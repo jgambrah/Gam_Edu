@@ -248,573 +248,568 @@ const svgQ1dFarmTools = `
 // ==========================================
 // 40 OBJECTIVE TEST QUESTIONS (STRICT JHS NACCA STANDARDS)
 // ==========================================
-const rawScienceBank: QuestionItem[] = [
+const balancedMock4P1: any[] = [
   {
-    number: 1,
-    prompt: "In which anatomical section of the human kidney does the ultrafiltration of blood plasma occur to separate metabolic wastes from blood cells?",
-    correctAnswer: "Bowman's capsule (in the renal cortex)",
-    distractors: [
-      "The renal pelvis",
-      "The urinary bladder",
-      "The collecting duct"
+    "number": 1,
+    "prompt": "Which of the following substances is an alloy of copper and zinc?",
+    "options": [
+      "Steel",
+      "Bronze",
+      "Solder",
+      "Brass"
     ],
-    hint: "High blood pressure forces water, urea, and glucose across glomerular capillaries into this cup-shaped structure.",
-    workedSolution: "Ultrafiltration occurs in Bowman's capsule surrounding the glomerulus in the renal cortex, filtering small molecules into nephron tubules while retaining large blood cells and proteins.",
-    points: 1
+    "correctAnswer": "Brass",
+    "hint": "Bronze is copper and tin; this alloy is copper and zinc.",
+    "workedSolution": "Brass is an alloy composed predominantly of copper and zinc. Bronze consists of copper and tin, while steel is iron and carbon.",
+    "points": 1
   },
   {
-    number: 2,
-    prompt: "In the International System of Units (S.I.), what derived unit is used to measure electrical potential difference (voltage)?",
-    correctAnswer: "Volt [V = J C⁻¹]",
-    distractors: [
-      "Ampere [A]",
-      "Ohm [Ω]",
-      "Watt [W]"
+    "number": 2,
+    "prompt": "When a speeding passenger bus stops abruptly, the passengers lurch forward. This physical occurrence demonstrates",
+    "options": [
+      "Newton's First Law of Motion.",
+      "Newton's Second Law of Motion.",
+      "Newton's Third Law of Motion.",
+      "the principle of conservation of momentum."
     ],
-    hint: "The energy transformed per unit electric charge passing between two points ($V = \\frac{W}{Q}$).",
-    workedSolution: "The Volt (V) is the derived S.I. unit of potential difference. Ampere measures current, Ohm measures electrical resistance, and Watt measures power.",
-    points: 1
+    "correctAnswer": "Newton's First Law of Motion.",
+    "hint": "Inertia causes a body to maintain its state of uniform motion.",
+    "workedSolution": "According to Newton's First Law (Law of Inertia), passengers continue moving forward with the bus's prior speed until an external braking force acts on them.",
+    "points": 1
   },
   {
-    number: 3,
-    prompt: "A livestock farmer adds crushed oyster shell meal to the feed ration of laying hens. This mineral supplement is provided primarily to:",
-    correctAnswer: "Supply calcium for the development of hard, strong eggshells",
-    distractors: [
-      "Accelerate the enzymatic digestion of crude fiber in the gizzard",
-      "Eliminate intestinal tapeworm infections",
-      "Provide energy to keep the birds warm during the rainy season"
+    "number": 3,
+    "prompt": "The vegetative part of an onion plant modified for food storage is the",
+    "options": [
+      "swollen taproot.",
+      "underground stem tuber.",
+      "lateral runner.",
+      "fleshy scale leaf."
     ],
-    hint: "Oyster shells are rich in calcium carbonate ($\\text{CaCO}_3$).",
-    workedSolution: "Eggshells consist almost entirely of calcium carbonate. Supplying crushed oyster shells provides the calcium needed to prevent thin-shelled or soft-shelled eggs in laying birds.",
-    points: 1
+    "correctAnswer": "fleshy scale leaf.",
+    "hint": "An onion bulb consists of concentric modified leaves.",
+    "workedSolution": "An onion bulb is a specialized underground shoot consisting of a reduced stem bearing concentric, fleshy scale leaves that store food reserves.",
+    "points": 1
   },
   {
-    number: 4,
-    prompt: "When white light is dispersed by a triangular glass prism into a spectrum of colors, which spectral color is deviated LEAST from its original path?",
-    correctAnswer: "Red light",
-    distractors: [
-      "Yellow light",
-      "Green light",
-      "Violet light"
+    "number": 4,
+    "prompt": "Which of the following cellular organisms lacks a membrane-bound nucleus and is classified as prokaryotic?",
+    "options": [
+      "Amoeba",
+      "Spirogyra",
+      "Yeast cell",
+      "Bacterium"
     ],
-    hint: "Has the longest wavelength in the visible spectrum and travels fastest in glass.",
-    workedSolution: "Red light has the longest wavelength and is refracted (bent) the least when entering glass. Violet light has the shortest wavelength and is deviated the most.",
-    points: 1
+    "correctAnswer": "Bacterium",
+    "hint": "Contains naked circular DNA in a nucleoid without a nuclear envelope.",
+    "workedSolution": "Bacteria are unicellular prokaryotes lacking a membrane-bound nucleus or membrane-bound organelles. Amoeba, yeast, and spirogyra are eukaryotes.",
+    "points": 1
   },
   {
-    number: 5,
-    prompt: "Which of the following clinical conditions in humans is an inheritable genetic blood disorder rather than an infectious disease?",
-    correctAnswer: "Sickle-cell anemia",
-    distractors: [
-      "Bacterial typhoid fever",
-      "Plasmodium malaria",
-      "Epidemic cholera"
+    "number": 5,
+    "prompt": "A bicycle dynamo generates electricity from the rotation of the bicycle wheel. What energy transformation takes place in the dynamo?",
+    "options": [
+      "Chemical energy to kinetic energy",
+      "Kinetic energy to electrical energy",
+      "Electrical energy to light energy",
+      "Potential energy to sound energy"
     ],
-    hint: "Caused by an inherited abnormal hemoglobin gene ($HbS$) passed from parents to children.",
-    workedSolution: "Sickle-cell anemia is an inherited autosomal recessive genetic condition where abnormal hemoglobin causes red blood cells to deform into sickles. Typhoid, malaria, and cholera are infectious.",
-    points: 1
+    "correctAnswer": "Kinetic energy to electrical energy",
+    "hint": "Mechanical movement of a magnet inside a coil induces current.",
+    "workedSolution": "A bicycle dynamo uses electromagnetic induction to convert the mechanical kinetic energy of the turning wheel into electrical energy.",
+    "points": 1
   },
   {
-    number: 6,
-    prompt: "What is the systematic chemical formula for the binary inorganic compound Aluminum oxide?",
-    correctAnswer: "Al₂O₃",
-    distractors: [
-      "AlO",
-      "AlO₂",
-      "Al₃O₂"
+    "number": 6,
+    "prompt": "Which chemical compound is responsible for temporary hardness in natural well water?",
+    "options": [
+      "Calcium hydrogencarbonate",
+      "Calcium sulfate",
+      "Magnesium chloride",
+      "Sodium carbonate"
     ],
-    hint: "Aluminum has a valency of 3 ($\\text{Al}^{3+}$) and Oxygen has a valency of 2 ($\\text{O}^{2-}$).",
-    workedSolution: "Exchanging valencies gives $\\text{Al}_2\\text{O}_3$, representing a neutral binary ionic compound formed between two $\\text{Al}^{3+}$ ions and three $\\text{O}^{2-}$ ions.",
-    points: 1
+    "correctAnswer": "Calcium hydrogencarbonate",
+    "hint": "Decomposes on boiling to form calcium carbonate scale.",
+    "workedSolution": "Temporary hardness is caused by dissolved calcium hydrogencarbonate, Ca(HCO₃)₂, or magnesium hydrogencarbonate, which decompose into insoluble carbonates upon heating.",
+    "points": 1
   },
   {
-    number: 7,
-    prompt: "In living cells, which of the following biological processes involves the net movement of water molecules across a selectively permeable membrane?",
-    correctAnswer: "Osmosis",
-    distractors: [
-      "Molecular gas diffusion",
-      "Gravitational sedimentation",
-      "Sublimation"
+    "number": 7,
+    "prompt": "In human dentition, dental decay begins when mouth bacteria ferment food sugars to produce",
+    "options": [
+      "alkalis that dissolve dentine.",
+      "enzymes that coat the cement.",
+      "acids that demineralize enamel.",
+      "toxins that harden the pulp cavity."
     ],
-    hint: "Water moves along a water potential gradient from a dilute to a concentrated solution.",
-    workedSolution: "Osmosis is the net diffusion of water molecules from a region of higher water potential (dilute solution) to a lower water potential (concentrated solution) across a semi-permeable membrane.",
-    points: 1
+    "correctAnswer": "acids that demineralize enamel.",
+    "hint": "Bacterial plaque produces acidic by-products that dissolve calcium enamel.",
+    "workedSolution": "Mouth bacteria break down residual dietary sugars into organic acids that lower mouth pH, demineralizing and dissolving the outer tooth enamel.",
+    "points": 1
   },
   {
-    number: 8,
-    prompt: "A crowbar of total length $150.0\\text{ cm}$ has its fulcrum placed $30.0\\text{ cm}$ from the load. Calculate the Velocity Ratio ($VR$) of the lever:",
-    correctAnswer: "4.0",
-    distractors: [
+    "number": 8,
+    "prompt": "Which farm tool is specifically used for leveling ploughed seedbeds and collecting uprooted weeds?",
+    "options": [
+      "Garden rake",
+      "Hand trowel",
+      "Pickaxe",
+      "Pruning shears"
+    ],
+    "correctAnswer": "Garden rake",
+    "hint": "Features metal tines mounted on a horizontal crossbar.",
+    "workedSolution": "A garden rake has metal teeth designed to level tilled soil surfaces, pulverize surface clods, and gather uprooted weeds and debris.",
+    "points": 1
+  },
+  {
+    "number": 9,
+    "prompt": "What is the total number of electrons present in an aluminum ion, Al³⁺, formed from an atom of aluminum (Z = 13)?",
+    "options": [
+      "3",
+      "10",
+      "13",
+      "16"
+    ],
+    "correctAnswer": "10",
+    "hint": "Aluminum loses its 3 valence electrons to achieve stability.",
+    "workedSolution": "A neutral aluminum atom has 13 electrons (2, 8, 3). When forming the Al³⁺ cation, it loses its 3 valence electrons, leaving 10 electrons (2, 8).",
+    "points": 1
+  },
+  {
+    "number": 10,
+    "prompt": "The darkest, central region of a shadow where all light from an extended source is completely blocked is called the",
+    "options": [
+      "penumbra.",
+      "spectrum.",
+      "focus.",
+      "umbra."
+    ],
+    "correctAnswer": "umbra.",
+    "hint": "Total shadow; the partial shadow is the penumbra.",
+    "workedSolution": "The umbra is the totally dark inner core of a shadow where all incident light rays from a source are blocked by an opaque body. The penumbra is the outer partial shadow.",
+    "points": 1
+  },
+  {
+    "number": 11,
+    "prompt": "Why is mercury preferred over water as a thermometric liquid in laboratory thermometers?",
+    "options": [
+      "It wets the glass bore easily.",
+      "It does not cling to the glass walls.",
+      "It has a high freezing point of 0°C.",
+      "It is transparent and colorless."
+    ],
+    "correctAnswer": "It does not cling to the glass walls.",
+    "hint": "High cohesion prevents meniscus sticking; expands evenly.",
+    "workedSolution": "Mercury has high surface tension and does not wet glass walls, has a wide liquid range (-39°C to 357°C), is opaque and silvery for easy reading, and conducts heat rapidly.",
+    "points": 1
+  },
+  {
+    "number": 12,
+    "prompt": "The removal of the horn buds of young calves to prevent injury to other animals is known as",
+    "options": [
+      "culling.",
+      "castrating.",
+      "dehorning.",
+      "docking."
+    ],
+    "correctAnswer": "dehorning.",
+    "hint": "Also called disbudding in very young livestock.",
+    "workedSolution": "Dehorning (or disbudding) is the physical or chemical removal of horn buds in livestock to prevent horned animals from injuring each other or farm handlers.",
+    "points": 1
+  },
+  {
+    "number": 13,
+    "prompt": "Which of the following elements exists as allotropes in the forms of diamond and graphite?",
+    "options": [
+      "Carbon",
+      "Silicon",
+      "Sulfur",
+      "Phosphorus"
+    ],
+    "correctAnswer": "Carbon",
+    "hint": "Forms giant covalent lattices of either tetrahedral or planar hexagonal layers.",
+    "workedSolution": "Carbon exists as allotropes: diamond (rigid tetrahedral network) and graphite (layered hexagonal sheets with delocalized electrons).",
+    "points": 1
+  },
+  {
+    "number": 14,
+    "prompt": "During human respiration, the diffusion of gases between the air and blood capillaries occurs across the walls of the",
+    "options": [
+      "bronchi.",
+      "larynx.",
+      "trachea.",
+      "alveoli."
+    ],
+    "correctAnswer": "alveoli.",
+    "hint": "Microscopic single-cell-thick air sacs in the lungs.",
+    "workedSolution": "Alveoli provide an extensive, moist, single-cell-thick respiratory surface surrounded by pulmonary capillaries where oxygen and carbon dioxide diffuse.",
+    "points": 1
+  },
+  {
+    "number": 15,
+    "prompt": "An electrical component used to adjust or vary the magnitude of current in an electric circuit is a",
+    "options": [
+      "transformer.",
+      "voltmeter.",
+      "capacitor.",
+      "rheostat."
+    ],
+    "correctAnswer": "rheostat.",
+    "hint": "A variable resistor with a sliding contact.",
+    "workedSolution": "A rheostat (variable resistor) adjusts circuit resistance, allowing fine control over current flow.",
+    "points": 1
+  },
+  {
+    "number": 16,
+    "prompt": "Which of the following agricultural practices helps to check severe wind erosion in open flat savannah farmlands?",
+    "options": [
+      "Planting shelterbelts",
+      "Practicing clean weeding",
+      "Ploughing along the slope",
+      "Burning dry crop residues"
+    ],
+    "correctAnswer": "Planting shelterbelts",
+    "hint": "Rows of dense trees planted across prevailing wind paths.",
+    "workedSolution": "Shelterbelts (windbreaks) are linear tree barriers planted perpendicular to prevailing winds to reduce wind velocity and prevent topsoil detachment.",
+    "points": 1
+  },
+  {
+    "number": 17,
+    "prompt": "A boy applies an effort force of 50 N to lift a load of 200 N using a simple lever. What is the Mechanical Advantage (MA) of the lever?",
+    "options": [
       "0.25",
-      "3.0",
-      "5.0"
+      "2.00",
+      "4.00",
+      "10.00"
     ],
-    hint: "$$\\text{Effort arm} = 150.0 - 30.0 = 120.0\\text{ cm}$$. $$VR = \\frac{\\text{Effort arm}}{\\text{Load arm}}$$.",
-    workedSolution: "$$\\text{Effort Arm } (d_E) = 150.0\\text{ cm} - 30.0\\text{ cm} = 120.0\\text{ cm}$$. $$VR = \\frac{d_E}{d_L} = \\frac{120.0\\text{ cm}}{30.0\\text{ cm}} = 4.0$$.",
-    points: 1
+    "correctAnswer": "4.00",
+    "hint": "Mechanical Advantage = Load / Effort.",
+    "workedSolution": "MA = Load / Effort = 200 N / 50 N = 4.00.",
+    "points": 1
   },
   {
-    number: 9,
-    prompt: "Which chemical reagent solution is used in laboratories to confirm the presence of dissolved carbon dioxide gas by forming a milky white precipitate?",
-    correctAnswer: "Aqueous calcium hydroxide [Limewater]",
-    distractors: [
-      "Dilute hydrochloric acid",
-      "Benedict's solution",
-      "Ethanol alcohol"
+    "number": 18,
+    "prompt": "In the female mammalian reproductive system, mature ova are released from the",
+    "options": [
+      "uterus.",
+      "ovary.",
+      "cervix.",
+      "oviduct."
     ],
-    hint: "Forms an insoluble precipitate of calcium carbonate ($\\text{CaCO}_3$).",
-    workedSolution: "Carbon dioxide reacts with limewater (calcium hydroxide) to precipitate insoluble white calcium carbonate ($\\text{CaCO}_3$), turning the solution milky: $\\text{Ca(OH)}_2 + \\text{CO}_2 \\to \\text{CaCO}_3\\downarrow + \\text{H}_2\\text{O}$.",
-    points: 1
+    "correctAnswer": "ovary.",
+    "hint": "The primary female gonad where ovulation occurs.",
+    "workedSolution": "The ovary is the primary female gonad responsible for oogenesis and the release of mature ova during ovulation.",
+    "points": 1
   },
   {
-    number: 10,
-    prompt: "In electrical circuits, what is the primary function of connecting an electrical fuse in series with a household appliance?",
-    correctAnswer: "To melt and break the circuit when electric current exceeds safe operating limits",
-    distractors: [
-      "To step down mains voltage from 240 V to 12 V",
-      "To convert alternating current into direct current",
-      "To store electrical energy for emergency backup"
+    "number": 19,
+    "prompt": "Which of the following mixtures can be separated by adding water, stirring, and filtering, followed by evaporation?",
+    "options": [
+      "Sand and common salt",
+      "Kerosene and water",
+      "Alcohol and water",
+      "Iron filings and sulfur"
     ],
-    hint: "Contains a low-melting-point wire that prevents electrical fires caused by overcurrent.",
-    workedSolution: "A fuse is a safety device containing a thin wire with a low melting point that melts when current exceeds its amperage rating, cutting off current to protect wiring and appliances.",
-    points: 1
+    "correctAnswer": "Sand and common salt",
+    "hint": "One component dissolves in water while the other remains insoluble.",
+    "workedSolution": "Salt dissolves in water while sand remains insoluble. Filtration collects the sand residue, and evaporation of the filtrate recovers pure salt crystals.",
+    "points": 1
   },
   {
-    number: 11,
-    prompt: "Which laboratory apparatus is specifically designed to separate two immiscible liquids of different densities, such as kerosene and water?",
-    correctAnswer: "A separating funnel",
-    distractors: [
-      "A Liebig condenser",
-      "A filter funnel with filter paper",
-      "A desiccator"
+    "number": 20,
+    "prompt": "A person who consumes a diet lacking in protein over a prolonged period is likely to develop",
+    "options": [
+      "rickets.",
+      "scurvy.",
+      "goiter.",
+      "kwashiorkor."
     ],
-    hint: "Features a glass bulb and a bottom stopcock to drain the denser liquid layer.",
-    workedSolution: "A separating funnel separates immiscible liquids of different densities: the denser liquid (water) settles at the bottom and drains through the stopcock, leaving the lighter liquid (kerosene) behind.",
-    points: 1
+    "correctAnswer": "kwashiorkor.",
+    "hint": "Nutritional disorder characterized by edema, swollen belly, and wasting.",
+    "workedSolution": "Kwashiorkor is a severe protein malnutrition disorder characterized by edema, swollen abdomen, skin depigmentation, and muscle wasting.",
+    "points": 1
   },
   {
-    number: 12,
-    prompt: "An electric blender rated $500.0\\text{ W}$ is operated for $6.0\\text{ hours}$ in a commercial bakery. Calculate the electrical energy consumed in kilowatt-hours (kWh):",
-    correctAnswer: "3.0 kWh",
-    distractors: [
-      "0.08 kWh",
-      "30.0 kWh",
-      "3,000.0 kWh"
+    "number": 21,
+    "prompt": "What is the S.I. unit for measuring electrical resistance?",
+    "options": [
+      "Volt",
+      "Ampere",
+      "Ohm",
+      "Watt"
     ],
-    hint: "$$\\text{Power in kW} = \\frac{500.0}{1,000} = 0.5\\text{ kW}$$. $$\\text{Energy} = P \\times t = 0.5 \\times 6.0$$.",
-    workedSolution: "$$\\text{Power} = 0.5\\text{ kW}$$. $$\\text{Energy} = P \\times t = 0.5\\text{ kW} \\times 6.0\\text{ h} = 3.0\\text{ kWh}$$.",
-    points: 1
+    "correctAnswer": "Ohm",
+    "hint": "Represented by the Greek symbol Omega (Ω).",
+    "workedSolution": "The Ohm (Ω) is the S.I. derived unit of electrical resistance. Volts measure potential difference; Amperes measure current; Watts measure power.",
+    "points": 1
   },
   {
-    number: 13,
-    prompt: "Which infectious childhood disease is caused by an airborne virus, presenting with high fever, cough, and a widespread reddish skin rash?",
-    correctAnswer: "Measles [Morbillivirus]",
-    distractors: [
-      "Poliomyelitis",
-      "Bacterial tetanus",
-      "Cholera"
+    "number": 22,
+    "prompt": "The practice of supporting trailing tomato and yam vines with upright wooden stakes is done primarily to",
+    "options": [
+      "absorb more soil moisture.",
+      "prevent leaves and fruits from rotting on the ground.",
+      "prevent birds from perching on the crops.",
+      "reduce the transpiration rate of the leaves."
     ],
-    hint: "Controlled through routine MMR / Measles infant vaccination.",
-    workedSolution: "Measles is a contagious viral infection transmitted via airborne respiratory droplets, characterized by fever, cough, Koplik's spots, and an extensive maculopapular rash.",
-    points: 1
+    "correctAnswer": "prevent leaves and fruits from rotting on the ground.",
+    "hint": "Keeps foliage and fruits off wet soil to minimize fungal infections.",
+    "workedSolution": "Staking keeps climbing vines and developing fruits elevated off moist soil, preventing soil-borne fungal infections, fruit rot, and facilitating sunlight capture.",
+    "points": 1
   },
   {
-    number: 14,
-    prompt: "What is the ground-state Bohr electronic configuration of an atom of Magnesium ($_{12}\\text{Mg}$)?",
-    correctAnswer: "2, 8, 2",
-    distractors: [
-      "2, 8, 8, 2",
-      "2, 10",
-      "2, 8, 1"
+    "number": 23,
+    "prompt": "When an atom of sodium (₁₁Na) combines with an atom of chlorine (₁₇Cl), the sodium atom",
+    "options": [
+      "gains one electron to form an anion.",
+      "loses one electron to form a cation.",
+      "shares two electrons with the chlorine atom.",
+      "gains seven electrons to fill its outer shell."
     ],
-    hint: "Fills 2 electrons in the K-shell, 8 in the L-shell, and 2 valence electrons in the M-shell.",
-    workedSolution: "Magnesium has atomic number 12: 2 electrons in the first shell, 8 in the second shell, and 2 valence electrons in the third shell ($2, 8, 2$).",
-    points: 1
+    "correctAnswer": "loses one electron to form a cation.",
+    "hint": "Sodium has 1 valence electron (2, 8, 1) and readily donates it.",
+    "workedSolution": "Sodium (2, 8, 1) loses its single valence electron to achieve a neon configuration (2, 8), forming a positively charged sodium cation (Na⁺).",
+    "points": 1
   },
   {
-    number: 15,
-    prompt: "Which of the following common tools operates as a third-class lever where the applied effort is situated between the fulcrum and the load?",
-    correctAnswer: "A pair of tweezers (or forceps)",
-    distractors: [
-      "A crowbar",
-      "A wheelbarrow",
-      "A crown-cap bottle opener"
+    "number": 24,
+    "prompt": "In the human urinary system, urine flows from the kidneys to the urinary bladder through the",
+    "options": [
+      "renal arteries.",
+      "urethras.",
+      "ureters.",
+      "nephron tubules."
     ],
-    hint: "The effort is applied at the center between the hinged joint and gripping tips.",
-    workedSolution: "In a Class 3 lever, the effort force is exerted between the fulcrum and load (e.g., tweezers, forceps, human forearm). Scissors are Class 1; wheelbarrows are Class 2.",
-    points: 1
+    "correctAnswer": "ureters.",
+    "hint": "Two muscular tubes leading from the renal pelvis down to the bladder.",
+    "workedSolution": "The ureters are bilateral muscular ducts that convey urine from the renal pelvis of each kidney into the urinary bladder by peristalsis.",
+    "points": 1
   },
   {
-    number: 16,
-    prompt: "Which soil type feels distinctly sticky and plastic when molded with water, forming long flexible ribbons that do not crack?",
-    correctAnswer: "Clayey soil",
-    distractors: [
-      "Coarse sandy soil",
-      "Sandy loam soil",
-      "Gravelly sand"
+    "number": 25,
+    "prompt": "An electric immersion heater of resistance 24 Ω is connected across a 240 V power supply. Calculate the current flowing through the heater.",
+    "options": [
+      "0.1 A",
+      "5.7 A",
+      "10.0 A",
+      "24.0 A"
     ],
-    hint: "Composed of microscopic mineral particles with high cohesion.",
-    workedSolution: "Clay soil consists of fine mineral particles ($< 0.002\\text{ mm}$) that become sticky, plastic, and moldable when wet, forming ribbons without breaking.",
-    points: 1
+    "correctAnswer": "10.0 A",
+    "hint": "Ohm's Law: Current = Voltage / Resistance.",
+    "workedSolution": "I = V / R = 240 V / 24 Ω = 10.0 A.",
+    "points": 1
   },
   {
-    number: 17,
-    prompt: "Which chamber of the human heart has the thickest muscular myocardium to pump oxygenated blood throughout systemic circulation?",
-    correctAnswer: "The left ventricle",
-    distractors: [
-      "The right ventricle",
-      "The left atrium",
-      "The right atrium"
+    "number": 26,
+    "prompt": "Which of the following substances will produce effervescence of carbon dioxide gas when mixed with dilute hydrochloric acid?",
+    "options": [
+      "Calcium carbonate",
+      "Sodium chloride",
+      "Copper metal",
+      "Magnesium oxide"
     ],
-    hint: "Must generate high hydrostatic pressure to drive blood through the systemic aorta.",
-    workedSolution: "The left ventricle has the thickest muscular wall because it must generate enough contractile force to overcome systemic vascular resistance and pump blood through the aorta to the body.",
-    points: 1
+    "correctAnswer": "Calcium carbonate",
+    "hint": "Carbonates react with mineral acids to liberate carbon dioxide gas.",
+    "workedSolution": "Calcium carbonate reacts with dilute hydrochloric acid to form calcium chloride, water, and effervescing carbon dioxide gas: CaCO₃ + 2HCl -> CaCl₂ + H₂O + CO₂↑.",
+    "points": 1
   },
   {
-    number: 18,
-    prompt: "When solid candle wax is gently heated in a crucible, it melts into liquid wax. When cooled, it resolidifies into solid wax. This change is classified as a:",
-    correctAnswer: "Reversible physical change",
-    distractors: [
-      "Permanent chemical change",
-      "Nuclear transmutation",
-      "Irreversible decomposition"
+    "number": 27,
+    "prompt": "The transfer of heat by the actual bodily movement of heated fluid particles from one place to another is called",
+    "options": [
+      "conduction.",
+      "radiation.",
+      "absorption.",
+      "convection."
     ],
-    hint: "No new chemical substance is formed; only physical state changes.",
-    workedSolution: "Melting wax is a reversible physical phase transition ($\\text{Solid} \\rightleftharpoons \\text{Liquid}$) that does not break covalent bonds or form new chemical compounds.",
-    points: 1
+    "correctAnswer": "convection.",
+    "hint": "Occurs only in fluids (liquids and gases) via density currents.",
+    "workedSolution": "Convection is heat transfer through fluids caused by density differences: heated fluid expands, becomes less dense, rises, and is replaced by cooler, denser fluid.",
+    "points": 1
   },
   {
-    number: 19,
-    prompt: "What is the primary physiological function performed by the colored muscular iris in the human eye?",
-    correctAnswer: "Controlling the diameter of the pupil to regulate the amount of entering light",
-    distractors: [
-      "Focusing sharp optical images onto the retina",
-      "Secreting aqueous humor into the anterior chamber",
-      "Protecting the sclera from bacterial infections"
+    "number": 28,
+    "prompt": "Which of the following crops is a cereal grain?",
+    "options": [
+      "Sorghum",
+      "Cowpea",
+      "Groundnut",
+      "Soya bean"
     ],
-    hint: "Smooth circular and radial muscles constrict or dilate the central pupil opening.",
-    workedSolution: "The iris contains smooth muscles that constrict the pupil in bright light to protect the retina and dilate it in dim light to maximize light entry.",
-    points: 1
+    "correctAnswer": "Sorghum",
+    "hint": "A grass crop cultivated for its edible grain seeds; the others are legumes.",
+    "workedSolution": "Sorghum (along with maize, rice, and millet) is a graminaceous cereal crop cultivated for its starchy edible grains. Cowpea and groundnut are legumes.",
+    "points": 1
   },
   {
-    number: 20,
-    prompt: "What color change is observed when red litmus paper is dipped into an aqueous solution of sodium hydroxide [$\\text{NaOH}$]?",
-    correctAnswer: "Turns blue (indicating an alkaline/basic solution, pH > 7)",
-    distractors: [
-      "Remains red without change",
-      "Turns bright yellow",
-      "Turns colorless"
+    "number": 29,
+    "prompt": "An optical pinhole camera produces an image that is always",
+    "options": [
+      "virtual and upright.",
+      "real and inverted.",
+      "magnified and upright.",
+      "virtual and inverted."
     ],
-    hint: "Bases turn red litmus paper blue.",
-    workedSolution: "Sodium hydroxide is a strong base with a high concentration of $\\text{OH}^-$ ions ($pH > 7$). Alkalis turn red litmus paper blue.",
-    points: 1
+    "correctAnswer": "real and inverted.",
+    "hint": "Formed on a physical screen by intersecting straight rays from an aperture.",
+    "workedSolution": "Because light travels in straight lines across the aperture, light rays cross, producing a real, inverted image on the screen.",
+    "points": 1
   },
   {
-    number: 21,
-    prompt: "In a biological community food web, organisms that feed directly on primary autotrophic producers are classified as:",
-    correctAnswer: "Primary consumers (Herbivores)",
-    distractors: [
-      "Secondary consumers",
-      "Tertiary consumers",
-      "Apex predators"
+    "number": 30,
+    "prompt": "The function of white blood cells (leukocytes) in the human body is to",
+    "options": [
+      "transport oxygen to tissues.",
+      "initiate blood clotting at wounds.",
+      "protect the body against pathogen infections.",
+      "distribute digested glucose throughout the body."
     ],
-    hint: "Herbivorous animals (e.g., grasshoppers, cattle, caterpillars) occupying Trophic Level 2.",
-    workedSolution: "Primary consumers are herbivores that feed directly on autotrophic plants (producers). Secondary consumers feed on herbivores.",
-    points: 1
+    "correctAnswer": "protect the body against pathogen infections.",
+    "hint": "Cells of the immune system that perform phagocytosis and antibody synthesis.",
+    "workedSolution": "White blood cells defend against microbial infections via phagocytosis and antibody production.",
+    "points": 1
   },
   {
-    number: 22,
-    prompt: "A horizontal pulling force of $50.0\\text{ N}$ moves a trolley across a level floor through a distance of $6.0\\text{ m}$. Calculate the work done:",
-    correctAnswer: "300.0 Joules",
-    distractors: [
-      "8.33 Joules",
-      "56.0 Joules",
-      "600.0 Joules"
+    "number": 31,
+    "prompt": "Which of the following gas components of air supports the combustion of fuels?",
+    "options": [
+      "Oxygen",
+      "Nitrogen",
+      "Carbon dioxide",
+      "Argon"
     ],
-    hint: "$$\\text{Work Done } (W) = \\text{Force } (F) \\times \\text{Distance } (d) = 50.0 \\times 6.0$$.",
-    workedSolution: "$$\\text{Work Done } (W) = F \\times d = 50.0\\text{ N} \\times 6.0\\text{ m} = 300.0\\text{ Joules (J)}$$.",
-    points: 1
+    "correctAnswer": "Oxygen",
+    "hint": "Makes up ~21% of the atmosphere and reacts with fuels during burning.",
+    "workedSolution": "Oxygen gas supports combustion; it serves as the oxidizing agent in chemical reactions between fuels and oxygen.",
+    "points": 1
   },
   {
-    number: 23,
-    prompt: "Which agronomic conservation practice establishes rows of tall trees along field borders to reduce wind speed across bare topsoil?",
-    correctAnswer: "Windbreaks / Shelterbelts",
-    distractors: [
-      "Strip cropping",
-      "Clean weeding",
-      "Overgrazing"
+    "number": 32,
+    "prompt": "The process whereby living organisms maintain a stable internal physiological state despite external environmental changes is called",
+    "options": [
+      "assimilation.",
+      "transpiration.",
+      "locomotion.",
+      "homeostasis."
     ],
-    hint: "Barrier plantings perpendicular to prevailing winds that prevent wind erosion.",
-    workedSolution: "Windbreaks (shelterbelts) are rows of trees planted along field edges to reduce wind velocity at ground level, preventing topsoil detachment by wind.",
-    points: 1
+    "correctAnswer": "homeostasis.",
+    "hint": "Regulates body temperature, blood glucose, and water balance.",
+    "workedSolution": "Homeostasis is the biological maintenance of a dynamic, constant internal physiological environment (such as body temperature and osmoregulation).",
+    "points": 1
   },
   {
-    number: 24,
-    prompt: "In fundamental chemistry, a pure chemical element is defined as a substance that:",
-    correctAnswer: "Consists exclusively of atoms having the exact same atomic number",
-    distractors: [
-      "Can be chemically decomposed into simpler substances by boiling",
-      "Is formed by physically dissolving a solid in a liquid solvent",
-      "Is composed of two or more elements combined in variable proportions"
+    "number": 33,
+    "prompt": "A block of wood of mass 6 kg is hoisted vertically through a height of 3 m. Calculate the work done against gravity. [g = 10 m s⁻²]",
+    "options": [
+      "18 J",
+      "60 J",
+      "180 J",
+      "300 J"
     ],
-    hint: "Cannot be broken down into simpler chemical substances by chemical means.",
-    workedSolution: "An element is a pure chemical substance consisting of atoms with the same nuclear proton number (atomic number) that cannot be split into simpler substances by chemical reactions.",
-    points: 1
+    "correctAnswer": "180 J",
+    "hint": "Work done = Force x distance = (m x g) x h.",
+    "workedSolution": "Weight = m x g = 6 kg x 10 m s⁻² = 60 N. Work Done = F x h = 60 N x 3 m = 180 J.",
+    "points": 1
   },
   {
-    number: 25,
-    prompt: "What is the stoichiometric chemical formula of binary Sodium oxide?",
-    correctAnswer: "Na₂O",
-    distractors: [
-      "NaO",
-      "NaO₂",
-      "Na₂O₂"
+    "number": 34,
+    "prompt": "In poultry production, debeaking is carried out on domestic fowls to",
+    "options": [
+      "improve egg incubation rates.",
+      "increase feed consumption speed.",
+      "control feather pecking and cannibalism.",
+      "facilitate vaccination administration."
     ],
-    hint: "Sodium has a valency of 1 ($\\text{Na}^+$) and Oxygen has a valency of 2 ($\\text{O}^{2-}$).",
-    workedSolution: "Two sodium cations combine with one oxide anion to form neutral sodium oxide, yielding the stoichiometric formula $\\text{Na}_2\\text{O}$.",
-    points: 1
+    "correctAnswer": "control feather pecking and cannibalism.",
+    "hint": "Trimming the sharp tip of the upper beak.",
+    "workedSolution": "Debeaking (beak trimming) removes the sharp tip of the upper mandible in domestic poultry to prevent cannibalism, feather pecking, and egg eating.",
+    "points": 1
   },
   {
-    number: 26,
-    prompt: "Which of the following agricultural food crops is propagated on farmlands using lateral vegetative sword suckers?",
-    correctAnswer: "Banana and Plantain [Musa spp.]",
-    distractors: [
-      "Cassava stem",
-      "Irish potato tuber",
-      "Sweet potato vine"
+    "number": 35,
+    "prompt": "When a beam of light passes from glass into air at an angle, the light ray",
+    "options": [
+      "bends toward the normal line.",
+      "bends away from the normal line.",
+      "travels straight without changing speed.",
+      "reflects completely along its incident path."
     ],
-    hint: "Lateral shoots arising from underground corms bearing narrow sword-shaped leaves.",
-    workedSolution: "Bananas and plantains are propagated vegetatively using sword suckers produced from subterranean corms, as commercial varieties do not produce viable seeds.",
-    points: 1
+    "correctAnswer": "bends away from the normal line.",
+    "hint": "Light speeds up when emerging into an optically less dense medium.",
+    "workedSolution": "Air is optically less dense than glass. Light speeds up as it leaves glass, causing the ray to bend away from the normal line (angle of refraction > angle of incidence).",
+    "points": 1
   },
   {
-    number: 27,
-    prompt: "When solid sodium chloride dissolves completely in water, the liquid remains transparent and does not settle. This mixture is:",
-    correctAnswer: "A homogeneous true solution",
-    distractors: [
-      "A heterogeneous suspension",
-      "A colloidal emulsion",
-      "A permanent chemical compound"
+    "number": 36,
+    "prompt": "Which of the following domestic substances will turn red litmus paper blue?",
+    "options": [
+      "Fresh lemon juice",
+      "Wood ash solution",
+      "Dilute vinegar",
+      "Pure distilled water"
     ],
-    hint: "Solute particles disperse uniformly at the ionic level throughout the solvent.",
-    workedSolution: "Dissolved salt forms a single-phase homogeneous solution: sodium and chloride ions disperse uniformly among water molecules and cannot be separated by filtration.",
-    points: 1
+    "correctAnswer": "Wood ash solution",
+    "hint": "Contains potassium carbonate and alkaline hydroxides (pH > 7).",
+    "workedSolution": "Wood ash dissolved in water forms an alkaline solution containing potassium and carbonate hydroxides (pH > 7), turning red litmus paper blue.",
+    "points": 1
   },
   {
-    number: 28,
-    prompt: "An electric heater of resistance $40.0\\ \\Omega$ draws a current of $2.5\\text{ A}$ from an electrical outlet. Determine the potential difference across the heater:",
-    correctAnswer: "100.0 V",
-    distractors: [
-      "16.0 V",
-      "42.5 V",
-      "250.0 V"
+    "number": 37,
+    "prompt": "The reproductive organ in an angiosperm flower that produces pollen grains is the",
+    "options": [
+      "anther.",
+      "stigma.",
+      "ovary.",
+      "sepal."
     ],
-    hint: "By Ohm's Law: $V = I \\times R = 2.5 \\times 40.0$.",
-    workedSolution: "By Ohm's Law: $V = I \\times R = 2.5\\text{ A} \\times 40.0\\ \\Omega = 100.0\\text{ Volts (V)}$.",
-    points: 1
+    "correctAnswer": "anther.",
+    "hint": "The terminal pollen-bearing sac of the stamen.",
+    "workedSolution": "The anther is the terminal pollen-producing organ of the male stamen where microspores undergo meiosis to form viable pollen grains.",
+    "points": 1
   },
   {
-    number: 29,
-    prompt: "Which environmental factor is essential for aerobic cellular respiration in germinating seeds to break down stored food into ATP?",
-    correctAnswer: "Diatomic oxygen gas [O₂]",
-    distractors: [
-      "Bright radiant sunlight",
-      "Synthetic fertilizer salts",
-      "Carbon monoxide gas"
+    "number": 38,
+    "prompt": "Which of the following organisms is an ectoparasite of farm cattle?",
+    "options": [
+      "Tapeworm",
+      "Liver fluke",
+      "Roundworm",
+      "Tick"
     ],
-    hint: "Acts as the final electron acceptor in the electron transport chain during aerobic respiration.",
-    workedSolution: "Oxygen gas ($\\text{O}_2$) is essential for aerobic respiration during seed germination, oxidizing stored food reserves to produce the ATP energy required for embryonic growth.",
-    points: 1
+    "correctAnswer": "Tick",
+    "hint": "Attaches externally to the hide to suck blood.",
+    "workedSolution": "Ticks are external blood-feeding ectoparasites that attach to cattle skin and transmit diseases like babesiosis. Tapeworms and flukes are endoparasites.",
+    "points": 1
   },
   {
-    number: 30,
-    prompt: "Which protective anti-rust method covers moving bicycle and engine parts with an oil barrier to exclude oxygen and moisture?",
-    correctAnswer: "Lubricating with oil and grease",
-    distractors: [
-      "Galvanizing with zinc",
-      "Enamel painting",
-      "Electroplating with chromium"
+    "number": 39,
+    "prompt": "The change of state directly from solid to gas without passing through a liquid phase is known as",
+    "options": [
+      "condensation.",
+      "evaporation.",
+      "sublimation.",
+      "melting."
     ],
-    hint: "Forms a waterproof barrier while reducing friction between moving contact parts.",
-    workedSolution: "Applying oil and grease forms a waterproof barrier that prevents atmospheric oxygen and moisture from contacting iron surfaces, while reducing mechanical friction.",
-    points: 1
+    "correctAnswer": "sublimation.",
+    "hint": "Observed when heating ammonium chloride, dry ice, or camphor.",
+    "workedSolution": "Sublimation is the direct phase transition of a substance from solid to gas without entering an intermediate liquid state.",
+    "points": 1
   },
   {
-    number: 31,
-    prompt: "Which human bodily action is an involuntary reflex mediated through an autonomic reflex arc?",
-    correctAnswer: "Blinking of the eye when an insect approaches the face",
-    distractors: [
-      "Reading a printed science textbook",
-      "Chewing a mouthful of food",
-      "Writing with a fountain pen"
+    "number": 40,
+    "prompt": "An inclined plane allows a heavy barrel to be rolled into a truck bed with less applied force because it",
+    "options": [
+      "reduces the weight of the barrel.",
+      "increases the effort distance over the load height.",
+      "eliminates all frictional resistance.",
+      "decreases the total work required to lift the load."
     ],
-    hint: "Occurs rapidly and automatically to protect the eye without prior conscious deliberation.",
-    workedSolution: "The corneal blink reflex is an involuntary protective reflex mediated through cranial nerves to shield the eye from foreign objects. Reading, chewing, and writing are voluntary.",
-    points: 1
-  },
-  {
-    number: 32,
-    prompt: "In simple machine mechanics, the Mechanical Advantage ($MA$) is mathematically defined as the ratio of:",
-    correctAnswer: "Load force overcome to applied Effort force [L / E]",
-    distractors: [
-      "Distance moved by effort to distance moved by load",
-      "Work input to work output",
-      "Momentum to linear velocity"
-    ],
-    hint: "$$MA = \\frac{\\text{Load}}{\\text{Effort}}$$.",
-    workedSolution: "Mechanical Advantage ($MA$) is the ratio of the load force overcome by a machine to the applied effort force exerted on it: $MA = \\frac{\\text{Load}}{\\text{Effort}}$.",
-    points: 1
-  },
-  {
-    number: 33,
-    prompt: "Which planet in our Solar System is surrounded by prominent, wide rings composed of orbiting ice, dust, and rock particles?",
-    correctAnswer: "Planet Saturn",
-    distractors: [
-      "Planet Mars",
-      "Planet Venus",
-      "Planet Mercury"
-    ],
-    hint: "The second-largest gas giant planet, famous for its visible ring system.",
-    workedSolution: "Saturn is a Jovian gas giant surrounded by a prominent, extensive system of planetary rings composed of orbiting ice, dust, and rocky debris.",
-    points: 1
-  },
-  {
-    number: 34,
-    prompt: "Which component of human whole blood is responsible for engulfing pathogenic bacteria through phagocytosis to defend the body?",
-    correctAnswer: "White blood cells (Leukocytes)",
-    distractors: [
-      "Red blood cells (Erythrocytes)",
-      "Blood platelets (Thrombocytes)",
-      "Liquid blood plasma"
-    ],
-    hint: "Cells of the immune system that engulf pathogens and synthesize antibodies.",
-    workedSolution: "White blood cells (leukocytes, such as neutrophils and monocytes) engulf invading pathogens by phagocytosis, while lymphocytes produce antibodies.",
-    points: 1
-  },
-  {
-    number: 35,
-    prompt: "When dilute hydrochloric acid reacts with sodium hydroxide solution, thermal heat is liberated and the temperature rises. This reaction is:",
-    correctAnswer: "An exothermic neutralization reaction",
-    distractors: [
-      "An endothermic neutralization reaction",
-      "A physical phase change",
-      "A nuclear fusion reaction"
-    ],
-    hint: "Acid-base neutralization liberates heat energy ($\\Delta H < 0$).",
-    workedSolution: "Acid-base neutralization is an exothermic reaction ($\\text{HCl} + \\text{NaOH} \\to \\text{NaCl} + \\text{H}_2\\text{O} + \\text{Heat}$), releasing thermal energy and raising the temperature.",
-    points: 1
-  },
-  {
-    number: 36,
-    prompt: "In vegetable crop husbandry, sunken nursery beds are prepared in dry, arid regions primarily to:",
-    correctAnswer: "Conserve limited soil moisture and catch surface irrigation water",
-    distractors: [
-      "Accelerate gravity water drainage during flood storms",
-      "Expose plant roots to direct midday sunlight",
-      "Prevent earthworms from entering topsoil"
-    ],
-    hint: "Constructed 5–10 cm below ground level to collect and conserve scarce water.",
-    workedSolution: "Sunken beds are constructed below the surrounding soil level in dry regions to collect and conserve irrigation water and protect seedlings from dry winds.",
-    points: 1
-  },
-  {
-    number: 37,
-    prompt: "In angiosperm floral reproduction, following successful double fertilization, which floral structure ripens into the fruit pericarp?",
-    correctAnswer: "The maternal floral ovary",
-    distractors: [
-      "The fertilized ovule",
-      "The slender style",
-      "The receptive stigma"
-    ],
-    hint: "The ovary wall becomes the fruit pericarp; the ovule develops into the seed.",
-    workedSolution: "Following fertilization, the ovary wall ripens into the fruit pericarp enclosing the seeds, while the fertilized ovules develop into viable seeds.",
-    points: 1
-  },
-  {
-    number: 38,
-    prompt: "Why is the third top pin (Earth pin) of a standard domestic three-pin electrical plug made longer and thicker than the Live and Neutral pins?",
-    correctAnswer: "To open safety shutters and establish grounding before current-carrying pins connect",
-    distractors: [
-      "To conduct electrical power directly into the appliance motor",
-      "To prevent alternating current from reversing direction",
-      "To resist high mechanical pulling forces from the wall socket"
-    ],
-    hint: "Ensures the metal chassis of the appliance is safely grounded before live contact is made.",
-    workedSolution: "The longer Earth pin opens the protective socket shutters and connects the appliance's chassis to ground before the live pin enters, protecting users from electric shocks.",
-    points: 1
-  },
-  {
-    number: 39,
-    prompt: "Which physical separation method uses boiling and subsequent condensation to recover pure solvent from a solution, such as fresh water from brine?",
-    correctAnswer: "Simple distillation",
-    distractors: [
-      "Open solar evaporation",
-      "Gravity filtration",
-      "Paper chromatography"
-    ],
-    hint: "Vaporizes volatile water and condenses it back to liquid in a Liebig condenser.",
-    workedSolution: "Simple distillation boils the saline solution to generate water vapor, then condenses the vapor in a cooling condenser to collect pure water distillate.",
-    points: 1
-  },
-  {
-    number: 40,
-    prompt: "Why do plants wilt and droop when transplanted into a new garden bed on a hot, sunny afternoon?",
-    correctAnswer: "The rate of water loss via transpiration exceeds water absorption by disturbed roots",
-    distractors: [
-      "The plants lack carbon dioxide gas in the new garden soil",
-      "Solar radiation eliminates all cellular chloroplasts",
-      "The roots absorb too much water, causing tissue rupture"
-    ],
-    hint: "Disturbed root hairs cannot absorb water fast enough to keep pace with rapid transpiration.",
-    workedSolution: "Transplanting damages delicate root hairs, reducing water uptake. On hot afternoons, high transpiration rates cause cells to lose turgor pressure and wilt.",
-    points: 1
+    "correctAnswer": "increases the effort distance over the load height.",
+    "hint": "Force multiplier: work is spread over a longer sloped distance.",
+    "workedSolution": "An inclined plane acts as a mechanical force multiplier. By extending the sloped distance along which effort is exerted relative to the vertical lift height, it reduces the required input force.",
+    "points": 1
   }
 ];
-
-// Seeded target permutation ensuring exactly 10 A, 10 B, 10 C, 10 D
-const targetKeys: number[] = [
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3
-];
-
-function seedShuffle<T>(array: T[], seed: number): T[] {
-  const arr = [...array];
-  let m = arr.length, t, i;
-  while (m) {
-    seed = (seed * 9301 + 49297) % 233280;
-    i = Math.floor((seed / 233280) * m--);
-    t = arr[m];
-    arr[m] = arr[i];
-    arr[i] = t;
-  }
-  return arr;
-}
-
-const assignedTargetIndices = seedShuffle(targetKeys, 202704);
-
-const balancedMock4P1 = rawScienceBank.map((q: any, idx: number) => {
-  const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
-  const options: string[] = [];
-  let dCount = 0;
-  for (let pos = 0; pos < 4; pos++) {
-    if (pos === correctIdx) {
-      options.push(q.correctAnswer);
-    } else {
-      options.push(q.distractors[dCount++]);
-    }
-  }
-  return {
-    number: q.number,
-    prompt: q.prompt,
-    options: options,
-    correctAnswer: q.correctAnswer,
-    hint: q.hint,
-    workedSolution: q.workedSolution,
-    points: q.points
-  };
-});
 
 // ==========================================
 // PAPER 2 ESSAY QUESTIONS BANK (STRICT JHS NACCA STANDARDS)
