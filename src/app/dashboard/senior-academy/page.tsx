@@ -5219,7 +5219,7 @@ function MathLab({
                 meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
                 description: paperNum === 1 
                     ? "Standardized 40-question objective examination synthesizing NaCCA BECE science curriculum standards with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
-                    : "Standardized practical and theory essay examination featuring gold-leaf electroscope, sublimation separation, respiratory bell-jar model, and soil capillarity.",
+                    : "Standardized practical and theory essay examination featuring principle of moments (metre rule equilibrium), sublimation separation, respiratory bell-jar model, and soil capillarity.",
                 difficulty: paperNum === 1 ? "Core" : "Advanced",
                 kind: "mock_suite",
                 setId: paperNum === 1 ? "paper_mock_5" : "paper_mock_5_p2",
