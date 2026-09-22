@@ -1607,8 +1607,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2023 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
-        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, Idioms, Cloze Test, and Oral Language.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2023_p1",
@@ -1619,9 +1619,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 3,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2023 BECE English Language Paper 2 (Essay & Literature)",
@@ -1630,8 +1630,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2023 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
-        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part essay, reading comprehension, and The Cockcrow literature examination with authentic Ghanaian marking guides.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2023_p2",
@@ -1642,9 +1642,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 3,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2022 BECE English Language Paper 1 (Objective)",
@@ -1653,8 +1653,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2022 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
-        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, Idioms, Cloze Test, and Oral Language.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2022_p1",
@@ -1665,9 +1665,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 4,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2022 BECE English Language Paper 2 (Essay & Literature)",
@@ -1676,8 +1676,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2022 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
-        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part essay, reading comprehension, and The Cockcrow literature examination with authentic Ghanaian marking guides.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2022_p2",
@@ -1688,9 +1688,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 4,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2021 BECE English Language Paper 1 (Objective)",
@@ -1699,8 +1699,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2021 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
-        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, Idioms, Cloze Test, and Oral Language.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2021_p1",
@@ -1711,9 +1711,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 5,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2021 BECE English Language Paper 2 (Essay & Literature)",
@@ -1722,8 +1722,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2021 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
-        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part essay, reading comprehension, and The Cockcrow literature examination with authentic Ghanaian marking guides.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2021_p2",
@@ -1734,9 +1734,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 5,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2020 BECE English Language Paper 1 (Objective)",
@@ -1745,8 +1745,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2020 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
-        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, Idioms, Cloze Test, and Oral Language.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2020_p1",
@@ -1757,9 +1757,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 6,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2020 BECE English Language Paper 2 (Essay & Literature)",
@@ -1768,8 +1768,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2020 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
-        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part essay, reading comprehension, and The Cockcrow literature examination with authentic Ghanaian marking guides.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2020_p2",
@@ -1780,9 +1780,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 6,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2019 BECE English Language Paper 1 (Objective)",
@@ -1791,8 +1791,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2019 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
-        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, Idioms, Cloze Test, and Oral Language.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2019_p1",
@@ -1803,9 +1803,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 7,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2019 BECE English Language Paper 2 (Essay & Literature)",
@@ -1814,8 +1814,8 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2019 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
-        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part essay, reading comprehension, and The Cockcrow literature examination with authentic Ghanaian marking guides.",
         difficulty: "Advanced",
         kind: "exam_series",
         setId: "bece_2019_p2",
@@ -1826,9 +1826,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 7,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     // ==========================================
     // SHS WASSCE ENGLISH LANGUAGE EXAM SERIES
@@ -6245,6 +6245,16 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                 handleLaunchModule({ setId: 'bece_2025_p2', title: 'BECE English Language 2025 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
                             } else if (activeQuestionSet?.id === 'bece_2024_p1' || activeQuestionSet?.id === 'bece_2024') {
                                 handleLaunchModule({ setId: 'bece_2024_p2', title: 'BECE English Language 2024 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2023_p1' || activeQuestionSet?.id === 'bece_2023') {
+                                handleLaunchModule({ setId: 'bece_2023_p2', title: 'BECE English Language 2023 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2022_p1' || activeQuestionSet?.id === 'bece_2022') {
+                                handleLaunchModule({ setId: 'bece_2022_p2', title: 'BECE English Language 2022 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2021_p1' || activeQuestionSet?.id === 'bece_2021') {
+                                handleLaunchModule({ setId: 'bece_2021_p2', title: 'BECE English Language 2021 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2020_p1' || activeQuestionSet?.id === 'bece_2020') {
+                                handleLaunchModule({ setId: 'bece_2020_p2', title: 'BECE English Language 2020 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2019_p1' || activeQuestionSet?.id === 'bece_2019') {
+                                handleLaunchModule({ setId: 'bece_2019_p2', title: 'BECE English Language 2019 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
                             } else if (activeQuestionSet?.id === 'paper_mock_1' || activeQuestionSet?.id === 'mock_1' || activeQuestionSet?.title?.toLowerCase().includes('mock 1')) {
                                 handleLaunchMockPaper(1, 2);
                             } else if (activeQuestionSet?.id === 'paper_mock_2' || activeQuestionSet?.id === 'mock_2' || activeQuestionSet?.title?.toLowerCase().includes('mock 2')) {
