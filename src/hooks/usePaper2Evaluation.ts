@@ -44,21 +44,35 @@ export function usePaper2Evaluation() {
           const targetQ = questionsList.find(
             (q: any) => String(q?.questionNumber || q?.id) === String(ans?.questionNumber)
           );
-          // DEFENSIVE FIX FOR i.iM: normalize subQuestions to array before calling .find()
           const subList = toSafeArray(targetQ?.subQuestions ?? targetQ?.parts);
-          const targetSub = subList.find(
-            (s: any) => String(s?.subId || s?.partLabel || s?.partId) === String(ans?.subId)
-          );
 
-          if (targetSub) {
-            formattedAnswers.push({
-              questionNumber: String(ans.questionNumber || targetQ?.questionNumber || '1'),
-              subId: String(ans.subId || targetSub.subId || '(a)'),
-              prompt: targetSub.prompt || '',
-              studentText: ans.studentText || ans.text || '',
-              maxMarks: Number(targetSub.maxMarks || targetSub.marks) || 5,
-              workedSolution: targetSub.workedSolution || targetSub.modelAnswer || ''
-            });
+          if (subList.length > 0) {
+            const targetSub = subList.find(
+              (s: any) => String(s?.subId || s?.partLabel || s?.partId) === String(ans?.subId)
+            );
+
+            if (targetSub) {
+              formattedAnswers.push({
+                questionNumber: String(ans.questionNumber || targetQ?.questionNumber || '1'),
+                subId: String(ans.subId || targetSub.subId || '(a)'),
+                prompt: targetSub.prompt || '',
+                studentText: ans.studentText || ans.text || '',
+                maxMarks: Number(targetSub.maxMarks || targetSub.marks) || 5,
+                workedSolution: targetSub.workedSolution || targetSub.modelAnswer || ''
+              });
+            }
+          } else if (targetQ) {
+            const text = ans.studentText || ans.text || '';
+            if (text.trim().length > 0) {
+              formattedAnswers.push({
+                questionNumber: String(ans.questionNumber || targetQ?.questionNumber || '1'),
+                subId: 'main',
+                prompt: targetQ.prompt || '',
+                studentText: text,
+                maxMarks: Number(targetQ.marks || targetQ.totalMarks || targetQ.points) || 30,
+                workedSolution: targetQ.workedSolution || targetQ.modelAnswer || ''
+              });
+            }
           }
         });
       } else if (studentAnswers && typeof studentAnswers === 'object') {
@@ -66,10 +80,9 @@ export function usePaper2Evaluation() {
           const targetQ = questionsList.find(
             (q: any) => String(q?.questionNumber || q?.id) === String(qNum)
           );
-          // DEFENSIVE FIX FOR i.iM: normalize subQuestions
           const subList = toSafeArray(targetQ?.subQuestions ?? targetQ?.parts);
 
-          if (subMap && typeof subMap === 'object') {
+          if (subMap && typeof subMap === 'object' && !Array.isArray(subMap)) {
             Object.entries(subMap).forEach(([subId, val]: [string, any]) => {
               const targetSub = subList.find(
                 (s: any) => String(s?.subId || s?.partLabel || s?.partId) === String(subId)
@@ -80,13 +93,25 @@ export function usePaper2Evaluation() {
                 formattedAnswers.push({
                   questionNumber: String(qNum),
                   subId: String(subId),
-                  prompt: targetSub?.prompt || '',
+                  prompt: targetSub?.prompt || targetQ?.prompt || '',
                   studentText: text,
-                  maxMarks: Number(targetSub?.maxMarks || targetSub?.marks) || 5,
-                  workedSolution: targetSub?.workedSolution || targetSub?.modelAnswer || ''
+                  maxMarks: Number(targetSub?.maxMarks || targetSub?.marks || targetQ?.marks || targetQ?.totalMarks) || 5,
+                  workedSolution: targetSub?.workedSolution || targetSub?.modelAnswer || targetQ?.workedSolution || targetQ?.modelAnswer || ''
                 });
               }
             });
+          } else {
+            const text = typeof subMap === 'string' ? subMap : subMap?.text || subMap?.value || '';
+            if (text.trim().length > 0) {
+              formattedAnswers.push({
+                questionNumber: String(qNum),
+                subId: 'main',
+                prompt: targetQ?.prompt || '',
+                studentText: text,
+                maxMarks: Number(targetQ?.marks || targetQ?.totalMarks || targetQ?.points) || 30,
+                workedSolution: targetQ?.workedSolution || targetQ?.modelAnswer || ''
+              });
+            }
           }
         });
       }
@@ -101,7 +126,7 @@ export function usePaper2Evaluation() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           schoolId: schoolId || 'demo-school',
-          examId: examId || exam?.id || exam?.variantId || (exam?.year ? `paper_${exam.year}_variant` : 'paper_2020_variant'),
+          examId: examId || exam?.id || exam?.variantId || (exam?.year ? `paper_${exam.year}_variant` : 'bece_paper2'),
           answers: formattedAnswers
         })
       });

@@ -190,13 +190,15 @@ export function QuestionRunner({
   const isPaper2Exam =
     questionSet.format === 'structured_essay' ||
     (questionSet as any).paperType === 2 ||
+    (questionSet.id && (questionSet.id.includes('_p2') || questionSet.id.includes('paper2') || questionSet.id.includes('theory'))) ||
     (Array.isArray(questionSet.questions) &&
       questionSet.questions.some(
         (q: any) =>
           q.format === 'structured_essay' ||
           (Array.isArray(q.parts) && q.parts.length > 0) ||
           (Array.isArray(q.subQuestions) && q.subQuestions.length > 0) ||
-          q.isPracticalSectionA
+          q.isPracticalSectionA ||
+          (!q.options || q.options.length === 0)
       ));
 
   if (isPaper2Exam) {
@@ -221,10 +223,11 @@ export function QuestionRunner({
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
-  // Detect whether this question is a Structured Essay with sub-parts
+  // Detect whether this question is a Structured Essay with sub-parts or standalone written essay
   const isStructuredEssay =
     currentQuestion.format === 'structured_essay' ||
-    (Array.isArray(currentQuestion.parts) && currentQuestion.parts.length > 0);
+    (Array.isArray(currentQuestion.parts) && currentQuestion.parts.length > 0) ||
+    (!currentQuestion.options || currentQuestion.options.length === 0);
 
   const parts: StructuredQuestionPart[] = currentQuestion.parts || [];
 
@@ -592,158 +595,290 @@ export function QuestionRunner({
           {/* ============================================================ */}
           {isStructuredEssay ? (
             <div className="space-y-6 pt-2">
-              {parts.map((part, pIdx) => {
-                const partKey = `${currentQuestionId}_p${pIdx}`;
-                const isRevealed = !!revealedParts[partKey];
-                const isHintShown = !!showPartHints[partKey];
-                const currentVal = partAnswers[partKey] || '';
+              {parts.length > 0 ? (
+                parts.map((part, pIdx) => {
+                  const partKey = `${currentQuestionId}_p${pIdx}`;
+                  const isRevealed = !!revealedParts[partKey];
+                  const isHintShown = !!showPartHints[partKey];
+                  const currentVal = partAnswers[partKey] || '';
 
-                return (
-                  <div
-                    key={pIdx}
-                    className="p-5 sm:p-6 rounded-3xl bg-slate-950/70 border border-slate-800 space-y-4 shadow-lg hover:border-slate-700 transition-colors"
-                  >
-                    {/* Sub-question Header */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-sm flex items-center justify-center">
-                          {part.partLabel}
-                        </span>
-                        <span className="text-xs font-semibold text-slate-300">
-                          Sub-Question Part {part.partLabel}
-                        </span>
+                  return (
+                    <div
+                      key={pIdx}
+                      className="p-5 sm:p-6 rounded-3xl bg-slate-950/70 border border-slate-800 space-y-4 shadow-lg hover:border-slate-700 transition-colors"
+                    >
+                      {/* Sub-question Header */}
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-sm flex items-center justify-center">
+                            {part.partLabel}
+                          </span>
+                          <span className="text-xs font-semibold text-slate-300">
+                            Sub-Question Part {part.partLabel}
+                          </span>
+                        </div>
+                        <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-2.5 py-0.5 font-bold">
+                          [{part.marks} Marks]
+                        </Badge>
                       </div>
-                      <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-2.5 py-0.5 font-bold">
-                        [{part.marks} Marks]
-                      </Badge>
-                    </div>
 
-                    {/* Sub-question Prompt with LaTeX */}
-                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed whitespace-pre-line">
-                      <MathRenderer content={(part.prompt || '').replace(/\\n/g, '\n')} />
-                    </div>
+                      {/* Sub-question Prompt with LaTeX */}
+                      <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed whitespace-pre-line">
+                        <MathRenderer content={(part.prompt || '').replace(/\\n/g, '\n')} />
+                      </div>
 
-                    {/* Sub-part Specific Diagram (if any) */}
-                    {part.diagramSvg && (
-                      <div className="my-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex justify-center overflow-x-auto">
-                        <div
-                          className="max-w-md [&>svg]:max-w-full [&>svg]:h-auto"
-                          dangerouslySetInnerHTML={{ __html: part.diagramSvg }}
+                      {/* Sub-part Specific Diagram (if any) */}
+                      {part.diagramSvg && (
+                        <div className="my-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex justify-center overflow-x-auto">
+                          <div
+                            className="max-w-md [&>svg]:max-w-full [&>svg]:h-auto"
+                            dangerouslySetInnerHTML={{ __html: part.diagramSvg }}
+                          />
+                        </div>
+                      )}
+
+                      {/* Student Working / Answer Draft Area */}
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>Your Derivation / Working Notes (Draft):</span>
+                        </label>
+                        <Textarea
+                          value={currentVal}
+                          onChange={(e) =>
+                            setPartAnswers((prev) => ({
+                              ...prev,
+                              [partKey]: e.target.value
+                            }))
+                          }
+                          placeholder="Write out your intermediate steps, formula, or final answer here..."
+                          className="bg-slate-900 border-slate-800 text-slate-200 placeholder:text-slate-600 rounded-2xl min-h-[70px] text-xs font-mono focus:border-indigo-500"
                         />
                       </div>
-                    )}
 
-                    {/* Student Working / Answer Draft Area */}
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>Your Derivation / Working Notes (Draft):</span>
-                      </label>
-                      <Textarea
-                        value={currentVal}
-                        onChange={(e) =>
-                          setPartAnswers((prev) => ({
-                            ...prev,
-                            [partKey]: e.target.value
-                          }))
-                        }
-                        placeholder="Write out your intermediate steps, formula, or final answer here..."
-                        className="bg-slate-900 border-slate-800 text-slate-200 placeholder:text-slate-600 rounded-2xl min-h-[70px] text-xs font-mono focus:border-indigo-500"
-                      />
-                    </div>
+                      {/* Hint & Solution Toggles */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
+                        {part.hint ? (
+                          <button
+                            type="button"
+                            onClick={() => togglePartHint(partKey)}
+                            className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Lightbulb className="w-3.5 h-3.5" />
+                            <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
+                          </button>
+                        ) : <div />}
 
-                    {/* Hint & Solution Toggles */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
-                      {part.hint ? (
-                        <button
+                        <Button
                           type="button"
-                          onClick={() => togglePartHint(partKey)}
-                          className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => togglePartSolution(partKey)}
+                          className={cn(
+                            'text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5',
+                            isRevealed
+                              ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-950/60'
+                              : 'border-slate-700 bg-slate-850 text-slate-300 hover:bg-slate-800 hover:text-white'
+                          )}
                         >
-                          <Lightbulb className="w-3.5 h-3.5" />
-                          <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
-                        </button>
-                      ) : <div />}
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => togglePartSolution(partKey)}
-                        className={cn(
-                          'text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5',
-                          isRevealed
-                            ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-950/60'
-                            : 'border-slate-700 bg-slate-850 text-slate-300 hover:bg-slate-800 hover:text-white'
-                        )}
-                      >
-                        {isRevealed ? (
-                          <>
-                            <EyeOff className="w-3.5 h-3.5" />
-                            <span>Hide Solution & Rubric</span>
-                          </>
-                        ) : (
-                          <>
-                            <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                            <span>Reveal Solution & Rubric</span>
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    {/* Part Hint Box */}
-                    {isHintShown && part.hint && (
-                      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                        💡 <strong>Hint {part.partLabel}:</strong> <MathRenderer content={part.hint} />
+                          {isRevealed ? (
+                            <>
+                              <EyeOff className="w-3.5 h-3.5" />
+                              <span>Hide Solution & Rubric</span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                              <span>Reveal Solution & Rubric</span>
+                            </>
+                          )}
+                        </Button>
                       </div>
-                    )}
 
-                    {/* Step-by-Step Marking Scheme & Derivation Box */}
-                    {isRevealed && (
-                      <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-200">
-                        {/* Model Answer Pill */}
-                        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
-                          <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-400 flex-shrink-0" />
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">
-                              OFFICIAL TARGET VALUE / MODEL ANSWER:
-                            </span>
-                            <div className="text-xs font-bold text-white">
-                              <MathRenderer content={part.modelAnswer} />
+                      {/* Part Hint Box */}
+                      {isHintShown && part.hint && (
+                        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                          💡 <strong>Hint {part.partLabel}:</strong> <MathRenderer content={part.hint} />
+                        </div>
+                      )}
+
+                      {/* Step-by-Step Marking Scheme & Derivation Box */}
+                      {isRevealed && (
+                        <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-200">
+                          {/* Model Answer Pill */}
+                          <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-400 flex-shrink-0" />
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">
+                                OFFICIAL TARGET VALUE / MODEL ANSWER:
+                              </span>
+                              <div className="text-xs font-bold text-white">
+                                <MathRenderer content={part.modelAnswer} />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Worked Marking Derivation */}
+                          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
+                                STEP-BY-STEP MARKING SCHEME & RUBRIC • [{part.marks} MARKS]
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-200 leading-relaxed">
+                              <MathRenderer content={part.workedSolution} />
                             </div>
                           </div>
                         </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                (() => {
+                  const standaloneKey = `${currentQuestionId}_essay`;
+                  const currentVal = partAnswers[standaloneKey] || partAnswers[currentQuestionId] || '';
+                  const isRevealed = !!revealedParts[standaloneKey];
+                  const isHintShown = !!showPartHints[standaloneKey];
+                  const wordCount = currentVal.trim() ? currentVal.trim().split(/\s+/).filter(Boolean).length : 0;
+                  const charCount = currentVal.length;
+                  const marks = currentQuestion.totalMarks || currentQuestion.points || 30;
 
-                        {/* Worked Marking Derivation */}
-                        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
-                              STEP-BY-STEP MARKING SCHEME & RUBRIC • [{part.marks} MARKS]
-                            </span>
-                          </div>
-                          <div className="text-xs text-slate-200 leading-relaxed">
-                            <MathRenderer content={part.workedSolution} />
-                          </div>
+                  return (
+                    <div className="p-5 sm:p-6 rounded-3xl bg-slate-950/70 border border-slate-800 space-y-4 shadow-lg">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-sm flex items-center justify-center">
+                            ✍️
+                          </span>
+                          <span className="text-xs font-semibold text-slate-300">
+                            {(currentQuestion as any).category || currentQuestion.title || 'Written Essay Composition'}
+                          </span>
                         </div>
+                        <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-2.5 py-0.5 font-bold">
+                          [{marks} Marks]
+                        </Badge>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
 
-              {/* Reveal All Helper */}
-              <div className="flex justify-end pt-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={revealAllPartSolutions}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/30 cursor-pointer flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Reveal All Marking Rubrics for this Question
-                </Button>
-              </div>
+                      {/* Essay Working / Answer Workspace */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="font-semibold flex items-center gap-1.5">
+                            <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                            <span>Write your complete essay or written answer:</span>
+                          </span>
+                          <span className="font-mono text-indigo-300 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-500/30 text-[11px]">
+                            {wordCount} Words • {charCount} Chars
+                          </span>
+                        </div>
+                        <Textarea
+                          value={currentVal}
+                          onChange={(e) =>
+                            setPartAnswers((prev) => ({
+                              ...prev,
+                              [standaloneKey]: e.target.value
+                            }))
+                          }
+                          placeholder="Write out your complete essay composition, paragraphs, arguments, or solution here..."
+                          className="bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-600 rounded-2xl min-h-[220px] text-xs font-sans leading-relaxed focus:border-indigo-500"
+                        />
+                      </div>
+
+                      {/* Hint & Solution Toggles */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/60">
+                        {currentQuestion.hint ? (
+                          <button
+                            type="button"
+                            onClick={() => togglePartHint(standaloneKey)}
+                            className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Lightbulb className="w-3.5 h-3.5" />
+                            <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need an essay writing tip?'}</span>
+                          </button>
+                        ) : <div />}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => togglePartSolution(standaloneKey)}
+                          className={cn(
+                            'text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5',
+                            isRevealed
+                              ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-950/60'
+                              : 'border-slate-700 bg-slate-850 text-slate-300 hover:bg-slate-800 hover:text-white'
+                          )}
+                        >
+                          {isRevealed ? (
+                            <>
+                              <EyeOff className="w-3.5 h-3.5" />
+                              <span>Hide Model Solution & Rubric</span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                              <span>Reveal Model Solution & Rubric</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+
+                      {/* Hint Box */}
+                      {isHintShown && currentQuestion.hint && (
+                        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                          💡 <strong>Guidance:</strong> <MathRenderer content={currentQuestion.hint} />
+                        </div>
+                      )}
+
+                      {/* Step-by-Step Marking Scheme Box */}
+                      {isRevealed && (
+                        <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-200">
+                          {(currentQuestion as any).modelAnswer && (
+                            <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-400 flex-shrink-0" />
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">
+                                  OFFICIAL MODEL ESSAY / BENCHMARK:
+                                </span>
+                                <div className="text-xs font-bold text-white whitespace-pre-line">
+                                  <MathRenderer content={(currentQuestion as any).modelAnswer} />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {currentQuestion.workedSolution && (
+                            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                              <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
+                                STEP-BY-STEP MARKING RUBRIC • [{marks} MARKS]
+                              </span>
+                              <div className="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+                                <MathRenderer content={currentQuestion.workedSolution} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()
+              )}
+
+              {/* Reveal All Helper (only if parts exist) */}
+              {parts.length > 0 && (
+                <div className="flex justify-end pt-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={revealAllPartSolutions}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/30 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Reveal All Marking Rubrics for this Question
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             /* ============================================================ */
