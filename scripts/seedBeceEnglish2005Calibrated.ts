@@ -18,7 +18,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -34,6 +34,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -41,12 +42,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2005
+const passage1Text = "### 📖 PASSAGE I\n\nAs they walked to school that bright morning, Esinam could not hide her excitement. Her father had bought her a brand-new, colorful schoolbag for the new academic term. She swung the bag proudly from side to side, humming a lively tune with the refrain: \"It's great to be young!\" For Esinam, life was wonderful and full of joy, surrounded by the warmth and comfort of parents who provided everything she needed.\n\nWalking silently beside her was her closest friend and classmate, Ayele. Ayele was unusually quiet today. She carried an old, faded canvas bag that had once belonged to her elder sister, its seams mended with thick thread. Whenever Esinam held up her glittering bag to admire it, Ayele merely responded with a faint grunt. Ayele's heart was heavy. Her parents were subsistence peasant farmers who struggled daily to make ends meet, and she knew there was no money for new bags or ceremonial shoes.\n\nObserving her friend's silence, Esinam wondered why Ayele seemed so moody on their very first day back at school. Yet, despite her modest circumstances, Ayele was deeply thoughtful, determined to study hard and rewrite the story of her humble home.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nPeople often wonder why they laugh and what laughter does to the human mind and body. Laughter is one of the most natural and healthy emotional releases known to mankind. We laugh when we see something funny, hear a witty joke, or watch someone behaving awkwardly or making a clumsy mistake.\n\nPhysically, laughter relaxes the body, eases muscle tension, and makes people look healthy and pleasant. Those who laugh often and maintain a cheerful disposition tend to make friends easily and resolve conflicts without bitterness.\n\nBeyond its personal health benefits, laughter serves an important social purpose. From ancient times, human societies have used laughter as a gentle tool to correct behavior and enforce community discipline. When someone acts foolishly or violates accepted social norms, public amusement and teasing often compel them to change their conduct more effectively than harsh punishment. Laughter reminds us not to take ourselves too seriously and bonds communities together in shared joy.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2005
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "In Passage I, why does Ayele respond with silence and a mere grunt when Esinam displays her new schoolbag?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why does Ayele respond with silence and a mere grunt when Esinam displays her new schoolbag?`,
+    passage: passage1Text,
     options: [
       "She detests the design of Esinam's new bag",
       "She is anxious to reach school early",
@@ -60,7 +67,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "According to Passage I, what does the exclamation 'It's great to be young!' signify for Esinam?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what does the exclamation 'It's great to be young!' signify for Esinam?`,
+    passage: passage1Text,
     options: [
       "Having generous parents who purchase whatever she wishes for",
       "Being privileged to attend basic school",
@@ -74,7 +82,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "What does the passage reveal regarding the socio-economic status of Ayele's family?",
+    prompt: `${passage1Text}\n\n---\nWhat does the passage reveal regarding the socio-economic status of Ayele's family?`,
+    passage: passage1Text,
     options: [
       "They are wealthy but extremely stingy",
       "They are of modest, economically constrained means",
@@ -88,7 +97,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "In Passage I, Ayele is depicted as a young girl who is remarkably ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, Ayele is depicted as a young girl who is remarkably ............`,
+    passage: passage1Text,
     options: [
       "haughty and envious",
       "difficult to satisfy",
@@ -102,7 +112,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "In Passage I, the word 'tremble' in 'There is a tremble in her voice' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'tremble' in 'There is a tremble in her voice' means ............`,
+    passage: passage1Text,
     options: ["disturbance", "quiver", "sudden drop", "sharp loudness"],
     correctAnswer: "quiver",
     hint: "A slight shaking or wavering caused by strong emotion.",
@@ -111,7 +122,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, what is the primary trigger that provokes spontaneous human laughter?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what is the primary trigger that provokes spontaneous human laughter?`,
+    passage: passage2Text,
     options: [
       "Wearing fashionable clothing",
       "Witnessing eccentric, queer, or awkward human behavior",
@@ -125,7 +137,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "According to Passage II, what positive physical benefit does laughter provide to the human body?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what positive physical benefit does laughter provide to the human body?`,
+    passage: passage2Text,
     options: [
       "It strengthens muscular bones",
       "It improves respiratory health and releases pent-up energy",
@@ -139,7 +152,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "According to Passage II, what social advantage do individuals who enjoy cheerful laughter possess?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what social advantage do individuals who enjoy cheerful laughter possess?`,
+    passage: passage2Text,
     options: [
       "They appear strange to strangers",
       "They easily attract good company and build friendships",
@@ -153,7 +167,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Passage II, how do traditional human societies utilize laughter as an instrument of social discipline?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how do traditional human societies utilize laughter as an instrument of social discipline?`,
+    passage: passage2Text,
     options: [
       "To entertain criminals",
       "To provoke violent conflicts",
@@ -167,7 +182,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "In Passage II, the word 'awkwardly' in 'behaving awkwardly' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'awkwardly' in 'behaving awkwardly' means ............`,
+    passage: passage2Text,
     options: ["clumsily and oddly", "happily and joyfully", "respectably and politely", "eagerly and boldly"],
     correctAnswer: "clumsily and oddly",
     hint: "Lacking grace, coordination, or normal social conformity.",
@@ -492,6 +508,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -641,10 +658,24 @@ async function seedBeceEnglish2005Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Ayele and Esinam's First Day of School",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Nature and Social Function of Laughter",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

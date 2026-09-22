@@ -22,7 +22,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -38,6 +38,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -45,12 +46,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2003
+const passage1Text = "### 📖 PASSAGE I\n\nThe children rushed out of school that afternoon innocently singing the song they had just learned:\n\"Rain, rain, go away. Go and come another day. Little children want to play. Rain, rain, go away.\"\n\nBut they stopped abruptly when they looked up and saw dark clouds racing across the sky. These were signs of rain and the children were beside themselves with joy. Then they burst into yet another song:\n\"The rains will soon come. The sky will be bright. And the guns will boom.\"\n\nAs they sang and danced, they were soon joined by their parents in their happiness. It was six months since it had rained and all that time the farmers prayed for rain that would not come. The result was famine in the country for the land became so dry that new crops could not be sown and cassava could not be uprooted. The streams and the wells had dried up and the people could find very little water for themselves and their livestock. Was it then strange that adults danced and sang like children in the hope that their troubles would soon be over? They were sure the fetish priest’s sacrifice would not be in vain.\n\nBut they woke up the next morning to find the land was still dry; there was not a drop of rain water anywhere. Then they became angry and ran after the fetish priest. But he was gone before they could lynch him.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nTeacher Amu never lost the opportunity to give pep-talks to his children. \"Variety is the spice of life,\" he often began. Then he would tell them how life has opposites, like good and bad. He would talk about the variety of birds, the different kinds of fish and species of trees. His students could always tell when teacher Amu’s sermons were about to end. He would raise his voice and look up as he made his point: \"God made them all and He said, 'It is good.'\"\n\nThese words had lasting effect on the students. When class was over, they would go on reeling with laughter as they recited these words. Soon, it was not surprising when they began to call Teacher Amu 'God made them all' whenever his back was turned.\n\nBut one of them, Kofi Abre, did not consider Teacher Amu’s pep-talks funny at all. He was not amused that his classmates joked with his teacher’s words. Teacher Amu had said that the world was made up of different things, different people and different habits. So why did they bother when he, Abre, acted differently?\n\nThe other day, he shouted down a school mate who called him lazy. He almost bloodied a friend’s nose too when this friend scolded him for not doing his homework. Teacher Amu warned that he would punish Abre. It was an act of indiscipline. Kofi Abre shook his head. It was his friend who offended him yet Teacher Amu would punish him for being violent and different.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2003
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 11) ---
   {
     number: 1,
-    prompt: "In Passage I, why did the school children suddenly alter their song as they rushed out of class?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why did the school children suddenly alter their song as they rushed out of class?`,
+    passage: passage1Text,
     options: [
       "They heard ceremonial musketry firing in the village",
       "They observed dark rain clouds racing across the sky",
@@ -64,7 +71,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "According to Passage I, why did the adult villagers join the children in dancing and singing?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did the adult villagers join the children in dancing and singing?`,
+    passage: passage1Text,
     options: [
       "They were celebrating a festive holiday",
       "The children had returned safely from school",
@@ -78,7 +86,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "Which of the following historical facts is true according to Passage I?",
+    prompt: `${passage1Text}\n\n---\nWhich of the following historical facts is true according to Passage I?`,
+    passage: passage1Text,
     options: [
       "The villagers assaulted the shrine priest",
       "It had rained continuously for six months",
@@ -92,7 +101,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "In Passage I, the word 'abruptly' in 'stopped abruptly' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'abruptly' in 'stopped abruptly' means ............`,
+    passage: passage1Text,
     options: ["soon", "totally", "slowly", "suddenly"],
     correctAnswer: "suddenly",
     hint: "Happening quickly, unexpectedly, and without warning.",
@@ -101,7 +111,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "Why did the furious villagers pursue the fetish priest with the intention of lynching him?",
+    prompt: `${passage1Text}\n\n---\nWhy did the furious villagers pursue the fetish priest with the intention of lynching him?`,
+    passage: passage1Text,
     options: [
       "Famine had struck the land",
       "The local streams had dried up",
@@ -115,7 +126,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "What profound philosophical lesson does the reader learn from the event in Passage I?",
+    prompt: `${passage1Text}\n\n---\nWhat profound philosophical lesson does the reader learn from the event in Passage I?`,
+    passage: passage1Text,
     options: [
       "Children are completely naive",
       "Human beings cannot manipulate or guarantee the forces of nature",
@@ -129,7 +141,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "In Passage II, the proverb 'Variety is the spice of life' implies that human existence ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the proverb 'Variety is the spice of life' implies that human existence ............`,
+    passage: passage2Text,
     options: [
       "has its inevitable sorrows",
       "resembles a seasoned meal",
@@ -143,7 +156,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "Why did the pupils affectionately nickname Teacher Amu 'God made them all'?",
+    prompt: `${passage2Text}\n\n---\nWhy did the pupils affectionately nickname Teacher Amu 'God made them all'?`,
+    passage: passage2Text,
     options: [
       "It was his favorite concluding phrase in every sermon",
       "He constantly gazed upward at the roof",
@@ -157,7 +171,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Passage II, why did Kofi Abre resent his classmates' jokes regarding Teacher Amu's words?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why did Kofi Abre resent his classmates' jokes regarding Teacher Amu's words?`,
+    passage: passage2Text,
     options: [
       "He harbored hatred toward his schoolmates",
       "He was terrified of the school headmaster",
@@ -171,7 +186,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "In Passage II, the word 'scolded' in 'when his friend scolded him' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'scolded' in 'when his friend scolded him' means ............`,
+    passage: passage2Text,
     options: ["reminded", "annoyed", "rebuked", "questioned"],
     correctAnswer: "rebuked",
     hint: "To reprimand or criticize someone angrily for a fault.",
@@ -180,7 +196,8 @@ const rawQuestions = [
   },
   {
     number: 11,
-    prompt: "Why did Teacher Amu resolve to punish Kofi Abre despite his preaching on diversity?",
+    prompt: `${passage2Text}\n\n---\nWhy did Teacher Amu resolve to punish Kofi Abre despite his preaching on diversity?`,
+    passage: passage2Text,
     options: [
       "Abre refused to complete his homework",
       "Abre exhibited violent and undisciplined behavior toward peers",
@@ -511,6 +528,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -663,10 +681,24 @@ async function seedBeceEnglish2003Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Prolonged Drought and the Rain Song",
+          text: passage1Text,
+          questionRange: [1, 6]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: Teacher Amu's Sermon and Kofi Abre",
+          text: passage2Text,
+          questionRange: [7, 11]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

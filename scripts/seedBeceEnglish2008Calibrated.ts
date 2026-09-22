@@ -18,7 +18,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -34,6 +34,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -41,12 +42,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2008
+const passage1Text = "### 📖 PASSAGE I\n\nEver since the construction of the District Hospital at Kpota, an attractive cluster of new residential buildings had sprung up around the medical complex. These well-planned, elegant houses caught the eye of anyone visiting the area, and they especially took the fancy of Mr. Akpaloo, who was searching for an ideal architectural model for his own proposed residence.\n\nResolving to build a home of identical design, Mr. Akpaloo visited the Hospital Administrator, Dr. Agbetor, to inquire about obtaining the building plans. Dr. Agbetor informed him that the houses had been designed and built under the personal supervision of Dr. Grant, who lived in a magnificent house at Tokoe and still kept the original blueprints.\n\nMr. Akpaloo immediately traveled to Tokoe to see Dr. Grant. However, after listening to his request, Dr. Grant politely declined to release the original drawings, explaining that it was not prudent to hand out specialized blueprints commissioned for institutional projects. Instead, he advised Mr. Akpaloo to visit the site caretaker, inspect the rooms carefully, and make his own sketch. When Mr. Akpaloo visited the site, he was astonished to discover that what looked like modest two-bedroom bungalows from afar were actually spacious four-bedroom houses, demonstrating that distance can dramatically alter human perception.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nOnce upon a time, an impoverished fisherman cast his net into the sea four times without catching a single fish. On his fourth attempt, his net felt exceptionally heavy. Straining with all his strength, he dragged ashore not a monstrous fish, but a heavy copper pot sealed securely with lead and stamped with a royal seal.\n\nHoping to find hidden gold inside, the fisherman took out his knife and pried open the lead stopper. Instantly, a thick plume of black smoke billowed out of the vessel, rising into the sky and condensing into a terrifying, colossal genie whose head brushed the clouds. Instead of thanking the fisherman, the fierce genie roared that he would kill him on the spot.\n\nThinking quickly, the clever fisherman feigned disbelief and asked: \"How could a magnificent, enormous being like you fit inside this tiny copper pot? I will not believe it until I see it with my own eyes.\" Proud and anxious to prove his magical power, the genie turned back into smoke and poured himself back into the narrow vessel. In a flash, the fisherman slammed the heavy lead cover back in place and cast the trapped genie back into the bottom of the sea.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2008
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "According to Passage I, at what point in time were the residential houses at Kpota constructed?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, at what point in time were the residential houses at Kpota constructed?`,
+    passage: passage1Text,
     options: [
       "When the hospital foundation was first dug",
       "Long before the hospital was ever planned",
@@ -60,7 +67,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "In Passage I, why did Dr. Grant decline to hand over his original architectural blueprint to Mr. Akpaloo?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why did Dr. Grant decline to hand over his original architectural blueprint to Mr. Akpaloo?`,
+    passage: passage1Text,
     options: [
       "The residential properties did not belong to him",
       "Mr. Akpaloo was already a certified draftsman",
@@ -74,7 +82,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "According to Passage I, what immediate action did Mr. Akpaloo take when he resolved to build his own residence?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what immediate action did Mr. Akpaloo take when he resolved to build his own residence?`,
+    passage: passage1Text,
     options: [
       "He made a direct sketch of the building site",
       "He submitted his own architectural drawings to Dr. Grant",
@@ -88,7 +97,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "In Passage I, the word 'magnificent' in 'his magnificent house at Tokoe' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'magnificent' in 'his magnificent house at Tokoe' means ............`,
+    passage: passage1Text,
     options: ["massive in size", "strikingly beautiful and splendid", "moderately good", "extremely expensive"],
     correctAnswer: "strikingly beautiful and splendid",
     hint: "Grand, stately, and remarkably attractive in appearance.",
@@ -97,7 +107,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "In Passage I, the expression 'took the fancy of Mr. Akpaloo' means that Mr. Akpaloo ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the expression 'took the fancy of Mr. Akpaloo' means that Mr. Akpaloo ............`,
+    passage: passage1Text,
     options: [
       "mocked and laughed at the houses",
       "was completely confused by the layout",
@@ -111,7 +122,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, what did the poor fisherman haul out of the sea after casting his net all day?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what did the poor fisherman haul out of the sea after casting his net all day?`,
+    passage: passage2Text,
     options: [
       "A valuable pot filled with gold",
       "A heavy sealed copper vessel",
@@ -125,7 +137,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "In Passage II, what was the true supernatural nature of the genie?",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, what was the true supernatural nature of the genie?`,
+    passage: passage2Text,
     options: [
       "A giant marine fish",
       "An enchanted copper vessel",
@@ -139,7 +152,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "In Passage II, the word 'captivity' as used in 'During the first century of my captivity' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'captivity' as used in 'During the first century of my captivity' means ............`,
+    passage: passage2Text,
     options: ["total financial loss", "the moment of birth", "state of confinement and imprisonment", "military defeat"],
     correctAnswer: "state of confinement and imprisonment",
     hint: "Being held in a cell, container, or prison against one's will.",
@@ -148,7 +162,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Passage II, how many distinct vows did the genie swear during his prolonged centuries of imprisonment?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how many distinct vows did the genie swear during his prolonged centuries of imprisonment?`,
+    passage: passage2Text,
     options: ["One solemn vow", "Two separate vows", "Three distinct vows", "Four consecutive vows"],
     correctAnswer: "Three distinct vows",
     hint: "First century: make liberator rich; second century: grant 3 wishes; afterwards: kill liberator without mercy.",
@@ -157,7 +172,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "How did the fisherman ultimately save his own life from the murderous genie in Passage II?",
+    prompt: `${passage2Text}\n\n---\nHow did the fisherman ultimately save his own life from the murderous genie in Passage II?`,
+    passage: passage2Text,
     options: [
       "He physically overpowered the giant spirit",
       "He outwitted the genie into re-entering the container",
@@ -502,6 +518,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -652,10 +669,24 @@ async function seedBeceEnglish2008Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Architectural Plan of Kpota Hospital Houses",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Fisherman and the Genie in the Copper Pot",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

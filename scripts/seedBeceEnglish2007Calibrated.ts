@@ -18,7 +18,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -34,6 +34,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -41,12 +42,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2007
+const passage1Text = "### 📖 PASSAGE I\n\nIn the middle of the night, piercing shouts and frantic alarms suddenly echoed through the sleeping town. Barimah was jolted awake by the commotion. Sensing that grave physical danger lurked outside, he firmly instructed his wife, Fosua, to remain indoors with the children while he stepped out to investigate.\n\nStepping into the compound, a dramatic and terrifying spectacle confronted him. The pitch-dark night was illuminated by towering sheets of fire; the residential building of their neighbor, Agya Atta, was completely engulfed in roaring flames. Neighbors were running in all directions, some hurling buckets of water and sand, while others helped haul salvaged property into the street.\n\nBarimah rushed forward without hesitation to join the rescue effort. He helped lead Agya Atta's weeping wife, Araba, and their terrified children to safety inside his own home, keeping watch over their belongings until morning. The entire community grieved deeply with Araba, whose kindness, generosity, and good deeds had won the hearts of everyone in the town.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nIn recent years, the menace of tobacco smoking has attracted intense concern across the globe. Both national governments and international organizations like the United Nations have launched aggressive public campaigns to oppose the killer habit, designating special days each year to educate people about the deadly consequences of tobacco consumption.\n\nScientific and medical research has decisively established that smoking causes fatal diseases, including lung cancer, coronary heart disease, and chronic bronchitis. Expectant mothers who smoke risk severe complications such as miscarriages, premature birth, and delivering underweight infants.\n\nFurthermore, smoking harms not only the smoker but also innocent bystanders. Non-smokers who inhale secondhand smoke in closed rooms or public transport suffer as 'passive smokers', facing identical health risks. Consequently, many societies now treat the public smoker as a social misfit who selfishly prioritizes a destructive craving over public safety and environmental health.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2007
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "According to Passage I, why did Barimah urge his wife Fosua to remain indoors when the alarm sounded?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did Barimah urge his wife Fosua to remain indoors when the alarm sounded?`,
+    passage: passage1Text,
     options: [
       "People were running about in wild confusion",
       "The noise outside was deafening",
@@ -60,7 +67,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "In Passage I, what dramatic sight confronted Barimah immediately as he stepped outside?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, what dramatic sight confronted Barimah immediately as he stepped outside?`,
+    passage: passage1Text,
     options: [
       "Araba fighting the blaze single-handedly",
       "Neighbors hastily packing salvaged goods",
@@ -74,7 +82,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "In Passage I, the phrase 'put out' as used in 'to put out the fire' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the phrase 'put out' as used in 'to put out the fire' means ............`,
+    passage: passage1Text,
     options: ["control", "extinguish", "reduce", "destroy"],
     correctAnswer: "extinguish",
     hint: "To quench or stop a fire from burning.",
@@ -83,7 +92,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "From the actions described in Passage I, what was the true relationship between the Barimahs and the Agya Attas?",
+    prompt: `${passage1Text}\n\n---\nFrom the actions described in Passage I, what was the true relationship between the Barimahs and the Agya Attas?`,
+    passage: passage1Text,
     options: [
       "School classmates",
       "Kind, supportive, and caring neighbors",
@@ -97,7 +107,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "According to Passage I, why did the community show immense sympathy toward Araba?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did the community show immense sympathy toward Araba?`,
+    passage: passage1Text,
     options: [
       "She had been deserted by her husband",
       "She had labored alongside her husband to build the house",
@@ -111,7 +122,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, what collective action has modern society taken against the menace of smoking?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what collective action has modern society taken against the menace of smoking?`,
+    passage: passage2Text,
     options: [
       "It has prosecuted all smokers in court",
       "It has provided free medical drugs to smokers",
@@ -125,7 +137,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "According to scientific findings cited in Passage II, which lethal condition is directly linked to tobacco smoking?",
+    prompt: `${passage2Text}\n\n---\nAccording to scientific findings cited in Passage II, which lethal condition is directly linked to tobacco smoking?`,
+    passage: passage2Text,
     options: [
       "Severe acute malaria",
       "Infectious measles",
@@ -139,7 +152,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "According to Passage II, what grave risk confronts pregnant women who smoke cigarettes?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what grave risk confronts pregnant women who smoke cigarettes?`,
+    passage: passage2Text,
     options: [
       "They are likely to deliver stillborn or underweight infants",
       "They completely lose the ability to breastfeed",
@@ -153,7 +167,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "In Passage II, passive smokers are defined as individuals who ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, passive smokers are defined as individuals who ............`,
+    passage: passage2Text,
     options: [
       "befriend chronic smokers in public",
       "are hopelessly addicted to tobacco",
@@ -167,7 +182,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "According to Passage II, why do non-smokers view the chronic smoker as a social misfit?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why do non-smokers view the chronic smoker as a social misfit?`,
+    passage: passage2Text,
     options: [
       "He is completely fearless of death",
       "He is selfish, pursuing his habit without regard for others' health",
@@ -522,6 +538,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -675,10 +692,24 @@ async function seedBeceEnglish2007Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Barimah and the Midnight Fire Alarm",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Menace of Smoking and Global Campaigns",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

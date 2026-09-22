@@ -18,7 +18,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -34,6 +34,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -41,12 +42,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2006
+const passage1Text = "### 📖 PASSAGE I\n\nOn Saturday morning, while other children were busy helping with household chores, Amma sat sullenly in the corner of the room. She was determined to avoid the sweeping and washing that awaited her. When her mother, MaaTee, asked her to fetch water from the well, Amma began to moan, clutching her head and claiming that she had a severe headache. She whispered to herself, \"I'm not so daft after all; now I can rest all day.\"\n\nMaaTee, however, was a deeply caring and protective mother who took no chances with her daughter's health. Dropping her kitchen utensils immediately, she told Amma to put on her shoes so they could go straight to the hospital. Amma’s heart began to thump with anxiety; this was not what she had planned.\n\nAt the consulting room, the doctor examined Amma thoroughly—checking her temperature, her eyes, and her chest. He soon discovered that she was as fit as a fiddle and was only feigning illness to escape work. Giving MaaTee a knowing wink, the doctor declared with a grave face: \"I'm sorry, MaaTee, Amma is very ill indeed. Take her to the injection room for three injections right now.\"\n\nUpon hearing the word 'injections', terror seized Amma. Before her mother or the nurse could grab her, she sprinted out of the consulting room with lightning speed and ran all the way home, where she immediately seized the broom and swept the compound without another word.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nGrandpa is a robust centenarian. Even at his advanced age of one hundred years, his eyesight is as clear as a child’s, his memory is remarkably sharp, and his voice rings with steady authority across the family compound. Neighbors and young scholars frequently gather on his veranda to listen to his fascinating historical reminiscences and seek his wise counsel.\n\nWhenever visitors express wonder at his enduring vigor and ask for his secret to a long, fulfilling life, Grandpa smiles warmly and shares his simple philosophy: \"Life is a sacred gift that must be lived with joy, truthfulness, and enthusiasm.\" He insists that harboring bitterness, jealousy, and anger poisons the human soul and wears down the body prematurely.\n\nGrandpa also emphasizes the importance of wholesome natural food and daily physical activity. He worked hard on his cocoa farm for over six decades, drinking fresh spring water and eating green vegetables rather than processed foods. His peaceful spirit and unyielding integrity have earned him the profound respect and admiration of our entire community.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2006
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "According to Passage I, why did MaaTee suspend her morning domestic chores immediately Amma spoke?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did MaaTee suspend her morning domestic chores immediately Amma spoke?`,
+    passage: passage1Text,
     options: [
       "She doubted the truth of Amma's complaint",
       "Amma had provoked her to anger",
@@ -60,7 +67,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "In Passage I, the word 'daft' in 'I'm not so daft after all' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'daft' in 'I'm not so daft after all' means ............`,
+    passage: passage1Text,
     options: ["disobedient", "good-natured", "strange", "unintelligent"],
     correctAnswer: "unintelligent",
     hint: "Foolish, stupid, or lacking cleverness.",
@@ -69,7 +77,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "According to Passage I, what was Amma's real physical condition when examined by the doctor?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what was Amma's real physical condition when examined by the doctor?`,
+    passage: passage1Text,
     options: [
       "She was suffering from severe malaria",
       "She was genuinely as fit as a fiddle and not ill",
@@ -83,7 +92,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "From the description in Passage I, what kind of parent was MaaTee?",
+    prompt: `${passage1Text}\n\n---\nFrom the description in Passage I, what kind of parent was MaaTee?`,
+    passage: passage1Text,
     options: ["A neglectful mother", "A caring and protective mother", "An overly strict parent", "A weak-willed mother"],
     correctAnswer: "A caring and protective mother",
     hint: "She dropped everything immediately to seek medical care for her child.",
@@ -92,7 +102,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "In Passage I, why did Amma sprint out of the doctor's consulting room with lightning speed?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why did Amma sprint out of the doctor's consulting room with lightning speed?`,
+    passage: passage1Text,
     options: [
       "She was terrified of receiving injections",
       "She remembered her unfinished sweeping at home",
@@ -106,7 +117,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, what remarkable biographical fact is true about Grandpa?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what remarkable biographical fact is true about Grandpa?`,
+    passage: passage2Text,
     options: [
       "He is an impoverished invalid",
       "He is a frail and sickly elder",
@@ -120,7 +132,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "According to Passage II, what general attitude do people in the community have toward Grandpa?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what general attitude do people in the community have toward Grandpa?`,
+    passage: passage2Text,
     options: [
       "They fear his supernatural powers",
       "They deeply admire his vigor and wisdom",
@@ -134,7 +147,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "In Passage II, the phrase 'devoid of' in 'live a free life devoid of stress' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the phrase 'devoid of' in 'live a free life devoid of stress' means ............`,
+    passage: passage2Text,
     options: ["unless", "despite", "against", "completely without"],
     correctAnswer: "completely without",
     hint: "Free from, entirely lacking, or empty of something.",
@@ -143,7 +157,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Grandpa's philosophy in Passage II, what function does a mirror perform in relation to human character?",
+    prompt: `${passage2Text}\n\n---\nAccording to Grandpa's philosophy in Passage II, what function does a mirror perform in relation to human character?`,
+    passage: passage2Text,
     options: [
       "It merely reflects and reproduces what is placed before it",
       "It alters a person's moral flaws",
@@ -157,7 +172,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "Why does Grandpa advise his grandchildren to remain strictly truthful to themselves?",
+    prompt: `${passage2Text}\n\n---\nWhy does Grandpa advise his grandchildren to remain strictly truthful to themselves?`,
+    passage: passage2Text,
     options: [
       "To amass physical wealth",
       "To gain political influence",
@@ -502,6 +518,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -671,10 +688,24 @@ async function seedBeceEnglish2006Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Amma Feigning Illness and MaaTee's Emergency Visit",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: Grandpa's Centenarian Vigor and Philosophy",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

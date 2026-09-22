@@ -22,7 +22,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -38,6 +38,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -45,12 +46,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2004
+const passage1Text = "### 📖 PASSAGE I\n\nOnce, in the world of animals, there was a great famine and the animals were dying. For about three months, Tortoise and his family had eaten very little. Tortoise’s body rattled in his empty shell as he walked. One day as he thought of a way to get food, his throat began to itch.\n\nHe would go to the next village where he had heard there was still some food. He would steal some for himself and his family. He took the bush path and arrived at the village after sunset. The people were preparing their meals and the smell made his mouth water.\n\nHow would he get this food? Not far away from him was the village playground where there was a big hollow log leaning against a tree. This log was the drum used to summon the villagers for very important announcements. When he reached the tree, he decided to climb it so that he could see the village better. Unfortunately, as he was climbing, he fell because he was very weak and hungry. His shell hit the drum, sending out a loud 'kpom! kpom!' noise.\n\nWhen they heard this noise, the villagers ran to the playground, believing they had been called, thereby leaving the food cooking in their homes. Very quickly, Tortoise disappeared into nearby bush and ran to the village. He filled his empty shell with as much food as he could carry and returned home.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nIn the centre of the town, the clock chimed two o’ clock. In an abandoned house on the outskirts of the town, an owl hooted as if to signal to Sergeant Abora and Abaidoo to wake up from slumber.\n\nThey had patrolled the town for hours and were heavy with sleep. The night was very dark and so cold that in spite of his overcoat, the Sergeant’s teeth were chattering. He was about to speak when he heard a faint sound down the road that led into the town.\n\nAbaidoo also picked the sound. Both listened attentively and realized that a late traveler was coming up the road. They took cover behind two opposing trees. As he reached where Abaidoo was hiding, the traveler stumbled over what looked like the root of a tree.\n\nThen constable Abaidoo quickly flashed his torchlight and bawled out, 'Stop or I shoot!' Abora’s gun was also held in readiness. The traveler who carried a heavy load on his left shoulder panicked, dropping his cutlass in the process.\n\n'Who are you? Where are you from? What’s in your bag? Speak out or I shoot! We’ve got you at last!' Abora exclaimed.\n\nTrembling with fear and stammering for words the traveler gave his name as Nsiah. He was returning from Fosa with a bag of plantain and cassava. But his cutlass and bag, both dripping with blood, gave him away. After a search, the police found a human head and triumphantly marched him to the police station.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2004
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "In Passage I, the expression 'there was a great famine' means that ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the expression 'there was a great famine' means that ............`,
+    passage: passage1Text,
     options: [
       "all the wild animals died instantly",
       "food was exceedingly scarce in the land",
@@ -64,7 +71,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "According to Passage I, which of the following statements is true regarding Tortoise?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, which of the following statements is true regarding Tortoise?`,
+    passage: passage1Text,
     options: [
       "Tortoise fasted completely for three months",
       "The villagers freely gave food to Tortoise",
@@ -78,7 +86,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "At what specific time of day did Tortoise arrive at the neighboring village in Passage I?",
+    prompt: `${passage1Text}\n\n---\nAt what specific time of day did Tortoise arrive at the neighboring village in Passage I?`,
+    passage: passage1Text,
     options: ["At early sunset", "In the dead of night", "At the break of dawn", "In the bright afternoon"],
     correctAnswer: "In the dead of night",
     hint: "Paragraph two states: 'He took the bush path and arrived at the village after sunset.'",
@@ -87,7 +96,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "In Passage I, why did the villagers drop their cooking and rush to the playground?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why did the villagers drop their cooking and rush to the playground?`,
+    passage: passage1Text,
     options: [
       "They wanted to catch who made the noise",
       "They believed the ceremonial drum had summoned them for an announcement",
@@ -101,7 +111,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "Why were the villagers unable to spot Tortoise at the playground in Passage I?",
+    prompt: `${passage1Text}\n\n---\nWhy were the villagers unable to spot Tortoise at the playground in Passage I?`,
+    passage: passage1Text,
     options: [
       "He swallowed his food rapidly",
       "He climbed inside the hollow drum",
@@ -115,7 +126,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "In Passage II, why were Sergeant Abora's teeth chattering during the patrol?",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, why were Sergeant Abora's teeth chattering during the patrol?`,
+    passage: passage2Text,
     options: [
       "He was suffering from acute toothache",
       "The night was freezing and intensely cold",
@@ -129,7 +141,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "According to Passage II, how did the police officers first detect the approach of the nocturnal traveler?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how did the police officers first detect the approach of the nocturnal traveler?`,
+    passage: passage2Text,
     options: [
       "They heard a faint sound down the road",
       "They saw blood dripping on the path",
@@ -143,7 +156,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "In Passage II, why did Sergeant Abora and Constable Abaidoo conceal themselves behind two opposing trees?",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, why did Sergeant Abora and Constable Abaidoo conceal themselves behind two opposing trees?`,
+    passage: passage2Text,
     options: [
       "To shelter from the freezing wind",
       "To avoid being seen while ambushing the suspect",
@@ -157,7 +171,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "Where was the criminal traveler finally apprehended by the police patrol team in Passage II?",
+    prompt: `${passage2Text}\n\n---\nWhere was the criminal traveler finally apprehended by the police patrol team in Passage II?`,
+    passage: passage2Text,
     options: [
       "Behind the trees on the road entering the town",
       "Inside the central charge office",
@@ -171,7 +186,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "In Passage II, the expression 'gave him away' in 'his cutlass and bag... gave him away' means that the items ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the expression 'gave him away' in 'his cutlass and bag... gave him away' means that the items ............`,
+    passage: passage2Text,
     options: [
       "terrified him completely",
       "warned him of danger",
@@ -516,6 +532,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -665,10 +682,24 @@ async function seedBeceEnglish2004Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Tortoise and the Great Famine",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Midnight Patrol and the Traveler",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

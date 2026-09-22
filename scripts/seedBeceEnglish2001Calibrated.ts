@@ -22,7 +22,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -38,6 +38,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -45,12 +46,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2001
+const passage1Text = "### 📖 PASSAGE I\n\nThere stood an enormous tree in the centre of the town. Its big branches and dense foliage gave shelter in all weather and so it had become a natural meeting place. Benches had been placed round the base of its huge trunk so that the elders of the town might sit in comfort and gossip or talk about serious affairs of the town. This particular morning, three old men were resting on one of the benches. They had chosen the side which overlooks the road entering the town. From there they could see the market, the lorry park and the main street.\n\nAs they watched, a large bus drove into the lorry park. It was surrounded immediately by a jostling crowd. Those who wished to travel hurried forward and food sellers rushed from all sides struggling to sell their wares. In the general uproar which followed, new passengers tried to get into the bus, whilst those who had reached their destination tried to alight. Others who were not willing to risk losing their seats stood blocking the doorway or leaned out of the bus windows as they bargained with the food sellers.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nAs I stood by a street in Accra that late afternoon watching people rushing home from work, I felt very safe. My sense of security came from the fact that Ghanaians are generally kind and hospitable people, particularly to strangers. Although I had just arrived from my village, I was a Ghanaian and in my own capital I should not fear anything.\n\nJust then, I felt a firm grip on my arm from behind. I did not feel threatened; rather I was relieved. I thought an old schoolmate must have spotted me, James Cudjoe, and decided to play our old game on me. How welcome! The good old days are here again.\n\nI turned to look at the fellow in the face but the more I turned to my left the faster he moved to my right as he tightened his grip on my wrist watch. Suddenly he let go of my arm and bolted. I saw him vanish into the thick crowd. Certainly, this was not how to welcome a friend. People of the city are surely very strange!\n\nTotally confused, I made my way towards the lorry park to leave for my brother’s house. In the gathering darkness, I tried to find out what time it was. To my utter surprise, I discovered that my wrist watch was gone. The rascal had made away with it. It was hardly new, not even expensive, yet the rogue found it worth stealing.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2001
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 11) ---
   {
     number: 1,
-    prompt: "According to Passage I, why did the town elders regularly sit on the wooden benches beneath the ancient tree?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did the town elders regularly sit on the wooden benches beneath the ancient tree?`,
+    passage: passage1Text,
     options: [
       "To wait for commercial buses heading outside town",
       "To engage in market buying and selling",
@@ -64,7 +71,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "From their vantage position under the tree in Passage I, which of the following landmarks could the old men NOT observe directly?",
+    prompt: `${passage1Text}\n\n---\nFrom their vantage position under the tree in Passage I, which of the following landmarks could the old men NOT observe directly?`,
+    passage: passage1Text,
     options: [
       "The market square",
       "The bus station and lorry park",
@@ -78,7 +86,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "In Passage I, the word 'uproar' in 'In the general uproar which followed' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'uproar' in 'In the general uproar which followed' means ............`,
+    passage: passage1Text,
     options: [
       "a physical fist fight",
       "rapid physical movement",
@@ -92,7 +101,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "Why did some passengers on the bus attempt to alight as soon as it parked in Passage I?",
+    prompt: `${passage1Text}\n\n---\nWhy did some passengers on the bus attempt to alight as soon as it parked in Passage I?`,
+    passage: passage1Text,
     options: [
       "They had arrived at their destination and wanted to go home",
       "They wanted to purchase food from street hawkers",
@@ -106,7 +116,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "According to Passage I, why did certain passengers obstruct the doorway of the bus?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did certain passengers obstruct the doorway of the bus?`,
+    passage: passage1Text,
     options: [
       "They disliked the street food vendors",
       "They feared losing their occupied seats to incoming travelers",
@@ -120,7 +131,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "In Passage II, why did the writer feel completely secure while standing on a busy street in Accra?",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, why did the writer feel completely secure while standing on a busy street in Accra?`,
+    passage: passage2Text,
     options: [
       "He saw workers rushing home from their offices",
       "He had just arrived safely from his home village",
@@ -134,7 +146,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "In Passage II, the word 'spotted' as used in 'an old schoolmate must have spotted me' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'spotted' as used in 'an old schoolmate must have spotted me' means ............`,
+    passage: passage2Text,
     options: ["looked at casually", "identified and recognized", "marked with a pen", "pointed out to the crowd"],
     correctAnswer: "identified and recognized",
     hint: "To catch sight of and recognize someone in a crowd.",
@@ -143,7 +156,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "Why did the writer turn toward his left when he felt a grip from behind in Passage II?",
+    prompt: `${passage2Text}\n\n---\nWhy did the writer turn toward his left when he felt a grip from behind in Passage II?`,
+    passage: passage2Text,
     options: [
       "He wanted to look the person in the face and greet his presumed friend",
       "He wanted to hide his wristwatch safely",
@@ -157,7 +171,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Passage II, what was the real objective of the stranger who gripped Cudjoe's arm?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what was the real objective of the stranger who gripped Cudjoe's arm?`,
+    passage: passage2Text,
     options: [
       "He wanted to embrace an old classmate",
       "He recognized a former friend",
@@ -171,7 +186,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "In Passage II, the word 'rogue' as used in 'the rogue found it worth stealing' refers to ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'rogue' as used in 'the rogue found it worth stealing' refers to ............`,
+    passage: passage2Text,
     options: ["an office commuter", "an old schoolfellow", "the crafty street thief", "a resident of the village"],
     correctAnswer: "the crafty street thief",
     hint: "A dishonest, unprincipled person or thief.",
@@ -180,7 +196,8 @@ const rawQuestions = [
   },
   {
     number: 11,
-    prompt: "Which of the following statements is NOT true according to Passage II?",
+    prompt: `${passage2Text}\n\n---\nWhich of the following statements is NOT true according to Passage II?`,
+    passage: passage2Text,
     options: [
       "Some city dwellers engage in deceptive criminal acts",
       "All people residing in Accra were former classmates of the writer",
@@ -501,6 +518,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -657,10 +675,24 @@ async function seedBeceEnglish2001Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Town Elders Under the Ancient Tree",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Naive Traveler and the City Pickpocket",
+          text: passage2Text,
+          questionRange: [6, 11]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {

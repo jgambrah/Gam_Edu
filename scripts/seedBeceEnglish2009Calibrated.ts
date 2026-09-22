@@ -18,7 +18,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -34,6 +34,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -41,12 +42,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2009
+const passage1Text = "### 📖 PASSAGE I\n\nWe were suddenly awakened at dawn by the frantic screams and cries of the tenants in our compound. Suspecting that danger was near, my father sprang out of bed in total darkness and rushed toward the living room to investigate. In his haste, he forgot that the main lights were off and ran straight into the concrete pillar in the middle of the hall, crashing his forehead against it and collapsing on the floor.\n\nWhen mother rushed in and turned on the switch, she found father clutching a bloody gash on his forehead with a huge swelling rising above his brow. Mother quickly fetched a towel with ice cubes from the freezer, pressing them firmly against the cut to stem the bleeding and soothe the swelling.\n\nWhen the compound gate was finally opened, we beheld a pathetic and heartbreaking scene. A band of armed robbers had broken into the tenant's quarters. When the brave tenant attempted to resist them and protect his family, the ruthless robbers had mercilessly attacked him with cutlasses, leaving him mortally wounded before fleeing into the night.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nAmong the natural wonders of the animal kingdom, few phenomena are as captivating as the melodies of songbirds. While birds produce simple calls throughout the year to signal danger or communicate location, their most elaborate and vigorous songs are produced strictly during the breeding season by male birds seeking to attract and impress prospective female partners.\n\nBird songs also serve as territorial declarations, warning rival males that a particular nesting area has already been claimed. What sounds to human ears like a single, continuous melodic whistle is often revealed by acoustic recordings to consist of dozens of rapid, intricate notes. The superior auditory acuity of birds allows them to distinguish subtle variations in pitch and timing that human ears completely miss.\n\nThrough these remarkable musical performances, nature demonstrates how acoustic communication ensures both species reproduction and territorial order in the wild.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2009
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "According to Passage I, what sudden event woke the household members from sleep at dawn?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what sudden event woke the household members from sleep at dawn?`,
+    passage: passage1Text,
     options: [
       "The father crashing into the pillar",
       "The noise made by the father in the hall",
@@ -60,7 +67,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "In Passage I, why was the writer's father holding his forehead when the lights were switched on?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, why was the writer's father holding his forehead when the lights were switched on?`,
+    passage: passage1Text,
     options: [
       "He had fallen flat on his back",
       "He had crashed his head against the pillar",
@@ -74,7 +82,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "In Passage I, what was the primary clinical purpose of applying ice cubes to the father's injury?",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, what was the primary clinical purpose of applying ice cubes to the father's injury?`,
+    passage: passage1Text,
     options: [
       "To disinfect the cut",
       "To heal the skin rapidly",
@@ -88,7 +97,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "In Passage I, the word 'pathetic' as used in 'we beheld a pathetic scene' means ............",
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'pathetic' as used in 'we beheld a pathetic scene' means ............`,
+    passage: passage1Text,
     options: ["naughty", "merciless", "sad and distressing", "strange"],
     correctAnswer: "sad and distressing",
     hint: "Evoking deep pity, grief, and emotional sorrow.",
@@ -97,7 +107,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "According to Passage I, what tragic fate befell the tenant?",
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what tragic fate befell the tenant?`,
+    passage: passage1Text,
     options: [
       "He fell down heavily in the dark hall",
       "He was killed by the armed robbers",
@@ -111,7 +122,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, why do male songbirds sing with exceptional vigor during the breeding season?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why do male songbirds sing with exceptional vigor during the breeding season?`,
+    passage: passage2Text,
     options: [
       "To instruct younger birds",
       "To practice notes for concert halls",
@@ -125,7 +137,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "According to Passage II, what enables birds to distinguish multiple notes in a song that sound like a single beat to human ears?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what enables birds to distinguish multiple notes in a song that sound like a single beat to human ears?`,
+    passage: passage2Text,
     options: [
       "Their sharp eyesight",
       "Their keen sense of hearing",
@@ -139,7 +152,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "According to Passage II, what non-musical message can a bird's vocalization communicate to its flock?",
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what non-musical message can a bird's vocalization communicate to its flock?`,
+    passage: passage2Text,
     options: [
       "An announcement of pleasant weather",
       "A complaint about scarce food",
@@ -153,7 +167,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "In Passage II, the word 'unique' in 'compose songs which are unique' means ............",
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'unique' in 'compose songs which are unique' means ............`,
+    passage: passage2Text,
     options: ["suitable", "similar", "exciting", "distinctive and one of a kind"],
     correctAnswer: "distinctive and one of a kind",
     hint: "Unlike anything else; not copied from others.",
@@ -162,7 +177,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "What major conclusion does the writer suggest regarding the acoustic ability of songbirds in Passage II?",
+    prompt: `${passage2Text}\n\n---\nWhat major conclusion does the writer suggest regarding the acoustic ability of songbirds in Passage II?`,
+    passage: passage2Text,
     options: [
       "Human beings possess better musical hearing than birds",
       "Birds have a superior ability to distinguish intricate musical notes",
@@ -522,6 +538,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -688,10 +705,24 @@ async function seedBeceEnglish2009Calibrated() {
       unplagiarizedPedagogicalAdaptation: true,
       updatedAt: new Date()
     },
-    paper1: {
+        paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Dawn Robbery Panic and the Hall Pillar",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Melodies and Signals of Songbirds",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {
