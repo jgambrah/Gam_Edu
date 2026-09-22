@@ -189,7 +189,7 @@ interface SuggestedModuleCard {
     explanation?: string;
     topicId?: string;
     setId?: string;
-    kind?: 'topical' | 'exam_series';
+    kind?: 'topical' | 'exam_series' | 'mock_suite';
     format?: 'objective' | 'structured_essay' | 'standard' | 'multiple_choice' | 'topical_lab';
     questionCount?: number;
     examTag?: string;
@@ -5083,6 +5083,107 @@ function MathLab({
     const showPrepNotice = viewMode === 'exam_series' && (isPrepEraSelected || (isPrepSearch && filteredModules.length === 0));
 
 
+
+interface MockSuiteItem {
+    mockNum: number;
+    setNum: number;
+    title: string;
+    description: string;
+    paper1Details: string;
+    paper2Details: string;
+}
+
+const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
+    {
+        mockNum: 1,
+        setNum: 132,
+        title: "BECE Integrated Science Mock 1 (Standard Mock Suite)",
+        description: "Full longitudinal mock simulation synthesizing three decades of WAEC science foundations: compound optics, simple machines, genetics, soil physics, Bohr models, and cardiovascular hemodynamics.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 2,
+        setNum: 133,
+        title: "BECE Integrated Science Mock 2 (Standard Mock Suite)",
+        description: "Advanced curriculum synthesis targeting ray optics with curved mirrors, organic esterification reactions, DC electrical circuits with Ohm's law, agroforestry crop protection, and human renal excretion.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 3,
+        setNum: 134,
+        title: "BECE Integrated Science Mock 3 (Standard Mock Suite)",
+        description: "Advanced curriculum synthesis targeting qualitative food tests, rectilinear light propagation in pinhole optics, immiscible liquid separation, and comparative digestive physiology.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 4,
+        setNum: 135,
+        title: "BECE Integrated Science Mock 4 (Standard Mock Suite)",
+        description: "Grand final benchmark examination targeting triangular prism dispersion, simple laboratory distillation, plant cell plasmolysis, and farm hand tool mechanics.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 5,
+        setNum: 136,
+        title: "BECE Integrated Science Mock 5 (Standard Mock Suite)",
+        description: "Advanced benchmark examination targeting electrostatics & charge induction, sublimation separation, respiratory bell-jar model, and soil capillarity mechanics.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 6,
+        setNum: 137,
+        title: "BECE Integrated Science Mock 6 (Standard Mock Suite)",
+        description: "Benchmark national examination targeting magnetic field lines, fractional distillation of ethanol/water, human tooth anatomy, and vegetative plant propagation.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 7,
+        setNum: 138,
+        title: "BECE Integrated Science Mock 7 (Standard Mock Suite)",
+        description: "Benchmark national examination targeting rectilinear propagation of light, soap lather vs. water hardness, epigeal vs. hypogeal germination, and soil profile pit horizons.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 8,
+        setNum: 139,
+        title: "BECE Integrated Science Mock 8 (National Standards Suite)",
+        description: "Benchmark national examination testing atmospheric air pressure, anhydrous water tests, gross mammalian ear anatomy, and livestock parasites.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 9,
+        setNum: 140,
+        title: "BECE Integrated Science Mock 9 (Benchmark National Suite)",
+        description: "Standardized national examination investigating pinhole camera ray optics, separating funnel immiscibility, bony fish morphology, and poultry housing systems.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 10,
+        setNum: 141,
+        title: "BECE Integrated Science Mock 10 (Final Benchmark Examination Suite)",
+        description: "Definitive capstone national examination assessing principle of moments, common salt preparation, variegated leaf photosynthesis, and 4-course crop rotation.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    },
+    {
+        mockNum: 11,
+        setNum: 142,
+        title: "BECE Integrated Science Mock 11 (Electricity & Electronics Mastery)",
+        description: "Specialized mastery suite targeting circuit troubleshooting, capacitor charging & LED flash behavior, solar irrigation pumps, and e-waste management.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics."
+    }
+];
+
     const handleLaunchMockPaper = async (mockNum: number, paperNum: 1 | 2) => {
         console.log(`[senior-academy] handleLaunchMockPaper called for Mock ${mockNum}, Paper ${paperNum}`);
         if (mockNum === 1) {
@@ -5492,7 +5593,7 @@ function MathLab({
                         tier: 'Junior Secondary (JHS)',
                         subject: 'Integrated Science',
                         topic: mod.title,
-                        format: isP2 ? 'structured_essay' : 'objective',
+                        format: (isP2 ? 'structured_essay' : 'multiple_choice') as any,
                         paperType: isP2 ? 2 : 1,
                         durationMinutes: pData.durationMinutes || (isP2 ? 105 : 45),
                         totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
@@ -5516,7 +5617,6 @@ function MathLab({
                     id: mod.setId || (isP2 ? (isMock4 ? 'paper_mock_4_p2' : (isMock3 ? 'paper_mock_3_p2' : (isMock2 ? 'paper_mock_2_p2' : 'paper_mock_1_p2'))) : (isMock4 ? 'paper_mock_4' : (isMock3 ? 'paper_mock_3' : (isMock2 ? 'paper_mock_2' : 'paper_mock_1')))),
                     tier: 'Junior Secondary (JHS)',
                     paperType: isP2 ? 2 : 1,
-                    durationMinutes: fallbackData.durationMinutes || (isP2 ? 105 : 45),
                     durationMinutes: fallbackData.durationMinutes || (isP2 ? 105 : 45)
                 } as any);
                 return;
@@ -6101,1020 +6201,118 @@ function MathLab({
                                 </div>
                             </div>
 
-                            {/* Mocks Grid */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                {/* MOCK 1 CARD - LIVE */}
-                                <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-slate-900 via-slate-900/95 to-emerald-950/30 p-6 sm:p-7 shadow-2xl shadow-emerald-500/10 flex flex-col justify-between relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-                                    
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                                            <div className="flex items-center gap-2">
-                                                <Badge className="bg-emerald-600 text-white text-xs font-black px-3 py-1">
-                                                    MOCK 1 • SET 132
-                                                </Badge>
-                                                <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 text-xs font-bold">
-                                                    150 Mins Total • 140 Marks
-                                                </Badge>
-                                            </div>
-                                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
+                            {/* Mocks Grid - Strict 2-Column Responsive Layout */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                                {SCIENCE_MOCK_SUITES.map((mock) => (
+                                    <div
+                                        key={mock.mockNum}
+                                        className="col-span-1 h-full flex flex-col justify-between rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/95 via-slate-900/85 to-slate-950 p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:border-emerald-500/40 transition-all duration-300 relative overflow-hidden group"
+                                    >
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
 
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-emerald-300 transition-colors">
-                                                BECE Integrated Science Mock 1 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Full longitudinal mock simulation synthesizing three decades of WAEC science foundations: compound optics, simple machines, genetics, soil physics, Bohr models, and cardiovascular hemodynamics.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
+                                        {/* Top Content Area */}
+                                        <div className="pt-1 space-y-4 flex-1 flex flex-col justify-between">
+                                            <div className="space-y-3">
+                                                {/* Header Badges & Live Status */}
+                                                <div className="flex items-center justify-between gap-2 flex-wrap overflow-visible">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <Badge className="bg-emerald-600/90 hover:bg-emerald-600 text-white text-[11px] sm:text-xs font-black px-2.5 py-1 rounded-lg border border-emerald-400/30 leading-normal">
+                                                            MOCK {mock.mockNum} • SET {mock.setNum}
+                                                        </Badge>
+                                                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg leading-normal">
+                                                            150 Mins Total • 140 Marks
+                                                        </Badge>
+                                                    </div>
+                                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 shrink-0 leading-normal">
+                                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                                        Live &amp; Calibrated
                                                     </span>
                                                 </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
-                                                </p>
+
+                                                {/* Mock Title & Normalized Description */}
+                                                <div>
+                                                    <h3 className="text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors leading-snug line-clamp-1">
+                                                        {mock.title}
+                                                    </h3>
+                                                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+                                                        {mock.description}
+                                                    </p>
+                                                </div>
                                             </div>
 
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
+                                            {/* Standardized Micro-Grid for Paper 1 and Paper 2 */}
+                                            <div className="grid grid-cols-2 gap-3 pt-3 mt-auto">
+                                                {/* Paper 1 Metrics Box */}
+                                                <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-sky-500/40 transition-colors">
+                                                    <div className="flex items-center justify-between gap-1 overflow-visible">
+                                                        <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5 min-w-0 leading-tight">
+                                                            <ListChecks className="w-3.5 h-3.5 shrink-0" />
+                                                            <span className="truncate">Paper 1: Objective</span>
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 border border-sky-500/30 px-1.5 py-0.5 rounded shrink-0 leading-tight">
+                                                            40 Marks
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
+                                                        {mock.paper1Details}
+                                                    </p>
                                                 </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    5 Questions • 105 Mins • Section A Practical (SVGs) + Section B Essay Rubrics.
-                                                </p>
+
+                                                {/* Paper 2 Metrics Box */}
+                                                <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-amber-500/40 transition-colors">
+                                                    <div className="flex items-center justify-between gap-1 overflow-visible">
+                                                        <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5 min-w-0 leading-tight">
+                                                            <FileText className="w-3.5 h-3.5 shrink-0" />
+                                                            <span className="truncate">Paper 2: Practical &amp; Theory</span>
+                                                        </span>
+                                                        <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 px-1.5 py-0.5 rounded shrink-0 leading-tight">
+                                                            100 Marks
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
+                                                        {mock.paper2Details}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Harmonized Action Buttons Row (Baseline Aligned) */}
+                                        <div className="pt-4 border-t border-slate-800/80 mt-5 space-y-2">
+                                            {/* Primary CTA: Start Unified Mock */}
+                                            <Button
+                                                onClick={() => handleLaunchMockPaper(mock.mockNum, 1)}
+                                                className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
+                                            >
+                                                <Rocket className="w-4 h-4" />
+                                                <span>Start Unified Mock {mock.mockNum} (Paper 1 → Paper 2)</span>
+                                                <ChevronRight className="w-4 h-4 ml-0.5" />
+                                            </Button>
+
+                                            {/* Secondary CTAs: Outlined Ghost Buttons with Universal Labels */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleLaunchMockPaper(mock.mockNum, 1)}
+                                                    className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
+                                                >
+                                                    <ListChecks className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                                                    <span className="truncate">Take Paper 1 (CBT)</span>
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleLaunchMockPaper(mock.mockNum, 2)}
+                                                    className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
+                                                >
+                                                    <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                                    <span className="truncate">Take Paper 2 (Essay)</span>
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="pt-5 border-t border-slate-800/80 mt-5 space-y-2">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(1, 1)}
-                                            className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Rocket className="w-4 h-4" />
-                                            <span>Start Unified Mock 1 (Paper 1 → Paper 2)</span>
-                                            <ChevronRight className="w-4 h-4" />
-                                        </Button>
-
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(1, 1)}
-                                                className="flex-1 text-xs border-sky-500/40 text-sky-300 hover:text-white hover:bg-sky-600/20 cursor-pointer"
-                                            >
-                                                <ListChecks className="w-3.5 h-3.5 mr-1" /> Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(1, 2)}
-                                                className="flex-1 text-xs border-amber-500/40 text-amber-300 hover:text-white hover:bg-amber-600/20 cursor-pointer"
-                                            >
-                                                <FileText className="w-3.5 h-3.5 mr-1" /> Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* MOCK 2 CARD - INGESTION QUEUE */}
-                                <div className="rounded-3xl border border-indigo-500/40 bg-slate-900/80 p-6 sm:p-7 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                                            <div className="flex items-center gap-2">
-                                                <Badge className="bg-indigo-600 text-white text-xs font-black px-3 py-1">
-                                                    MOCK 2 • SET 133
-                                                </Badge>
-                                                <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 text-xs font-bold">
-                                                    150 Mins Total • 140 Marks
-                                                </Badge>
-                                            </div>
-                                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
-                                                BECE Integrated Science Mock 2 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Advanced curriculum synthesis targeting ray optics with curved mirrors, organic esterification reactions, DC electrical circuits with Ohm's law, agroforestry crop protection, and human renal excretion.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
-                                                        <BookOpen className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="space-y-2.5 pt-5 border-t border-slate-800 mt-5">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(2, 1)}
-                                            className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
-                                        >
-                                            <Sparkles className="w-4 h-4 text-amber-300" />
-                                            <span>Start Unified Mock 2 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                        
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(2, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(2, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* MOCK 3 CARD */}
-                                <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between group">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 3 • SET 134
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
-                                                BECE Integrated Science Mock 3 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Advanced curriculum synthesis targeting qualitative food tests, rectilinear light propagation in pinhole optics, immiscible liquid separation, and comparative digestive physiology.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
-                                                        <BookOpen className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="space-y-2.5 pt-5 border-t border-slate-800 mt-5">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(3, 1)}
-                                            className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
-                                        >
-                                            <Sparkles className="w-4 h-4 text-amber-300" />
-                                            <span>Start Unified Mock 3 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                        
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(3, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(3, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* MOCK 4 CARD */}
-                                <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between group">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 4 • SET 135
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
-                                                BECE Integrated Science Mock 4 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Grand final benchmark examination targeting triangular prism dispersion, simple laboratory distillation, plant cell plasmolysis, and farm hand tool mechanics.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
-                                                        <BookOpen className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400">
-                                                    5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="space-y-2.5 pt-5 border-t border-slate-800 mt-5">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(4, 1)}
-                                            className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
-                                        >
-                                            <Sparkles className="w-4 h-4 text-amber-300" />
-                                            <span>Start Unified Mock 4 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                        
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(4, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(4, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
-
-                            {/* MOCK 5 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-teal-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-teal-400/50 hover:shadow-teal-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-teal-500/40 text-teal-300 bg-teal-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 5 • SET 136
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-teal-300 transition-colors">
-                                                BECE Integrated Science Mock 5 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Advanced benchmark examination targeting electrostatics & charge induction, sublimation separation, respiratory bell-jar model, and soil capillarity mechanics.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-teal-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-teal-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-teal-300 bg-teal-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(5, 1)}
-                                            className="w-full bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 hover:from-teal-600 hover:to-emerald-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 5 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(5, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(5, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 6 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-cyan-400/50 hover:shadow-cyan-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-cyan-500/40 text-cyan-300 bg-cyan-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 6 • SET 137
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
-                                                BECE Integrated Science Mock 6 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Benchmark national examination targeting magnetic field lines, fractional distillation of ethanol/water, human tooth anatomy, and vegetative plant propagation.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-cyan-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(6, 1)}
-                                            className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 6 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(6, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(6, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 7 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-amber-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-amber-400/50 hover:shadow-amber-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-amber-500/40 text-amber-300 bg-amber-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 7 • SET 138
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-amber-300 transition-colors">
-                                                BECE Integrated Science Mock 7 (Standard Mock Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Benchmark national examination targeting rectilinear propagation of light, soap lather vs. water hardness, epigeal vs. hypogeal germination, and soil profile pit horizons.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(7, 1)}
-                                            className="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 7 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(7, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 1 Only
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(7, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Take Paper 2 Only
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 8 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-teal-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-teal-400/50 hover:shadow-teal-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-teal-500/40 text-teal-300 bg-teal-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 8 • SET 139
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-teal-300 transition-colors">
-                                                BECE Integrated Science Mock 8 (National Standards Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Benchmark national examination testing atmospheric air pressure, anhydrous water tests, gross mammalian ear anatomy, and livestock parasites.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-teal-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-teal-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-teal-300 bg-teal-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(8, 1)}
-                                            className="w-full bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 hover:from-teal-600 hover:to-emerald-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 8 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(8, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 1 (CBT)
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(8, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 2 (Essay)
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 9 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-cyan-400/50 hover:shadow-cyan-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-cyan-500/40 text-cyan-300 bg-cyan-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 9 • SET 140
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
-                                                BECE Integrated Science Mock 9 (Benchmark National Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Standardized national examination investigating pinhole camera ray optics, separating funnel immiscibility, bony fish morphology, and poultry housing systems.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-cyan-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-cyan-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(9, 1)}
-                                            className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-cyan-600 hover:from-cyan-600 hover:to-sky-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 9 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(9, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 1 (CBT)
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(9, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 2 (Essay)
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 10 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-indigo-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-indigo-400/50 hover:shadow-indigo-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 10 • SET 141
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
-                                                BECE Integrated Science Mock 10 (Final Benchmark Examination Suite)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Definitive capstone national examination assessing principle of moments, common salt preparation, variegated leaf photosynthesis, and 4-course crop rotation.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-indigo-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-indigo-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(10, 1)}
-                                            className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 10 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(10, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 1 (CBT)
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(10, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 2 (Essay)
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* MOCK 11 CARD */}
-                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-yellow-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-yellow-400/50 hover:shadow-yellow-500/10">
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-500/10 via-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <Badge variant="outline" className="border-yellow-500/40 text-yellow-300 bg-yellow-500/10 text-xs font-bold px-3 py-1">
-                                                MOCK 11 • SET 142
-                                            </Badge>
-                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                Live & Calibrated
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-yellow-300 transition-colors">
-                                                BECE Integrated Science Mock 11 (Electricity & Electronics Mastery)
-                                            </h3>
-                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Specialized mastery suite targeting circuit troubleshooting, capacitor charging & LED flash behavior, solar irrigation pumps, and e-waste management.
-                                            </p>
-                                        </div>
-
-                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                            {/* Paper 1 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
-                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
-                                                        40 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
-                                                </p>
-                                            </div>
-
-                                            {/* Paper 2 Box */}
-                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-yellow-500/30 space-y-1.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-yellow-400 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-yellow-300 bg-yellow-500/20 px-2 py-0.5 rounded">
-                                                        100 Marks
-                                                    </span>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 leading-snug">
-                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Launchers */}
-                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                                        <Button
-                                            onClick={() => handleLaunchMockPaper(11, 1)}
-                                            className="w-full bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 hover:from-yellow-600 hover:to-amber-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-yellow-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
-                                        >
-                                            <Sparkles className="w-4 h-4" />
-                                            <span>Start Unified Mock 11 (Paper 1 → Paper 2)</span>
-                                            <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(11, 1)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 1 (CBT)
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleLaunchMockPaper(11, 2)}
-                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
-                                            >
-                                                Paper 2 (Essay)
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-
                         </div>
                     ) : showPrepNotice ? (
                         <div className="py-16 px-6 text-center bg-slate-900/40 border border-dashed border-amber-500/30 rounded-3xl space-y-4">
