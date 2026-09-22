@@ -34,6 +34,7 @@ import { SET_BECE_MOCK_6_SCIENCE_P1, SET_BECE_MOCK_6_SCIENCE_P2 } from '@/lib/da
 import { SET_BECE_MOCK_7_SCIENCE_P1, SET_BECE_MOCK_7_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-138';
 import { SET_BECE_MOCK_8_SCIENCE_P1, SET_BECE_MOCK_8_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-139';
 import { SET_BECE_MOCK_9_SCIENCE_P1, SET_BECE_MOCK_9_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-140';
+import { SET_BECE_MOCK_10_SCIENCE_P1, SET_BECE_MOCK_10_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-141';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -5362,6 +5363,37 @@ function MathLab({
                 subject: "Integrated Science",
                 status: "ready"
             });
+        } else if (mockNum === 10) {
+            await handleLaunchModule({
+                title: paperNum === 1 
+                    ? "BECE Integrated Science Mock 10 (Set 141 Objective)" 
+                    : "BECE Integrated Science Mock 10 (Set 141 Practical & Theory)",
+                domain: paperNum === 1 ? "COMPREHENSIVE MOCK CURRICULUM" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                strandName: "STRAND 1 TO STRAND 5",
+                strandCode: "S1-S5",
+                subStrand: paperNum === 1 
+                    ? "Final Benchmark Standards Mock 10 Objective" 
+                    : "Final Benchmark Standards Mock 10 Practical & Theory",
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
+                description: paperNum === 1 
+                    ? "Standardized 40-question objective examination synthesizing NaCCA BECE science curriculum standards with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                    : "Standardized practical and theory essay examination featuring principle of moments, salt synthesis by neutralization, variegated leaf starch test, and 4-course crop rotation.",
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? "paper_mock_10" : "paper_mock_10_p2",
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: 141,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 5,
+                examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                subject: "Integrated Science",
+                status: "ready"
+            });
         }
     };
 
@@ -5394,7 +5426,9 @@ function MathLab({
                 // Robust fallback to bundled data
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                    if (cleanMockId === 'mock_9' || mod.setId?.includes('mock_9')) {
+                    if (cleanMockId === 'mock_10' || mod.setId?.includes('mock_10')) {
+                        pData = isP2 ? SET_BECE_MOCK_10_SCIENCE_P2 : SET_BECE_MOCK_10_SCIENCE_P1;
+                    } else if (cleanMockId === 'mock_9' || mod.setId?.includes('mock_9')) {
                         pData = isP2 ? SET_BECE_MOCK_9_SCIENCE_P2 : SET_BECE_MOCK_9_SCIENCE_P1;
                     } else if (cleanMockId === 'mock_8' || mod.setId?.includes('mock_8')) {
                         pData = isP2 ? SET_BECE_MOCK_8_SCIENCE_P2 : SET_BECE_MOCK_8_SCIENCE_P1;
@@ -5862,7 +5896,7 @@ function MathLab({
                                 <span>{isRefreshing ? "Refreshing..." : "Refresh Resources"}</span>
                             </Button>
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
-                                {viewMode === 'predictive_mocks' ? '9 Mock Suites' : `${filteredModules.length} ${viewMode === 'exam_series' ? 'Past Papers' : 'Topical Labs'}`}
+                                {viewMode === 'predictive_mocks' ? '10 Mock Suites' : `${filteredModules.length} ${viewMode === 'exam_series' ? 'Past Papers' : 'Topical Labs'}`}
                             </span>
                         </div>
                     </div>
@@ -5895,7 +5929,7 @@ function MathLab({
                                     )}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-                                    <span>Mock Examination Suite (Mock 1–9)</span>
+                                    <span>Mock Examination Suite (Mock 1–10)</span>
                                 </button>
                             </div>
                         </div>
@@ -6859,6 +6893,99 @@ function MathLab({
                                     </div>
                                 </div>
                             </div>
+
+                            {/* MOCK 10 CARD */}
+                            <div className="group relative rounded-3xl p-6 sm:p-7 border border-indigo-500/30 bg-gradient-to-b from-slate-900/90 via-slate-900/50 to-slate-950/90 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-indigo-400/50 hover:shadow-indigo-500/10">
+                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                                <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
+                                                MOCK 10 • SET 141
+                                            </Badge>
+                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                                Live & Calibrated
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
+                                                BECE Integrated Science Mock 10 (Final Benchmark Examination Suite)
+                                            </h3>
+                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                Definitive capstone national examination assessing principle of moments, common salt preparation, variegated leaf photosynthesis, and 4-course crop rotation.
+                                            </p>
+                                        </div>
+
+                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            {/* Paper 1 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
+                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
+                                                        40 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400 leading-snug">
+                                                    40 Multiple Choice CBT • 45 mins • Balanced (10 A, 10 B, 10 C, 10 D).
+                                                </p>
+                                            </div>
+
+                                            {/* Paper 2 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-indigo-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-indigo-400 flex items-center gap-1.5">
+                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Practical & Theory
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">
+                                                        100 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400 leading-snug">
+                                                    Sec A Practical (4 SVGs) + Sec B Theory • 105 mins • 5 Questions.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Launchers */}
+                                    <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                                        <Button
+                                            onClick={() => handleLaunchMockPaper(10, 1)}
+                                            className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold text-sm py-5 rounded-2xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
+                                        >
+                                            <Sparkles className="w-4 h-4" />
+                                            <span>Start Unified Mock 10 (Paper 1 → Paper 2)</span>
+                                            <ArrowRight className="w-4 h-4 ml-1" />
+                                        </Button>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(10, 1)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Paper 1 (CBT)
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(10, 2)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Paper 2 (Essay)
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
 
                         </div>
