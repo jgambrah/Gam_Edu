@@ -22,7 +22,7 @@ async function getDb() {
       if (cfg?.tokens?.access_token) {
         const oauthClient = new OAuth2Client();
         oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
       }
     }
   } catch (e) {
@@ -38,6 +38,7 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
+  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
@@ -45,12 +46,18 @@ interface QuestionItem {
   points: number;
 }
 
+// Verified Authentic Reading Comprehension Passages for BECE 2000
+const passage1Text = "### 📖 PASSAGE I\n\nMr. Kobi, the next speaker, said that although he had left the school many years ago, he still remembered with thanks all that the headmaster had done to make sure that his pupils were all prepared for life. He was sorry that the headmaster had decided to retire at so early an age. This would deprive the pupils of his assistance long before it was necessary to do so. However, he wished the headmaster the best of luck in his retirement and offered him a silver tray as a sign of the high esteem in which his old pupils held him.\n\nAfter the tray had been handed over, the retiring headmaster came forward to make his speech of thanks. He began by giving a brief summary of the time he had spent as headmaster of the school. He added that it had always been his aim to do his best for the pupils under his charge. He expressed his gratitude to the masters who had been on his staff for their hard work and sacrifice. Finally, he said how glad he was that he was being succeeded as headmaster by Mr. Smith, who had been teaching in the school for many years. He believed that Mr. Smith was generally admired and respected by all who knew him. He asked all his old pupils to take an interest in the school after he had gone, and promised that he would certainly do so himself.";
+
+const passage2Text = "### 📖 PASSAGE II\n\nTelevision is an attractive medium of communication because it is available in the home and provides entertainment after a day's work. Unlike radio, it appeals to both the eye and the ear, bringing distant people and events directly into our living rooms. Even those with little or no formal education find it fascinating and easy to follow.\n\nHowever, television is also an exclusive medium that tends to occupy all our attention. It poses more serious problems for children. It robs children of the time they must use to learn other things, do their homework, or engage in active play. Furthermore, children watch far more adult programmes than children's programmes, exposing them prematurely to the complex realities, conflicts, and temptations of the adult world. At an impressionable age, this constant exposure raises serious questions about the healthy development and intellectual discipline of the young.";
+
 // 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2000
 const rawQuestions = [
   // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
   {
     number: 1,
-    prompt: "According to Passage I, why did Mr. Kobi express regret regarding the headmaster's decision to retire?",
+    passage: passage1Text,
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did Mr. Kobi express regret regarding the headmaster's decision to retire?`,
     options: [
       "The headmaster was required to step down by law",
       "His departure would prematurely deprive the pupils of his valuable mentorship",
@@ -64,7 +71,8 @@ const rawQuestions = [
   },
   {
     number: 2,
-    prompt: "Which of the following statements is NOT true concerning the retiring headmaster in Passage I?",
+    passage: passage1Text,
+    prompt: `${passage1Text}\n\n---\nWhich of the following statements is NOT true concerning the retiring headmaster in Passage I?`,
     options: [
       "He was disliked and rejected by the school community",
       "He had dedicated long years of hard work to the school",
@@ -78,7 +86,8 @@ const rawQuestions = [
   },
   {
     number: 3,
-    prompt: "In Passage I, the word 'brief' in 'giving a brief summary' means ............",
+    passage: passage1Text,
+    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'brief' in 'giving a brief summary' means ............`,
     options: ["necessary", "good", "factual", "short"],
     correctAnswer: "short",
     hint: "Lasting only a short time or using few words.",
@@ -87,7 +96,8 @@ const rawQuestions = [
   },
   {
     number: 4,
-    prompt: "According to Passage I, what was the general opinion of the school community regarding Mr. Smith, the incoming headmaster?",
+    passage: passage1Text,
+    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what was the general opinion of the school community regarding Mr. Smith, the incoming headmaster?`,
     options: [
       "He was admired and respected by everyone who knew him",
       "He was favored solely by the retiring headmaster",
@@ -101,7 +111,8 @@ const rawQuestions = [
   },
   {
     number: 5,
-    prompt: "At the conclusion of his farewell address in Passage I, what commitment did the retiring headmaster make?",
+    passage: passage1Text,
+    prompt: `${passage1Text}\n\n---\nAt the conclusion of his farewell address in Passage I, what commitment did the retiring headmaster make?`,
     options: [
       "He would continue praising his former teachers",
       "He would continue teaching part-time in the school",
@@ -115,7 +126,8 @@ const rawQuestions = [
   },
   {
     number: 6,
-    prompt: "According to Passage II, why is television viewing so attractive to adults after a day's work?",
+    passage: passage2Text,
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why is television viewing so attractive to adults after a day's work?`,
     options: [
       "It is an exquisite piece of household furniture",
       "It effortlessly resolves complex personal challenges",
@@ -129,7 +141,8 @@ const rawQuestions = [
   },
   {
     number: 7,
-    prompt: "In Passage II, what caution does the writer give concerning children's television habits?",
+    passage: passage2Text,
+    prompt: `${passage2Text}\n\n---\nIn Passage II, what caution does the writer give concerning children's television habits?`,
     options: [
       "Children should watch television exclusively in the dark",
       "Children should avoid television entirely throughout childhood",
@@ -143,7 +156,8 @@ const rawQuestions = [
   },
   {
     number: 8,
-    prompt: "In Passage II, the word 'poses' in 'poses more serious problems' means ............",
+    passage: passage2Text,
+    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'poses' in 'poses more serious problems' means ............`,
     options: ["solves", "increases", "presents", "determines"],
     correctAnswer: "presents",
     hint: "To present, constitute, or create a problem or danger.",
@@ -152,7 +166,8 @@ const rawQuestions = [
   },
   {
     number: 9,
-    prompt: "According to Passage II, which of the following assertions about television is NOT true?",
+    passage: passage2Text,
+    prompt: `${passage2Text}\n\n---\nAccording to Passage II, which of the following assertions about television is NOT true?`,
     options: [
       "It serves as a popular source of relaxation",
       "It exposes viewers to diverse cultures and distant places",
@@ -166,7 +181,8 @@ const rawQuestions = [
   },
   {
     number: 10,
-    prompt: "What is the writer's overall attitude toward the influence of television on young people in Passage II?",
+    passage: passage2Text,
+    prompt: `${passage2Text}\n\n---\nWhat is the writer's overall attitude toward the influence of television on young people in Passage II?`,
     options: [
       "He despises all forms of television entertainment",
       "He is deeply concerned about its negative effects on children's study time",
@@ -521,6 +537,7 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   return {
     number: q.number,
     prompt: q.prompt,
+    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
@@ -682,6 +699,20 @@ async function verifyAndSeedBeceEnglish2000() {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Retiring Headmaster's Farewell",
+          text: passage1Text,
+          questionRange: [1, 5]
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Influence of Television",
+          text: passage2Text,
+          questionRange: [6, 10]
+        }
+      ],
       questions: balancedPaper1
     },
     paper2: {
