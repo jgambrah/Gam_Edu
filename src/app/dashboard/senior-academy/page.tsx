@@ -1561,7 +1561,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.3",
         subStrand: "2024 BECE English Language Objective Assessment",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "40 Questions • 45 mins • Digitization In Prep",
+        meta: "40 Questions • 45 mins • Standardized CBT",
         description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
         difficulty: "Advanced",
         kind: "exam_series",
@@ -1573,9 +1573,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 2,
         era: "modern",
         questionCount: 40,
-        examTag: "40 Objective Questions • In Prep",
+        examTag: "40 Objective Questions • Balanced Key Distribution",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2024 BECE English Language Paper 2 (Essay & Literature)",
@@ -1584,7 +1584,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         strandCode: "B7-B9.4",
         subStrand: "2024 BECE Written Essay, Comprehension & Literature",
         gradeTier: "Junior Secondary (JHS)",
-        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
         description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
         difficulty: "Advanced",
         kind: "exam_series",
@@ -1596,9 +1596,9 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         setNumber: 2,
         era: "modern",
         questionCount: 3,
-        examTag: "Essay & Literature • In Prep",
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
         subject: "English Language",
-        status: "pending_content"
+        status: "ready"
     },
     {
         title: "2023 BECE English Language Paper 1 (Objective)",
@@ -6243,6 +6243,8 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         onProceedToPaper2={() => {
                             if (activeQuestionSet?.id === 'bece_2025_p1' || activeQuestionSet?.id === 'bece_2025') {
                                 handleLaunchModule({ setId: 'bece_2025_p2', title: 'BECE English Language 2025 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'bece_2024_p1' || activeQuestionSet?.id === 'bece_2024') {
+                                handleLaunchModule({ setId: 'bece_2024_p2', title: 'BECE English Language 2024 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
                             } else if (activeQuestionSet?.id === 'paper_mock_1' || activeQuestionSet?.id === 'mock_1' || activeQuestionSet?.title?.toLowerCase().includes('mock 1')) {
                                 handleLaunchMockPaper(1, 2);
                             } else if (activeQuestionSet?.id === 'paper_mock_2' || activeQuestionSet?.id === 'mock_2' || activeQuestionSet?.title?.toLowerCase().includes('mock 2')) {
