@@ -39,6 +39,14 @@ import { SET_BECE_MOCK_11_SCIENCE_P1, SET_BECE_MOCK_11_SCIENCE_P2 } from '@/lib/
 import { SET_BECE_MOCK_1_ENGLISH_P1, SET_BECE_MOCK_1_ENGLISH_P2 } from '@/lib/data/bece-english-mock-1';
 import { SET_BECE_MOCK_2_ENGLISH_P1, SET_BECE_MOCK_2_ENGLISH_P2 } from '@/lib/data/bece-english-mock-2';
 import { SET_BECE_MOCK_3_ENGLISH_P1, SET_BECE_MOCK_3_ENGLISH_P2 } from '@/lib/data/bece-english-mock-3';
+import { SET_BECE_MOCK_4_ENGLISH_P1, SET_BECE_MOCK_4_ENGLISH_P2 } from '@/lib/data/bece-english-mock-4';
+import { SET_BECE_MOCK_5_ENGLISH_P1, SET_BECE_MOCK_5_ENGLISH_P2 } from '@/lib/data/bece-english-mock-5';
+import { SET_BECE_MOCK_6_ENGLISH_P1, SET_BECE_MOCK_6_ENGLISH_P2 } from '@/lib/data/bece-english-mock-6';
+import { SET_BECE_MOCK_7_ENGLISH_P1, SET_BECE_MOCK_7_ENGLISH_P2 } from '@/lib/data/bece-english-mock-7';
+import { SET_BECE_MOCK_8_ENGLISH_P1, SET_BECE_MOCK_8_ENGLISH_P2 } from '@/lib/data/bece-english-mock-8';
+import { SET_BECE_MOCK_9_ENGLISH_P1, SET_BECE_MOCK_9_ENGLISH_P2 } from '@/lib/data/bece-english-mock-9';
+import { SET_BECE_MOCK_10_ENGLISH_P1, SET_BECE_MOCK_10_ENGLISH_P2 } from '@/lib/data/bece-english-mock-10';
+import { SET_BECE_MOCK_11_ENGLISH_P1, SET_BECE_MOCK_11_ENGLISH_P2 } from '@/lib/data/bece-english-mock-11';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -6997,6 +7005,70 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
         description: "Standardized national mock examination: Inverted conditionals, subjunctive unreal mood, proximity concord, clinical medicine cloze register, oral dental fricatives and intonation, sacred groves and totemic wildlife conservation comprehension, and The Cockcrow literature suite.",
         paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
         paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 4,
+        setNum: 4,
+        title: "BECE English Language National Mock Examination 4",
+        description: "Standardized national mock examination: Past perfect progressive, correlative time inversion (barely... when), cumulative adjective ordering, causative verbs, aviation and air travel cloze register, oral phonology, plastic pollution crisis comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 5,
+        setNum: 5,
+        title: "BECE English Language National Mock Examination 5",
+        description: "Comprehensive national mock simulation: Inverted third conditional, mandative subjunctive, relative pronoun with fronted preposition, collective noun concord, banking & finance cloze register, oral phonology, cassava agro-security comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 6,
+        setNum: 6,
+        title: "BECE English Language National Mock Examination 6",
+        description: "Comprehensive national mock simulation: Conditional counterfactuals (but for), modal bare infinitives (dare not), fronted degree inversion (so ferocious...), partitive collocations (pane of glass), forestry and ecology cloze register, oral phonology (affricates, diphthongs, clusters, silent letters, fall-rise intonation), holistic education comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 7,
+        setNum: 7,
+        title: "BECE English Language National Mock Examination 7",
+        description: "Standardized national mock simulation: Inverted third conditional, mandative subjunctive, compound noun plural possessive (commanders-in-chief's), Latin comparatives (superior to), maritime & fisheries cloze register, oral phonology (velar plosives, long front vowels, clusters, silent letters, alternative question intonation), mass tourism double-edged sword comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 8,
+        setNum: 8,
+        title: "BECE English Language National Mock Examination 8",
+        description: "Comprehensive national mock simulation: Past unfulfilled moral obligation (ought to have attended), fronted concessive adjective (tired as they were...), relative adverb of time (when), compound noun plural possessive (attorneys-general's), passive causative (had his vehicle serviced), renewable energy cloze register, oral phonology (affricate /dʒ/ in village & soldier, long /uː/ in tomb & fool, cluster /ksts/ in texts & desks, silent 'w' in sword, confirmation question tag falling intonation), global e-waste crisis comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 9,
+        setNum: 9,
+        title: "BECE English Language National Mock Examination 9",
+        description: "Comprehensive national mock simulation: Past counterfactual preference (would rather you had informed), reciprocal pronouns (each other vs. one another), mandative subjunctive (recommended that it be dissolved), semi-modal need not, sensory verb passive to-infinitive, passive gerund, fronted negative inversion (at no time did...), publishing and printing cloze register, oral phonology (dental fricatives /ð/, centering diphthong /eə/, cluster /pts/, silent 'c' in indict, echo question rising intonation), clean energy minerals paradox comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 10,
+        setNum: 10,
+        title: "BECE English Language National Mock Examination 10 (Capstone Examination)",
+        description: "Grand capstone national mock simulation: Inverted third conditional (had it not been for...), mandative subjunctive (demanded that it be published), objective relative pronoun (whom), compound noun plural possessive (secretaries-general's), semi-modal need not, sensory verb passive (was seen to discard), software engineering and cybersecurity cloze register, oral phonology (post-alveolar fricative /ʒ/ in vision & measure, closing diphthong /eɪ/ in straight & freight, cluster /ksts/, silent 'k' in knack, open polar question rising intonation), galamsey cocoa crisis comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    },
+    {
+        mockNum: 11,
+        setNum: 11,
+        title: "BECE English Language National Mock Examination 11",
+        description: "Advanced national mock simulation: Past counterfactual wish (wishes she had listened), fronted correlative negative adverbial inversion (not only did the artisan craft...), dependent prepositions (blamed for, acquitted of), partitive collective noun (ream of paper), compound noun plural possessive (brothers-in-law's), semi-modal need not, comparative verb prefer to, proximity concord with neither...nor, passive causative (had vehicle overhauled), catenative gerund (admitted misplacing), restrictive time inversion (only when... did the invigilators collect), double possessive (companion of his), semi-negative tag question, cumulative adjective order, telecommunications and network engineering cloze register (bandwidth, latency, fiber-optic, routers, packet), oral phonology (dental fricatives /θ/, closing diphthong /aʊ/ in plough & bough, cluster /sks/, silent 'b' in subtle, Wh-question falling intonation), acute water shortage composition, urban noise pollution comprehension, and The Cockcrow literature suite.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
     }
 ];
 
@@ -7089,6 +7161,254 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                     paperType: paperNum,
                     year: 2026,
                     setNumber: 3,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 4) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 4 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 4 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, AVIATION CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 4 Objective Examination (40 Questions)" 
+                        : "National Mock 4 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Aviation and Air Travel Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Cyber-Fraud, Impact of AI in JHS Education Article, Moral Story), Plastic Pollution Ecological Crisis Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_4" : "mock_4_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 4,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 5) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 5 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 5 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, BANKING CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 5 Objective Examination (40 Questions)" 
+                        : "National Mock 5 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Banking and Financial Operations Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Community Sanitation, Screen Time and Mental Health Article, Moral Story), Cassava Food Security Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_5" : "mock_5_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 5,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 6) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 6 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 6 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, FORESTRY CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 6 Objective Examination (40 Questions)" 
+                        : "National Mock 6 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Forestry and Environmental Science Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Sports Infrastructure, Marine Plastic Pollution Article, Moral Story), Holistic Education Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_6" : "mock_6_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 6,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 7) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 7 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 7 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, MARITIME CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 7 Objective Examination (40 Questions)" 
+                        : "National Mock 7 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Maritime and Fisheries Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Unregulated Billboards, Mental Health Education Article, Moral Story), Mass Tourism Double-Edged Sword Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_7" : "mock_7_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 7,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 8) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 8 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 8 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, ENERGY CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 8 Objective Examination (40 Questions)" 
+                        : "National Mock 8 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Renewable Energy Infrastructure Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Fall Armyworm Invasion, Road Safety & Carnage Article, Moral Story), Global Electronic Waste (E-Waste) Crisis Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_8" : "mock_8_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 8,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 9) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 9 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 9 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, PUBLISHING CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 9 Objective Examination (40 Questions)" 
+                        : "National Mock 9 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Book Publishing and Printing Technology Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Dilapidated Public Library, Unregulated Sand-Winning Article, Moral Story), Clean Energy Battery Minerals Paradox Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_9" : "mock_9_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 9,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 10) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 10 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 10 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, IT CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 10 Capstone Objective Examination (40 Questions)" 
+                        : "National Mock 10 Capstone Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Comprehensive 40-question capstone objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Software Engineering & Cloud Infrastructure Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Unauthorized Speed Ramps, Substance Abuse Article, Moral Story), Galamsey & Cocoa Sector Crisis Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_10" : "mock_10_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 10,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            } else if (mockNum === 11) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 11 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 11 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, TELECOM CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 11 Objective Examination (40 Questions)" 
+                        : "National Mock 11 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Comprehensive 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Telecommunications & Network Engineering Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter on Water Shortage, Cyber-Bullying Article, Proverbial Moral Story), Urban Noise Pollution & Public Health Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_11" : "mock_11_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 11,
                     era: "modern",
                     isMock: true,
                     questionCount: paperNum === 1 ? 40 : 9,
@@ -7487,11 +7807,19 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                     if (isEnglishMock) {
+                        const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
+                        const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
+                        const isMock9 = mod.setId?.includes('mock_9') || mod.title?.toLowerCase().includes('mock 9');
+                        const isMock8 = mod.setId?.includes('mock_8') || mod.title?.toLowerCase().includes('mock 8');
+                        const isMock7 = mod.setId?.includes('mock_7') || mod.title?.toLowerCase().includes('mock 7');
+                        const isMock6 = mod.setId?.includes('mock_6') || mod.title?.toLowerCase().includes('mock 6');
+                        const isMock5 = mod.setId?.includes('mock_5') || mod.title?.toLowerCase().includes('mock 5');
+                        const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
                         const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
                         const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
                         pData = isP2 
-                            ? (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P2 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P2)) 
-                            : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P1 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P1 : SET_BECE_MOCK_1_ENGLISH_P1));
+                            ? (isMock11 ? SET_BECE_MOCK_11_ENGLISH_P2 : (isMock10 ? SET_BECE_MOCK_10_ENGLISH_P2 : (isMock9 ? SET_BECE_MOCK_9_ENGLISH_P2 : (isMock8 ? SET_BECE_MOCK_8_ENGLISH_P2 : (isMock7 ? SET_BECE_MOCK_7_ENGLISH_P2 : (isMock6 ? SET_BECE_MOCK_6_ENGLISH_P2 : (isMock5 ? SET_BECE_MOCK_5_ENGLISH_P2 : (isMock4 ? SET_BECE_MOCK_4_ENGLISH_P2 : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P2 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P2)))))))))) 
+                            : (isMock11 ? SET_BECE_MOCK_11_ENGLISH_P1 : (isMock10 ? SET_BECE_MOCK_10_ENGLISH_P1 : (isMock9 ? SET_BECE_MOCK_9_ENGLISH_P1 : (isMock8 ? SET_BECE_MOCK_8_ENGLISH_P1 : (isMock7 ? SET_BECE_MOCK_7_ENGLISH_P1 : (isMock6 ? SET_BECE_MOCK_6_ENGLISH_P1 : (isMock5 ? SET_BECE_MOCK_5_ENGLISH_P1 : (isMock4 ? SET_BECE_MOCK_4_ENGLISH_P1 : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P1 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P1 : SET_BECE_MOCK_1_ENGLISH_P1))))))))));
                     } else {
                         if (cleanMockId === 'mock_11' || mod.setId?.includes('mock_11')) {
                             pData = isP2 ? SET_BECE_MOCK_11_SCIENCE_P2 : SET_BECE_MOCK_11_SCIENCE_P1;
@@ -7543,14 +7871,22 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                 console.error('[senior-academy] Error activating mock exam:', mockErr);
                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                 if (isEnglishMock) {
+                    const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
+                    const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
+                    const isMock9 = mod.setId?.includes('mock_9') || mod.title?.toLowerCase().includes('mock 9');
+                    const isMock8 = mod.setId?.includes('mock_8') || mod.title?.toLowerCase().includes('mock 8');
+                    const isMock7 = mod.setId?.includes('mock_7') || mod.title?.toLowerCase().includes('mock 7');
+                    const isMock6 = mod.setId?.includes('mock_6') || mod.title?.toLowerCase().includes('mock 6');
+                    const isMock5 = mod.setId?.includes('mock_5') || mod.title?.toLowerCase().includes('mock 5');
+                    const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
                     const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
                     const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
                     const fallbackData = isP2 
-                        ? (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P2 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P2)) 
-                        : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P1 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P1 : SET_BECE_MOCK_1_ENGLISH_P1));
+                        ? (isMock11 ? SET_BECE_MOCK_11_ENGLISH_P2 : (isMock10 ? SET_BECE_MOCK_10_ENGLISH_P2 : (isMock9 ? SET_BECE_MOCK_9_ENGLISH_P2 : (isMock8 ? SET_BECE_MOCK_8_ENGLISH_P2 : (isMock7 ? SET_BECE_MOCK_7_ENGLISH_P2 : (isMock6 ? SET_BECE_MOCK_6_ENGLISH_P2 : (isMock5 ? SET_BECE_MOCK_5_ENGLISH_P2 : (isMock4 ? SET_BECE_MOCK_4_ENGLISH_P2 : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P2 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P2)))))))))) 
+                        : (isMock11 ? SET_BECE_MOCK_11_ENGLISH_P1 : (isMock10 ? SET_BECE_MOCK_10_ENGLISH_P1 : (isMock9 ? SET_BECE_MOCK_9_ENGLISH_P1 : (isMock8 ? SET_BECE_MOCK_8_ENGLISH_P1 : (isMock7 ? SET_BECE_MOCK_7_ENGLISH_P1 : (isMock6 ? SET_BECE_MOCK_6_ENGLISH_P1 : (isMock5 ? SET_BECE_MOCK_5_ENGLISH_P1 : (isMock4 ? SET_BECE_MOCK_4_ENGLISH_P1 : (isMock3 ? SET_BECE_MOCK_3_ENGLISH_P1 : (isMock2 ? SET_BECE_MOCK_2_ENGLISH_P1 : SET_BECE_MOCK_1_ENGLISH_P1))))))))));
                     setActiveQuestionSet({
                         ...fallbackData,
-                        id: mod.setId || (isP2 ? (isMock3 ? 'mock_3_p2' : (isMock2 ? 'mock_2_p2' : 'mock_1_p2')) : (isMock3 ? 'mock_3' : (isMock2 ? 'mock_2' : 'mock_1'))),
+                        id: mod.setId || (isP2 ? (isMock11 ? 'mock_11_p2' : (isMock10 ? 'mock_10_p2' : (isMock9 ? 'mock_9_p2' : (isMock8 ? 'mock_8_p2' : (isMock7 ? 'mock_7_p2' : (isMock6 ? 'mock_6_p2' : (isMock5 ? 'mock_5_p2' : (isMock4 ? 'mock_4_p2' : (isMock3 ? 'mock_3_p2' : (isMock2 ? 'mock_2_p2' : 'mock_1_p2')))))))))) : (isMock11 ? 'mock_11' : (isMock10 ? 'mock_10' : (isMock9 ? 'mock_9' : (isMock8 ? 'mock_8' : (isMock7 ? 'mock_7' : (isMock6 ? 'mock_6' : (isMock5 ? 'mock_5' : (isMock4 ? 'mock_4' : (isMock3 ? 'mock_3' : (isMock2 ? 'mock_2' : 'mock_1'))))))))))),
                         tier: 'Junior Secondary (JHS)',
                         subject: 'English Language',
                         paperType: isP2 ? 2 : 1,
@@ -8101,7 +8437,7 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                                     )}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-                                    <span>{subject === 'english' ? 'English Mock Suite (Mock 1–3)' : 'Mock Examination Suite (Mock 1–11)'}</span>
+                                    <span>{subject === 'english' ? 'English Mock Suite (Mock 1–11)' : 'Mock Examination Suite (Mock 1–11)'}</span>
                                 </button>
                             </div>
                         </div>
