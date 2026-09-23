@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,387 +45,324 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 30)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "May I borrow your ............ hat for the festival?",
-    options: ["blue new straw", "new blue straw", "new straw blue", "straw new blue"],
+    prompt: "May I borrow your ............ hat for the sunny garden excursion?",
+    options: [
+      "blue new straw",
+      "new blue straw",
+      "new straw blue",
+      "straw new blue"
+    ],
     correctAnswer: "new blue straw",
-    hint: "Royal Order of Adjectives: Age ('new') comes before Color ('blue'), which precedes Material ('straw').",
-    workedSolution: "Adjectives modifying a noun follow the natural order: Age ('new') + Color ('blue') + Material ('straw').",
+    hint: "Cumulative adjective ordering: Age/Condition ('new') precedes Color ('blue') which precedes Material ('straw') before the head noun.",
+    workedSolution: "Standard English cumulative adjective order places age ('new') before color ('blue') followed by material origin ('straw'): 'new blue straw hat'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "The treasurer will not give us ........... financial assistance this term.",
+    prompt: "The accountant has strictly informed us that she will not disburse ............ more allowances this week.",
     options: ["any", "even", "much", "little"],
     correctAnswer: "any",
-    hint: "Use 'any' with negative clauses ('will not give') when referring to an unstated quantity.",
-    workedSolution: "In negative clauses containing 'not', the non-assertive quantifier 'any' is used ('will not give us any more money').",
+    hint: "Following the negative particle 'not', standard English requires the non-assertive quantifier 'any'.",
+    workedSolution: "In negative clauses containing 'not', the non-assertive determiner 'any' is required: 'will not give us any more money'.",
     points: 1
   },
   {
     number: 3,
-    prompt: "You would be exhausted if you ..... to rest after the long march.",
+    prompt: "You would be ravenously hungry during the journey if you ............ to take your breakfast.",
     options: ["are refusing", "refuse", "refused", "were refusing"],
     correctAnswer: "refused",
-    hint: "Conditional Type 2: 'would be' in the main clause requires a simple past verb in the if-clause.",
-    workedSolution: "A hypothetical Second Conditional sentence uses 'would + base verb' in the result clause and the simple past tense ('refused') in the conditional clause.",
+    hint: "Second Conditional: 'would be' in the main clause requires a simple past indicative/subjunctive verb in the if-clause.",
+    workedSolution: "In a Second Conditional sentence expressing a hypothetical condition ('would be hungry'), the if-clause takes the simple past tense: 'refused'.",
     points: 1
   },
   {
     number: 4,
-    prompt: "The prefects have completed the assembly roster, .... they?",
+    prompt: "You have verified the examination index numbers on the roster, ............ you?",
     options: ["did", "didn't", "had", "haven't"],
     correctAnswer: "haven't",
-    hint: "An affirmative present perfect statement takes a negative tag using the same auxiliary verb.",
-    workedSolution: "The main clause has a positive auxiliary verb ('have'). The corresponding tag must be negative: 'haven't they?'.",
+    hint: "An affirmative present perfect statement with auxiliary 'have' takes the contracted negative tag 'haven't you?'.",
+    workedSolution: "The auxiliary verb in the main clause is affirmative present perfect 'have'. The matching question tag must be negative: 'haven't you?'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "The farmers travel to the regional market ......... train.",
+    prompt: "To avoid the congested city road traffic, Habib travels to the academy ............ train.",
     options: ["by", "in", "on", "with"],
     correctAnswer: "by",
-    hint: "General modes of transport (train, bus, air, sea) take the preposition 'by' without an article.",
-    workedSolution: "When describing standard means of transport, English uses 'by + noun' without determiners ('by train', 'by bus', 'by air').",
+    hint: "General modes of transport (train, sea, air, bus) take the preposition 'by' without an article.",
+    workedSolution: "When describing standard public transportation modes without determiners, standard English uses 'by': 'by train'.",
     points: 1
   },
   {
     number: 6,
-    prompt: "Korkor does not like ........ official reports during the weekend.",
+    prompt: "Aba prefers telephone calls because she does not enjoy ............ long letters.",
     options: ["to be writing", "to write", "write", "writing"],
     correctAnswer: "writing",
-    hint: "Verbs expressing general preference (like, dislike, enjoy) commonly take a gerund complement.",
-    workedSolution: "The verb 'like' when expressing a general habitual preference takes a gerund ('writing').",
+    hint: "The catenative verb 'like/enjoy' takes a gerund complement (verb-ing) when expressing general habitual dislike.",
+    workedSolution: "Following verbs expressing general habitual preference ('does not like/enjoy'), the gerund complement 'writing' is standard: 'writing letters'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "You will fall sick if you ....... unwashed fruits from the market.",
+    prompt: "You will suffer severe food poisoning if you ............ uncooked pork.",
     options: ["ate", "eat", "had eaten", "have eaten"],
     correctAnswer: "eat",
-    hint: "Conditional Type 1: A future main clause ('will fall') requires a simple present verb in the if-clause.",
-    workedSolution: "In a First Conditional sentence expressing a real future possibility, the condition clause uses the simple present tense ('eat').",
+    hint: "First Conditional: Future predictive 'will + verb' in the main clause requires a simple present verb in the if-clause.",
+    workedSolution: "In a First Conditional predictive sentence ('You will be ill...'), the conditional if-clause takes the simple present tense: 'eat'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "The distribution of sports equipment was conducted according .......... the headmaster's guidelines.",
+    prompt: "The judicial proceedings were conducted strictly according ............ the statutory regulations.",
     options: ["by", "of", "to", "with"],
     correctAnswer: "to",
-    hint: "Identify the standard preposition that forms the complex preposition 'according ...'.",
-    workedSolution: "The complex preposition is always 'according to' (meaning in conformity with or as stated by).",
+    hint: "Identify the preposition that regularly collocates with the prepositional phrase 'according'.",
+    workedSolution: "In standard English, the fixed prepositional phrase is 'according to': 'according to the rules'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "............... the heavy downpour, the match officials started the game on schedule.",
+    prompt: "............ the formidable economic obstacles, our cooperative enterprise succeeded.",
     options: ["As such", "However", "In spite of", "Nevertheless"],
     correctAnswer: "In spite of",
-    hint: "Which prepositional phrase expresses concession and takes a noun phrase object ('the heavy downpour')?",
-    workedSolution: "'In spite of' is a prepositional phrase of concession followed directly by a noun phrase. 'However' and 'nevertheless' are conjunctive adverbs.",
+    hint: "Prepositional phrase of concession followed directly by a noun phrase complement ('the challenges').",
+    workedSolution: "The concessive prepositional phrase governing a noun phrase is 'In spite of' (meaning notwithstanding the challenges). 'However' and 'Nevertheless' are adverbs.",
     points: 1
   },
   {
     number: 10,
-    prompt: "The assemblyman, together with his wife and children, ........... travelling to Tamale next weekend.",
+    prompt: "My elder brother, together with his wife and children, ............ traveling to Salaga next weekend.",
     options: ["are", "is", "was", "were"],
     correctAnswer: "is",
-    hint: "Parenthetical phrases like 'together with...' do not change the number of the singular subject ('The assemblyman').",
-    workedSolution: "When a singular subject ('The assemblyman') is followed by a parenthetical phrase ('together with his wife and children'), the verb remains singular ('is').",
+    hint: "Parenthetical additions introduced by 'together with / with' do not pluralize the singular subject 'My brother'.",
+    workedSolution: "Parenthetical phrases ('with his wife and children') do not alter the grammatical number of the subject. The singular head 'My brother' takes the singular present auxiliary 'is'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "It is high time the committee ...... a final decision on the petition.",
-    options: ["are taking", "shall take", "take", "took"],
-    correctAnswer: "took",
-    hint: "The subjunctive phrase 'It is high time + subject' takes a simple past verb.",
-    workedSolution: "The fixed structure 'It is high time + subject' requires a simple past subjunctive verb ('took') to express an overdue action.",
+    prompt: "The sun is already rising; it is high time we ............ our cross-country trek.",
+    options: ["are starting", "shall start", "start", "started"],
+    correctAnswer: "started",
+    hint: "Subjunctive past simple: 'It is high time + subject' takes a simple past verb form.",
+    workedSolution: "Following the subjunctive formula 'It is high time' followed by a subject, standard grammar requires the simple past tense: 'started'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "Most rural farmers prefer cassava ........... plantain because it withstands drought.",
+    prompt: "Our grandmother always prefers juicy sweet oranges ............ bitter grapefruits.",
     options: ["on", "than", "to", "for"],
     correctAnswer: "to",
     hint: "The comparative verb 'prefer' takes the preposition 'to', never 'than'.",
-    workedSolution: "The verb 'prefer' takes 'to' when comparing two choices ('prefer cassava to plantain'). Using 'than' with prefer is an error.",
+    workedSolution: "In standard English grammar, the verb 'prefer' takes the preposition 'to': 'prefer oranges to mangoes'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The nurse ....... treated my injured ankle lives in the next compound.",
+    prompt: "His paternal aunt ............ addressed our class assembly resides in Tamale.",
     options: ["that", "which", "who", "whom"],
     correctAnswer: "who",
-    hint: "Use the subjective relative pronoun referring to a person performing an action.",
-    workedSolution: "'Who' functions as the subject relative pronoun referring to a human antecedent ('The nurse').",
+    hint: "Subjective relative pronoun referring to human beings functioning as the grammatical subject of 'spoke'.",
+    workedSolution: "When referring to a human person in the subject position of a relative clause ('spoke to us'), 'who' is standard: 'aunt who spoke to us'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The hungry child could not resist ....... the pot of groundnut soup.",
+    prompt: "Because the aroma was so savory, Araba could not resist ............ the cooking pot on the stove.",
     options: ["by opening", "open", "to open", "opening"],
     correctAnswer: "opening",
-    hint: "The idiom 'cannot resist' is followed by a gerund (verb-ing).",
-    workedSolution: "The expression 'could not resist' is an idiomatic verb pattern that requires a gerund complement ('opening').",
+    hint: "The catenative verb 'resist' requires a gerund complement (verb-ing).",
+    workedSolution: "In standard English syntax, the verb 'resist' takes a gerund complement: 'resist opening'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Our neighbour, ............ pedigree dog barks every night, has traveled abroad.",
+    prompt: "My eccentric neighbor, ............ hound barks furiously every midnight, has relocated to another town.",
     options: ["which", "who", "who's", "whose"],
     correctAnswer: "whose",
-    hint: "Identify the possessive relative pronoun indicating ownership of the dog.",
-    workedSolution: "'Whose' is the possessive relative pronoun modifying 'pedigree dog'. 'Who's' is a contraction for 'who is' or 'who has'.",
+    hint: "Possessive relative pronoun showing ownership of the dog ('dog barks').",
+    workedSolution: "The possessive relative pronoun modifying a noun possessed by a person is 'whose': 'neighbour, whose dog barks'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "The selected drama pieces are very relatable to youth experiences.\nChoose the word nearest in meaning to the underlined word 'selected'.",
+    prompt: "The selected classical poems in the anthology are remarkably engaging.\nChoose the word nearest in meaning to 'selected'.",
     options: ["preferred", "chosen", "prescribed", "given"],
     correctAnswer: "chosen",
-    hint: "Picked out from a larger group based on suitability.",
-    workedSolution: "'Selected' means carefully picked out from a group; 'chosen' is its direct synonym.",
+    hint: "Picked out or selected from a larger group.",
+    workedSolution: "'Selected' means singled out from a number of alternatives; 'chosen' is its direct synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Deploying police patrols on highway corridors helped to halt armed robbery.\nChoose the word nearest in meaning to the underlined word 'halt'.",
+    prompt: "Merely increasing patrols does not halt the proliferation of cyber fraud.\nChoose the word nearest in meaning to 'halt'.",
     options: ["avoid", "prevent", "stop", "suspend"],
     correctAnswer: "stop",
-    hint: "To bring an ongoing activity to an end.",
-    workedSolution: "'Halt' means to bring to an abrupt standstill or termination; 'stop' is its direct equivalent.",
+    hint: "To bring or come to an abrupt standstill or end.",
+    workedSolution: "'Halt' means to bring to a stop or terminate an action; 'stop' is its exact equivalent.",
     points: 1
   },
   {
     number: 18,
-    prompt: "The headmistress warned that lax enforcement of dormitory rules would not be tolerated.\nChoose the word nearest in meaning to the underlined word 'lax'.",
+    prompt: "All the lax disciplinary guidelines in the dormitory have been repealed.\nChoose the word nearest in meaning to 'lax'.",
     options: ["mild", "previous", "weak", "wrong"],
     correctAnswer: "weak",
-    hint: "Not sufficiently strict, severe, or careful.",
-    workedSolution: "'Lax' means slack, careless, or lacking strictness; 'weak' is the nearest synonym in this context.",
+    hint: "Not sufficiently strict, severe, or careful; loose and deficient in firmness.",
+    workedSolution: "'Lax' in describing discipline or regulations means loose, careless, or 'weak'; 'weak' (or loose/mild) fits the context.",
     points: 1
   },
   {
     number: 19,
-    prompt: "Good citizenship should be guided by the fundamental principles of honesty.\nChoose the word nearest in meaning to the underlined word 'fundamental'.",
+    prompt: "Disciplined youth should be guided by the fundamental principles of civic integrity.\nChoose the word nearest in meaning to 'fundamental'.",
     options: ["essential", "known", "popular", "realistic"],
     correctAnswer: "essential",
-    hint: "Serving as an indispensable foundation, primary, or core.",
-    workedSolution: "'Fundamental' means forming an essential foundation or core requirement; its synonym is 'essential'.",
+    hint: "Forming a necessary base or core; of central importance.",
+    workedSolution: "'Fundamental' means serving as an original, primary, or core basis; 'essential' is its direct synonym.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The patient could no longer endure the excruciating toothache.\nChoose the word nearest in meaning to the underlined word 'endure'.",
+    prompt: "The patient porter could no longer endure the passenger's verbal insolence.\nChoose the word nearest in meaning to 'endure'.",
     options: ["accept", "agree", "approve", "bear"],
     correctAnswer: "bear",
-    hint: "To tolerate, withstand, or suffer through pain without yielding.",
-    workedSolution: "'Endure' means to undergo pain or hardship patiently; 'bear' is the direct synonym.",
+    hint: "To tolerate, put up with, or withstand suffering or insolence.",
+    workedSolution: "'Endure' in the context of enduring hardship or abuse means to tolerate or 'bear'; 'bear' is its exact equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "Abena burnt her fingers when she meddled in her friends' quarrel. This means that Abena ......",
-    options: ["got herself into trouble", "hated her friends", "showed how brave she was", "supported her friends"],
-    correctAnswer: "got herself into trouble",
-    hint: "Suffering an unpleasant consequence because of meddling in other people's affairs.",
-    workedSolution: "The idiom 'to burn one's fingers' means to suffer harmful consequences or get into trouble as a result of foolish or rash intervention.",
+    prompt: "Azara burned her fingers when she intervened in the bitter land dispute. This means that Azara ............",
+    options: [
+      "got herself into serious trouble",
+      "hated her former companion",
+      "demonstrated how courageous she was",
+      "suffered minor physical burns"
+    ],
+    correctAnswer: "got herself into serious trouble",
+    hint: "To suffer unpleasant consequences as a result of meddling or taking an ill-advised risk.",
+    workedSolution: "The idiom 'to burn one's fingers' means to suffer harm, financial loss, or trouble as a result of meddling or reckless action.",
     points: 1
   },
   {
     number: 22,
-    prompt: "A failing trader may clutch at straws to save his venture. This means that he may ......",
-    options: ["decide to act bravely", "seize any desperate opportunity", "try all clever means", "use a secret strategy"],
-    correctAnswer: "seize any desperate opportunity",
-    hint: "Resorting to any small, desperate hope when facing disaster.",
-    workedSolution: "'To clutch at straws' means to turn to any desperate, unlikely hope or resource in a difficult emergency.",
+    prompt: "A drowning man will clutch at straws to preserve his life. This means that in a crisis, an individual will ............",
+    options: [
+      "act with extraordinary bravery",
+      "seize desperately upon any slight chance of rescue",
+      "devise a cunning intellectual scheme",
+      "seek assistance from hidden enemies"
+    ],
+    correctAnswer: "seize desperately upon any slight chance of rescue",
+    hint: "To attempt any course of action, no matter how desperate or hopeless, in an emergency.",
+    workedSolution: "The proverb 'to clutch at straws' means to resort to any desperate or slight expedient, however hopeless, to save oneself.",
     points: 1
   },
   {
     number: 23,
-    prompt: "The witness held her tongue throughout the sensitive dispute. This means that she ......",
-    options: ["bit her tongue accidentally", "kept silent", "maintained her stand", "refused to laugh"],
-    correctAnswer: "kept silent",
-    hint: "Restraining oneself from speaking or giving voice to an opinion.",
-    workedSolution: "The idiom 'to hold one's tongue' means to remain silent and refrain from speaking.",
+    prompt: "Gifty held her tongue throughout the heated political altercation. This means that Gifty ............",
+    options: [
+      "bit her tongue in pain",
+      "deliberately remained silent and refrained from speaking",
+      "shouted down her opponents",
+      "refused to smile"
+    ],
+    correctAnswer: "deliberately remained silent and refrained from speaking",
+    hint: "To refrain from expressing an opinion; to keep silent.",
+    workedSolution: "The idiom 'to hold one's tongue' means to deliberately keep silent and refrain from speaking.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The district water expansion project is currently in the pipeline. This means that the project is ......",
-    options: ["being dealt with and prepared", "being suspended indefinitely", "no longer pursued", "stuck in the pipe"],
-    correctAnswer: "being dealt with and prepared",
-    hint: "In the process of being planned, produced, or developed.",
-    workedSolution: "'In the pipeline' is an idiom meaning being planned, developed, processed, or prepared for implementation.",
+    prompt: "The regional drainage construction project is already in the pipeline. This means the project is ............",
+    options: [
+      "being actively planned, processed, and prepared",
+      "suspended indefinitely",
+      "completely abandoned",
+      "stuck inside water pipes"
+    ],
+    correctAnswer: "being actively planned, processed, and prepared",
+    hint: "In the process of being planned, developed, or produced.",
+    workedSolution: "The idiom 'in the pipeline' means in the process of being dealt with, developed, or prepared for implementation.",
     points: 1
   },
   {
     number: 25,
-    prompt: "Mensah has always kept fraudulent businessmen at arm's length. This means that Mensah ......",
-    options: ["abused them publicly", "avoided intimacy with them", "threatened them with arrest", "trusted them partially"],
-    correctAnswer: "avoided intimacy with them",
-    hint: "Maintaining a safe distance and avoiding close familiarity.",
-    workedSolution: "'To keep someone at arm's length' means to avoid close contact, intimacy, or familiar association with them.",
+    prompt: "Amon has always kept his treacherous rivals at arm's length. This means that Amon has ............",
+    options: [
+      "threatened them with physical force",
+      "shunned them and avoided close familiarity",
+      "challenged them openly in public",
+      "trusted them with confidential files"
+    ],
+    correctAnswer: "shunned them and avoided close familiarity",
+    hint: "To avoid intimacy, maintain emotional distance, or keep someone at a safe distance.",
+    workedSolution: "The idiom 'to keep someone at arm's length' means to avoid becoming too friendly or familiar with them; to shun or keep them at a distance.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 30) ---
   {
     number: 26,
-    prompt: "The health post was closed temporarily during the weekend, but it has reopened ......",
+    prompt: "The market stalls were temporarily evacuated during the fire drill, but reopened ...... thereafter.\nChoose the word most nearly opposite in meaning to 'temporarily'.",
     options: ["constantly", "deliberately", "legally", "permanently"],
     correctAnswer: "permanently",
-    hint: "'Temporarily' means for a short period. Find the word that denotes lasting for all time.",
-    workedSolution: "'Temporarily' means lasting for a limited time. Its direct antonym is 'permanently' (lasting indefinitely).",
+    hint: "'Temporarily' means for a brief, limited period. What word denotes lasting for all time without end?",
+    workedSolution: "'Temporarily' means for a limited time only. Its direct antonym is 'permanently' (enduringly or for all time).",
     points: 1
   },
   {
     number: 27,
-    prompt: "Passengers normally alight from the bus at the central terminal and ...... the shuttle to the hospital.",
-    options: ["ascend", "board", "enter", "join"],
-    correctAnswer: "board",
-    hint: "'Alight' means to step down or get off a vehicle. Find the word meaning to get on a vehicle.",
-    workedSolution: "'Alight' means to dismount or step down from a vehicle. Its antonym is 'board' (to get onto a ship, train, or bus).",
+    prompt: "Passengers alight from the bus at the terminal, whereas commuters ...... the coach at the curb.\nChoose the word most nearly opposite in meaning to 'alights'.",
+    options: ["ascends", "boards", "enters", "joins"],
+    correctAnswer: "boards",
+    hint: "'To alight' means to get off or descend from a vehicle. What transportation verb denotes getting onto a vehicle?",
+    workedSolution: "'Alight' means to step down or disembark from a bus, train, or carriage. Its direct opposite in passenger transport is 'boards' (gets on).",
     points: 1
   },
   {
     number: 28,
-    prompt: "The night watchman felt unsafe in the dark compound until the floodlights made him feel ......",
+    prompt: "While travelers feel unsafe in the dark thicket, they feel remarkably ...... within the fortified lodge.\nChoose the word most nearly opposite in meaning to 'unsafe'.",
     options: ["afraid", "rejected", "secure", "unhappy"],
     correctAnswer: "secure",
-    hint: "'Unsafe' means exposed to danger. Find the word meaning protected and free from harm.",
-    workedSolution: "'Unsafe' means exposed to danger or risk. Its direct antonym is 'secure' (safe and protected).",
+    hint: "'Unsafe' means exposed to danger or risk. What word denotes protected, safe, and free from peril?",
+    workedSolution: "'Unsafe' means dangerous or exposed to hazard. Its direct physical antonym is 'secure' (safe and protected).",
     points: 1
   },
   {
     number: 29,
-    prompt: "The audience laughed heartily at the amusing play, but sat through the ...... documentary.",
+    prompt: "The children laughed at his funny theatrical anecdotes, but fell silent at his ...... lectures.\nChoose the word most nearly opposite in meaning to 'funny'.",
     options: ["cheerful", "humourless", "familiar", "peculiar"],
     correctAnswer: "humourless",
-    hint: "'Amusing' or 'funny' brings laughter. Find the word meaning lacking fun or laughter.",
-    workedSolution: "'Funny' (amusing) means causing laughter. Its opposite is 'humourless' (lacking humor, dull, or serious).",
+    hint: "'Funny' means amusing and comical. What word denotes lacking humor, dry, and serious?",
+    workedSolution: "'Funny' describes something amusing or comical. Its direct stylistic antonym is 'humourless' (devoid of wit or amusement).",
     points: 1
   },
   {
     number: 30,
-    prompt: "The master rebuked the truant apprentice, but ...... the punctual assistant.",
+    prompt: "The disciplinary master rebuked the truants, but ...... the punctual monitors.\nChoose the word most nearly opposite in meaning to 'rebuked'.",
     options: ["defended", "justified", "pardoned", "praised"],
     correctAnswer: "praised",
-    hint: "'Rebuked' means scolded or reprimanded. Find the word meaning commended or applauded.",
-    workedSolution: "'Rebuke' means to scold or express sharp disapproval. Its antonym is 'praise' (to commend and applaud).",
-    points: 1
-  },
-
-  // --- SECTION E: CLOZE TEST (31 - 35) ---
-  {
-    number: 31,
-    prompt: "Before human societies adopted settled agriculture, hunter-gatherers depended on wild plants and game to obtain their daily ---31---.",
-    options: ["nourishment", "ration", "crop", "supply"],
-    correctAnswer: "nourishment",
-    hint: "Food or substance necessary for growth, health, and sustaining life.",
-    workedSolution: "In nutritional science and history, food necessary to sustain biological life is referred to as 'nourishment'.",
-    points: 1
-  },
-  {
-    number: 32,
-    prompt: "When early man harvested wild grain grasses, rodents such as mice entered the domestic ---32--- to scavenge on stored seeds.",
-    options: ["granaries", "gardens", "kitchens", "pantries"],
-    correctAnswer: "granaries",
-    hint: "Storage buildings or rooms specifically designed for threshed grain.",
-    workedSolution: "A storehouse or structure built to keep harvested cereal grain dry and safe is a 'granary' (plural: 'granaries').",
-    points: 1
-  },
-  {
-    number: 33,
-    prompt: "Because wild cats preyed upon rodents, ancient farmers did not drive them away but ---33--- them to stay.",
-    options: ["encouraged", "compelled", "forced", "trained"],
-    correctAnswer: "encouraged",
-    hint: "To give support, confidence, or welcome conditions to an animal or person.",
-    workedSolution: "'Encouraged' fits the context of tolerating and welcoming cats around dwellings without formal domestic training.",
-    points: 1
-  },
-  {
-    number: 34,
-    prompt: "With the invention of sailing vessels, dried grains served as valuable items of ---34--- across maritime routes.",
-    options: ["barter", "charity", "conveyance", "haulage"],
-    correctAnswer: "barter",
-    hint: "The direct exchange of commodities and goods for other goods without using money.",
-    workedSolution: "In historical trade, trading commodities directly without currency is termed 'barter' ('items of barter').",
-    points: 1
-  },
-  {
-    number: 35,
-    prompt: "In this manner, a natural predator-prey relationship expanded across all ---35--- of the globe.",
-    options: ["corners", "points", "sections", "tracts"],
-    correctAnswer: "corners",
-    hint: "Idiomatic phrase: 'all ...... of the globe' meaning everywhere in the world.",
-    workedSolution: "The standard geographical idiom is 'all corners of the globe/world' (meaning throughout every part of the earth).",
-    points: 1
-  },
-
-  // --- SECTION F: ORAL LANGUAGE (36 - 40) ---
-  {
-    number: 36,
-    prompt: "The carpenter used an adze to shape the timber.\nWhich of the following words ends with the same voiced alveolar fricative consonant sound as 'adze' (/z/)?",
-    options: ["buzz", "kiss", "face", "mouse"],
-    correctAnswer: "buzz",
-    hint: "'Adze' is pronounced /ædz/, ending in the voiced sibilant /z/.",
-    workedSolution: "'Adze' ends with the voiced alveolar fricative /z/. 'Buzz' (/bʌz/) ends with the identical /z/ sound. ('kiss', 'face', 'mouse' end with voiceless /s/).",
-    points: 1
-  },
-  {
-    number: 37,
-    prompt: "The hunter shot an antelope with his bow.\nWhich of the following words has the exact same vowel sound as the word 'bow' (weapon for shooting arrows)?",
-    options: ["sew", "cow", "now", "how"],
-    correctAnswer: "sew",
-    hint: "'Bow' (the weapon) is pronounced /bəʊ/, rhyming with 'go' and 'no'. ('Bow' as in bending the head is /baʊ/).",
-    workedSolution: "The noun 'bow' (weapon) contains the diphthong /əʊ/. 'Sew' (/səʊ/) shares the identical /əʊ/ sound. ('cow', 'now', 'how' contain /aʊ/).",
-    points: 1
-  },
-  {
-    number: 38,
-    prompt: "The ship dropped anchor in the harbor.\nWhich of the following words contains the same consonant sound as the digraph 'ch' in 'anchor'?",
-    options: ["chemist", "church", "charcoal", "champion"],
-    correctAnswer: "chemist",
-    hint: "'Anchor' is pronounced /ˈæŋ.kər/, where 'ch' represents the /k/ sound.",
-    workedSolution: "In 'anchor', 'ch' is pronounced as the voiceless velar plosive /k/. 'Chemist' (/ˈkem.ɪst/) shares the same /k/ sound. ('church', 'charcoal', 'champion' have /tʃ/).",
-    points: 1
-  },
-  {
-    number: 39,
-    prompt: "The shepherd sheared the soft fleece of the sheep.\nWhich of the following words has the same long vowel sound as 'fleece'?",
-    options: ["yield", "build", "guild", "friend"],
-    correctAnswer: "yield",
-    hint: "'Fleece' contains the long close front unrounded vowel /iː/.",
-    workedSolution: "'Fleece' contains the long /iː/ vowel sound. 'Yield' (/jiːld/) contains the identical /iː/ sound. ('build' and 'guild' have /ɪ/; 'friend' has /e/).",
-    points: 1
-  },
-  {
-    number: 40,
-    prompt: "The athlete took a deep breath before diving.\nWhich of the following words ends with the same voiceless dental fricative consonant sound as 'breath' (/θ/)?",
-    options: ["faith", "breathe", "clothe", "smooth"],
-    correctAnswer: "faith",
-    hint: "'Breath' ends with the voiceless sound /θ/ (as in 'teeth').",
-    workedSolution: "'Breath' ends with the voiceless dental fricative /θ/. 'Faith' (/feɪθ/) ends with the same /θ/ sound. ('breathe', 'clothe', 'smooth' end with voiced /ð/).",
+    hint: "'Rebuked' means scolded or reprimanded sharply. What word denotes commended or expressed warm approval?",
+    workedSolution: "'Rebuked' means reprimanded or scolded. Its direct behavioral antonym is 'praised' (commended).",
     points: 1
   }
 ];
 
-// Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
+// Seeded Deterministic Shuffle across 30 Objective Items: Exactly 8 A, 7 B, 8 C, 7 D
 const targetKeys: number[] = [
   0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
   2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3
+  0, 1, 2, 3, 0, 1, 2, 3, 0, 2
 ];
 
 function seedShuffle<T>(array: T[], seed: number): T[] {
@@ -436,9 +378,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 202105);
+const assignedTargetIndices = seedShuffle(targetKeys, 202104);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -461,249 +403,243 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING, COMPREHENSION & LITERATURE (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
+  partA_composition: {
     title: "Part A: Essay Writing",
     instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Write a letter to the Minister for Transport, discussing two major problems bedeviling the public road transport system in Ghana and suggesting two practical solutions to improve road travel for citizens.",
-        modelAnswer: `St. Thomas Junior High School
-P. O. Box 42
-Achimota, Accra
-14th July, 2021
+        prompt: "Write a formal letter to the Minister of Transport, presenting at least two practical policy recommendations for modernizing and improving the public road transit network in your country.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2021
 
-The Minister
+The Honorable Minister
 Ministry of Transport
-Ministries, Accra
+Ministries Directorate, Accra
 
-Dear Sir,
+Dear Honorable Minister,
 
-CHALLENGES IN OUR PUBLIC ROAD TRANSPORT SYSTEM AND RECOMMENDATIONS FOR IMPROVEMENT
+PROPOSALS FOR REFORMING AND MODERNIZING GHANA'S PUBLIC ROAD TRANSPORT SYSTEM
 
-I respectfully write as an observant basic school student to draw your attention to two pressing challenges undermining public road transportation in our country and to suggest practical remedies to enhance commuter safety.
+I respectfully submit this letter on behalf of the youth and commuters within the Bekwai Municipality to share two practical policy interventions aimed at improving the efficiency, reliability, and safety of our national road transport network.
 
-First and foremost is the deplorable condition of our major road networks. Many feeder and arterial highways are riddled with deep potholes, unpaved surfaces, and broken shoulders. During rainy seasons, these roads degenerate into muddy gullies, causing vehicular breakdowns, severe traffic gridlock, and fatal road crashes. Commercial mini-buses (trotros) swerve recklessly around craters, endangering the lives of commuters and pedestrians daily.
+First and foremost, the Ministry should spearhead the nationwide integration of modern, high-capacity Bus Rapid Transit (BRT) networks across all major urban and inter-city corridors. Currently, our public transport sector is heavily dominated by poorly maintained commercial minibuses (trotros), whose erratic stopping habits and overcrowding cause severe traffic gridlocks and fatal highway accidents. By deploying fleets of air-conditioned, fuel-efficient mass transit buses operating along dedicated transit lanes, the government can provide safe, affordable, and punctual commuting. Implementing digital contactless ticketing on these fleets will also eliminate extortionate, unpredictable fare hikes by opportunistic conductors.
 
-Secondly, the prevalence of substandard, unroadworthy vehicles on our highways poses a grave threat to public safety. Many commercial vehicles operate with bald tires, defective braking systems, cracked windshields, and broken headlamps. Combined with driver fatigue, overloading, and reckless speeding, these moving deathtraps cause avoidable accidents daily.
+Secondly, the Ministry must enforce rigorous statutory vehicle roadworthiness inspections and computerized speed-monitoring protocols. A substantial percentage of catastrophic highway fatalities occur because commercial vehicles operate with defective hydraulic brakes, worn-out tires, and broken tail-lights. The Ministry should establish mechanized testing stations across all district capitals and mandate the installation of automated speed limiters on all commercial passenger vehicles. Furthermore, introducing highway solar-powered surveillance cameras to penalize reckless drivers will restore discipline and drastically reduce road carnage.
 
-To resolve these challenges, I suggest that the Ministry intensify public-private partnerships to fund the regular resurfacing and asphalt paving of major transit highways, ensuring strict drainage engineering. Secondly, the Driver and Vehicle Licensing Authority (DVLA), in collaboration with the Motor Transport and Traffic Directorate (MTTD) of the Ghana Police Service, must conduct rigorous, automated roadworthiness inspections, barring any rickety vehicle from plying commercial routes.
-
-I trust your esteemed office will take prompt action to make our highways safer for all commuters.
+I trust that your visionary leadership will prioritize these actionable reforms to protect the lives and livelihoods of Ghanaian commuters.
 
 Thank you.
 
 Yours faithfully,
 [Signature]
-David Ankomah
-(JHS 3)`
+Kwabena Mensah
+(Youth Representative)`
       },
       {
         questionNumber: "2",
         category: "Debate Speech",
-        prompt: "You are the main speaker representing your school in an inter-schools debate on the motion: \"Students should not wear uniforms to school.\" Write your speech arguing either for or against the motion.",
-        modelAnswer: `AGAINST THE MOTION: "STUDENTS SHOULD NOT WEAR UNIFORMS TO SCHOOL"
+        prompt: "You are the principal speaker in an inter-schools debate competition on the motion: \"Basic and Senior High School Students Should Not Be Compelled to Wear Uniforms to School.\" Write your speech arguing against the motion.",
+        modelAnswer: `AGAINST THE MOTION: "STUDENTS SHOULD NOT BE COMPELLED TO WEAR UNIFORMS TO SCHOOL"
 
-Mr. Chairman, Panel of Esteemed Judges, Accurate Timekeeper, Co-debaters, and Distinguished Audience:
+Mr. Chairman, Distinguished Panel of Judges, Impartial Timekeeper, Worthy Opponents, and Fellow Students:
 
-I stand firmly before you to oppose the motion which states that "Students should not wear uniforms to school." School uniforms are not mere garments; they are the bedrock of school discipline, equality, and focused learning.
+I stand firmly before you this morning to vehemently oppose the motion which asserts that: "Students should not be compelled to wear uniforms to school." While proponents argue that wearing casual clothing fosters individuality, an objective socio-economic and pedagogical analysis demonstrates that compulsory school uniforms remain an indispensable pillar of social equality, campus discipline, and academic focus.
 
-First, school uniforms serve as a great social equalizer. Students come from diverse socio-economic backgrounds; some are from affluent homes, while others are from economically disadvantaged families. If students are permitted to wear casual home clothes, school will become a competitive fashion parade. Wealthy students will flaunt designer wear, while underprivileged children will suffer peer ridicule, stigmatization, and deep psychological distress. Uniforms erase these visible wealth gaps, creating a level playing field where every child is identified simply as a learner.
+First and foremost, school uniforms function as a magnificent social equalizer that obliterates socio-economic disparities. In any school community, students originate from radically diverse economic backgrounds; some are children of wealthy business executives, while others are children of struggling subsistence farmers. If casual mufti attire were permitted, the school environment would rapidly degenerate into a toxic fashion parade. Wealthy students would flaunt expensive designer jeans and imported sneakers, while indigent learners would endure acute psychological humiliation, shame, and inferiority complexes on account of their modest clothing. Uniforms eliminate this superficial vanity, creating a level playing field where every child is valued solely for intellectual character.
 
-Secondly, school uniforms promote student safety, institutional identity, and discipline. A uniform makes students easily identifiable both on campus and in the wider community. When pupils leave school compounds without permission or engage in truant behavior in town, citizens and law enforcement officers can instantly identify them by their school badge and color. Furthermore, uniforms eliminate the morning anxiety and distraction of deciding what to wear, allowing learners to focus entirely on their studies.
+Secondly, uniforms reinforce campus security and foster institutional pride. A standardized uniform instantly identifies a student within the school compound and the wider township, deterring truancy and preventing unauthorized criminal intruders from infiltrating the school grounds unnoticed. Furthermore, dressing in smart, neatly pressed uniforms conditions young minds for professional decorum and workplace readiness.
 
-In conclusion, school uniforms promote humility, foster unity, and protect students from needless peer pressure. I urge you all to reject the motion resoundingly.
+In conclusion, school uniforms promote modesty, protect poor students from social stigmatization, and maintain institutional discipline. I urge you all to resoundingly reject the motion.
 
 Thank you.`
       },
       {
         questionNumber: "3",
         category: "Informal Letter",
-        prompt: "Write a letter to your cousin who attends school in another town, inviting him or her to spend the upcoming holidays with your grandparents in the village, giving two compelling reasons why the visit will be beneficial.",
-        modelAnswer: `Nana Kwaku Boateng JHS
-P. O. Box 112
-Berekum, Bono Region
+        prompt: "Write a warm, engaging letter to your cousin living in another region, inviting him or her to spend the upcoming long vacation with your grandparents in the village, giving at least two compelling reasons why he or she should pay them a visit.",
+        modelAnswer: `Presbyterian Junior High School
+P. O. Box 80
+Begoro, Eastern Region
 18th June, 2021
 
-Dear Yaw,
+Dear Cousin Kofi,
 
-I hope this letter finds you in good health and high spirits as you round off your end-of-term examinations. I am writing to invite you to join me in spending the upcoming long vacation with our grandparents at their village in Berekum.
+I hope this letter finds you in fine health, peace of mind, and preparing hard for your upcoming examinations in Accra. I write with immense joy to invite you to join me in spending three weeks of our long vacation with our beloved grandparents at their peaceful village homestead in Kofiase. It has been over four years since you last visited them, and I present two compelling reasons why you should make this trip.
 
-First, staying with Grandpa and Grandma will afford us an invaluable opportunity to reconnect with our cultural heritage and traditional folklore. In the city, our lives are consumed by television and smartphones, leaving little room for learning our native traditions. At the village, Grandpa gathers us around the evening hearth to narrate rich Ananse tales, explain traditional proverbs, and teach us the customs of our ancestors. These storytelling sessions are both entertaining and morally enriching.
+First and foremost, our grandparents are advancing in age, and spending time with them will bring them immeasurable emotional comfort and joy. Whenever I visit the village, Grandpa constantly asks about your wellbeing, while Grandma treasures your childhood photographs on her dresser. In their twilight years, there is no greater blessing we can bestow upon them than our physical presence, sharing warm meals, listening to Grandpa's captivating evening fireside folktales, and helping them with light homestead chores like harvesting ripe citrus fruits and feeding their poultry.
 
-Secondly, the holiday will offer us hands-on experience in practical agriculture and healthy outdoor life. Grandpa has promised to teach us how to harvest yams, set harmless snares for grasscutters, and cultivate fresh organic vegetables on his farm by the riverside. Breathing clean forest air, drinking fresh palm wine, and eating wholesome, fresh foods will rejuvenate our bodies and prepare our minds for the demands of Form Three.
+Secondly, spending the vacation in the serene countryside will provide you with a refreshing mental retreat from the noise, toxic pollution, and chaotic stress of metropolitan Accra. Kofiase is blessed with misty mountain waterfalls, lush cocoa plantations, and clean, unpolluted breeze. During our stay, Uncle Kwame has agreed to take us on guided forest hikes to explore natural rock caves and teach us traditional river fishing. In addition, Grandma has promised to prepare her legendary hot pounded fufu served with freshly tapped palm-nut game soup!
 
-Grandma has already prepared your favorite bedroom in the old compound. Please speak with your parents immediately so we can travel together on Friday.
+Please discuss this invitation with Auntie Mansa early so we can travel together. I eagerly await your arrival.
 
-Your loving cousin,
+Your affectionate cousin,
 [Signature]
-Kwabena`
+Emmanuel Addo`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `The tiger, the cheetah, and the domestic cat belong to the same biological family (Felidae). The tiger is the largest member of this family. Although it is a wild carnivore, it is occasionally trained to perform acrobatic feats to entertain spectators in circuses. The cheetah is the swiftest animal on land and can be trained to hunt game. Domestic cats are found in countless households across the globe, yet their wild counterparts still inhabit forests and savannahs.
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `The tiger, the cheetah, and the domestic cat belong to the identical zoological felid family. The majestic tiger represents the largest carnivorous member of this feline group. Although it remains a fierce wild predator, it is occasionally tamed and trained to assist circus acrobats in entertaining audiences. The cheetah is universally celebrated as the fastest terrestrial mammal on earth, capable of being trained to chase down game during traditional royal hunts. Domestic cats inhabit millions of human households worldwide, although wild species continue to thrive in the forests.
 
-Although cats are common household pets today, humans did not deliberately domesticate them. Before early humans learned to cultivate crops and rear livestock, they relied entirely on foraging wild plants and hunting bush game for subsistence. When early agrarian communities began gathering and harvesting wild grains—which were the seeds of wild grasses—they inadvertently stored the natural food supply of wild rodents such as mice and rats. These rodent populations naturally followed their food source into human settlements. The wild cat, the ancestral natural predator of rats and mice, promptly followed these rodent swarms into domestic granaries.
+Although domestic felines are found in countless human homes today, humanity did not set out to domesticate them intentionally. In prehistoric eras before humanity developed the skills of systematic crop agriculture and animal husbandry, early humans depended exclusively upon wild forest plants and hunted game for sustenance.
 
-Significantly, cats did not consume the harvested cereal grains that were becoming the primary source of nutrition for early human settlements. Consequently, human communities encouraged cats to remain around their compounds to eradicate the destructive rodents. Early humans also discovered that cats were clean, independent, and quieter than dogs.
+When humans eventually learned to harvest and store cereal grains—which originated as the seeds of wild grasses—they inadvertently gathered the natural food supply of destructive rodents such as mice and field rats. These ravenous rodents followed their food indoors, infesting early human granaries. In turn, the African wildcat, the natural predatory enemy of mice and rats, tracked its prey straight into domestic granaries.
 
-When ocean-going sailing ships were invented and long-distance maritime commerce expanded, grain became an indispensable trade commodity. Grains were used not only as sea rations for sailors but also as vital items of barter in foreign ports. The mice and rats inadvertently boarded the ships inside grain sacks, closely followed by the cats. In this manner, a natural food chain that originated in the fertile Mediterranean grasslands was carried aboard trade vessels to every corner of the world.`,
+Significantly, cats did not consume the stored cereal grains that had become the staple nourishment for human communities. Consequently, early agriculturalists encouraged these agile predators to remain within their homesteads to eradicate the destructive rodent pests. Furthermore, humans discovered that cats were remarkably cleaner, neater, and quieter than domesticated dogs.
+
+With the subsequent invention of sailing vessels and the expansion of inter-continental maritime trade, stored grains emerged as vital commercial commodities used both as travel provisions and as valuable items of barter. Inevitably, the rodents accompanied these maritime grain cargoes on long ocean voyages, closely pursued by the cats. Through this unbroken historical chain, an ecological commensalism that commenced across the ancient Mediterranean basin spread to all corners of the earth.`,
     questions: [
       {
-        subId: "(a)(i)",
-        question: "Mention the two broad types of cats referred to in the passage.",
-        answer: "1. Domestic (household) cats.\n2. Wild cats."
+        subQuestion: "(a)",
+        question: "I. What two broad categories or types of cats are mentioned in the opening paragraph?\nII. How did the cat originally become a domestic animal living with human beings?",
+        answer: "I. The two types are domestic cats and wild cats.\nII. The cat became domesticated naturally when early human grain storage attracted rodents into homes, and wild cats followed these rodents indoors to hunt them, leading humans to welcome them."
       },
       {
-        subId: "(a)(ii)",
-        question: "How did the cat originally become a domestic animal according to the passage?",
-        answer: "When early humans stored grain in granaries, mice followed the grain into human homes, and wild cats followed the mice to hunt them. Because cats did not eat human grain and eliminated rodents, humans encouraged them to remain around domestic dwellings."
+        subQuestion: "(b)",
+        question: "State two specific reasons why early humans preferred cats to dogs around their households.",
+        answer: "Early humans preferred cats because they were cleaner (neater) and quieter than dogs (and did not consume human grains)."
       },
       {
-        subId: "(b)",
-        question: "State two reasons why early humans preferred cats to dogs around their dwellings.",
-        answer: "1. Cats were neater (cleaner) than dogs.\n2. Cats were quieter than dogs."
+        subQuestion: "(c)",
+        question: "What specific human technological and commercial activity led to the global spread of cats across the world?",
+        answer: "Maritime sailing trade (the invention of sailing ships and long-distance ocean commerce involving grain transport)."
       },
       {
-        subId: "(c)",
-        question: "Which specific human activity led to the global spread of cats across the world?",
-        answer: "Long-distance maritime trade and shipping (ocean exploration and grain barter commerce)."
+        subQuestion: "(d)",
+        question: "I. What is specifically referred to as 'a food chain' in the context of the passage?\nII. Why were cereal grains easily transported on long voyages to all corners of the world?",
+        answer: "I. 'A food chain' refers to the ecological feeding relationship where rodents eat human grains, and cats prey on rodents (Grain -> Rodents -> Cats).\nII. Grains were easily transported because they are dry, non-perishable food items that could be stored for long periods as voyage provisions and trade barter."
       },
       {
-        subId: "(d)(i)",
-        question: "\"... a food chain.\"\nWhat specific biological food chain is referred to in the passage?",
-        answer: "The food chain linking: **Grain (Grass seeds) → Rodents (Mice and Rats) → Cats**."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following expressions as used in the passage:\nI. 'the domestic granaries'\nII. 'items of barter'\nIII. 'all corners of the world'",
+        answer: "I. 'the domestic granaries' means household grain barns or food storage structures built by human families.\nII. 'items of barter' means goods or commodities used directly as a medium of trade to exchange for other goods without money.\nIII. 'all corners of the world' means everywhere across the entire globe; internationally."
       },
       {
-        subId: "(d)(ii)",
-        question: "Why do you think cereal grains were easily transported across the world in ancient trade?",
-        answer: "Because dry grains do not spoil quickly, are lightweight, can be stored in sacks for long ocean voyages, and served as both food rations and valuable currency for barter."
-      },
-      {
-        subId: "(e)",
-        question: "Explain in your own words the following expressions as used in the passage:\n(i) the domestic granaries;\n(ii) items of barter;\n(iii) all corners of the world.",
-        answer: "(i) **the domestic granaries:** Household storehouses or structures used for storing harvested grains in communities.\n(ii) **items of barter:** Commodities or goods exchanged directly for other goods without the use of money.\n(iii) **all corners of the world:** Everywhere on earth / every part of the globe."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, provide a word or phrase that means the same and can replace it in the passage without altering the meaning:\n(i) sometimes;\n(ii) intentionally;\n(iii) gathered;\n(iv) nourishment;\n(v) probably.",
-        answer: "(i) **sometimes:** occasionally / periodically / from time to time.\n(ii) **intentionally:** deliberately / purposely / consciously.\n(iii) **gathered:** harvested / collected / amassed / reaped.\n(iv) **nourishment:** food / sustenance / nutrition / sustenance.\n(v) **probably:** likely / perhaps / presumably / in all likelihood."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. sometimes\nII. intentionally\nIII. gathered\nIV. nourishment\nV. probably",
+        answer: "I. sometimes: occasionally, periodically, now and then.\nII. intentionally: deliberately, purposely, on purpose, consciously.\nIII. gathered: collected, harvested, amassed, accumulated.\nIV. nourishment: food, sustenance, nutrition, nutriment.\nV. probably: likely, presumably, in all likelihood, perhaps."
       }
     ]
   },
-  sectionC_literature: {
+  partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
+    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
     questions: [
       {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "'Mr. Bumble made Oliver miserable and the boy couldn't wait to get away from the workhouse.'",
-        question: "Why did Mr. Bumble make Oliver's life miserable in the workhouse?",
-        answer: "Because Oliver had committed the 'unpardonable crime' of asking for more food ('Please, sir, I want some more') when the orphans were starving."
+        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        contextExtract: "'Mr. Bumble made Oliver miserable and the boy couldn't wait to get away from the workhouse.'",
+        subItems: [
+          {
+            subQuestion: "5(a)",
+            question: "State two specific ways through which Mr. Bumble made young Oliver miserable in the workhouse.",
+            answer: "He starved him, verbally abused him, subjected him to solitary confinement, and administered brutal physical beatings with his cane."
+          },
+          {
+            subQuestion: "5(b)",
+            question: "Who is Mr. Bumble in terms of his official occupation in the parish?",
+            answer: "He is the pompous, cruel parish beadle (workhouse official/church officer)."
+          },
+          {
+            subQuestion: "5(c)",
+            question: "How did Mr. Bumble attempt to get rid of Oliver Twist from the parish workhouse?",
+            answer: "He offered a five-pound reward to anyone who would take Oliver as an apprentice, eventually indenturing him to Mr. Sowerberry, the undertaker."
+          }
+        ]
       },
       {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "'Mr. Bumble made Oliver miserable...'",
-        question: "Who is Mr. Bumble in the story?",
-        answer: "The pompous, cruel, and self-important parish beadle in charge of the workhouse."
+        sectionTitle: "KEN SARO-WIWA: Home Sweet Home",
+        contextExtract: "\"They came in the usual assortment of rags: gowns picked up from the stores of second-hand clothes traders, singlets bearing the words, Oxford University, mildewed blouses. Some women wore shirts that are meant for men; one of them was in a printed cotton nightgown that had faded beyond recognition.\"",
+        subItems: [
+          {
+            subQuestion: "5(d)",
+            question: "In the story, who does the plural pronoun 'They' refer to in the extract?",
+            answer: "The impoverished rural villagers / market women of Dakuna who gathered to welcome the passenger lorry."
+          },
+          {
+            subQuestion: "5(e)",
+            question: "What predominant social imagery is vividly created through this description?",
+            answer: "An imagery of acute poverty, destitution, squalor, and socio-economic neglect (visual imagery of rags)."
+          }
+        ]
       },
       {
-        subId: "5(c)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "How Mr. Bumble dealt with Oliver...",
-        question: "How did Mr. Bumble attempt to rid the workhouse of Oliver Twist?",
-        answer: "He posted a public notice offering five pounds to anyone who would take Oliver away as an apprentice, eventually apprenticing him to the undertaker, Mr. Sowerberry."
+        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
+        contextExtract: "EULALIE: Ya, I remember I bought the idea, but I got the feeling ...\nATO: Heavens, women! They are always getting feelings. First, you got the feeling you needed a couple of years to settle down and now you are obviously getting a feeling.",
+        subItems: [
+          {
+            subQuestion: "5(f)",
+            question: "What specific idea did Eulalie 'buy' (agree to) initially?",
+            answer: "The agreement to use contraception (birth control) to postpone childbearing for a few years until they had settled down professionally."
+          },
+          {
+            subQuestion: "5(g)",
+            question: "What new 'feeling' has Eulalie developed now regarding children?",
+            answer: "She now feels ready and desires to have a baby immediately, feeling the pressure and isolation of the African extended family."
+          },
+          {
+            subQuestion: "5(h)",
+            question: "How does Ato react to Eulalie's expressions of her feelings?",
+            answer: "He reacts with irritation, exasperation, dismissiveness, and mockery, brushing aside her genuine emotional concerns."
+          }
+        ]
       },
       {
-        subId: "5(d)",
-        textSource: "KEN SARO-WIWA: Home Sweet Home",
-        extract: "\"They came in the usual assortment of rags: gowns picked up from the stores of second-hand clothes traders, singlets bearing the words, Oxford University, mildewed blouses. Some women wore shirts that are meant for men; one of them was in a printed cotton nightgown that had faded beyond recognition.\"",
-        question: "To whom does the pronoun \"They\" refer in the extract?",
-        answer: "The impoverished villagers and market women of Dukana who gathered to welcome the young narrator back home."
-      },
-      {
-        subId: "5(e)",
-        textSource: "KEN SARO-WIWA: Home Sweet Home",
-        extract: "\"They came in the usual assortment of rags...\"",
-        question: "What dominant imagery is created through the description of the villagers' clothing in this extract?",
-        answer: "Visual imagery of extreme poverty, squalor, deprivation, and economic stagnation in the village."
-      },
-      {
-        subId: "5(f)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "EULALIE: Ya, I remember I bought the idea, but I got the feeling ...\nATO: Heavens, women! They are always getting feelings. First, you got the feeling you needed a couple of years to settle down and now you are obviously getting a feeling.",
-        question: "What specific idea did Eulalie agree to (\"buy\") before their marriage?",
-        answer: "The decision to postpone having children during their first years of marriage to allow them to settle down and save money."
-      },
-      {
-        subId: "5(g)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\".. but I got the feeling ...\"",
-        question: "What new \"feeling\" has Eulalie developed that is troubling her?",
-        answer: "She now feels that they should start having children immediately because the family and community expect grandchildren, and she feels alienated and misunderstood by Ato's relatives."
-      },
-      {
-        subId: "5(h)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "ATO: Heavens, women! They are always getting feelings...",
-        question: "How does Ato react to Eulalie's emotional anxiety?",
-        answer: "He reacts with dismissive impatience, irritation, and patriarchal condescension, brushing aside her genuine fears."
-      },
-      {
-        subId: "5(i)",
-        textSource: "V.B. AAKYE: The Colour of God",
-        extract: "How silly man is, laughs the rose\nWhy should he be black or white\nOr green or yellow or even red?",
-        question: "Identify the figure of speech used in the expression \"laughs the rose\".",
-        answer: "Personification (attributing the human ability of laughing to a rose flower)."
-      },
-      {
-        subId: "5(j)",
-        textSource: "V.B. AAKYE: The Colour of God",
-        extract: "\"Why should he be black or white...\"",
-        question: "According to the central philosophical message of the poem, what is the color of God?",
-        answer: "God has no single physical color; God transcends racial divisions and encompasses all creation with universal love."
+        sectionTitle: "V. B. AAKYE: The Colour of God",
+        contextExtract: "\"How silly man is, laughs the rose\nWhy should he be black or white\nOr green or yellow or even red?\"",
+        subItems: [
+          {
+            subQuestion: "5(i)",
+            question: "Identify the literary figure of speech utilized in the expression: '... laughs the rose'.",
+            answer: "Personification."
+          },
+          {
+            subQuestion: "5(j)",
+            question: "According to the profound philosophical message of the poem, what is the true 'colour of God'?",
+            answer: "God has no single physical racial color; God is love, universal, and present in all colors and all humanity."
+          }
+        ]
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    id: `lit_${q.subId}`,
-    partLabel: `Part C: Literature - ${q.textSource} [${q.subId}]`,
-    prompt: (q.extract ? `Extract:\n"${q.extract}"\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 2
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  },
+  ...paper2Calibrated.partC_literature.questions.map((sec, idx) => ({
+    id: `literature_cockcrow_${idx + 1}`,
+    partLabel: `Part C: Literature - ${sec.sectionTitle}`,
+    contextExtract: sec.contextExtract || null,
+    subItems: sec.subItems,
+    marks: 10
   }))
 ];
 
 async function seedBeceEnglish2021Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2021 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2021 (Seed 202104) into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -714,8 +650,9 @@ async function seedBeceEnglish2021Calibrated() {
     if (idx === 2) keyDist.C++;
     if (idx === 3) keyDist.D++;
   });
-  console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
+  console.log("Verified Key Balance across 30 Objective Items:", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2021");
   await docRef.set({
     year: 2021,
@@ -729,25 +666,49 @@ async function seedBeceEnglish2021Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasCockcrowLiterature: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
-      title: "Paper 1: Objective Test",
+      title: "Paper 1: Objective Test (Lexis and Structure)",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 30",
+          questions: balancedPaper1.slice(25, 30)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2021 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2021 successfully updated in Firestore!");
 }
 
 seedBeceEnglish2021Calibrated()

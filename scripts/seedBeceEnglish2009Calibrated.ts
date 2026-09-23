@@ -1,8 +1,11 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -12,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -34,359 +38,396 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2009
-const passage1Text = "### 📖 PASSAGE I\n\nWe were suddenly awakened at dawn by the frantic screams and cries of the tenants in our compound. Suspecting that danger was near, my father sprang out of bed in total darkness and rushed toward the living room to investigate. In his haste, he forgot that the main lights were off and ran straight into the concrete pillar in the middle of the hall, crashing his forehead against it and collapsing on the floor.\n\nWhen mother rushed in and turned on the switch, she found father clutching a bloody gash on his forehead with a huge swelling rising above his brow. Mother quickly fetched a towel with ice cubes from the freezer, pressing them firmly against the cut to stem the bleeding and soothe the swelling.\n\nWhen the compound gate was finally opened, we beheld a pathetic and heartbreaking scene. A band of armed robbers had broken into the tenant's quarters. When the brave tenant attempted to resist them and protect his family, the ruthless robbers had mercilessly attacked him with cutlasses, leaving him mortally wounded before fleeing into the night.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: THE MIDNIGHT RESCUE AND FIRST AID (CALIBRATED)
+// =========================================================================
+const passage1Title = "Passage I: The Midnight Rescue and First Aid";
+const passage1Text = `We were abruptly jolted awake at dawn by piercing shrieks echoing from the tenants in our compound house. They were raising a frantic commotion in the central courtyard. Father bolted instantly from his mattress and lunged for the bedroom door. Barely a minute later, we heard him cry out in acute agony. We sprinted into the central hallway, flicked on the light switch, and found him sprawled flat on his back, clutching his forehead in pain.
 
-const passage2Text = "### 📖 PASSAGE II\n\nAmong the natural wonders of the animal kingdom, few phenomena are as captivating as the melodies of songbirds. While birds produce simple calls throughout the year to signal danger or communicate location, their most elaborate and vigorous songs are produced strictly during the breeding season by male birds seeking to attract and impress prospective female partners.\n\nBird songs also serve as territorial declarations, warning rival males that a particular nesting area has already been claimed. What sounds to human ears like a single, continuous melodic whistle is often revealed by acoustic recordings to consist of dozens of rapid, intricate notes. The superior auditory acuity of birds allows them to distinguish subtle variations in pitch and timing that human ears completely miss.\n\nThrough these remarkable musical performances, nature demonstrates how acoustic communication ensures both species reproduction and territorial order in the wild.";
+In his desperate rush to unlatch the front door, he had neglected to switch on the corridor lights, running straight headlong into the heavy concrete pillar erected in the middle of the hall. When we inspected his brow, we observed a massive lump swelling rapidly, with dark blood oozing from a deep laceration near his right eyebrow.
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2009
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+Mother, a retired nursing sister, issued calm, rapid directives to fetch the domestic first-aid kit, a basin of ice cubes, and Father's towel. When the supplies arrived, she attended immediately to the bleeding wound. Wrapping several ice cubes within the towel, she pressed the cold compress firmly against the cut for about two minutes to constrict the ruptured vessels. Having wiped away the blood gently, she applied a swab of iodine gauze over the wound and secured it with a clean cotton bandage. Turning to the contusion, she gently massaged the lump with ice, noticeably reducing the swelling.
+
+She then unlatched the front door, and we beheld a truly pathetic scene. Stretched across the middle of the courtyard lay the motionless body of one of the tenants. In a desperate attempt to resist an armed robbery attack, he had been butchered mercilessly and his lifeless body abandoned in the yard.`;
+
+const passage1QuestionsRaw = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what sudden event woke the household members from sleep at dawn?`,
-    passage: passage1Text,
+    prompt: "According to Passage I, what sudden event woke the narrator and the family at dawn?",
     options: [
-      "The father crashing into the pillar",
-      "The noise made by the father in the hall",
-      "The attack by the armed robbers",
-      "The frantic shouting of the tenants in the compound"
+      "The father crashing his head violently into the concrete pillar",
+      "The frantic screams and loud commotion of the tenants in the yard",
+      "The shattering sound of the front door being forced open",
+      "The arrival of the armed robbery gang on the veranda"
     ],
-    correctAnswer: "The frantic shouting of the tenants in the compound",
-    hint: "Reread the opening sentence: 'We were suddenly awakened at dawn by the screams of the tenants...'",
-    workedSolution: "The passage explicitly states in the first sentence that the household was awakened at dawn by the screams and commotion made by the tenants in the yard.",
+    correctAnswer: "The frantic screams and loud commotion of the tenants in the yard",
+    hint: "Reread paragraph one: they were awakened by the screams of the tenants making a lot of commotion in the yard.",
+    workedSolution: "The narrative opens by stating that the family was awakened at dawn by the frantic screams and loud commotion of the compound tenants.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why was the writer's father holding his forehead when the lights were switched on?`,
-    passage: passage1Text,
+    prompt: "Why was the narrator's father discovered lying on his back holding his brow in Passage I?",
     options: [
-      "He had fallen flat on his back",
-      "He had crashed his head against the pillar",
-      "He wanted to prevent the blood from flowing",
-      "He was confused about what action to take"
+      "He had suffered an acute muscle spasm and collapsed",
+      "He had collided violently with the concrete pillar in the dark",
+      "He was attempting to hold his breath to stop internal bleeding",
+      "He had been assaulted by an armed robber in the corridor"
     ],
-    correctAnswer: "He had crashed his head against the pillar",
-    hint: "In his haste in the dark, what obstacle did the father hit?",
-    workedSolution: "The narrative explains that in his haste in the dark, the father ran straight into the pillar in the middle of the hall, cutting his forehead.",
+    correctAnswer: "He had collided violently with the concrete pillar in the dark",
+    hint: "Check paragraph two: rushing in the dark without switching on the lights caused him to crash headlong into the pillar.",
+    workedSolution: "The father was clutching his head because, rushing through the unlit hallway, he ran directly into the concrete pillar.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, what was the primary clinical purpose of applying ice cubes to the father's injury?`,
-    passage: passage1Text,
+    prompt: "In Passage I, what was the primary medical purpose of applying ice cubes to the father's head?",
     options: [
-      "To disinfect the cut",
-      "To heal the skin rapidly",
-      "To clean the wound gently",
-      "To reduce the swelling and stop bleeding"
+      "To disinfect the cut against infectious bacteria",
+      "To accelerate the healing of the skin tissues",
+      "To clean the bloodstains off his forehead",
+      "To arrest the bleeding and reduce the contusion swelling"
     ],
-    correctAnswer: "To reduce the swelling and stop bleeding",
-    hint: "Ice causes vasoconstriction, which soothes lumps and arrests bleeding.",
-    workedSolution: "The passage describes the mother pressing ice cubes on the cut to curb bleeding and massaging the big lump to reduce the swelling.",
+    correctAnswer: "To arrest the bleeding and reduce the contusion swelling",
+    hint: "Reread paragraph three: mother pressed ice on the cut for two minutes and massaged the lump to reduce swelling.",
+    workedSolution: "The cold compress was applied to constrict ruptured blood vessels to arrest bleeding and to minimize inflammation and swelling.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'pathetic' as used in 'we beheld a pathetic scene' means ............`,
-    passage: passage1Text,
-    options: ["naughty", "merciless", "sad and distressing", "strange"],
-    correctAnswer: "sad and distressing",
-    hint: "Evoking deep pity, grief, and emotional sorrow.",
-    workedSolution: "'Pathetic' in this context means arousing pity, grief, sorrow, and compassion; 'sad and distressing' is the exact meaning.",
+    prompt: "In Passage I, the word 'pathetic' in 'beheld a pathetic scene' means ............",
+    options: [
+      "naughty and disobedient",
+      "merciless and cruel",
+      "deeply sorrowful, heartbreaking, and distressing",
+      "peculiar and unfamiliar"
+    ],
+    correctAnswer: "deeply sorrowful, heartbreaking, and distressing",
+    hint: "'Pathetic' in this context means arousing profound pity, grief, and sadness.",
+    workedSolution: "'Pathetic' describes a sight that evokes intense pity, sadness, and grief; 'deeply sorrowful, heartbreaking, and distressing' is its direct meaning.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what tragic fate befell the tenant?`,
-    passage: passage1Text,
+    prompt: "According to the concluding paragraph of Passage I, what happened to the unfortunate tenant?",
     options: [
-      "He fell down heavily in the dark hall",
-      "He was killed by the armed robbers",
-      "He ran out of the compound in fear",
-      "He locked the main entrance gate"
+      "He opened the front gate to admit the medical personnel",
+      "He was brutally killed by armed robbers after resisting",
+      "He slipped and fell heavily across the concrete drainage ditch",
+      "He fled into the adjacent bush to alert the police"
     ],
-    correctAnswer: "He was killed by the armed robbers",
-    hint: "What did the robbers do when the tenant resisted their attack?",
-    workedSolution: "The passage concludes by revealing that the tenant had been butchered mercilessly and murdered while attempting to resist the armed intruders.",
+    correctAnswer: "He was brutally killed by armed robbers after resisting",
+    hint: "Look at the final sentence: trying to resist an attack from armed robbers, he had been butchered mercilessly.",
+    workedSolution: "The tenant lost his life because he bravely attempted to resist the armed robbers, who attacked and killed him mercilessly.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE ACOUSTICS OF SONGBIRDS (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Title = "Passage II: The Acoustics of Songbirds";
+const passage2Text = `Where is the enchanting musical auditorium of songbirds located? It is situated in no gilded concert hall, but rather high upon leafy tree branches, rustic garden fences, and elevated telephone wires. It is from these open perches that our small feathered companions blend their delicate vocal cords in some of the most melodious harmonies heard on earth.
+
+Songbirds do not emit random noise. The male voices in this avian choir, for example, communicate two precise messages through their vocalizations. First, their melody serves as an unmistakable territorial boundary warning to other males to keep away from their partners. Second, it functions as an alluring invitation from bachelor birds seeking to attract prospective female mates. The most intricate and vigorous melodies are produced during the mating and breeding season, when males exert their vocal energies to win the affection of female birds.
+
+Songbirds are truly extraordinary vocalists. They possess the rare biological capability to produce three or four distinct musical notes simultaneously. To the human ear, this intricate acoustic blend registers as a single unified beat, yet birds can decipher the individual notes effortlessly due to their extraordinarily keen auditory perception. At times, what sounds like a song to human listeners is actually a functional social directive designed to maintain flock cohesion during flight, or a sharp warning of an approaching airborne predator.
+
+How birds compose their melodies is a fascinating field of inquiry. Some species have their melodies genetically hardwired into their brains at birth. While certain birds imitate the calls of surrounding species, others compose entirely unique songs, resolutely refusing to mimic whatever notes they hear from their neighbors.`;
+
+const passage2QuestionsRaw = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why do male songbirds sing with exceptional vigor during the breeding season?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, songbirds are capable of singing melodious tunes effortlessly because they ............",
     options: [
-      "To instruct younger birds",
-      "To practice notes for concert halls",
-      "To attract and impress female birds",
-      "To copy the melodies of other flocks"
+      "are innately gifted natural singers from birth",
+      "undergo formal musical training in concert halls",
+      "possess vocal cords identical to human singers",
+      "are compelled by nature to make loud noise"
     ],
-    correctAnswer: "To attract and impress female birds",
-    hint: "Look at the second paragraph: 'produced during the breeding season by the males to impress...'",
-    workedSolution: "The text explains that the vigorous songs during breeding season are produced specifically by male birds to impress and attract female partners.",
+    correctAnswer: "are innately gifted natural singers from birth",
+    hint: "Paragraph four notes: some birds have their songs fixed in their brains at birth; they are naturally endowed.",
+    workedSolution: "The text explains that songbirds are biologically endowed with innate singing abilities, with songs often hardwired in their brains from birth.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what enables birds to distinguish multiple notes in a song that sound like a single beat to human ears?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, why do male songbirds sing with exceptional vigor during the breeding season?",
     options: [
-      "Their sharp eyesight",
-      "Their keen sense of hearing",
-      "Their rapid wing beats",
-      "Their vocal imitation skills"
+      "To guide young chicks during migratory flights",
+      "To produce four musical notes for human amusement",
+      "To attract, impress, and court prospective female partners",
+      "To imitate the calls of predatory animals"
     ],
-    correctAnswer: "Their keen sense of hearing",
-    hint: "Reread paragraph three regarding the sensory capabilities of songbirds.",
-    workedSolution: "The author explicitly states that 'birds can identify the different notes because of their keen sense of hearing'.",
+    correctAnswer: "To attract, impress, and court prospective female partners",
+    hint: "Check paragraph two: the most vigorous songs are sung during the breeding season to impress the female birds.",
+    workedSolution: "Male songbirds sing with great intensity during the breeding season specifically to attract and impress female mates.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what non-musical message can a bird's vocalization communicate to its flock?`,
-    passage: passage2Text,
+    prompt: "Which of the following assertions about songbirds is confirmed by Passage II?",
     options: [
-      "An announcement of pleasant weather",
-      "A complaint about scarce food",
-      "A warning of approaching danger",
-      "An invitation to human listeners"
+      "They sing exclusively during the breeding season",
+      "They produce some of the most melodious and sweet songs on earth",
+      "Female birds sing to invite bachelor birds to their nests",
+      "They can vocalize only a single musical note at a time"
     ],
-    correctAnswer: "A warning of approaching danger",
-    hint: "Paragraph three notes: 'It may also be a warning of...'",
-    workedSolution: "The passage notes that certain bird calls serve as practical signals to keep the flock united or to warn of impending danger.",
+    correctAnswer: "They produce some of the most melodious and sweet songs on earth",
+    hint: "Paragraph one highlights that little feathered creatures blend their voices in some of the most melodious songs in the world.",
+    workedSolution: "The author explicitly affirms in paragraph one that songbirds produce some of the sweetest, most melodious melodies in the natural world.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'unique' in 'compose songs which are unique' means ............`,
-    passage: passage2Text,
-    options: ["suitable", "similar", "exciting", "distinctive and one of a kind"],
-    correctAnswer: "distinctive and one of a kind",
-    hint: "Unlike anything else; not copied from others.",
-    workedSolution: "'Unique' means being the only one of its kind or having no equal; 'distinctive and one of a kind' is its direct meaning.",
+    prompt: "In Passage II, the word 'unique' in 'compose songs which are unique' means ............",
+    options: [
+      "suitable and fitting",
+      "similar to others",
+      "delightful and exciting",
+      "special, distinct, and one-of-a-kind"
+    ],
+    correctAnswer: "special, distinct, and one-of-a-kind",
+    hint: "'Unique' means being the only one of its kind; distinct and unlike anything else.",
+    workedSolution: "'Unique' means being the only one of its kind, distinct, or original; 'special, distinct, and one-of-a-kind' is its exact equivalent.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nWhat major conclusion does the writer suggest regarding the acoustic ability of songbirds in Passage II?`,
-    passage: passage2Text,
+    prompt: "What does the passage imply regarding the auditory perception of birds compared to human beings?",
     options: [
-      "Human beings possess better musical hearing than birds",
-      "Birds have a superior ability to distinguish intricate musical notes",
-      "Birds make louder sounds than other animals",
-      "All birds sing the identical song from birth"
+      "Human beings possess sharper hearing than songbirds",
+      "Birds possess a superior capacity to interpret simultaneous musical notes",
+      "Birds produce louder acoustic noise than human musical instruments",
+      "Human beings compose more intricate melodies than birds"
     ],
-    correctAnswer: "Birds have a superior ability to distinguish intricate musical notes",
-    hint: "Humans hear one combined beat, while birds differentiate several individual notes.",
-    workedSolution: "The passage demonstrates that because of their keen hearing, birds can separate three or four rapid notes that human ears perceive only as a single beat.",
+    correctAnswer: "Birds possess a superior capacity to interpret simultaneous musical notes",
+    hint: "Paragraph three points out that while humans hear only one beat, birds distinguish three or four notes due to their keen hearing.",
+    workedSolution: "The text explains that while humans hear several notes as a single beat, birds' acute hearing allows them to interpret each simultaneous note individually.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// =========================================================================
+const generalQuestionsRaw = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "The dilapidated colonial bungalow by the seashore has been abandoned.\nChoose the word nearest in meaning to the underlined word 'abandoned'.",
-    options: ["deserted", "destroyed", "infested", "robbed"],
+    prompt: "The dilapidated coastal fortress has been abandoned by the community.\nChoose the word nearest in meaning to 'abandoned'.",
+    options: ["demolished", "deserted", "infested", "auctioned"],
     correctAnswer: "deserted",
-    hint: "Left behind permanently without occupants or care.",
-    workedSolution: "'Abandoned' means left empty, neglected, or permanently vacated; 'deserted' is its direct synonym.",
+    hint: "Left behind completely; vacated or forsaken.",
+    workedSolution: "'Abandoned' means left permanently empty or forsaken; 'deserted' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "Most football supporters were optimistic that the national team would win the tournament.\nChoose the word nearest in meaning to the underlined word 'optimistic'.",
-    options: ["reasonable", "happy", "concerned", "hopeful"],
+    prompt: "The football supporters were optimistic that their national team would lift the continental trophy.\nChoose the word nearest in meaning to 'optimistic'.",
+    options: ["reasonable", "cheerful", "anxious", "hopeful"],
     correctAnswer: "hopeful",
-    hint: "Confident and expecting a favorable, successful outcome.",
-    workedSolution: "'Optimistic' means viewing the future with positive expectation and confidence; 'hopeful' is its direct synonym.",
+    hint: "Confident, positive, and expectant of a favorable outcome.",
+    workedSolution: "'Optimistic' means possessing a positive outlook or expecting favorable outcomes; 'hopeful' is its direct synonym.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The indigenous residents of the community provided manual labor during the school project.\nChoose the word nearest in meaning to the underlined word 'indigenous'.",
-    options: ["skilled", "native", "expatriate", "urban"],
+    prompt: "The indigenous craftsmen supplied all the timber required to construct the community clinic.\nChoose the word nearest in meaning to 'indigenous'.",
+    options: ["skilled", "native", "expatriate", "resident"],
     correctAnswer: "native",
-    hint: "Originating naturally in a particular region; local inhabitants.",
-    workedSolution: "'Indigenous' refers to people or species originating or occurring naturally in a particular land; 'native' is its direct equivalent.",
+    hint: "Originating or occurring naturally in a particular region; local.",
+    workedSolution: "'Indigenous' refers to people, species, or things native to a specific locality; 'native' is its exact equivalent.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The brave intervention of the neighborhood watch that foiled the robbery was laudable.\nChoose the word nearest in meaning to the underlined word 'laudable'.",
-    options: ["quick", "real", "constant", "praiseworthy"],
+    prompt: "The vigilance of the security officer that averted the burglary was laudable.\nChoose the word nearest in meaning to 'laudable'.",
+    options: ["praiseworthy", "prompt", "genuine", "tireless"],
     correctAnswer: "praiseworthy",
-    hint: "Deserving high commendation, honor, or praise.",
-    workedSolution: "'Laudable' means deserving praise and commendation; 'praiseworthy' is its exact synonym.",
+    hint: "Deserving high praise, commendation, or admiration.",
+    workedSolution: "'Laudable' means deserving praise and commendation; 'praiseworthy' is its direct synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Our parents and guardians deserve our deepest appreciation for their sacrifices.\nChoose the word nearest in meaning to the underlined word 'appreciation'.",
-    options: ["assistance", "gratitude", "concern", "encouragement"],
+    prompt: "Our self-sacrificing teachers deserve our deepest appreciation.\nChoose the word nearest in meaning to 'appreciation'.",
+    options: ["assistance", "gratitude", "sympathy", "encouragement"],
     correctAnswer: "gratitude",
-    hint: "Thankfulness and heartfelt recognition of kindness.",
-    workedSolution: "'Appreciation' in the context of recognizing benevolence means thankfulness; 'gratitude' is its direct synonym.",
+    hint: "The feeling or expression of thankfulness and recognition.",
+    workedSolution: "'Appreciation' in the context of recognizing benevolence means thankfulness or 'gratitude'.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "The store manager took the careless clerk to task for misplacing the invoices. This means that the manager ............",
+    prompt: "Mr. Taiwoo took the administrative clerk to task for misplacing the confidential letters. This means that Mr. Taiwoo ............",
     options: [
-      "dismissed the clerk immediately",
-      "scolded and reprimanded the clerk",
-      "reported the clerk to the police",
-      "assigned another task to the clerk"
+      "dismissed the clerk from service",
+      "reprimanded and blamed the clerk sharply",
+      "accused the clerk of criminal theft",
+      "reassigned the clerk to another department"
     ],
-    correctAnswer: "scolded and reprimanded the clerk",
-    hint: "To criticize severely, scold, or reprimand someone for a fault.",
-    workedSolution: "The idiom 'to take someone to task' means to rebuke, reprimand, or severely criticize them for a mistake or misconduct.",
+    correctAnswer: "reprimanded and blamed the clerk sharply",
+    hint: "To take someone to task means to criticize, reprimand, or scold them for a mistake.",
+    workedSolution: "The idiom 'to take someone to task' means to rebuke, criticize, or blame them sharply for an error or fault.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The argument between the market traders got out of hand. This means that the argument ............",
+    prompt: "During the town meeting, the heated disagreement got out of hand. This means that the dispute ............",
     options: [
-      "became uncontrollable and disorderly",
-      "lasted for several days",
-      "became uninteresting",
-      "was settled peacefully"
+      "became completely uncontrollable",
+      "was prolonged into the evening",
+      "became tiresome and boring",
+      "was settled through peaceful arbitration"
     ],
-    correctAnswer: "became uncontrollable and disorderly",
-    hint: "Escaping restraint and becoming impossible to control.",
-    workedSolution: "The idiom 'to get out of hand' means to become chaotic, unruly, or impossible to control.",
+    correctAnswer: "became completely uncontrollable",
+    hint: "Beyond management or control.",
+    workedSolution: "The idiom 'to get out of hand' means to become chaotic, unmanageable, or uncontrollable.",
     points: 1
   },
   {
     number: 18,
-    prompt: "On sighting the stern disciplinary master, the truant student took to his heels. This means that the student ............",
-    options: ["collapsed in fear", "felt terrified", "ran away swiftly", "hid behind the door"],
-    correctAnswer: "ran away swiftly",
-    hint: "Fleeing rapidly to escape punishment.",
-    workedSolution: "The idiom 'to take to one's heels' means to turn and run away hastily from danger or trouble.",
+    prompt: "Upon catching sight of the disciplinary master, the truant girl took to her heels. This means the girl ............",
+    options: [
+      "fainted on the path",
+      "trembled with terror",
+      "ran away rapidly in flight",
+      "hid beneath the veranda"
+    ],
+    correctAnswer: "ran away rapidly in flight",
+    hint: "To run away as fast as possible.",
+    workedSolution: "The idiom 'to take to one's heels' means to turn and run away hastily in flight.",
     points: 1
   },
   {
     number: 19,
-    prompt: "Kwaku resides within a stone's throw of the regional hospital. This means that Kwaku ............",
+    prompt: "Joseph lives within a stone's throw from the municipal post office. This means that Joseph ............",
     options: [
-      "lives in a stone building",
-      "lives very close to the hospital",
-      "walks daily to the hospital",
-      "frequently throws stones"
+      "resides in a house built of stone",
+      "lives in very close proximity to the post office",
+      "frequently visits the postal station",
+      "habitually throws stones along the road"
     ],
-    correctAnswer: "lives very close to the hospital",
-    hint: "A very short physical distance away.",
-    workedSolution: "The idiom 'within a stone's throw' signifies a very short, easily walkable distance.",
+    correctAnswer: "lives in very close proximity to the post office",
+    hint: "A very short distance away.",
+    workedSolution: "The idiom 'a stone's throw' means a very short distance away or in very close proximity.",
     points: 1
   },
   {
     number: 20,
-    prompt: "All his grandiose schemes for constructing a private library came to naught. This means that ............",
+    prompt: "All his ambitious plans for establishing a modern printing press came to naught. This means that ............",
     options: [
-      "the library was completed on time",
+      "the printing press was successfully launched",
       "his plans failed completely and yielded nothing",
-      "the building developed cracks",
-      "the books were stolen"
+      "the machinery was destroyed by rain",
+      "he secured an institutional bank loan"
     ],
     correctAnswer: "his plans failed completely and yielded nothing",
-    hint: "'Naught' means zero; achieving nothing or ending in complete failure.",
-    workedSolution: "The idiom 'to come to naught' means to end in total failure or produce no positive result.",
+    hint: "To come to nothing; to fail completely without result.",
+    workedSolution: "The idiom 'to come to naught' means to end in total failure or produce zero successful results.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "While our former landlord maintained a cordial relationship with all tenants, the new owner was distinctly ...... .",
-    options: ["harsh", "hostile", "scornful", "different"],
+    prompt: "While my father maintains a cordial relationship with his neighbors, the tenant is notoriously ...... .\nChoose the word most nearly opposite in meaning to 'cordial'.",
+    options: ["harsh", "hostile", "scornful", "distant"],
     correctAnswer: "hostile",
-    hint: "'Cordial' means warm and friendly. Find the word that denotes antagonism and cold unfriendliness.",
-    workedSolution: "'Cordial' means warm, polite, and friendly. Its direct antonym in interpersonal relationships is 'hostile' (unfriendly and antagonistic).",
+    hint: "'Cordial' means warm, polite, and friendly. What word denotes aggressive, unwelcoming, and antagonistic?",
+    workedSolution: "'Cordial' means warm, genial, and friendly. Its direct behavioral antonym is 'hostile' (antagonistic and unfriendly).",
     points: 1
   },
   {
     number: 22,
-    prompt: "The introductory scene of the drama was rather dull, but the subsequent acts were remarkably ...... .",
-    options: ["interesting", "informative", "sensible", "educative"],
+    prompt: "The opening act of the theatrical performance was dull, but the climax was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'dull'.",
+    options: ["interesting", "informative", "sensible", "instructive"],
     correctAnswer: "interesting",
-    hint: "'Dull' means boring and unexciting. Find the word meaning engaging and captivating.",
-    workedSolution: "'Dull' means boring and uninspiring. Its direct antonym is 'interesting' (captivating, engaging, and lively).",
+    hint: "'Dull' means boring, unexciting, and lacking interest. What word denotes engaging, lively, and fascinating?",
+    workedSolution: "'Dull' describes something uninteresting, boring, or monotonous. Its direct antonym is 'interesting' (or exciting).",
     points: 1
   },
   {
     number: 23,
-    prompt: "Although he appeared feeble from illness, the veteran blacksmith was still physically ...... .",
-    options: ["bold", "strong", "bright", "successful"],
+    prompt: "The disease left the patient feeble, but following therapy he became remarkably ...... .\nChoose the word most nearly opposite in meaning to 'feeble'.",
+    options: ["bold", "strong", "lively", "resilient"],
     correctAnswer: "strong",
-    hint: "'Feeble' means weak and lacking physical power. Find the word denoting vigor and power.",
-    workedSolution: "'Feeble' means physically weak and frail. Its direct antonym is 'strong' (robust and powerful).",
+    hint: "'Feeble' means physically weak and lacking vigor. What word denotes possessing muscular power and robust health?",
+    workedSolution: "'Feeble' means physically weak, frail, or lacking strength. Its direct physical antonym is 'strong'.",
     points: 1
   },
   {
     number: 24,
-    prompt: "Instead of descending the stairs hurriedly, the injured athlete stepped down ...... .",
-    options: ["consciously", "lazily", "slowly", "noisily"],
+    prompt: "While the intruder descended the stairs hurriedly, the elderly watchman walked down ...... .\nChoose the word most nearly opposite in meaning to 'hurriedly'.",
+    options: ["cautiously", "lazily", "slowly", "quietly"],
     correctAnswer: "slowly",
-    hint: "'Hurriedly' means with great rush and speed. Find the word meaning at a low speed.",
-    workedSolution: "'Hurriedly' means quickly and in a rush. Its direct antonym is 'slowly'.",
+    hint: "'Hurriedly' means in a rapid rush. What word denotes moving with unhurried, measured pace?",
+    workedSolution: "'Hurriedly' means done with speed or haste. Its direct adverbial antonym is 'slowly'.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The diligent student was rewarded by the committee, while the ...... apprentice was cautioned.",
-    options: ["careless", "lucky", "playful", "proud"],
+    prompt: "The diligent scholar was awarded a certificate, whereas the ...... pupil failed the examination.\nChoose the word most nearly opposite in meaning to 'diligent'.",
+    options: ["careless", "playful", "insolent", "slothful"],
     correctAnswer: "careless",
-    hint: "'Diligent' means hardworking, conscientious, and careful. Find the word meaning negligent and untidy.",
-    workedSolution: "'Diligent' means showing steady, conscientious effort. Its direct antonym in work habits is 'careless' (negligent or slapdash).",
+    hint: "'Diligent' means industrious, painstaking, and attentive. What word denotes inattentive, negligent, and lacking care?",
+    workedSolution: "'Diligent' implies persistent care, earnestness, and hard work. Its direct behavioral antonym in academic duties is 'careless' (or lazy).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "The guardian visited the boarding house to ascertain how his ward was getting ...... with his studies.",
+    prompt: "Father visited the boarding school to ascertain how Abu was getting ...... in his coursework.",
     options: ["on", "down", "back", "up"],
     correctAnswer: "on",
-    hint: "Identify the phrasal verb meaning to make progress or fare in a situation.",
-    workedSolution: "The phrasal verb 'to get on' (or 'get along') means to make progress or manage in a situation ('getting on at school').",
+    hint: "Identify the phrasal verb meaning to make progress, manage, or fare in a situation: 'get on'.",
+    workedSolution: "The phrasal verb 'to get on' means to make progress, fare, or manage in a course of study: 'getting on at school'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "If the wooden ferry had been serviced properly, it ...... capsized during the storm.",
-    options: ["have not", "will not have", "would not have", "might have not"],
+    prompt: "If the wooden canoe had been properly caulked and maintained, it ...... capsized in the estuary.",
+    options: [
+      "have not",
+      "will not have",
+      "would not have",
+      "might have not"
+    ],
     correctAnswer: "would not have",
-    hint: "Conditional Type 3: 'If + past perfect' requires 'would not have + past participle' in the negative main clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition ('If the boat had been maintained'), the main clause takes 'would not have + past participle' ('would not have capsized').",
+    hint: "Third Conditional: 'had been properly maintained' requires 'would not have + past participle' in the main clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the main clause requires 'would not have + past participle': 'would not have capsized'.",
     points: 1
   },
   {
     number: 28,
-    prompt: "The white stallion galloped ...... than the black mare.",
+    prompt: "The thoroughbred white stallion is significantly ...... than the black mare.",
     options: ["faster", "very fast", "fast", "more fast"],
     correctAnswer: "faster",
-    hint: "Short one-syllable adverbs/adjectives take the '-er' comparative inflection followed by 'than'.",
-    workedSolution: "'Fast' is a monosyllabic word whose comparative degree is formed by adding '-er' ('faster than'). 'More fast' is ungrammatical.",
+    hint: "One-syllable comparative adjective paired with the comparative marker 'than': fast - faster.",
+    workedSolution: "One-syllable adjectives form their comparative degree with the suffix '-er' followed by 'than': 'faster than'. Forms like *more fast are ungrammatical.",
     points: 1
   },
   {
     number: 29,
-    prompt: "The villagers thought Kwame would become an agricultural officer, ......?",
+    prompt: "They thought he would qualify as a chartered accountant, ......?",
     options: ["wouldn't they", "didn't they", "wasn't they", "isn't they"],
     correctAnswer: "didn't they",
-    hint: "The main verb in the independent clause is 'thought' (simple past). Form a past tag with 'did'.",
-    workedSolution: "The primary subject and verb governing the sentence are 'They thought' (simple past affirmative). The question tag must be formed using 'did': 'didn't they?'.",
+    hint: "The main verb in the main clause is 'thought' (simple past of 'think'), requiring a question tag formed with 'did'.",
+    workedSolution: "The governing verb of the sentence is the simple past 'thought' with subject 'they'. The matching question tag is 'didn't they?'.",
     points: 1
   },
   {
@@ -394,58 +435,63 @@ const rawQuestions = [
     prompt: "There were only two students in the classroom who ...... any inkling of the correct answer.",
     options: ["have", "had", "has", "would"],
     correctAnswer: "had",
-    hint: "Sequence of tenses: The past copula 'were' requires the past tense 'had' in the relative clause.",
-    workedSolution: "Because the main clause is set in the simple past ('There were only two...'), the relative clause must maintain past tense agreement: 'who had any idea'.",
+    hint: "Sequence of past narrative tenses: Governed by the past copula 'There were...'.",
+    workedSolution: "In a past narrative framework governed by 'There were...', the subordinate relative clause requires the simple past tense: 'had'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "The passenger had boarded the express train, ......?",
+    prompt: "The traveler had boarded an express coach, ......?",
     options: ["wouldn't he", "hadn't he", "isn't it", "won't he"],
     correctAnswer: "hadn't he",
-    hint: "An affirmative past perfect clause with 'had' takes a negative tag using 'had'.",
-    workedSolution: "The statement contains the past perfect auxiliary 'had' ('had boarded'). The tag must be negative using the same auxiliary: 'hadn't he?'.",
+    hint: "The main clause contains the affirmative past perfect auxiliary 'had', requiring a negative contracted tag.",
+    workedSolution: "The auxiliary verb in the statement is affirmative past perfect 'had'. The corresponding question tag must be negative: 'hadn't he?'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "Mrs. Mensah ...... in this coastal municipality since 1970.",
-    options: ["was living", "has been living", "had lived", "is living"],
+    prompt: "Mrs. Mensah ...... in the municipality of Saltpond since 1970.",
+    options: [
+      "was living",
+      "has been living",
+      "has lived",
+      "is living"
+    ],
     correctAnswer: "has been living",
-    hint: "An action starting in the past and continuing up to the present with 'since' requires the Present Perfect Continuous.",
-    workedSolution: "The preposition 'since' specifying a starting point that extends into the present requires the Present Perfect Continuous tense ('has been living').",
+    hint: "An ongoing action beginning in past time and continuing up to the present with 'since [year]' takes the Present Perfect Continuous.",
+    workedSolution: "The duration phrase 'since 1970' indicating an action continuing uninterrupted from the past into the present requires the Present Perfect Continuous: 'has been living'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "The ticket clerk made the passenger ...... an advance reservation fee.",
+    prompt: "The transport booking clerk made the passenger ...... an advance reservation deposit.",
     options: ["to pay", "paid", "to be paying", "pay"],
     correctAnswer: "pay",
-    hint: "The causative verb 'made' takes an object followed by a bare infinitive without 'to'.",
-    workedSolution: "The causative verb 'make' (past: 'made') is followed by a direct object and a bare infinitive ('pay') without 'to'.",
+    hint: "The causative verb 'make' (past: 'made') takes a direct object followed by a bare infinitive without 'to'.",
+    workedSolution: "Causative 'made' requires a bare infinitive without 'to': 'made him pay a deposit'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "Although all the six woven kente cloths were magnificent, the tourist liked ...... of them.",
+    prompt: "Although all the bridal gowns were exquisite, she selected ...... of them.",
     options: ["any", "none", "neither", "both"],
     correctAnswer: "none",
-    hint: "When choosing zero out of three or more items, use this negative quantifier.",
-    workedSolution: "'None' is used to negate three or more items ('all the dresses'). 'Neither' applies strictly when choosing between two.",
+    hint: "Use the negative indefinite pronoun referring to a choice among three or more items ('all the dresses').",
+    workedSolution: "When referring to three or more items ('all the dresses') in a negative sense, standard English requires 'none'. ('Neither' applies to exactly two items).",
     points: 1
   },
   {
     number: 35,
-    prompt: "Kwesi and Ama are deeply in love with ......",
+    prompt: "Kwesi and Ama have been affectionate companions for years; they are deeply in love with ......",
     options: ["themselves", "one another", "each other", "ourselves"],
     correctAnswer: "each other",
-    hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
+    hint: "Reciprocal pronoun used when an action or emotion is mutually exchanged between exactly two individuals.",
     workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('Kwesi and Ama'). 'One another' is preferred for three or more.",
     points: 1
   },
   {
     number: 36,
-    prompt: "Trekking through the dense forest reserve is ...... to undertake without an experienced guide.",
+    prompt: "The mountain hike is ...... for the junior pupils to undertake in a single afternoon.",
     options: [
       "too long and difficult a journey",
       "the journey too long and difficult",
@@ -453,13 +499,13 @@ const rawQuestions = [
       "too long and difficult the journey"
     ],
     correctAnswer: "too long and difficult a journey",
-    hint: "Structure: 'too + adjective + a/an + singular noun'.",
-    workedSolution: "In formal English syntax, the modifier 'too' precedes the adjectives and takes the indefinite article before the noun: 'too + adjective + a + noun' ('too long and difficult a journey').",
+    hint: "Standard syntactic modifier order: 'too + compound adjective + a + noun'.",
+    workedSolution: "In formal English syntax, the modifier 'too' precedes the adjectives and takes the indefinite article before the noun: 'too long and difficult a journey'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "The torrential downpour shouldn't deter you ...... attending the community meeting.",
+    prompt: "The torrential downpour could not deter the candidates ...... traveling to the examination center.",
     options: ["for", "on", "by", "from"],
     correctAnswer: "from",
     hint: "Identify the preposition that regularly collocates with the verb 'deter'.",
@@ -468,11 +514,11 @@ const rawQuestions = [
   },
   {
     number: 38,
-    prompt: "The regional director is leaving ...... Takoradi early this morning.",
+    prompt: "Father packed his luggage because he was leaving ...... Kumasi by the morning coach.",
     options: ["for", "to", "by", "from"],
     correctAnswer: "for",
     hint: "When 'leave' indicates the destination of departure, it takes this preposition.",
-    workedSolution: "When stating the destination towards which one is traveling, 'leave' takes the preposition 'for' ('leaving for Takoradi').",
+    workedSolution: "When stating the destination towards which one is traveling, 'leave' takes the preposition 'for' ('leaving for Kumasi').",
     points: 1
   },
   {
@@ -491,13 +537,20 @@ const rawQuestions = [
   },
   {
     number: 40,
-    prompt: "No sooner had the minister opened the exhibition hall ...... the venue was packed to capacity.",
+    prompt: "No sooner had the invigilator distributed the question papers ...... the siren sounded.",
     options: ["when", "for", "as", "than"],
     correctAnswer: "than",
     hint: "The negative correlative temporal adverb 'No sooner' is always paired with 'than'.",
     workedSolution: "The correlative pair is 'No sooner ... than' ('No sooner had... than...'). ('Hardly' and 'Scarcely' pair with 'when').",
     points: 1
   }
+];
+
+// Combine raw items
+const allRawQuestions = [
+  ...passage1QuestionsRaw,
+  ...passage2QuestionsRaw,
+  ...generalQuestionsRaw
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -521,9 +574,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200901);
+const assignedTargetIndices = seedShuffle(targetKeys, 200902);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -535,21 +588,48 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
-  return {
+
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (idx < 5) {
+    passageTitle = passage1Title;
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (idx < 10) {
+    passageTitle = passage2Title;
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
+  const item: QuestionItem = {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
     points: q.points
   };
+
+  if (passageTitle) {
+    item.passageTitle = passageTitle;
+    item.passageText = passageText;
+    item.passage = passage;
+  }
+
+  return item;
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -676,7 +756,7 @@ const flattenedPaper2Questions = [
 ];
 
 async function seedBeceEnglish2009Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2009 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2009 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -703,27 +783,53 @@ async function seedBeceEnglish2009Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: Dawn Robbery Panic and the Hall Pillar",
+          title: passage1Title,
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
         },
         {
           id: "passage_2",
-          title: "Passage II: The Melodies and Signals of Songbirds",
+          title: passage2Title,
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: passage1Title,
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: passage2Title,
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
@@ -733,7 +839,7 @@ async function seedBeceEnglish2009Calibrated() {
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2009 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2009 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2009Calibrated()

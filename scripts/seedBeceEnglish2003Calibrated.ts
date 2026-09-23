@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -38,456 +38,517 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2003
-const passage1Text = "### 📖 PASSAGE I\n\nThe children rushed out of school that afternoon innocently singing the song they had just learned:\n\"Rain, rain, go away. Go and come another day. Little children want to play. Rain, rain, go away.\"\n\nBut they stopped abruptly when they looked up and saw dark clouds racing across the sky. These were signs of rain and the children were beside themselves with joy. Then they burst into yet another song:\n\"The rains will soon come. The sky will be bright. And the guns will boom.\"\n\nAs they sang and danced, they were soon joined by their parents in their happiness. It was six months since it had rained and all that time the farmers prayed for rain that would not come. The result was famine in the country for the land became so dry that new crops could not be sown and cassava could not be uprooted. The streams and the wells had dried up and the people could find very little water for themselves and their livestock. Was it then strange that adults danced and sang like children in the hope that their troubles would soon be over? They were sure the fetish priest’s sacrifice would not be in vain.\n\nBut they woke up the next morning to find the land was still dry; there was not a drop of rain water anywhere. Then they became angry and ran after the fetish priest. But he was gone before they could lynch him.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: THE GATHERING CLOUDS AND THE DROUGHT (CALIBRATED)
+// =========================================================================
+const passage1Text = `The school bell clanged for dismissal, and the pupils spilled into the open courtyard chanting the playful nursery verse they had rehearsed all week:
+"Rain, rain, go away,
+Come again another day,
+Little children want to play,
+Rain, rain, go away."
 
-const passage2Text = "### 📖 PASSAGE II\n\nTeacher Amu never lost the opportunity to give pep-talks to his children. \"Variety is the spice of life,\" he often began. Then he would tell them how life has opposites, like good and bad. He would talk about the variety of birds, the different kinds of fish and species of trees. His students could always tell when teacher Amu’s sermons were about to end. He would raise his voice and look up as he made his point: \"God made them all and He said, 'It is good.'\"\n\nThese words had lasting effect on the students. When class was over, they would go on reeling with laughter as they recited these words. Soon, it was not surprising when they began to call Teacher Amu 'God made them all' whenever his back was turned.\n\nBut one of them, Kofi Abre, did not consider Teacher Amu’s pep-talks funny at all. He was not amused that his classmates joked with his teacher’s words. Teacher Amu had said that the world was made up of different things, different people and different habits. So why did they bother when he, Abre, acted differently?\n\nThe other day, he shouted down a school mate who called him lazy. He almost bloodied a friend’s nose too when this friend scolded him for not doing his homework. Teacher Amu warned that he would punish Abre. It was an act of indiscipline. Kofi Abre shook his head. It was his friend who offended him yet Teacher Amu would punish him for being violent and different.";
+Suddenly, the singing ceased. Looking upward toward the horizon, the children noticed heavy, dark storm clouds gathering rapidly across the sky. These unmistakable harbingers of rain filled them with uncontrollable excitement. Instantly, they abandoned their rhyme and burst into a spirited traditional song of celebration:
+"The sweet downpour will soon arrive,
+The skies will turn radiant,
+And festive muskets will boom!"
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2003
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 11) ---
+Hearing the joyous uproar, parents working in the village compounds abandoned their tasks and joined their children in ecstatic dancing. It had been over half a year since the heavens had released a drop of moisture. Throughout those six grueling months, subsistence farmers had prayed fruitlessly for rain. The prolonged drought had triggered severe famine across the valley; the soil had baked into rock, preventing the planting of new seed corn and cementing mature cassava roots into the hardened earth. Community streams and shallow wells had dried to cracked mud, leaving humans and domestic cattle in desperate thirst.
+
+Small wonder, then, that adults cast aside their customary dignity and danced like toddlers, convinced that their prolonged misery was about to end. Everyone was persuaded that the white rams sacrificed by the local fetish priest at the sacred shrine had finally appeased the ancestral spirits.
+
+However, when dawn broke the following morning, a cruel reality greeted the community. The sky was pale and clear, and the parched earth remained bone-dry without a single trace of water. Overcome with fury and betrayal, the villagers seized sticks and machetes and marched on the shrine to lynch the deceptive priest. Fortunately for him, the crafty charlatan had fled under the cover of night before the mob arrived.`;
+
+const passage1Questions = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why did the school children suddenly alter their song as they rushed out of class?`,
-    passage: passage1Text,
+    prompt: "In Passage I, why did the schoolchildren abruptly cease singing their initial playground verse?",
     options: [
-      "They heard ceremonial musketry firing in the village",
-      "They observed dark rain clouds racing across the sky",
-      "Their parents had consulted the traditional shrine",
-      "They disliked the verse taught by their teacher"
+      "The village elders commanded them to maintain absolute silence",
+      "They spotted dark rain clouds gathering and realized rain was approaching",
+      "They had forgotten the remaining stanzas taught by their teacher",
+      "They heard the loud booming of celebratory muskets in the distance"
     ],
-    correctAnswer: "They observed dark rain clouds racing across the sky",
-    hint: "Reread paragraph two: 'they looked up and saw dark clouds racing across the sky. These were signs of rain...'",
-    workedSolution: "The children switched from begging the rain to go away to welcoming it because dark clouds indicated that the long-awaited rain was about to fall.",
+    correctAnswer: "They spotted dark rain clouds gathering and realized rain was approaching",
+    hint: "Reread paragraph two: they stopped when they saw dark clouds racing across the sky, indicating rain.",
+    workedSolution: "The children switched songs because the sudden sight of gathering dark clouds signaled an impending downpour, filling them with joy.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did the adult villagers join the children in dancing and singing?`,
-    passage: passage1Text,
+    prompt: "Why did the adult villagers join the children in dancing and singing in Passage I?",
     options: [
-      "They were celebrating a festive holiday",
-      "The children had returned safely from school",
-      "Torrential rain had finally started pouring",
-      "They firmly believed the prolonged drought was ending"
+      "They were celebrating the safe return of their wards from school",
+      "They firmly believed that the gathering clouds meant the long drought was breaking",
+      "The torrential rain had already started drenching the village",
+      "They were rejoicing over the fetish priest's sacrificial feast"
     ],
-    correctAnswer: "They firmly believed the prolonged drought was ending",
-    hint: "The farmers had endured six months without rain; they hoped their troubles were over.",
-    workedSolution: "The adults joined in joyous celebration because they believed the gathering rain clouds signaled the end of their six-month drought and famine.",
+    correctAnswer: "They firmly believed that the gathering clouds meant the long drought was breaking",
+    hint: "Check paragraph three: they joined in because they believed their troubles from the six-month drought would soon be over.",
+    workedSolution: "The adults danced because they genuinely believed the gathering clouds were the answer to their six months of prayers for rain.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nWhich of the following historical facts is true according to Passage I?`,
-    passage: passage1Text,
+    prompt: "Which of the following statements is factually accurate according to Passage I?",
     options: [
-      "The villagers assaulted the shrine priest",
-      "It had rained continuously for six months",
-      "Streams and wells had dried up, causing acute water shortage",
-      "The children were opposed to the arrival of rain"
+      "The angry villagers caught and lynched the priest at his shrine",
+      "Torrential rains fell steadily throughout the night until morning",
+      "Water was critically scarce for both human beings and livestock",
+      "The schoolchildren wished for the dry spell to continue indefinitely"
     ],
-    correctAnswer: "Streams and wells had dried up, causing acute water shortage",
-    hint: "Paragraph two describes the drying up of water bodies and the suffering of livestock.",
-    workedSolution: "The text explicitly states: 'The streams and the wells had also dried up and the people could find very little water for themselves and their livestock.'",
+    correctAnswer: "Water was critically scarce for both human beings and livestock",
+    hint: "Paragraph three notes: streams and wells had dried up, leaving very little water for people and animals.",
+    workedSolution: "The passage notes that streams and wells had dried up, leaving scarcely any water for human consumption or cattle.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'abruptly' in 'stopped abruptly' means ............`,
-    passage: passage1Text,
-    options: ["soon", "totally", "slowly", "suddenly"],
-    correctAnswer: "suddenly",
-    hint: "Happening quickly, unexpectedly, and without warning.",
-    workedSolution: "'Abruptly' means suddenly, unexpectedly, or precipitously; 'suddenly' is its exact equivalent.",
+    prompt: "In Passage I, the word 'abruptly' in 'they stopped abruptly' means ............",
+    options: [
+      "gradually and smoothly",
+      "suddenly and without warning",
+      "reluctantly and sadly",
+      "quietly and timidly"
+    ],
+    correctAnswer: "suddenly and without warning",
+    hint: "'Abruptly' denotes an unexpected, sudden halt.",
+    workedSolution: "'Abruptly' means suddenly, unexpectedly, or without delay; 'suddenly and without warning' is its direct meaning.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nWhy did the furious villagers pursue the fetish priest with the intention of lynching him?`,
-    passage: passage1Text,
+    prompt: "Why did the villagers resolve to lynch the fetish priest the following morning?",
     options: [
-      "Famine had struck the land",
-      "The local streams had dried up",
-      "They had forgotten to perform the sacrifices",
-      "His promises failed and he had deceived them"
+      "He refused to share the meat of the sacrificed rams",
+      "He had falsely promised rain and deceived them into believing his sacrifices had worked",
+      "He commanded the farmers to stop uprooting cassava tubers",
+      "He had desecrated the sacred grove during the night"
     ],
-    correctAnswer: "His promises failed and he had deceived them",
-    hint: "The sacrifices promised rain, but morning came with completely dry ground.",
-    workedSolution: "The villagers felt betrayed and cheated because the priest had guaranteed that his sacrifices would bring rain, yet the ground remained bone dry.",
+    correctAnswer: "He had falsely promised rain and deceived them into believing his sacrifices had worked",
+    hint: "The morning broke completely dry despite the expensive sacrifices, demonstrating that the priest had deceived them.",
+    workedSolution: "The villagers felt betrayed and enraged because the priest had deceived them into believing his rituals guaranteed rain.",
     points: 1
   },
   {
     number: 6,
-    prompt: `${passage1Text}\n\n---\nWhat profound philosophical lesson does the reader learn from the event in Passage I?`,
-    passage: passage1Text,
+    prompt: "From the narrative development in Passage I, we learn that ............",
     options: [
-      "Children are completely naive",
-      "Human beings cannot manipulate or guarantee the forces of nature",
-      "Adults invariably act like immature children",
-      "Droughts last only for a few days"
+      "fetish priests always predict seasonal weather accurately",
+      "human beings cannot always predict or control the natural elements",
+      "schoolchildren are indifferent to community hardship",
+      "farmers should never plant cassava in dry weather"
     ],
-    correctAnswer: "Human beings cannot manipulate or guarantee the forces of nature",
-    hint: "Despite rituals and desperate hopes, nature remained unyielding.",
-    workedSolution: "The passage illustrates that human rituals and predictions cannot dictate the unpredictable forces of nature and weather.",
+    correctAnswer: "human beings cannot always predict or control the natural elements",
+    hint: "Despite human expectations, songs, and sacrifices, the rain never fell; nature remains outside human mastery.",
+    workedSolution: "The story demonstrates that despite human rituals, gathering clouds, and fervent hopes, humanity cannot reliably control natural weather patterns.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: TEACHER AMU'S LESSONS AND ABRE (CALIBRATED)
+// =========================================================================
+const passage2Text = `Teacher Amu never let slip an opportunity to deliver moral pep-talks to his students. "Variety is the spice of life," he would invariably begin in his booming voice. He would then elaborate on how existence is constituted of necessary contrasts, like light and darkness, virtue and vice. He would describe the infinite varieties of wild birds, the diverse creatures of the oceans, and the countless species of forest timber. His pupils could always predict when his sermon was reaching its climax. Raising his index finger and gazing toward the ceiling, he would conclude with flourish: "God made them all, and He declared, 'It is good'!"
+
+These concluding words left an indelible impression on the class. When instructional periods ended, students would burst into fits of laughter, mimicking his gestures and reciting the phrase. Before long, it was no surprise that pupils began whispering the nickname "God made them all" whenever Teacher Amu turned his back to write on the chalkboard.
+
+However, one pupil, Kofi Abre, found nothing amusing in his classmates' teasing. He was irritated that his peers made a mockery of Teacher Amu's philosophy. Had not the teacher emphasized that the universe was made up of contrasting temperaments, varied individuals, and different habits? Why, then, did his classmates grumble whenever he, Abre, acted according to his own distinct nature?
+
+Just the previous week, Abre had aggressively shouted down a classmate who labeled him sluggish. He had nearly fractured another boy's jaw when that friend rebuked him for failing to complete his homework assignments. Teacher Amu had sternly warned Abre that such violence constituted gross indiscipline and would be severely punished. Abre shook his head in bitter resentment. His friend had provoked him, yet Teacher Amu threatened to punish him merely for being different and reacting in his own unique way.`;
+
+const passage2Questions = [
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the proverb 'Variety is the spice of life' implies that human existence ............`,
-    passage: passage2Text,
+    prompt: "In Passage II, the aphorism 'Variety is the spice of life' means that life ............",
     options: [
-      "has its inevitable sorrows",
-      "resembles a seasoned meal",
-      "must be treated with rigid seriousness",
-      "is enriched by diversity and different interesting experiences"
+      "is comparable to heavily seasoned food",
+      "is full of unexpected troubles and sorrow",
+      "is enriched and made interesting by differences and diversity",
+      "demands that everyone behave in the exact same manner"
     ],
-    correctAnswer: "is enriched by diversity and different interesting experiences",
-    hint: "Life is made lively and enjoyable by having diverse things, people, and habits.",
-    workedSolution: "The idiom 'Variety is the spice of life' means that diversity, differences, and varied experiences make life stimulating, enjoyable, and rich.",
+    correctAnswer: "is enriched and made interesting by differences and diversity",
+    hint: "The proverb expresses that differences, contrasts, and varied experiences make life enjoyable and exciting.",
+    workedSolution: "'Variety is the spice of life' is a proverb meaning that diversity, differences, and varied experiences make human existence engaging and interesting.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nWhy did the pupils affectionately nickname Teacher Amu 'God made them all'?`,
-    passage: passage2Text,
+    prompt: "Why did the students nickname Teacher Amu 'God made them all' in Passage II?",
     options: [
-      "It was his favorite concluding phrase in every sermon",
-      "He constantly gazed upward at the roof",
-      "His pep-talks were comically humorous",
-      "He had a deep passion for preaching"
+      "He was an ordained priest who conducted Sunday chapel sermons",
+      "It was his favorite concluding catchphrase during moral pep-talks",
+      "He constantly gazed toward the heavens when teaching science",
+      "He taught biological classification of plant and animal species"
     ],
-    correctAnswer: "It was his favorite concluding phrase in every sermon",
-    hint: "Check paragraph one: 'He would raise his voice...: God made them all...'",
-    workedSolution: "The students gave him the nickname because he invariably concluded every assembly pep-talk with the dramatic proclamation: 'God made them all and He said, It is good.'",
+    correctAnswer: "It was his favorite concluding catchphrase during moral pep-talks",
+    hint: "Paragraph one and two note that he always concluded his speeches with that exact religious phrase, making it memorable.",
+    workedSolution: "The students gave him the nickname because he invariably concluded every single one of his moral lectures with that memorable phrase.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why did Kofi Abre resent his classmates' jokes regarding Teacher Amu's words?`,
-    passage: passage2Text,
+    prompt: "Why was Kofi Abre displeased when his classmates mocked Teacher Amu's words?",
     options: [
-      "He harbored hatred toward his schoolmates",
-      "He was terrified of the school headmaster",
-      "He took the teacher's philosophy literally to justify his own eccentric behavior",
-      "He was chronically indolent"
+      "He took the philosophical message of diversity seriously to justify his own behavior",
+      "He was terrified that the master would cancel morning break",
+      "He harbored intense personal hatred toward all his classmates",
+      "He was the class prefect tasked with maintaining classroom order"
     ],
-    correctAnswer: "He took the teacher's philosophy literally to justify his own eccentric behavior",
-    hint: "He thought if the world is full of different people, why should anyone correct his laziness or anger?",
-    workedSolution: "Abre took the sermon literally to mean that everyone is entitled to act however they please without question, resenting any criticism of his own misconduct.",
+    correctAnswer: "He took the philosophical message of diversity seriously to justify his own behavior",
+    hint: "Paragraph three reveals that Abre took the words literally to argue that his own different, aggressive conduct was natural.",
+    workedSolution: "Abre took Teacher Amu's teachings on diversity seriously and felt that his peers had no right to criticize his unusual or aggressive behavior.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'scolded' in 'when his friend scolded him' means ............`,
-    passage: passage2Text,
-    options: ["reminded", "annoyed", "rebuked", "questioned"],
-    correctAnswer: "rebuked",
-    hint: "To reprimand or criticize someone angrily for a fault.",
-    workedSolution: "'Scolded' means reprimanded, criticized, or chided sharply; 'rebuked' is its direct synonym.",
+    prompt: "In Passage II, the word 'rebuked' in 'when that friend rebuked him' means ............",
+    options: [
+      "interrogated closely",
+      "scolded and reprimanded sharply",
+      "reminded politely",
+      "entertained humorously"
+    ],
+    correctAnswer: "scolded and reprimanded sharply",
+    hint: "'Rebuked' (or scolded) means criticized or reprimanded for a fault.",
+    workedSolution: "'Rebuked' means expressed sharp disapproval or reprimanded; 'scolded and reprimanded sharply' is its direct meaning.",
     points: 1
   },
   {
     number: 11,
-    prompt: `${passage2Text}\n\n---\nWhy did Teacher Amu resolve to punish Kofi Abre despite his preaching on diversity?`,
-    passage: passage2Text,
+    prompt: "Why did Teacher Amu warn that he would administer disciplinary punishment to Kofi Abre?",
     options: [
-      "Abre refused to complete his homework",
-      "Abre exhibited violent and undisciplined behavior toward peers",
-      "Abre rejected the teacher's sermons",
-      "Abre shook his head in disrespect"
+      "Because Abre refused to recite the class catchphrase",
+      "Because Abre engaged in violent physical aggression and indiscipline",
+      "Because Abre neglected to memorize biological species of birds",
+      "Because Abre arrived late to the morning lecture"
     ],
-    correctAnswer: "Abre exhibited violent and undisciplined behavior toward peers",
-    hint: "Abre shouted down a peer and nearly bloodied a friend's nose.",
-    workedSolution: "Teacher Amu punished him because physical violence and assault constitute acts of gross indiscipline that cannot be excused under the guise of being 'different'.",
+    correctAnswer: "Because Abre engaged in violent physical aggression and indiscipline",
+    hint: "Paragraph four explains that Abre shouted down peers and almost broke a friend's jaw, which constituted gross indiscipline.",
+    workedSolution: "Teacher Amu cautioned Abre because resorting to physical violence and assault against classmates constitutes unacceptable indiscipline.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 2003 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (12 - 16) ---
   {
     number: 12,
-    prompt: "Abass was not selected for the marathon team because he possessed little stamina.\nChoose the word nearest in meaning to the underlined word 'stamina'.",
-    options: ["love", "potential", "endurance", "skill"],
+    prompt: "Abass was not selected for the marathon squad because he lacked adequate stamina.\nChoose the word nearest in meaning to 'stamina'.",
+    options: ["agility", "endurance", "enthusiasm", "muscle"],
     correctAnswer: "endurance",
-    hint: "The physical or mental strength to sustain prolonged physical effort.",
-    workedSolution: "'Stamina' refers to the physical capacity to sustain prolonged effort or activity; 'endurance' is its direct synonym.",
+    hint: "The ability to sustain prolonged physical or mental effort.",
+    workedSolution: "'Stamina' means the physical or mental ability to sustain prolonged exertion; 'endurance' is its direct synonym.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The border community was completely deserted after the civil conflict erupted.\nChoose the word nearest in meaning to the underlined word 'deserted'.",
-    options: ["destroyed", "built", "quiet", "abandoned"],
+    prompt: "The border town was completely deserted after the outbreak of civil war.\nChoose the word nearest in meaning to 'deserted'.",
+    options: ["fortified", "shattered", "abandoned", "surrounded"],
     correctAnswer: "abandoned",
-    hint: "Vacated, left empty, or having no occupants.",
-    workedSolution: "'Deserted' means abandoned by inhabitants or left empty; 'abandoned' is its exact equivalent.",
+    hint: "Empty of people; vacated and left behind.",
+    workedSolution: "'Deserted' describes a place empty of residents or left desolate; 'abandoned' is its exact equivalent.",
     points: 1
   },
   {
     number: 14,
-    prompt: "Detectives rigorously interrogated the suspect regarding the missing government bonds.\nChoose the word nearest in meaning to the underlined word 'interrogated'.",
-    options: ["warned", "questioned", "detained", "beat"],
+    prompt: "The detectives interrogated the prime suspect at the regional police command.\nChoose the word nearest in meaning to 'interrogated'.",
+    options: ["cautioned", "questioned", "detained", "admonished"],
     correctAnswer: "questioned",
-    hint: "To ask questions formally, closely, or thoroughly.",
-    workedSolution: "'Interrogated' means examined through systematic formal questioning; 'questioned' is its direct synonym.",
+    hint: "Asked questions formally, aggressively, or systematically.",
+    workedSolution: "'Interrogated' means examined or asked questions formally; 'questioned' is its direct synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The headmistress was deeply impressed with the prefect's terminal leadership report.\nChoose the word nearest in meaning to the underlined word 'impressed'.",
-    options: ["moved", "deceived", "calmed", "pleased"],
+    prompt: "The senior master was thoroughly impressed with Kwesi's technical drawing portfolio.\nChoose the word nearest in meaning to 'impressed'.",
+    options: ["pleased", "deceived", "calmed", "surprised"],
     correctAnswer: "pleased",
-    hint: "Filled with admiration, approval, or positive satisfaction.",
-    workedSolution: "'Impressed' means feeling admiration, approval, or satisfaction; 'pleased' is the closest synonym in this context.",
+    hint: "Feeling admiration, approval, or deep satisfaction.",
+    workedSolution: "'Impressed' means feeling deep admiration or satisfaction with quality; 'pleased' is its closest synonym.",
     points: 1
   },
   {
     number: 16,
-    prompt: "Experienced clinical surgeons are exceptionally cautious during complex operations.\nChoose the word nearest in meaning to the underlined word 'cautious'.",
-    options: ["careful", "good", "experienced", "friendly"],
+    prompt: "Experienced pediatricians are exceedingly cautious when administering potent medications.\nChoose the word nearest in meaning to 'cautious'.",
+    options: ["careful", "dexterous", "hesitant", "competent"],
     correctAnswer: "careful",
-    hint: "Taking great care to avoid risk, error, or danger.",
-    workedSolution: "'Cautious' means alert, prudent, and taking care to avoid harm or error; 'careful' is its direct synonym.",
+    hint: "Taking care to avoid risk, error, or danger.",
+    workedSolution: "'Cautious' means showing care, wariness, and prudence to avoid hazards; 'careful' is its direct synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (17 - 21) ---
   {
     number: 17,
-    prompt: "The convener was disappointed because only fifteen delegates turned up for the summit. This means that fifteen delegates ............ the summit.",
-    options: ["attended", "avoided", "postponed", "disturbed"],
-    correctAnswer: "attended",
-    hint: "Arrived, appeared, or made a physical presence at an event.",
-    workedSolution: "The phrasal verb 'to turn up' means to arrive, appear, or attend a scheduled gathering.",
+    prompt: "The chairman was disappointed because barely twelve executive members turned up for the deliberation. This means that twelve members ............",
+    options: [
+      "avoided the meeting hall",
+      "attended the scheduled meeting",
+      "voted against the agenda",
+      "postponed the conference"
+    ],
+    correctAnswer: "attended the scheduled meeting",
+    hint: "To turn up means to arrive, appear, or be present.",
+    workedSolution: "The phrasal verb 'to turn up' means to appear, arrive, or attend an event; 'attended' is its exact meaning.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Kwame held his tongue throughout the heated dispute between the elders. This means that Kwame ............",
-    options: ["was furious", "was joyful", "smiled broadly", "kept quiet"],
-    correctAnswer: "kept quiet",
-    hint: "Refraining from speaking or keeping silent.",
-    workedSolution: "The idiom 'to hold one's tongue' means to maintain silence and refrain from speaking.",
+    prompt: "Despite the provocation, Tony held his tongue throughout the angry dispute. This means that Tony ............",
+    options: [
+      "clenched his jaw in agony",
+      "spoke in an aggressive tone",
+      "refrained from speaking and kept quiet",
+      "laughed sarcastically at his rivals"
+    ],
+    correctAnswer: "refrained from speaking and kept quiet",
+    hint: "To refrain from expressing an opinion; to keep silent.",
+    workedSolution: "The idiom 'to hold one's tongue' means to deliberately remain silent and refrain from speaking.",
     points: 1
   },
   {
     number: 19,
-    prompt: "Jones will let the cat out of the bag if he attends the meeting. This means he will ............",
-    options: ["provoke trouble", "confuse the house", "reveal the secret", "release an animal"],
-    correctAnswer: "reveal the secret",
-    hint: "Disclosing a confidential matter carelessly or prematurely.",
-    workedSolution: "'To let the cat out of the bag' is an idiom meaning to reveal a secret or disclose confidential information.",
+    prompt: "Do not invite Jones to the secret briefing, as he is sure to let the cat out of the bag. This means Jones will ............",
+    options: [
+      "create chaos in the room",
+      "reveal the confidential secret",
+      "bring an animal into the hall",
+      "misplace the official files"
+    ],
+    correctAnswer: "reveal the confidential secret",
+    hint: "To disclose a secret carelessly or prematurely.",
+    workedSolution: "The idiom 'to let the cat out of the bag' means to disclose confidential information or reveal a secret.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The municipal engineer cleared the air regarding the delayed water project. This means that he ............",
+    prompt: "The school principal cleared the air regarding the recent increase in boarding levies. This means the principal ............",
     options: [
-      "explained the reasons and dispelled doubts",
-      "broadcasted the contract costs",
-      "advertised in the national press",
-      "apologized for his incompetence"
+      "cancelled the planned increment",
+      "opened the classroom windows",
+      "explained the reasons and removed misunderstandings",
+      "apologized for imposing the fees"
     ],
-    correctAnswer: "explained the reasons and dispelled doubts",
-    hint: "Removing suspicion, confusion, or misunderstanding through clarification.",
-    workedSolution: "The idiom 'to clear the air' means to clarify a confusing situation, resolve misunderstandings, and dispel doubts.",
+    correctAnswer: "explained the reasons and removed misunderstandings",
+    hint: "To eliminate doubts, misunderstandings, or suspicions through clarification.",
+    workedSolution: "The idiom 'to clear the air' means to eliminate confusion, suspicion, or tension by explaining the full truth openly.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The striker's shot missed the goalpost by a hair's breadth. This means that ............",
+    prompt: "The striker's powerful shot missed the goalpost by a hair's breadth. This means that ............",
     options: [
-      "he shot wide into the crowd",
-      "the goal was ruled offside",
-      "he came extremely close to scoring a goal",
-      "the goalkeeper blocked the shot easily"
+      "the ball flew high into the spectator stands",
+      "the goalkeeper caught the ball effortlessly",
+      "he came extraordinarily close to scoring a goal",
+      "the goal was ruled offside by the referee"
     ],
-    correctAnswer: "he came extremely close to scoring a goal",
-    hint: "By a minute, tiny margin of distance.",
-    workedSolution: "The idiom 'by a hair's breadth' means by an extremely tiny, narrow margin; in sports, it means narrowly missing or nearly scoring.",
+    correctAnswer: "he came extraordinarily close to scoring a goal",
+    hint: "By a very narrow margin; barely missing.",
+    workedSolution: "The idiom 'by a hair's breadth' means by an extremely tiny margin; the striker came within inches of scoring a goal.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (22 - 26) ---
   {
     number: 22,
-    prompt: "Applying pure shea butter to the skin makes it smooth, but severe harmattan winds make it ...... .",
-    options: ["soft", "rough", "warm", "dark"],
+    prompt: "Applying pure shea butter makes dry skin smooth, whereas exposure to wind makes it ...... .\nChoose the word most nearly opposite in meaning to 'smooth'.",
+    options: ["dark", "flaccid", "rough", "moist"],
     correctAnswer: "rough",
-    hint: "'Smooth' means having an even, gentle surface. Find the word meaning uneven or coarse.",
-    workedSolution: "'Smooth' describes an even, gentle texture. Its direct physical antonym is 'rough' (coarse or uneven).",
+    hint: "'Smooth' means having an even, gentle surface. What word denotes uneven, coarse texture?",
+    workedSolution: "'Smooth' describes an even, flat surface. Its direct physical antonym regarding skin or texture is 'rough'.",
     points: 1
   },
   {
     number: 23,
-    prompt: "Never despise underprivileged individuals because of your current wealth, but learn to ...... their endurance.",
-    options: ["cheat", "avoid", "admire", "annoy"],
+    prompt: "It is wrong to despise the poor; rather, we should ...... their honest industry.\nChoose the word most nearly opposite in meaning to 'despise'.",
+    options: ["admire", "defraud", "tolerate", "pity"],
     correctAnswer: "admire",
-    hint: "'Despise' means to look down on with contempt. Find the word meaning to regard with high respect and approval.",
-    workedSolution: "'Despise' means to hold in contempt or disdain. Its direct antonym is 'admire' (to respect, appreciate, or esteem).",
+    hint: "'Despise' means to look down on with contempt. Find the word denoting looking up to with respect.",
+    workedSolution: "'Despise' means to view with contempt, disdain, or scorn. Its direct antonym is 'admire' (or respect).",
     points: 1
   },
   {
     number: 24,
-    prompt: "Blinking when dust blows into the eye is an involuntary reflex, whereas raising your hand is ...... .",
-    options: ["difficult", "slow", "quick", "intentional"],
+    prompt: "Sneezing is largely an involuntary reflex, whereas speaking is a completely ...... action.\nChoose the word most nearly opposite in meaning to 'involuntary'.",
+    options: ["swift", "complex", "intentional", "natural"],
     correctAnswer: "intentional",
-    hint: "'Involuntary' means done automatically without conscious will. Find the word meaning done on purpose.",
-    workedSolution: "'Involuntary' describes an action done without conscious choice. Its direct antonym is 'intentional' (or voluntary/deliberate).",
+    hint: "'Involuntary' means done without conscious control. What word denotes done on purpose with conscious will?",
+    workedSolution: "'Involuntary' describes an action performed unconsciously without deliberate choice. Its direct antonym is 'intentional' (or voluntary).",
     points: 1
   },
   {
     number: 25,
-    prompt: "While Kojo was a reckless spendthrift, his elder brother was a cautious ...... .",
-    options: ["miser", "pauper", "weakling", "thief"],
+    prompt: "Kofi declared that he would rather live as a generous spendthrift than as a stingy ...... .\nChoose the word most nearly opposite in meaning to 'spendthrift'.",
+    options: ["pauper", "miser", "bankrupt", "usurer"],
     correctAnswer: "miser",
-    hint: "'Spendthrift' means someone who squanders money wastefully. Find the word for someone who hoards money and hates spending.",
-    workedSolution: "'Spendthrift' denotes a person who spends money wastefully. Its direct financial antonym is 'miser' (a hoarder who hates spending).",
+    hint: "A 'spendthrift' spends money wastefully and extravagantly. What word denotes someone who hoards money and hates spending?",
+    workedSolution: "'Spendthrift' denotes someone who squanders money extravagantly. Its direct economic opposite is 'miser' (one who hoards wealth selfishly).",
     points: 1
   },
   {
     number: 26,
-    prompt: "The visiting delegation expected a cordial reception, but received a distinctly ...... encounter.",
-    options: ["plain", "hostile", "calm", "steady"],
+    prompt: "The visiting delegation received a cordial reception from the hosts, but a ...... posture from the protesters.\nChoose the word most nearly opposite in meaning to 'cordial'.",
+    options: ["haughty", "hostile", "rigid", "cautious"],
     correctAnswer: "hostile",
-    hint: "'Cordial' means warm and friendly. Find the word denoting antagonism and cold enmity.",
-    workedSolution: "'Cordial' means warm, polite, and genial. Its direct opposite in human relations is 'hostile' (unfriendly, cold, and antagonistic).",
+    hint: "'Cordial' means warm and welcoming. What word denotes antagonistic, unwelcoming, and aggressive?",
+    workedSolution: "'Cordial' means warm, genial, and polite. Its direct behavioral antonym is 'hostile' (antagonistic and unfriendly).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (27 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (27 - 40) ---
   {
     number: 27,
-    prompt: "Adolescents are strongly counseled to abstain ...... substance abuse and risky habits.",
-    options: ["in", "on", "from", "through"],
+    prompt: "Responsible adolescents are strongly counseled to abstain ...... risky behaviors.",
+    options: ["in", "on", "from", "against"],
     correctAnswer: "from",
     hint: "Identify the preposition that regularly collocates with the verb 'abstain'.",
-    workedSolution: "In standard English, the verb 'abstain' is followed by the preposition 'from' ('abstain from alcohol / smoking / sex').",
+    workedSolution: "In standard English grammar, the verb 'abstain' requires the preposition 'from' ('abstain from alcohol/drugs').",
     points: 1
   },
   {
     number: 28,
-    prompt: "Our father writes with exceptional elegance, ......?",
-    options: ["would he", "wouldn't he", "doesn't he", "didn't he"],
-    correctAnswer: "doesn't he",
-    hint: "The main verb 'writes' is in the simple present tense (habitual action) with a singular subject ('father').",
-    workedSolution: "The main clause has a singular subject and a positive present tense verb ('writes'). The question tag must be negative and use 'does': 'doesn't he?'.",
+    prompt: "Father writes with exceptional elegance, ...... he?",
+    options: ["wouldn't", "didn't", "doesn't", "won't"],
+    correctAnswer: "doesn't",
+    hint: "The main verb 'writes' is simple present affirmative with singular subject 'Father'. Form a negative tag with 'does'.",
+    workedSolution: "The main clause has an affirmative simple present verb ('writes') with singular subject 'Father'. Its matching tag is 'doesn't he?'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "Heavy commercial commodities are usually transported ...... sea.",
+    prompt: "Heavy industrial mining machinery is transported across oceans ...... sea.",
     options: ["through", "to", "on", "by"],
     correctAnswer: "by",
-    hint: "General modes of transport (sea, air, road, rail) take the preposition 'by' without determiners.",
-    workedSolution: "When describing standard means or routes of cargo transit without articles, English uses 'by' ('by sea', 'by air', 'by rail').",
+    hint: "General modes of transport (sea, air, road, rail) take the preposition 'by' without an article.",
+    workedSolution: "When describing standard modes of transport or shipping without determiners, English uses 'by' ('by sea', 'by air').",
     points: 1
   },
   {
     number: 30,
-    prompt: "Life Skills ...... my favorite academic subject when I was a junior high student.",
+    prompt: "Social Studies ...... my favorite subject throughout my basic school years.",
     options: ["has been", "were", "was", "have been"],
     correctAnswer: "was",
-    hint: "School subjects ending in '-s' (Life Skills, Mathematics, Physics) are treated as singular nouns.",
-    workedSolution: "Names of school subjects and academic disciplines ending in '-s' ('Life Skills') take a singular verb. In the past narrative frame ('when I was...'), the verb is 'was'.",
+    hint: "School academic subjects ending in '-s' (Social Studies, Mathematics, Physics) are grammatically singular.",
+    workedSolution: "Academic subjects like 'Social Studies' or 'Life Skills' are treated as singular nouns. In a past narrative context, it requires 'was'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "\"Would you mind if I borrowed your dictionary for a moment?\"\n\"............, go right ahead.\"",
-    options: ["Yes, I do", "Yes, I mind", "No, I don't", "No, I wouldn't"],
+    prompt: '"Would you mind if I borrowed your dictionary?"\n"............; please take it."',
+    options: [
+      "Yes, I do",
+      "Yes, I mind",
+      "No, I wouldn't",
+      "No, I don't mind"
+    ],
     correctAnswer: "No, I wouldn't",
-    hint: "To grant permission politely to a 'Would you mind' request, answer in the negative with the matching conditional auxiliary.",
-    workedSolution: "Answering 'No, I wouldn't [mind]' politely grants permission (meaning 'I do not object'). 'Yes' would mean you object and refuse permission.",
+    hint: "A polite affirmative grant of permission to 'Would you mind...?' requires a negative modal response: 'No, I wouldn't [mind]'.",
+    workedSolution: "When someone asks 'Would you mind...?', replying 'No' means 'I do not object' (granting permission), matching the hypothetical modal: 'No, I wouldn't'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "Has Sister Edith ...... her evening dose of herbal tonic?",
-    options: ["drunk", "drink", "drinks", "drank"],
+    prompt: "Has Sister Edith ...... her glass of herbal tea this evening?",
+    options: ["drank", "drink", "drinks", "drunk"],
     correctAnswer: "drunk",
-    hint: "The present perfect auxiliary 'has' requires the past participle form of 'drink'.",
-    workedSolution: "The principal parts of 'drink' are drink (base) - drank (simple past) - drunk (past participle). Following 'has', the past participle 'drunk' is required.",
+    hint: "The present perfect auxiliary 'Has' takes the past participle form of 'drink': drink - drank - drunk.",
+    workedSolution: "The principal parts of 'drink' are: present 'drink', past 'drank', past participle 'drunk'. Following 'Has', the past participle 'drunk' is required.",
     points: 1
   },
   {
     number: 33,
-    prompt: "If my elder uncle had arrived on time, I ...... have received my school supplies.",
+    prompt: "If my elder brother had arrived from Kumasi, I ...... have received my school fees.",
     options: ["may", "will", "shall", "would"],
     correctAnswer: "would",
-    hint: "Third Conditional: 'If + past perfect' takes 'would have + past participle' in the main clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition ('If my uncle had come'), the main clause takes 'would have' followed by the past participle.",
+    hint: "Third Conditional: 'had arrived' in the if-clause requires 'would + have + past participle' in the main clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the main clause requires the past modal auxiliary 'would' ('would have received').",
     points: 1
   },
   {
     number: 34,
-    prompt: "Daily newspapers are generally ...... weekly magazines.",
-    options: ["cheap as", "cheaper than", "cheapest of", "cheap than"],
+    prompt: "Daily national newspapers are significantly ...... commercial glossy magazines.",
+    options: ["cheap as", "cheapest of", "cheaper than", "cheap than"],
     correctAnswer: "cheaper than",
-    hint: "Comparing two items using the comparative inflection '-er' followed by 'than'.",
-    workedSolution: "When comparing two things, the comparative form followed by 'than' ('cheaper than') is required.",
+    hint: "Comparative degree of the one-syllable adjective 'cheap' followed by the comparative particle 'than'.",
+    workedSolution: "Comparing two items requires the comparative inflection '-er' followed by 'than': 'cheaper than'.",
     points: 1
   },
   {
     number: 35,
-    prompt: "The music master has composed a delightful new ...... rhyme.",
-    options: ["children", "childrens'", "children's", "childrens"],
+    prompt: "The kindergarten teacher taught the pupils a delightful new ...... song.",
+    options: ["children", "childrens'", "childrens", "children's"],
     correctAnswer: "children's",
-    hint: "'Children' is an irregular plural noun that forms its possessive by adding an apostrophe and 's'.",
-    workedSolution: "'Children' is already plural. Its possessive is formed by attaching ''s' ('children's rhyme').",
+    hint: "The irregular plural noun 'children' forms its possessive by adding apostrophe + 's' ('children's').",
+    workedSolution: "'Children' is already plural. Plural nouns that do not end in 's' form their possessive by adding an apostrophe and 's' ('children's song').",
     points: 1
   },
   {
     number: 36,
-    prompt: "Kofi informed his mother that he ...... eat his lunch later in the afternoon.",
+    prompt: "Kofi informed his mother that he ...... complete his homework before supper.",
     options: ["will", "can", "would", "shall"],
     correctAnswer: "would",
-    hint: "In indirect reported speech following a past reporting verb ('informed'), 'will' shifts back to 'would'.",
-    workedSolution: "Because the reporting verb 'informed/told' is in the past tense, the future modal auxiliary 'will' shifts to its past form 'would'.",
+    hint: "Reported speech sequence of tenses: The past reporting verb 'informed' requires the backshift of 'will' to 'would'.",
+    workedSolution: "In indirect reported speech governed by a past reporting verb ('informed'), the modal 'will' shifts to its past form 'would'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "The championship match was scheduled to take place ...... two and four o'clock.",
-    options: ["by", "toward", "from", "between"],
+    prompt: "The championship football match was played ...... two and four o'clock in the afternoon.",
+    options: ["by", "toward", "between", "from"],
     correctAnswer: "between",
-    hint: "Identify the preposition that pairs with 'and' to define a time span connecting two specific points.",
-    workedSolution: "The correlative structure is 'between [time] and [time]'. ('From' pairs with 'to').",
+    hint: "Identify the preposition of temporal interval that pairs with 'and'.",
+    workedSolution: "The temporal correlative structure identifying a time interval between two boundary points linked by 'and' is 'between ... and ...'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "The girl told her mother that she ...... from the church service.",
+    prompt: "The girl informed her parents that she ...... from the church rehearsal.",
     options: ["comes", "had come", "has come", "has been coming"],
     correctAnswer: "had come",
-    hint: "In indirect speech, a past action that occurred before the reporting takes the past perfect tense.",
-    workedSolution: "In reported speech following the past reporting verb 'told', the action completed prior to the conversation takes the past perfect tense ('had come').",
+    hint: "Reported speech sequence: An action completed prior to the past reporting verb 'informed' takes the past perfect tense.",
+    workedSolution: "In indirect reported speech, an action that occurred before the past verb 'informed' shifts to the Past Perfect tense: 'had come'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "...... the candidate joined the revision class late, he managed to pass with distinction.",
+    prompt: "...... the candidate reported late for the examination, he succeeded in finishing the paper.",
     options: ["Since", "As", "Despite", "Although"],
     correctAnswer: "Although",
-    hint: "Identify the subordinating conjunction of concession that joins two contrasting clauses.",
-    workedSolution: "'Although' is a subordinating conjunction of concession introducing a subordinate clause. 'Despite' requires a noun phrase or gerund, not a full subject-verb clause.",
+    hint: "Subordinating conjunction of concession introducing a clause containing subject and finite verb.",
+    workedSolution: "'Although' is a concessive conjunction introducing a finite subordinate clause ('Although the candidate reported late...'). 'Despite' requires a noun phrase.",
     points: 1
   },
   {
     number: 40,
-    prompt: "The philosophical treatise was ...... complex for the junior students to comprehend.",
+    prompt: "The philosophical treatise was ...... complex for the junior pupils to comprehend.",
     options: ["much", "too", "little", "so"],
     correctAnswer: "too",
-    hint: "Look for the correlative structure 'too + adjective + to-infinitive'.",
-    workedSolution: "The degree modifier 'too' pairs with the infinitive 'to comprehend' to show an excessive degree that prevents successful execution ('too complex to comprehend').",
+    hint: "Correlative degree modifier pairing with an infinitive to denote an excessive quality that prevents success: 'too + adjective + to-infinitive'.",
+    workedSolution: "The degree adverb 'too' pairs with the infinitive 'to comprehend' to express an excessive degree that results in inability ('too complex to comprehend').",
     points: 1
   }
+];
+
+// Combine all 40 raw questions
+const allRawQuestions = [
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -511,9 +572,11 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200301);
+const assignedTargetIndices = seedShuffle(targetKeys, 200302);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+// Attach Passage I (Q1-6) and Passage II (Q7-11) directly to questions so that
+// the passage ALWAYS comes first before any question is displayed!
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -525,21 +588,44 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 6) {
+    passageTitle = "Passage I: The Gathering Clouds and the Drought";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 7 && qNum <= 11) {
+    passageTitle = "Passage II: Teacher Amu's Lessons and Abre";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 6);
+const passage2Items = balancedPaper1.slice(6, 11);
+const remainingItems = balancedPaper1.slice(11);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -548,29 +634,29 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Your school lacks a standard playing field for sporting activities. Write a formal letter to your District Chief Executive (DCE) appealing for municipal assistance to construct and equip a standard sports field for your school.",
-        modelAnswer: `Anglican Junior High School
-P. O. Box 24
-Dormaa Ahenkro, Bono Region
-15th May, 2003
+        prompt: "Your school lacks a standard playing field, forcing students to practice sports in hazardous, rocky surroundings. Write a formal petition to your District Chief Executive (DCE) appealing for municipal assistance to construct a modern sports field.",
+        modelAnswer: `Methodist Junior Secondary School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2003
 
 The District Chief Executive
-Dormaa District Assembly
-Dormaa Ahenkro
+Bekwai Municipal Assembly
+Municipal Directorate, Bekwai
 
 Dear Sir,
 
-AN APPEAL FOR ASSISTANCE TO DEVELOP A STANDARD PLAYING FIELD FOR OUR SCHOOL
+PETITION FOR MUNICIPAL ASSISTANCE TO CONSTRUCT A MODERN SCHOOL PLAYING FIELD
 
-On behalf of the students and staff of Anglican Junior High School, I respectfully write to appeal for the intervention of the District Assembly in leveling, constructing, and equipping a standard playing field for our school.
+On behalf of the students and sports department of Methodist Junior Secondary School, Bekwai, I respectfully submit this petition to draw your administrative attention to our acute lack of a standard playing field and to appeal for municipal intervention.
 
-Currently, our school has an undulating, rocky clearing that serves as our recreation ground. During rainy seasons, the field degenerates into an eroded mud trap filled with deep gullies and pools of water. During physical education lessons and inter-school football matches, pupils frequently suffer twisted ankles, sprains, and abrasions from exposed rocks. Consequently, our school is unable to host inter-schools sports tournaments or provide safe physical recreation for our three hundred pupils.
+For several years, our school of over four hundred students has had no functional sports pitch. Our pupils are forced to practice soccer, athletics, and volleyball on an uneven, rocky plot littered with exposed roots and gravel. Consequently, our talented athletes suffer recurrent physical injuries—including sprained ankles, deep knee abrasions, and fractured collarbones—during mandatory physical education periods. More discouragingly, our school cannot host inter-school friendly matches or zonal athletic competitions, depriving our youth of wholesome sporting interaction.
 
-Developing a standard playing field is vital for discovering and nurturing raw athletic talent. Our district is richly blessed with gifted young sprinters, footballers, and volleyball players. Providing a leveled turf and athletic track will foster physical health, instill teamwork, and curb truancy by keeping students engaged in wholesome co-curricular activities.
+Physical education is a vital component of the national basic education curriculum. Engaging in organized sports instills physical discipline, builds mental endurance, and unearths raw athletic talents that could bring national honors and scholarships to our district. Denying our students a safe recreational ground undermines their physical well-being and stifles athletic development.
 
-We humbly request that the District Assembly assist us with an earth-moving grader and bulldozer from the Works Department to level the field and excavate drainage channels. The youth and Parent-Teacher Association have already pledged to provide communal labor to plant lawn grass and construct spectator benches.
+Fortunately, our school community possesses an undeveloped two-acre parcel of land behind the junior block. We humbly appeal to the District Assembly to assist us by deploying municipal bulldozers and graders to level the ground, clear the rocks, and construct standard goalposts and running tracks.
 
-We pray that your esteemed office will favorably consider our appeal to uplift sports in our district.
+We count on your visionary leadership and commitment to youth development.
 
 Thank you.
 
@@ -582,77 +668,71 @@ Kwabena Mensah
       {
         questionNumber: "2",
         category: "Informal / Persuasive Letter",
-        prompt: "You wish to further your education after completing Junior Secondary School (JSS). Write a letter to your uncle giving him at least three compelling reasons why you need his financial sponsorship to attend Senior Secondary School.",
-        modelAnswer: `Presbyterian Junior High School
+        prompt: "You wish to continue your education in a Senior Secondary School after leaving Junior Secondary School (JSS), but your parents cannot afford the financial expenditure. Write a letter to your affluent uncle giving him at least three reasons why you need his financial sponsorship.",
+        modelAnswer: `Presbyterian Junior Secondary School
 P. O. Box 80
 Begoro, Eastern Region
-12th July, 2003
+18th October, 2003
 
 Dear Uncle Kwesi,
 
-I hope this letter finds you in fine health, peace of mind, and prosperity in Accra. As our final BECE examinations approach, I write with deep humility and hope to share my educational plans and to appeal for your kind financial sponsorship to enable me to attend Senior Secondary School.
+I hope this letter finds you in fine health, peace of mind, and thriving in your business enterprises in Accra. As I approach the conclusion of my final year in junior secondary school, I write to share an urgent personal crisis and to appeal for your benevolent financial sponsorship.
 
-First, my biological parents are aged subsistence peasant farmers whose modest cocoa yield has dwindled due to recurring droughts. The meager income from the farm is barely sufficient to feed my younger siblings and pay their basic school levies. Sponsoring my secondary education—covering boarding fees, uniforms, and textbooks—will relieve my parents of a crushing financial burden and keep my academic dreams alive.
+Recently, my parents informed me that due to poor seasonal cocoa harvests, they cannot afford the financial expenditure required to enroll me in Senior Secondary School. They have suggested that I terminate my schooling and learn a manual trade. While I respect their domestic financial constraints, my heart is broken because academic education is my greatest passion. I humbly present three compelling reasons why I need your sponsorship.
 
-Secondly, I have demonstrated consistent academic excellence and dedication throughout my three years in junior secondary school. I have consistently placed first in my class in Mathematics and Integrated Science, and my teachers have endorsed me as the school's top candidate to secure Aggregate Six in the BECE. Investing in my education is planting a seed in fertile soil that will yield generational dividends for our entire extended family.
+First and foremost, I have consistently demonstrated exceptional academic competence, placing first in my class in Mathematics, Integrated Science, and English throughout my three years in basic school. In our recent regional mock examinations, I secured Aggregate Six. My teachers have affirmed that I possess the intellectual discipline to excel in the General Science programme at Prempeh College.
 
-Finally, my ultimate career goal is to become an agricultural engineer. Gaining secondary STEM education will equip me with the technical expertise needed to modernize farming methods in our village and manage our family lands profitably.
+Secondly, my lifelong ambition is to study civil engineering at the university to help design modern bridges and water systems for rural communities. Terminating my schooling now would permanently extinguish this dream.
 
-I promise to study with relentless diligence to justify your investment. May God bless your business abundantly.
+Finally, obtaining secondary and tertiary education will empower me to become financially self-reliant and break the cycle of poverty in our family, enabling me to support my younger siblings in the future.
+
+I promise to study with relentless diligence to justify your investment. May God richly bless your endeavors.
 
 Your grateful nephew,
 [Signature]
-Emmanuel Osei`
+Emmanuel Addo`
       },
       {
         questionNumber: "3",
-        category: "Descriptive / Expository Essay",
-        prompt: "Your school is organizing an educational excursion to a prominent historical or industrial site in your region. Describe the meticulous preparations you and your schoolmates are making toward the journey.",
-        modelAnswer: `PREPARATIONS FOR OUR MEMORABLE EXCURSION TO THE AKOSOMBO DAM
+        category: "Descriptive Narrative",
+        prompt: "Your school is organizing an educational excursion to a prominent historical or geographical site in your region. Describe in detail the comprehensive preparations your class is making towards the upcoming journey.",
+        modelAnswer: `PREPARATIONS TOWARDS OUR CLASS EXCURSION TO KAKUM NATIONAL PARK
 
-Excitement has gripped every classroom at Methodist Junior High School as our Science and Social Studies clubs finalize preparations for our upcoming educational excursion to the Akosombo Hydroelectric Dam and the Shai Hills Game Reserve scheduled for next Friday.
+Excitement and lively anticipation have engulfed our Form Three classroom over the past month as we make comprehensive preparations for our upcoming educational excursion to the world-renowned Kakum National Park in the Central Region, scheduled for next Friday.
 
-Our preparations began several weeks ago under the guidance of our lead patron, Mr. Mensah. First, we held a series of classroom orientation meetings to outline the objectives of the tour. We studied maps of the Volta River basin, researched the history of the dam's construction under Dr. Kwame Nkrumah, and prepared structured interview questionnaires to administer to Volta River Authority engineers. Every student procured a durable hard-cover notebook and pens to record observations.
+Our preparations commenced with extensive academic research under the guidance of our Integrated Science and Social Studies master, Mr. Mensah. During our weekly club periods, our class was divided into four specialized inquiry committees: the Botanical Team, tasked with documenting tropical rainforest flora; the Wildlife Team, assigned to observe primate species and canopy birds; the Geography Team, responsible for studying rainfall patterns and soil conservation; and the Logistics Committee. Each student has assembled a field notebook, magnifying glasses, and measurement charts to record observations during the tour.
 
-Secondly, the student planning committee worked hand-in-hand with our parents to mobilize the excursion fees. Many of us took up minor holiday gardening errands and saved our weekly allowances to pay for the return commercial bus fare and guided site entry permits. The school health committee assembled an emergency first-aid box stocked with bandages, methylated spirit, paracetamol, and motion-sickness tablets.
+Financially, our class executive organized a series of self-help fundraising initiatives to subsidize the trip. We cultivated and harvested fresh vegetables from our school farm, organized a Saturday car wash, and sold craft items at the local market, successfully raising three hundred thousand cedis to reduce individual travel levies. Our class teacher has finalized arrangements with the State Transport Corporation to charter an air-conditioned passenger bus, ensuring safe and reliable transit.
 
-On our part, we have prepared our neat ceremonial school uniforms and organized food rations. My mother has agreed to bake crispy meat pies and pack bottles of chilled water for my journey. We have also formed peer accountability pairs to ensure that no student wanders away from the group during the guided tours.
+Domestic preparations are equally well advanced. Our mothers have agreed to prepare portable travel snacks—including roasted chicken, boiled eggs, and meat pies—packed in insulated cooler containers alongside abundant bottled water. Furthermore, our school dispensary has equipped our class prefects with a comprehensive first-aid kit containing bandages, antiseptics, and analgesics.
 
-With all logistics smoothly settled, we are eagerly counting down the days to embark on what promises to be an educational and adventurous experience.`
+We are physically and mentally ready to transform our classroom textbook notes into living realities. Kakum promises to be an unforgettable adventure.`
       },
       {
         questionNumber: "4",
         category: "Article for Publication",
-        prompt: "Write an article for publication in the Junior Graphic on the topic: \"Why Candidates Should Not Cheat in National Examinations.\"",
-        modelAnswer: `THE POISON OF EXAMINATION MALPRACTICE: WHY INTEGRITY MUST PREVAIL
-By Rebecca Arthur, JHS 3
+        prompt: 'Write a persuasive article for publication in the Junior Graphic on the topic: "Why Candidates Should Not Cheat in Examinations."',
+        modelAnswer: `WHY CANDIDATES SHOULD NOT CHEAT IN EXAMINATIONS
+By Samuel K. Boateng, Begoro
 
-In recent years, national examinations conducted by the West African Examinations Council (WAEC) have been plagued by the disturbing menace of examination malpractice. From smuggling foreign materials into examination halls to relying on leaked question papers, cheating has become a dangerous shortcut for many basic school candidates. However, candidates must realize that examination fraud is an intellectual poison with devastating consequences.
+In contemporary basic and secondary schools across Ghana, the disturbing phenomenon of examination malpractice—popularly known as cheating—has emerged as a dangerous cancer threatening the moral fabric and international credibility of our educational system. Whether it takes the form of sneaking concealed notes into the hall, copying from seatmates, or purchasing leaked question papers, cheating is an intellectual crime that must be resolutely rejected by every disciplined student.
 
-First and foremost, examination malpractice destroys authentic learning habits and personal self-confidence. The primary purpose of schooling is to acquire genuine knowledge, critical problem-solving skills, and intellectual competence. When candidates rely on cheating, they abandon disciplined study, library research, and homework. In the long run, students who cheat their way into Senior Secondary Schools and universities find themselves academically deficient, unable to cope with advanced academic work, and often suffer disgraceful dismissal.
+First and foremost, cheating destroys personal integrity and undermines authentic self-confidence. The primary objective of an examination is not merely to obtain a certificate; it is to assess a student's actual mastery of knowledge and critical thinking skills. A candidate who cheats to secure high grades lives in constant fear of exposure and deceit. When such students transition to higher educational institutions or professional workplaces, their intellectual hollowness is swiftly exposed, leading to humiliation and career failure. Real self-worth comes from knowing that your grade reflects your honest labor.
 
-Secondly, cheating attracts severe legal, institutional, and social penalties. WAEC regulations prescribe harsh sanctions: candidates caught cheating suffer the cancellation of their entire results, while schools face prolonged bans as examination centers. Furthermore, candidates risk arrest and imprisonment under national examination laws, bringing indelible shame, stigma, and heartbreak to their families.
+Secondly, examination malpractice attracts catastrophic institutional sanctions. The West African Examinations Council (WAEC) imposes severe penalties on culprits, including the cancellation of entire subject results, outright disqualification of entire school centers, and multi-year bans from sitting national examinations. In severe cases, candidates face public prosecution and criminal detention. Sacrificing years of hard schooling for a fleeting, dishonest advantage is absolute foolishness.
 
-On a national scale, examination malpractice degrades the international credibility of Ghanaian academic certificates and produces incompetent professionals who endanger public safety.
+Furthermore, cheating devalues Ghana's educational credentials internationally, making foreign universities skeptical of local certificates.
 
-In conclusion, honesty is the cornerstone of true success. Candidates must study diligently, revise past questions thoroughly, and trust in their own preparations. A humble, honest pass is infinitely superior to a fraudulent distinction.`
+In conclusion, academic success has no shortcuts. Let every candidate cultivate diligent study habits, revise past questions methodically, and rely on honest preparation. Integrity is the true hallmark of an educated mind.`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2003Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2003 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2003 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -665,7 +745,6 @@ async function seedBeceEnglish2003Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2003");
   await docRef.set({
     year: 2003,
@@ -679,37 +758,61 @@ async function seedBeceEnglish2003Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: The Prolonged Drought and the Rain Song",
+          title: "Passage I: The Gathering Clouds and the Drought",
           text: passage1Text,
-          questionRange: [1, 6]
+          questionRange: "Questions 1 to 6"
         },
         {
           id: "passage_2",
-          title: "Passage II: Teacher Amu's Sermon and Kofi Abre",
+          title: "Passage II: Teacher Amu's Lessons and Abre",
           text: passage2Text,
-          questionRange: [7, 11]
+          questionRange: "Questions 7 to 11"
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: "Passage I: The Gathering Clouds and the Drought",
+          text: passage1Text,
+          questionRange: "Questions 1 to 6",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: "Passage II: Teacher Amu's Lessons and Abre",
+          text: passage2Text,
+          questionRange: "Questions 7 to 11",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 12 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2003 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2003 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2003Calibrated()

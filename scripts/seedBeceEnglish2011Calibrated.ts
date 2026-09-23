@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,395 +45,427 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2011
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 40)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 17) ---
   {
     number: 1,
-    prompt: "The jury acquitted the man ............ murder.",
+    prompt: "Following an exhaustive judicial trial, the high court acquitted the accused artisan ............ the charges of armed robbery.",
     options: ["from", "of", "on", "with"],
     correctAnswer: "of",
-    hint: "Identify the preposition that regularly collocates with 'acquit'.",
-    workedSolution: "In legal and standard English grammar, one is 'acquitted of' a crime (cleared or found not guilty of the charge).",
+    hint: "Identify the dependent preposition that regularly collocates with the verb 'acquit'.",
+    workedSolution: "In standard English legal collocations, the verb 'acquit' takes the preposition 'of': 'acquitted of murder/robbery'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "Ama's essay is superior ............ that of Adzo.",
+    prompt: "The literary style of Mensah's composition is clearly superior ............ that of his desk-mate.",
     options: ["from", "over", "than", "to"],
     correctAnswer: "to",
-    hint: "Latin-derived comparative adjectives ending in '-ior' take 'to', never 'than'.",
-    workedSolution: "Comparative adjectives of Latin origin (superior, inferior, senior, junior, prior) take the preposition 'to', never 'than'.",
+    hint: "Latin-derived comparative adjectives (superior, inferior, senior, junior) take 'to', never 'than'.",
+    workedSolution: "Latin comparative adjectives such as 'superior', 'inferior', and 'senior' collocate strictly with the preposition 'to' ('superior to that of Adzo').",
     points: 1
   },
   {
     number: 3,
-    prompt: "I would study hard for the examination if I ............ you.",
+    prompt: "I would dedicate four hours to revision daily if I ............ in your academic situation.",
     options: ["am", "be", "was", "were"],
     correctAnswer: "were",
-    hint: "Subjunctive mood for hypothetical conditions ('If I were you').",
-    workedSolution: "In hypothetical or contrary-to-fact conditional clauses (Second Conditional), the past subjunctive 'were' is used for all persons ('if I were you').",
+    hint: "Second conditional (hypothetical unreal present): 'If I were..., I would...'.",
+    workedSolution: "In a Second Conditional hypothetical structure expressing an unreal condition contrary to present fact, the subjunctive form 'were' is standard: 'if I were you'.",
     points: 1
   },
   {
     number: 4,
-    prompt: "I cannot tell you ............",
+    prompt: "The librarian refused to disclose ............ until the book was returned.",
     options: [
-      "what about the story is.",
-      "what about is the story.",
-      "what is the story about.",
-      "what the story is about."
+      "what about the story is",
+      "what about is the story",
+      "what is the story about",
+      "what the story is about"
     ],
-    correctAnswer: "what the story is about.",
-    hint: "Indirect / embedded question clauses follow normal statement word order (Subject + Verb).",
-    workedSolution: "Embedded clauses within complex sentences must follow declarative word order (Subject + Verb + Preposition): 'what the story is about', not question order.",
+    correctAnswer: "what the story is about",
+    hint: "Indirect question / noun clause word order: Wh-word + Subject ('the story') + Verb ('is about').",
+    workedSolution: "In embedded noun clauses and indirect questions, standard declarative syntax (subject preceding verb) is required: 'what the story is about'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "That troublesome friend of ............ is here again.",
+    prompt: "That cantankerous neighbor of ............ has lodged another complaint at the station.",
     options: ["he", "him", "his", "himself"],
     correctAnswer: "his",
-    hint: "Use the double possessive construction ('of + possessive pronoun').",
-    workedSolution: "The double possessive structure requires an absolute possessive pronoun: 'a friend of his / that friend of his'.",
+    hint: "Double possessive construction: 'that [noun] of' requires an independent possessive pronoun.",
+    workedSolution: "Double possessive constructions ('that friend of...') require the absolute possessive pronoun 'his' without a following noun.",
     points: 1
   },
   {
     number: 6,
-    prompt: "I told you to leave my office, ............ I?",
+    prompt: "I explicitly directed you to vacate my office, ............ I?",
     options: ["aren't", "didn't", "don't", "wasn't"],
     correctAnswer: "didn't",
-    hint: "An affirmative clause with a simple past lexical verb ('told') takes a negative past auxiliary tag.",
-    workedSolution: "The main verb 'told' is in the simple past tense. Its negative question tag uses the auxiliary 'did': 'didn't I?'.",
+    hint: "The main clause has an affirmative simple past lexical verb ('directed/told'), requiring a negative past tag with 'did'.",
+    workedSolution: "The governing verb 'told/directed' is in the simple past affirmative with subject 'I'. Its corresponding question tag must be negative past: 'didn't I?'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "Kofi traveled five days ............",
-    options: ["ago.", "hence.", "now.", "since."],
-    correctAnswer: "ago.",
-    hint: "Use 'ago' to count back from the present moment to a specific completed past time.",
-    workedSolution: "'Ago' is an adverb used with a past tense verb to show how far back in the past an action occurred ('five days ago').",
+    prompt: "The medical director embarked on his journey three weeks ............",
+    options: ["ago", "hence", "now", "since"],
+    correctAnswer: "ago",
+    hint: "Adverb measuring elapsed past time from the present reference point: '[time period] + ago'.",
+    workedSolution: "When measuring an interval of time backwards from the present moment with a simple past verb ('traveled'), 'ago' is required: 'five days ago'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "Kwame's uncle, with his three friends, ............ coming home tomorrow.",
+    prompt: "The regional manager, together with his two administrative assistants, ............ inspecting the project tomorrow.",
     options: ["are", "is", "were", "would be"],
     correctAnswer: "is",
-    hint: "Parenthetical phrases beginning with 'with' do not affect the singular subject 'Kwame's uncle'.",
-    workedSolution: "The grammatical subject is singular ('Kwame's uncle'). An intervening prepositional phrase ('with his three friends') does not change the subject-verb agreement; hence 'is' is required.",
+    hint: "Parenthetical additions introduced by 'together with / with' do not pluralize the singular subject 'The regional manager'.",
+    workedSolution: "Parenthetical additions ('with his three friends') do not affect the grammatical number of the subject. The singular head 'Kwame's uncle' takes the singular present verb 'is'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "I am afraid I cannot make you ............",
+    prompt: "The candidate's handwriting was so faded that the examiner could barely make it ............",
     options: ["in", "on", "out", "up"],
     correctAnswer: "out",
-    hint: "Identify the phrasal verb meaning to discern, perceive, or recognize someone.",
-    workedSolution: "The phrasal verb 'to make someone out' means to see, hear, or recognize someone clearly, or to understand their character.",
+    hint: "Identify the phrasal verb meaning to decipher, discern, or comprehend with difficulty.",
+    workedSolution: "The phrasal verb 'to make out' means to decipher, see, or understand something with difficulty: 'make you out'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "The plane takes ............ at noon.",
+    prompt: "The commercial passenger flight takes ............ precisely at midday.",
     options: ["from", "of", "off", "to"],
     correctAnswer: "off",
-    hint: "Identify the phrasal verb meaning to become airborne.",
-    workedSolution: "The phrasal verb 'to take off' means to depart the runway and become airborne.",
+    hint: "Identify the aeronautical phrasal verb meaning to leave the ground and begin flight.",
+    workedSolution: "The phrasal verb 'to take off' means to become airborne and leave the runway: 'takes off at noon'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "Please, can I have ............ salt in my soup?",
+    prompt: "Please, may I request ............ salt to season my vegetable soup?",
     options: ["little more", "a few more", "a little more", "few more"],
-    correctAnswer: "a a little more",
-    hint: "'Salt' is an uncountable noun. A polite request for some additional amount requires 'a little more'.",
-    workedSolution: "Salt is a non-count noun, ruling out 'few'. A polite request asking for a positive small quantity requires 'a little more'.",
+    correctAnswer: "a little more",
+    hint: "'Salt' is an uncountable mass noun. Use the positive partitive expressing a modest additional quantity.",
+    workedSolution: "'Salt' is an uncountable noun. To request an additional small positive quantity, standard English requires 'a little more'. ('A few more' applies strictly to countable nouns).",
     points: 1
   },
   {
     number: 12,
-    prompt: "I wish I ............ my friend next week.",
+    prompt: "The timetable is extremely tight, but I truly wish I ............ my grandparents next weekend.",
     options: ["can visit", "am visiting", "shall visit", "could visit"],
     correctAnswer: "could visit",
-    hint: "Wishes expressing personal ability or possibility in the future take 'could + base verb'.",
-    workedSolution: "When 'wish' expresses an unfulfilled future ability or potential action of the speaker, the modal auxiliary 'could' is required ('could visit').",
+    hint: "Future hypothetical wish clauses require a past modal auxiliary ('could / would').",
+    workedSolution: "When 'wish' expresses a desire regarding a future event that is unlikely or uncertain, English requires the past modal 'could': 'wish I could visit'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "By September 2007, I ............ school for nine years.",
-    options: ["had attended", "have attended", "have been attending", "shall have attended"],
-    correctAnswer: "had attended",
-    hint: "Expressing an action completed prior to a specific point in the past requires the Past Perfect tense.",
-    workedSolution: "The time clause refers to a completed past benchmark ('By September 2007'), requiring the Past Perfect tense ('had attended').",
+    prompt: "By December 2012, our basic school ............ candidates for ten consecutive years.",
+    options: [
+      "had presented",
+      "have presented",
+      "have been presenting",
+      "shall have presented"
+    ],
+    correctAnswer: "shall have presented",
+    hint: "Future Perfect tense: Prepositional marker 'By [future time]' requires 'shall/will have + past participle'.",
+    workedSolution: "A time marker indicating completion before a specific future milestone ('By September 2007 / By December') takes the Future Perfect tense: 'shall have attended / presented'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "............ Aso run short of money, what would she do?",
+    prompt: "............ the traveler run out of funds while abroad, how would she survive?",
     options: ["If", "In case", "Should", "Were"],
     correctAnswer: "Should",
-    hint: "Inverted conditional without 'if': 'Should + subject + bare infinitive'.",
-    workedSolution: "'Should' can replace 'if' in formal conditional sentences by subject-auxiliary inversion ('Should Aso run short of money...' = 'If Aso should run short of money...').",
+    hint: "Inverted conditional: An inversion replacing 'If she runs...' begins with this modal auxiliary followed by a bare infinitive.",
+    workedSolution: "In formal inverted conditional clauses without 'if', 'Should' introduces a hypothetical condition followed by the base subject and verb: 'Should Aso run short of money...'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Human beings will not live forever, ............?",
+    prompt: "Mortal human beings will not dwell on earth forever, ............?",
     options: ["will they", "isn't it", "does it", "shall they"],
     correctAnswer: "will they",
-    hint: "A negative statement with 'will not' takes an affirmative tag using 'will'.",
-    workedSolution: "The main clause has a negative modal verb ('will not') with plural subject 'human beings'. The tag must be positive: 'will they?'.",
+    hint: "A negative statement with 'will not' and plural subject 'Human beings' takes the positive tag 'will they?'.",
+    workedSolution: "The main clause is negative future ('will not live'). Its matching question tag must be affirmative: 'will they?'.",
     points: 1
   },
   {
     number: 16,
-    prompt: "I saw Esi ............ a new pair of shoes.",
+    prompt: "While waiting at the boutique, I saw Esi ............ a handwoven silk stole.",
     options: ["bought", "buy", "buys", "to buy"],
     correctAnswer: "buy",
-    hint: "Verbs of sensory perception (see, hear, watch) take a bare infinitive or present participle.",
-    workedSolution: "Verbs of perception ('saw') followed by an object ('Esi') take the bare infinitive ('buy') without 'to' to denote witnessing a complete action.",
+    hint: "Verbs of sensory perception (see, hear, watch) take an object followed by a bare infinitive for a completed action.",
+    workedSolution: "Following verbs of sensory perception ('saw'), standard English uses a bare infinitive without 'to' ('buy') to indicate witnessing the complete action.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Let us have a cup of tea, ............?",
+    prompt: "Let us assemble our revised notes and prepare for the test, ............?",
     options: ["do we", "shall we", "should we", "would we"],
     correctAnswer: "shall we",
-    hint: "Imperative sentences introduced by 'Let us' take this conventional tag.",
-    workedSolution: "Imperative suggestions beginning with 'Let us' (or 'Let's') always take 'shall we?' as their standard question tag.",
+    hint: "Cohort imperatives and suggestions beginning with 'Let us / Let's' take a mandatory first-person plural tag.",
+    workedSolution: "Imperative sentences expressing collective suggestions beginning with 'Let us / Let's' require the question tag 'shall we?'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (18 - 22) ---
   {
     number: 18,
-    prompt: "The headteacher's arrival in the classroom was sudden.\nChoose the word nearest in meaning to the underlined word 'sudden'.",
+    prompt: "The inspector's sudden entry into the staff room took everyone by surprise.\nChoose the word nearest in meaning to 'sudden'.",
     options: ["quick", "strange", "unexpected", "unusual"],
     correctAnswer: "unexpected",
-    hint: "Occurring without prior notice, warning, or anticipation.",
-    workedSolution: "'Sudden' means happening quickly and without warning; 'unexpected' is its direct contextual synonym.",
+    hint: "Occurring rapidly, abruptly, and without warning.",
+    workedSolution: "'Sudden' means happening quickly without prior notice or warning; 'unexpected' is its direct synonym.",
     points: 1
   },
   {
     number: 19,
-    prompt: "It is rude to talk loudly in the presence of elderly people.\nChoose the word nearest in meaning to the underlined word 'rude'.",
+    prompt: "It is considered rude to interrupt an elder while he is addressing a gathering.\nChoose the word nearest in meaning to 'rude'.",
     options: ["impolite", "incorrect", "improper", "unwise"],
     correctAnswer: "impolite",
-    hint: "Lacking good manners, courtesy, or respect.",
-    workedSolution: "'Rude' means ill-mannered, discourteous, or offensive; 'impolite' is its exact equivalent.",
+    hint: "Lacking manners, courtesy, or civility.",
+    workedSolution: "'Rude' means discourteous, ill-mannered, and 'impolite'.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The pupils grumbled about the assignment.\nChoose the word nearest in meaning to the underlined word 'grumbled'.",
+    prompt: "The farmhands grumbled about the low wages offered by the contractor.\nChoose the word nearest in meaning to 'grumbled'.",
     options: ["bothered", "complained", "talked", "questioned"],
     correctAnswer: "complained",
-    hint: "Muttered in discontent or expressed dissatisfaction.",
-    workedSolution: "'Grumbled' means expressed discontent, annoyance, or protest in a low voice; 'complained' is its nearest synonym.",
+    hint: "Muttered in discontent; expressed dissatisfaction.",
+    workedSolution: "'Grumbled' means expressed dissatisfaction or resentment in a muttering tone; 'complained' is its direct synonym.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The victim could not identify the thief.\nChoose the word nearest in meaning to the underlined word 'identify'.",
+    prompt: "The storekeeper could not identify the shoplifter in the identification parade.\nChoose the word nearest in meaning to 'identify'.",
     options: ["discover", "find", "know", "recognize"],
     correctAnswer: "recognize",
-    hint: "To establish who someone is based on physical appearance or knowledge.",
-    workedSolution: "'Identify' means to know and establish who a person is; 'recognize' is its direct synonym.",
+    hint: "To establish or acknowledge the identity of someone previously seen.",
+    workedSolution: "'Identify' in a visual line-up means to pick out, spot, or 'recognize' someone.",
     points: 1
   },
   {
     number: 22,
-    prompt: "Armed robbery is a very risky undertaking.\nChoose the word nearest in meaning to the underlined word 'risky'.",
+    prompt: "Navigating an open boat across flooded rapids is an extremely risky venture.\nChoose the word nearest in meaning to 'risky'.",
     options: ["dangerous", "dreadful", "unacceptable", "uncertain"],
     correctAnswer: "dangerous",
-    hint: "Full of peril, hazard, or risk of injury or death.",
-    workedSolution: "'Risky' means involving the possibility of danger, failure, or injury; 'dangerous' is its direct equivalent.",
+    hint: "Full of peril, hazard, or risk of injury.",
+    workedSolution: "'Risky' means involving high chance of hazard, injury, or loss; 'dangerous' is its direct synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (23 - 27) ---
   {
     number: 23,
-    prompt: "For all his brilliance, Kofi could not solve the problem. This means that Kofi failed to solve the problem ............",
+    prompt: "For all his brilliance, Kofi failed to decipher the mathematical riddle. This means that Kofi failed ............",
     options: [
-      "as he was clever enough.",
-      "even though he was clever.",
-      "as he was too clever.",
-      "for he was still clever."
+      "because he was not clever enough",
+      "even though he was exceptionally clever",
+      "because his cleverness blinded him",
+      "since he was too arrogant to study"
     ],
-    correctAnswer: "even though he was clever.",
-    hint: "'For all...' is an idiom of concession meaning 'despite' or 'in spite of'.",
-    workedSolution: "The prepositional phrase 'for all' means 'in spite of' or 'even though'. Thus, Kofi failed even though he was brilliant.",
+    correctAnswer: "even though he was exceptionally clever",
+    hint: "Concessive prepositional idiom: 'For all [attribute]' means in spite of or despite possessing that quality.",
+    workedSolution: "The phrase 'For all his brilliance' means despite or even though he was brilliant; his exceptional intelligence did not prevent him from failing.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The manager's decision on the matter is cut and dried. This means that the manager's decision is ............",
-    options: ["clear.", "simple.", "unchangeable.", "unknown."],
-    correctAnswer: "unchangeable.",
-    hint: "Completely settled, finalized, and incapable of being altered.",
-    workedSolution: "'Cut and dried' is an idiom meaning definitively settled in advance, predetermined, and unchangeable.",
+    prompt: "The managing director announced that his decision regarding staff retrenchment was cut and dried. This means the decision was ............",
+    options: [
+      "lucid and simple",
+      "brief and concise",
+      "final, settled, and unchangeable",
+      "kept completely confidential"
+    ],
+    correctAnswer: "final, settled, and unchangeable",
+    hint: "Completely settled, predetermined, and not open to further debate or alteration.",
+    workedSolution: "The idiom 'cut and dried' means completely determined, settled beforehand, and unchangeable.",
     points: 1
   },
   {
     number: 25,
-    prompt: "Abla made an ass of herself at the party. This means that Abla behaved ............",
-    options: ["foolishly.", "shamefully.", "uncontrollably.", "unpleasantly."],
-    correctAnswer: "foolishly.",
-    hint: "Acting in a silly, absurd, or ridiculous manner.",
-    workedSolution: "'To make an ass of oneself' means to behave foolishly or make oneself look ridiculous in public.",
+    prompt: "Abla made an ass of herself during the banquet. This means that Abla ............",
+    options: [
+      "behaved foolishly and ridiculously",
+      "became physically intoxicated",
+      "wept uncontrollably",
+      "refused to partake in the feast"
+    ],
+    correctAnswer: "behaved foolishly and ridiculously",
+    hint: "To act in a foolish, ridiculous, or embarrassing manner.",
+    workedSolution: "The idiom 'to make an ass of oneself' means to behave stupidly, foolishly, or in a manner that invites ridicule.",
     points: 1
   },
   {
     number: 26,
-    prompt: "In spite of his boasting, Mensah proved to be a chicken-hearted fellow. This means that Mensah was ............",
-    options: ["cowardly.", "mean.", "stupid.", "weak."],
-    correctAnswer: "cowardly.",
-    hint: "Timid, lacking courage, and easily frightened.",
-    workedSolution: "'Chicken-hearted' is an idiom meaning timid, fearful, lacking bravery, or cowardly.",
+    prompt: "Despite his loud boasting, Mensah proved to be a chicken-hearted fellow. This means that Mensah was ............",
+    options: ["cowardly and easily frightened", "petty and mean", "intellectually dull", "physically frail"],
+    correctAnswer: "cowardly and easily frightened",
+    hint: "Lacking courage; timid and fearful.",
+    workedSolution: "The idiom 'chicken-hearted' means faint-hearted, timid, and cowardly.",
     points: 1
   },
   {
     number: 27,
-    prompt: "Efua can always talk her way out of trouble. This means that Efua ............",
-    options: ["is troublesome.", "can defend herself.", "can avoid trouble.", "is talkative."],
-    correctAnswer: "can defend herself.",
-    hint: "Using persuasive arguments and verbal skill to protect or defend oneself against blame or punishment.",
-    workedSolution: "To 'talk one's way out of trouble' means to use persuasive arguments, explanations, and defense to escape blame; hence Efua 'can defend herself'.",
+    prompt: "Whenever she is confronted with a mistake, Efua can always talk her way out of trouble. This means that Efua ............",
+    options: [
+      "is chronically argumentative",
+      "can defend herself with physical force",
+      "can evade punishment by persuasive speaking",
+      "is excessively talkative"
+    ],
+    correctAnswer: "can evade punishment by persuasive speaking",
+    hint: "Using clever words or eloquence to escape difficult situations or avoid penalties.",
+    workedSolution: "The idiom 'to talk one's way out of trouble' means to use persuasive, smooth speech to escape blame or avoid trouble.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (28 - 32) ---
   {
     number: 28,
-    prompt: "My friend welcomed my suggestion.\nChoose the word most nearly opposite in meaning to 'welcomed'.",
-    options: ["changed", "discussed", "disliked", "rejected"],
-    correctAnswer: "rejected",
-    hint: "'Welcomed' means received with pleasure or accepted willingly. Find the word meaning refused or turned down.",
-    workedSolution: "'Welcomed' means accepted with approval. Its direct antonym is 'rejected' (dismissed or refused).",
+    prompt: "The committee rejected my proposal, whereas the director ...... it enthusiastically.\nChoose the word most nearly opposite in meaning to 'rejected'.",
+    options: ["altered", "debated", "disliked", "welcomed"],
+    correctAnswer: "welcomed",
+    hint: "'Rejected' means turned down or dismissed. What word denotes received with favor and approval?",
+    workedSolution: "'Rejected' means refused or cast aside. Its direct opposite is 'welcomed' (received with approval or accepted).",
     points: 1
   },
   {
     number: 29,
-    prompt: "Unlike her sister, Ackah is stingy.\nChoose the word most nearly opposite in meaning to 'stingy'.",
+    prompt: "While Ackah is notoriously stingy with his resources, his sister is remarkably ...... .\nChoose the word most nearly opposite in meaning to 'stingy'.",
     options: ["friendly", "generous", "selfless", "sympathetic"],
     correctAnswer: "generous",
-    hint: "'Stingy' means miserly and unwilling to spend. Find the word meaning willing to give freely.",
-    workedSolution: "'Stingy' means ungenerous or miserly. Its direct antonym is 'generous' (liberal in giving).",
+    hint: "'Stingy' means unwilling to spend or give. What word denotes liberal, giving, and open-handed?",
+    workedSolution: "'Stingy' means miserly and ungiving. Its direct antonym is 'generous' (liberal in giving).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Serwaa's dress was decent.\nChoose the word most nearly opposite in meaning to 'decent'.",
-    options: ["dirty.", "old.", "shabby.", "ugly."],
-    correctAnswer: "shabby.",
-    hint: "'Decent' clothing is respectable, neat, and in good taste. Find the word meaning ragged, worn out, or untidy.",
-    workedSolution: "'Decent' in clothing describes neat, respectable, and proper attire. Its direct antonym in appearance is 'shabby' (worn out, untidy, or disreputable).",
+    prompt: "The bride's wedding gown was decent, whereas her cousin's costume looked rather ...... .\nChoose the word most nearly opposite in meaning to 'decent'.",
+    options: ["dirty", "archaic", "shabby", "unpleasant"],
+    correctAnswer: "shabby",
+    hint: "'Decent' means respectable, neat, and appropriate. What word denotes ragged, untidy, or inferior in quality?",
+    workedSolution: "'Decent' implies respectable, tidy, and suitable. In sartorial presentation, its direct opposite here is 'shabby' (untidy or poorly kept).",
     points: 1
   },
   {
     number: 31,
-    prompt: "It is compulsory for all pupils to be in school uniform for the ceremony.\nChoose the word most nearly opposite in meaning to 'compulsory'.",
+    prompt: "Attendance at morning assembly is compulsory, whereas participating in evening games is ...... .\nChoose the word most nearly opposite in meaning to 'compulsory'.",
     options: ["considerate", "optional", "unnecessary", "expected"],
     correctAnswer: "optional",
-    hint: "'Compulsory' means mandated or required by rule. Find the word meaning left to personal choice.",
-    workedSolution: "'Compulsory' means mandatory or obligatory. Its direct antonym is 'optional' (voluntary or discretionary).",
+    hint: "'Compulsory' means required by rule. What word denotes available by choice and not obligatory?",
+    workedSolution: "'Compulsory' means mandatory or obligatory. Its direct administrative antonym is 'optional' (left to choice).",
     points: 1
   },
   {
     number: 32,
-    prompt: "Aminata is boastful about her beauty.\nChoose the word most nearly opposite in meaning to 'boastful'.",
+    prompt: "While Aminata is boastful about her academic accomplishments, her brother is remarkably ...... .\nChoose the word most nearly opposite in meaning to 'boastful'.",
     options: ["careless", "humble", "modest", "uneasy"],
     correctAnswer: "modest",
-    hint: "'Boastful' means excessively proud and braggy. Find the word meaning unassuming and humble about one's merits.",
-    workedSolution: "'Boastful' means braggy or showing excessive pride. Its direct antonym regarding personal qualities is 'modest'.",
+    hint: "'Boastful' means bragging and conceited. What word denotes unpretentious and unassuming?",
+    workedSolution: "'Boastful' means proud and bragging. Its direct behavioral antonym is 'modest' (unassuming and humble).",
     points: 1
   },
 
   // --- PART II: LITERATURE IN ENGLISH (33 - 40) ---
   {
     number: 33,
-    prompt: "A metaphor achieves the same figurative effect as a/an ............",
-    options: ["alliteration.", "metonymy.", "paradox.", "simile."],
-    correctAnswer: "simile.",
-    hint: "Both figures of speech draw comparisons between two unlike objects.",
-    workedSolution: "Both metaphors and similes function as figures of comparison; a simile does so explicitly using 'like' or 'as', while a metaphor does so by direct substitution.",
+    prompt: "A metaphor accomplishes the exact same figurative comparison as a ............",
+    options: ["paradox", "metonymy", "hyperbole", "simile"],
+    correctAnswer: "simile",
+    hint: "Both figures of speech compare two dissimilar things, but one uses 'like/as' while the other equates directly.",
+    workedSolution: "Both a metaphor and a simile perform figurative comparisons between two distinct entities; a metaphor is an implied simile omitting 'like' or 'as'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "In dramatic analysis, which of the following provides the clearest clue to a character's nature?",
-    options: ["what he thinks.", "how he feels.", "what he says.", "how he moves about."],
-    correctAnswer: "what he says.",
-    hint: "Spoken dialogue directly reveals a character's intentions, morals, and characterization.",
-    workedSolution: "Through dialogue ('what he says'), a character reveals their underlying thoughts, motives, educational background, and ethical disposition to the audience.",
+    prompt: "In a play or novel, an audience discovers the true moral nature of a character primarily through ............",
+    options: [
+      "what the character thinks and articulates",
+      "how physically fast the character moves",
+      "the physical length of the character's costume",
+      "the geographical setting of the scene"
+    ],
+    correctAnswer: "what the character thinks and articulates",
+    hint: "Characterization is revealed through dialogue, thoughts, motives, and actions.",
+    workedSolution: "In dramatic and literary characterization, a character's true inner nature and psychology are revealed through their thoughts, spoken dialogue, and moral decisions.",
     points: 1
   },
   {
     number: 35,
-    prompt: "Read the extract below:\n\"The fair breeze blew; the white foam flew, / The furrow followed free; / We were the first that burst / Into the silent sea.\"\nThe dominant sound device used in the extract is ............",
-    options: ["alliteration.", "onomatopoeia.", "pun.", "rhyme."],
-    correctAnswer: "alliteration.",
-    hint: "Repetition of initial consonant sounds: /b/ in 'breeze blew', /f/ in 'foam flew, furrow followed free'.",
-    workedSolution: "'Alliteration' is the prominent repetition of consonant sounds at the beginning of words in close proximity ('fair breeze blew, white foam flew, furrow followed free').",
+    prompt: "Read the poetic extract carefully:\n'The fair breeze blew; the white foam flew,\nThe furrow followed free;\nWe were the first that burst\nInto the silent sea.'\n\nThe dominant acoustic sound device utilized in these lines is ............",
+    options: ["alliteration", "onomatopoeia", "pun", "assonance"],
+    correctAnswer: "alliteration",
+    hint: "Notice the repetition of initial consonant sounds: /b/ in breeze blew burst, and /f/ in foam flew furrow followed free.",
+    workedSolution: "The lines feature dense repetition of initial consonant sounds (/b/ in 'breeze blew burst' and /f/ in 'foam flew furrow followed free'), which is 'alliteration'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "In Coleridge's stanza, the alliterative repetition of /f/ and /b/ sounds serves primarily to express the ............",
+    prompt: "In the extract:\n'The fair breeze blew; the white foam flew,\nThe furrow followed free;'\n\nThe rhythmic sound device helps to evoke ............",
     options: [
-      "silence of the sea.",
-      "smoothness of the movement.",
-      "whiteness of the foam.",
-      "fairness of the weather."
+      "the silence of the deep ocean",
+      "the swift, smooth movement of the vessel through water",
+      "the dazzling whiteness of the sea foam",
+      "the extreme coldness of the marine weather"
     ],
-    correctAnswer: "smoothness of the movement.",
-    hint: "Acoustic mimicry of a vessel gliding smoothly and effortlessly across ocean waters.",
-    workedSolution: "The flowing alliteration of soft fricatives (/f/) and plosives (/b/) creates a rhythmic fluidity that musically conveys the smooth, effortless gliding of the ship across the waves.",
+    correctAnswer: "the swift, smooth movement of the vessel through water",
+    hint: "The flowing /f/ alliterative rhythm mirrors the brisk, unhindered cutting of the ship through ocean waves.",
+    workedSolution: "The light, rhythmic alliterative flow of the fricative consonant /f/ reinforces the sensation of rapid, frictionless, and smooth sailing across the water.",
     points: 1
   },
   {
     number: 37,
-    prompt: "In literary tradition, a good novel or play is designed both to entertain and ............",
-    options: ["condemn.", "preach.", "teach.", "warn."],
-    correctAnswer: "teach.",
-    hint: "The classic Horace principle of literature: 'to delight and instruct'.",
-    workedSolution: "Literature traditionally fulfills a dual role: to entertain (delight) and to teach (instruct / impart moral and philosophical understanding).",
+    prompt: "A successful literary novel or dramatic play is designed both to entertain and to ............",
+    options: ["condemn", "preach", "teach", "warn"],
+    correctAnswer: "teach",
+    hint: "Horace's classical principle of literature: 'to delight and to instruct' (entertain and teach).",
+    workedSolution: "The traditional dual function of creative literature is 'dulce et utile'—to entertain the reader and to instruct or 'teach' moral and social truths.",
     points: 1
   },
   {
     number: 38,
-    prompt: "A character that develops, evolves, and changes psychologically in a play or novel in the course of the work is known as ............",
-    options: ["complete.", "flat.", "round.", "sound."],
-    correctAnswer: "round.",
-    hint: "E.M. Forster's definition of a dynamic, multi-dimensional character.",
-    workedSolution: "A 'round' character is complex, multi-dimensional, and undergoes personal transformation or development over the course of the narrative. A 'flat' character remains unchanged.",
+    prompt: "A dynamic literary character who undergoes significant psychological growth, transformation, and complexity during a narrative is termed a ............",
+    options: ["complete character", "flat character", "round character", "sound character"],
+    correctAnswer: "round character",
+    hint: "E.M. Forster's literary classification: flat characters are static types, whereas multi-dimensional developing characters are round.",
+    workedSolution: "In literary analysis (established by E.M. Forster), a complex, multi-dimensional character who evolves and undergoes internal growth across a work is a 'round character'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Which of the following elements best helps to develop and advance the plot of a novel or play?",
-    options: ["Characters", "Literary devices", "Setting", "Style"],
-    correctAnswer: "Characters",
-    hint: "Human agents whose choices, actions, and conflicts create and drive the plot forward.",
-    workedSolution: "Characters are the driving agents of a narrative; their decisions, motivations, actions, and conflicts create and develop the plot.",
+    prompt: "Which of the following literary elements primarily drives and develops the plot of a novel or play?",
+    options: [
+      "Characters and their conflicts",
+      "Decorative figures of speech",
+      "The historical font style",
+      "The physical binding of the volume"
+    ],
+    correctAnswer: "Characters and their conflicts",
+    hint: "The sequence of events in a plot is propelled by the desires, choices, and struggles of the characters.",
+    workedSolution: "Plot is the causal sequence of motivated events; it is driven forward primarily by the decisions, desires, and conflicts of characters.",
     points: 1
   },
   {
     number: 40,
-    prompt: "A lyric poem is traditionally fairly short and ............",
+    prompt: "A lyric poem is traditionally brief, musical, and primarily designed to ............",
     options: [
-      "tells a short story.",
-      "praises a dead person.",
-      "expresses thoughts and feelings.",
-      "is sung to send a child to sleep."
+      "narrate a lengthy historical war chronicle",
+      "memorialize a deceased leader formally",
+      "express intense personal thoughts and emotions",
+      "lull a crying infant to sleep"
     ],
-    correctAnswer: "expresses thoughts and feelings.",
-    hint: "Subjective, melodic expression of the poet's personal emotions.",
-    workedSolution: "A 'lyric' is a short, musical poem characterized by the direct expression of the speaker's personal emotions, reflections, and feelings.",
+    correctAnswer: "express intense personal thoughts and emotions",
+    hint: "Unlike narrative epics or dramatic verse, lyric poetry conveys the speaker's personal feelings, reflections, and mood.",
+    workedSolution: "A lyric is a short, musical poem whose primary objective is to articulate the speaker's deeply felt personal thoughts, reflections, and emotions.",
     points: 1
   }
 ];
@@ -454,9 +491,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 201101);
+const assignedTargetIndices = seedShuffle(targetKeys, 201102);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -479,163 +516,161 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY & COMPREHENSION
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING & COMPREHENSION (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
-    title: "Part A: Essay Writing",
-    instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
+  partA_composition: {
+    title: "Part A: Composition",
+    instructions: "Answer one question only from this section. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Write a letter to your District Director of Education giving at least two compelling reasons why caning should be banned in schools.",
+        prompt: "Write a formal letter to your District Director of Education, presenting at least two compelling educational reasons why corporal punishment (caning) should be permanently banned in all basic schools.",
         modelAnswer: `Methodist Junior High School
-P. O. Box 12
-Berekum, Bono Region
-15th June, 2011
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2011
 
 The District Director of Education
 Ghana Education Service
-Berekum District Directorate
-Berekum
+Bekwai Municipal Directorate
+Bekwai
 
 Dear Sir,
 
-PETITION FOR THE ABOLITION OF CORPORAL PUNISHMENT (CANING) IN BASIC SCHOOLS
+PETITION FOR THE ABOLITION OF CORPORAL PUNISHMENT IN BASIC SCHOOLS
 
-I write with great respect on behalf of the students of Berekum District to appeal to your high office to enforce an absolute ban on corporal punishment, particularly caning, in all basic schools across the district.
+On behalf of the basic school students within the Bekwai Municipality, I respectfully write to petition your high office to enforce an absolute prohibition of corporal punishment (caning) across all schools in our district.
 
-First and foremost, caning inflicts severe physical injury and psychological trauma on learners. Many overzealous teachers administer strokes of the cane indiscriminately, causing deep welts, fractured fingers, and occasional eye injuries. More critically, the psychological damage is devastating. Caning breeds intense anxiety, suppresses classroom participation, and instills a morbid fear of school. Consequently, many vulnerable pupils drop out or become chronic truants simply to escape physical brutality from educators who ought to protect them.
+First and foremost, corporal punishment inflicts grave psychological trauma that undermines authentic academic learning. Education thrives in an atmosphere of intellectual curiosity, mutual trust, and emotional security. When teachers routinely brandish cane switches in the classroom, students become paralyzed by fear and anxiety. Rather than actively participating in discussions or asking questions to clarify difficult concepts in Mathematics and Science, pupils retreat into timid silence to avoid physical pain. This culture of intimidation destroys self-confidence and breeds chronic absenteeism and school dropouts among vulnerable children.
 
-Secondly, caning is an ineffective disciplinary tool that promotes violence and hinders genuine moral reformation. Modern pedagogical research has proven that physical beatings do not teach self-discipline; rather, they harden delinquent pupils and model aggression as the primary means of resolving conflict. Caning diminishes a child's self-esteem and creates an adversarial barrier between teachers and students.
+Secondly, the indiscriminate use of caning frequently results in severe physical injuries and medical complications. Across our district, there have been distressing cases where pupils suffered fractured fingers, lacerated palms, and permanent ear damage due to excessive floggings administered by angry teachers. Modern pedagogy emphasizes that positive reinforcement and non-violent restorative discipline—such as time-out sessions, constructive labor, loss of privileges, and professional guidance counseling—are far more effective in molding moral character and self-discipline than physical violence.
 
-In place of caning, the educational directorate should train teachers in modern, positive corrective measures such as counseling, withdrawal of privileges, manual campus beautification, and peer mediation. These constructive alternatives instill accountability without degrading human dignity.
-
-We trust that you will consider this petition favorably to create a safe, supportive learning environment for all Ghanaian children.
+Caning is an antiquated relic of colonial education that has no place in a democratic, child-friendly society. We humbly appeal to your administration to organize training workshops for teachers on non-violent disciplinary methods and strictly enforce the ban on corporal punishment.
 
 Thank you.
 
 Yours faithfully,
 [Signature]
-Kwesi Mensah
-(District Students' Representative)`
+Kwabena Mensah
+(Student Representative)`
       },
       {
         questionNumber: "2",
         category: "Narrative Essay",
-        prompt: "Write a story which ends with the expression: \"................ what a dream!\"",
-        modelAnswer: `A GOLDEN VOYAGE TO THE STARS
+        prompt: "Write an engaging, suspenseful story that concludes with the expression: \"... what a dream!\"",
+        modelAnswer: `A NIGHT OF TERROR IN THE LABYRINTH
 
-The evening had begun like any ordinary Tuesday. Exhausted after a grueling day of revising past examination papers, I fell asleep immediately after my evening supper. Almost instantly, my modest bedroom dissolved into a glorious golden palace floating high above the clouds.
+It was a suffocating Friday night during the tense week preceding our final BECE mock examinations. Exhausted after six hours of revising algebraic formulas and integrated science definitions, I finally collapsed onto my mattress and drifted into deep slumber.
 
-A majestic herald dressed in shining silver regalia greeted me by name and led me to a royal dais where the elders of the universe were seated. To my utter astonishment, the Supreme Chancellor announced that I had been chosen as the Planetary Ambassador for World Peace. When he placed a diamond-studded medal of honor around my neck, an invisible orchestra erupted into breathtaking symphonies, and thousands of celestial beings cheered with thunderous applause.
+Suddenly, I found myself standing in the center of an enormous, fog-shrouded amphitheater constructed of ancient black granite. Before me sat an imposing tribunal of cloaked examiners whose eyes burned like glowing embers. The chief examiner pointed an icy, bony finger at me and bellowed in a voice that shook the stone walls: "Candidate Kwabena Mensah, you have been summoned to defend the intellectual honor of your school! Solve the riddle of the flaming scrolls before the hourglass drains, or be cast into the abyss of oblivion!"
 
-Moments later, I was ushered into a supersonic spacecraft capable of traveling at the speed of thought. We glided effortlessly across galaxies, weaving past rings of vibrant turquoise and exploring glistening extraterrestrial cities where poverty, war, and disease were completely unknown. People walked the streets with radiant smiles, sharing limitless feasts of delicious exotic fruits. I was handed the golden key to universal wisdom and told that I possessed the power to bring this eternal prosperity to Ghana.
+He hurled a glowing scroll toward me. I unrolled it in terror, only to find intricate mathematical equations that squirmed across the parchment like venomous scorpions. My heart hammered violently against my ribs as I grabbed a quill, but the ink turned to smoke. Around me, the stone floor began to crumble into a bottomless fiery pit as a giant clock chimed midnight with deafening clangs.
 
-Suddenly, a loud, jarring sound shattered the cosmic paradise. "Kofi, wake up! You will be late for school!" my mother's booming voice commanded as she pulled my blanket away.
+Desperate to survive, I concentrated all my mental energy, closed my eyes, and recited Archimedes' principle at the top of my lungs. The granite walls trembled, and a blinding lightning bolt shattered the tribunal's dais. I fell backward into the dark void, screaming in terror.
 
-Sitting up abruptly, rubbing my eyes and finding myself on my wooden bed with the morning sunlight streaming through the window blinds, I sighed deeply and whispered to myself, "................ what a dream!"`
+I jolted upright in bed with a loud gasp, panting heavily and soaked in cold sweat. Outside my window, the morning rooster was crowing and gentle sunlight was streaming into my bedroom. Clasping my trembling hands in profound relief, I whispered: ... what a dream!`
       },
       {
         questionNumber: "3",
-        category: "Speech Writing",
-        prompt: "As secretary of the Friends of the Environment club, write a speech you would give to the students of your school on the need to keep the environment clean.",
-        modelAnswer: `AN ADDRESS DELIVERED BY KWAME ADJEI, SECRETARY OF FRIENDS OF THE ENVIRONMENT CLUB, AT THE MORNING ASSEMBLY ON ENVIRONMENTAL SANITATION
+        category: "Speech / Environmental Address",
+        prompt: "As the Secretary of the Friends of the Environment Club in your school, write the speech you will deliver to the student body on the vital need to keep our school and community environment clean.",
+        modelAnswer: `A CLEAN ENVIRONMENT: OUR SACRED CIVIC DUTY
+Delivered by the Club Secretary to the Student Body of Methodist JHS
 
-Mr. Headmaster, Respected Teachers, and Fellow Students:
+Mr. Chairman, Respected Headmaster, Dedicated Teachers, and Fellow Students:
 
-I deem it a singular privilege to stand before you today on behalf of the Friends of the Environment club to address a subject of paramount importance to our lives: the urgent need to keep our school and community clean.
+I stand before you this morning on behalf of the Friends of the Environment Club to sound a passionate clarion call concerning an issue that touches our health, our dignity, and our collective survival: the vital necessity of maintaining an immaculate school and community environment.
 
-A clean environment is the bedrock of good health and academic excellence. Filthy surroundings laden with plastic wrappers, choked gutters, and overgrown weeds serve as breeding grounds for disease-carrying vectors such as mosquitoes and houseflies. These vectors spread deadly infections like malaria and cholera, which rob us of precious instructional time and burden our parents with hospital bills. When our campus is clean, disease outbreaks are eradicated, allowing us to attend classes regularly and achieve outstanding grades.
+Look around our immediate surroundings. It is disheartening to observe discarded plastic sachets, crumpled papers, and food wrappers littering our verandas and compound lawns. When rainfall occurs, these non-biodegradable plastics wash into our open roadside gutters, blocking the drainage network and creating foul, stagnant pools of black water. These choked gutters become fertile breeding grounds for disease-transmitting mosquitoes and houseflies, directly causing the recurrent outbreaks of malaria, cholera, and typhoid fever that hospitalize dozens of our classmates every term. Filth is not merely unsightly; it is a deadly public health hazard.
 
-Furthermore, maintaining a neat environment reflects our personal discipline and collective dignity. Our school compound is our second home. When visitors enter our campus and see spotless flower gardens, clean classrooms, and well-managed trash bins, they form a high impression of our character. Cleanliness is not merely an external act; it trains our minds to be orderly, responsible, and environmentally conscious citizens.
+Keeping our environment clean is a fundamental civic obligation that begins with individual responsibility. We must cultivate the disciplined habit of proper waste disposal. Do not drop empty water sachets on the ground after recess; place them into the designated recycling bins stationed across the compound.
 
-Fellow students, cleanliness begins with individual action. Let us make a solemn pledge today never to litter indiscriminately. Always drop waste into designated dustbins, participate enthusiastically in Friday communal sanitation duties, and weed our allocated plots.
+Furthermore, let us actively participate in our scheduled Friday afternoon communal campus desilting exercises. Planting trees and flowering hedges around our classrooms will beautify our school, purify the air we breathe, and provide shade from the tropical sun.
 
-Remember, a clean environment ensures a healthy life. Let us preserve our school with pride.
+Cleanliness is the bedrock of academic excellence and sound moral character. Let us make Methodist JHS a shining beacon of environmental purity.
 
-Thank you all for your kind attention.`
+Thank you.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `Ali set out of the house that morning in high spirits knowing well that he was going to meet his childhood friend Kofi. He had heard that his friend was occupying a very high position in a reputable company. Kofi could hardly recognize Ali when the latter entered the former's office.
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `Kwesi set out from his family house that morning in high spirits, knowing well that he was traveling to the regional capital to visit his primary schoolmate, Dr. Baah. He had learned that his childhood companion had achieved great professional distinction, serving as the Senior Medical Administrator of a prestigious hospital.
 
-'So you can't recognize me, Kofi, your classmate, Sikakrom J.H.S? Does money blind people and erase their memory? Can ten short years change you so completely as to make you forget an intimate friend?'
+When Kwesi stepped into the air-conditioned office, Dr. Baah could barely identify the disheveled visitor.
 
-Kofi then suddenly recognized him. 'Sorry, Ali. You've changed so much I couldn't make you out. Please, sit down. What can I do for you?'
+"So you can no longer recognize Kwesi, your intimate classmate from Sikakrom Primary?" Kwesi exclaimed with an offended frown. "Does corporate wealth blind individuals and erase their memory? Can ten short years transform a man so completely that he forgets his closest childhood brother?"
 
-Ali reluctantly sat down. He admired Kofi's tidy office and person—the well-groomed hair, the attractive shirt and tie. Ali removed a small bottle from the breast pocket of his dust-covered shirt, poured out some white substance in his palm and sniffed it greedily.
+Dr. Baah scrutinized the visitor closely and suddenly recognized him. "Forgive me, Kwesi. You have altered so drastically that I could scarcely make you out. Please, take a seat. How may I be of assistance to you?"
 
-Kofi noticed all that but suppressed his anger. 'I learn that luck has given you great wealth, Kofi,' Ali said. 'Indeed, some people are lucky!' he added, and pulled out a crumpled cigarette and a box of matches.
+Kwesi sat down reluctantly. He looked around the immaculate consulting suite with covert envy—the organized bookshelf, the polished mahogany desk, and Dr. Baah's crisp white coat and silk necktie. Slipping a small glass phial from his dust-stained jacket pocket, Kwesi tapped a pinch of white powdered snuff into his palm and inhaled it greedily. Dr. Baah observed this misconduct with deep concern but mastered his irritation.
 
-'I'd rather you didn't smoke here. I keep my air fresh,' Kofi politely ordered. Ali was shocked. 'Hei, Kofi, what a complete change! What bird must have lent you its wings for you to soar so high? Oh, Luck, you can really change people! Just ten short years!'
+"I observe that blind luck has showered boundless riches upon you, Baah," Kwesi remarked casually. "Truly, some people are favored by fortune!" He then extracted a crumpled cigarette and a box of matches.
 
-'Look here, Ali, leave luck out of this. I worked very hard for seven years to acquire a good degree and a job. I never relied on luck for success.'`,
+"I must insist that you do not smoke in this facility; I maintain a sterilized, smoke-free atmosphere," Dr. Baah commanded in a firm, polite voice.
+
+Kwesi was startled. "Incredible, Baah! What powerful bird lent you its wings to soar to such magnificent heights? Ah, blind Luck is a miracle worker! Ten short years ago we were equal toddlers!"
+
+"Listen to me, Kwesi, and leave superstitious luck out of this," Dr. Baah responded sternly. "I labored through seven grueling years of medical schooling, studying through midnight oil while others slept. I never relied on luck for success; I earned it through relentless hard work and discipline."`,
     questions: [
       {
-        subId: "(a)",
-        question: "What did Ali expect as he left the house to meet Kofi?",
-        answer: "He expected a joyful, warm reunion with his childhood friend and anticipated that Kofi's wealth and high position would be shared with or benefit him."
+        subQuestion: "(a)",
+        question: "What was Kwesi's mood and expectation as he set out from home to visit Dr. Baah?",
+        answer: "He was in high spirits and joyful anticipation, expecting a warm and celebratory reunion with his childhood friend."
       },
       {
-        subId: "(b)",
-        question: "Why did Kofi initially fail to recognize Ali?",
-        answer: "Because Ali had deteriorated physically and changed drastically in appearance (he was unkempt, wearing a dust-covered shirt, and showed the physical toll of substance abuse)."
+        subQuestion: "(b)",
+        question: "Why did Dr. Baah fail to recognize Kwesi initially when he entered the office?",
+        answer: "Dr. Baah failed to recognize him because Kwesi's physical appearance had altered drastically over ten years, looking dust-stained, worn-out, and disheveled."
       },
       {
-        subId: "(c)",
-        question: "What does the passage reveal about Ali's personal habits and lifestyle?",
-        answer: "It reveals that Ali has destructive, reckless habits: he engages in illicit drug use (sniffing a white powdery substance) and heavy cigarette smoking."
+        subQuestion: "(c)",
+        question: "What does the passage reveal regarding Kwesi's personal habits and lifestyle?",
+        answer: "The passage reveals that Kwesi has careless, unwholesome, and addictive habits: he inhales powdered snuff in public and smokes cigarettes indoors regardless of decorum."
       },
       {
-        subId: "(d)(i)",
-        question: "According to Ali, what factor was responsible for Kofi's great wealth and professional success?",
-        answer: "Good luck (fortune)."
+        subQuestion: "(d)",
+        question: "I. According to Kwesi, what single factor made Dr. Baah wealthy and successful?\nII. What actually enabled Dr. Baah to achieve professional success in reality?",
+        answer: "I. According to Kwesi, blind fortune and superstitious luck made Dr. Baah successful.\nII. In reality, Dr. Baah succeeded through seven years of rigorous medical schooling, relentless hard work, academic sacrifice, and personal discipline."
       },
       {
-        subId: "(d)(ii)",
-        question: "What actually helped Kofi to achieve his success in life?",
-        answer: "Seven years of relentless hard work, academic dedication to acquire a university degree, and professional diligence."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following expressions as used in the passage:\nI. in high spirits\nII. erase their memory\nIII. I couldn't make you out",
+        answer: "I. 'in high spirits' means feeling extremely cheerful, joyful, and enthusiastic.\nII. 'erase their memory' means to completely wipe out, forget, or lose recollection of past events and friends.\nIII. 'I couldn't make you out' means I was unable to decipher, distinguish, or recognize your identity."
       },
       {
-        subId: "(e)",
-        question: "Explain in your own words the following expressions as used in the passage:\n(i) in high spirits;\n(ii) erase their memory;\n(iii) I couldn't make you out.",
-        answer: "(i) **in high spirits:** In a very cheerful, joyful, and optimistic mood.\n(ii) **erase their memory:** Cause people to completely forget their humble past, roots, and old friends.\n(iii) **I couldn't make you out:** I could not recognize or identify your face."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, provide a word or phrase that means the same and can replace it in the passage without altering the meaning:\n(i) reputable;\n(ii) intimate;\n(iii) tidy;\n(iv) attractive.",
-        answer: "(i) **reputable:** prestigious / well-respected / distinguished / renowned.\n(ii) **intimate:** close / bosom / trusted / dear.\n(iii) **tidy:** neat / orderly / clean / spotless.\n(iv) **attractive:** smart / charming / appealing / handsome."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. reputable\nII. intimate\nIII. tidy\nIV. attractive",
+        answer: "I. reputable: prestigious, respectable, renowned, celebrated, honorable.\nII. intimate: close, bosom, familiar, dear, cherished.\nIII. tidy: neat, organized, immaculate, orderly, clean.\nIV. attractive: elegant, handsome, charming, appealing, pleasing."
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId.replace(/[()]/g, '_')}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  }))
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  }
 ];
 
 async function seedBeceEnglish2011Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2011 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2011 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -648,6 +683,7 @@ async function seedBeceEnglish2011Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2011");
   await docRef.set({
     year: 2011,
@@ -661,25 +697,54 @@ async function seedBeceEnglish2011Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)"],
-      status: "calibrated",
+      hasLiteratureComponent: true,
+      passageFirstLayout: false, // 2011 comprehension is in Paper 2
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 17",
+          questions: balancedPaper1.slice(0, 17)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 18 to 22",
+          questions: balancedPaper1.slice(17, 22)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 23 to 27",
+          questions: balancedPaper1.slice(22, 27)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 28 to 32",
+          questions: balancedPaper1.slice(27, 32)
+        },
+        partII_literature: {
+          title: "Part II: Literature in English",
+          questionRange: "Questions 33 to 40",
+          questions: balancedPaper1.slice(32, 40)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay and Reading Comprehension",
+      title: "Paper 2: Written Essay and Reading Comprehension",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2011 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2011 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2011Calibrated()

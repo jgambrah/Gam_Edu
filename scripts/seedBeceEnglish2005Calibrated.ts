@@ -1,8 +1,11 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -12,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -34,440 +38,492 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2005
-const passage1Text = "### 📖 PASSAGE I\n\nAs they walked to school that bright morning, Esinam could not hide her excitement. Her father had bought her a brand-new, colorful schoolbag for the new academic term. She swung the bag proudly from side to side, humming a lively tune with the refrain: \"It's great to be young!\" For Esinam, life was wonderful and full of joy, surrounded by the warmth and comfort of parents who provided everything she needed.\n\nWalking silently beside her was her closest friend and classmate, Ayele. Ayele was unusually quiet today. She carried an old, faded canvas bag that had once belonged to her elder sister, its seams mended with thick thread. Whenever Esinam held up her glittering bag to admire it, Ayele merely responded with a faint grunt. Ayele's heart was heavy. Her parents were subsistence peasant farmers who struggled daily to make ends meet, and she knew there was no money for new bags or ceremonial shoes.\n\nObserving her friend's silence, Esinam wondered why Ayele seemed so moody on their very first day back at school. Yet, despite her modest circumstances, Ayele was deeply thoughtful, determined to study hard and rewrite the story of her humble home.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: WALKING TO SCHOOL (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Title = "Passage I: Walking to School - Two Friends and Differing Fortunes";
+const passage1Text = `The two girls were drawing near to the school compound, holding hands affectionately as they walked together. Ayele and Esinam were inseparable companions who attended the same basic school and shared the same classroom desk. Today, however, Ayele was unusually quiet, even though Esinam was eagerly waiting for her to say something complimentary about her fashionable new schoolbag.
 
-const passage2Text = "### 📖 PASSAGE II\n\nPeople often wonder why they laugh and what laughter does to the human mind and body. Laughter is one of the most natural and healthy emotional releases known to mankind. We laugh when we see something funny, hear a witty joke, or watch someone behaving awkwardly or making a clumsy mistake.\n\nPhysically, laughter relaxes the body, eases muscle tension, and makes people look healthy and pleasant. Those who laugh often and maintain a cheerful disposition tend to make friends easily and resolve conflicts without bitterness.\n\nBeyond its personal health benefits, laughter serves an important social purpose. From ancient times, human societies have used laughter as a gentle tool to correct behavior and enforce community discipline. When someone acts foolishly or violates accepted social norms, public amusement and teasing often compel them to change their conduct more effectively than harsh punishment. Laughter reminds us not to take ourselves too seriously and bonds communities together in shared joy.";
+"So that is your attitude today? You cannot even pass a simple remark about my bag? Father bought it for me when he returned from his trip to America yesterday," Esinam prodded. Ayele's only response was a faint, indifferent grunt. But Esinam was in far too buoyant a mood to be disheartened. Shrugging off her friend's withdrawn disposition, she broke into a lighthearted tune celebrating her parents' lavish generosity: "Mother and Father buy me elegant dresses, fancy footwear, and whatever luxury I desire once I ask. It is truly wonderful to be young!"
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2005
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+Strapped across Ayele's shoulders was a worn, weathered rucksack formerly used by her senior sister. Its original brown canvas had faded to a dusty cream from countless washings. When she finally broke her prolonged silence, her tone was dignified, solemn, and devoid of envy: "I have grown accustomed to the second-hand dresses, bags, and sandals that Mother manages to purchase for me from the market. She tells me honestly that her modest wages cannot stretch any further. I trust her sacrifices and love her dearly." A slight quiver ruffled her voice, as though tears were welling behind her eyelids. Yet her eyes brightened with determination as she continued: "I am in J.S.S. 3, just like you, and our academic marks are equally brilliant. It is magnificent to look forward to the future with courage and hope." Esinam nodded in silent respect just as the morning siren sounded, transforming their stroll into a brisk sprint.`;
+
+const passage1QuestionsRaw = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why does Ayele respond with silence and a mere grunt when Esinam displays her new schoolbag?`,
-    passage: passage1Text,
+    prompt: "According to Passage I, why was Ayele unusually quiet during their walk to school?",
     options: [
-      "She detests the design of Esinam's new bag",
-      "She is anxious to reach school early",
-      "She feels pensive and overwhelmed by her modest circumstances",
-      "She is furious with Esinam's playful singing"
+      "She disliked Esinam's new American schoolbag",
+      "She was hurrying to arrive before the school gates closed",
+      "She was feeling pensive, withdrawn, and moody",
+      "Esinam had offended her with an insulting remark"
     ],
-    correctAnswer: "She feels pensive and overwhelmed by her modest circumstances",
-    hint: "Notice her emotional struggle between her faded hand-me-down bag and her friend's brand-new overseas bag.",
-    workedSolution: "Ayele is quiet not out of malice, but because she is reflective and pensive, conscious of her family's limited financial means compared to Esinam's affluent background.",
+    correctAnswer: "She was feeling pensive, withdrawn, and moody",
+    hint: "Reread paragraph one: she was not speaking and responded with a mere grunt, reflecting a quiet, reflective, and moody state.",
+    workedSolution: "The narrative explains that Ayele was quiet because she was in a moody, reflective state as her friend flaunted her new bag.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what does the exclamation 'It's great to be young!' signify for Esinam?`,
-    passage: passage1Text,
+    prompt: "From Esinam's perspective in Passage I, the exclamation 'It's great to be young!' signifies ............",
     options: [
-      "Having generous parents who purchase whatever she wishes for",
-      "Being privileged to attend basic school",
-      "Living under the roof of both parents",
-      "Singing cheerful songs on the way to school"
+      "having parents who supply every material comfort and wish",
+      "enjoying the privilege of attending a basic school",
+      "living happily with both a mother and a father",
+      "being cheerful and singing along the pathway"
     ],
-    correctAnswer: "Having generous parents who purchase whatever she wishes for",
-    hint: "Reread paragraph one: 'Mum and Dad buy me dresses, shoes and anything I wish for... It's great to be young!'",
-    workedSolution: "Esinam equates the joy of youth directly with material abundance and having loving parents who readily satisfy all her material wants.",
+    correctAnswer: "having parents who supply every material comfort and wish",
+    hint: "Notice how she immediately connects the statement to her parents buying her dresses, shoes, and anything she asks for.",
+    workedSolution: "Esinam equates the joy of youth with material indulgence—having wealthy parents who purchase every dress, shoe, and luxury she desires.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nWhat does the passage reveal regarding the socio-economic status of Ayele's family?`,
-    passage: passage1Text,
+    prompt: "What does the passage reveal regarding the economic status of Ayele's family?",
     options: [
-      "They are wealthy but extremely stingy",
-      "They are of modest, economically constrained means",
-      "They are unconcerned with their children's education",
-      "They refuse to support their daughters"
+      "They are destitute and beg for daily food",
+      "They are wealthy but extremely stingy with money",
+      "They are of modest means and somewhat poor",
+      "They are dishonest about their financial income"
     ],
-    correctAnswer: "They are of modest, economically constrained means",
-    hint: "Her mother buys secondhand items and admits: 'she can't do more.'",
-    workedSolution: "The narrative portrays Ayele's mother as an honest, struggling parent who does her best within very tight financial constraints.",
+    correctAnswer: "They are of modest means and somewhat poor",
+    hint: "Ayele's mother buys second-hand items and honestly explains she cannot afford more.",
+    workedSolution: "The text indicates that Ayele's family has modest financial resources (somewhat poor), compelling her to use faded, second-hand hand-me-downs.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, Ayele is depicted as a young girl who is remarkably ............`,
-    passage: passage1Text,
+    prompt: "In Passage I, Ayele is portrayed as a young girl who is remarkably ............",
     options: [
-      "haughty and envious",
-      "difficult to satisfy",
-      "quarrelsome toward friends",
-      "mature, thoughtful, and hopeful"
+      "proud and resentful",
+      "difficult to please",
+      "jealous of her peers",
+      "mature, contented, and thoughtful"
     ],
-    correctAnswer: "mature, thoughtful, and hopeful",
-    hint: "Notice how she accepts her mother's limitations without bitterness and looks to the future with optimism.",
-    workedSolution: "Ayele demonstrates remarkable emotional maturity: she loves her mother, accepts hand-me-downs without resentment, and looks forward to the future with hope.",
+    correctAnswer: "mature, contented, and thoughtful",
+    hint: "She speaks solemnly without regret, loves her mother, and looks forward to the future with hope.",
+    workedSolution: "Ayele exhibits maturity, gratitude, and deep reflection (thoughtful), appreciating her mother's honest efforts and prioritizing academic success over material vanity.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'tremble' in 'There is a tremble in her voice' means ............`,
-    passage: passage1Text,
-    options: ["disturbance", "quiver", "sudden drop", "sharp loudness"],
-    correctAnswer: "quiver",
-    hint: "A slight shaking or wavering caused by strong emotion.",
-    workedSolution: "'Tremble' refers to an involuntary wavering or shaking in the voice due to emotional strain; 'quiver' is its direct synonym.",
+    prompt: "In Passage I, the word 'quiver' (or 'tremble') in 'a slight quiver ruffled her voice' means ............",
+    options: [
+      "disturbance",
+      "tremor or slight shake",
+      "sudden drop in pitch",
+      "loudness"
+    ],
+    correctAnswer: "tremor or slight shake",
+    hint: "A slight shaking or trembling of the voice when emotionally moved.",
+    workedSolution: "'Tremble' or 'quiver' refers to an unsteady, involuntary shaking or slight vibration of the voice; 'tremor or slight shake' is its direct meaning.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE NATURE OF LAUGHTER (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Title = "Passage II: The Psychology and Social Function of Laughter";
+const passage2Text = `There are two fundamental inquiries that observers frequently pose concerning laughter: what triggers human amusement, and what physiological and social benefits does laughter produce?
+
+When one examines the roots of humor, attention naturally turns to interpersonal behavior across diverse circumstances. Why, for instance, do people laugh when someone acts awkwardly or exhibits an unusual human frailty?
+
+The explanation is remarkably straightforward. We laugh instinctively whenever we encounter behavior or appearances that are incongruous and queer. If, for instance, on your morning commute to work or school, you observed an extraordinarily corpulent gentleman dressed in a leafy green tuxedo and balancing an absurdly tiny straw hat upon his head, or if at a formal banquet you watched a very short man dancing with an exceptionally towering woman, you would chuckle involuntarily. Such sights are inherently funny because they depart from conventional expectations.
+
+Beyond the comical oddities that provoke mirth, laughter confers immense physical and mental benefits. Medically, robust laughter exercises our respiratory lungs and enables the body to release pent-up nervous energy. Socially, humor acts as an irresistible magnet; individuals who cultivate cheerful laughter naturally attract warm company and forge enduring friendships. Furthermore, across diverse societies, collective laughter serves as a gentle corrective instrument to check deviant, antisocial behavior, thereby helping maintain community order and discipline.`;
+
+const passage2QuestionsRaw = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what is the primary trigger that provokes spontaneous human laughter?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, why do human beings laugh instinctively when observing others?",
     options: [
-      "Wearing fashionable clothing",
-      "Witnessing eccentric, queer, or awkward human behavior",
-      "Attending lavish social gatherings",
-      "Embarking on a long journey to school"
+      "They are dressed in expensive ceremonial apparel",
+      "They witness someone behaving in an odd, unusual, or funny manner",
+      "They are attending an official evening banquet",
+      "They are commuting together along a public highway"
     ],
-    correctAnswer: "Witnessing eccentric, queer, or awkward human behavior",
-    hint: "Check paragraph two and three: 'We laugh when we see people behaving or acting in an odd manner...'",
-    workedSolution: "The passage explains that people naturally laugh when they observe odd, mismatched, or awkward behavior in others, such as comical dress or unusual pairings.",
+    correctAnswer: "They witness someone behaving in an odd, unusual, or funny manner",
+    hint: "Reread paragraph three: we laugh when we see people behaving or acting in an odd, queer, or funny manner.",
+    workedSolution: "The passage notes that humor arises when we witness unusual, incongruous, or funny actions and appearances that deviate from the ordinary.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what positive physical benefit does laughter provide to the human body?`,
-    passage: passage2Text,
+    prompt: "What physiological benefit does hearty laughter provide to the human body according to Passage II?",
     options: [
-      "It strengthens muscular bones",
-      "It improves respiratory health and releases pent-up energy",
-      "It alters physical height",
-      "It cures all viral infections"
+      "It strengthens memory retention during study",
+      "It promotes lung health and releases pent-up bodily energy",
+      "It makes people appear comical to onlookers",
+      "It lowers physical body temperature instantly"
     ],
-    correctAnswer: "It improves respiratory health and releases pent-up energy",
-    hint: "Reread paragraph four: 'It is good for our lungs and allows us to release extra energy.'",
-    workedSolution: "The author explicitly states that laughter promotes physical well-being by exercising the lungs and discharging excess physical tension.",
+    correctAnswer: "It promotes lung health and releases pent-up bodily energy",
+    hint: "Check paragraph four: it is good for our lungs and allows us to release extra energy.",
+    workedSolution: "The author explains that laughter exercises the respiratory lungs and releases surplus or pent-up physical energy, promoting good health.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what social advantage do individuals who enjoy cheerful laughter possess?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, individuals who enjoy cheerful laughter generally ............",
     options: [
-      "They appear strange to strangers",
-      "They easily attract good company and build friendships",
-      "They frequently criticize their neighbors",
-      "They dominate community leadership"
+      "appear strange to the public",
+      "find fault with their neighbors",
+      "injure their physical vocal cords",
+      "attract good company and make friends easily"
     ],
-    correctAnswer: "They easily attract good company and build friendships",
-    hint: "Paragraph four notes: 'If you enjoy laughter you invite good company.'",
-    workedSolution: "The passage notes that a cheerful disposition and readiness to laugh invite good social company and foster warm interpersonal bonds.",
+    correctAnswer: "attract good company and make friends easily",
+    hint: "Look at paragraph four: 'If you enjoy laughter you invite good company.'",
+    workedSolution: "Humor has high social value; people who embrace laughter attract pleasant companions and build friendships effortlessly.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how do traditional human societies utilize laughter as an instrument of social discipline?`,
-    passage: passage2Text,
+    prompt: "How do human societies utilize laughter as a tool of social control in Passage II?",
     options: [
-      "To entertain criminals",
-      "To provoke violent conflicts",
-      "To check improper conduct through gentle ridicule and correction",
-      "To reward community chiefs"
+      "To provoke public anger and disputes",
+      "To mock the physically afflicted",
+      "To correct improper behavior and enforce community discipline",
+      "To flatter political leaders"
     ],
-    correctAnswer: "To check improper conduct through gentle ridicule and correction",
-    hint: "Look at the final sentences: 'laughter is used as a way of keeping people who do not do the right things in check... ensuring discipline.'",
-    workedSolution: "The author argues that societies employ mild laughter and mockery to correct deviant or unacceptable behavior, thereby maintaining social order.",
+    correctAnswer: "To correct improper behavior and enforce community discipline",
+    hint: "Paragraph four concludes: laughter is used to keep non-conformists in check, ensuring discipline.",
+    workedSolution: "The text explains that societies employ laughter and mild ridicule to check unacceptable behavior, thereby maintaining social order and discipline.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'awkwardly' in 'behaving awkwardly' means ............`,
-    passage: passage2Text,
-    options: ["clumsily and oddly", "happily and joyfully", "respectably and politely", "eagerly and boldly"],
-    correctAnswer: "clumsily and oddly",
-    hint: "Lacking grace, coordination, or normal social conformity.",
-    workedSolution: "'Awkwardly' means in an ungainly, clumsy, or socially unconventional manner; 'clumsily and oddly' is the closest equivalent.",
+    prompt: "In Passage II, the word 'awkwardly' in 'behaving awkwardly' means acting ............",
+    options: [
+      "foolishly and clumsily",
+      "joyfully and excitedly",
+      "respectably and honorably",
+      "eagerly and boldly"
+    ],
+    correctAnswer: "foolishly and clumsily",
+    hint: "'Awkwardly' means lacking grace, clumsy, or odd in manner.",
+    workedSolution: "'Awkwardly' refers to behaving in an ungainly, clumsy, odd, or foolish manner; 'foolishly and clumsily' captures its contextual meaning.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// =========================================================================
+const generalQuestionsRaw = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "Our dependable goalkeeper saved the school team from defeat.\nChoose the word nearest in meaning to the underlined word 'dependable'.",
-    options: ["reliable", "tall", "smart", "muscular"],
+    prompt: "Our dependable school goalkeeper saved the team from public defeat.\nChoose the word nearest in meaning to 'dependable'.",
+    options: ["muscular", "athletic", "reliable", "vigilant"],
     correctAnswer: "reliable",
-    hint: "Trustworthy and consistent in performance.",
-    workedSolution: "'Dependable' means trustworthy, consistent, and capable of being relied on; 'reliable' is its direct synonym.",
+    hint: "Trustworthy, steady, and capable of being relied on.",
+    workedSolution: "'Dependable' means trustworthy and consistent; 'reliable' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "An impartial referee officiated the inter-schools football finals.\nChoose the word nearest in meaning to the underlined word 'impartial'.",
-    options: ["foreign", "local", "neutral", "athletic"],
-    correctAnswer: "neutral",
-    hint: "Fair, unbiased, and not favoring one side over another.",
-    workedSolution: "'Impartial' means treating all rivals equally and without bias; 'neutral' is its exact synonym.",
+    prompt: "An experienced, neutral referee was appointed to officiate the championship finals.\nChoose the word nearest in meaning to 'neutral'.",
+    options: ["foreign", "impartial", "celebrated", "tolerant"],
+    correctAnswer: "impartial",
+    hint: "Not taking sides in a dispute; unbiased and fair.",
+    workedSolution: "'Neutral' means unbiased, fair, and not favoring either side; 'impartial' is its exact equivalent.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The candidates were jubilating because they had secured distinction in the examinations.\nChoose the word nearest in meaning to the underlined word 'jubilating'.",
-    options: ["singing", "shouting", "dancing", "rejoicing"],
+    prompt: "The candidates were jubilating when the provisional results were posted on the notice board.\nChoose the word nearest in meaning to 'jubilating'.",
+    options: ["dancing", "rejoicing", "marching", "applauding"],
     correctAnswer: "rejoicing",
-    hint: "Expressing great joy, triumph, and happiness.",
-    workedSolution: "'Jubilating' means expressing great happiness, celebration, and triumph; 'rejoicing' is its direct synonym.",
+    hint: "Expressing great happiness, triumph, or celebration.",
+    workedSolution: "'Jubilating' means expressing great joy and celebration; 'rejoicing' is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "Aba's ambition is to become a celebrated medical scientist.\nChoose the word nearest in meaning to the underlined word 'celebrated'.",
-    options: ["gospel", "rich", "famous", "reggae"],
+    prompt: "Kuuki's lifelong dream is to become a celebrated concert pianist.\nChoose the word nearest in meaning to 'celebrated'.",
+    options: ["wealthy", "gospel", "famous", "traditional"],
     correctAnswer: "famous",
-    hint: "Widely known, honored, and acclaimed by the public.",
-    workedSolution: "'Celebrated' means widely recognized, honored, and acclaimed; 'famous' (or renowned) is its closest equivalent.",
+    hint: "Widely known, admired, and acclaimed by the public.",
+    workedSolution: "'Celebrated' means widely honored, acclaimed, or 'famous'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Appiah is a talented sprinter who won three gold medals.\nChoose the word nearest in meaning to the underlined word 'talented'.",
-    options: ["strong", "gifted", "dull", "lucky"],
+    prompt: "Appiah is a talented athlete who excels in both track and field competitions.\nChoose the word nearest in meaning to 'talented'.",
+    options: ["gifted", "robust", "tireless", "fortunate"],
     correctAnswer: "gifted",
-    hint: "Possessing natural aptitude, flair, or exceptional ability.",
-    workedSolution: "'Talented' means possessing natural creative or athletic aptitude; 'gifted' is its direct synonym.",
+    hint: "Possessing natural creative or athletic ability.",
+    workedSolution: "'Talented' means possessing natural aptitude or ability; 'gifted' is its exact equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "Kofi was suspended after playing truant for four consecutive days. This means that Kofi was ............",
-    options: ["expelled from school", "abducted by strangers", "deliberately absent from school without permission", "seriously sick at home"],
+    prompt: "Kofi returned to class after playing truant for three consecutive days. This means that Kofi was ............",
+    options: [
+      "detained in hospital",
+      "deliberately absent from school without permission",
+      "kidnapped by strangers",
+      "formally suspended by the headmaster"
+    ],
     correctAnswer: "deliberately absent from school without permission",
-    hint: "Staying away from school without authorization or valid excuse.",
-    workedSolution: "The idiom 'to play truant' means to stay away from school or duties deliberately without leave or valid excuse.",
+    hint: "To play truant means to stay away from school without authorization.",
+    workedSolution: "The idiom 'to play truant' means to stay away from school deliberately without permission or valid excuse.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Ama remained close-lipped throughout the police interrogation. This means that Ama ............",
-    options: ["refused to shed tears", "appeared very solemn", "refused to speak or disclose secrets", "was completely relaxed"],
-    correctAnswer: "refused to speak or disclose secrets",
-    hint: "Keeping the mouth shut and refusing to disclose confidential information.",
-    workedSolution: "The idiom 'close-lipped' (or tight-lipped) means uncommunicative, secretive, and refusing to utter words or disclose facts.",
+    prompt: "Ama was the only witness who remained close-lipped during the investigation. This means that Ama ............",
+    options: [
+      "refused to weep",
+      "looked depressed",
+      "refused to speak or disclose information",
+      "spoke in a whisper"
+    ],
+    correctAnswer: "refused to speak or disclose information",
+    hint: "Keeping one's lips sealed; saying nothing.",
+    workedSolution: "The idiom 'close-lipped' (or tight-lipped) means refusing to speak, divulge secrets, or give information.",
     points: 1
   },
   {
     number: 18,
-    prompt: "The new club member was instructed to toe the line or leave the society. This means that he was told to ............",
-    options: ["render an apology", "resign immediately", "change his uniform", "conform strictly to established regulations"],
-    correctAnswer: "conform strictly to established regulations",
-    hint: "Obeying established standards, rules, or authority without deviation.",
-    workedSolution: "The idiom 'to toe the line' means to conform strictly to established standards, rules, or disciplinary commands.",
+    prompt: "The recalcitrant player was instructed to toe the line or be dismissed from the squad. This means he was asked to ............",
+    options: [
+      "tender an apology",
+      "conform to rules and obey instructions",
+      "resign immediately",
+      "repay his allowance"
+    ],
+    correctAnswer: "conform to rules and obey instructions",
+    hint: "To conform strictly to established rules and standards.",
+    workedSolution: "The idiom 'to toe the line' means to conform strictly to rules, standards, or authoritative directives; to obey.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The doctor urged the patient to give up smoking. This means that the patient was advised to ............ smoking.",
-    options: ["suspend temporarily", "stop permanently", "prevent others from", "hate the smell of"],
-    correctAnswer: "stop permanently",
-    hint: "To quit, abandon, or cease a chronic habit.",
-    workedSolution: "The phrasal verb 'to give up' means to discontinue, abandon, or permanently stop a habit.",
+    prompt: "The doctor advised the asthmatic patient to give up smoking permanently. This means the patient should ...... smoking.",
+    options: ["suspend", "stop", "curtail", "abhor"],
+    correctAnswer: "stop",
+    hint: "To abandon, cease, or discontinue a habit.",
+    workedSolution: "The phrasal verb 'to give up' an activity or habit means to cease, discontinue, or 'stop' it entirely.",
     points: 1
   },
   {
     number: 20,
-    prompt: "Our grandmother has a heart of gold. This means that she is exceptionally ............",
-    options: ["wealthy", "clever", "generous and kind", "physically strong"],
-    correctAnswer: "generous and kind",
-    hint: "Possessing a deeply generous, loving, and compassionate nature.",
-    workedSolution: "The idiom 'a heart of gold' describes an individual who is exceedingly kind, generous, and benevolent toward others.",
+    prompt: "Auntie Mansa has a heart of gold. This means that Auntie Mansa is ............",
+    options: ["exceedingly wealthy", "remarkably generous and kind", "intellectually brilliant", "proud of her jewelry"],
+    correctAnswer: "remarkably generous and kind",
+    hint: "Having an exceptionally generous, benevolent, and kind nature.",
+    workedSolution: "The idiom 'to have a heart of gold' means to be exceptionally kind, benevolent, and generous toward others.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "While Grandpa remains a robust elder, his younger brother has become remarkably ...... .",
-    options: ["troublesome", "inquisitive", "weak", "cheerful"],
+    prompt: "While my grandfather is a robust nonagenarian, his younger brother is frail and ...... .\nChoose the word most nearly opposite in meaning to 'robust'.",
+    options: ["troublesome", "inquisitive", "weak", "melancholy"],
     correctAnswer: "weak",
-    hint: "'Robust' means strong, healthy, and vigorous. Find the word denoting lack of physical strength.",
-    workedSolution: "'Robust' means vigorous, sturdy, and physically strong. Its direct antonym in physical health is 'weak' (frail).",
+    hint: "'Robust' means strong, sturdy, and healthy. What word denotes lacking physical strength?",
+    workedSolution: "'Robust' means strong, vigorous, and healthy. Its direct physical antonym is 'weak' (or frail).",
     points: 1
   },
   {
     number: 22,
-    prompt: "The committee consented to the proposal, but the director ...... with the decision.",
-    options: ["disagreed", "submitted", "replied", "applied"],
+    prompt: "The board consented to the director's proposal, but the auditors ...... with the figures.\nChoose the word most nearly opposite in meaning to 'consented'.",
+    options: ["disagreed", "submitted", "protested", "hesitated"],
     correctAnswer: "disagreed",
-    hint: "'Consented' means agreed to or approved. Find the word meaning refused to agree.",
-    workedSolution: "'Consented' means expressed agreement or compliance. Its direct antonym is 'disagreed' (dissented or rejected).",
+    hint: "'Consented' means agreed or approved. What word denotes having an opposite opinion or saying no?",
+    workedSolution: "'Consented' means agreed, concurred, or assented. Its direct antonym is 'disagreed' (dissented).",
     points: 1
   },
   {
     number: 23,
-    prompt: "The prospectus requested a sharp cutlass, but the apprentice brought a ...... blade.",
-    options: ["new", "used", "short", "blunt"],
+    prompt: "You need a sharp machete to clear the thicket, not a ...... blade.\nChoose the word most nearly opposite in meaning to 'sharp'.",
+    options: ["coarse", "rusty", "blunt", "notched"],
     correctAnswer: "blunt",
-    hint: "'Sharp' means having a keen cutting edge. Find the word meaning lacking a sharp edge.",
-    workedSolution: "'Sharp' describes a keen edge capable of cutting. Its direct antonym regarding cutting tools is 'blunt' (dull).",
+    hint: "'Sharp' means having a thin cutting edge. What word describes a cutting edge that is dull?",
+    workedSolution: "'Sharp' describes a keen, cutting edge. Its direct tool antonym is 'blunt' (dull).",
     points: 1
   },
   {
     number: 24,
-    prompt: "While junior students read the abridged versions of classical plays, the teacher studied the ...... manuscripts.",
-    options: ["old", "original", "cheap", "paperback"],
+    prompt: "Basic students read abridged literary texts, whereas university scholars study the ...... unabridged editions.\nChoose the word most nearly opposite in meaning to 'abridged'.",
+    options: ["original", "classic", "modern", "lengthy"],
     correctAnswer: "original",
-    hint: "'Abridged' means shortened or condensed. Find the word meaning complete, uncut, and authentic.",
-    workedSolution: "'Abridged' refers to a shortened or condensed text. Its direct literary antonym is 'original' (unabridged or complete).",
+    hint: "'Abridged' means shortened or condensed. What word denotes the complete, authentic text as first written?",
+    workedSolution: "'Abridged' means shortened or condensed from a longer text. Its direct textual antonym is 'original' (or unabridged/complete).",
     points: 1
   },
   {
     number: 25,
-    prompt: "The deserving pupil was awarded a scholarship, while the dishonest candidate was ...... one.",
-    options: ["rewarded", "shown", "denied", "robbed"],
+    prompt: "The most disciplined student was awarded a scholarship, while the truant was ...... admission.\nChoose the word most nearly opposite in meaning to 'awarded'.",
+    options: ["deprived", "denied", "stripped", "exempted"],
     correctAnswer: "denied",
-    hint: "'Awarded' means granted or bestowed. Find the word meaning refused or withheld.",
-    workedSolution: "'Awarded' means officially granted or bestowed. Its direct antonym is 'denied' (refused or withheld).",
+    hint: "'Awarded' means granted or given as a prize. What word denotes refused or withheld?",
+    workedSolution: "'Awarded' means granted, given, or bestowed. Its direct antonym is 'denied' (refused or withheld).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Ashia is accustomed to ...... her aged grandparents every weekend.",
+    prompt: "Ashia is used to ...... her elderly grandparents every Saturday morning.",
     options: ["visit", "have visited", "visited", "visiting"],
     correctAnswer: "visiting",
-    hint: "The structure 'to be accustomed/used to' is followed by a gerund (verb-ing).",
-    workedSolution: "In the predicate structure 'to be used to' (meaning habituated to), 'to' functions as a preposition requiring a gerund complement ('visiting').",
+    hint: "The structure 'be used to' (expressing familiarity or habit) is followed by a gerund (verb-ing).",
+    workedSolution: "In the construction 'be used to' meaning accustomed to, 'to' functions as a preposition followed by a gerund: 'is used to visiting'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "...... candidates arrived early for the morning examination.",
+    prompt: "...... students in the science laboratory were present for the safety demonstration.",
     options: ["The whole", "The several", "Much of the", "All the"],
     correctAnswer: "All the",
-    hint: "Plural countable nouns like 'candidates' take this universal determiner.",
-    workedSolution: "'All the' correctly quantifies plural countable nouns ('All the students/candidates'). 'The whole' is used with singular nouns; 'Much' with non-count nouns.",
+    hint: "Use the universal plural determiner that modifies plural countable nouns ('students').",
+    workedSolution: "Plural countable nouns ('students') are universally determined by 'All the'. 'Whole' is used with singular count nouns; 'Much' with mass nouns.",
     points: 1
   },
   {
     number: 28,
-    prompt: "The young girl has ...... on her head.",
+    prompt: "The young infant has ...... on her scalp.",
     options: ["plenty hair", "a lot of hair", "many hairs", "much hairs"],
     correctAnswer: "a lot of hair",
-    hint: "'Hair' when referring to the entire mass on a person's head is uncountable and singular.",
-    workedSolution: "'Hair' on the human scalp is treated as an uncountable collective mass noun. 'A lot of hair' is grammatically correct. 'Hairs' is used only for individual countable strands.",
+    hint: "'Hair' (on the head) is an uncountable mass noun modified by 'a lot of'. Individual strands are 'hairs'.",
+    workedSolution: "Human head hair is normally an uncountable non-count noun. It takes the quantifier 'a lot of hair'. Phrases like 'many hairs' or 'much hairs' are ungrammatical in this context.",
     points: 1
   },
   {
     number: 29,
-    prompt: "Korkoi is an attractive, ...... of twelve years.",
-    options: ["tall, shapely girl", "shapely, tall girl", "girl, shapely, tall", "tall, girl, shapely"],
-    correctAnswer: "tall, shapely girl",
-    hint: "Order of adjectives: General physical dimension/height ('tall') comes before physical form/shape ('shapely') before the noun.",
-    workedSolution: "In standard descriptive sequence, dimension/size adjectives ('tall') precede physical shape/figure descriptors ('shapely') immediately modifying the head noun: 'tall, shapely girl'.",
+    prompt: "Korkoi is an elegant, ...... of twelve years.",
+    options: [
+      "tall, shapely, girl",
+      "shapely, tall, girl",
+      "girl, shapely, tall",
+      "tall, girl, shapely"
+    ],
+    correctAnswer: "tall, shapely, girl",
+    hint: "Adjective ordering: Size/Height ('tall') precedes Shape/Physical appearance ('shapely') before the head noun ('girl').",
+    workedSolution: "Cumulative adjective ordering places size/dimension ('tall') before physical shape/condition ('shapely') preceding the noun: 'tall, shapely girl'.",
     points: 1
   },
   {
     number: 30,
-    prompt: "The preacher emphasized that members of the congregation must love ......",
+    prompt: "The pastor exhorted the entire congregation that they should love ......",
     options: ["another", "each other", "one another", "one other"],
     correctAnswer: "one another",
-    hint: "Use this reciprocal pronoun when mutual interaction involves an entire congregation (three or more persons).",
-    workedSolution: "'One another' is preferred when reciprocal action involves more than two individuals (such as an entire congregation). 'Each other' applies strictly to two.",
+    hint: "Reciprocal pronoun preferred when an action is mutually exchanged among more than two persons.",
+    workedSolution: "When referring to mutual interaction among three or more persons (such as a congregation), 'one another' is prescriptively standard. 'Each other' refers to two.",
     points: 1
   },
   {
     number: 31,
-    prompt: "Mansah is ...... articulate than any of her three elder sisters.",
+    prompt: "Mansah is ...... beautiful than any of her three senior sisters.",
     options: ["very", "most", "more", "much"],
     correctAnswer: "more",
-    hint: "Comparative degree of multi-syllable adjectives followed by 'than'.",
-    workedSolution: "Adjectives of three or more syllables form their comparative degree with 'more' followed by 'than' ('more articulate than').",
+    hint: "Multi-syllable comparative adjective paired with the comparative marker 'than': 'more + adjective + than'.",
+    workedSolution: "When comparing two entities with a multi-syllable adjective ('beautiful') followed by 'than', the comparative form requires 'more': 'more beautiful than'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "Appiah was appointed senior prefect of his school, ......?",
-    options: ["wasn't it?", "didn't he?", "isn't he?", "wasn't he?"],
-    correctAnswer: "wasn't he?",
-    hint: "An affirmative past passive statement with 'was' and subject 'Appiah' takes a negative tag with 'was'.",
-    workedSolution: "The main clause is affirmative in the simple past passive ('was appointed') with the masculine subject 'Appiah'. The question tag must be negative: 'wasn't he?'.",
+    prompt: "Appiah was appointed the senior prefect of his school, ......?",
+    options: ["wasn't it", "didn't he", "isn't he", "wasn't he"],
+    correctAnswer: "wasn't he",
+    hint: "An affirmative past passive statement with auxiliary 'was' and masculine subject 'Appiah' takes the negative tag 'wasn't he?'.",
+    workedSolution: "The main clause has an affirmative past auxiliary ('was appointed') with masculine subject 'Appiah'. The question tag must be negative: 'wasn't he?'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "Whenever Ataa arrived at the market, she ...... into heated arguments.",
+    prompt: "Whenever Ataa went to the market without permission, she ...... into serious trouble.",
     options: ["got", "gets", "is getting", "has got"],
     correctAnswer: "got",
-    hint: "Sequence of past habitual tenses: The past clause 'Whenever Ataa arrived' requires a simple past verb.",
-    workedSolution: "Because the introductory conditional time clause is in the simple past ('Whenever Ataa went/arrived'), the main clause must maintain past tense agreement: 'she got into trouble'.",
+    hint: "Past habitual sequence of tenses: The past time subordinator 'Whenever Ataa went...' requires a past simple main verb.",
+    workedSolution: "To maintain narrative sequence with the past dependent clause ('Whenever Ataa went...'), the main clause takes the simple past tense: 'got'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "That secondary academy is an institution for ...... only.",
+    prompt: "The new residential academy is established for ...... only.",
     options: ["boy", "boy's", "boys", "boys'"],
     correctAnswer: "boys",
-    hint: "Use the plural noun without an apostrophe following the preposition 'for'.",
-    workedSolution: "Following the preposition 'for', the plural noun 'boys' functions as an objective complement without an apostrophe. 'Boys'' is possessive.",
+    hint: "Plural noun functioning as the direct object of the preposition 'for' without possession.",
+    workedSolution: "Following the preposition 'for', the simple plural noun 'boys' (without an apostrophe) is required to designate the group.",
     points: 1
   },
   {
     number: 35,
-    prompt: "Kwaku, have you ever ...... across this swollen river?",
+    prompt: "\"Kwame, have you ever ...... across this wide river?\"",
     options: ["swam", "swum", "swim", "swims"],
     correctAnswer: "swum",
-    hint: "The auxiliary 'have' requires the past participle form of the irregular verb 'swim'.",
-    workedSolution: "The principal parts of 'swim' are swim (base) - swam (simple past) - swum (past participle). Following 'have you ever', the past participle 'swum' is required.",
+    hint: "Present Perfect auxiliary 'have' takes the past participle of 'swim': swim - swam - swum.",
+    workedSolution: "The principal parts of 'swim' are: present 'swim', past 'swam', past participle 'swum'. Following auxiliary 'have', the correct form is 'swum'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "Susie and Tim are bosom friends; they genuinely respect ......",
+    prompt: "Susie and Tim are childhood companions; they respect and like ......",
     options: ["each other", "themselves", "the other", "one another"],
     correctAnswer: "each other",
-    hint: "Reciprocal pronoun used when mutual action takes place between exactly two persons.",
-    workedSolution: "'Each other' is the reciprocal pronoun used when mutual action involves two persons ('Susie and Tim').",
+    hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
+    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('Susie and Tim').",
     points: 1
   },
   {
     number: 37,
-    prompt: "Our senior housemistress ...... be able to resolve the boundary dispute.",
+    prompt: "With her extensive mathematical knowledge, Aunt Ekuwa ...... be able to solve the problem.",
     options: ["can", "has", "will", "ought"],
     correctAnswer: "will",
-    hint: "The modal 'can' cannot combine with 'be able to'. Choose the future modal that pairs with 'be able to'.",
-    workedSolution: "'Will' combines with 'be able to' to express future capability ('will be able to'). 'Can be able to' is a redundant grammatical error.",
+    hint: "Future ability modal: 'will be able to'. (Note that *can be able to is redundant and ungrammatical).",
+    workedSolution: "Future potential or ability is expressed by combining the future auxiliary 'will' with 'be able to': 'will be able to'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "Throughout that week, the pupils journeyed to the examination center ...... foot.",
+    prompt: "When the bus broke down, the students traveled to the examination center ...... foot.",
     options: ["by", "on", "at", "in"],
     correctAnswer: "on",
-    hint: "Identify the standard preposition used for walking or pedestrian transit.",
-    workedSolution: "In standard English idiomatic usage, pedestrian travel is always 'on foot', never 'by foot'.",
+    hint: "Identify the preposition used in the standard idiom for walking: 'on foot'.",
+    workedSolution: "The standard English idiomatic preposition for walking is 'on foot', never 'by foot'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "The disciplinary panel has been reviewing the petition ...... two o'clock this afternoon.",
+    prompt: "The arbitration committee has been deliberating over the land dispute ...... two o'clock.",
     options: ["over", "by", "since", "until"],
     correctAnswer: "since",
-    hint: "Use 'since' with the Present Perfect Continuous to denote a specific starting point in time.",
-    workedSolution: "The preposition 'since' is required with the Present Perfect Continuous tense ('has been meeting') to specify the precise starting moment of an ongoing action.",
+    hint: "Use 'since' with the Present Perfect Continuous to denote a specific starting point in past time.",
+    workedSolution: "The preposition 'since' is required with perfect continuous tenses to indicate the specific starting point of an ongoing action ('since 2pm').",
     points: 1
   },
   {
     number: 40,
-    prompt: "I trust you are not ...... exhausted to run an urgent errand for me.",
+    prompt: "I hope you are not ...... exhausted to carry this basket of oranges to the kitchen.",
     options: ["very", "so", "as", "too"],
     correctAnswer: "too",
-    hint: "Look for the correlative pattern 'too + adjective + to-infinitive'.",
-    workedSolution: "The degree adverb 'too' pairs with the infinitive 'to run' to indicate an excessive degree that would prevent an action ('too tired to run').",
+    hint: "Correlative degree structure expressing an excessive state resulting in inability: 'too + adjective + to-infinitive'.",
+    workedSolution: "The degree adverb 'too' pairs with the infinitive 'to carry' to indicate an excessive degree that prevents performance: 'too tired to run an errand'.",
     points: 1
   }
+];
+
+// Combine all 40 raw questions
+const allRawQuestions = [
+  ...passage1QuestionsRaw,
+  ...passage2QuestionsRaw,
+  ...generalQuestionsRaw
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -491,9 +547,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200501);
+const assignedTargetIndices = seedShuffle(targetKeys, 200502);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -505,21 +561,48 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
-  return {
+
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (idx < 5) {
+    passageTitle = passage1Title;
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (idx < 10) {
+    passageTitle = passage2Title;
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
+  const item: QuestionItem = {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
     points: q.points
   };
+
+  if (passageTitle) {
+    item.passageTitle = passageTitle;
+    item.passageText = passageText;
+    item.passage = passage;
+  }
+
+  return item;
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -528,108 +611,105 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Informal Letter",
-        prompt: "Write a letter to your mother who lives and works abroad, asking her to purchase three important items you need for your education and explaining convincing reasons why each item is essential.",
-        modelAnswer: `St. Mary's Junior High School
-P. O. Box 80
-Sunyani, Bono Region
-15th May, 2005
+        prompt: "Write a letter to your mother who lives abroad, asking her to purchase three important items for your education and well-being, and explaining clearly why you need each of them.",
+        modelAnswer: `Methodist Junior Secondary School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2005
 
 Dear Mother,
 
-I hope this letter finds you in fine health, peace of mind, and thriving in your work in London. We miss you dearly at home, but we are comforted knowing that you are laboring for our welfare. As I enter my final year preparing for the Basic Education Certificate Examination (BECE), I write to request three essential educational items that will greatly aid my studies.
+I hope this letter finds you in fine health, peace of mind, and thriving in your professional duties in London. Everyone at home is doing well, and Father constantly speaks of your love and dedication to our family. As I approach my final term in basic school and prepare for the Basic Education Certificate Examination (BECE), I write to plead that you purchase three essential learning items that will significantly enhance my studies.
 
-First, I need an electronic scientific calculator. In our JHS Three syllabus, we are solving advanced mathematical topics including trigonometry, statistics, and business calculations. Having a dependable scientific calculator will quicken my calculations, save valuable examination time, and boost my confidence in solving complex mathematical problems.
+First and foremost, I humbly request a modern scientific calculator. In our third-year Mathematics curriculum, we are currently tackling advanced trigonometry, logarithms, and statistical calculations that require rapid, multi-step computations. Having a reliable, genuine scientific calculator will sharpen my computational speed and boost my accuracy during timed examinations.
 
-Secondly, I kindly request an advanced illustrated English dictionary and encyclopedia compendium. A broad vocabulary and sound grammatical competence are indispensable for scoring high marks in English composition and comprehension. A contemporary dictionary will help me research unfamiliar words independently and refine my essay writing skills.
+Secondly, I desperately need an advanced Oxford English Dictionary and Thesaurus. In the English Language syllabus, precision in vocabulary, mastery of grammatical idioms, and comprehension analysis are paramount. Possessing an authoritative reference dictionary will expand my lexis and improve my essay writing skills.
 
-Finally, I request a sturdy digital wristwatch. Time management is one of the greatest challenges candidates face during national examinations. Having my own wristwatch will help me allocate time properly among essay sections and finish objective papers without rushing.
+Finally, I plead for a durable, water-resistant knapsack and a pair of sturdy black leather school shoes. The rainy season has set in, and my current canvas bag leaks whenever it rains, risking the destruction of my exercise books. A reinforced backpack will keep my study materials safe and dry.
 
-I promise to study diligently to secure Aggregate Six to make you proud of your investment in my future. May the Almighty replenish your finances.
+I promise to study with relentless diligence to secure Grade One in all subjects and make you proud. Thank you for your endless sacrifices.
 
-Your loving daughter,
+Your loving son,
 [Signature]
-Esinam`
+Kwabena Mensah`
       },
       {
         questionNumber: "2",
         category: "Formal Application Letter",
-        prompt: "Write a formal letter to your District Director of Education applying for the post of messenger in the district education office during your long vacation, stating your qualifications and why you are the most suitable applicant for the job.",
-        modelAnswer: `P. O. Box 44
-Nsawam, Eastern Region
-12th July, 2005
+        prompt: "Having completed basic school, write a formal letter to your District Director of Education applying for the vacant post of Office Messenger, stating why you are the most qualified candidate for the position.",
+        modelAnswer: `P. O. Box 80
+Begoro, Eastern Region
+18th June, 2005
 
 The District Director of Education
 Ghana Education Service
-District Education Directorate
-Nsawam
+Fanteakwa District Directorate
+Begoro
 
 Dear Sir,
 
-APPLICATION FOR THE VACANT POSITION OF TEMPORARY OFFICE MESSENGER
+APPLICATION FOR EMPLOYMENT AS AN OFFICE MESSENGER
 
-I respectfully write to apply for the post of temporary office messenger in the District Education Directorate, as advertised on the municipal notice board. Having successfully completed my Basic Education Certificate Examination (BECE) at Presbyterian Junior High School, I am eager to contribute meaningfully to your administration while awaiting my secondary school placement.
+I respectfully write to submit my application for the post of Office Messenger within your esteemed directorate, as advertised on the municipal notice board.
 
-During my three years in basic school, I served as the Senior Compound Prefect. In that leadership capacity, I demonstrated high personal integrity, punctuality, and reliability. I was responsible for dispatching official correspondence between the headmaster's office and classroom teachers, managing school notices, and safeguarding office supplies. These experiences have instilled in me a deep sense of confidentiality and diligence.
+I recently completed the Basic Education Certificate Examination (BECE) at Begoro Presbyterian Junior Secondary School, securing Grade One in English Language and Social Studies. During my basic school education, I served as the Senior Classroom Monitor for two consecutive years. This position required me to maintain administrative logbooks, deliver official correspondence between the headmaster's office and classroom teachers, and organize teaching materials with absolute confidentiality, speed, and precision.
 
-Furthermore, I possess excellent physical stamina and an intimate knowledge of our municipality. I am capable of running urgent errands, dispatching circulars to basic schools across the district swiftly, and operating basic office equipment like photocopiers and paper shredders. My former headmaster, Reverend E. K. Boateng, has kindly agreed to provide an official testimonial certifying my honesty and hardworking character.
+I possess several distinct qualities that make me the ideal candidate for this role. First, I am physically robust, energetic, and intimately familiar with the layout of all educational institutions, government departments, and postal agencies across the district. I can navigate local routes swiftly on foot or bicycle to ensure the prompt dispatch and retrieval of official documents.
 
-If granted the opportunity, I pledge to discharge all assigned duties with utmost dedication, humility, and promptness. I am available for an interview at your earliest convenience.
+Secondly, I uphold exemplary moral character, honesty, and punctuality. My former headmaster, Reverend J. K. Boateng, has graciously agreed to provide an official testimonial certifying my integrity and diligence. I am disciplined, respectful, and eager to execute clerical instructions faithfully.
 
-Thank you for your favorable consideration.
+I am available for an interview at your earliest convenience. Thank you for considering my application.
 
 Yours faithfully,
+[Signature]
+Emmanuel Addo
+(Applicant)`
+      },
+      {
+        questionNumber: "3",
+        category: "Descriptive / Directional Guide",
+        prompt: "You live approximately ten kilometers away from your school in a rural community. Write a letter to your close friend giving him or her accurate, step-by-step directions to locate your home.",
+        modelAnswer: `Anglican Junior Secondary School
+P. O. Box 112
+Mampong, Ashanti Region
+12th October, 2005
+
+Dear Kwesi,
+
+I was thrilled to receive your letter confirming that you will spend this coming Saturday with my family. Since our village, Kofiase, is situated about ten kilometers north of our school in Mampong, I am writing to provide you with clear, accurate directions so that you can reach our house without losing your way.
+
+When you arrive at the Mampong Central Lorry Station, walk past the main ticket booth toward the northern exit where the rural passenger vehicles park. Board a commercial passenger minibus (trotro) heading toward Kofiase. Inform the conductor that you will alight at the "Old Agricultural Cocoa Shed Junction." The journey takes approximately twenty-five minutes through scenic countryside.
+
+Once you alight at the Cocoa Shed Junction, you will see a prominent signpost for the "Bethel Presbyterian Church." Take the smooth gravel road on your immediate right and walk straight down the gentle incline for about four hundred meters. You will cross a narrow concrete culvert over a clear freshwater stream.
+
+Continue walking for another two minutes until you reach a large, ancient mango tree standing at a three-way junction. Branch to your left onto the pathway bordered by neatly trimmed green hedges. Our residence is the third house on your right—a cream-painted four-room bungalow with a blue corrugated zinc roof and a green wooden gate.
+
+I will be on the lookout for you along the lane from nine o'clock. Safe travels!
+
+Your true friend,
 [Signature]
 Kwaku Mensah`
       },
       {
-        questionNumber: "3",
-        category: "Expository / Directional Writing",
-        prompt: "You live in a new residential suburb about ten kilometers away from your school. Write clear, accurate, and detailed directions to guide a schoolmate who wishes to visit your home for the first time.",
-        modelAnswer: `DIRECTIONS TO MY HOME AT AIRPORT RESIDENTIAL EXTENSION, SUNYANI
-
-Dear Yaw,
-
-I am thrilled that you are visiting my home this Saturday. To help you locate my family compound easily without getting stranded, please follow these detailed directions from our school gate:
-
-From the main gate of Anglican Junior High School, walk five minutes down the paved road to the Municipal Central Lorry Station. At the station, proceed to the taxi rank and board a shared passenger taxi heading toward the 'New Airport Residential Extension'. Inform the driver that you will alight at the landmark known as 'Total Petroleum Filling Station' on the main bypass. The transit ride takes approximately fifteen minutes.
-
-Upon alighting at Total Filling Station, cross the pedestrian walkway carefully to the opposite side of the road, where you will see a large white billboard for 'Grace Baptist Church'. Take the red laterite road directly beside the church billboard. Walk straight down this road for approximately two hundred meters until you arrive at a prominent three-way junction marked by an ancient baobab tree.
-
-At this junction, branch to your immediate right onto 'Palm Avenue'. Continue along Palm Avenue past the community water borehole and a blue provisions store named 'Nyame Nti Enterprise'. Our house is the third building directly behind the provisions store: a walled, cream-colored compound with a dark green sliding metal gate, bearing the house address 'Plot 14, Block B'.
-
-Press the electric doorbell at the gate or call out my name. My siblings and I will be waiting to welcome you warmly!
-
-Safe journey,
-Kwabena`
-      },
-      {
         questionNumber: "4",
         category: "Narrative Essay",
-        prompt: "Write an interesting, realistic story describing how an unexpected family or communal difficulty was amicably resolved, ending with the sentence: \".............but everybody was happy.\"",
-        modelAnswer: `Tension had been simmering in our peaceful farming village of Dwenem for weeks. The dispute centered on the sharing of proceeds from our communal teak plantation. One faction of the youth argued that the entire revenue should be expended on constructing a modern football pitch and organizing a grand musical festival, while the village council of elders and market women insisted that the money be allocated to drill two commercial boreholes to solve our chronic water shortage. The disagreement grew so fierce that communal labor was boycotted, and friends stopped greeting one another.
+        prompt: "Write an engaging, realistic story that concludes with the sentence: \".............but everybody was happy.\"",
+        modelAnswer: `It was the climax of the annual dry season in our agrarian village, and our local basic school football team, the Mighty Leopards, was facing our fierce arch-rivals, Anglican JSS, in the finals of the District Championship. The match carried high stakes; for five consecutive years, our opponents had defeated us, subjecting our school to endless ridicule.
 
-Seeing that our communal unity was on the verge of collapsing, our revered paramount chief, Nana Kwadwo Appiah, summoned a mandatory town hall meeting under the sacred odum tree at the palace courtyard. Both sides were given an opportunity to present their arguments passionately. The atmosphere was charged with anxiety.
+The game commenced with blistering intensity under the blazing afternoon sun. Anglican JSS dominated the midfield, scoring a stunning opening goal in the twentieth minute. Our supporters fell into gloomy silence. However, our coach, Master Mensah, refused to surrender. During the halftime interval, he gathered us in a circle and delivered an electrifying pep-talk, reminding us that determination and teamwork could conquer any disadvantage.
 
-Then, an elderly retired educationist, Agya Opoku, stood up and proposed a brilliant compromise. He suggested that seventy percent of the timber revenue be allocated immediately to mechanize a high-yielding borehole equipped with overhead storage tanks, ensuring clean drinking water for every household. The remaining thirty percent would be used to grade the village sports park and purchase jerseys and footballs for the youth club, while the youth would provide the communal labor to lay the water pipelines.
+When the second half resumed, we fought with renewed vigor. In the seventieth minute, our striker, Kofi Badu, equalized with a magnificent header from a corner kick, sending our supporters into deafening cheers. The drama intensified in the dying seconds of injury time when Anglican launched a ferocious counter-attack. Their forward fired a thunderous volley toward our net, but our heroic goalkeeper, diving across the goalmouth, pushed the ball onto the crossbar.
 
-Both factions recognized the justice and fairness of the compromise and erupted into joyful applause. The youth embraced the elders, and the queen mother provided bowls of roasted groundnuts and fresh palm wine. It had been a tense and exhausting week of disputes, but everybody was happy.`
+From that miraculous rebound, our winger launched a swift counter-offensive, crossing the ball to me. Lunging forward with every ounce of my remaining strength, I slipped the ball past the advancing goalkeeper into the bottom corner of the net.
+
+The referee blew the final whistle immediately. The entire stadium erupted in wild ecstasy as students, teachers, and parents swarmed the pitch, carrying us on their shoulders in a glorious victory lap. We were bruised, exhausted, and caked in red dust, but everybody was happy.`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2005Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2005 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2005 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -656,37 +736,63 @@ async function seedBeceEnglish2005Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: Ayele and Esinam's First Day of School",
+          title: passage1Title,
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
         },
         {
           id: "passage_2",
-          title: "Passage II: The Nature and Social Function of Laughter",
+          title: passage2Title,
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: passage1Title,
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: passage2Title,
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2005 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2005 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2005Calibrated()

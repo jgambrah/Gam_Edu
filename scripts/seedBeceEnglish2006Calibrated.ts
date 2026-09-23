@@ -1,8 +1,11 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -12,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -34,450 +38,510 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2006
-const passage1Text = "### 📖 PASSAGE I\n\nOn Saturday morning, while other children were busy helping with household chores, Amma sat sullenly in the corner of the room. She was determined to avoid the sweeping and washing that awaited her. When her mother, MaaTee, asked her to fetch water from the well, Amma began to moan, clutching her head and claiming that she had a severe headache. She whispered to herself, \"I'm not so daft after all; now I can rest all day.\"\n\nMaaTee, however, was a deeply caring and protective mother who took no chances with her daughter's health. Dropping her kitchen utensils immediately, she told Amma to put on her shoes so they could go straight to the hospital. Amma’s heart began to thump with anxiety; this was not what she had planned.\n\nAt the consulting room, the doctor examined Amma thoroughly—checking her temperature, her eyes, and her chest. He soon discovered that she was as fit as a fiddle and was only feigning illness to escape work. Giving MaaTee a knowing wink, the doctor declared with a grave face: \"I'm sorry, MaaTee, Amma is very ill indeed. Take her to the injection room for three injections right now.\"\n\nUpon hearing the word 'injections', terror seized Amma. Before her mother or the nurse could grab her, she sprinted out of the consulting room with lightning speed and ran all the way home, where she immediately seized the broom and swept the compound without another word.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: AMMA'S SATURDAY MALADY (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Title = "Passage I: Amma's Saturday Malady";
+const passage1Text = `"Amma, Amma, rise from your mat and sweep the compound clean!" MaaTee hollered from the outdoor kitchen. However, Amma had privately resolved that she would not lift a broom that Saturday morning.
 
-const passage2Text = "### 📖 PASSAGE II\n\nGrandpa is a robust centenarian. Even at his advanced age of one hundred years, his eyesight is as clear as a child’s, his memory is remarkably sharp, and his voice rings with steady authority across the family compound. Neighbors and young scholars frequently gather on his veranda to listen to his fascinating historical reminiscences and seek his wise counsel.\n\nWhenever visitors express wonder at his enduring vigor and ask for his secret to a long, fulfilling life, Grandpa smiles warmly and shares his simple philosophy: \"Life is a sacred gift that must be lived with joy, truthfulness, and enthusiasm.\" He insists that harboring bitterness, jealousy, and anger poisons the human soul and wears down the body prematurely.\n\nGrandpa also emphasizes the importance of wholesome natural food and daily physical activity. He worked hard on his cocoa farm for over six decades, drinking fresh spring water and eating green vegetables rather than processed foods. His peaceful spirit and unyielding integrity have earned him the profound respect and admiration of our entire community.";
+"What excuse can I invent to evade these tedious domestic chores?" Amma whispered to herself under the blanket. "I shall pretend to be gripped by a fever; then Mama cannot possibly compel me to scrub the verandas. This is an ingenious scheme. I am not so daft after all," she concluded with a quiet chuckle.
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2006
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+When Amma staggered into the kitchen groaning about a blinding headache and body chills, MaaTee suspended her dough-kneading immediately, seized with maternal panic, and ordered her daughter to get dressed for the municipal clinic. Poor Amma—her clever plot had completely backfired!
+
+Throughout the trek to the clinic, Amma prayed fervently that the consulting physician would be off duty, but fortune deserted her that morning. The doctor examined Amma thoroughly, checked her temperature, and found her as fit as a fiddle. Shrewd and experienced, he deduced instantly that the young girl had feigned illness simply to dodge her routine Saturday morning sweeping.
+
+"I am truly sorry, MaaTee," the doctor remarked with a deadpan expression. "Amma is critically ill. Escort her immediately to the injection room for three deep, painful injections. They will..."
+
+Before the physician could finish his sentence, Amma shot out of the consulting room with the speed of an antelope, sprinting down the hospital lane without stopping until she dashed into her family house. The doctor smiled knowingly at MaaTee and burst into hearty laughter, telling the relieved mother to return home. By the time MaaTee arrived back at the compound, Amma had swept every corner, washed the breakfast dishes, and fetched water from the standpipe.`;
+
+const passage1QuestionsRaw = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did MaaTee suspend her morning domestic chores immediately Amma spoke?`,
-    passage: passage1Text,
+    prompt: "Why did MaaTee suspend all her domestic kitchen chores in Passage I?",
     options: [
-      "She doubted the truth of Amma's complaint",
-      "Amma had provoked her to anger",
-      "She wanted to take Amma to the hospital for medical treatment",
-      "Amma pleaded to be taken to the clinic"
+      "She suspected that Amma was fabricating a deliberate falsehood",
+      "She was deeply annoyed by Amma's rebellious conduct",
+      "She was eager to take Amma to the hospital for medical treatment",
+      "Amma pleaded with her to visit the consulting clinic"
     ],
-    correctAnswer: "She wanted to take Amma to the hospital for medical treatment",
-    hint: "Notice MaaTee's immediate protective reaction upon hearing her child complain of a headache.",
-    workedSolution: "The narrative explains that MaaTee dropped her chores because of maternal care, ordering Amma to prepare immediately for the hospital.",
+    correctAnswer: "She was eager to take Amma to the hospital for medical treatment",
+    hint: "Reread paragraph three: when Amma reported a headache, MaaTee stopped everything to get her ready for the hospital.",
+    workedSolution: "MaaTee dropped her work because she was genuinely concerned about her daughter's health and wanted to rush her to the hospital immediately.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'daft' in 'I'm not so daft after all' means ............`,
-    passage: passage1Text,
-    options: ["disobedient", "good-natured", "strange", "unintelligent"],
-    correctAnswer: "unintelligent",
-    hint: "Foolish, stupid, or lacking cleverness.",
-    workedSolution: "'Daft' is an informal adjective meaning foolish, stupid, or silly; 'unintelligent' is its direct equivalent.",
+    prompt: "In Passage I, the word 'daft' in 'I am not so daft after all' means ............",
+    options: [
+      "disobedient and stubborn",
+      "admirable and virtuous",
+      "strange and queer",
+      "unintelligent, foolish, or silly"
+    ],
+    correctAnswer: "unintelligent, foolish, or silly",
+    hint: "'Daft' means silly, foolish, or lacking intelligence.",
+    workedSolution: "'Daft' is an informal adjective meaning foolish, stupid, or silly; 'unintelligent, foolish, or silly' is its direct meaning.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what was Amma's real physical condition when examined by the doctor?`,
-    passage: passage1Text,
+    prompt: "What does the passage establish regarding Amma's true physical condition?",
     options: [
-      "She was suffering from severe malaria",
-      "She was genuinely as fit as a fiddle and not ill",
-      "She enjoyed sweeping the house",
-      "She was exhausted from doing chores"
+      "She was suffering from an acute medical ailment",
+      "She was genuinely healthy and not sick at all",
+      "She enjoyed performing domestic household chores",
+      "She was allergic to the morning sweepings"
     ],
-    correctAnswer: "She was genuinely as fit as a fiddle and not ill",
-    hint: "The doctor discovered she was 'as fit as a fiddle' and had only feigned illness.",
-    workedSolution: "The clinical examination revealed that Amma was perfectly healthy ('as fit as a fiddle') and was only pretending to be sick to dodge chores.",
+    correctAnswer: "She was genuinely healthy and not sick at all",
+    hint: "The doctor examined her and found her 'as fit as a fiddle'—she was feigning illness.",
+    workedSolution: "The clinical examination revealed that Amma was 'as fit as a fiddle'; she was entirely healthy and merely pretending to be sick.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nFrom the description in Passage I, what kind of parent was MaaTee?`,
-    passage: passage1Text,
-    options: ["A neglectful mother", "A caring and protective mother", "An overly strict parent", "A weak-willed mother"],
-    correctAnswer: "A caring and protective mother",
-    hint: "She dropped everything immediately to seek medical care for her child.",
-    workedSolution: "MaaTee's prompt suspension of her work to take her complaining daughter to the hospital demonstrates that she was a loving and caring mother.",
+    prompt: "From the narrative development in Passage I, MaaTee is demonstrated to be a ............",
+    options: [
+      "harsh and demanding parent",
+      "deeply loving and caring mother",
+      "physically weak and fragile woman",
+      "careless and indifferent guardian"
+    ],
+    correctAnswer: "deeply loving and caring mother",
+    hint: "She dropped all her work immediately to take her child to the clinic upon hearing she had a headache.",
+    workedSolution: "MaaTee's immediate willingness to suspend her work and rush Amma to the hospital proves that she was a deeply affectionate and caring mother.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why did Amma sprint out of the doctor's consulting room with lightning speed?`,
-    passage: passage1Text,
+    prompt: "Why did Amma bolt out of the consulting room with lightning speed?",
     options: [
-      "She was terrified of receiving injections",
-      "She remembered her unfinished sweeping at home",
-      "She took pity on her anxious mother",
-      "The doctor threatened to punish her"
+      "She was terrified of receiving three painful injections",
+      "She remembered that her chores at home were unfinished",
+      "She was struck by sudden remorse for her mother",
+      "She disliked the doctor's consulting room"
     ],
-    correctAnswer: "She was terrified of receiving injections",
-    hint: "As soon as the doctor prescribed 'three injections', she bolted out the door.",
-    workedSolution: "Amma fled because she had an overwhelming fear of medical needle injections prescribed to cure her 'feigned' illness.",
+    correctAnswer: "She was terrified of receiving three painful injections",
+    hint: "The moment the doctor prescribed three injections, she bolted to escape the needle.",
+    workedSolution: "Amma fled in terror because she was deathly afraid of the prescribed injections and preferred doing chores to getting injected.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: GRANDPA'S CENTENNIAL WISDOM (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Title = "Passage II: Grandpa's Centennial Wisdom";
+const passage2Text = `Grandpa is a remarkably robust centenarian. Even at one hundred years of age, his eyesight is as clear as a child's and his intellectual memory remains razor-sharp. We have frequently marveled at what secret regimen has preserved his vigor over such a vast span of time. "I live by a simple philosophical theory of life," is the smiling reply he offers to anyone who inquires.
+
+Grandpa's theory is, in truth, elementary when he explains its tenets. He speaks first of maintaining an unshakeable, joyful attitude toward daily existence. He insists that authentic joy generates enthusiasm and an inspiring urge to uplift others. He never turns away anyone seeking assistance, even though Grandpa could never be classified as a wealthy man.
+
+Furthermore, Grandpa maintains that human society acts as an impartial mirror. The mirror merely reflects the exact image presented before it. Consequently, if we treat others with malice and cruelty, the world will reflect hostility back to us; but if we walk in honesty and benevolence, we shall live without suspicion and earn the goodwill of our neighbors.
+
+The core principle that Grandpa treasures most dearly is his devotion to truth. He argues that speaking the truth liberates a human being from mental tension, anxiety, and guilt. "Let your 'no' remain 'no'," he cautions whenever he discovers any of us attempting to spin a falsehood to avoid trouble. He reminds us that once a person tells a single lie, they are compelled to invent a dozen more lies to cover the initial deceit. Truth, by contrast, is eternal and never alters.
+
+Grandpa never concludes his counsel without rolling his bright eyes excitedly and admonishing us to be true to our inner conscience so that we can never be false to our fellow men.`;
+
+const passage2QuestionsRaw = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what remarkable biographical fact is true about Grandpa?`,
-    passage: passage2Text,
+    prompt: "Which of the following descriptions is factually true of Grandpa according to Passage II?",
     options: [
-      "He is an impoverished invalid",
-      "He is a frail and sickly elder",
-      "He is an exceptionally old centenarian with clear eyesight",
-      "He lives an isolated and lonely life"
+      "He is a lonely, isolated recluse",
+      "He is a bedridden, sickly invalid",
+      "He is an exceptionally aged centenarian",
+      "He is an affluent merchant possessing vast gold"
     ],
-    correctAnswer: "He is an exceptionally old centenarian with clear eyesight",
-    hint: "A centenarian is someone who has attained 100 years of age.",
-    workedSolution: "The passage opens by identifying Grandpa as a 'robust centenarian' (at least 100 years old) with sharp memory and clear vision.",
+    correctAnswer: "He is an exceptionally aged centenarian",
+    hint: "Paragraph one explicitly introduces him as a 'robust centenarian' (someone who is one hundred years old).",
+    workedSolution: "The opening sentence identifies Grandpa as a centenarian (a person who is 100 years of age or older), confirming he is an exceptionally old man.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what general attitude do people in the community have toward Grandpa?`,
-    passage: passage2Text,
+    prompt: "How do relatives and neighbors generally regard Grandpa in Passage II?",
     options: [
-      "They fear his supernatural powers",
-      "They deeply admire his vigor and wisdom",
-      "They dislike his constant advice",
-      "They barely tolerate his presence"
+      "They fear his stern disciplinary reprimands",
+      "They deeply admire and respect his wisdom and longevity",
+      "They resent his philosophical lectures",
+      "They tolerate his eccentric habits with annoyance"
     ],
-    correctAnswer: "They deeply admire his vigor and wisdom",
-    hint: "People regularly ask him for the secret of his long, healthy life.",
-    workedSolution: "The text explains that people marvel at Grandpa's longevity and seek his counsel, demonstrating broad admiration and respect.",
+    correctAnswer: "They deeply admire and respect his wisdom and longevity",
+    hint: "The narrator notes they marvel at him, seek his advice, and hold him in high regard.",
+    workedSolution: "Grandpa is an object of widespread veneration, wonder, and admiration due to his enduring health, generosity, and wisdom.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the phrase 'devoid of' in 'live a free life devoid of stress' means ............`,
-    passage: passage2Text,
-    options: ["unless", "despite", "against", "completely without"],
-    correctAnswer: "completely without",
-    hint: "Free from, entirely lacking, or empty of something.",
-    workedSolution: "'Devoid of' is a prepositional phrase meaning entirely lacking, empty of, or 'completely without'.",
+    prompt: "In Passage II, the phrase 'devoid of' in 'live a free life devoid of stress' means ............",
+    options: [
+      "contrary to",
+      "completely free from or without",
+      "in spite of",
+      "in opposition to"
+    ],
+    correctAnswer: "completely free from or without",
+    hint: "'Devoid of' means entirely lacking or free from something.",
+    workedSolution: "'Devoid of' means entirely lacking, empty of, or 'without'; 'completely free from or without' is its direct meaning.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nAccording to Grandpa's philosophy in Passage II, what function does a mirror perform in relation to human character?`,
-    passage: passage2Text,
+    prompt: "According to the analogy in Passage II, human society functions like a mirror because it ............",
     options: [
-      "It merely reflects and reproduces what is placed before it",
-      "It alters a person's moral flaws",
-      "It exaggerates human virtues",
-      "It hides deceit from the world"
+      "distorts the reality of human intentions",
+      "magnifies personal faults and weaknesses",
+      "faithfully reproduces and reflects what a person puts into it",
+      "hides moral flaws beneath a shiny surface"
     ],
-    correctAnswer: "It merely reflects and reproduces what is placed before it",
-    hint: "Grandpa explains: 'The mirror merely reflects what is before it'.",
-    workedSolution: "Grandpa uses the metaphor of the mirror to illustrate that how we treat others is simply reflected back to us by society.",
+    correctAnswer: "faithfully reproduces and reflects what a person puts into it",
+    hint: "Paragraph three notes: 'The mirror merely reflects what is before it. So if we are wicked...'",
+    workedSolution: "The author uses the mirror analogy to show that society reflects back whatever behavior, kindness, or malice we project into it.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nWhy does Grandpa advise his grandchildren to remain strictly truthful to themselves?`,
-    passage: passage2Text,
+    prompt: "Why does Grandpa urge his grandchildren to be true to themselves in Passage II?",
     options: [
-      "To amass physical wealth",
-      "To gain political influence",
-      "To avoid the trap of inventing more lies to cover falsehood",
-      "To become fearless fighters"
+      "To amass material riches in the city",
+      "To avoid living deceitful lives and telling lies to others",
+      "To ensure they outlive their contemporaries",
+      "To prove that they are mature adults"
     ],
-    correctAnswer: "To avoid the trap of inventing more lies to cover falsehood",
-    hint: "He explains that 'if we tell lies, we will have to create more lies to cover them'.",
-    workedSolution: "Grandpa teaches that telling the truth keeps life free from anxiety, because one lie inevitably requires a web of further falsehoods to sustain.",
+    correctAnswer: "To avoid living deceitful lives and telling lies to others",
+    hint: "Look at the concluding sentence: 'be true to ourselves so that we can't be false to others.'",
+    workedSolution: "Grandpa emphasizes inner truthfulness so that one avoids hypocrisy, deceit, and falsehood toward others.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// =========================================================================
+const generalQuestionsRaw = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "All the junior pupils are skillful at assembling electronic components in the science club.\nChoose the word nearest in meaning to the underlined word 'skillful'.",
-    options: ["interested", "lazy", "expert", "happy"],
+    prompt: "The basic school candidates are exceptionally skillful at computer programming.\nChoose the word nearest in meaning to 'skillful'.",
+    options: ["diligent", "enthusiastic", "expert", "eager"],
     correctAnswer: "expert",
-    hint: "Having or showing the knowledge, ability, or training to perform a task well.",
-    workedSolution: "'Skillful' means having or showing expertise, dexterity, and competence; 'expert' is its direct synonym.",
+    hint: "Possessing high-level competence, proficiency, or dexterity.",
+    workedSolution: "'Skillful' means having or showing the knowledge, ability, or training to do something well; 'expert' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The benefactor who provided thirty dual desks to the school chose to remain anonymous.\nChoose the word nearest in meaning to the underlined word 'anonymous'.",
-    options: ["quiet", "rich", "unimportant", "unknown"],
+    prompt: "The benefactor who donated new science equipment requested to remain anonymous.\nChoose the word nearest in meaning to 'anonymous'.",
+    options: ["humble", "unknown", "quiet", "unheralded"],
     correctAnswer: "unknown",
-    hint: "Having an undisclosed name or unidentified authorship.",
-    workedSolution: "'Anonymous' means nameless, unidentified, or undisclosed in identity; 'unknown' is its direct synonym.",
+    hint: "Having no revealed name; unidentified.",
+    workedSolution: "'Anonymous' means not identified by name, nameless, or 'unknown'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Mr. Mensah is the most popular farmer in the district.\nChoose the word nearest in meaning to the underlined word 'popular'.",
-    options: ["wanted", "respected", "liked", "feared"],
+    prompt: "Mr. Osei is the most popular community leader in our district.\nChoose the word nearest in meaning to 'popular'.",
+    options: ["respected", "liked", "wealthy", "influential"],
     correctAnswer: "liked",
-    hint: "Admired, enjoyed, or favored by a great number of people.",
-    workedSolution: "'Popular' means liked, admired, or supported by many people; 'liked' is its closest synonym.",
+    hint: "Liked, admired, or favored by many people.",
+    workedSolution: "'Popular' means widely admired, approved, or 'liked' by many people.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The emergency Parent-Teacher Association meeting has been postponed.\nChoose the word nearest in meaning to the underlined word 'postponed'.",
-    options: ["delayed", "cancelled", "announced", "held"],
+    prompt: "The annual general meeting of the Parent-Teacher Association has been postponed.\nChoose the word nearest in meaning to 'postponed'.",
+    options: ["delayed", "adjourned", "cancelled", "convened"],
     correctAnswer: "delayed",
-    hint: "Deferred, put off to a later time or future date.",
-    workedSolution: "'Postponed' means arranged to take place at a later date or time; 'delayed' (or deferred) is its closest equivalent.",
+    hint: "Put off to a later date or deferred.",
+    workedSolution: "'Postponed' means arranged to take place at a time later than originally scheduled; 'delayed' (or put off) is its direct synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "While the elder brother is gentle, his sister is remarkably arrogant.\nChoose the word nearest in meaning to the underlined word 'arrogant'.",
-    options: ["shy", "proud", "clever", "tough"],
+    prompt: "While Kwesi is modest, his elder brother is thoroughly arrogant.\nChoose the word nearest in meaning to 'arrogant'.",
+    options: ["haughty", "proud", "defiant", "boisterous"],
     correctAnswer: "proud",
-    hint: "Having an exaggerated sense of one's own importance and showing contempt for others.",
-    workedSolution: "'Arrogant' means haughty, conceited, and overbearing; 'proud' is its direct synonym in this context.",
+    hint: "Having or revealing an exaggerated sense of one's own importance or abilities.",
+    workedSolution: "'Arrogant' means having an exaggerated sense of one's superiority; 'proud' (or haughty) is its closest synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "Your bicycle was costly, but my father bought his for a song. This means that my father's bicycle was ............",
-    options: ["a secondhand item", "very cheap and inexpensive", "exceptionally beautiful", "an unconditional gift"],
-    correctAnswer: "very cheap and inexpensive",
-    hint: "Acquired at an extraordinarily low, bargain price.",
-    workedSolution: "The idiom 'for a song' means very cheaply or at a remarkably low, bargain price.",
+    prompt: "While my uncle's saloon car was expensive, my father bought his for a song. This means my father's car was ............",
+    options: [
+      "purchased as a brand-new vehicle",
+      "bought very cheaply at a bargain price",
+      "presented to him as a choral award",
+      "repaired by a mechanical technician"
+    ],
+    correctAnswer: "bought very cheaply at a bargain price",
+    hint: "To buy something for a song means to purchase it for very little money.",
+    workedSolution: "The idiom 'for a song' means very cheaply or for an extraordinarily low price.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Fatimah cautioned her brother that his friend had a loose tongue. This means that his friend ............",
+    prompt: "Fatimah cautioned her brother that his friend had a loose tongue. This means his friend ............",
     options: [
-      "could not keep quiet",
-      "could not be trusted to keep secrets",
-      "had a severe speech defect",
-      "was completely dishonest"
+      "could not keep secrets confidential",
+      "spoke with a noticeable stammer",
+      "talked with a very loud voice",
+      "habitually avoided eye contact"
     ],
-    correctAnswer: "could not be trusted to keep secrets",
-    hint: "Habitually talking indiscreetly and revealing confidential secrets.",
-    workedSolution: "A person with a 'loose tongue' is indiscreet, talks carelessly, and cannot be trusted to keep confidential matters secret.",
+    correctAnswer: "could not keep secrets confidential",
+    hint: "Habitually indiscreet in speech; unable to keep confidential matters secret.",
+    workedSolution: "The idiom 'to have a loose tongue' means to be indiscreet and unable to keep secrets from leaking to others.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Adzo's chronic theft and bad manners make her the black sheep of the family. This means that Adzo is a ............",
-    options: ["neighborhood bully", "destructive person", "disgrace and embarrassment", "habitual liar"],
-    correctAnswer: "disgrace and embarrassment",
-    hint: "An odd, disreputable member who brings shame to an honorable family.",
-    workedSolution: "The idiom 'the black sheep of the family' refers to a disreputable member of a family or group who brings shame or disgrace upon the rest.",
+    prompt: "Adzo's chronic dishonesty and insolence make her the black sheep of the family. This means Adzo is ............",
+    options: [
+      "a source of shame and disgrace to her relatives",
+      "the youngest child in the household",
+      "the most rebellious pastoral herdsman",
+      "a child who avoids manual chores"
+    ],
+    correctAnswer: "a source of shame and disgrace to her relatives",
+    hint: "A disreputable or disgraced member of a family or group.",
+    workedSolution: "The idiom 'the black sheep' refers to a member of a family or group who is considered a disgrace, embarrassment, or failure.",
     points: 1
   },
   {
     number: 19,
-    prompt: "When I arrived in Accra for the interview, Mr. Asah put me up for the night. This means that Mr. Asah ............",
+    prompt: "When I traveled to Accra, Mr. Asah put me up for the night. This means Mr. Asah ............",
     options: [
-      "welcomed me at the station",
-      "entertained me lavishly",
-      "provided me with temporary lodging to sleep",
-      "cautioned me against lateness"
+      "welcomed me at the bus terminal",
+      "entertained me lavishly with beverages",
+      "provided me with a bed and overnight lodging",
+      "reprimanded me for visiting unannounced"
     ],
-    correctAnswer: "provided me with temporary lodging to sleep",
-    hint: "Accommodating someone overnight in one's home.",
-    workedSolution: "The phrasal verb 'to put someone up' means to provide them with temporary food and lodging in one's home.",
+    correctAnswer: "provided me with a bed and overnight lodging",
+    hint: "To provide someone with temporary overnight accommodation.",
+    workedSolution: "The phrasal verb 'to put someone up' means to provide them with temporary overnight lodging or accommodation.",
     points: 1
   },
   {
     number: 20,
-    prompt: "Basic education takes the lion's share of the municipal budget. This means that basic education ............",
+    prompt: "In the national budget allocation, the Education Ministry takes the lion's share of the revenues. This means the ministry ............",
     options: [
-      "exhausts all the funds completely",
-      "is allocated the largest portion of the funds",
-      "receives the smallest fraction of money",
-      "depends on external bank loans"
+      "utilizes all the treasury funds completely",
+      "receives the largest portion or share of the money",
+      "is allocated the smallest fraction of resources",
+      "borrows funds from commercial banks"
     ],
-    correctAnswer: "is allocated the largest portion of the funds",
-    hint: "Receiving the greatest, disproportionately largest part of a shared resource.",
-    workedSolution: "The idiom 'the lion's share' refers to the largest, majority, or predominant portion of something being distributed.",
+    correctAnswer: "receives the largest portion or share of the money",
+    hint: "The major, largest, or disproportionately greatest part of something.",
+    workedSolution: "The idiom 'the lion's share' refers to the largest, predominant, or greatest portion of something being distributed.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "The committee members were joyful because they held a fruitful deliberation, unlike the ...... meeting last week.",
-    options: ["long", "useless", "short", "frank"],
+    prompt: "The morning committee session was fruitful, but the afternoon debate proved completely ...... .\nChoose the word most nearly opposite in meaning to 'fruitful'.",
+    options: ["lengthy", "useless", "hasty", "turbulent"],
     correctAnswer: "useless",
-    hint: "'Fruitful' means productive and yielding good results. Find the word denoting barren, unproductive, or futile outcomes.",
-    workedSolution: "'Fruitful' means productive and yielding beneficial results. Its direct antonym is 'useless' (unproductive, futile, or ineffective).",
+    hint: "'Fruitful' means productive and yielding good results. What word denotes unproductive or of no value?",
+    workedSolution: "'Fruitful' means productive or successful. Its direct opposite is 'useless' (unproductive or futile).",
     points: 1
   },
   {
     number: 22,
-    prompt: "The apprentice complained that weeding the rocky plot was tedious, but painting the fence was ...... .",
-    options: ["boring", "dirty", "good", "easy"],
+    prompt: "Mensa complained that de-husking the maize was tedious, while roasting the cobs was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'tedious'.",
+    options: ["laborious", "monotonous", "easy", "complex"],
     correctAnswer: "easy",
-    hint: "'Tedious' means tiresome, laborious, and exhausting. Find the word meaning simple and effortless.",
-    workedSolution: "'Tedious' means tiresome, laborious, and difficult. Its direct antonym regarding manual labor is 'easy' (effortless and simple).",
+    hint: "'Tedious' means tiresome, wearisome, and burdensome. What word denotes effortless and simple?",
+    workedSolution: "'Tedious' describes a tiresome, demanding, or boring task. Its direct practical antonym is 'easy' (or simple/effortless).",
     points: 1
   },
   {
     number: 23,
-    prompt: "The audience entered through the main entrance and departed through the rear ...... .",
-    options: ["closure", "opening", "exit", "departure"],
+    prompt: "While incoming visitors rushed toward the main entrance, departing guests moved toward the ...... .\nChoose the word most nearly opposite in meaning to 'entrance'.",
+    options: ["passageway", "gateway", "exit", "threshold"],
     correctAnswer: "exit",
-    hint: "'Entrance' is the way into a building. Find the word that denotes the way out.",
-    workedSolution: "'Entrance' refers to the doorway or passage used for entering. Its direct architectural and directional antonym is 'exit' (the way out).",
+    hint: "'Entrance' is the way into a building. What word denotes the way out?",
+    workedSolution: "'Entrance' refers to the point of entry or opening into a building. Its direct spatial antonym is 'exit' (the way out).",
     points: 1
   },
   {
     number: 24,
-    prompt: "The magistrate ruled that the accused suspect was not guilty of the theft, but entirely ...... .",
-    options: ["ignorant", "aware", "innocent", "careless"],
+    prompt: "The magistrate pronounced the first suspect guilty, but declared his companion ...... .\nChoose the word most nearly opposite in meaning to 'guilty'.",
+    options: ["ignorant", "unaware", "innocent", "forgiven"],
     correctAnswer: "innocent",
-    hint: "'Guilty' means blameworthy of a crime. Find the word meaning free from legal culpability.",
-    workedSolution: "'Guilty' means legally culpable for an offense. Its direct legal and ethical antonym is 'innocent' (free from blame).",
+    hint: "'Guilty' means convicted of a crime. What word denotes free from guilt, blameless, or not guilty?",
+    workedSolution: "'Guilty' means responsible for a criminal wrong. Its direct judicial antonym is 'innocent' (free from guilt).",
     points: 1
   },
   {
     number: 25,
-    prompt: "Mrs. Addo acted as our gracious hostess for the dinner, while the visiting director was the chief ...... .",
-    options: ["guest", "speaker", "guide", "sponsor"],
+    prompt: "Mrs. Addo acted as the hostess for the cultural gala, while the regional minister was the guest of honor.\nChoose the word most nearly opposite in meaning to 'hostess'.",
+    options: ["guest", "patron", "speaker", "organizer"],
     correctAnswer: "guest",
-    hint: "'Hostess' is the person who entertains others. Find the word for the person being entertained.",
-    workedSolution: "'Hostess' is a woman who receives and entertains visitors. Her direct social counterpart and antonym is 'guest' (the visitor being entertained).",
+    hint: "A 'hostess' welcomes and entertains people. What word denotes the person who is invited and entertained?",
+    workedSolution: "'Hostess' refers to a person who entertains or receives visitors. Its direct reciprocal antonym is 'guest' (one who is entertained).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Mary and Comfort are ...... arriving by the evening passenger train.",
+    prompt: "Mary and Comfort are ...... arriving by the evening train from Takoradi.",
     options: ["both", "all", "either", "neither"],
     correctAnswer: "both",
-    hint: "Use this pronoun when referring to the two persons collectively in an affirmative sentence.",
-    workedSolution: "When referring to two specific individuals ('Mary and Comfort') together in an affirmative clause, 'both' is required. 'All' refers to three or more.",
+    hint: "Use the dual pronoun/determiner referring to two persons simultaneously in an affirmative clause.",
+    workedSolution: "When referring to two specific individuals ('Mary and Comfort') acting affirmatively together, standard English requires 'both'. 'All' applies to three or more.",
     points: 1
   },
   {
     number: 27,
-    prompt: "Abukari prefers playing football ...... swimming in the river.",
+    prompt: "Abukari prefers playing football ...... swimming in the lagoon.",
     options: ["by", "for", "than", "to"],
     correctAnswer: "to",
     hint: "The comparative verb 'prefer' takes the preposition 'to', never 'than'.",
-    workedSolution: "In standard English, the verb 'prefer' takes 'to' when expressing a preference between two activities ('prefers X to Y').",
+    workedSolution: "In standard English verb grammar, 'prefer' takes the preposition 'to' when comparing two activities: 'prefers playing football to swimming'.",
     points: 1
   },
   {
     number: 28,
-    prompt: "All ...... you have testified before the commission is completely accurate.",
+    prompt: "All ...... the witness stated under oath is completely true.",
     options: ["what", "that", "which", "as"],
     correctAnswer: "that",
-    hint: "The indefinite pronoun 'all' is followed by the relative pronoun 'that', never 'what'.",
-    workedSolution: "In standard English relative clauses, the quantifier 'all' is modified by 'that' ('All that you are saying...'). Using 'what' here is a common grammatical error.",
+    hint: "Following the universal quantifier 'all' referring to inanimate speech or things, standard grammar requires the relative pronoun 'that'.",
+    workedSolution: "When the antecedent is 'all', standard grammar requires the relative pronoun 'that': 'All that you are saying is true'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "The master carpenter complained that the apprentice was ...... for his liking.",
-    options: ["slow", "much slow", "slower", "too slow"],
-    correctAnswer: "too slow",
-    hint: "Identify the degree adverb that signifies an unacceptable, excessive defect.",
-    workedSolution: "'Too slow' uses the adverb 'too' to express an excessive degree that causes dissatisfaction or falls below required standards.",
+    prompt: "The supervisor remarked that the apprentice was ...... slow for his liking.",
+    options: ["much", "much slow", "slower", "too"],
+    correctAnswer: "too",
+    hint: "Use the degree adverb expressing an excessive degree beyond what is desirable: 'too + adjective'.",
+    workedSolution: "The degree modifier 'too' indicates an excessive or undesirable quality beyond an acceptable limit: 'too slow for his liking'.",
     points: 1
   },
   {
     number: 30,
-    prompt: "Panyin is ...... taller than her twin sister Kakra.",
+    prompt: "Panyin is ...... taller than his twin brother, Kakra.",
     options: ["more", "much", "so", "too"],
     correctAnswer: "much",
-    hint: "Comparative adjectives ('taller') are intensified by 'much' or 'far', not 'more' or 'too'.",
-    workedSolution: "Comparative adjectives like 'taller' are modified by degree adverbs such as 'much' or 'far' ('much taller'). Using 'more taller' is an error (double comparative).",
+    hint: "Comparative adjectives with '-er' are intensified by 'much' or 'far', never by 'more' or 'too'.",
+    workedSolution: "To intensify a comparative adjective ('taller'), English uses 'much' or 'far' ('much taller than'). Double comparatives like *more taller are ungrammatical.",
     points: 1
   },
   {
     number: 31,
-    prompt: "The stray sheep has been missing from the kraal ...... last Saturday.",
+    prompt: "The stray puppy has been missing from our compound ...... last Saturday.",
     options: ["since", "from", "until", "for"],
     correctAnswer: "since",
-    hint: "Use 'since' to denote the specific historical starting point of an ongoing condition.",
-    workedSolution: "The preposition 'since' is used with the Present Perfect tense to denote a specific starting point in past time ('since Saturday') continuing to the present.",
+    hint: "Use 'since' with the Present Perfect tense to denote a specific starting point in past time.",
+    workedSolution: "The preposition 'since' indicates a specific starting point in the past from which an ongoing action continues into the present: 'since Saturday'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "Akua, could you please ...... me your English dictionary for the weekend?",
+    prompt: "\"Akua, could you please ...... me your English textbook for the weekend?\"",
     options: ["lend", "borrow", "afford", "buy"],
     correctAnswer: "lend",
-    hint: "To give something temporarily is to 'lend'; to receive something temporarily is to 'borrow'.",
-    workedSolution: "'Lend' means to grant temporary use of something expecting it back. 'Borrow' means to receive temporary use of an object.",
+    hint: "'Lend' means to give something temporarily to someone; 'borrow' means to receive something temporarily from someone.",
+    workedSolution: "'Lend' means to grant temporary possession of an item to another person. ('Borrow' means to take or receive temporarily). The correct request is 'lend me your book'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "Kofi insisted ...... painting the classroom walls without taking any wage.",
+    prompt: "The master builder insisted ...... painting the classroom walls himself.",
     options: ["in", "at", "on", "with"],
     correctAnswer: "on",
-    hint: "Identify the preposition that regularly collocates with the verb 'insisted'.",
-    workedSolution: "In standard English grammar, the verb 'insist' is followed by the preposition 'on' (or 'upon') and a gerund ('insisted on painting').",
+    hint: "Identify the preposition that regularly collocates with the verb 'insist'.",
+    workedSolution: "In standard English grammar, the verb 'insist' takes the preposition 'on' followed by a gerund: 'insisted on painting'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "This exercise book is mine and that dictionary on the shelf is ......",
+    prompt: "This dictionary belongs to me, and that notebook on the desk is ......",
     options: ["your", "yours'", "your's", "yours"],
     correctAnswer: "yours",
-    hint: "Absolute possessive pronouns never take apostrophes.",
-    workedSolution: "'Yours' is an absolute possessive pronoun and never takes an apostrophe. Forms such as 'your's' or 'yours'' are completely non-standard.",
+    hint: "Absolute possessive pronouns never take an apostrophe.",
+    workedSolution: "'Yours' is an absolute possessive pronoun and never takes an apostrophe. Forms like 'your's' or 'yours'' are ungrammatical.",
     points: 1
   },
   {
     number: 35,
     prompt: "If Asi had traveled to Beseasi yesterday, she ...... her grandmother.",
-    options: ["would meet", "would have met", "will meet", "had met"],
+    options: [
+      "would meet",
+      "would have met",
+      "will meet",
+      "had met"
+    ],
     correctAnswer: "would have met",
-    hint: "Third Conditional: 'If + past perfect' requires 'would have + past participle' in the main clause.",
-    workedSolution: "In a Third Conditional sentence expressing a counterfactual past condition ('If Asi had gone'), the main clause takes 'would have + past participle' ('would have met').",
+    hint: "Third Conditional: 'had traveled' in the if-clause requires 'would have + past participle' in the main clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the main clause requires 'would have + past participle': 'would have met'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "You ate too much heavy food at the party, ......?",
-    options: ["didn't you?", "don't you?", "haven't you?", "isn't it?"],
-    correctAnswer: "didn't you?",
-    hint: "The main verb 'ate' is in the simple past affirmative. The question tag must be past negative using 'did'.",
-    workedSolution: "The main clause has an affirmative simple past verb ('ate'). Its corresponding question tag must be negative and use 'did': 'didn't you?'.",
+    prompt: "You had a massive portion of fufu for lunch, ......?",
+    options: ["didn't you", "don't you", "haven't you", "isn't it"],
+    correctAnswer: "didn't you",
+    hint: "The main verb 'had' is used here as a lexical verb in the simple past tense, requiring a question tag formed with 'did'.",
+    workedSolution: "When 'had' is the main lexical verb in the simple past ('had too much to eat'), its tag is formed with the past auxiliary 'did': 'didn't you?'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "The visitor walked into the hall while I ...... my evening meal.",
+    prompt: "He knocked and entered the office while I ...... my midday meal.",
     options: ["am having", "had", "have", "was having"],
     correctAnswer: "was having",
-    hint: "An ongoing past continuous action ('was having') during which another past event occurred.",
-    workedSolution: "The past continuous tense ('was having') is used after 'while' to describe an extended background action in the past interrupted by a simple past event ('came in').",
+    hint: "Past Continuous tense expressing an ongoing background action in the past interrupted by a sudden past simple event ('entered').",
+    workedSolution: "An ongoing background activity in the past introduced by 'while' takes the Past Continuous tense: 'was having'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "The recalcitrant prisoner would neither speak ...... eat throughout the interrogation.",
+    prompt: "The recalcitrant prisoner would neither speak ...... eat his breakfast.",
     options: ["yet", "but", "or", "nor"],
     correctAnswer: "nor",
-    hint: "Correlative pair: 'Neither' is always paired with 'nor'.",
-    workedSolution: "The negative correlative conjunction 'neither' is invariably paired with 'nor' ('neither speak nor eat'). 'Either' pairs with 'or'.",
+    hint: "Identify the negative correlative conjunction that pairs with 'neither'.",
+    workedSolution: "In correlative coordination, 'neither' pairs strictly with 'nor' ('neither talk nor eat'). 'Either' pairs with 'or'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Afote kindly offered his hungry seatmate ...... of his loaf of bread.",
+    prompt: "Afote was generous enough to give his classmate ...... of his bread.",
     options: ["little", "few", "some", "any"],
     correctAnswer: "some",
-    hint: "Use 'some' in affirmative statements to denote an unspecified positive amount of a mass noun.",
-    workedSolution: "'Some' is used in affirmative declarative statements with uncountable nouns ('some of his bread'). 'Any' is used primarily in questions or negative statements.",
+    hint: "Use an affirmative partitive determiner with non-count nouns ('bread') expressing an unspecified positive quantity.",
+    workedSolution: "In positive affirmative declarative statements, 'some' is used to denote an unspecified positive quantity of a mass noun: 'some of his bread'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "Kwame and Anita are a devoted couple who have always loved ......",
+    prompt: "John and Anita have been companions since childhood; they have always loved ......",
     options: ["each other", "one another", "themselves", "each one"],
     correctAnswer: "each other",
-    hint: "Reciprocal pronoun used when an action is mutually exchanged between two individuals.",
-    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('Kwame and Anita'). 'One another' is preferred for three or more.",
+    hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
+    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('John and Anita'). 'One another' is preferred for three or more.",
     points: 1
   }
+];
+
+// Combine raw items
+const allRawQuestions = [
+  ...passage1QuestionsRaw,
+  ...passage2QuestionsRaw,
+  ...generalQuestionsRaw
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -501,9 +565,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200601);
+const assignedTargetIndices = seedShuffle(targetKeys, 200602);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -515,21 +579,48 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
-  return {
+
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (idx < 5) {
+    passageTitle = passage1Title;
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (idx < 10) {
+    passageTitle = passage2Title;
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
+  const item: QuestionItem = {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
     points: q.points
   };
+
+  if (passageTitle) {
+    item.passageTitle = passageTitle;
+    item.passageText = passageText;
+    item.passage = passage;
+  }
+
+  return item;
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -538,128 +629,104 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Write a letter to your local Assemblyman suggesting three practical ways in which the youth and residents can collaborate to improve environmental sanitation and hygiene in your community.",
-        modelAnswer: `Methodist Junior High School
+        prompt: "Write a letter to your local Assemblyman suggesting three practical ways in which students and community youth can actively help improve environmental sanitation in your electoral area.",
+        modelAnswer: `Methodist Junior Secondary School
 P. O. Box 54
-Konongo, Ashanti Region
-12th June, 2006
+Bekwai, Ashanti Region
+12th May, 2006
 
 The Assemblyman
-Konongo Central Electoral Area
-Municipal Assembly, Konongo
+Bekwai Central Electoral Area
+Municipal Assembly, Bekwai
 
 Dear Sir,
 
-PROPOSALS FOR COLLABORATIVE COMMUNITY ACTION TO IMPROVE SANITATION IN OUR ELECTORAL AREA
+PROPOSALS FOR YOUTH INVOLVEMENT IN IMPROVING COMMUNITY SANITATION
 
-I respectfully write on behalf of the youth of Konongo Central to congratulate you on your civic leadership and to suggest three practical strategies through which our community can actively resolve the worsening sanitation crisis in our neighborhood.
+I respectfully write to commend your exemplary leadership in our electoral area and to present three practical initiatives through which basic school students and community youth can actively partner with the local assembly to eradicate filth and enhance sanitation.
 
-First, I suggest the reinstatement of mandatory monthly communal clean-up exercises. In the past, communal labor effectively kept our public spaces clean. Through your office, our unit committee should designate the first Saturday of every month for clearing overgrown bushes, desilting choked storm drains, and sweeping public markets. The youth are fully prepared to mobilize wheelbarrows, rakes, and shovels to spearhead this communal effort.
+First and foremost, our youth association can spearhead bi-weekly communal clean-up exercises across all residential zones. Armed with rakes, brooms, and wheelbarrows, students can desilt choked open gutters, clear overgrown weeds around public standpipes, and sweep commercial lorry terminals. Regular clearing of drainage ditches prevents stagnant wastewater from breeding disease-carrying mosquitoes, dramatically reducing the incidence of malaria in our neighborhood.
 
-Secondly, our electoral area urgently needs the placement of designated communal refuse containers at strategic locations. Currently, due to the lack of central waste disposal points, residents dump domestic refuse into open gutters, causing severe flooding and mosquito breeding during rainy seasons. Partnering with the municipal environmental health department to provide covered communal bins will eliminate illegal roadside dumps.
+Secondly, students can establish a Community Waste Segregation and Anti-Littering Volunteer Campaign. In collaboration with local environmental health officers, youth volunteers can go door-to-door educating residents and market women on separating degradable organic waste from non-biodegradable plastics and polythene bags. Furthermore, we can fabricate modest wooden dustbins and place them along market avenues to discourage indiscriminate littering.
 
-Finally, we must establish a vigorous public education campaign coupled with the strict enforcement of municipal sanitation bye-laws. Community health volunteers should visit households and churches to educate families on sorting waste, covering drinking water containers, and maintaining clean surroundings. Concurrently, environmental inspectors should fine recalcitrant residents caught disposing of human or domestic waste in unauthorized spaces.
+Finally, we propose the formation of an Environmental Sanitation Monitoring Club in our basic schools. This youth task force will monitor illegal dumping sites and report recalcitrant residents who dispose of domestic waste into streams to the Town Development Committee for corrective sanctions.
 
-We trust that your esteemed office will consider these recommendations to make Konongo clean, healthy, and prosperous.
+We are ready to mobilize our peers to transform our community into a beacon of cleanliness. We look forward to discussing these proposals with you.
 
 Thank you.
 
 Yours faithfully,
 [Signature]
-Kwaku Mensah
+Kwabena Mensah
 (Youth Secretary)`
       },
       {
         questionNumber: "2",
         category: "Informal Letter",
-        prompt: "Write a letter to your elder brother who is working or studying in another region of Ghana, updating him on the latest exciting family and community news at home.",
-        modelAnswer: `P. O. Box 22
-Mampong, Ashanti Region
+        prompt: "Write a letter to your elder brother who is working or studying in another region of your country, informing him about the latest interesting news, family milestones, and community developments at home.",
+        modelAnswer: `Presbyterian Junior Secondary School
+P. O. Box 80
+Begoro, Eastern Region
 18th October, 2006
 
-Dear Brother Yaw,
+Dear Brother Kwaku,
 
-I hope this letter finds you in fine health, peace of mind, and thriving in your studies in Tamale. Life at home has been peaceful and eventful, and I am excited to share the latest family and community news with you.
+I hope this letter finds you in fine health, peace of mind, and excelling in your university studies at the University of Cape Coast. Everyone at home is in good health, and Mother always mentions your name in her evening prayers. I am writing to update you on the exciting developments and latest news in our family and community.
 
-First, you will be delighted to learn that our elder sister, Akosua, successfully gave birth to a bouncy baby boy last month! The christening ceremony was a joyful family occasion held at our family compound, attended by dozens of relatives and church members. Father named the child after Grandpa, and Mother has been pampering both mother and baby with delicious traditional nursing broths. We only missed your lively presence during the celebratory dancing.
+The biggest family news is that our elder sister, Akosua, gave birth to a bouncy baby boy last Wednesday at the Begoro District Hospital. Both mother and newborn are doing wonderfully, and our compound has been filled with joyful relatives bringing gifts of baby clothes and white calico. Father has announced that the traditional outdooring and naming ceremony will take place next Saturday, and we are praying that your weekend schedule permits you to attend.
 
-Secondly, Father's cocoa harvest this main season has been phenomenal. Because of the new fertilizer methods introduced by the extension officers, our family plantation recorded its highest yield in a decade. Father has already used part of the proceeds to plaster our family house and connect electricity to all our bedrooms, meaning we no longer read under hurricane kerosene lamps at night!
+In addition, our father's minor cocoa harvest yielded exceptional returns this season. With the proceeds, he has successfully roofed our new four-room family annex and connected our house to the national electricity grid. You will no longer need to study with kerosene hurricane lamps when you return home for the vacation!
 
-In our community, the municipal assembly has finally completed the construction of the new asphalt road linking our village to the commercial market center. Commercial trotros now ply our route smoothly, cutting travel time in half.
+In the wider community, the District Assembly has finally completed the asphalt tarring of our main township road and installed solar-powered streetlights along the market boulevard, completely transforming Begoro at night.
 
-Everyone at home sends their warm love and blessings. Please write back soon and inform us when you will be coming home for the Christmas holidays.
+We miss your lively humor at the dinner table. Please write back soon and let us know when to expect your visit.
 
 Your loving brother,
 [Signature]
-Kofi`
+Emmanuel Addo`
       },
       {
         questionNumber: "3",
         category: "Debate Speech",
-        prompt: "You are the principal speaker in an inter-school debate on the motion: \"Television is doing more harm than good to students.\" Write your speech arguing either for or against the motion.",
-        modelAnswer: `FOR THE MOTION: "TELEVISION IS DOING MORE HARM THAN GOOD TO STUDENTS"
+        prompt: "You are the principal speaker in an inter-schools debate competition on the topic: \"Television is doing more harm than good to students.\" Write your speech for or against the motion.",
+        modelAnswer: `AGAINST THE MOTION: "TELEVISION IS DOING MORE HARM THAN GOOD TO STUDENTS"
 
 Mr. Chairman, Distinguished Panel of Judges, Impartial Timekeeper, Worthy Opponents, and Fellow Students:
 
-I stand firmly before you this afternoon to support the motion that: "Television is doing more harm than good to basic school students." While television was conceived as an informative medium, its unrestricted consumption has become an intellectual and moral hazard to our youth.
+I stand firmly before you this afternoon to vehemently oppose the motion that: "Television is doing more harm than good to students." While detractors routinely portray television as an intellectual distraction, an objective analysis demonstrates that modern television broadcasting is an indispensable medium of education, enlightenment, and global awareness.
 
-First and foremost, television viewing is the primary culprit behind the collapse of reading habits and poor academic performance among students. Basic education requires hours of dedicated study, reading comprehension, and problem solving. Unfortunately, countless students rush home after school only to spend five to six uninterrupted hours watching soap operas, cartoons, and musical videos. This excessive screen time causes chronic mental fatigue, displaces homework time, and results in widespread failures in national examinations like the BECE.
+First and foremost, television serves as a powerful audio-visual classroom that simplifies complex academic concepts. Visual learning significantly enhances comprehension and memory retention. Through dedicated educational channels and documentary broadcasts like the National Science and Maths Quiz, National Geographic, and Discovery Channel, students observe practical scientific experiments, historical recreations, and geographic phenomena that under-resourced school laboratories cannot provide. Abstract textbook formulas are transformed into living realities, inspiring young learners to pursue careers in medicine, aviation, and engineering.
 
-Secondly, television broadcasts expose impressionable young minds to moral degradation and violent antisocial behavior. Many television stations broadcast unrated foreign movies featuring violent crime, vulgar language, and immoral lifestyles that conflict with our cherished African values of modesty and respect. Gullible youths imitate these televised vices, leading to rising cases of school indiscipline, teenage delinquency, and substance abuse. Furthermore, prolonged sitting in front of television sets fosters physical inactivity, leading to childhood obesity and eye defects.
+Secondly, television cultivates civic consciousness and global literacy. Watching national and international news broadcasts keeps students informed about contemporary geopolitical events, environmental conservation, and social policies. This broadens their worldview and equips them with critical insights that enhance their performance in English comprehension and Social Studies examinations.
 
-In conclusion, television has transformed our classrooms into sanctuaries of distraction and eroded the moral discipline of our youth. To safeguard our academic future and moral character, we must acknowledge that television currently causes far more harm than good to students.
+Furthermore, television is a versatile teacher of language and oratorical eloquence. Listening to professional broadcasters and debate panels sharpens students' pronunciation, expands their vocabulary, and improves their spoken English.
+
+In conclusion, television is merely a technological tool; the fault lies not in the medium, but in undisciplined viewing habits. When guided by responsible parental supervision, television is a beacon of intellectual enlightenment. I urge you all to resoundingly reject the motion.
 
 Thank you.`
       },
       {
         questionNumber: "4",
-        category: "Formal Nomination Letter",
-        prompt: "Your school's Parent-Teacher Association (PTA) has instituted an annual Best Teacher Award Scheme. Write a letter to the PTA Committee nominating one of your teachers for the award and giving convincing reasons why he or she deserves the honor.",
-        modelAnswer: `Presbyterian Junior High School
-P. O. Box 104
-Sunyani, Bono Region
-25th November, 2006
+        category: "Descriptive / Nomination Essay",
+        prompt: "Your Parent-Teacher Association (PTA) has instituted an annual Best Teacher Award Scheme in your school. Which of your teachers would you nominate for the award and why? Write an essay stating at least three compelling reasons for your choice.",
+        modelAnswer: `NOMINATION OF MR. EMMANUEL OSEI FOR THE ANNUAL BEST TEACHER AWARD
 
-The Chairman
-Best Teacher Award Selection Committee
-Parent-Teacher Association
-Presbyterian JHS, Sunyani
+I enthusiastically nominate our Integrated Science master, Mr. Emmanuel Osei, for the prestigious Best Teacher Award instituted by our Parent-Teacher Association. In an academic institution blessed with dedicated educators, Mr. Osei stands out as an exceptional teacher, moral mentor, and selfless community builder who has revolutionized learning in our school.
 
-Dear Sir,
+First and foremost, Mr. Osei exhibits unrivaled pedagogical excellence and innovative teaching methods. Before his arrival, science was widely feared as a difficult, abstract subject. Mr. Osei transformed our classroom into an active laboratory. In the absence of a modern science complex, he uses his personal financial resources to construct creative improvisational teaching models from local clay, bamboo, and recycled materials. He organizes weekly field trips around the school environment to observe ecological systems, making challenging topics like photosynthesis and genetics simple and enjoyable. Under his guidance, our school achieved a one hundred percent pass rate in Integrated Science in the BECE for three consecutive years.
 
-NOMINATION OF MR. EMMANUEL OSEI FOR THE ANNUAL BEST TEACHER AWARD
+Secondly, Mr. Osei demonstrates boundless selflessness and pastoral care for struggling learners. He voluntarily sacrifices his free afternoons and Saturday mornings to organize free remedial tutorials for academically weak pupils. Furthermore, he quietly purchases textbooks and mathematical sets for indigent orphans whose parents cannot afford school supplies, ensuring that poverty never truncates a child's education.
 
-I respectfully write on behalf of the student body to formally nominate our Integrated Science master, Mr. Emmanuel Osei, for the prestigious PTA Best Teacher Award for this academic year.
+Finally, his personal integrity, punctuality, and humility inspire us to cultivate upright moral character. He treats every student with fatherly dignity and never uses abusive language.
 
-Mr. Osei is an extraordinarily dedicated educator whose passion for teaching has revolutionized science education in our school. In a school where we lack an elaborate modern science laboratory, Mr. Osei regularly uses his personal resources to improvise local teaching aids. He constructs clay models of human body organs, collects soil and plant specimens, and organizes practical field trips that make abstract scientific concepts tangible and easy to understand. Through his innovative pedagogy, our school's pass rate in Integrated Science rose from sixty percent to an unprecedented ninety-five percent in the recent mock examinations.
-
-Furthermore, Mr. Osei's commitment to student welfare extends far beyond normal classroom contact hours. He organizes free remedial classes every Saturday morning for struggling students and candidates preparing for the BECE. Beyond academics, he serves as our patron for the Science and Debating Club and provides fatherly guidance to students facing domestic hardships, counseling them to stay focused on their education. His patience, moral integrity, and punctuality serve as a living model of excellence for both staff and pupils.
-
-For his selfless dedication, pedagogical brilliance, and profound moral impact on our lives, Mr. Emmanuel Osei is richly deserving of the Best Teacher Award.
-
-Thank you for instituting this noble scheme to reward educational excellence.
-
-Yours faithfully,
-[Signature]
-Francisca Donkor
-(School Prefect)`
+Mr. Osei is not merely an instructor; he is a beacon of hope and an embodiment of true teaching nobility. He deserves this honor unconditionally.`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2006Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2006 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2006 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -686,37 +753,63 @@ async function seedBeceEnglish2006Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: Amma Feigning Illness and MaaTee's Emergency Visit",
+          title: passage1Title,
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
         },
         {
           id: "passage_2",
-          title: "Passage II: Grandpa's Centenarian Vigor and Philosophy",
+          title: passage2Title,
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: passage1Title,
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: passage2Title,
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2006 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2006 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2006Calibrated()

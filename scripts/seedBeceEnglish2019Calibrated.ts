@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,387 +45,339 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2019
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 30)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "One of the heifers ...... from the cattle kraal into the forest.",
-    options: ["have been strayed", "has been strayed", "have strayed", "has strayed"],
+    prompt: "One of the prized breeding bulls ............ from the municipal ranch during the storm.",
+    options: [
+      "have been strayed",
+      "has been strayed",
+      "have strayed",
+      "has strayed"
+    ],
     correctAnswer: "has strayed",
-    hint: "The subject is 'One', not 'heifers'. An active intransitive verb takes 'has + past participle'.",
-    workedSolution: "In the subject phrase 'One of the heifers', the true head noun is the singular pronoun 'One'. It requires the singular active verb 'has strayed'. 'Stray' is an intransitive verb and cannot take the passive form ('has been strayed').",
+    hint: "The grammatical subject head is 'One' (singular third-person), requiring an active singular present perfect verb.",
+    workedSolution: "The true grammatical head is 'One' (singular) of the bulls, which takes the active singular present perfect verb 'has strayed'. ('Has been strayed' is an erroneous passive).",
     points: 1
   },
   {
     number: 2,
-    prompt: "Kofi saw the monkey .......... swiftly up the baobab tree.",
-    options: ["climb", "is climbing", "climbed", "was climbing"],
-    correctAnswer: "climb",
-    hint: "Verbs of sensory perception (saw, heard, watched) take an object followed by a bare infinitive.",
-    workedSolution: "After sensory verbs of perception like 'saw', an object is followed by a bare infinitive ('climb') to show a complete action, or a present participle ('climbing') for an ongoing one. 'Climbed' and 'was climbing' are grammatically incorrect in this pattern.",
+    prompt: "From our balcony, we saw the frightened puppy ............ across the busy avenue.",
+    options: ["run", "is running", "ran", "was running"],
+    correctAnswer: "run",
+    hint: "Verbs of sensory perception (see, hear, watch) take a direct object followed by a bare infinitive for a completed action.",
+    workedSolution: "Following verbs of sensory perception ('saw'), standard English uses a bare infinitive without 'to' ('run') to indicate witnessing the complete action.",
     points: 1
   },
   {
     number: 3,
-    prompt: "Kwame travels to the regional capital each weekend ............ train.",
+    prompt: "To beat the morning highway gridlock, Habib commutes to school ............ train.",
     options: ["by", "on", "with", "in"],
     correctAnswer: "by",
-    hint: "General modes of transport (train, bus, boat, plane) take the preposition 'by' without an article.",
-    workedSolution: "When referring to a means of travel without determiners or articles, standard English uses 'by + vehicle' ('by train', 'by bus', 'by air').",
+    hint: "General modes of transport (train, bus, air, sea) take the preposition 'by' without a determiner.",
+    workedSolution: "When describing standard public modes of travel without an article or determiner, standard English uses 'by': 'by train'.",
     points: 1
   },
   {
     number: 4,
-    prompt: "This bicycle is not mine; it is ............ property.",
-    options: ["mine uncle's", "my uncle's", "my uncles", "mine uncles"],
+    prompt: "This laptop computer does not belong to me; it is ............",
+    options: [
+      "mine uncle's",
+      "my uncle's",
+      "my uncles",
+      "mine uncles"
+    ],
     correctAnswer: "my uncle's",
-    hint: "Use the possessive adjective 'my' before a singular possessive noun ending in ''s'.",
-    workedSolution: "The possessive determiner 'my' precedes the singular possessive noun 'uncle's' to modify 'property'. 'Mine' is a possessive pronoun and cannot modify a noun.",
+    hint: "Possessive determiner 'my' followed by a singular possessive noun ending in 's.",
+    workedSolution: "Possession is correctly indicated by combining the possessive determiner 'my' with the possessive noun 'uncle's': 'it is my uncle's'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "Adjoa wore a ............ dress to the anniversary thanksgiving service.",
-    options: ["silk blue beautiful", "beautiful blue silk", "blue beautiful silk", "beautiful silk blue"],
+    prompt: "The bride looked magnificent in her ............ gown.",
+    options: [
+      "silk blue beautiful",
+      "beautiful blue silk",
+      "blue beautiful silk",
+      "beautiful silk blue"
+    ],
     correctAnswer: "beautiful blue silk",
-    hint: "Order of adjectives: Opinion ('beautiful') comes before Color ('blue'), which precedes Material ('silk').",
-    workedSolution: "According to the Royal Order of Adjectives: Opinion ('beautiful') precedes Color ('blue'), which precedes Material ('silk'). Therefore, 'beautiful blue silk dress' is the correct sequence.",
+    hint: "Cumulative adjective ordering: Opinion/Evaluation ('beautiful') precedes Color ('blue') which precedes Material ('silk') before the noun.",
+    workedSolution: "Standard English cumulative adjective order places subjective evaluation ('beautiful') before color ('blue') followed by material origin ('silk'): 'beautiful blue silk dress'.",
     points: 1
   },
   {
     number: 6,
-    prompt: "I wish I ............ my ailing grandmother in Tamale next weekend.",
+    prompt: "The promotional examination schedule is demanding, but I truly wish I ............ my ailing companion next weekend.",
     options: ["can visit", "am visiting", "shall visit", "could visit"],
     correctAnswer: "could visit",
-    hint: "A wish about an unreal or uncertain future event takes the modal 'could'.",
-    workedSolution: "Wishes expressing future desires that are contrary to current reality or uncertain take 'could + base verb' ('could visit').",
+    hint: "Hypothetical future wishes require the past modal auxiliary 'could'.",
+    workedSolution: "When expressing a hypothetical wish regarding future possibilities that are uncertain or contrary to fact, standard English requires 'could': 'wish I could visit'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "In terms of temperament and patience, Abena took ............ her grandmother.",
+    prompt: "In terms of personal discipline and moral character, Aba took ............ her mother in many ways.",
     options: ["after", "up", "on", "by"],
     correctAnswer: "after",
-    hint: "Identify the phrasal verb meaning to resemble an older relative in appearance or character.",
-    workedSolution: "The phrasal verb 'to take after' means to resemble an older family member in character, habits, or physical features.",
+    hint: "Identify the phrasal verb meaning to resemble an older parent or ancestor in appearance or temperament.",
+    workedSolution: "The phrasal verb 'to take after' means to resemble an ancestor or parent in character or appearance: 'took after her mother'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "The young apprentice is allergic ............ sawdust and paint fumes.",
+    prompt: "The pediatric physician cautioned that the young girl is allergic ............ chalk dust.",
     options: ["with", "to", "against", "about"],
     correctAnswer: "to",
-    hint: "The adjective 'allergic' regularly collocates with this specific preposition.",
-    workedSolution: "In standard English grammar, the adjective 'allergic' is followed by the preposition 'to' ('allergic to sawdust').",
+    hint: "Identify the dependent preposition that regularly collocates with the adjective 'allergic'.",
+    workedSolution: "In standard English grammatical collocations, the adjective 'allergic' takes the preposition 'to': 'allergic to dust'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "The assemblyman, together with his children, ............ travelling to Kumasi tomorrow.",
+    prompt: "My elder brother, together with his two children, ............ traveling to Tamale next Monday.",
     options: ["is", "are", "was", "were"],
     correctAnswer: "is",
-    hint: "Parenthetical additions like 'together with...' do not alter the singular subject 'The assemblyman'.",
-    workedSolution: "When a singular subject ('The assemblyman') is followed by a parenthetical phrase introduced by 'together with', the subject remains singular. For an upcoming event ('tomorrow'), the singular present continuous auxiliary 'is' is required.",
+    hint: "Parenthetical additions introduced by 'together with / with' do not pluralize the singular subject 'My elder brother'.",
+    workedSolution: "Parenthetical phrases like 'with his children' do not alter the grammatical number of the subject. The singular head 'My brother' takes the singular present continuous auxiliary 'is'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "It is high time the debating club ............ its executive officers.",
-    options: ["elected", "elect", "have to elect", "will elect"],
-    correctAnswer: "elected",
-    hint: "The structure 'It is high time + subject' takes a simple past subjunctive verb.",
-    workedSolution: "The fixed idiom 'It is high time + subject' requires a simple past subjunctive verb ('elected') to express an action that is long overdue.",
+    prompt: "It is high time the municipal delegates ............ for the annual summit.",
+    options: ["left", "leave", "have to leave", "will leave"],
+    correctAnswer: "left",
+    hint: "Subjunctive past simple: 'It is high time + subject' takes a simple past verb form.",
+    workedSolution: "Following the subjunctive construction 'It is high time' with a specified subject, standard grammar requires the simple past tense: 'left'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "The headmaster refused to address the petition before a ...... delegation.",
+    prompt: "The accused contractor refused to appear before the ............ disciplinary committee.",
     options: ["five-man's", "five-man", "five-men", "five-men's"],
     correctAnswer: "five-man",
-    hint: "When a compound number-noun acts as an adjective before a noun, it takes the singular form without an apostrophe.",
-    workedSolution: "When a compound noun functions attributively as an adjective before another noun ('delegation'), the unit is hyphenated and singular: 'a five-man delegation'.",
+    hint: "Compound adjective modifying a noun retains the singular form and is hyphenated without possessive inflection.",
+    workedSolution: "When a numeral and noun combine into a compound adjective preceding a head noun ('panel/committee'), the noun remains singular: 'five-man panel'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The hilarious folktale told by the elder made the children ......",
+    prompt: "The comical antics of the playful toddler made the entire congregation ............",
     options: ["to laugh", "laughing", "laughed", "laugh"],
     correctAnswer: "laugh",
-    hint: "The causative verb 'made' takes an object followed by a bare infinitive without 'to'.",
-    workedSolution: "The causative verb 'make' (past: 'made') is followed by an object and a bare infinitive ('laugh') without 'to'.",
+    hint: "The causative verb 'make' (past: 'made') in the active voice takes an object followed by a bare infinitive without 'to'.",
+    workedSolution: "In active causative constructions, 'make' takes an object followed by a bare infinitive without 'to': 'made her laugh'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The school has not received ............ of the two consignment trucks.",
+    prompt: "Because of acute paper scarcity, the bookstore has not stocked ............ of the two prescribed literature texts.",
     options: ["neither", "either", "none", "all"],
     correctAnswer: "either",
-    hint: "When a negative clause ('has not received') refers to two items, use 'either' to avoid a double negative.",
-    workedSolution: "Because the sentence already contains the negative particle 'not' and refers specifically to two items, 'either' is required ('not ... either of the two'). 'Neither' would create a double negative.",
+    hint: "In a negative clause containing 'not', use this pronoun to negate a choice between two items without creating a double negative.",
+    workedSolution: "Following the negative auxiliary 'have not', standard English uses 'either' when referring to two items ('either of the two prescribed books'). 'Neither' would create an ungrammatical double negative.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The junior students found the mathematics theorem ...... to solve.",
-    options: ["much too difficult", "difficult too much", "too much difficult", "so difficult too much"],
+    prompt: "The candidates found the advanced calculus problem ............ to solve within the time limit.",
+    options: [
+      "much too difficult",
+      "difficult too much",
+      "too much difficult",
+      "very too difficult"
+    ],
     correctAnswer: "much too difficult",
-    hint: "Use 'much too' before an adjective to intensify an excessive degree.",
-    workedSolution: "'Much too' modifies an adjective ('difficult') followed by an infinitive ('to solve') to indicate an excessive degree. 'Too much' is used before uncountable nouns, not adjectives.",
+    hint: "Standard modifier order: 'much' modifies the degree adverb 'too', which modifies the adjective 'difficult'.",
+    workedSolution: "To intensify the degree phrase 'too difficult', the adverb 'much' precedes 'too': 'much too difficult'. Forms like *too much difficult are ungrammatical.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The cattle lay peacefully under the neem shade, ............",
+    prompt: "The tired oxen lay resting on the bare paddock floor, ............?",
     options: ["didn't they", "don't they", "didn't it", "isn't it"],
     correctAnswer: "didn't they",
-    hint: "'Cattle' is a plural noun, and 'lay' is the simple past tense of 'lie'. Form a past negative tag.",
-    workedSolution: "'Cattle' is a plural noun (referred to as 'they'). The verb 'lay' is the simple past tense of 'lie' (to recline). The sentence is affirmative in the past simple, requiring the negative past tag 'didn't they?'.",
+    hint: "'Oxen' is the irregular plural of 'ox', and 'lay' is the simple past tense of 'lie' (to recline), requiring a negative past tag with plural pronoun 'they'.",
+    workedSolution: "The subject 'oxen' is plural (requiring pronoun 'they'), and the verb 'lay' is the simple past of 'lie'. The matching tag must be negative simple past: 'didn't they?'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "The education director paid an abrupt visit to the school compound.\nChoose the word nearest in meaning to the underlined word 'abrupt'.",
+    prompt: "The regional education directors paid a sudden unannounced visit to our school.\nChoose the word nearest in meaning to 'sudden'.",
     options: ["an usual", "a strange", "a quick", "an unexpected"],
     correctAnswer: "an unexpected",
-    hint: "Happening suddenly and without prior warning or preparation.",
-    workedSolution: "'Abrupt' (or sudden) means happening without warning or notice; 'an unexpected' is its direct synonym.",
+    hint: "Occurring rapidly without prior notice or anticipation.",
+    workedSolution: "'Sudden' means happening quickly without prior announcement or warning; 'an unexpected' is its direct synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Several candidates muttered complaints about the length of the examination paper.\nChoose the word nearest in meaning to the underlined word 'muttered complaints'.",
+    prompt: "Several junior pupils grumbled about the demanding compound cleaning duties.\nChoose the word nearest in meaning to 'grumbled'.",
     options: ["questioned", "talked", "complained", "bothered"],
     correctAnswer: "complained",
-    hint: "Expressing discontent, dissatisfaction, or grumbling in a low voice.",
-    workedSolution: "'Grumbled' (or muttered complaints) means expressed dissatisfaction in a low, resentful tone; 'complained' is the direct synonym.",
+    hint: "Muttered in discontent; expressed dissatisfaction.",
+    workedSolution: "'Grumbled' means expressed dissatisfaction or resentment in a low, muttering tone; 'complained' is its direct synonym.",
     points: 1
   },
   {
     number: 18,
-    prompt: "It is discourteous to interrupt an elder while he is speaking at a gathering.\nChoose the word nearest in meaning to the underlined word 'discourteous'.",
+    prompt: "It is considered impolite to interrupt an elder while he is addressing a gathering.\nChoose the word nearest in meaning to 'impolite'.",
     options: ["incorrect", "improper", "unwise", "rude"],
     correctAnswer: "rude",
-    hint: "Lacking good manners, civility, or respect.",
-    workedSolution: "'Discourteous' (or impolite) means lacking manners or respect for others; 'rude' is its direct equivalent.",
+    hint: "Lacking manners, respect, or civility.",
+    workedSolution: "'Impolite' means discourteous, ill-mannered, or 'rude'.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The prefect spends valuable study time arguing over petty matters.\nChoose the word nearest in meaning to the underlined word 'petty'.",
+    prompt: "The magistrate advised the feuding neighbors not to waste court time on trivial matters.\nChoose the word nearest in meaning to 'trivial'.",
     options: ["unpleasant", "unimportant", "unexciting", "unacceptable"],
     correctAnswer: "unimportant",
-    hint: "Of little value, weight, or significance.",
-    workedSolution: "'Petty' (or trivial) means having little real worth or consequence; 'unimportant' is its direct synonym.",
+    hint: "Of little value, minor significance, or petty consequence.",
+    workedSolution: "'Trivial' means of little worth, insignificant, or 'unimportant'.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The young apprentice was remarkably inquisitive, inspecting every gear in the workshop.\nChoose the word nearest in meaning to the underlined word 'inquisitive'.",
+    prompt: "The curious apprentice asked several probing questions about the electrical circuit.\nChoose the word nearest in meaning to 'curious'.",
     options: ["inquisitive", "pompous", "intelligent", "talkative"],
     correctAnswer: "inquisitive",
-    hint: "Eager to investigate and acquire knowledge about how things work.",
-    workedSolution: "'Inquisitive' (or curious) describes someone with an eager desire to learn and investigate; 'inquisitive' is the exact synonym for 'curious'.",
+    hint: "Eager to learn, investigate, or inquire.",
+    workedSolution: "'Curious' in the context of seeking knowledge means inquiring, prying, or 'inquisitive'.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "The news of the headmaster's sudden transfer came like a bolt from the blue. This means that the news was ............",
-    options: ["a most welcome one", "short and brief", "a complete surprise", "timely"],
+    prompt: "Araba's unannounced visit to our village was a bolt from the blue. This means her arrival was ............",
+    options: [
+      "a most welcome occurrence",
+      "exceptionally brief",
+      "a complete surprise",
+      "punctual and timely"
+    ],
     correctAnswer: "a complete surprise",
-    hint: "Happening completely unexpectedly, like lightning from a clear blue sky.",
-    workedSolution: "The idiom 'a bolt from the blue' refers to an event that happens totally unexpectedly and causes great surprise.",
+    hint: "A sudden, completely unexpected shock or event that comes without warning.",
+    workedSolution: "The idiom 'a bolt from the blue' refers to an event that occurs completely unexpectedly and without prior warning; 'a complete surprise'.",
     points: 1
   },
   {
     number: 22,
-    prompt: "Our grandmother loved to cast her bread upon the waters by feeding destitute strangers. This means that she ............",
-    options: ["behaved strangely", "fed fish with bread", "was wasteful", "loved to help people generously"],
-    correctAnswer: "loved to help people generously",
-    hint: "Doing good deeds selflessly without expecting immediate return.",
-    workedSolution: "'To cast one's bread upon the waters' is a biblical idiom meaning to do good and generous deeds freely without seeking personal benefit.",
+    prompt: "My philanthropic uncle loves to cast his bread upon waters. This means that my uncle ............",
+    options: [
+      "behaves in an eccentric manner",
+      "feeds fish in the river with bread",
+      "wastes his wealth carelessly",
+      "loves to help people generously without demanding immediate returns"
+    ],
+    correctAnswer: "loves to help people generously without demanding immediate returns",
+    hint: "To do good deeds or share resources selflessly, trusting that good will return in due course.",
+    workedSolution: "The biblical idiom 'to cast one's bread upon the waters' means to do good deeds, be generous, or help others selflessly without expecting immediate personal gain.",
     points: 1
   },
   {
     number: 23,
-    prompt: "When his enterprise collapsed, Kwaku was left to sink or swim. This means that Kwaku ............",
-    options: ["was depressed", "shouted for help", "had to find another job", "had to survive on his own"],
-    correctAnswer: "had to survive on his own",
-    hint: "Left to fail or succeed entirely by one's own efforts without outside support.",
-    workedSolution: "'To sink or swim' means to face a challenging situation where one must rely entirely on personal efforts to survive without external help.",
+    prompt: "When his commercial enterprise collapsed, Yaro was left to sink or swim. This means that Yaro ............",
+    options: [
+      "fell into severe depression",
+      "cried aloud for rescue",
+      "secured an alternative job immediately",
+      "had to survive independently on his own efforts"
+    ],
+    correctAnswer: "had to survive independently on his own efforts",
+    hint: "To fail or succeed solely by one's own efforts without external assistance.",
+    workedSolution: "The idiom 'to sink or swim' means to face a challenging situation where one must either fail completely or survive entirely through one's own efforts.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The candidates were informed at the eleventh hour that the venue had been changed. This means they were informed ............",
-    options: ["immediately", "at eleven o'clock", "in good time", "very late"],
-    correctAnswer: "very late",
-    hint: "At the latest possible moment before an event occurs.",
-    workedSolution: "'At the eleventh hour' is an idiom meaning at the very last moment or very late.",
+    prompt: "I was informed of the executive meeting at the eleventh hour. This means I received the information ............",
+    options: [
+      "instantly without delay",
+      "at exactly eleven o'clock",
+      "with abundant time to prepare",
+      "very late when it was almost too late"
+    ],
+    correctAnswer: "very late when it was almost too late",
+    hint: "At the very last possible moment.",
+    workedSolution: "The idiom 'at the eleventh hour' means at the latest possible moment or 'very late'.",
     points: 1
   },
   {
     number: 25,
-    prompt: "Kweku had to eat his words when the underdog school won the soccer championship. This means that Kweku ............",
-    options: ["became very much surprised", "admitted he was wrong", "denied all that he had said", "lost his appetite"],
-    correctAnswer: "admitted he was wrong",
-    hint: "Retracting a boastful prediction and admitting an error.",
-    workedSolution: "'To eat one's words' means to be forced to admit that an earlier statement, prediction, or boast was wrong.",
+    prompt: "John had to eat his words when our underdog football team lifted the championship trophy. This means that John ............",
+    options: [
+      "was completely astonished",
+      "humbly admitted that he had been mistaken",
+      "denied his previous statements",
+      "lost his appetite for food"
+    ],
+    correctAnswer: "humbly admitted that he had been mistaken",
+    hint: "To be forced to retract a statement or admit humiliatingly that one was wrong.",
+    workedSolution: "The idiom 'to eat one's words' means to be forced to admit that what one previously said was wrong, boastful, or untrue.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 30) ---
   {
     number: 26,
-    prompt: "The apprentice tore the blueprint accidentally, but his supervisor handled his copy ......",
-    options: ["carelessly", "intentionally", "willingly", "foolishly"],
-    correctAnswer: "intentionally",
-    hint: "'Accidentally' means by chance without meaning to. Find the word that means done on purpose.",
-    workedSolution: "'Accidentally' means happening by chance. Its direct antonym is 'intentionally' (or deliberately).",
+    prompt: "While the angry student intentionally smashed the window, his classmate damaged the desk ...... .\nChoose the word most nearly opposite in meaning to 'intentionally'.",
+    options: ["carelessly", "accidentally", "willingly", "foolishly"],
+    correctAnswer: "accidentally",
+    hint: "'Intentionally' means done on purpose deliberately. What word denotes done unintentionally by chance or error?",
+    workedSolution: "'Intentionally' means deliberately or on purpose. Its direct antonym is 'accidentally' (by mistake or chance).",
     points: 1
   },
   {
     number: 27,
-    prompt: "The municipal assembly initiated three major sanitation projects last year and ...... two older ones this morning.",
+    prompt: "The municipal assembly initiated several infrastructure projects last year, and have now ...... them.\nChoose the word most nearly opposite in meaning to 'initiated'.",
     options: ["funded", "completed", "executed", "organized"],
     correctAnswer: "completed",
-    hint: "'Initiated' means started or commenced. Find the word that denotes finishing or bringing to an end.",
-    workedSolution: "'Initiated' means started or launched. Its antonym is 'completed' (finished).",
+    hint: "'Initiated' means started or commenced. What word denotes finished, concluded, or brought to an end?",
+    workedSolution: "'Initiated' means commenced, started, or set in motion. Its direct procedural antonym is 'completed' (finished).",
     points: 1
   },
   {
     number: 28,
-    prompt: "While the junior boys observed all school regulations, the truant students ...... them.",
+    prompt: "While most sanitary regulations were observed by the food vendors, a few recalcitrant hawkers ...... them.\nChoose the word most nearly opposite in meaning to 'observed'.",
     options: ["violated", "cancelled", "lessened", "excluded"],
     correctAnswer: "violated",
-    hint: "'Observed' means obeyed or complied with. Find the word that means broken or infringed.",
-    workedSolution: "'Observed' in reference to rules means complied with or obeyed. Its direct antonym is 'violated' (broken).",
+    hint: "'Observed' in reference to laws or rules means obeyed and followed. What word denotes broke, infringed, or disobeyed?",
+    workedSolution: "'Observed' in regulatory contexts means adhered to, respected, or obeyed. Its direct legal antonym is 'violated' (breached or broken).",
     points: 1
   },
   {
     number: 29,
-    prompt: "The examination council released the results for compliant schools, but ...... the grades of centers under investigation.",
+    prompt: "The examination council released the verified results, but ...... the scripts of schools suspected of malpractice.\nChoose the word most nearly opposite in meaning to 'released'.",
     options: ["withheld", "confirmed", "withdrew", "cancelled"],
     correctAnswer: "withheld",
-    hint: "'Released' means made public or given out. Find the word that means retained or held back.",
-    workedSolution: "'Released' means made available or published. Its antonym is 'withheld' (kept back or restrained).",
+    hint: "'Released' means made public or handed out. What administrative word denotes kept back, retained, or refrained from releasing?",
+    workedSolution: "'Released' means published or made available. Its direct administrative antonym is 'withheld' (kept back or restrained from publication).",
     points: 1
   },
   {
     number: 30,
-    prompt: "The audience laughed heartily at the comedian's amusing anecdotes, but found the speaker's remarks completely ......",
-    options: ["funny", "humourless", "familiar", "cheerful"],
-    correctAnswer: "humourless",
-    hint: "'Amusing' or 'funny' brings laughter. Find the word meaning lacking fun, serious, or dry.",
-    workedSolution: "'Funny' (amusing) means causing laughter. Its direct antonym is 'humourless' (lacking humor, dull, or dry).",
-    points: 1
-  },
-
-  // --- SECTION E: CLOZE TEST (31 - 35) ---
-  {
-    number: 31,
-    prompt: "True friendship requires trust. What destroys camaraderie most often is friends being ---31--- of each other.",
-    options: ["suspicious", "proud", "envious", "afraid"],
-    correctAnswer: "suspicious",
-    hint: "Having or showing a cautious distrust of someone's motives.",
-    workedSolution: "'Suspicious' fits the context of distrust undermining the foundation of true friendship.",
-    points: 1
-  },
-  {
-    number: 32,
-    prompt: "A popular adage teaches that lack of faith is the ---32--- of harmonious companionship.",
-    options: ["bane", "loss", "end", "fault"],
-    correctAnswer: "bane",
-    hint: "A cause of great distress, ruin, or destruction ('the ...... of friendship').",
-    workedSolution: "The literary noun 'bane' means a cause of continuous misery, ruin, or destruction.",
-    points: 1
-  },
-  {
-    number: 33,
-    prompt: "Students attend school not only to make acquaintances but also to ---33--- practical skills for livelihood.",
-    options: ["acquire", "seize", "gather", "catch"],
-    correctAnswer: "acquire",
-    hint: "To gain knowledge, skills, or habits through study or experience.",
-    workedSolution: "In educational terminology, one 'acquires' knowledge, competencies, and vocational skills through instruction.",
-    points: 1
-  },
-  {
-    number: 34,
-    prompt: "Through rigorous character training, learners become thoroughly ---34--- in their speech and civic manners.",
-    options: ["polished", "bright", "famous", "trained"],
-    correctAnswer: "polished",
-    hint: "Refined, cultured, and showing polite, dignified social conduct.",
-    workedSolution: "'Polished' describes manners that are refined, courteous, cultured, and elegant.",
-    points: 1
-  },
-  {
-    number: 35,
-    prompt: "With disciplined persistence, a student's academic standing can improve by leaps and ---35---.",
-    options: ["bounds", "steps", "marks", "turns"],
-    correctAnswer: "bounds",
-    hint: "Complete the fixed idiom denoting rapid and spectacular progress: 'by leaps and ......'.",
-    workedSolution: "The standard English idiom is 'by leaps and bounds' (meaning with rapid, remarkable progress).",
-    points: 1
-  },
-
-  // --- SECTION F: ORAL LANGUAGE (36 - 40) ---
-  {
-    number: 36,
-    prompt: "The farmer harvested ripe maize from the field.\nWhich of the following words has the exact same vowel sound as 'ripe' (/aɪ/)?",
-    options: ["kite", "clip", "ship", "drip"],
-    correctAnswer: "kite",
-    hint: "'Ripe' contains the open-to-close diphthong /aɪ/ (rhyming with 'pipe' and 'light').",
-    workedSolution: "'Ripe' is pronounced /raɪp/, containing the diphthong /aɪ/. 'Kite' (/kaɪt/) shares the identical /aɪ/ vowel sound.",
-    points: 1
-  },
-  {
-    number: 37,
-    prompt: "The soldier blew the brass trumpet.\nWhich of the following words begins with the same initial consonant cluster as 'brass' (/br-/)?",
-    options: ["brick", "bark", "bake", "bank"],
-    correctAnswer: "brick",
-    hint: "Identify the word starting with the double consonant cluster /b/ + /r/.",
-    workedSolution: "'Brass' begins with the double consonant cluster /br-/. 'Brick' begins with the identical /br-/ cluster.",
-    points: 1
-  },
-  {
-    number: 38,
-    prompt: "The chef cooked a pot of seasoned broth.\nWhich of the following words contains the same vowel sound as 'pot' (/ɒ/)?",
-    options: ["lock", "look", "luck", "lake"],
-    correctAnswer: "lock",
-    hint: "'Pot' contains the short open back rounded vowel /ɒ/.",
-    workedSolution: "'Pot' contains the short vowel sound /ɒ/. 'Lock' (/lɒk/) contains the exact same /ɒ/ sound.",
-    points: 1
-  },
-  {
-    number: 39,
-    prompt: "The bride walked gracefully down the aisle.\nWhich of the following words contains a silent consonant letter just like the 's' in 'aisle'?",
-    options: ["island", "simple", "silent", "sister"],
-    correctAnswer: "island",
-    hint: "In 'aisle' (/aɪl/), the letter 's' is completely silent.",
-    workedSolution: "In 'aisle', the letter 's' is silent. In 'island' (/ˈaɪ.lənd/), the letter 's' is also completely silent.",
-    points: 1
-  },
-  {
-    number: 40,
-    prompt: "The mechanic repaired the lorry's engine.\nWhich of the following words contains the same consonant sound as the digraph 'ch' in 'mechanic' (/k/)?",
-    options: ["school", "church", "chain", "cheese"],
-    correctAnswer: "school",
-    hint: "'Mechanic' has a 'ch' pronounced as the voiceless velar plosive /k/.",
-    workedSolution: "In 'mechanic', 'ch' is pronounced as /k/. In 'school' (/skuːl/), 'ch' represents the same voiceless velar plosive /k/.",
+    prompt: "The children found the stranger's stories humourless, whereas the clown's performance was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'humourless'.",
+    options: ["funny", "peculiar", "familiar", "cheerful"],
+    correctAnswer: "funny",
+    hint: "'Humourless' means devoid of humor, dry, and not amusing. What word denotes amusing, comical, or provoking laughter?",
+    workedSolution: "'Humourless' describes something lacking wit, amusement, or comical qualities. Its direct antonym is 'funny' (humorous or amusing).",
     points: 1
   }
 ];
 
-// Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
+// Seeded Deterministic Shuffle across 30 Objective Items: Exactly 8 A, 7 B, 8 C, 7 D
 const targetKeys: number[] = [
   0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
   2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3
+  0, 1, 2, 3, 0, 1, 2, 3, 0, 2
 ];
 
 function seedShuffle<T>(array: T[], seed: number): T[] {
@@ -436,9 +393,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 201903);
+const assignedTargetIndices = seedShuffle(targetKeys, 201902);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -461,234 +418,240 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING, COMPREHENSION & LITERATURE (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
+  partA_composition: {
     title: "Part A: Essay Writing",
     instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Write a letter to your headmaster discussing two sporting games that should be actively encouraged among students in your school, giving two convincing reasons for your suggestions.",
-        modelAnswer: `Anglican Junior High School
-P. O. Box 104
-Mampong, Ashanti Region
-12th June, 2019
+        prompt: "Write a formal letter to your Headmaster, proposing and discussing at least two competitive sporting games that should be actively encouraged and introduced among students in your school.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2019
 
 The Headmaster
-Anglican Junior High School
-P. O. Box 104
-Mampong
+Methodist Junior High School
+P. O. Box 54
+Bekwai
 
 Dear Sir,
 
-PROPOSAL FOR THE INTRODUCTION OF TABLE TENNIS AND VOLLEYBALL IN OUR SCHOOL
+PROPOSAL FOR THE INTRODUCTION OF VOLLEYBALL AND TABLE TENNIS IN OUR SCHOOL
 
-On behalf of the Sports Committee of the Student Representative Council, I respectfully write to suggest two sporting games that should be actively promoted in our school: Table Tennis and Volleyball.
+I respectfully write on behalf of the student body to propose two exciting, low-cost sporting games that our school should actively introduce and promote among students: volleyball and table tennis.
 
-First, I recommend Table Tennis (ping-pong). Unlike football, which requires a vast open field and gets interrupted during the rainy season, table tennis can be played indoors in our assembly hall regardless of the weather. It is an inexpensive, fast-paced sport that sharpens hand-eye coordination, quickens mental reflexes, and improves tactical concentration. Introducing table tennis will encourage quiet and less physically aggressive students, who often shy away from soccer, to participate actively in school sports.
+First and foremost, volleyball is an exceptional team sport that fosters physical fitness, cardiovascular endurance, and strategic collaboration. Unlike football, which requires a vast, turf-covered pitch, a standard volleyball court occupies minimal space and can be constructed easily on our empty gravel compound behind the junior block using two treated wooden posts and a net. Furthermore, volleyball is inherently non-contact, drastically minimizing the incidence of fractures, sprains, and collisions commonly sustained during inter-class soccer matches. Introducing volleyball will also encourage widespread female participation in competitive school sports.
 
-Secondly, I suggest the promotion of Volleyball. Volleyball is an exceptional non-contact sport that instills discipline, communication, and collective teamwork. It requires minimal space and inexpensive equipment: only two upright posts, a net, and a ball. Because volleyball does not involve violent physical collisions, it has a very low risk of player injuries, making it safe and enjoyable for both male and female pupils.
+Secondly, table tennis is an ideal indoor game that sharpens reflexes, improves hand-eye coordination, and stimulates quick tactical thinking. Because it is played indoors, students can train continuously during rainy days and harsh harmattan heatwaves when outdoor sports are impossible. Fabricating two standard wooden table tennis boards through our school's technical skills workshop will require minimal expenditure, providing an engaging recreational outlet that deters students from loitering during recess.
 
-Promoting these two sports will diversify our co-curricular program and uncover hidden sporting talents for inter-schools competitions. I hope you will consider these recommendations favorably.
+Both sports offer fertile opportunities for our talented students to win honors at municipal sports festivals and earn secondary school athletic scholarships. I pray that you will give this proposal favorable consideration.
 
-Thank you for your continuous support for student development.
+Thank you.
 
 Yours faithfully,
 [Signature]
-Kwame Owusu
+Kwabena Mensah
 (Sports Prefect)`
       },
       {
         questionNumber: "2",
         category: "Article for Publication",
-        prompt: "Write an article for publication in your school magazine on the topic: \"Why Every Junior High School Student Should Be Computer-Literate.\"",
-        modelAnswer: `THE IMPERATIVE OF COMPUTER LITERACY FOR JUNIOR HIGH SCHOOL LEARNERS
-By Janet Asantewaa, JHS 3
+        prompt: "Write an article for publication in your school magazine on the topic: \"Why Every Basic and Senior High School Student Should Be Computer-Literate in the 21st Century.\"",
+        modelAnswer: `THE CRITICAL NECESSITY OF COMPUTER LITERACY FOR MODERN STUDENTS
+By Samuel K. Boateng, Begoro
 
-We live in a fast-paced, twenty-first-century global village driven by information and communication technology. From banking and agriculture to healthcare and governance, digital technology has transformed human existence. In this modern era, computer literacy is no longer a luxury; it is a fundamental educational necessity for every basic school student.
+We live in an extraordinary 21st-century technological era where digital automation, artificial intelligence, and electronic connectivity define human civilization. In contemporary society, the classical definition of literacy—the rudimentary ability to read and write on paper—is no longer sufficient. Today, possessing digital competence and computer literacy is the non-negotiable prerequisite for academic triumph and professional survival.
 
-First, computer literacy revolutionizes independent academic research and learning. Textbooks in our school libraries are often limited in number and quickly become outdated. A computer-literate student with access to the internet can explore encyclopedias, watch educational science simulations, and download past examination papers. Digital proficiency empowers learners to conduct in-depth research, type neat assignments, and prepare effectively for national assessments.
+First and foremost, computer literacy revolutionizes academic research and independent study. In previous decades, students relied solely on limited, outdated physical textbooks in school libraries. Today, a computer-literate student can navigate electronic search engines, download updated academic journals, explore interactive digital encyclopedias, and watch practical science laboratory simulations online. This unhindered access to global knowledge clarifies abstract concepts in Mathematics and Integrated Science, fostering independent critical inquiry and enhancing performance in national examinations like the BECE.
 
-Secondly, mastering computers equips students with vital vocational and career skills for the future. Almost all modern workplaces require employees to be proficient in word processing, data spreadsheets, and digital communication. Learning foundational computing at the basic level prepares students for Senior High School STEM education and tertiary training in software engineering, digital media, and business administration. Conversely, a student without computer skills is severely disadvantaged in the modern job market.
+Secondly, computer literacy is the foundation of future employment. In the modern global economy, virtually every professional enterprise—ranging from banking and medicine to engineering, corporate administration, and graphic design—demands digital proficiency. An applicant who cannot type documents, manage electronic spreadsheets, or operate communication software is rendered unemployable. Equipping students with digital skills bridges the gap between classroom instruction and market demands.
 
-In conclusion, our school administration and Parent-Teacher Association must continue investing in a well-equipped computer laboratory. Every student must embrace computing with enthusiasm, for digital literacy is the key to personal and national transformation.`
+Furthermore, digital literacy sparks innovative creativity, empowering young minds to explore computer coding, software programming, and digital entrepreneurship.
+
+In conclusion, computer literacy is not an optional hobby; it is an indispensable life skill. Every student must seize the opportunity to master the computer.
+
+A digitally empowered student is a conqueror of the future.`
       },
       {
         questionNumber: "3",
-        category: "Narrative Essay",
-        prompt: "Write an interesting story that illustrates the value of benevolence, ending with the statement: \"It pays to be kind to strangers.\"",
-        modelAnswer: `One rainy Friday afternoon, while returning home from school in the farming town of Kade, I noticed an elderly man sitting helplessly under a leaky bus shed. His clothes were soaked, his bare feet were coated in mud, and he was shivering from the biting cold. Commuters hurried past him without a second glance, but pity stirred in my heart.
+        category: "Narrative Moral Essay",
+        prompt: "Write an engaging, realistic story that concludes with the words: \"... It pays to be kind to strangers.\"",
+        modelAnswer: `THE BENEVOLENT TRAVELER AND THE STRANDED DRIVER
 
-I approached him and discovered that he was a stranger from the northern region who had traveled to visit an estranged relative, only to find the compound locked. He had exhausted his travel money and had not eaten all day. Without hesitating, I used my pocket allowance to buy him a warm plate of rice and offered him my umbrella to shelter him as I guided him to my parents' compound. My mother welcomed him warmly, provided dry clothing, and prepared a warm bath. The following morning, my father bought his return bus ticket back to Bolgatanga. The old man wept tears of gratitude and pronounced blessings upon our household.
+It was a chilly, moonless Saturday evening in November, and our rural farming village was enveloped in darkness after a violent rainstorm had knocked down the municipal electrical poles. Sitting outside our family compound with my elder brother, Kofi, we noticed a heavy commercial delivery van skid off the muddy highway into an overgrown, waterlogged ditch.
 
-Eight years later, I completed my diploma and attended an interview for an administrative officer position at a reputable multinational firm in Accra. Over sixty qualified applicants competed for a single vacancy. As I entered the managing director's office, the elderly executive behind the mahogany desk stared intently at me. To my astonishment, it was the same stranded traveler we had assisted years ago in Kade; he had relocated to head the corporation.
+The driver, a middle-aged stranger from the northern savannah region who spoke our local dialect with difficulty, was trembling with cold and anxiety. He had suffered a deep laceration on his forearm while attempting to push the vehicle, and his mechanical tools were submerged in the red mud. Several passers-by chuckled at his predicament or demanded exorbitant sums before offering aid, but my heart went out to him.
 
-He remembered my face instantly and recalled our family's kindness. After assessing my academic credentials, he hired me on the spot. Walking out of the skyscraper, I smiled and whispered: It pays to be kind to strangers.`
+Kofi and I assisted the stranded traveler onto our veranda. We brought warm water, antiseptic soap, and clean cotton gauze from our mother's dispensary kit to dress his bleeding arm. I hurried to the kitchen, warmed a bowl of spicy pepper soup with boiled yams, and served him with hot tea. Afterward, Kofi mobilized five robust youth volunteers from our neighborhood who, armed with strong hemp ropes and wooden logs, hauled his delivery van out of the muddy ditch. Overwhelmed with gratitude, the stranger thanked us profusely, prayed for our future, and continued his journey to Takoradi.
+
+Five months later, my father suffered an acute mechanical breakdown while transporting twenty sacks of harvested cocoa to the regional depot in a rented truck. Stranded on an isolated forest highway at midnight with armed robbers roaming the corridor, a massive refrigerated logistics truck pulled over. The driver stepped down, immediately recognized my father from the family photograph on his dashboard pass, and hauled our entire cocoa consignment to the depot free of charge, saving our family from financial ruin. It was the grateful stranger we had assisted.
+
+Smiling at our good fortune, I realized that genuine charity is never lost. Truly, it pays to be kind to strangers.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `Friends are meant to support each other when the need arises. At school, young people develop friendly relationships which often endure throughout their adult lives. One thing which helps people to stay together as intimate friends is the ability to communicate freely among themselves and endeavor to be each other's keeper. What destroys friendships mostly is friends being suspicious of each other. That is why a popular adage says, "Suspicion is the bane of friendship."
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `True friendship is established on mutual support and unreserved loyalty whenever adversity strikes. In school environments, many individuals cultivate deep companionship that endures across several decades of adult life. The primary anchor that sustains such intimate bonds is the capacity to communicate openly without deceit and to endeavor actively to be each other's keeper. Conversely, the most toxic poison that dismantles human friendship is the emergence of mutual suspicion. This reality underscores the timeless traditional adage: "Suspicion is the bane of authentic friendship."
 
-People attend school not only because they want to make friends but also to acquire knowledge and skills for employment. Education helps people to be polished in their manners. The school prepares its students to become useful, disciplined citizens.
+Human beings attend educational institutions not merely to socialize, but primarily to acquire foundational knowledge and technical competencies for gainful employment. Formal education refines human character, instills polished civic manners, and molds adolescents into responsible, productive citizens.
 
-At school, Tono was not in the good books of the teachers because he behaved in an unruly manner. Initially, everyone avoided his company; he could be violent at times. Worst of all, he would refuse to do his assignments and was a habitual latecomer. With the passage of time, he was subjected to strict discipline by the school authorities. He began to amend his ways and obey the school's rules and regulations. He realized the need to work diligently in order to have a bright future. His academic work thereafter improved by leaps and bounds.
+During our basic school days, Tono was notorious for being outside the good books of our teachers because of his unruly, insolent behavior. Initially, peers avoided his company because of his unpredictable violent temper. Worst of all, he refused to complete classroom assignments, skipped morning chores, and was a chronic latecomer.
 
-Fortune eventually separated us. I traveled abroad for further studies and stayed away for two decades. On my return, I went to my former school to collect my certificate. There, I met a middle-aged gentleman who had also come to the headmaster's office for the same purpose. I could not recognize him because time had wiped off all physical memories of school days. However, the names on the certificates revealed that we were classmates. After a warm discussion, Tono invited me to become his business partner.`,
+With the passage of time, the headmaster subjected him to rigorous institutional discipline and counseling. Tono began to amend his conduct, respecting school regulations and realizing that diligent labor was the sole foundation for a bright future. Consequently, his academic performance improved by leaps and bounds.
+
+Upon completing school, fortune separated our pathways. I secured an overseas scholarship for tertiary studies, remaining outside the country for twenty consecutive years. On my return, I visited our former school registry to collect my original basic certificate. While waiting at the administrative counter, I observed a dignified, middle-aged gentleman who had arrived on an identical mission. I could not recognize him initially, as the passage of time had eroded vivid memories of childhood acquaintances.
+
+However, when our names were called from the official ledger, we discovered with astonishment that we were former classmates! Following a joyful conversation reflecting on our school days, Tono, now a prosperous logistics director, warmly invited me to partner with him as an executive director in his commercial enterprise.`,
     questions: [
       {
-        subId: "(a)(i)",
-        question: "State one thing which helps people to maintain a close, lasting friendship according to the passage.",
-        answer: "The ability to communicate freely among themselves (or striving to be each other's keeper)."
+        subQuestion: "(a)",
+        question: "I. State one primary factor that helps friends to stay close and sustain their relationship.\nII. How does authentic friendship get destroyed according to the passage?",
+        answer: "I. The ability to communicate freely and openly among themselves (or endeavoring to be each other's keeper).\nII. Friendships get destroyed when friends become suspicious and harbor mistrust toward one another."
       },
       {
-        subId: "(a)(ii)",
-        question: "How does friendship get destroyed according to the passage?",
-        answer: "Friendship gets destroyed when friends become suspicious of each other (mutual distrust)."
+        subQuestion: "(b)",
+        question: "State two principal reasons why people attend school as presented in the passage.",
+        answer: "1. To acquire knowledge and skills for gainful employment.\n2. To acquire polished manners and character, becoming useful and responsible citizens."
       },
       {
-        subId: "(b)",
-        question: "Give two reasons why people go to school as stated in the second paragraph.",
-        answer: "1. To acquire knowledge and skills for employment.\n2. To become polished in their manners and develop into useful citizens."
+        subQuestion: "(c)",
+        question: "I. Why did classmates initially avoid Tono's company?\nII. State Tono's mission when he visited his former school twenty years later.",
+        answer: "I. They avoided him because he was unruly, violent at times, refused to do his assignments, and was a chronic latecomer.\nII. His mission was to collect his original basic school certificate from the registry."
       },
       {
-        subId: "(c)(i)",
-        question: "Why did people avoid Tono's company initially?",
-        answer: "Because he was unruly, violent at times, refused to do his assignments, and was a habitual latecomer."
+        subQuestion: "(d)",
+        question: "Why could the writer not recognize Tono immediately upon seeing him at the office counter?",
+        answer: "He could not recognize him because twenty years had elapsed, which had wiped off memories of his childhood classmate's physical appearance."
       },
       {
-        subId: "(c)(ii)",
-        question: "State Tono's reason for visiting his former school after twenty years.",
-        answer: "He visited the school to collect his school certificate."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following idiomatic expressions as used in the passage:\nI. 'was not in the good books of the teachers'\nII. 'with the passage of time'\nIII. 'by leaps and bounds'",
+        answer: "I. 'was not in the good books of the teachers' means was out of favor, disliked, and viewed with disapproval by the teachers.\nII. 'with the passage of time' means as time progressed, rolled by, or elapsed gradually.\nIII. 'by leaps and bounds' means rapidly, dramatically, and with tremendous progress."
       },
       {
-        subId: "(d)",
-        question: "Why could the writer not recognize Tono when they met in the office?",
-        answer: "Because twenty years (two decades) had elapsed, changing his appearance and wiping away memories of school days."
-      },
-      {
-        subId: "(e)",
-        question: "Explain in your own words the following expressions as used in the passage:\n(i) was not in the good books of the teachers;\n(ii) with the passage of time;\n(iii) by leaps and bounds.",
-        answer: "(i) **was not in the good books of the teachers:** Was disliked or viewed with disfavor and disapproval by the teachers.\n(ii) **with the passage of time:** As time went by / as days and months progressed.\n(iii) **by leaps and bounds:** Rapidly / with great and remarkable progress."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\n(i) intimate;\n(ii) adage;\n(iii) acquire;\n(iv) polished;\n(v) initially.",
-        answer: "(i) **intimate:** close / devoted / bosom / dear.\n(ii) **adage:** proverb / saying / maxim / wise saying.\n(iii) **acquire:** gain / obtain / learn / attain.\n(iv) **polished:** refined / cultured / well-mannered / polite.\n(v) **initially:** at first / originally / in the beginning."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. intimate\nII. adage\nIII. acquire\nIV. polished\nV. initially",
+        answer: "I. intimate: close, bosom, trusted, dear.\nII. adage: proverb, saying, maxim, aphorism.\nIII. acquire: obtain, gain, attain, secure.\nIV. polished: refined, cultured, well-mannered, disciplined.\nV. initially: at first, originally, in the beginning."
       }
     ]
   },
-  sectionC_literature: {
+  partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
+    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
     questions: [
       {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Stop, thief!\" he shouted, thinking Oliver had robbed him. The poor boy found himself being chased by people and even dogs! Someone in the crowd, a young man with purple lips and red sores all over his hands, grabbed Oliver and knocked him down............\"",
-        question: "Who is the young man with purple lips and red sores all over his hands?",
-        answer: "A brutal, rough bystander in the London mob (or an associate of the criminal underworld in London)."
+        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        contextExtract: "\"Stop, thief!\" he shouted, thinking Oliver had robbed him. The poor boy found himself being chased by people and even dogs! Someone in the crowd, a young man with purple lips and red sores all over his hands, grabbed Oliver and knocked him down............",
+        subItems: [
+          {
+            subQuestion: "5(a)",
+            question: "Who is the character described in the crowd as 'a young man with purple lips and red sores all over his hands'?",
+            answer: "A brutal, diseased chimney sweep / young apprentice ruffian in the street mob (or Bill Sikes' associate / street rogue)."
+          },
+          {
+            subQuestion: "5(b)",
+            question: "Why did the aggressive young man in the street mob want to harm and capture Oliver?",
+            answer: "He wanted to join the chase for excitement, appear heroic before the crowd, and violently apprehend an alleged thief."
+          },
+          {
+            subQuestion: "5(c)",
+            question: "How did the benevolent Mr. Brownlow help Oliver Twist at the end of the narrative?",
+            answer: "He officially adopted Oliver as his lawful son, cleared his name, secured his rightful inheritance, and provided him with a loving, peaceful home."
+          }
+        ]
       },
       {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Someone in the crowd... grabbed Oliver and knocked him down...\"",
-        question: "Why did the young man in the crowd want to harm Oliver?",
-        answer: "He joined the shouting mob out of malice and cruelty, eager to punish a defenseless boy falsely accused of pickpocketing."
+        sectionTitle: "KEN SARO-WIWA: Home Sweet Home",
+        contextExtract: "\"Bom, say, our young Miss has arrived heavily laden with all the good things of the earth. I should think Dakuna will soon float on a sea of wealth\".",
+        subItems: [
+          {
+            subQuestion: "5(d)",
+            question: "Who is referred to as 'our young Miss' in the story?",
+            answer: "Duzia / the narrator, Miss Sira (who returned from the urban normal school / college to the village of Dakuna)."
+          },
+          {
+            subQuestion: "5(e)",
+            question: "Identify the literary device utilized in the expression: '... heavily laden with all the good things of the earth / float on a sea of wealth'.",
+            answer: "Hyperbole (or metaphor)."
+          }
+        ]
       },
       {
-        subId: "5(c)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "The resolution of Oliver's ordeal...",
-        question: "How did Mr. Brownlow help Oliver at the end of the story?",
-        answer: "He officially adopted Oliver as his son, provided him with a loving home, education, and secured his rightful family inheritance."
+        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
+        contextExtract: "X: It was a couple of days ago that we met. What came out of the meeting is that we must come and ask you and your wife what is preventing you from giving your grandmother a great-grandchild before she leaves us.",
+        subItems: [
+          {
+            subQuestion: "5(f)",
+            question: "Which dramatic speaker is represented by 'X' in this excerpt?",
+            answer: "Petu (the elder uncle and spokesman of the Odumna clan)."
+          },
+          {
+            subQuestion: "5(g)",
+            question: "According to Ato Yawson's private understanding, what was actually preventing him and his wife Eulalie from having children?",
+            answer: "They had mutually decided to use modern birth control (contraception) to delay childbirth until they were financially and professionally ready."
+          },
+          {
+            subQuestion: "5(h)",
+            question: "The figure of speech utilized in the expression 'before she leaves us' to signify physical death is a/an ............",
+            answer: "euphemism."
+          }
+        ]
       },
       {
-        subId: "5(d)",
-        textSource: "KEN SARO-WIWA: Home Sweet Home",
-        extract: "\"Bom, say, our young Miss has arrived heavily laden with all the good things of the earth. I should think Dukana will soon float on a sea of wealth.\"",
-        question: "Who is referred to as \"our young Miss\" in the extract?",
-        answer: "The narrator (the educated young woman returning to her village of Dukana after her schooling)."
-      },
-      {
-        subId: "5(e)",
-        textSource: "KEN SARO-WIWA: Home Sweet Home",
-        extract: "\"... heavily laden with all the good things of the earth...\"",
-        question: "Identify the literary device used in the underlined expression.",
-        answer: "Hyperbole (or Exaggeration), describing her ordinary travel luggage as carrying all the riches of the world."
-      },
-      {
-        subId: "5(f)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"X: It was a couple of days ago that we met. What came out of the meeting is that we must come and ask you and your wife what is preventing you from giving your grandmother a great-grandchild before she leaves us.\"",
-        question: "Who is the speaker represented by 'X' in the extract?",
-        answer: "Petu (the elder uncle of Ato Yawson and head of the Odumna family)."
-      },
-      {
-        subId: "5(g)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"... what is preventing you from giving your grandmother a great-grandchild...\"",
-        question: "According to the real secret shared between Ato and Eulalie, what was preventing them from having children?",
-        answer: "They had mutually agreed to use birth control to postpone childbearing, but Ato concealed this from his family."
-      },
-      {
-        subId: "5(h)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"... before she leaves us.\"",
-        question: "Identify the figure of speech used in the expression \"before she leaves us\".",
-        answer: "Euphemism (softening the harsh reality of physical death by saying 'leaves us')."
-      },
-      {
-        subId: "5(i)",
-        textSource: "THERESA ENNIN: Makola",
-        extract: "\"Head bent, rags all around the upside down pan\nPicking her nose, shuffling her feet, oblivious to the bustle\"",
-        question: "Write down one group of words in the extract that highlights the theme of uncleanliness or poverty.",
-        answer: "\"rags all around\" (or \"Picking her nose\")."
-      },
-      {
-        subId: "5(j)",
-        textSource: "THERESA ENNIN: Makola",
-        extract: "\"Head bent, rags all around the upside down pan...\"",
-        question: "The words 'Head bent, rags all around the upside down pan' appeal to the reader's sense of ............",
-        answer: "Sense of sight (visual imagery)."
+        sectionTitle: "THERESA ENNIN: Makola",
+        contextExtract: "Head bent, rags all around the upside down pan\nPicking her nose, shuffling her feet, oblivious to the bustle",
+        subItems: [
+          {
+            subQuestion: "5(i)",
+            question: "Identify one phrase from the extract that vivid brings out the theme of uncleanliness and squalor.",
+            answer: "'rags all around' (or 'Picking her nose')."
+          },
+          {
+            subQuestion: "5(j)",
+            question: "The descriptive phrase 'Head bent, rags all around the upside down pan' appeals primarily to the reader's sense of ............",
+            answer: "sight (visual imagery)."
+          }
+        ]
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    id: `lit_${q.subId}`,
-    partLabel: `Part C: Literature - ${q.textSource} [${q.subId}]`,
-    prompt: (q.extract ? `Extract:\n"${q.extract}"\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 2
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  },
+  ...paper2Calibrated.partC_literature.questions.map((sec, idx) => ({
+    id: `literature_cockcrow_${idx + 1}`,
+    partLabel: `Part C: Literature - ${sec.sectionTitle}`,
+    contextExtract: sec.contextExtract || null,
+    subItems: sec.subItems,
+    marks: 10
   }))
 ];
 
 async function seedBeceEnglish2019Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2019 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2019 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -699,8 +662,9 @@ async function seedBeceEnglish2019Calibrated() {
     if (idx === 2) keyDist.C++;
     if (idx === 3) keyDist.D++;
   });
-  console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
+  console.log("Verified Key Balance across 30 Objective Items:", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2019");
   await docRef.set({
     year: 2019,
@@ -714,25 +678,49 @@ async function seedBeceEnglish2019Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasCockcrowLiterature: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
-      title: "Paper 1: Objective Test",
+      title: "Paper 1: Objective Test (Lexis and Structure)",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 30",
+          questions: balancedPaper1.slice(25, 30)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2019 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2019 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2019Calibrated()

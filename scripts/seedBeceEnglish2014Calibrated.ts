@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,390 +45,427 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2014
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 40)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 17) ---
   {
     number: 1,
-    prompt: "The market traders were openly hostile ............ the new revenue collectors.",
+    prompt: "The union members were noticeably hostile ............ the newly appointed factory supervisor.",
     options: ["on", "to", "from", "with"],
     correctAnswer: "to",
     hint: "Identify the preposition that regularly collocates with the adjective 'hostile'.",
-    workedSolution: "The adjective 'hostile' is followed by the preposition 'to' (or occasionally 'towards') when indicating the object of opposition ('hostile to the revenue collectors').",
+    workedSolution: "In standard English collocations, the adjective 'hostile' takes the preposition 'to' (or occasionally 'towards'): 'hostile to the teacher/supervisor'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "The senior ............ of the armed forces assembled at the officers' mess.",
-    options: ["commander-in-chief", "commander-in-chiefs", "commanders-in-chief", "commanders-in-chiefs"],
+    prompt: "All the allied military ............ assembled at the garrison mess for the briefing.",
+    options: [
+      "commander-in-chief",
+      "commander-in-chiefs",
+      "commanders-in-chief",
+      "commanders-in-chiefs"
+    ],
     correctAnswer: "commanders-in-chief",
-    hint: "Pluralize the principal base noun in a hyphenated compound title, not the modifying prepositional phrase.",
-    workedSolution: "In hyphenated compound titles, the plural inflection '-s' is added to the principal head noun ('commander'), yielding 'commanders-in-chief'.",
+    hint: "Pluralize the principal head noun in a hyphenated compound noun.",
+    workedSolution: "In compound nouns linked by prepositions, the plural inflection '-s' is added to the principal base noun ('commander'), not the prepositional modifier: 'commanders-in-chief'.",
     points: 1
   },
   {
     number: 3,
-    prompt: "The aggrieved workers are demonstrating ............ the unfair dismissal of their union leader.",
+    prompt: "The aggrieved health workers are publicly demonstrating ............ the proposed salary deduction.",
     options: ["at", "on", "upon", "against"],
     correctAnswer: "against",
-    hint: "Which preposition expresses active opposition or protest?",
-    workedSolution: "The verb 'demonstrate' takes the preposition 'against' when protesting or expressing public opposition to an entity or policy.",
+    hint: "Identify the preposition of opposition used with 'demonstrating'.",
+    workedSolution: "When a demonstration is staged in protest or opposition to an authority or policy, 'against' is standard: 'demonstrating against management'.",
     points: 1
   },
   {
     number: 4,
-    prompt: ".............. completed her vocational training, Mansa established her own dressmaking shop.",
+    prompt: "............ failed the promotional examination twice, Doris was withdrawn from the academy.",
     options: ["Having", "In having", "On having", "To having"],
     correctAnswer: "Having",
-    hint: "Use the perfect participle ('Having + past participle') to express an action completed before the main action.",
-    workedSolution: "The perfect participle clause begins with 'Having' ('Having completed...') to show an action completed prior to the event in the main clause.",
+    hint: "Perfect participle clause expressing an anterior completed action: 'Having + past participle'.",
+    workedSolution: "The perfect active participle 'Having failed' concisely introduces an adverbial participle clause indicating an action completed prior to the dismissal in the main clause.",
     points: 1
   },
   {
     number: 5,
-    prompt: "The commercial bus that the school board purchased last year ............ millions of cedis.",
-    options: ["cost", "costs", "costed", "costing"],
+    prompt: "The modern poultry incubator he procured last year ............ thousands of cedis.",
+    options: ["cost", "costs", "coated", "costing"],
     correctAnswer: "cost",
-    hint: "'Cost' is an irregular verb whose past tense form remains unchanged.",
-    workedSolution: "The verb 'cost' (to have a price) is invariable in the past tense: cost - cost - cost. 'Costed' is only used in accounting to mean calculating projected expenses.",
+    hint: "Past tense of the irregular verb 'cost' (which retains the identical form in past: cost - cost - cost).",
+    workedSolution: "The verb 'cost' is irregular and retains the identical spelling and pronunciation in the simple past tense: 'cost' (never *costed in this sense).",
     points: 1
   },
   {
     number: 6,
-    prompt: "Those school uniforms on the drying line are ............",
+    prompt: "These elegant ceremonial costumes belong to our family; they are ............",
     options: ["you", "your's", "our's", "ours"],
     correctAnswer: "ours",
-    hint: "Absolute possessive pronouns never take apostrophes.",
-    workedSolution: "'Ours' is an absolute possessive pronoun and never takes an apostrophe. Forms like 'our's' or 'your's' are ungrammatical.",
+    hint: "Absolute possessive pronouns never take an apostrophe.",
+    workedSolution: "'Ours' is an absolute possessive pronoun and never takes an apostrophe. Forms such as 'our's' or 'your's' are ungrammatical.",
     points: 1
   },
   {
     number: 7,
-    prompt: "The headmaster will announce the scholarship winners as soon as he ............. from the conference.",
+    prompt: "The departmental head will convene a meeting as soon as the director ............ from his diplomatic tour.",
     options: ["will return", "had returned", "returns", "returned"],
     correctAnswer: "returns",
-    hint: "In subordinate adverbial time clauses referring to the future, use the simple present tense.",
-    workedSolution: "Adverbial clauses of time introduced by 'when', 'as soon as', or 'after' use the simple present tense ('returns') to refer to future time, not 'will return'.",
+    hint: "Future temporal time clauses ('when / as soon as...') take the simple present tense.",
+    workedSolution: "Adverbial time clauses referring to future events require the simple present tense ('when he returns'), even though the main clause uses future 'will'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "The debate team was warmly congratulated ............ their resounding victory.",
+    prompt: "The outstanding scholar was warmly congratulated ............ her stellar BECE performance.",
     options: ["by", "on", "with", "about"],
     correctAnswer: "on",
-    hint: "Identify the preposition that regularly collocates with the verb 'congratulate'.",
-    workedSolution: "In standard English grammar, one is 'congratulated on' (or 'upon') an achievement, never 'congratulated for' or 'congratulated about'.",
+    hint: "Identify the dependent preposition that regularly collocates with 'congratulate'.",
+    workedSolution: "In standard English grammar, the verb 'congratulate' takes the preposition 'on' (or 'upon'): 'congratulated on their performance'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "By this time next year, all the final-year candidates ............ basic school.",
-    options: ["will leave", "would leave", "might leave", "will have left"],
+    prompt: "By this time next November, our senior class ............ basic school.",
+    options: [
+      "will leave",
+      "would leave",
+      "might leave",
+      "will have left"
+    ],
     correctAnswer: "will have left",
-    hint: "The Future Perfect tense ('will have + past participle') indicates an action completed before a future date.",
-    workedSolution: "The temporal prepositional phrase 'By this time next year' specifies a future completion point, requiring the Future Perfect tense ('will have left').",
+    hint: "Future Perfect tense: Prepositional time marker 'By this time next [future]' requires 'will have + past participle'.",
+    workedSolution: "An action to be completed prior to a designated milestone in future time takes the Future Perfect tense: 'will have left'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "Isn't that teenage boy ............ mature to indulge in childish tantrums?",
+    prompt: "Isn't that adolescent girl ............ mature to indulge in nursery playground squabbles?",
     options: ["as", "so", "too", "very"],
     correctAnswer: "too",
-    hint: "Look for the correlative structure 'too + adjective + to-infinitive'.",
-    workedSolution: "The degree adverb 'too' pairs with the infinitive 'to indulge' to indicate an excessive degree that makes the action inappropriate.",
+    hint: "Correlative degree adverb pairing with a to-infinitive: 'too + adjective + to-infinitive'.",
+    workedSolution: "The degree modifier 'too' indicates an excessive quality that makes an action inappropriate or impossible: 'too old to play with toys'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "You usually arrive at the library before eight o'clock, .............?",
+    prompt: "You usually arrive at the library ahead of everyone else, ............?",
     options: ["can you", "will you", "aren't you", "don't you"],
     correctAnswer: "don't you",
-    hint: "An affirmative present simple statement with 'arrive' takes the negative tag 'don't you?'.",
-    workedSolution: "The main verb 'arrive' is in the simple present tense (habitual action) with subject 'you'. It takes the negative tag 'don't you?'.",
+    hint: "An affirmative present simple statement with lexical verb 'arrive/come' takes a negative tag formed with 'do'.",
+    workedSolution: "The main clause has an affirmative simple present verb ('usually come') with subject 'you'. The corresponding question tag must be negative present: 'don't you?'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "At the end of an official business letter, the complementary close is written as ............",
-    options: ["Yours faithfully", "Yours' faithfully", "Yours's faithfully", "Your's faithfully"],
-    correctAnswer: "Yours faithfully",
-    hint: "Possessive pronouns never use apostrophes. Note the correct capitalization.",
-    workedSolution: "In formal correspondence, 'Yours faithfully' is standard. 'Yours' is an absolute possessive pronoun and never takes an apostrophe.",
+    prompt: "Formal business correspondence traditionally closes with the subscription: 'I am, ............ faithfully'.",
+    options: ["your", "yours'", "yours", "your's"],
+    correctAnswer: "yours",
+    hint: "Absolute possessive pronoun in formal letter endings without an apostrophe.",
+    workedSolution: "'Yours' is an absolute possessive pronoun and never takes an apostrophe. The standard formal subscription is 'Yours faithfully'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "No sooner had the invigilator distributed the question papers ............ the power went out.",
+    prompt: "No sooner had the invigilator sounded the bell ............ the candidates stood up to submit their scripts.",
     options: ["than", "then", "when", "before"],
     correctAnswer: "than",
-    hint: "The negative correlative adverb 'No sooner' is always paired with 'than'.",
-    workedSolution: "The correlative pair is 'No sooner ... than'. ('Hardly' and 'Scarcely' pair with 'when').",
+    hint: "Correlative comparative pair: 'No sooner had...' is strictly paired with 'than'. ('Hardly/Scarcely' pairs with 'when').",
+    workedSolution: "The standard English correlative conjunction pairing for negative inversions of time is: 'No sooner ... than'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "Kwame and Ama are devoted siblings who assist ............",
+    prompt: "Kwame and Ama have been childhood companions; they genuinely love ............",
     options: ["another", "their selves", "each other", "one another"],
     correctAnswer: "each other",
-    hint: "Reciprocal pronoun used when an action is mutually exchanged between two individuals.",
-    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('Kwame and Ama'). 'One another' is preferred for three or more.",
+    hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
+    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('Kofi and Ama'). 'One another' is preferred for three or more.",
     points: 1
   },
   {
     number: 15,
-    prompt: "It is no good ............ to an unrepentant truant who refuses to reform.",
-    options: ["to be talking", "talked", "talking", "about talking"],
+    prompt: "It is no good ............ to an individual who refuses to listen to reasoned counsel.",
+    options: [
+      "to be talking",
+      "talked",
+      "talking",
+      "about talking"
+    ],
     correctAnswer: "talking",
-    hint: "The idiomatic structure 'It is no good...' is followed by a gerund (verb-ing).",
-    workedSolution: "The fixed expression 'It is no good' is followed by a gerund ('talking').",
+    hint: "The idiomatic structure 'It is no good' requires a gerund complement (verb-ing).",
+    workedSolution: "In English idiomatic grammar, expressions like 'It's no good' and 'It's no use' take a gerund complement: 'no good talking'.",
     points: 1
   },
   {
     number: 16,
-    prompt: "Ever since our last inter-schools competition, the captain ............ with a fractured wrist.",
-    options: ["is", "was", "had been", "has been"],
-    correctAnswer: "has been",
-    hint: "The time preposition 'since' requires the present perfect tense to show an action continuing to the present.",
-    workedSolution: "Clauses introduced by 'since' that denote a continuing state from the past into the present require the Present Perfect tense ('has been').",
+    prompt: "Ever since our last holiday meeting in Kumasi, I ............ plagued by recurrent malaria.",
+    options: ["am", "was", "had been", "have been"],
+    correctAnswer: "have been",
+    hint: "An action beginning in the past and continuing up to the present with 'Since...' requires the Present Perfect tense.",
+    workedSolution: "The temporal preposition 'Since' introducing an interval extending from past time to the present requires the Present Perfect tense: 'have been'.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The farmer was ............ exhausted after harvesting the cocoa that he fell asleep instantly.",
+    prompt: "The weary marathon runner was ............ exhausted that he collapsed fifty meters before the finish line.",
     options: ["so", "too", "much", "very"],
     correctAnswer: "so",
-    hint: "Identify the intensifier that pairs with 'that' to indicate cause and effect ('so + adjective + that').",
-    workedSolution: "The correlative structure 'so + adjective + that' indicates an extreme degree leading to a stated result ('so exhausted that he fell asleep').",
+    hint: "Correlative clause of result: 'so + adjective + that + consequence'.",
+    workedSolution: "The degree adverb 'so' pairs correlatively with the subordinator 'that' to introduce a clause of consequence: 'so tired that I couldn't go any further'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (18 - 22) ---
   {
     number: 18,
-    prompt: "Youth leaders were warned not to meddle in chieftaincy disputes.\nChoose the word nearest in meaning to the underlined word 'meddle'.",
+    prompt: "The clan elders were strongly cautioned not to meddle in boundary litigation.\nChoose the word nearest in meaning to 'meddle'.",
     options: ["indulge", "intrude", "interfere", "intervene"],
     correctAnswer: "interfere",
-    hint: "To busy oneself with something that is not one's concern; intrude unnecessarily.",
-    workedSolution: "'Meddle' means to involve oneself in others' affairs without right or invitation; 'interfere' is its direct synonym.",
+    hint: "To busy oneself with or meddle into matters without right or invitation.",
+    workedSolution: "'Meddle' means to intrude into or interfere unwantedly in others' affairs; 'interfere' is its direct synonym.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The internal auditor rectified all the accounting errors in the payroll.\nChoose the word nearest in meaning to the underlined word 'rectified'.",
+    prompt: "The internal auditor rectified all the bookkeeping errors committed by the accounts clerk.\nChoose the word nearest in meaning to 'rectified'.",
     options: ["refused", "erased", "nullified", "corrected"],
     correctAnswer: "corrected",
-    hint: "To set right, remedy, or amend a defect or error.",
-    workedSolution: "'Rectified' means corrected, put right, or adjusted properly; 'corrected' is its direct equivalent.",
+    hint: "Put right, amended, or corrected a mistake.",
+    workedSolution: "'Rectified' means corrected, put right, or remedied an error; 'corrected' is its exact equivalent.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The choir delivered a superb performance during the festival.\nChoose the word nearest in meaning to the underlined word 'superb'.",
+    prompt: "The architect's modern layout for the school library complex was superb.\nChoose the word nearest in meaning to 'superb'.",
     options: ["right", "good", "excellent", "wonderful"],
     correctAnswer: "excellent",
-    hint: "Of the highest quality, magnificent, or splendid.",
-    workedSolution: "'Superb' means of outstanding quality or excellence; 'excellent' is its closest synonym.",
+    hint: "Excellently executed, brilliant, or of supreme quality.",
+    workedSolution: "'Superb' means of the highest quality, magnificent, or 'excellent'.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The board members felt that the disciplinary policies were too rigid.\nChoose the word nearest in meaning to the underlined word 'rigid'.",
+    prompt: "The boarding students lamented that the hostel regulations were far too rigid.\nChoose the word nearest in meaning to 'rigid'.",
     options: ["strong", "hard", "strict", "bad"],
     correctAnswer: "strict",
-    hint: "Inflexible, unyielding, and enforced without compromise.",
-    workedSolution: "'Rigid' when describing rules or discipline means inflexible and unbending; 'strict' is the nearest synonym.",
+    hint: "Inflexible, unyielding, and enforced with severe precision.",
+    workedSolution: "'Rigid' in reference to disciplinary rules means inflexible, rigorous, or 'strict'.",
     points: 1
   },
   {
     number: 22,
-    prompt: "The newly elected prefect delivered her maiden speech to the assembly.\nChoose the word nearest in meaning to the underlined word 'maiden'.",
+    prompt: "The newly installed headmaster addressed the assembly and delivered his maiden speech.\nChoose the word nearest in meaning to 'maiden'.",
     options: ["first", "fresh", "official", "original"],
     correctAnswer: "first",
-    hint: "The very initial or earliest public appearance or speech.",
-    workedSolution: "'Maiden' in the context of speeches, voyages, or flights means the earliest or first; 'first' is its direct synonym.",
+    hint: "The initial, earliest, or first of a kind.",
+    workedSolution: "'Maiden' in the context of a speech, voyage, or address means inaugural or 'first'.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (23 - 27) ---
   {
     number: 23,
-    prompt: "The intruder was caught red-handed prying open the storehouse window. This means that the intruder was caught ............",
+    prompt: "The student was caught red-handed prying open the bursar's window. This means the student was apprehended ............",
     options: [
-      "in the act of committing the crime",
-      "with bloodstains on his hands",
-      "while running away from town",
-      "after hiding the stolen goods"
+      "in the very act of committing the offense",
+      "with red stains on his fingers",
+      "after he had successfully escaped",
+      "upon confessing his guilt"
     ],
-    correctAnswer: "in the act of committing the crime",
-    hint: "Apprehended right in the middle of doing something unlawful.",
-    workedSolution: "The idiom 'to catch red-handed' means to discover or capture someone in the very act of committing a crime or misdeed.",
+    correctAnswer: "in the very act of committing the offense",
+    hint: "To catch someone red-handed means to discover them while they are actively engaged in wrongdoing.",
+    workedSolution: "The idiom 'caught red-handed' means apprehended in the very act of committing a crime or offense.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The truant gave a cock and bull story about his absence from school. This means that the story was ............",
-    options: ["difficult to believe and fabricated", "about domestic farm animals", "completely authentic", "brief and informative"],
-    correctAnswer: "difficult to believe and fabricated",
-    hint: "An absurd, unbelievable tale invented as an excuse.",
-    workedSolution: "'A cock and bull story' is an idiom meaning an improbable, fabricated, and completely unbelievable excuse.",
+    prompt: "Everyone realized that the suspect's alibi was a cock and bull story. This means the account was ............",
+    options: [
+      "completely false, absurd, and difficult to believe",
+      "a traditional fable featuring domestic animals",
+      "genuine and verified by witnesses",
+      "brief and concise"
+    ],
+    correctAnswer: "completely false, absurd, and difficult to believe",
+    hint: "An absurd, fabricated, and unbelievable tale used as an excuse.",
+    workedSolution: "The idiom 'a cock and bull story' refers to an improbable, absurd, and fabricated excuse that is difficult to believe.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The highway robbers were armed to the teeth when they mounted the roadblock. This means that the robbers were ............",
-    options: ["professionally trained", "physically violent", "fully and heavily armed", "wearing protective armor"],
-    correctAnswer: "fully and heavily armed",
-    hint: "Equipped with an abundance of weapons.",
-    workedSolution: "'Armed to the teeth' is an idiom meaning heavily, fully, and completely equipped with weapons.",
+    prompt: "The armed bandits were armed to the teeth when they raided the warehouse. This means the bandits were ............",
+    options: [
+      "highly trained in military tactics",
+      "hardened and experienced",
+      "completely and heavily armed with weapons",
+      "violent in speech"
+    ],
+    correctAnswer: "completely and heavily armed with weapons",
+    hint: "Fully equipped with a large array of weapons.",
+    workedSolution: "The idiom 'armed to the teeth' means heavily and completely equipped with weapons.",
     points: 1
   },
   {
     number: 26,
-    prompt: "The mother instructed the elder sibling to keep an eye on the toddler. This means that the toddler should be ............",
-    options: ["pampered with gifts", "disciplined severely", "controlled forcefully", "watched carefully and protected"],
-    correctAnswer: "watched carefully and protected",
-    hint: "Monitoring closely and looking after someone.",
-    workedSolution: "'To keep an eye on someone' means to watch, look after, or monitor them attentively.",
+    prompt: "Mr. Abban instructed his wife to keep an eye on their daughter. This means that their daughter should be ............",
+    options: [
+      "pampered with gifts",
+      "disciplined severely",
+      "controlled with strict rules",
+      "watched and supervised closely"
+    ],
+    correctAnswer: "watched and supervised closely",
+    hint: "To keep an eye on someone means to observe or watch over them attentively.",
+    workedSolution: "The idiom 'to keep an eye on someone' means to look after, observe, or 'watch closely'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "The minister hit the nail on the head regarding the causes of youth unemployment. This means that the minister ............",
-    options: ["stated the exact truth", "spoke in unnecessary detail", "criticized the youth harshly", "spoke very quietly"],
-    correctAnswer: "stated the exact truth",
-    hint: "Identifying or expressing something with perfect accuracy.",
-    workedSolution: "'To hit the nail on the head' means to describe a situation with precise accuracy or state the exact truth.",
+    prompt: "The headmaster hit the nail on the head regarding the cause of academic decline. This means the headmaster spoke ............",
+    options: [
+      "the exact, precise truth",
+      "in extensive detail",
+      "in a harsh, abrasive manner",
+      "loudly through a microphone"
+    ],
+    correctAnswer: "the exact, precise truth",
+    hint: "To state or describe a situation with absolute accuracy.",
+    workedSolution: "The idiom 'to hit the nail on the head' means to describe a situation with exact precision or speak the exact truth.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (28 - 32) ---
   {
     number: 28,
-    prompt: "While the corrupt official was disgraced publicly, the patriotic doctor was ...... by the president.",
+    prompt: "The corrupt official was disgraced before the public, whereas his honest deputy was ...... .\nChoose the word most nearly opposite in meaning to 'disgraced'.",
     options: ["respected", "honoured", "welcomed", "accepted"],
     correctAnswer: "honoured",
-    hint: "'Disgraced' means brought into public shame. Find the word that means conferred with public glory and esteem.",
-    workedSolution: "'Disgraced' means brought into public shame or discredit. Its direct antonym is 'honoured' (conferred with high esteem and praise).",
+    hint: "'Disgraced' means brought into public shame. What word denotes bestowed with public prestige and distinction?",
+    workedSolution: "'Disgraced' means publicly shamed or discredited. Its direct antonym in civic standing is 'honoured' (accorded high respect and praise).",
     points: 1
   },
   {
     number: 29,
-    prompt: "Akosua accepted the teaching appointment, but her colleague ...... the offer.",
+    prompt: "While Kofi accepted the overseas employment offer, his sister ...... it.\nChoose the word most nearly opposite in meaning to 'accepted'.",
     options: ["disliked", "declined", "withdrew", "ignored"],
     correctAnswer: "declined",
-    hint: "'Accepted' means agreed to receive. Find the formal word meaning politely refused or turned down.",
-    workedSolution: "'Accepted' means received willingly. Its direct antonym in business offers is 'declined' (refused or turned down).",
+    hint: "'Accepted' an offer means agreed to take it up. What word denotes refused or turned it down politely?",
+    workedSolution: "'Accepted' means agreed to receive an offer. Its direct opposite is 'declined' (refused or turned down).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Fresh vegetables are abundant in rural markets, but remarkably ...... in desert settlements.",
+    prompt: "Harvested maize is abundant in agrarian communities, but remarkably ...... in arid deserts.\nChoose the word most nearly opposite in meaning to 'abundant'.",
     options: ["scarce", "less", "few", "cheap"],
     correctAnswer: "scarce",
-    hint: "'Abundant' means existing in large quantities. Find the word meaning in short supply or rare.",
-    workedSolution: "'Abundant' means plentiful. Its direct economic and linguistic antonym is 'scarce' (rare or available in insufficient quantities).",
+    hint: "'Abundant' means plentiful. What word denotes insufficient, rare, or hard to find?",
+    workedSolution: "'Abundant' means plentiful and overflowing. Its direct economic and agricultural antonym is 'scarce' (rare or in short supply).",
     points: 1
   },
   {
     number: 31,
-    prompt: "The health workers withdrew their emergency services, but the volunteers ...... theirs unconditionally.",
+    prompt: "The striking transit drivers have withdrawn their transport services, but emergency pilots have ...... theirs.\nChoose the word most nearly opposite in meaning to 'withdrawn'.",
     options: ["hidden", "registered", "offered", "displayed"],
     correctAnswer: "offered",
-    hint: "'Withdrew' means pulled back or withheld. Find the word that denotes presenting or making available.",
-    workedSolution: "'Withdrew' means took back or withheld. Its direct opposite is 'offered' (presented or provided willingly).",
+    hint: "'Withdrawn' means pulled back or ceased providing. What word denotes provided, volunteered, or presented for use?",
+    workedSolution: "'Withdrawn' services means suspended or taken away. Its direct operational antonym is 'offered' (made available or provided).",
     points: 1
   },
   {
     number: 32,
-    prompt: "Under our national electoral laws, casting a ballot is civic and optional, not ......",
-    options: ["good", "necessary", "obligatory", "right"],
-    correctAnswer: "obligatory",
-    hint: "'Optional' means left to free choice. Find the word meaning compulsory or mandated by law.",
-    workedSolution: "'Optional' means voluntary or not compulsory. Its direct antonym is 'obligatory' (compulsory or required by law).",
+    prompt: "In civic elections, voting is considered obligatory, whereas joining a partisan rally is entirely ...... .\nChoose the word most nearly opposite in meaning to 'obligatory'.",
+    options: ["good", "necessary", "optional", "right"],
+    correctAnswer: "optional",
+    hint: "'Obligatory' means mandatory or required. What word denotes voluntary and left to one's choice?",
+    workedSolution: "'Obligatory' means legally or morally required; mandatory. Its direct civic antonym is 'optional' (discretionary or voluntary).",
     points: 1
   },
 
   // --- PART II: LITERATURE IN ENGLISH (33 - 40) ---
   {
     number: 33,
-    prompt: "Which of the following literary forms is NOT an example of oral literature?",
+    prompt: "Which of the following literary forms is NOT an example of traditional oral literature?",
     options: ["Myth", "Folktale", "Proverb", "Melodrama"],
     correctAnswer: "Melodrama",
-    hint: "Oral literature encompasses traditional verbal art passed down by word of mouth; melodrama is a written theatrical stage genre.",
-    workedSolution: "Oral literature consists of traditional verbal folklore (myths, legends, folktales, proverbs, riddles). 'Melodrama' is a written theatrical dramatic genre.",
+    hint: "Myths, folktales, and proverbs are ancient oral folklore genres, whereas this option is a written dramatic genre.",
+    workedSolution: "Myths, folktales, and proverbs belong to indigenous oral lore passed down by word of mouth. 'Melodrama' is a scripted theatrical dramatic form.",
     points: 1
   },
   {
     number: 34,
-    prompt: "The central philosophical idea, message, or underlying subject explored in a literary work constitutes its ............",
+    prompt: "The central governing idea or underlying moral truth in a literary work is the ............",
     options: ["plot", "theme", "diction", "structure"],
     correctAnswer: "theme",
-    hint: "The main idea or lesson conveyed by the author.",
-    workedSolution: "In literary analysis, the 'theme' is the central unifying idea, moral insight, or underlying subject explored throughout a text.",
+    hint: "The central subject, core message, or universal truth explored by an author.",
+    workedSolution: "In creative literature, the central underlying idea, philosophical subject, or universal message of a work is its 'theme'.",
     points: 1
   },
   {
     number: 35,
-    prompt: "The famous Shakespearean expression \"The world is a stage, and all the men and women merely players\" is an example of a/an ............",
+    prompt: "The literary expression 'All the world is a stage' is an example of a/an ............",
     options: ["metonymy", "simile", "personification", "metaphor"],
     correctAnswer: "metaphor",
-    hint: "A direct figurative comparison without using 'like' or 'as'.",
-    workedSolution: "A 'metaphor' directly compares two unlike things by stating that one is the other without using comparison markers ('like' or 'as').",
+    hint: "Directly equating the world to a theater stage without using 'like' or 'as'.",
+    workedSolution: "Directly equating one entity ('the world') to another ('a stage') without using comparative words like 'as' or 'like' is a 'metaphor'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "In literary studies, the term genre refers specifically to ............",
+    prompt: "In literary studies, a genre is defined as ............",
     options: [
-      "any kind of romantic poetry",
-      "another technical term for prose",
-      "a minor subdivision of drama",
-      "any of the major forms or categories of literature"
+      "any subcategory of lyric poetry",
+      "another technical term for prose narrative",
+      "a specific subdivision of tragic drama",
+      "any of the primary distinct categories or forms of literature"
     ],
-    correctAnswer: "any of the major forms or categories of literature",
-    hint: "The three major traditional divisions: Prose, Poetry, and Drama.",
-    workedSolution: "A literary 'genre' is a category, class, or type of artistic composition marked by a distinctive style, form, or content (Prose, Poetry, Drama).",
+    correctAnswer: "any of the primary distinct categories or forms of literature",
+    hint: "The broad classification of creative works into prose, poetry, and drama.",
+    workedSolution: "A literary 'genre' refers to a broad recognized category or form of artistic composition (such as prose, poetry, or drama).",
     points: 1
   },
   {
     number: 37,
-    prompt: "Read the poetic lines below:\n\"Sweet sensation rises in pressure / Sleep comes gently and strong / Sleep whispers softly and strong\"\nThe figure of speech exemplified in \"Sleep whispers softly\" is ............",
+    prompt: "Read the line carefully:\n'Sleep comes gently and strong'\n\nThe literary device utilized in this line is ............",
     options: ["irony", "hyperbole", "euphemism", "personification"],
     correctAnswer: "personification",
-    hint: "Attributing human traits (whispering) to an inanimate natural state (sleep).",
-    workedSolution: "'Personification' endows inanimate abstractions or non-human entities with human qualities, actions, or emotions (giving sleep the human ability to whisper).",
+    hint: "Attributing human actions ('comes gently') to an abstract natural state (Sleep).",
+    workedSolution: "Giving living, human actions to an abstract physiological state ('Sleep comes gently') is an example of 'personification'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "Read the stanza below:\n\"Sweet sensation rises in pressure (a)\nSleep comes gently and strong (b)\nSleep whispers softly and strong\" (b)\nIf an identical four-line stanza concludes with 'long' (b), the rhyme scheme is predominantly ............",
-    options: ["abba", "bbaa", "aabb", "abab"],
-    correctAnswer: "aabb",
-    hint: "Stanzas organized in paired rhyming couplets share this standard scheme.",
-    workedSolution: "Couplet rhyme structures where consecutive pairs of lines rhyme with each other follow an 'aabb' pattern.",
+    prompt: "Read the extract carefully:\n'Sweet sensation rises in pressure\nSleep comes gently and strong\nSleep whispers softly and strong'\n\nThe rhyme scheme of this three-line extract is ............",
+    options: ["abba", "bbaa", "abb", "abab"],
+    correctAnswer: "abb",
+    hint: "Line 1 ends with 'pressure' (sound a); Line 2 ends with 'strong' (sound b); Line 3 ends with 'strong' (sound b).",
+    workedSolution: "End-rhyme analysis: 'pressure' (A) / 'strong' (B) / 'strong' (B) yields the rhyme scheme 'abb' (or 'aabb' in a full quatrain).",
     points: 1
   },
   {
     number: 39,
-    prompt: "Read the extract below:\n\"The fair breeze blew, the white foam flew, / The furrow followed free\"\nThe principal sound device demonstrated through the repetition of initial consonant sounds is ............",
+    prompt: "Read the lines carefully:\n'The fair breeze blew, the white foam flew,\nThe furrow followed free;'\n\nThe primary phonetic sound device utilized in these lines is ............",
     options: ["pun", "rhyme", "alliteration", "onomatopoeia"],
     correctAnswer: "alliteration",
-    hint: "Repetition of initial consonant sounds: /b/ in 'breeze blew' and /f/ in 'foam flew, furrow followed free'.",
-    workedSolution: "'Alliteration' is the deliberate repetition of identical initial consonant sounds in successive or closely associated words ('fair breeze blew, white foam flew, furrow followed free').",
+    hint: "Repetition of initial consonant sounds: /b/ in breeze blew, and /f/ in foam flew furrow followed free.",
+    workedSolution: "The repetition of initial consonant sounds across adjacent words (/b/ in 'breeze blew' and /f/ in 'foam flew furrow followed free') is 'alliteration'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "In Coleridge's stanza, the musical repetition of the /f/ and /b/ sounds in \"The fair breeze blew, the white foam flew / The furrow followed free\" serves to evoke ............",
+    prompt: "In the lines:\n'The fair breeze blew, the white foam flew,\nThe furrow followed free;'\n\nThe rhythmic alliterative sound device helps to evoke ............",
     options: [
-      "the eerie silence of the sea",
-      "the glaring whiteness of the foam",
-      "the sudden fury of a hurricane",
-      "the swift, smooth movement of the sailing ship"
+      "the silence of the open ocean",
+      "the dazzling whiteness of the foam",
+      "the freezing temperature of the sea",
+      "the smoothness and brisk motion of the sailing vessel"
     ],
-    correctAnswer: "the swift, smooth movement of the sailing ship",
-    hint: "Sound symbolism: the soft, rushing consonant sounds imitate a ship gliding effortlessly across waters.",
-    workedSolution: "The rhythmic alliteration of light fricatives and plosives (/f/, /b/) acoustically mimics the swift, continuous, and smooth movement of a vessel cutting through ocean waves.",
+    correctAnswer: "the smoothness and brisk motion of the sailing vessel",
+    hint: "The light, rhythmic repetition of the fricative consonant /f/ reinforces frictionless, rapid sailing across waves.",
+    workedSolution: "The rhythmic alliteration of /f/ creates a brisk, flowing acoustic movement that mirrors the smooth, unhindered cutting of the vessel through the ocean waves.",
     points: 1
   }
 ];
@@ -449,9 +491,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 201401);
+const assignedTargetIndices = seedShuffle(targetKeys, 201402);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -474,98 +516,153 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY & COMPREHENSION
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING & COMPREHENSION (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
-    title: "Part A: Essay Writing",
-    instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
+  partA_composition: {
+    title: "Part A: Composition",
+    instructions: "Answer one question only from this section. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "You have been offered admission to a Senior High School to pursue an academic program that does not align with your future career goals. Write a formal letter to the headmaster of the school, stating at least two compelling reasons why you request to be transferred to your preferred program.",
-        modelAnswer: `P. O. Box 45\nNkawkaw, Eastern Region\n12th September, 2014\n\nThe Headmaster\nSt. Peter's Senior High School\nP. O. Box 22\nNkwatia-Kwahu\n\nDear Sir,\n\nREQUEST FOR A CHANGE OF ACADEMIC PROGRAMME FROM GENERAL ARTS TO GENERAL SCIENCE\n\nI write with the utmost respect to express my sincere gratitude for the admission offered me to pursue the General Arts programme in your prestigious institution for the upcoming academic year. However, I respectfully appeal to your high office for permission to change my course of study to General Science.\n\nFirst and foremost, my lifelong career aspiration is to pursue Human Medicine at the university in order to become a medical doctor. Ever since my junior high school days, I have nurtured a passion for biomedical research and healthcare delivery to assist underserved rural communities. Pursuing General Science—specifically Biology, Chemistry, Physics, and Elective Mathematics—is the compulsory prerequisite foundation required to gain admission into medical school. Remaining in General Arts will permanently truncate this professional dream.\n\nSecondly, my academic performance in the Basic Education Certificate Examination (BECE) clearly demonstrates my competence in science and numeracy. I secured Grade One in Integrated Science, Grade One in Mathematics, and Grade One in Information and Communication Technology. My junior high school teachers commended my analytical laboratory skills and consistently encouraged me to pursue the sciences.\n\nI have discussed this matter thoroughly with my parents, who fully endorse this appeal and have pledged to provide all prescribed science textbooks and laboratory equipment. I humbly pray that you grant my request so I can pursue my true academic calling.\n\nThank you for your anticipated benevolence.\n\nYours faithfully,\n[Signature]\nEmmanuel Osei Boateng\n(Index Number: 0204010045)`
+        prompt: "You have been offered provisional admission into a Senior High School to pursue a programme that does not align with your natural abilities and career goals. Write a formal petition to the headmaster of the school, stating at least two compelling reasons why you want your programme changed.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2014
+
+The Headmaster
+St. Peter's Senior High School
+P. O. Box 22
+Nkwatia-Kwahu
+
+Dear Sir,
+
+PETITION FOR CHANGE OF ALLOCATED ACADEMIC PROGRAMME
+
+I respectfully write to express my profound gratitude for the provisional admission offered me to pursue the General Arts programme in your prestigious institution for the 2014/2015 academic year. However, I write to appeal for your administrative intervention to transfer me to the General Science programme instead.
+
+While I hold the humanities in high regard, my strongest academic passion and natural aptitudes lie in the physical and biological sciences. In the recently concluded Basic Education Certificate Examination (BECE), I secured Grade One in both Mathematics and Integrated Science, achieving an overall Aggregate Six. Throughout my basic education, I consistently topped my class in quantitative problem-solving and scientific projects.
+
+Furthermore, my lifelong career ambition is to study biomedical engineering at the university to help design modern, affordable diagnostic medical equipment for rural hospitals in Ghana. Pursuing the General Science curriculum—specializing in Physics, Chemistry, Elective Mathematics, and Biology—is the mandatory, non-negotiable prerequisite required to qualify for engineering admission at the Kwame Nkrumah University of Science and Technology. Enrolling in General Arts would permanently truncate this professional dream.
+
+I promise to dedicate myself with relentless discipline to maintain academic excellence and bring distinction to your institution. I humbly pray that your benevolent office will approve this transfer.
+
+Thank you for your kind consideration and anticipated intervention.
+
+Yours faithfully,
+[Signature]
+Kwabena Mensah
+(Index Number: 0204010054)`
       },
       {
         questionNumber: "2",
         category: "Article for Publication",
-        prompt: "Write an article for publication in a national newspaper on the topic: \"Why Every Basic School in Ghana Should Have a Well-Stocked Library.\"",
-        modelAnswer: `THE INDISPENSABLE ROLE OF SCHOOL LIBRARIES IN BASIC EDUCATION\nBy Victoria Arthur, JHS 3\n\nIn an era where national educational development is recognized as the ultimate driver of economic transformation, the poor performance of students in literacy and reading comprehension remains a matter of grave public concern. While various stakeholders propose educational reforms, one foundational necessity is frequently overlooked: the urgent need for a well-stocked library in every basic school across Ghana.\n\nFirst, a school library is the primary engine that nurtures a sustainable reading culture and sharpens language proficiency. Many pupils in public basic schools come from humble homes where parents cannot afford leisure reading books or reference encyclopedias. A functional library provides equitable access to storybooks, illustrated readers, and classical literature. Regular reading expands vocabulary, improves grammatical competence, and enhances creative writing skills, thereby banishing the chronic mass failures recorded in English examinations.\n\nSecondly, a library fosters independent research skills and stimulates intellectual curiosity. Education must go beyond rote memorization of classroom chalkboard notes. When learners have access to supplementary science journals, historical atlases, and geographical encyclopedias, they learn to investigate concepts independently. This builds critical thinking and analytical problem-solving abilities essential for secondary and tertiary academic pursuits.\n\nIn conclusion, a school without a library is like a hospital without a pharmacy. The Ministry of Education, municipal assemblies, and corporate philanthropic organizations must prioritize the construction and stocking of modern libraries in all basic schools to secure our nation's intellectual future.`
+        prompt: "Write an article for publication in a national daily newspaper on the topic: \"Why Every Basic and Senior High School Should Have a Modern Library.\"",
+        modelAnswer: `THE VITAL NECESSITY OF MODERN LIBRARIES IN OUR SCHOOLS
+By Samuel K. Boateng, Begoro
+
+In the contemporary knowledge-driven global economy, literacy is the fundamental pillar of socio-economic progress. While Ghana continues to record remarkable strides in school enrollment, thousands of basic and secondary institutions across the country operate without an indispensable academic facility: a functional, modern school library.
+
+A modern library is not a decorative luxury; it is the intellectual engine of educational excellence. First and foremost, a well-stocked library fosters an enduring reading culture and sharpens linguistic competence. Reading diverse literary fiction, biographies, and historical encyclopedias expands students' vocabulary, refines their sentence structures, and improves their writing skills. A student who reads widely develops critical comprehension abilities that directly boost performance across all subjects, reversing the perennial mass failures recorded in English Language examinations.
+
+Secondly, a modern library bridges the socio-economic inequality gap. Many children from impoverished homes cannot afford expensive reference encyclopedias, supplementary science manuals, or past question compendiums. A public school library democratizes learning, ensuring that indigent students have free, unrestricted access to the reference materials necessary to compete on equal footing with peers from endowed private academies.
+
+Furthermore, equipping modern school libraries with internet-connected desktop computers provides students with essential digital literacy, enabling them to conduct independent research and explore global educational portals.
+
+To safeguard Ghana's intellectual future, the Ministry of Education, municipal assemblies, and corporate philanthropists must partner to construct and furnish modern libraries in every public school. A school without a library is like a hospital without medicine.`
       },
       {
         questionNumber: "3",
-        category: "Speech Writing",
-        prompt: "As the outgoing Senior Prefect, write a speech to be delivered at your school's annual Speech and Prize-Giving Day on the topic: \"Evaluating Our School's Achievements and Setbacks in the Past Academic Year.\"",
-        modelAnswer: `A VALEDICTORY ADDRESS DELIVERED BY KWAME ADJEI, SENIOR PREFECT OF METHODIST JHS, AT THE 10TH ANNUAL SPEECH AND PRIZE-GIVING DAY\n\nMr. Chairman, Respected Headmaster, Dedicated Members of Staff, Revered Members of the PTA, Fellow Students, and Distinguished Guests:\n\nIt is a singular honor to stand before you today on behalf of the graduating class to review the milestones and setbacks of our school over the past academic year.\n\nIn the realm of achievements, this year has been historic. Academically, our school placed first in the Municipal Science and Mathematics Quiz Competition, outperforming twelve competing basic schools. Furthermore, through the generous support of our Parent-Teacher Association, we successfully refurbished our computer laboratory with twenty modern desktop units, enabling every candidate to undergo practical digital training prior to the BECE. In sports, our junior girls' volleyball team won the district championship trophy, bringing immense pride to our institution.\n\nNotwithstanding these achievements, our school faced notable setbacks. The foremost challenge has been the severe deficit of standard furniture. Many junior classrooms are overcrowded, with three students squeezed onto dual desks meant for two, hindering neat handwriting and classroom concentration. Additionally, the lack of an enclosed fence wall around our compound has allowed unauthorized trespassers and stray animals to disrupt instructional periods and vandalize school flower gardens.\n\nAs we depart, I passionately appeal to our Municipal Assembly, traditional elders, and benevolent alumni to assist the school administration in constructing a perimeter wall and providing adequate dual desks. To my fellow students, I urge you to maintain strict discipline and protect school property.\n\nLong live our noble school! Thank you all for your kind attention.`
+        category: "Speech / Graduation Address",
+        prompt: "As the outgoing Senior Prefect, write the speech you will deliver at your school's graduation ceremony, evaluating the school's notable achievements and key challenges during the academic year.",
+        modelAnswer: `A SPEECH DELIVERED BY THE SENIOR PREFECT ON THE OCCASION OF THE 2014 GRADUATION AND SPEECH DAY
+
+Mr. Chairman, Respected District Director of Education, Dedicated Headmaster, Inspiring Teachers, Esteemed Parents, and Fellow Graduating Students:
+
+It is a singular honor to stand before you today on behalf of the graduating Class of 2014 to evaluate our stewardship, celebrate our school's remarkable triumphs, and reflect on the challenges that tested our collective resilience during this academic year.
+
+This past academic year has been crowned with extraordinary achievements. Academically, our basic school clinched first place in the Municipal Inter-Schools Science and Mathematics Quiz, demonstrating the intellectual rigor cultivated by our dedicated teachers. In the sporting arena, our football team won the zonal championship trophy, while our school cadet corps was adjudicated the smartest marching contingent during the Independence Day parade. Morally, our prefectorial board instituted an anti-bullying campaign that transformed our campus into a peaceful, child-friendly community.
+
+However, our successes must not blind us to our pressing institutional challenges. Our school continues to endure an acute shortage of classroom furniture, forcing many junior students to squeeze three to a dual desk. Furthermore, our information technology laboratory contains only ten functional computers for over four hundred students, severely limiting practical digital learning. Our compound also lacks potable pipe-borne water, forcing students to trek to neighboring boreholes during recess.
+
+We humbly appeal to our visionary Parent-Teacher Association and municipal authorities to assist in resolving these infrastructural deficits.
+
+To our dedicated teachers and self-sacrificing parents, we say thank you. We promise to make you proud as we step into senior high school.
+
+Thank you, and God bless our school.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `Fatimeh was always silent. She learnt a lot within a short time. In one month, she could milk cows, separate butter and cheese from the milk, ferment the milk, and cook nearly as well as Rikku's mother. At first, she went with Rikku's mother to hawk the sour milk; she was beginning to find her way to and from town.\n\nFatimeh was always chewing tobacco flower and so her lips, teeth and gums became red. Hodio noticed that her looks had improved since she came to live with the family; her skin was smooth and shiny; she had also put on more flesh.\n\nTowards nightfall, when Fatimeh came home, she would take a pot and go down to the stream where she bathed and drew water. Sometimes, she went with Leibe or Shaitu; she was never alone.\n\nOne evening, Hodio followed Fatimeh quietly to the stream when the place was quiet and he could hear the sound of his own footsteps on the dusty road. When he caught up with Fatimeh, he suggested to her to run away with him because he loved her dearly and wanted her to be his wife. Fatimeh refused. She knew very well that, as a slave, she could never hope to marry a freeborn and proud Fulani like Hodio Sunsaye.\n\nHodio did not give up. He spoke to her again. He tried to persuade her to run away with him and live in a town where no one cared about tradition and custom. Eventually, Fatimeh agreed to consider his proposal.\n\nHodio's father, old Sunsaye, was the first person who missed Fatimeh. He called his wife, Shaitu, and asked her if she had seen Fatimeh. She replied in the negative. He asked Rikku and Leibe. No one could tell him where Hodio and Fatimeh were. They then looked behind the hut; the horse was not there.`,
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `Fatima was an extraordinarily quiet young girl who learned domestic and agrarian skills with astonishing speed. Within a single month of arriving at Ardo's pastoral homestead, she had mastered how to milk cattle, separate butter and cheese from fresh milk, ferment the curds into yogurt, and prepare rich stews nearly as skillfully as Ardo's senior wife. Initially, she accompanied the matriarch to the rural market to hawk calabashes of sour milk, quickly learning to navigate the forest trails to and from the settlement. Fatima was constantly chewing dried tobacco blossoms, which stained her lips, teeth, and gums a vibrant scarlet.
+
+Jallo noticed that her physical appearance had blossomed remarkably since she came to live with the household. Her dark skin had become radiant, smooth, and supple; she had also filled out with healthy flesh. Towards twilight, when Fatima returned from her market rounds, she would balance an earthenware pot on her head and walk down to the secluded forest stream to bathe and draw water. Usually, she was accompanied by younger maidens; she was scarcely ever alone.
+
+One evening, Jallo shadowed Fatima quietly to the stream when the trail was deserted and only the crunch of his own sandals on the dusty footpath broke the silence. Catching up with her at the water's edge, he proposed that they elope to the metropolis together because he loved her deeply and wished to marry her. Fatima firmly refused. She knew very well that, as an impoverished bondmaid, traditional pastoral customs would never permit a proud, freeborn cattle owner like Jallo to take her as his lawful wife.
+
+Jallo refused to abandon his quest. He pleaded with her passionately, urging her to flee with him to a modern urban city where ancient caste customs were disregarded. Eventually, Fatima was swayed by his sincerity and agreed to elope.
+
+Ardo, Jallo's father, was the first to notice Fatima's absence at dawn. He inquired from his wife and her companions, but none could explain where the girl had gone. They rushed behind the thatched stable; Jallo's prized stallion was missing.`,
     questions: [
       {
-        subId: "(a)",
-        question: "State two domestic tasks that Fatimeh learned to do within a single month.",
-        answer: "1. Milking cows and separating butter and cheese from milk.\n2. Fermenting milk and cooking (or hawking sour milk)."
+        subQuestion: "(a)",
+        question: "State two domestic or dairy skills that the girl mastered within a single month.",
+        answer: "She mastered how to milk cattle, separate butter and cheese from milk, ferment curds, and prepare rich meals/stews."
       },
       {
-        subId: "(b)",
-        question: "Give two descriptive adjectives that depict Fatimeh's character and learning disposition in the first paragraph.",
-        answer: "Silent (or quiet/reserved) and industrious (or quick-learning/receptive/adaptable)."
+        subQuestion: "(b)",
+        question: "Mention two adjectives that describe Fatima's character or physical traits as presented in the opening paragraph.",
+        answer: "She was silent (quiet), fast-learning (quick), hardworking, and resourceful."
       },
       {
-        subId: "(c)",
-        question: "What was Hodio's main reason for following Fatimeh secretly to the stream?",
-        answer: "To confess his deep love for her and persuade her to elope (run away) with him so she could become his wife."
+        subQuestion: "(c)",
+        question: "What was Jallo's primary objective for following Fatima secretly to the forest stream?",
+        answer: "He followed her to meet her alone in private and propose that they elope together so she could become his wife."
       },
       {
-        subId: "(d)(i)",
-        question: "\"Fatimeh refused.\"\nWhat did Fatimeh refuse to do at first?",
-        answer: "She refused Hodio's proposal to run away with him to become his wife."
+        subQuestion: "(d)",
+        question: "I. What did Fatima refuse to do initially?\nII. Why did she refuse Jallo's proposal at first?",
+        answer: "I. She initially refused to elope and marry Jallo.\nII. She refused because she was an impoverished bondmaid/slave and knew that rigid pastoral customs forbade a proud, freeborn cattle owner from marrying someone of her caste."
       },
       {
-        subId: "(d)(ii)",
-        question: "Why did Fatimeh initially reject Hodio's marriage proposal?",
-        answer: "Because she was a slave and knew that societal traditions and caste prejudices forbade a slave from marrying a proud, freeborn Fulani."
+        subQuestion: "(e)",
+        question: "Why did Jallo desire to elope and settle in a modern urban city?",
+        answer: "He wanted to live in a cosmopolitan town where people did not care about rigid traditional caste barriers and ethnic customs prohibiting their marriage."
       },
       {
-        subId: "(e)",
-        question: "Why did Hodio specifically want them to elope to a modern town?",
-        answer: "Because in a modern urban town, people did not care about or enforce strict tribal traditions, ancestral customs, and slave-caste barriers."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, provide a word or phrase that means the same and can replace it in the passage without altering the meaning:\n(i) silent;\n(ii) sour;\n(iii) improved;\n(iv) drew;\n(v) proposal.",
-        answer: "(i) **silent:** quiet / reserved / speechless / calm.\n(ii) **sour:** fermented / curdled / tart / acidified.\n(iii) **improved:** gotten better / blossomed / enhanced / developed.\n(iv) **drew:** fetched / collected / scooped / pumped.\n(v) **proposal:** offer / suggestion / marriage request / proposition."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. silent\nII. sour\nIII. improved\nIV. drew\nV. proposal",
+        answer: "I. silent: quiet, reserved, calm, speechless.\nII. sour: fermented, tart, curdled, acidic.\nIII. improved: blossomed, enhanced, refined, flourished.\nIV. drew: fetched, collected, scooped.\nV. proposal: request, offer, proposition, suggestion."
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId.replace(/[()]/g, '_')}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  }))
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  }
 ];
 
 async function seedBeceEnglish2014Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2014 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2014 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -578,6 +675,7 @@ async function seedBeceEnglish2014Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2014");
   await docRef.set({
     year: 2014,
@@ -591,25 +689,54 @@ async function seedBeceEnglish2014Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)"],
-      status: "calibrated",
+      hasLiteratureComponent: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 17",
+          questions: balancedPaper1.slice(0, 17)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 18 to 22",
+          questions: balancedPaper1.slice(17, 22)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 23 to 27",
+          questions: balancedPaper1.slice(22, 27)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 28 to 32",
+          questions: balancedPaper1.slice(27, 32)
+        },
+        partII_literature: {
+          title: "Part II: Literature in English",
+          questionRange: "Questions 33 to 40",
+          questions: balancedPaper1.slice(32, 40)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay and Reading Comprehension",
+      title: "Paper 2: Written Essay and Reading Comprehension",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2014 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2014 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2014Calibrated()

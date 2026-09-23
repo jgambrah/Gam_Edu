@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -38,440 +38,475 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2004
-const passage1Text = "### 📖 PASSAGE I\n\nOnce, in the world of animals, there was a great famine and the animals were dying. For about three months, Tortoise and his family had eaten very little. Tortoise’s body rattled in his empty shell as he walked. One day as he thought of a way to get food, his throat began to itch.\n\nHe would go to the next village where he had heard there was still some food. He would steal some for himself and his family. He took the bush path and arrived at the village after sunset. The people were preparing their meals and the smell made his mouth water.\n\nHow would he get this food? Not far away from him was the village playground where there was a big hollow log leaning against a tree. This log was the drum used to summon the villagers for very important announcements. When he reached the tree, he decided to climb it so that he could see the village better. Unfortunately, as he was climbing, he fell because he was very weak and hungry. His shell hit the drum, sending out a loud 'kpom! kpom!' noise.\n\nWhen they heard this noise, the villagers ran to the playground, believing they had been called, thereby leaving the food cooking in their homes. Very quickly, Tortoise disappeared into nearby bush and ran to the village. He filled his empty shell with as much food as he could carry and returned home.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: ANANSE AND THE TOWN DRUM (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `Once upon a time in the animal kingdom, an acute famine struck the land and creatures were perishing from starvation. For nearly three months, Kweku Ananse and his household had survived on meager scraps of dried leaves. Ananse's frail body rattled inside his hollow carapace as he dragged himself along. One sweltering afternoon, as he racked his brain to devise a scheme for obtaining food, a sudden plan took shape in his cunning mind.
 
-const passage2Text = "### 📖 PASSAGE II\n\nIn the centre of the town, the clock chimed two o’ clock. In an abandoned house on the outskirts of the town, an owl hooted as if to signal to Sergeant Abora and Abaidoo to wake up from slumber.\n\nThey had patrolled the town for hours and were heavy with sleep. The night was very dark and so cold that in spite of his overcoat, the Sergeant’s teeth were chattering. He was about to speak when he heard a faint sound down the road that led into the town.\n\nAbaidoo also picked the sound. Both listened attentively and realized that a late traveler was coming up the road. They took cover behind two opposing trees. As he reached where Abaidoo was hiding, the traveler stumbled over what looked like the root of a tree.\n\nThen constable Abaidoo quickly flashed his torchlight and bawled out, 'Stop or I shoot!' Abora’s gun was also held in readiness. The traveler who carried a heavy load on his left shoulder panicked, dropping his cutlass in the process.\n\n'Who are you? Where are you from? What’s in your bag? Speak out or I shoot! We’ve got you at last!' Abora exclaimed.\n\nTrembling with fear and stammering for words the traveler gave his name as Nsiah. He was returning from Fosa with a bag of plantain and cassava. But his cutlass and bag, both dripping with blood, gave him away. After a search, the police found a human head and triumphantly marched him to the police station.";
+He resolved to journey to the neighboring human settlement where rumors indicated that food supplies were still abundant. He would forage and steal enough sustenance for himself and his starving family. Taking the secluded forest footpath, he arrived at the outskirts of the village just after sunset. The villagers were busily stirring their evening cooking pots, and the savory aroma of boiling palm-nut soup made his mouth water uncontrollably.
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2004
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+How could he access these kitchens without being detected? Not far from where he lurked lay the village central playground, where a massive hollow log drum leaned against an ancient silk-cotton tree. This ceremonial log drum was sounded exclusively to convene all citizens for momentous emergency proclamations. Reaching the tree, Ananse attempted to climb its lower branches to survey the compound layouts. Unfortunately, his emaciated limbs gave way from acute hunger and exhaustion. He lost his grip and tumbled downward, his hard carapace striking the stretched hide of the drum with a thunderous "kpom! kpom!" reverberation.
+
+Hearing the urgent signal, the villagers abandoned their boiling hearths and raced to the playground, convinced that the town crier had sounded an emergency summons. Seizing the golden opportunity, Ananse vanished into the adjacent bush, sprinted into the deserted kitchens, loaded his sack with as much cooked meat and boiled yam as he could carry, and hurried back home.`;
+
+const passage1Questions = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the expression 'there was a great famine' means that ............`,
-    passage: passage1Text,
+    prompt: "In Passage I, the statement that 'there was a great famine' means that ............",
     options: [
-      "all the wild animals died instantly",
-      "food was exceedingly scarce in the land",
-      "there were no farmers left to cultivate",
-      "food was completely prohibited in markets"
+      "all the living animals in the forest died",
+      "food was critically scarce and unavailable",
+      "all the subsistence farmers abandoned their hoes",
+      "cooked food was no longer sold in the market"
     ],
-    correctAnswer: "food was exceedingly scarce in the land",
-    hint: "A famine is an extreme, widespread scarcity of food.",
-    workedSolution: "A famine is defined as a widespread, severe scarcity of food leading to starvation; 'food was exceedingly scarce in the land' is the accurate meaning.",
+    correctAnswer: "food was critically scarce and unavailable",
+    hint: "Famine denotes an acute, widespread scarcity of food across a region.",
+    workedSolution: "'Famine' refers to an extreme and widespread shortage of food causing hunger; 'food was critically scarce and unavailable' is its direct meaning.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, which of the following statements is true regarding Tortoise?`,
-    passage: passage1Text,
+    prompt: "Which of the following assertions is factually true according to Passage I?",
     options: [
-      "Tortoise fasted completely for three months",
-      "The villagers freely gave food to Tortoise",
-      "Tortoise harvested crops from his own farm",
-      "Tortoise stole food from the cooking pots of the villagers"
+      "Ananse and his household had not tasted any food for three months",
+      "The hospitable villagers presented cooked food to Ananse",
+      "Ananse harvested fresh cassava from his personal family plot",
+      "Ananse stole cooked provisions belonging to the villagers"
     ],
-    correctAnswer: "Tortoise stole food from the cooking pots of the villagers",
-    hint: "Reread the final paragraph: he ran to the village while everyone was at the playground and filled his shell.",
-    workedSolution: "The narrative explains that Tortoise capitalized on the villagers' absence to enter their homes and steal their cooking food to feed his family.",
+    correctAnswer: "Ananse stole cooked provisions belonging to the villagers",
+    hint: "Paragraph four shows that Ananse entered their deserted kitchens and took their food while they gathered at the playground.",
+    workedSolution: "The narrative confirms that Ananse capitalized on the empty houses to steal cooked food from the villagers' kitchens.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nAt what specific time of day did Tortoise arrive at the neighboring village in Passage I?`,
-    passage: passage1Text,
-    options: ["At early sunset", "In the dead of night", "At the break of dawn", "In the bright afternoon"],
-    correctAnswer: "In the dead of night",
-    hint: "Paragraph two states: 'He took the bush path and arrived at the village after sunset.'",
-    workedSolution: "The text states that Tortoise arrived 'after sunset' when the evening meals were being cooked, which corresponds to the onset of night.",
+    prompt: "At what specific time of day did Ananse arrive at the neighboring village in Passage I?",
+    options: [
+      "At the break of dawn",
+      "In the middle of the afternoon",
+      "Just after sunset",
+      "At midnight"
+    ],
+    correctAnswer: "Just after sunset",
+    hint: "Check paragraph two: '...arrived at the village after sunset.'",
+    workedSolution: "The text states explicitly that Ananse arrived at the village just after sunset as evening meals were being prepared.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why did the villagers drop their cooking and rush to the playground?`,
-    passage: passage1Text,
+    prompt: "Why did the villagers rush in haste to the playground in Passage I?",
     options: [
-      "They wanted to catch who made the noise",
-      "They believed the ceremonial drum had summoned them for an announcement",
-      "They saw Tortoise fall from the tree",
-      "The hollow drum had collapsed to the ground"
+      "They wanted to inspect the damaged hollow log drum",
+      "They believed an official emergency announcement had been summoned",
+      "They heard Ananse tumbling down from the tree branches",
+      "They wanted to capture the intruder trespassing on their land"
     ],
-    correctAnswer: "They believed the ceremonial drum had summoned them for an announcement",
-    hint: "The hollow log was the official community drum used to summon citizens for important royal announcements.",
-    workedSolution: "The villagers recognized the 'kpom! kpom!' sound of the ceremonial drum and believed the chiefs had summoned them for an urgent announcement.",
+    correctAnswer: "They believed an official emergency announcement had been summoned",
+    hint: "Reread paragraph three and four: the drum was used for important announcements, so hearing it made them run to assemble.",
+    workedSolution: "The villagers rushed to the grounds because the booming drum was the traditional summons signaling an important public announcement.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nWhy were the villagers unable to spot Tortoise at the playground in Passage I?`,
-    passage: passage1Text,
+    prompt: "Why did the gathered villagers fail to see Ananse at the playground?",
     options: [
-      "He swallowed his food rapidly",
-      "He climbed inside the hollow drum",
-      "He had already fled into the nearby bush",
-      "He buried himself in the loose soil"
+      "He climbed inside the hollow drum to hide",
+      "He sprinted away and concealed himself in the nearby bushes",
+      "He was invisible to human eyes",
+      "He was busy eating under the silk-cotton tree"
     ],
-    correctAnswer: "He had already fled into the nearby bush",
-    hint: "Reread the opening of the final paragraph: 'Very quickly Tortoise disappeared into nearby bush...'",
-    workedSolution: "Immediately after accidentally hitting the drum, Tortoise quickly retreated into the safety of the nearby thick bush before the villagers arrived.",
+    correctAnswer: "He sprinted away and concealed himself in the nearby bushes",
+    hint: "Look at paragraph four: 'Very quickly Tortoise disappeared into nearby bush...'",
+    workedSolution: "The text notes that immediately after falling, Ananse darted into the thick undergrowth of the adjacent bush before the crowd arrived.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE MIDNIGHT PATROL AND ARREST (CALIBRATED)
+// =========================================================================
+const passage2Text = `From the central tower of the municipal hall, the town clock chimed two o'clock in the morning. Within an abandoned, dilapidated building on the periphery of the town, an owl screeched shrilly as if sounding an alarm to Sergeant Mensah and Corporal Boateng to shake off their heavy drowsiness.
+
+The two officers had patrolled the quiet streets for four continuous hours and were fighting off exhaustion. The night was ink-black and so bitterly cold that despite wearing a thick woolen greatcoat, Sergeant Mensah's teeth were chattering uncontrollably. He was on the verge of speaking when a faint rustle resonated down the road leading into the township.
+
+Corporal Boateng picked up the auditory cue at the same instant. Both men held their breath, listening intently, and soon discerned the heavy footfalls of a lone midnight traveler coming up the incline. Slipping noiselessly into the shadows, they took cover behind two opposing roadside nim trees. As the traveler drew level with Boateng's hiding spot, he stumbled awkwardly over an exposed tree root across the pathway.
+
+Immediately, Corporal Boateng switched on his high-powered electric torch and roared, "Halt or I open fire!" Sergeant Mensah cocked his rifle in deadly readiness. The solitary traveler, who was balancing a heavy burlap sack on his left shoulder, froze in terror, accidentally dropping his bloodstained machete in the process.
+
+"Who are you? What is your destination? Reveal the contents of that sack or we shoot! We have cornered you at last!" Mensah bellowed.
+
+Shivering violently and stammering through trembling lips, the traveler identified himself as Nsiah. He claimed he was returning from Fosa carrying a consignment of freshly harvested plantains and cassava tubers. However, his glistening cutlass and the dripping scarlet liquid oozing through the bottom of the sack completely gave him away. A swift forensic search of the baggage revealed a severed human head. Exultant with their breakthrough, the officers secured his wrists and marched him to the municipal police command.`;
+
+const passage2Questions = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, why were Sergeant Abora's teeth chattering during the patrol?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, why were Sergeant Mensah's teeth chattering uncontrollably?",
     options: [
-      "He was suffering from acute toothache",
-      "The night was freezing and intensely cold",
-      "He wore a very light singlet",
-      "He was terrified by the hooting owl"
+      "He was suffering from acute dental pain",
+      "He was terrified by the screech of the owl",
+      "The night atmospheric temperature was intensely cold",
+      "His woolen greatcoat had become soaking wet"
     ],
-    correctAnswer: "The night was freezing and intensely cold",
-    hint: "Look at paragraph two: 'The night was very dark and so cold that in spite of his thick overcoat...'",
-    workedSolution: "The narrative explains that despite wearing a thick overcoat, the biting cold of the late night caused the Sergeant's teeth to chatter.",
+    correctAnswer: "The night atmospheric temperature was intensely cold",
+    hint: "Reread paragraph two: 'The night was very dark and so cold that in spite of his thick overcoat, the Sergeant's teeth were chattering.'",
+    workedSolution: "The narrative explains that the teeth chattering was caused by the severe, biting cold of the midnight atmosphere.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how did the police officers first detect the approach of the nocturnal traveler?`,
-    passage: passage2Text,
+    prompt: "How did the police officers first detect the presence of the approaching traveler in Passage II?",
     options: [
-      "They heard a faint sound down the road",
-      "They saw blood dripping on the path",
-      "The traveler stammered in the dark",
-      "They noticed a flashing torchlight"
+      "They spotted his flashlight beam through the foliage",
+      "They heard a faint noise and footsteps along the dark road",
+      "They observed drops of blood on the pathway gravel",
+      "The hooting owl alerted them to his exact position"
     ],
-    correctAnswer: "They heard a faint sound down the road",
-    hint: "Paragraph two states: 'he heard a faint sound down the road that led to the town.'",
-    workedSolution: "Both officers first detected the traveler through auditory perception: hearing a faint noise of approaching footsteps on the dusty road.",
+    correctAnswer: "They heard a faint noise and footsteps along the dark road",
+    hint: "Paragraph two and three show that they heard a faint sound down the road and listened attentively.",
+    workedSolution: "The officers first detected him through their sharp hearing when they picked up a faint rustling and stumbling noise down the road.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, why did Sergeant Abora and Constable Abaidoo conceal themselves behind two opposing trees?`,
-    passage: passage2Text,
+    prompt: "Why did Sergeant Mensah and Corporal Boateng take cover behind opposing trees in Passage II?",
     options: [
-      "To shelter from the freezing wind",
-      "To avoid being seen while ambushing the suspect",
-      "To load their firearms in safety",
-      "To take a quick nap after hours of walking"
+      "To shelter themselves from the freezing wind",
+      "To conceal their presence and ambush the approaching traveler",
+      "To inspect and reload their firearms quietly",
+      "To rest and take a brief nap during patrol"
     ],
-    correctAnswer: "To avoid being seen while ambushing the suspect",
-    hint: "Taking cover allowed them to observe the traveler without alerting him.",
-    workedSolution: "The officers took cover behind trees to remain hidden and surprise the late traveler as he passed between them.",
+    correctAnswer: "To conceal their presence and ambush the approaching traveler",
+    hint: "Taking cover behind trees allowed them to remain invisible until the suspect walked into their trap.",
+    workedSolution: "The officers hid behind the trees to avoid being seen by the approaching traveler, ensuring they could ambush him effectively.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nWhere was the criminal traveler finally apprehended by the police patrol team in Passage II?`,
-    passage: passage2Text,
+    prompt: "Where did the police officers successfully apprehend the late traveler?",
     options: [
-      "Behind the trees on the road entering the town",
-      "Inside the central charge office",
-      "In the market center of the town",
-      "Near the boundary of the neighboring village"
+      "At the entrance of the municipal police command",
+      "Within the municipal town square near the clock tower",
+      "Near the outskirts along the road entering the town",
+      "Inside the abandoned dilapidated building"
     ],
-    correctAnswer: "Behind the trees on the road entering the town",
-    hint: "Abaidoo sprang out and shouted 'Stop or I shoot!' as the man stumbled near the trees.",
-    workedSolution: "The suspect was intercepted and arrested right where he stumbled on the tree root between the two trees on the road leading into town.",
+    correctAnswer: "Near the outskirts along the road entering the town",
+    hint: "The encounter took place on the outskirts road near the abandoned building where they were patrolling.",
+    workedSolution: "The arrest was executed on the road near the outskirts of town where the patrolmen were stationed.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the expression 'gave him away' in 'his cutlass and bag... gave him away' means that the items ............`,
-    passage: passage2Text,
+    prompt: "In Passage II, the phrase 'gave him away' in 'the dripping scarlet liquid gave him away' means that the blood ............",
     options: [
-      "terrified him completely",
-      "warned him of danger",
-      "exposed his hidden guilt",
-      "disgraced him before his family"
+      "alarmed and frightened him",
+      "cautioned him of danger",
+      "exposed his hidden guilt and crime",
+      "humiliated him before the crowd"
     ],
-    correctAnswer: "exposed his hidden guilt",
-    hint: "To betray or reveal someone's secret wrongdoing.",
-    workedSolution: "'To give someone away' is an idiom meaning to betray, reveal, or expose their secret guilt or true identity.",
+    correctAnswer: "exposed his hidden guilt and crime",
+    hint: "To give someone away means to betray or reveal their secret guilt or identity.",
+    workedSolution: "'Gave him away' is an idiom meaning betrayed or exposed someone's true identity, guilt, or secret; 'exposed his hidden guilt and crime' is the exact equivalent.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 2004 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "Mary's mother is confident that her daughter will secure distinction in the examination.\nChoose the word nearest in meaning to the underlined word 'confident'.",
-    options: ["anxious", "proud", "certain", "determined"],
+    prompt: "The mathematics tutor is confident that his candidates will secure distinction in the examination.\nChoose the word nearest in meaning to 'confident'.",
+    options: ["apprehensive", "optimistic", "certain", "resolute"],
     correctAnswer: "certain",
-    hint: "Having strong belief or full assurance of an outcome.",
-    workedSolution: "'Confident' means having strong assurance or conviction; 'certain' is its direct synonym.",
+    hint: "Feeling sure, positive, and free from doubt.",
+    workedSolution: "'Confident' means firmly trusting, assured, or sure; 'certain' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The defensive troops retreated when superior firepower attacked their outpost.\nChoose the word nearest in meaning to the underlined word 'retreated'.",
-    options: ["escaped", "scattered", "fought", "withdrew"],
+    prompt: "The border troops retreated to their fortified trenches when the artillery barrage intensified.\nChoose the word nearest in meaning to 'retreated'.",
+    options: ["scattered", "escaped", "withdrew", "surrendered"],
     correctAnswer: "withdrew",
-    hint: "Moved back or retired from an offensive position.",
-    workedSolution: "'Retreated' in military strategy means moved back or retired from battle; 'withdrew' is its exact equivalent.",
+    hint: "Moved back or pulled back from an advanced position.",
+    workedSolution: "'Retreated' in military contexts means pulled back or 'withdrew' from a battle position.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Our senior housemaster advised all boarders to remain courteous at all times.\nChoose the word nearest in meaning to the underlined word 'courteous'.",
-    options: ["punctual", "mannerly", "hard-working", "kind"],
+    prompt: "Our parents continually admonished us to remain courteous to elders and strangers alike.\nChoose the word nearest in meaning to 'courteous'.",
+    options: ["mannerly", "punctual", "humble", "accommodating"],
     correctAnswer: "mannerly",
-    hint: "Polite, respectful, and displaying refined social manners.",
-    workedSolution: "'Courteous' means polite, respectful, and well-mannered; 'mannerly' is its direct synonym.",
+    hint: "Polite, respectful, and well-behaved.",
+    workedSolution: "'Courteous' means showing good manners, politeness, and respect; 'mannerly' is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The recalcitrant latecomers were promptly cautioned by the senior master.\nChoose the word nearest in meaning to the underlined word 'promptly'.",
-    options: ["immediately", "mercilessly", "roughly", "severely"],
+    prompt: "The truant pupils who jumped the school fence were promptly disciplined by the disciplinary master.\nChoose the word nearest in meaning to 'promptly'.",
+    options: ["ruthlessly", "immediately", "sternly", "severely"],
     correctAnswer: "immediately",
-    hint: "Without delay, hesitation, or lapse of time.",
-    workedSolution: "'Promptly' means with speed, punctuality, and without delay; 'immediately' is its exact equivalent.",
+    hint: "Without hesitation, delay, or postponement.",
+    workedSolution: "'Promptly' means without delay or at once; 'immediately' is its exact equivalent.",
     points: 1
   },
   {
     number: 15,
-    prompt: "A disciplined athlete must learn to restrain his temper under intense provocation.\nChoose the word nearest in meaning to the underlined word 'restrain'.",
-    options: ["avoid", "control", "apply", "delay"],
+    prompt: "Mature individuals know how to restrain their emotional impulses during heated arguments.\nChoose the word nearest in meaning to 'restrain'.",
+    options: ["suppress", "avoid", "control", "conceal"],
     correctAnswer: "control",
-    hint: "To hold back, check, or curb strong emotional impulses.",
-    workedSolution: "'Restrain' means to hold back, suppress, or keep under check; 'control' is its direct synonym.",
+    hint: "To hold back, keep under check, or regulate.",
+    workedSolution: "'Restrain' means to hold back, limit, or 'control' an impulse or emotion.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "The two committee members are constantly quarreling; they never see eye to eye. This means they do not ............ each other.",
-    options: ["agree with", "admire", "respect", "trust"],
-    correctAnswer: "agree with",
-    hint: "Sharing the same view, opinion, or agreement on an issue.",
-    workedSolution: "The idiom 'to see eye to eye' means to have identical opinions, agree, or see things in the same light.",
+    prompt: "The two committee executives are constantly disputing; they never see eye to eye on policy. This means they do not ............",
+    options: [
+      "respect each other's credentials",
+      "agree with each other",
+      "admire each other's talents",
+      "trust each other's honesty"
+    ],
+    correctAnswer: "agree with each other",
+    hint: "To see eye to eye means to share the same opinion or agree.",
+    workedSolution: "The idiom 'to see eye to eye' means to have the same opinion, harmonize, or agree with someone.",
     points: 1
   },
   {
     number: 17,
-    prompt: "You must be off your head if you believe that stones can produce oil. This means that you must be ............",
-    options: ["crazy", "joking", "unintelligent", "dreaming"],
+    prompt: "You must be completely off your head if you believe that gold nuggets grow on trees. This means you must be ............",
+    options: ["foolish", "joking", "crazy", "dreaming"],
     correctAnswer: "crazy",
-    hint: "Acting absurdly, out of one's mind, or completely irrational.",
-    workedSolution: "The idiom 'off one's head' is an informal expression meaning insane, irrational, or crazy.",
+    hint: "Acting irrationally, demented, or mentally unbalanced.",
+    workedSolution: "The informal idiom 'off one's head' means insane, irrational, or 'crazy'.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Though she earns a modest wage, Auntie Mansa always has some money put by. This means she has money ............",
+    prompt: "Although Auntie Mansa earns a modest salary, she has some savings put by for emergencies. This means she has money ............",
     options: [
-      "to live on luxuriously",
-      "reserved strictly for charity",
-      "saved carefully for future needs",
-      "to pay legal fees"
+      "saved for the future",
+      "dedicated to charity",
+      "lent out with interest",
+      "hidden in her bedroom"
     ],
-    correctAnswer: "saved carefully for future needs",
-    hint: "Setting aside or banking money for future emergencies.",
-    workedSolution: "The phrasal idiom 'to put by' means to save, reserve, or lay aside money for future requirements.",
+    correctAnswer: "saved for the future",
+    hint: "To put money by means to reserve or save it for future needs.",
+    workedSolution: "The phrasal idiom 'to put by' means to reserve, save, or store money for future use.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The driver survived the fatal road collision by the skin of his teeth. This means that the driver ............",
+    prompt: "Several passengers perished in the head-on collision, but the conductor escaped by the skin of his teeth. This means that the conductor ............",
     options: [
-      "escaped death very narrowly",
-      "lost all his dental teeth",
-      "escaped into the bush",
-      "suffered minor facial scratches"
+      "sustained minor surface scratches",
+      "narrowly avoided death by a tiny margin",
+      "fled rapidly into the adjacent bush",
+      "lost several of his front teeth"
     ],
-    correctAnswer: "escaped death very narrowly",
-    hint: "Escaping a catastrophe by the narrowest possible margin.",
-    workedSolution: "'By the skin of one's teeth' is a biblical idiom meaning by a very narrow margin or barely managing to escape disaster.",
+    correctAnswer: "narrowly avoided death by a tiny margin",
+    hint: "To escape barely or by a hair's breadth.",
+    workedSolution: "The idiom 'by the skin of one's teeth' means barely, narrowly, or by the narrowest possible margin.",
     points: 1
   },
   {
     number: 20,
-    prompt: "When the besieged rebels ran out of ammunition, they gave in. This means that they ............",
-    options: ["fled in panic", "surrendered to the army", "fired aimlessly", "pleaded for help"],
-    correctAnswer: "surrendered to the army",
-    hint: "Ceasing resistance and submitting to an opponent.",
-    workedSolution: "The phrasal verb 'to give in' means to cease opposition, yield, or surrender.",
+    prompt: "When the armed robbers were surrounded on all sides and ran out of ammunition, they gave in. This means the robbers ............",
+    options: [
+      "surrendered to the police",
+      "escaped through the drainage culvert",
+      "cried out for public mercy",
+      "shot at their own accomplices"
+    ],
+    correctAnswer: "surrendered to the police",
+    hint: "To cease resistance and yield to an opponent.",
+    workedSolution: "The phrasal verb 'to give in' means to cease fighting, capitulate, or 'surrender'.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "The diligent prefect was commended for his integrity, whereas the truant was ...... .",
-    options: ["admired", "promoted", "rejected", "rebuked"],
+    prompt: "The senior prefect was commended for his integrity, whereas his dishonest assistant was ...... .\nChoose the word most nearly opposite in meaning to 'commended'.",
+    options: ["demoted", "rebuked", "cautioned", "dismissed"],
     correctAnswer: "rebuked",
-    hint: "'Commended' means praised. Find the word that denotes scolded or criticized severely.",
-    workedSolution: "'Commended' means officially praised. Its direct antonym is 'rebuked' (reprimanded or scolded).",
+    hint: "'Commended' means praised warmly. Find the word meaning scolded or reprimanded sharply.",
+    workedSolution: "'Commended' means formally praised or approved. Its direct behavioral antonym is 'rebuked' (reprimanded or scolded).",
     points: 1
   },
   {
     number: 22,
-    prompt: "The master's stern demeanor terrified the pupils, but his assistant had a ...... disposition.",
-    options: ["proud", "indifferent", "friendly", "concerned"],
+    prompt: "While the headmaster's stern demeanor maintained discipline, his wife's ...... smile put the children at ease.\nChoose the word most nearly opposite in meaning to 'stern'.",
+    options: ["proud", "indifferent", "friendly", "gentle"],
     correctAnswer: "friendly",
-    hint: "'Stern' means severe, unsmiling, and harsh. Find the word meaning warm and approachable.",
-    workedSolution: "'Stern' means severe, strict, and austere. Its direct antonym in interpersonal disposition is 'friendly' (warm and genial).",
+    hint: "'Stern' means strict, severe, and forbidding. What word denotes genial, warm, and approachable?",
+    workedSolution: "'Stern' describes a severe, strict, or forbidding countenance. Its direct behavioral antonym is 'friendly' (warm and genial).",
     points: 1
   },
   {
     number: 23,
-    prompt: "The assemblyman declined our invitation, but the municipal engineer ...... our request.",
-    options: ["regretted", "denied", "rejected", "accepted"],
+    prompt: "Our Assemblywoman declined the invitation to address the youth, but her deputy graciously ...... it.\nChoose the word most nearly opposite in meaning to 'declined'.",
+    options: ["accepted", "confirmed", "honored", "supported"],
     correctAnswer: "accepted",
-    hint: "'Declined' means turned down or refused. Find the word meaning received or agreed to.",
-    workedSolution: "'Declined' means refused an offer. Its direct opposite in formal correspondence is 'accepted'.",
+    hint: "'Declined' means turned down or refused. What word denotes received with consent?",
+    workedSolution: "'Declined' an invitation means turned it down. Its direct opposite is 'accepted' (agreed to take up).",
     points: 1
   },
   {
     number: 24,
-    prompt: "Though the thirsty child begged for water, the cruel person callously refused him, while the good neighbor treated him ...... .",
-    options: ["mercifully", "greedily", "playfully", "intentionally"],
+    prompt: "Though her thirsty classmate pleaded for water, the girl callously consumed the entire bottle.\nChoose the word most nearly opposite in meaning to 'callously'.",
+    options: ["greedily", "mercifully", "playfully", "intentionally"],
     correctAnswer: "mercifully",
-    hint: "'Callously' means cruelly without feeling. Find the word denoting kindness and compassion.",
-    workedSolution: "'Callously' means showing insensitive and cruel disregard for others. Its direct antonym is 'mercifully' (compassionately).",
+    hint: "'Callously' means unfeelingly and cruelly. Find the adverb meaning with compassion and mercy.",
+    workedSolution: "'Callously' means showing insensitive, cruel disregard for others. Its direct antonym is 'mercifully' (or compassionately).",
     points: 1
   },
   {
     number: 25,
-    prompt: "The afternoon rain made the soil moist for planting, but the intense drought made the ground ...... .",
-    options: ["fertile", "loose", "solid", "dry"],
+    prompt: "The gentle morning drizzle made the seedbed moist, whereas the blazing noon sun rendered it ...... .\nChoose the word most nearly opposite in meaning to 'moist'.",
+    options: ["porous", "cracked", "dry", "solid"],
     correctAnswer: "dry",
-    hint: "'Moist' means slightly wet or damp. Find the word denoting complete lack of moisture.",
-    workedSolution: "'Moist' means damp or humid. Its direct physical antonym is 'dry'.",
+    hint: "'Moist' means slightly wet or damp. What word denotes completely devoid of moisture?",
+    workedSolution: "'Moist' means slightly wet or damp. Its direct physical antonym regarding soil condition is 'dry'.",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "The boarding students can proceed to the dining hall when they ...... the evening chores.",
+    prompt: "The laboratory students may depart for the dormitory as soon as they ...... the experiment.",
     options: ["had finished", "finished", "finish", "will finish"],
     correctAnswer: "finish",
-    hint: "In subordinate adverbial time clauses ('when...'), use the simple present tense to refer to future completion.",
-    workedSolution: "In conditional and temporal clauses introduced by 'when', the simple present tense ('finish') is used to express a future condition, not 'will finish'.",
+    hint: "In future temporal adverbial clauses ('as soon as / when...'), standard grammar requires the simple present tense.",
+    workedSolution: "Adverbial time clauses referring to future completion take the simple present tense: 'as soon as they finish'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "Most people are not unkind to domestic animals, ......?",
+    prompt: "Most people are not compassionate toward stray animals, ......?",
     options: ["weren't it", "isn't it", "wasn't it", "are they"],
     correctAnswer: "are they",
-    hint: "A negative statement with 'are not' and plural subject 'people' takes an affirmative tag: 'are they?'.",
-    workedSolution: "The main clause has a negative auxiliary ('are not') and plural subject ('Most people' -> 'they'). The question tag must be affirmative: 'are they?'.",
+    hint: "A negative clause with 'are not' and plural subject 'Most people' takes an affirmative tag: 'are they?'.",
+    workedSolution: "The statement is negative present using 'are not' with plural subject 'Most people' ('they'). The question tag must be affirmative: 'are they?'.",
     points: 1
   },
   {
     number: 28,
-    prompt: "Afua washed her laundry and ...... the wet towels on the drying line.",
-    options: ["hung", "folded", "hang", "stretched"],
+    prompt: "After washing her school uniform, Afua ...... it neatly on the wire line to dry.",
+    options: ["hung", "hang", "hanged", "stretched"],
     correctAnswer: "hung",
-    hint: "'Hang' (to suspend an object) has the simple past form 'hung'. ('Hanged' is used only for execution).",
-    workedSolution: "When 'hang' means to suspend an object like clothing, its past tense and past participle is 'hung'. 'Hanged' refers exclusively to capital punishment by execution.",
+    hint: "Past tense of 'hang' (to suspend an object): hang - hung - hung. ('Hanged' is used exclusively for execution by the noose).",
+    workedSolution: "For suspending objects or clothes, the simple past tense of 'hang' is 'hung'. ('Hanged' refers strictly to capital execution).",
     points: 1
   },
   {
     number: 29,
-    prompt: "Kwesi departed for school after he ...... his morning meal.",
-    options: ["had eaten", "has eaten", "eating", "ate"],
-    correctAnswer: "had eaten",
-    hint: "Use the past perfect tense ('had + past participle') for an action completed before another past event.",
-    workedSolution: "The past perfect tense ('had eaten') expresses an event that occurred before another specified past action ('Kwesi departed').",
+    prompt: "Kwesi set off for classes immediately after he ...... his teeth.",
+    options: ["had brushed", "has brushed", "brushing", "brushed"],
+    correctAnswer: "had brushed",
+    hint: "Use the past perfect tense ('had + past participle') for an action completed prior to another past event ('went/set off').",
+    workedSolution: "The brushing of teeth preceded the past departure for school, requiring the Past Perfect tense: 'had brushed'.",
     points: 1
   },
   {
     number: 30,
-    prompt: "Kate is the ...... candidate in the graduating class.",
+    prompt: "Abena is widely recognized as the ...... pupil in our junior high class.",
     options: ["well-behaved", "more-behaved", "very well-behaved", "most well-behaved"],
     correctAnswer: "most well-behaved",
-    hint: "Form the superlative degree of compound hyphenated adjectives with 'most'.",
-    workedSolution: "Compound adjectives like 'well-behaved' form their superlative degree by adding the superlative adverb 'most': 'the most well-behaved'.",
+    hint: "Form the superlative degree of compound descriptive adjectives preceded by 'the'.",
+    workedSolution: "The superlative form of the compound adjective 'well-behaved' preceded by 'the' is 'most well-behaved'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "A bag of money, with some documents ...... stolen from the car.",
+    prompt: "A bag of gold coins, together with several confidential deeds, ...... stolen from the vault.",
     options: ["were", "are", "was", "have been"],
     correctAnswer: "was",
-    hint: "Parenthetical additions like 'with...' do not alter the singular subject 'A bag of money'.",
-    workedSolution: "Parenthetical additions introduced by 'with' do not affect the grammatical number of the subject. The singular head noun 'A bag' takes the singular past verb 'was'.",
+    hint: "Parenthetical additions introduced by 'together with / with' do not pluralize the singular subject 'A bag of gold coins'.",
+    workedSolution: "The true grammatical head of the subject is 'A bag' (singular). Parenthetical additions ('with several confidential deeds') do not alter its number, taking singular 'was'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "It is unlawful for citizens to resort ...... violent self-help during disputes.",
+    prompt: "In resolving communal grievances, it is unacceptable to resort ...... physical violence.",
     options: ["through", "to", "into", "with"],
     correctAnswer: "to",
-    hint: "Identify the preposition that regularly collocates with the verb 'resort'.",
-    workedSolution: "In standard English grammar, the verb 'resort' is followed by the preposition 'to' ('resort to violence').",
+    hint: "Identify the preposition that regularly collocates with the phrasal verb 'resort'.",
+    workedSolution: "In standard English grammar, the verb 'resort' takes the preposition 'to' ('resort to violence').",
     points: 1
   },
   {
     number: 33,
-    prompt: "Clara understood all ...... the tutor demonstrated in the laboratory.",
+    prompt: "Clara understood all ...... the physics instructor demonstrated on the chalkboard.",
     options: ["what", "which", "that", "this"],
     correctAnswer: "that",
-    hint: "The indefinite pronoun 'all' is followed by the relative pronoun 'that', never 'what'.",
-    workedSolution: "In standard English relative clauses, the quantifier 'all' is modified by 'that' ('all that the tutor demonstrated'). Using 'what' here is a grammatical error.",
+    hint: "Following the universal indefinite pronoun 'all' referring to inanimate things, standard grammar requires the relative pronoun 'that'.",
+    workedSolution: "When the antecedent is 'all', standard English syntax requires the relative pronoun 'that' rather than 'what' or 'which': 'all that her teacher taught'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "The agricultural officer confirmed that the irrigation project was ...... beneficial.",
+    prompt: "The agricultural extension officer agrees that the inland rice irrigation scheme is ...... viable.",
     options: ["so", "much", "too", "very"],
     correctAnswer: "very",
-    hint: "Use 'very' as a standard intensifier modifying a positive base adjective without negative consequence.",
-    workedSolution: "'Very' modifies the base adjective 'beneficial' to express a high positive degree. 'Too' carries a negative connotation of excess; 'much' modifies comparatives.",
+    hint: "Standard intensifier modifying a positive gradable adjective: 'very + adjective'.",
+    workedSolution: "To intensify a positive gradable adjective ('good' or 'viable') without negative excess, 'very' is the standard adverb modifier.",
     points: 1
   },
   {
     number: 35,
-    prompt: "Charles does not expect ...... his supervisor at the workshop today.",
+    prompt: "Charles does not expect ...... his personal tutor at the library today.",
     options: ["seeing", "having seen", "being seen", "to see"],
     correctAnswer: "to see",
-    hint: "The verb 'expect' takes a to-infinitive complement, not a gerund.",
-    workedSolution: "In standard English verb catenation, 'expect' takes a full to-infinitive complement ('expect to see').",
+    hint: "The catenative verb 'expect' requires a full to-infinitive complement.",
+    workedSolution: "In English verb catenation, the verb 'expect' takes a full to-infinitive complement: 'does not expect to see'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "The veteran craftsman thinks that manual labor becomes strenuous ...... you grow old.",
+    prompt: "Kweku believes that physical labor becomes arduous ...... one attains old age.",
     options: ["if", "while", "when", "as"],
     correctAnswer: "when",
-    hint: "Identify the conjunction denoting the specific time or stage of life.",
-    workedSolution: "'When' is used as a temporal conjunction referring to a specific life stage or condition ('when you are old').",
+    hint: "Subordinating temporal conjunction expressing at the time that a state is reached.",
+    workedSolution: "'When' is the temporal conjunction indicating the time or condition during which an event or life stage occurs ('when you are old').",
     points: 1
   },
   {
     number: 37,
-    prompt: "English is spoken by millions of commercial travelers ...... the globe.",
+    prompt: "Countless commercial enterprises ...... the globe conduct transactions in English.",
     options: ["across", "inside", "by", "on"],
     correctAnswer: "across",
-    hint: "Preposition meaning throughout every part of an extensive geographic area.",
-    workedSolution: "'Across' is the preposition denoting extension throughout all parts of a geographical region ('across the world/globe').",
+    hint: "Identify the spatial preposition meaning throughout the expanse of a geographic area.",
+    workedSolution: "The idiomatic spatial expression denoting widespread presence throughout the world is 'across the world' (or 'around the globe').",
     points: 1
   },
   {
     number: 38,
-    prompt: "\"Do you admire this handwoven kente stole? I crafted ...... myself.\"",
+    prompt: '"Do you admire this handwoven kente stole? I crafted ...... myself on the loom."',
     options: ["for", "that", "which", "it"],
     correctAnswer: "it",
-    hint: "Use the direct object pronoun referring to the singular object 'kente stole'.",
-    workedSolution: "The singular inanimate noun 'kente stole' functions as the direct object of 'crafted' and is replaced by the pronoun 'it' ('I crafted it myself').",
+    hint: "Direct object pronoun referring back to the singular countable noun phrase 'this handwoven kente stole'.",
+    workedSolution: "The transitive verb 'crafted/made' requires an objective personal pronoun referring back to the singular object: 'made it myself'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Obuasi Gold Mine is the ............",
+    prompt: "The Obuasi mine is recognized as the ......",
     options: [
       "nation's producer largest",
       "largest nation's producer",
@@ -479,19 +514,26 @@ const rawQuestions = [
       "nation's largest producer"
     ],
     correctAnswer: "nation's largest producer",
-    hint: "Correct word order: Possessive noun ('nation's') + Superlative adjective ('largest') + Head noun ('producer').",
-    workedSolution: "In English noun phrase syntax, the possessive modifier ('nation's') precedes the superlative adjective ('largest'), which precedes the head noun ('producer').",
+    hint: "Correct possessive noun phrase ordering: Possessive noun ('nation's') + Superlative adjective ('largest') + Head noun ('producer').",
+    workedSolution: "Standard English noun phrase syntax orders the possessive noun first, followed by the adjective and the head noun: 'the nation's largest producer'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "Neither Kwesi nor Yaw ...... present when the headmaster arrived.",
+    prompt: "Neither Kwesi nor Yaw ...... present at the family meeting when I arrived.",
     options: ["are", "is", "was", "were"],
     correctAnswer: "was",
-    hint: "With 'neither... nor' joining two singular subjects in the past, the verb is singular past: 'was'.",
-    workedSolution: "Proximity rule: When 'neither... nor' connects two singular subjects ('Kwesi', 'Yaw') in a past narrative, the verb agrees with the nearer singular subject in the simple past: 'was'.",
+    hint: "Proximity rule: With 'neither... nor' connecting two singular subjects, the verb agrees with the nearer singular subject in the past.",
+    workedSolution: "When two singular subjects ('Kwesi', 'Yaw') are joined by 'neither... nor', the verb agrees with the nearer singular subject in the past: 'was'.",
     points: 1
   }
+];
+
+// Combine all 40 raw questions
+const allRawQuestions = [
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -515,9 +557,11 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200401);
+const assignedTargetIndices = seedShuffle(targetKeys, 200402);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+// Attach Passage I (Q1-5) and Passage II (Q6-10) directly to questions so that
+// the passage ALWAYS comes first before any question is displayed!
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -529,21 +573,44 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 5) {
+    passageTitle = "Passage I: Kweku Ananse and the Town Drum Incident";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 6 && qNum <= 10) {
+    passageTitle = "Passage II: The Midnight Patrol and the Bloodstained Sack";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -552,108 +619,101 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Write a letter to the headmaster of a Senior High School applying for admission into the school, stating at least two reasons why you have chosen that institution.",
-        modelAnswer: `Methodist Junior High School
-P. O. Box 88
-Sunyani, Bono Region
-12th July, 2004
+        prompt: "Your class teacher has selected an academic programme for your upcoming Senior Secondary School course, but you prefer a different one. Write a polite, convincing letter to him explaining why you would prefer to study the alternative programme.",
+        modelAnswer: `Methodist Junior Secondary School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2004
 
-The Headmaster
-Prempeh College
-P. O. Box 199
-Kumasi
+The Class Teacher
+Form Three Gold
+Methodist Junior Secondary School
+Bekwai
 
 Dear Sir,
 
-APPLICATION FOR ADMISSION INTO SENIOR SECONDARY SCHOOL (GENERAL SCIENCE PROGRAMME)
+REQUEST FOR CHANGE OF RECOMMENDED SENIOR SECONDARY SCHOOL PROGRAMME
 
-I respectfully write to submit my formal application for admission into Form One at Prempeh College to pursue the General Science programme for the upcoming academic year, following my completion of the Basic Education Certificate Examination (BECE).
+I respectfully write to express my heartfelt appreciation for your continuous academic mentorship and for selecting the General Arts programme for my upcoming Senior Secondary School education. However, after deep reflection and consultation with my parents, I write to plead that you recommend me for the General Science programme instead.
 
-First and foremost, I chose Prempeh College because of your institution's legendary record of academic excellence, particularly in STEM disciplines. Over the decades, your school has consistently dominated national science competitions, including the National Science and Maths Quiz, and produced world-class physicians, biomedical engineers, and research scientists. As an aspiring surgeon, studying under your dedicated science faculty and utilizing your well-equipped laboratories will provide me with the solid academic foundation necessary to achieve my career dreams.
+While I acknowledge that my performance in English Language and Social Studies has been strong, my greatest academic passion and highest natural aptitude lie in Mathematics and Integrated Science. In our recent regional mock examinations, I scored ninety-four percent in Mathematics and ninety-two percent in Integrated Science. I find deep satisfaction in solving quantitative problems, balancing chemical equations, and exploring biological mechanisms.
 
-Secondly, I admire your institution's emphasis on holistic moral discipline, leadership development, and co-curricular vibrancy. I am an active student leader, having served as the Senior Compound Prefect and president of our school debating club. Enrolling in Prempeh College will afford me the opportunity to participate in your renowned cadet corps and sports tournaments, honing my leadership skills and instilling in me the virtues of perseverance and patriotism.
+Furthermore, my lifelong career ambition is to study civil engineering at the university to help design modern, resilient drainage systems and bridges for flood-prone rural communities in Ghana. Pursuing the General Science curriculum—specializing in Physics, Chemistry, Elective Mathematics, and Biology—is the non-negotiable prerequisite required to qualify for engineering admission at the Kwame Nkrumah University of Science and Technology. Enrolling in General Arts, despite its noble value, would permanently foreclose this technical career pathway.
 
-My mock examination results indicate that I am poised to secure Aggregate Six in the BECE. My former headmaster has attached an official testimonial attesting to my exemplary conduct and academic diligence.
+I promise to dedicate myself with relentless discipline to justify your confidence in my scientific potential. I humbly pray that you approve this adjustment on my official selection card.
 
-I trust that your esteemed office will favorably consider my application.
-
-Thank you.
+Thank you for your fatherly understanding and guidance.
 
 Yours faithfully,
 [Signature]
-Kwaku Mensah Boateng`
+Kwabena Mensah
+(Index Number: 0204010054)`
       },
       {
         questionNumber: "2",
         category: "Informal Letter",
-        prompt: "Write a letter to your friend living in another town, describing a memorable traditional festival recently celebrated in your community and highlighting what made the occasion colorful and enjoyable.",
-        modelAnswer: `Anglican Junior High School
-P. O. Box 45
-Cape Coast, Central Region
-18th September, 2004
+        prompt: "With the full consent of your parents, write a warm, inviting letter to your close friend in another town, inviting him or her to spend a portion of the upcoming long vacation with your family.",
+        modelAnswer: `Presbyterian Junior Secondary School
+P. O. Box 80
+Begoro, Eastern Region
+18th June, 2004
 
-Dear Kweku,
+Dear Kwaku,
 
-I hope this letter finds you in high spirits and good health. I am writing to share with you the pomp, pageantry, and excitement of the annual Fetu Afahye festival, which was commemorated with breathtaking grandeur in Cape Coast last Saturday.
+I hope this letter finds you in fine health, peace of mind, and studying hard as our final examinations approach. With the official permission and warm blessing of my parents, I write with great joy to invite you to spend two weeks of the upcoming long vacation with my family here in Begoro.
 
-The festivities commenced early in the morning with the firing of antique musketry and the sounding of traditional horns. The highlight of the celebration was the grand procession of the seven Asafo warrior companies through the historical streets. Dressed in brilliant traditional military regalia and holding ornamental swords, they danced with incredible agility while acrobatics and drumming electrified the atmosphere.
+Our town is famous for its cool, misty weather and breathtaking tourist attractions. During your stay, my elder brother has agreed to guide us on an unforgettable hiking expedition to the Osuben Mountain Waterfalls, where we can swim in natural mountain pools and explore the lush tropical rainforest. In addition, our community will celebrate the annual Odweira festival in August, featuring majestic palanquin processions of chiefs, thunderous fontomfrom drumming, and vibrant traditional warrior dancing.
 
-Later in the afternoon, our paramount chief, Nana Kwesi Atta II, and his sub-chiefs were carried through the cheering crowds in lavish palanquins shaded by rotating ceremonial umbrellas. The paramount chief was adorned in magnificent kente cloth and heavy gold ornaments that sparkled under the afternoon sun. The air was filled with joyful singing, cultural drumming, and the firing of musketry as thousands of citizens and foreign tourists cheered enthusiastically. At the Victoria Park durbar ground, traditional libations were poured, and chiefs delivered speeches urging the youth to pursue education and protect communal peace.
+Beyond sightseeing, we will establish a disciplined joint study routine. We can revise past question compendiums together in our peaceful family orchard, practice challenging Mathematics formulas, and prepare ahead for our senior secondary school courses. My mother has already prepared our spacious guest room for you and has promised to treat us to her delicious homemade dishes, including hot pounded fufu with spiced game palm-nut soup.
 
-I thoroughly enjoyed the delicious culinary treats, particularly the spicy fante kenkey with fried fish and hot pepper. My cousins and I spent the evening enjoying cultural musical performances by the seaside.
+Please discuss this invitation with Uncle Kwame and Auntie Mansa so that you can confirm your arrival date early. My father will meet you at the central lorry station when your bus arrives.
 
-You must definitely visit us during next year's celebration. Give my warm greetings to your parents.
+I look forward to an exciting and productive holiday together.
 
 Your true friend,
 [Signature]
-Kwesi`
+Emmanuel Addo`
       },
       {
         questionNumber: "3",
-        category: "Debate Speech",
-        prompt: "You are the principal speaker in an inter-school debate on the motion: \"Students should be allowed to choose their own subjects in Junior Secondary School.\" Write your speech arguing either for or against the motion.",
-        modelAnswer: `AGAINST THE MOTION: "STUDENTS SHOULD BE ALLOWED TO CHOOSE THEIR OWN SUBJECTS IN JUNIOR SECONDARY SCHOOL"
+        category: "Descriptive Narrative",
+        prompt: "Describe in vivid, colorful detail an interesting and memorable cultural or civic function you attended recently in your community.",
+        modelAnswer: `A GRAND CELEBRATION OF EDUCATIONAL EXCELLENCE
 
-Mr. Chairman, Distinguished Panel of Judges, Impartial Timekeeper, Worthy Opponents, and Fellow Students:
+Last Saturday, the Jubilee Park in Bekwai was transformed into a dazzling carnival of colors, music, and academic pride as our municipal directorate convened the 2004 Annual Basic Schools Speech and Prize-Giving Day.
 
-I stand firmly before you this morning to oppose the motion that: "Students should be allowed to choose their own subjects in Junior Secondary School." Basic education was deliberately designed by educational experts to provide a broad, holistic foundation; permitting immature adolescents to prematurely specialize is an educational mistake.
+The ceremonial grounds were resplendent with festive decorations. Towering blue-and-gold velvet canopies surrounded the dais, while hundreds of proud parents, traditional chiefs, municipal education directors, and smartly uniformed students filled the spectator stands. The ceremony opened with an impressive inspection of the school cadet corps by the Municipal Chief Executive, followed by stirring brass band anthems and exhilarating traditional drumming performed by our award-winning cultural troupe.
 
-First and foremost, basic school students are psychologically and emotionally too young to make definitive career choices. At twelve or thirteen years of age, a pupil lacks the cognitive maturity to determine what professional path suits his or her talents. Many students find mathematics or integrated science challenging; if given the freedom of choice, they would naturally abandon these rigorous subjects for simpler ones. This would permanently truncate their future opportunities, barring them from pursuing crucial fields like medicine, computer engineering, and accounting at higher levels.
+The highlight of the ceremony was the keynote address delivered by a prominent alumna who is now a pediatric neurosurgeon. She narrated her humble beginnings in a rural village and challenged students to view poverty not as an insurmountable barrier, but as a catalyst for relentless determination. Her inspiring words brought the entire audience to its feet in a thunderous standing ovation.
 
-Secondly, a broad common curriculum equips students with foundational literacy, numeracy, and technical competencies essential for everyday adult survival. Whether one becomes a carpenter, farmer, lawyer, or business entrepreneur, basic knowledge of English for communication, Mathematics for financial accounting, and Social Studies for civic responsibility is indispensable. Permitting early subject selection would create lopsided individuals who are deficient in critical life skills.
+The climax was the presentation of awards. When my name was announced as the Overall Best Student in Integrated Science and Mathematics in the municipality, an electric thrill surged through my veins. Walking onto the stage to receive a plaque, a desktop encyclopedia, and a full secondary school scholarship amidst roaring applause from my teachers and parents was the proudest moment of my life.
 
-In conclusion, Junior Secondary School must remain a comprehensive training ground that opens doors rather than closes them. I urge you all to reject the motion resoundingly.
-
-Thank you.`
+The event concluded with an exquisite reception where guests were treated to savory local delicacies and refreshing fruit juices. It was a glorious milestone that celebrated the beauty of hard work and community support.`
       },
       {
         questionNumber: "4",
-        category: "Narrative Essay",
-        prompt: "Write an interesting, realistic story illustrating how honesty and integrity ultimately triumphed over falsehood and greed, ending with the sentence: \"Honesty is indeed the best policy.\"",
-        modelAnswer: `During the long vacation following our Form Two examinations, I assisted my maternal uncle, Mr. Addo, in managing his busy provisions and wholesale store at the Kejetia Market in Kumasi. One bustling Saturday afternoon, a wealthy cocoa merchant purchased fifty cartons of canned fish and milk, paying with a heavy leather pouch of banknotes.
+        category: "Persuasive / Argumentative Essay",
+        prompt: "Would you prefer to attend a single-sex (girls/boys) school or a co-educational (mixed) school for your Senior Secondary School education? Write an essay giving at least three convincing reasons for your choice.",
+        modelAnswer: `THE SUPERIORITY OF CO-EDUCATIONAL SECONDARY SCHOOLS
 
-In the confusion of loading the consignment onto the waiting haulage truck, the merchant accidentally left behind a thick brown envelope containing eight million cedis on the wooden counter. When I discovered the envelope under a stack of receipts, my heart raced. My co-apprentice, Kofi, urged me to hide the money, whispering that no one had seen it and that we could divide the fortune and buy motorbikes. Conscience wrestled with greed, but the godly counsel of my parents echoed in my mind: never touch what does not belong to you.
+As basic school candidates finalize their selection of secondary institutions, an enduring debate concerns whether single-sex or co-educational (mixed) schools provide the optimal environment for adolescent development. Having critically weighed both models, I firmly maintain that attending a co-educational secondary school offers superior benefits for holistic education and character formation.
 
-I handed the envelope intact to my uncle, who locked it in the office safe. Two hours later, the cocoa merchant returned to the market in a state of utter hysteria, weeping and clutching his chest. The money was his entire annual operating capital, without which his enterprise would collapse. When Uncle Addo brought out the envelope with its contents untouched, the merchant fell to his knees in tears of joy and disbelief.
+First and foremost, co-educational schools mirror the demographic reality of modern adult society. The real world—comprising university campuses, corporate boardrooms, civil service offices, and civic assemblies—is not partitioned by gender. Educating boys and girls together fosters natural social ease, mutual understanding, and professional collaboration from an early age. Young men in mixed institutions learn to view female peers as intellectual equals, dissolving archaic chauvinistic prejudices, while young women develop unshakeable confidence in articulating ideas before male counterparts.
 
-Deeply moved by my integrity, the merchant awarded me two million cedis on the spot and pledged to sponsor my Senior Secondary School boarding fees. Kofi stood by, humiliated and ashamed. Smiling through tears of gratitude, I remembered the timeless proverb: Honesty is indeed the best policy.`
+Secondly, co-educational environments foster healthy, balanced academic competition. Male and female students often exhibit complementary cognitive approaches and academic strengths. In my basic school experience, female students frequently modeled exceptional organizational consistency, neatness, and diligent revision habits, which challenged male students to abandon complacency. Similarly, male peers inspired female classmates to engage boldly in technical, quantitative problem-solving. This cross-gender synergy elevates overall scholastic performance.
+
+Finally, mixed schools encourage emotional maturity and self-discipline. Adolescents educated in healthy, supervised mixed environments develop natural social etiquette, emotional control, and mutual respect, which demystifies the opposite sex and dramatically reduces the social awkwardness and behavioral extremes often observed among single-sex school graduates.
+
+In conclusion, secondary education should prepare students for the realities of life. Co-educational schooling provides the balanced social, intellectual, and emotional foundation required to thrive in a diverse world.`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2004Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2004 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2004 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -666,7 +726,6 @@ async function seedBeceEnglish2004Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2004");
   await docRef.set({
     year: 2004,
@@ -680,37 +739,61 @@ async function seedBeceEnglish2004Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: Tortoise and the Great Famine",
+          title: "Passage I: Kweku Ananse and the Town Drum Incident",
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5"
         },
         {
           id: "passage_2",
-          title: "Passage II: The Midnight Patrol and the Traveler",
+          title: "Passage II: The Midnight Patrol and the Bloodstained Sack",
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10"
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: "Passage I: Kweku Ananse and the Town Drum Incident",
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: "Passage II: The Midnight Patrol and the Bloodstained Sack",
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2004 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2004 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2004Calibrated()

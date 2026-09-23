@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,385 +45,407 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2016
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 40)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 17) ---
   {
     number: 1,
-    prompt: "He is ............ poor that he cannot pay his utility bills.",
+    prompt: "The indigent artisan is ............ impoverished that he cannot settle his domestic utility bills.",
     options: ["so", "too", "very", "rather"],
     correctAnswer: "so",
-    hint: "The degree adverb that pairs with a result clause starting with 'that' is 'so' ('so + adjective + that').",
-    workedSolution: "The correlative structure 'so + adjective + that' expresses an extreme degree leading to a stated result ('so poor that he cannot pay'). 'Too' pairs with a to-infinitive, not a that-clause.",
+    hint: "Correlative result clause: 'so + adjective + that + consequence'.",
+    workedSolution: "The degree adverb 'so' pairs correlatively with the subordinator 'that' to introduce a clause of consequence: 'so poor that he cannot pay'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "You will be late for the morning assembly ............ you hurry.",
+    prompt: "You will miss the morning passenger train ............ you hasten your pace.",
     options: ["if", "or", "unless", "since"],
     correctAnswer: "unless",
-    hint: "Which conjunction means 'if not' and introduces an exception condition?",
-    workedSolution: "'Unless' means 'except if' or 'if ... not' ('You will be late if you do not hurry'). Using 'if' would mean the opposite.",
+    hint: "Negative conditional conjunction meaning 'except if' or 'if not'.",
+    workedSolution: "'Unless' means 'if not', introducing a negative conditional requirement: 'You will be late unless you hurry'.",
     points: 1
   },
   {
     number: 3,
-    prompt: "Aminu has been absent from school ............ one month.",
+    prompt: "Master Aminu has been absent from instructional classes ............ three continuous weeks.",
     options: ["in", "for", "from", "since"],
     correctAnswer: "for",
-    hint: "Use 'for' to denote a duration or period of time, and 'since' for a specific starting point.",
-    workedSolution: "'For' is used with a noun phrase denoting a duration or period ('one month'). 'Since' is reserved for specific points in time.",
+    hint: "Preposition used to measure the duration of an elapsed period of time.",
+    workedSolution: "The preposition 'for' is used to measure an elapsed duration or span of time ('for one month / for three weeks'). 'Since' marks a starting point.",
     points: 1
   },
   {
     number: 4,
-    prompt: "Many job applicants were interviewed, but ............ will be employed.",
+    prompt: "Scores of applicants were shortlisted for the interview, but only ............ will be selected for employment.",
     options: ["few", "a few", "little", "a little"],
     correctAnswer: "few",
-    hint: "Applicants are countable. The contrast marker 'but' indicates an unexpectedly small, near-zero negative quantity.",
-    workedSolution: "'Few' has a negative meaning indicating scarcely any, contrasting with 'many'. 'A few' has a positive connotation (some), while 'little' is for uncountable nouns.",
+    hint: "Countable negative quantifier expressing a scarce, tiny number without an article.",
+    workedSolution: "'Few' without an article has a negative meaning indicating scarcely any (almost none). 'Little' applies strictly to uncountable nouns.",
     points: 1
   },
   {
     number: 5,
-    prompt: "The teacher told the girl he had received ............ of the two assignments.",
+    prompt: "The mathematics instructor remarked that he had marked ............ of the two assignments submitted by the candidate.",
     options: ["all", "any", "none", "neither"],
     correctAnswer: "neither",
-    hint: "When referring to negative choice between exactly two items, use this pronoun.",
-    workedSolution: "When referring to two specific items, 'neither' is the correct negative pronoun meaning 'not one nor the other'. 'None' is used for three or more.",
+    hint: "Negative pronoun used when referring specifically to a choice between exactly two items.",
+    workedSolution: "When negating exactly two entities ('of the two exercises'), standard English requires 'neither'. 'None' applies to three or more.",
     points: 1
   },
   {
     number: 6,
-    prompt: "My father has bought a ............ saloon car.",
-    options: ["private brand new", "new brand private", "private new brand", "brand new private"],
-    correctAnswer: "brand new private",
-    hint: "Adjective order: Age/condition ('brand new') precedes type/purpose ('private').",
-    workedSolution: "In the natural ordering of adjectives, descriptive condition/age ('brand new') precedes classification/purpose ('private') before the noun 'car'.",
+    prompt: "My elder brother has recently purchased a elegant, ............",
+    options: [
+      "private brand new car",
+      "new brand private car",
+      "private new brand car",
+      "brand new private car"
+    ],
+    correctAnswer: "brand new private car",
+    hint: "Cumulative adjective ordering: Condition/Age compound ('brand new') precedes Purpose/Category ('private') before the head noun.",
+    workedSolution: "Standard English noun phrase syntax places the age/condition compound ('brand new') before the classifying purpose adjective ('private'): 'a brand new private car'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "Mama is never ............ ready for school on time.",
+    prompt: "Our grandmother is never ............ caught unprepared for unexpected family visitors.",
     options: ["so", "ever", "even", "rather"],
     correctAnswer: "ever",
-    hint: "'Never' pairs with this adverb to emphasize at any time ('never ever').",
-    workedSolution: "The adverb 'ever' intensifies the negative frequency adverb 'never' ('never ever ready') to mean at no time whatsoever.",
+    hint: "Adverbial intensifier pairing with 'never' to emphasize timeless continuity: 'never ever'.",
+    workedSolution: "The emphatic temporal combination 'never ever' (or simply 'ever' after a negative) reinforces that the condition never occurs at any time.",
     points: 1
   },
   {
     number: 8,
-    prompt: "Akua was ............ that she won four academic prizes.",
-    options: ["a girl so brilliant", "a so brilliant girl", "so brilliant a girl", "a brilliant so girl"],
+    prompt: "Akua was ............ that she swept four major academic awards on Speech Day.",
+    options: [
+      "a girl so brilliant",
+      "a so brilliant girl",
+      "so brilliant a girl",
+      "a brilliant so girl"
+    ],
     correctAnswer: "so brilliant a girl",
-    hint: "The formal emphatic pattern is 'so + adjective + a/an + singular noun'.",
-    workedSolution: "When 'so' modifies an adjective preceding a singular countable noun with an indefinite article, standard English uses the inverted structure: 'so + adjective + a + noun' ('so brilliant a girl').",
+    hint: "Inverted modifier syntax: 'so + adjective + a/an + singular countable noun'.",
+    workedSolution: "When 'so' modifies an adjective modifying a singular countable noun, standard grammar requires the construction: 'so + adjective + a/an + noun' ('so brilliant a girl that...').",
     points: 1
   },
   {
     number: 9,
-    prompt: "Before the tutor entered the classroom, we ............ the chalkboard.",
+    prompt: "Before the senior housemaster entered the hall, the monitors ............ the chalkboard.",
     options: ["cleaned", "have cleaned", "had cleaned", "are cleaning"],
     correctAnswer: "had cleaned",
-    hint: "An action completed before another past event requires the past perfect tense ('had + past participle').",
-    workedSolution: "The past perfect tense ('had cleaned') is used to express an action that took place prior to another past event ('Before he entered').",
+    hint: "Past Perfect tense: Action completed prior to another past event introduced by 'Before he entered...'.",
+    workedSolution: "The cleaning of the board was completed prior to the master's past entry, requiring the Past Perfect tense: 'had cleaned'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "I have forgotten all ............ my grandfather told me.",
+    prompt: "The candidate had forgotten all ............ the science master demonstrated in the laboratory.",
     options: ["this", "that", "what", "which"],
     correctAnswer: "that",
-    hint: "The indefinite quantifier 'all' is followed by the relative pronoun 'that', never 'what'.",
-    workedSolution: "In standard English, the indefinite pronoun 'all' is modified by the relative pronoun 'that' ('all that he told me'). 'What' and 'which' are non-standard in this structure.",
+    hint: "Following the universal quantifier 'all' referring to inanimate things, standard grammar requires the relative pronoun 'that'.",
+    workedSolution: "When the antecedent is the quantifier 'all' referring to things or instructions, standard English requires the relative pronoun 'that': 'all that my friend told me'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "The supervisor will ask the ............ to come and repair the leaking pipe in the bathroom.",
-    options: ["mason", "carpenter", "plumber", "electrician"],
+    prompt: "The estate supervisor will summon the ............ to repair the leaking water pipes in the lavatory.",
+    options: ["mason", "repairer", "plumber", "lumber"],
     correctAnswer: "plumber",
-    hint: "Which skilled artisan specializes in fitting and repairing water pipes and drainage fixtures?",
-    workedSolution: "A 'plumber' is a tradesperson who specializes in installing and maintaining systems used for potable water, sewage, and drainage.",
+    hint: "Tradesperson skilled in installing and repairing domestic water pipes, drainage systems, and fixtures.",
+    workedSolution: "A skilled artisan who fits and repairs pipes, water fittings, and drainage apparatus is a 'plumber'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The heavy boulder fell into the river with a loud .............",
+    prompt: "The granite boulder tumbled into the deep river with a loud ............",
     options: ["bang", "crash", "noise", "splash"],
     correctAnswer: "splash",
-    hint: "The onomatopoeic word for the sound produced when an object hits water.",
-    workedSolution: "'Splash' specifically denotes the sound or action of an object striking or plunging into liquid.",
+    hint: "Onomatopoeic sound produced when an object falls heavily into water.",
+    workedSolution: "The distinctive acoustic sound made by an object striking or plunging into a liquid is a 'splash'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Aggie obtained ............ score for French in the end-of-term examination.",
+    prompt: "Aggie obtained the ............ score in the French dictation examination.",
     options: ["bad", "worse", "the worse", "the worst"],
     correctAnswer: "the worst",
-    hint: "Superlative degree of 'bad' used to indicate the lowest mark among all.",
-    workedSolution: "The irregular degrees of comparison for 'bad' are 'bad - worse - the worst'. In evaluating the lowest mark, the superlative 'the worst' is required.",
+    hint: "Irregular superlative form of the adjective 'bad': bad - worse - the worst.",
+    workedSolution: "The superlative degree of 'bad' comparing performance across the entire class is 'the worst'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "We won the municipal debating contest, ............ we?",
+    prompt: "Our school debating squad won the national championship trophy, ............ we?",
     options: ["hadn't", "didn't", "couldn't", "did"],
     correctAnswer: "didn't",
-    hint: "The affirmative past tense verb 'won' takes a negative tag using the auxiliary 'did'.",
-    workedSolution: "The sentence has an affirmative simple past verb ('won'). The question tag must be negative, utilizing the past auxiliary 'did': 'didn't we?'.",
+    hint: "An affirmative simple past lexical verb ('won') with subject 'we' takes a negative tag formed with 'did'.",
+    workedSolution: "The main clause has an affirmative simple past verb ('won') with subject 'we'. The corresponding question tag must be negative past: 'didn't we?'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Kwame looks very handsome in his new school uniform, .............?",
+    prompt: "Kwame looks remarkably distinguished in his ceremonial smock, ............?",
     options: ["isn't he", "isn't it", "doesn't he", "does he"],
     correctAnswer: "doesn't he",
-    hint: "An affirmative present simple statement with 'looks' takes a negative tag with 'does'.",
-    workedSolution: "The main verb is the third-person singular present 'looks'. The tag must be negative and use the matching present auxiliary 'does': 'doesn't he?'.",
+    hint: "An affirmative simple present lexical verb ('looks') with third-person singular subject takes 'doesn't he?'.",
+    workedSolution: "The main verb is the simple present lexical verb 'looks' with masculine subject 'Kwame'. Its tag is formed with 'does' in the negative: 'doesn't he?'.",
     points: 1
   },
   {
     number: 16,
-    prompt: "Nana Yaa was suffering ............ a severe attack of measles.",
+    prompt: "The infant was suffering ............ acute bronchopneumonia.",
     options: ["by", "with", "from", "through"],
     correctAnswer: "from",
-    hint: "The verb 'suffer' regularly collocates with this preposition when mentioning an illness.",
-    workedSolution: "In standard English, the verb 'suffer' takes the preposition 'from' when referring to a disease or medical condition ('suffering from measles').",
+    hint: "Identify the dependent preposition that regularly collocates with the verb 'suffer' when specifying an illness.",
+    workedSolution: "In standard English medical grammar, the verb 'suffer' takes the preposition 'from' when denoting an affliction or disease: 'suffering from measles'.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The market suspect was charged ............ pickpocketing.",
+    prompt: "The young apprentice was formally charged in court ............ burglary.",
     options: ["of", "for", "on", "with"],
     correctAnswer: "with",
-    hint: "In legal English, an accused person is charged ...... a crime.",
-    workedSolution: "The legal verb phrase is 'charged with' an offense or crime ('charged with pickpocketing').",
+    hint: "Identify the preposition that collocates with the passive judicial verb 'charged'.",
+    workedSolution: "In standard legal collocations, an accused person is 'charged with' an offense (contrasting with 'accused of').",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (18 - 22) ---
   {
     number: 18,
-    prompt: "One essential ingredient for making traditional black soap is soda ash.\nChoose the word nearest in meaning to the underlined word 'essential'.",
+    prompt: "One essential ingredient in traditional soap manufacturing is palm kernel oil.\nChoose the word nearest in meaning to 'essential'.",
     options: ["correct", "main", "real", "important"],
     correctAnswer: "important",
-    hint: "Crucial, vital, indispensable, or of great significance.",
-    workedSolution: "'Essential' means absolutely necessary, fundamental, or indispensable; 'important' is its closest synonym in this context.",
+    hint: "Indispensable, vital, of prime importance.",
+    workedSolution: "'Essential' means indispensable, vital, or fundamentally 'important'; 'important' is its closest synonym.",
     points: 1
   },
   {
     number: 19,
-    prompt: "Examination candidates are instructed to read the instructions carefully.\nChoose the word nearest in meaning to the underlined word 'instructions'.",
-    options: ["notices", "demands", "commands", "directives"],
+    prompt: "Candidates are required to study the examination instructions with utmost care.\nChoose the word nearest in meaning to 'instructions'.",
+    options: ["notice", "demands", "commands", "directives"],
     correctAnswer: "directives",
-    hint: "Official orders, guidelines, or directions telling someone how to do something.",
-    workedSolution: "'Instructions' in examination and administrative contexts refers to official guidelines or directions; 'directives' is its closest synonym.",
+    hint: "Authoritative directions, guidelines, or instructions.",
+    workedSolution: "'Instructions' in an examination or procedural context refers to official rules, guidelines, or 'directives'.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The thirsty dog saw its image in the clear pool of water.\nChoose the word nearest in meaning to the underlined word 'image'.",
+    prompt: "The deer caught sight of its own image in the clear forest pool.\nChoose the word nearest in meaning to 'image'.",
     options: ["nature", "condition", "reflection", "attraction"],
     correctAnswer: "reflection",
-    hint: "An optical likeness produced by light bouncing off a shiny surface or water.",
-    workedSolution: "An 'image' seen on the surface of water is an optical 'reflection'.",
+    hint: "An optical reproduction or likeness produced on a shiny surface or water.",
+    workedSolution: "'Image' seen in water or a mirror refers specifically to an optical 'reflection'.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The school drama club will hold its final rehearsal for the speech day play tonight.\nChoose the word nearest in meaning to the underlined word 'rehearsal'.",
+    prompt: "The dramatic troupe will hold its final rehearsal for the play this evening.\nChoose the word nearest in meaning to 'rehearsal'.",
     options: ["meeting", "practice", "trial", "preparation"],
     correctAnswer: "practice",
-    hint: "A trial performance or practice session before a public drama presentation.",
-    workedSolution: "'Rehearsal' in performing arts refers to a preparatory practice session; 'practice' is its direct synonym.",
+    hint: "A preparatory performance or trial run of a theatrical or musical work.",
+    workedSolution: "'Rehearsal' in the performing arts refers to a preparatory drill or 'practice' session before public performance.",
     points: 1
   },
   {
     number: 22,
-    prompt: "Our grandmother is exceptionally skilled in domestic affairs.\nChoose the word nearest in meaning to the underlined word 'domestic'.",
+    prompt: "Auntie Araba is exceptionally skilled in domestic administration.\nChoose the word nearest in meaning to 'domestic'.",
     options: ["local", "internal", "everyday", "household"],
     correctAnswer: "household",
-    hint: "Relating to the running of a home or family living space.",
-    workedSolution: "'Domestic' refers to matters concerning the home or family; 'household' is its exact equivalent.",
+    hint: "Relating to the running of a home or family dwelling.",
+    workedSolution: "'Domestic' in the context of chores or affairs means relating to the home or 'household'.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (23 - 27) ---
   {
     number: 23,
-    prompt: "Akweley was taken aback on seeing a stranger sitting quietly in her room. This means that Akweley was very ............",
-    options: ["angry", "afraid", "confused", "surprised"],
-    correctAnswer: "surprised",
-    hint: "Shocked, startled, or caught off guard by something unexpected.",
-    workedSolution: "The idiom 'to be taken aback' means to be astonished, startled, or thoroughly surprised by an unexpected occurrence.",
+    prompt: "Akweley was completely taken aback upon discovering an intruder in her study. This means that Akweley was ............",
+    options: ["deeply infuriated", "thoroughly terrified", "mildly confused", "greatly astonished and surprised"],
+    correctAnswer: "greatly astonished and surprised",
+    hint: "Shocked, startled, or caught by complete surprise.",
+    workedSolution: "The idiom 'taken aback' means startled, shocked, or greatly surprised.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The factory workers saw eye to eye with their managing director. This means that the workers ............",
+    prompt: "The union representatives saw eye to eye with the managing director during negotiations. This means they ............",
     options: [
-      "agreed completely with him",
-      "were very close to him",
-      "rarely saw him",
-      "greatly respected him"
+      "agreed completely and harmoniously with him",
+      "sat in close physical proximity to him",
+      "rarely scheduled meetings with him",
+      "admired his executive authority"
     ],
-    correctAnswer: "agreed completely with him",
-    hint: "Having identical opinions and being in complete agreement.",
-    workedSolution: "'To see eye to eye' with someone is an idiom meaning to agree fully or have the same view on an issue.",
+    correctAnswer: "agreed completely and harmoniously with him",
+    hint: "To be in full agreement; to share the same opinion.",
+    workedSolution: "The idiom 'to see eye to eye' means to have identical views, harmonize, or agree completely with someone.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The minister was in high spirits throughout the harvest thanksgiving service. This means that he was ............",
-    options: ["content", "cheerful", "spiritual", "annoyed"],
-    correctAnswer: "cheerful",
-    hint: "In a very happy, energetic, and joyful mood.",
-    workedSolution: "'In high spirits' is an idiom meaning lively, happy, vibrant, and cheerful.",
+    prompt: "The guest speaker was in high spirits throughout his address to the youth. This means that he was ............",
+    options: ["calm and contented", "cheerful, lively, and joyful", "deeply spiritual", "visibly agitated"],
+    correctAnswer: "cheerful, lively, and joyful",
+    hint: "In a very buoyant, cheerful, and lively mood.",
+    workedSolution: "The idiom 'in high spirits' means lively, buoyant, and extremely cheerful.",
     points: 1
   },
   {
     number: 26,
-    prompt: "After decades of hostility, the two chieftaincy factions decided to bury the hatchet. This means that they decided to ............",
-    options: ["make peace", "bury their weapons", "hold discussions", "suspend fighting temporarily"],
-    correctAnswer: "make peace",
-    hint: "Ending a longstanding quarrel and settling differences amicably.",
-    workedSolution: "The idiom 'to bury the hatchet' means to settle grievances, end conflict, and make peace.",
+    prompt: "The two warring communities resolved to bury the hatchet at the peace summit. This means they decided to ............",
+    options: [
+      "settle their conflict and make peace",
+      "bury their physical hunting weapons",
+      "adjourn their discussions indefinitely",
+      "request police mediation"
+    ],
+    correctAnswer: "settle their conflict and make peace",
+    hint: "To end a dispute and become reconciled; to make peace.",
+    workedSolution: "The idiom 'to bury the hatchet' means to cease hostilities, reconcile differences, and make peace.",
     points: 1
   },
   {
     number: 27,
-    prompt: "The headmaster took the truant student's explanation with a pinch of salt. This means that the headmaster ............",
+    prompt: "The magistrate took the suspect's dramatic excuse with a pinch of salt. This means the magistrate ............",
     options: [
-      "believed the student's version completely",
-      "doubted the student's version",
-      "accepted the student's version happily",
-      "ignored the student's version"
+      "believed the testimony unreservedly",
+      "doubted and maintained skepticism about the story",
+      "endorsed the defense argument",
+      "dismissed the courtroom proceedings"
     ],
-    correctAnswer: "doubted the student's version",
-    hint: "Viewing an assertion with skepticism and distrusting its accuracy.",
-    workedSolution: "'To take something with a pinch of salt' means to maintain skepticism and doubt the truthfulness or reliability of a claim.",
+    correctAnswer: "doubted and maintained skepticism about the story",
+    hint: "To view a claim with skepticism and doubt its truthfulness.",
+    workedSolution: "The idiom 'to take something with a pinch of salt' means to doubt its validity and view it with skepticism.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (28 - 32) ---
   {
     number: 28,
-    prompt: "The high court judge acquitted four of the accused suspects but ............ the principal offender.",
+    prompt: "The judge acquitted the first defendant of the felony, but ...... the remaining two.\nChoose the word most nearly opposite in meaning to 'acquitted'.",
     options: ["convicted", "discharged", "cautioned", "rebuked"],
     correctAnswer: "convicted",
-    hint: "'Acquitted' means declared innocent in court. Find the word that denotes finding guilty and sentencing.",
-    workedSolution: "'Acquitted' means cleared of criminal charges. Its direct judicial antonym is 'convicted' (found guilty of a crime).",
+    hint: "'Acquitted' means declared not guilty. What judicial word denotes declared formally guilty of a crime?",
+    workedSolution: "'Acquitted' means cleared of legal guilt. Its direct judicial antonym is 'convicted' (declared guilty).",
     points: 1
   },
   {
     number: 29,
-    prompt: "It pays to be courteous toward elders and colleagues rather than being ............",
+    prompt: "It is always honorable to remain courteous to strangers, rather than being ...... .\nChoose the word most nearly opposite in meaning to 'courteous'.",
     options: ["rude", "wicked", "disobedient", "boastful"],
     correctAnswer: "rude",
-    hint: "'Courteous' means polite and well-mannered. Find the word meaning disrespectful and bad-mannered.",
-    workedSolution: "'Courteous' means displaying good manners and civility. Its direct antonym is 'rude' (impolite or ill-mannered).",
+    hint: "'Courteous' means polite and respectful. What word denotes impolite, ill-mannered, and insolent?",
+    workedSolution: "'Courteous' means polite and well-mannered. Its direct behavioral antonym is 'rude' (discourteous).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Commercial drivers who do not drive with care are frequently prosecuted for ............",
-    options: ["speeding", "drunkenness", "disobedience", "recklessness"],
+    prompt: "Motorists who navigate highways with care avoid penalties, whereas those guilty of ...... are prosecuted.\nChoose the word most nearly opposite in meaning to 'care'.",
+    options: ["speeding", "drunkenness", "indiscipline", "recklessness"],
     correctAnswer: "recklessness",
-    hint: "'Care' means caution and attentiveness. Find the noun meaning wild carelessness without regard for safety.",
-    workedSolution: "'Care' denotes vigilance and caution. Its direct behavioral and legal opposite is 'recklessness' (heedless carelessness).",
+    hint: "'Care' means caution, heedfulness, and attention. What word denotes heedless disregard of danger or caution?",
+    workedSolution: "'Care' implies caution and prudence. In vehicular driving, its direct behavioral antonym is 'recklessness' (careless disregard of danger).",
     points: 1
   },
   {
     number: 31,
-    prompt: "Prince David was the legitimate heir to the throne, whereas his cousin was an unlawful ............",
+    prompt: "Prince Solomon was the legitimate heir to the throne, whereas his rebellious uncle was a/an ...... .\nChoose the word most nearly opposite in meaning to 'heir'.",
     options: ["usurper", "successor", "claimant", "descendant"],
     correctAnswer: "usurper",
-    hint: "'Heir' is the rightful, lawful inheritor. Find the word meaning one who seizes power illegitimately.",
-    workedSolution: "An 'heir' inherits power or property by legal right. An 'usurper' takes a position of power illegally or by force.",
+    hint: "An 'heir' inherits a position by legitimate legal right. What word denotes one who seizes power illegally?",
+    workedSolution: "An 'heir' is a lawful, legitimate inheritor of rank or property. Its direct political antonym is a 'usurper' (one who wrongfully seizes power without legal right).",
     points: 1
   },
   {
     number: 32,
-    prompt: "The dishonest clerk intentionally concealed the register, but the junior assistant ............ discarded it.",
+    prompt: "The treasurer intentionally concealed the audit vouchers, whereas the clerk ...... shredded them.\nChoose the word most nearly opposite in meaning to 'intentionally'.",
     options: ["willingly", "hastily", "mistakenly", "carelessly"],
     correctAnswer: "mistakenly",
-    hint: "'Intentionally' means done on purpose. Find the word meaning done unintentionally by error.",
-    workedSolution: "'Intentionally' (or deliberately) means done on purpose. Its antonym is 'mistakenly' (or accidentally by error).",
+    hint: "'Intentionally' means done on purpose deliberately. What word denotes done inadvertently by error?",
+    workedSolution: "'Intentionally' means on purpose or deliberately. Its direct antonym is 'mistakenly' (accidentally or inadvertently).",
     points: 1
   },
 
-  // --- SECTION E: LITERATURE & LITERARY DEVICES (33 - 40) ---
+  // --- PART II: LITERATURE IN ENGLISH (33 - 40) ---
   {
     number: 33,
-    prompt: "In poetic terminology, a stanza consisting of exactly six lines is called a/an ............",
+    prompt: "In poetic versification, a stanza comprising exactly six lines of verse is termed a/an ............",
     options: ["octave", "opera", "sextet", "sonnet"],
     correctAnswer: "sextet",
-    hint: "An octave has 8 lines, a quatrain has 4 lines. What is a 6-line poetic unit called?",
-    workedSolution: "In poetry, a stanza or poem division consisting of six lines is termed a 'sextet' (or sestet). An octave has eight lines, and a sonnet has fourteen.",
+    hint: "A four-line stanza is a quatrain, eight lines is an octave, and a six-line stanza or poem section is this term.",
+    workedSolution: "In poetic terminology, a stanza or verse unit consisting of six lines is a 'sextet' (or sestet).",
     points: 1
   },
   {
     number: 34,
-    prompt: "Read the extract below and answer the question:\n\"The sudden change in the weather frightened Araba. The bright orange colour of the sunset sky had quickly turned dull as the grey clouds gathered, rumbling, dark and angry. The booming voice of thunder was intimidating. Lightning flashed shards of light from his formidable torch. Araba was a cornered rat. How would she get home if the worst happened?\"\n\nWhat is the prevailing atmosphere of the extract?",
-    options: ["cheerful", "friendly", "frightening", "undaunting"],
+    prompt: "Read the descriptive extract carefully:\n'The sudden shift in the weather terrified Araba. The bright amber sunset had quickly turned dull as bruised grey storm clouds gathered, rumbling, dark and angry. The booming thunder was intimidating. Lightning flashed ferocious shards from its formidable torch. Araba felt like a trapped animal.'\n\nThe overarching atmospheric mood conveyed in this passage is ............",
+    options: ["cheerful", "friendly", "frightening", "undaunted"],
     correctAnswer: "frightening",
-    hint: "Notice words like 'frightened', 'rumbling, dark and angry', 'intimidating', and 'cornered rat'.",
-    workedSolution: "The menacing thunder, gathering angry clouds, and Araba feeling like a 'cornered rat' create an ominous, 'frightening' atmosphere.",
+    hint: "Words like 'terrified', 'dark and angry', 'intimidating', and 'trapped animal' create this emotional atmosphere.",
+    workedSolution: "The menacing visual and auditory descriptions of the storm evoke a tense, terrifying, and 'frightening' atmosphere.",
     points: 1
   },
   {
     number: 35,
-    prompt: "In the extract describing the storm, which word directly personifies the menacing state of the clouds?",
+    prompt: "In the descriptive extract:\n'The bright amber sunset had quickly turned dull as bruised grey storm clouds gathered, rumbling, dark and angry.'\n\nThe hostile nature of the gathering weather is emotionally emphasized by the adjective ............",
     options: ["angry", "cloud", "flashed", "grey"],
     correctAnswer: "angry",
-    hint: "Which adjective assigns the human emotional state of fury to inanimate storm clouds?",
-    workedSolution: "Describing clouds as 'angry' attributes human emotion to a natural phenomenon, which emphasizes the hostile weather.",
+    hint: "A personified emotive adjective attributing hostile human emotion to the clouds.",
+    workedSolution: "The word 'angry' attributes fierce emotional hostility to the dark storm clouds, strongly emphasizing the menacing state of the weather.",
     points: 1
   },
   {
     number: 36,
-    prompt: "\"Lightning flashed shards of light from his formidable torch.\"\nWhich literary device is exemplified in this line?",
+    prompt: "In the line:\n'Lightning flashed ferocious shards from its formidable torch.'\n\nAttributing a 'torch' and intentional striking actions to lightning is an example of ............",
     options: ["alliteration", "ellipsis", "parallelism", "personification"],
     correctAnswer: "personification",
-    hint: "Attributing personal pronouns ('his') and human tools ('torch') to inanimate lightning.",
-    workedSolution: "Giving lightning human qualities ('his formidable torch') is a classic example of 'personification'.",
+    hint: "Giving human tools and human agency to an inanimate electrical discharge.",
+    workedSolution: "Attributing human traits and equipment ('its formidable torch') to natural lightning is 'personification'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "In the extract, what impending natural event is implied by the rhetorical question: \"How would she get home if the worst happened?\"",
-    options: ["Current calm", "Imminent rain", "Latent sky", "Rumbling clouds"],
-    correctAnswer: "Imminent rain",
-    hint: "Dark gathering clouds, thunder, and lightning precede what severe physical event?",
-    workedSolution: "The 'worst' that could trap Araba on her journey home is a violent downpour ('Imminent rain').",
+    prompt: "In the extract, the anxious rhetorical question 'How would she reach home if the worst happened?' refers to the imminent danger of ............",
+    options: [
+      "the peaceful evening calm",
+      "an impending violent rainstorm and tempest",
+      "the setting of the sun",
+      "the barking of domestic animals"
+    ],
+    correctAnswer: "an impending violent rainstorm and tempest",
+    hint: "The approaching disaster being prepared for by dark clouds, thunder, and lightning.",
+    workedSolution: "The phrase 'if the worst happened' refers directly to the outbreak of a violent, torrential storm that would strand her in the wild.",
     points: 1
   },
   {
     number: 38,
-    prompt: "\"The sudden change in the weather frightened Araba. The bright orange colour of the sunset sky had quickly turned dull...\"\nThis literary extract is written in which literary genre?",
-    options: ["drama", "poetry", "prose", "verse"],
+    prompt: "The literary style and formal structure of the extract about Araba and the gathering storm is ............",
+    options: ["drama", "poetry", "prose", "satire"],
     correctAnswer: "prose",
-    hint: "Continuous narrative text structured in sentences and paragraphs, without metric verse or theatrical dialogue.",
-    workedSolution: "The narrative is written in ordinary, continuous grammatical sentences without poetic meter or drama script format, classifying it as 'prose'.",
+    hint: "Written in continuous sentences and ordinary paragraph narrative form, not verse lines or dramatic dialogue.",
+    workedSolution: "The extract is composed in continuous grammatical sentences organized into narrative prose paragraphs, which defines 'prose'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "One distinctive structural feature that characterizes prose writing is the division of text into ............",
-    options: ["paragraphs", "stanzas", "stage directions", "rhymes"],
-    correctAnswer: "paragraphs",
-    hint: "Poetry is organized into stanzas, drama into stage directions and acts, while prose is organized into...",
-    workedSolution: "The fundamental structural building block of prose narrative is the 'paragraph'. Stanzas belong to poetry, and stage directions belong to drama.",
+    prompt: "The fundamental structural building block of prose narrative literature is the ............",
+    options: ["paragraph", "stanza", "stage direction", "rhyme"],
+    correctAnswer: "paragraph",
+    hint: "Poetry is organized into stanzas, drama into scenes and stage directions, while prose is organized into this unit.",
+    workedSolution: "In literature, poetry is structured into stanzas, drama into dialogue and stage directions, whereas prose is organized into 'paragraphs'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "A novelist produces literary works primarily in which form?",
+    prompt: "The creative work of a novelist is written in the literary genre of ............",
     options: ["drama", "poetry", "prose", "verse"],
     correctAnswer: "prose",
-    hint: "A novel is an extended fictional narrative written in ordinary paragraph form.",
-    workedSolution: "A novel is an extended narrative work of fiction written in 'prose' form.",
+    hint: "A novel is an extended fictional narrative written in ordinary continuous prose.",
+    workedSolution: "A novel is defined as an extended work of narrative fiction composed in 'prose'.",
     points: 1
   }
 ];
@@ -444,9 +471,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 201601);
+const assignedTargetIndices = seedShuffle(targetKeys, 201602);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -469,195 +496,135 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING & COMPREHENSION (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
-    title: "Part A: Essay Writing",
-    instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
+  partA_composition: {
+    title: "Part A: Composition",
+    instructions: "Answer one question only from this section. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Informal Letter",
-        prompt: "Write a letter to your friend describing how you saved a child who was in danger.",
-        modelAnswer: `Wesley Girls' Junior High School
-P. O. Box 115
-Cape Coast, Central Region
-14th June, 2016
+        prompt: "Write a letter to your close friend attending another school, describing vividly how you displayed courage and presence of mind to rescue a little child who was in grave physical danger.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2016
 
-Dear Esi,
+Dear Kwaku,
 
-I hope this letter finds you in high spirits and good health. I am writing to share a harrowing experience that occurred last Friday afternoon in my neighborhood, which I still remember with a pounding heart.
+I hope this letter finds you in fine health, peace of mind, and excelling in your studies in Kumasi. I am writing to recount a terrifying yet triumphant incident that occurred in our neighborhood last Saturday afternoon, in which I had to risk my own safety to rescue a five-year-old child from grave danger.
 
-While walking home from extra classes along the Kakum River corridor, I heard frantic screams and splashing water near the old timber bridge. Rushing to the riverbank, I was horrified to see little Kwame, our neighbor's six-year-old boy, struggling desperately in the swift current. He had slipped from the slippery embankment while trying to retrieve a plastic football and was being dragged toward deep, swirling waters.
+It was a sweltering afternoon, and I was returning from our family vegetable garden along the railway crossing lane when piercing, hysterical screams shattered the quiet air: "Help! The baby is on the tracks!" Looking ahead with my heart in my throat, I spotted little Kofi, our neighbor's toddler, wandering innocently between the steel railway tracks, trying to retrieve a plastic ball. Barely two hundred meters away, an approaching heavy diesel cargo train sounded its deafening horn, hurtling down the decline at high speed. The locomotive driver was frantically blasting the siren and braking, but the massive iron train could not stop instantly.
 
-Without hesitating, I dropped my heavy school bag, kicked off my sandals, and looked around for help. Realizing there were no adults nearby, I grabbed a long, sturdy bamboo pole that fishermen had left on the bank. I waded carefully into the shallows where the footing was secure, extended the pole toward Kwame, and shouted at him to hold on tightly. Terrified but determined, the little boy grasped the bamboo with both hands.
+Paralyzed onlookers on the roadside were screaming in helpless terror. Knowing that hesitation meant gruesome death, an electric surge of adrenaline seized me. I dropped my basket of vegetables and sprinted across the gravel embankment with every ounce of physical strength in my body. Diving headlong across the steel rails like an agile goalkeeper, I wrapped my arms around the toddler's waist and shoved us both violently off the tracks into the soft grassy ditch just as the screaming metal wheels roared past, missing our heels by inches.
 
-Summoning all my strength, I braced my feet against the river rocks and steadily hauled him toward safety until I could reach his arms and pull him onto the grassy bank. He was coughing up muddy water, shivering, and crying inconsolably. I wrapped him in my dry school cardigan and carried him home to his frantic parents, who wept with gratitude.
+Neighbors rushed into the ditch, weeping in profound relief and lifting us onto their shoulders. Holding the trembling child in my arms, I thanked God for granting me the courage to act.
 
-That incident taught me that presence of mind and courage can make all the difference in an emergency. Write back soon and share your holiday plans.
+Please write back soon.
 
-Your affectionate friend,
+Your true friend,
 [Signature]
-Abena`
+Kwabena Mensah`
       },
       {
         questionNumber: "2",
         category: "Article for Publication",
-        prompt: "Write an article for publication in your school magazine on the topic: \"The Relationship Between Parents and Their Children Should Be Cordial.\"",
-        modelAnswer: `FOSTERING CORDIAL RELATIONSHIPS BETWEEN PARENTS AND CHILDREN
-By Joseph Boateng, JHS 3
+        prompt: "Write an article for publication in your school magazine on the topic: \"The Relationship Between Parents and Their Children Should Be Cordial and Friendly.\"",
+        modelAnswer: `THE VITAL NECESSITY OF CORDIAL PARENT-CHILD RELATIONSHIPS
+By Samuel K. Boateng, Begoro
 
-In many traditional Ghanaian homes, parenting is often characterized by stern authority, distance, and fear. Many parents believe that strict intimidation is the only effective way to instill discipline in young minds. However, in our rapidly changing contemporary world, it is imperative that the relationship between parents and their children should be cordial, empathetic, and communicative.
+In many traditional Ghanaian homes, parenting is predominantly characterized by strict authoritarianism, emotional distance, and fear. Children are conditioned to view their parents not as approachable confidants, but as unyielding disciplinarians whose presence demands trembling silence. While parental authority is vital, modern developmental psychology proves that establishing a cordial, affectionate, and open relationship between parents and their children is essential for healthy adolescent growth and moral discipline.
 
-First, a cordial relationship creates an open atmosphere where young people can confide their problems without dread. Adolescence is a turbulent phase fraught with peer pressure, emotional conflicts, and academic anxieties. When parents are approachable and warm, children readily discuss their difficulties, including exposure to bad influences, cyberbullying, or substance abuse. Conversely, when an atmosphere of terror reigns at home, children withdraw into secrecy, seeking flawed advice from misguided peers, which often leads to delinquency and teenage pregnancy.
+First and foremost, a cordial relationship fosters open emotional communication and mental security. Adolescence is a turbulent developmental phase fraught with peer pressure, academic anxiety, and physical changes. When parents maintain an approachable, friendly posture, children feel safe discussing their personal doubts, school challenges, and moral dilemmas without the dread of instant beatings or verbal abuse. Conversely, children raised in rigid, hostile homes bottle up their struggles or seek terrible counsel from delinquent peers, frequently descending into drug abuse, truancy, and teenage pregnancy. A child who can talk openly to his father will never seek wisdom from bad company.
 
-Secondly, friendly parental guidance nurtures genuine emotional security, self-confidence, and academic excellence. Children who feel respected and cherished by their parents develop a healthy self-esteem that enables them to excel in school and society. A warm home environment does not mean the absence of discipline; rather, it means correcting mistakes with love, patience, and rational explanation rather than harsh corporal brutality.
+Secondly, mutual friendship cultivates authentic moral integrity and voluntary obedience. Discipline imposed purely through terror is fleeting; the moment the authoritarian parent turns their back, the rebellious child misbehaves. In contrast, children who experience warm parental affection, patient listening, and mutual respect obey household guidelines out of love and a desire to honor their parents, developing deep personal consciences.
 
-In conclusion, cordiality between parents and children builds unbreakable family bonds and shapes responsible future citizens. Parents should become trusted mentors, listeners, and friends to their children, for love and open communication are the greatest guardians of youthful virtue.`
+In conclusion, parents must dismantle walls of intimidation and build bridges of understanding. A home anchored in friendly warmth produces emotionally resilient, morally upright, and confident citizens.`
       },
       {
         questionNumber: "3",
         category: "Narrative Essay",
-        prompt: "Write an interesting story that ends with the sentence: \"We were lucky that night.\"",
-        modelAnswer: `During the mid-term holidays, my elder brother Yaw and I accompanied our uncle to his isolated cocoa cottage near the forest reserve in Sefwi Wiawso. The day had been long and exhausting as we helped harvest golden cocoa pods. By nightfall, a heavy tropical storm rolled across the mountains, plunging the forest into inky blackness accompanied by howling winds and blinding lightning.
+        prompt: "Write an engaging, suspenseful story that concludes with the sentence: \"We were lucky that night.\"",
+        modelAnswer: `THE MIDNIGHT INTRUSION IN THE STORM
 
-Around midnight, while Uncle slept soundly, Yaw and I were jolted awake by the pungent smell of burning wood and choking smoke filling the wooden bedroom. Coughing violently, we discovered that a faulty kerosene storm lantern in the hallway had tipped over during the gale, igniting dry thatch and wooden wall planks. The corridor was already engulfed in roaring orange flames, completely blocking the main doorway.
+It was a pitch-black Friday night in July, and our rural community was engulfed in a howling tropical storm. The relentless thunder rattled our wooden shutters, and torrential rainfall roared across our corrugated zinc roof. My elder brother, Kofi, and I were alone in our four-bedroom family bungalow while our parents were attending a regional church convention in Kumasi.
 
-Panic gripped my heart, but Yaw acted with remarkable presence of mind. He immediately smashed the wooden louvers of our bedroom window with a heavy bench and helped me scramble out into the pouring rain. Together, we screamed for Uncle through his adjoining window. Dazed by smoke, Uncle managed to break through his bedroom window frame and tumble onto the muddy grass just seconds before the entire roof collapsed in a cascade of burning embers.
+Around one o'clock in the morning, during a momentary lull in the wind, a sudden metallic clatter echoed from the back kitchen veranda, followed by the muffled grunts of men whispering in the dark. Creeping cautiously to the kitchen door, my blood ran cold. Through the glass louvers, illuminated by a vivid flash of lightning, I spotted three masked men armed with heavy crowbars, machetes, and a home-made shotgun, busily prying open our burglar-proof iron gate.
 
-Neighbors from distant hamlets braved the storm with buckets of water, but the cottage was burned to ashes. Shivering in the rain under the banana trees, watching our belongings turn to cinders, we hugged each other tightly, grateful that not a single life was lost. We were lucky that night.`
+Panic threatened to overwhelm us, but Kofi kept an extraordinary cool head. Knowing that screaming would only provoke the armed robbers to shoot through the windows, he slipped into our father's bedroom, switched on our high-decibel car alarm remote control, and flashed our powerful security floodlights. The piercing, wailing siren shattered the quiet neighborhood, while Kofi bellowed at the top of his lungs through the megaphone: "Security patrol, surround the back gate; they are armed!"
+
+Startled by the blazing lights and the deafening siren, the intruders concluded that a military tactical team was lying in ambush. Dropping their crowbars in terror, they scaled the razor-wire fence and fled into the dark forest. Minutes later, armed community watchdog volunteers arrived to secure our house. Breathing heavily as we inspected the shattered gate lock, we realized that our quick wit had averted a massacre. We were lucky that night.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `One major cause of environmental degradation in Ghana is gold mining. In the name of natural resource development, land is given to mining companies owned by foreigners. These foreigners milk the country dry and destroy the heritage of the people.
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `One of the most devastating catalysts of environmental destruction in contemporary Ghana is open-cast gold mining. In the name of exploiting natural mineral resources for economic growth, vast expanses of fertile arable land are ceded to large multinational mining syndicates. These foreign commercial conglomerates ruthlessly milk the nation dry and systematically dismantle the ancestral heritage of the people. Operating within vast forest concessions granted by statutory regulatory agencies, they excavate the gold deposits, pollute river basins, and strip pristine vegetation before repatriating their astronomical profits overseas, abandoning behind them a barren, worthless landscape. Yet, their activities operate under legal permits.
 
-From the vast concessions granted them by the government, they extract the gold, destroy the rivers and other water bodies in the communities before going home, leaving the land worthless. Yet their operations are legal.
+However, state-approved concessions do not constitute the sole category of gold excavation. There exists an equally rampant, unauthorized artisanal sector popularly referred to as galamsey. In this illegal enterprise, adventurous local youths undertake uncontrolled private mining as a primary livelihood. Utilizing excavators, dredging platforms, and rudimentary pickaxes, they excavate deep craters across the countryside.
 
-Approved mining is, however, not the sole gold mining activity. There is also what is regarded as unauthorized mining, called galamsey. In this enterprise, adventurous Ghanaians set out to do private mining as a livelihood. They dig up the earth with tools that are not as sophisticated as those of foreigners who also dig for the precious metal.
+Mining activities inflict catastrophic, irreversible harm upon the environment. So far, all reclamation policies have failed; the ecological damage is largely permanent. Expansive agricultural belts that formerly yielded bountiful harvests of cocoa, plantain, and cassava have been converted into desolate lunar mounds of toxic gravel where no vegetation can take root.
 
-Mining activities destroy the environment. So far, it appears that nothing can be done to reclaim the land degraded by miners; the damage is irreversible. Vast tracts of arable land have become desolate mounds because of gold digging. Nothing can grow where galamsey has taken place.
-
-Besides, the main water sources of communities have been polluted by the activities of both legal and illegal miners. The gold extracted from dirt requires cleaning with chemicals and rinsing in water. By the time the gold searchers succeed in producing a glittering handful, large stretches of rivers, ponds of water and some lakes have become poisoned.
-
-Pollution leaves little drinking water for man and beast. Fishes die and humans contract various diseases.`,
+Furthermore, vital water bodies have been poisoned. Gold extraction from muddy slurries requires chemical washing using potent toxins like mercury and cyanide. By the time prospectors extract a sparkling handful of gold dust, extensive stretches of majestic rivers, freshwater streams, and community ponds have been transformed into toxic brown sewers. This contamination exterminates aquatic fish populations and deprives humans and livestock of clean drinking water, triggering acute kidney failure and waterborne epidemics across rural communities.`,
     questions: [
       {
-        subId: "(a)",
-        question: "Name the two types of mining activities discussed in the passage.",
-        answer: "1. Approved / legal mining (conducted by foreign commercial companies).\n2. Unauthorized / illegal mining (popularly called 'galamsey', conducted by private local miners)."
+        subQuestion: "(a)",
+        question: "Identify the two distinct categories of gold mining operations discussed in the passage.",
+        answer: "The two categories are state-approved (legal/large-scale foreign) mining and unauthorized (illegal/artisanal) mining popularly known as galamsey."
       },
       {
-        subId: "(b)(i)",
-        question: "Which groups of people engage in mining according to the passage?",
-        answer: "Foreign mining companies (foreigners) and local adventurous Ghanaians (galamsey operators)."
+        subQuestion: "(b)",
+        question: "I. Which two main groups of people engage in these mining activities?\nII. Why does the government grant legal concession licenses to foreign mining companies?",
+        answer: "I. Foreign mining companies (multinationals) and local Ghanaian youths (adventurous citizens / galamsey operators).\nII. The government grants licenses in the name of natural resource exploitation and economic development (to earn mineral revenue)."
       },
       {
-        subId: "(b)(ii)",
-        question: "Why does the government grant licenses to miners?",
-        answer: "In the name of natural resource development (to generate economic revenue and develop national mineral resources)."
+        subQuestion: "(c)",
+        question: "State two specific ways in which both the land and the local population are adversely affected by mining activities.",
+        answer: "1. The land is rendered barren, degraded, and desolate, turning fertile farms into worthless gravel mounds where crops cannot grow.\n2. Water sources are heavily poisoned with toxic chemicals, exterminating fish, destroying drinking water, and inflicting deadly diseases on human beings."
       },
       {
-        subId: "(c)",
-        question: "How are the people and the land affected by mining activities according to the passage?",
-        answer: "1. The land is ruined and turned into desolate mounds where no crops can grow (irreversible degradation).\n2. Community water bodies are poisoned with chemicals, causing fish to die, depriving humans and animals of clean drinking water, and spreading diseases among humans."
+        subQuestion: "(d)",
+        question: "I. What is the author's personal attitude toward gold mining activities?\nII. Why does the author maintain that nothing effective can be done about the consequences?",
+        answer: "I. The author feels angry, resentful, bitter, and strongly critical of mining activities.\nII. The author believes nothing can be done because the extensive ecological damage and soil degradation inflicted by miners are largely irreversible and permanent."
       },
       {
-        subId: "(d)(i)",
-        question: "How does the writer feel about mining?",
-        answer: "The writer feels deeply critical, distressed, disapproving, and sorrowful about the widespread destruction and environmental degradation caused by mining."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following figurative expressions as used in the passage:\nI. 'milk the country dry'\nII. 'leaving the land worthless'",
+        answer: "I. 'milk the country dry' means ruthlessly exploiting, draining, and exhausting all the nation's natural wealth and mineral resources without giving back fair value.\nII. 'leaving the land worthless' means abandoning the soil in a completely ruined, barren, and unproductive state where it has no agricultural or economic value."
       },
       {
-        subId: "(d)(ii)",
-        question: "Why does the writer think that nothing can be done about the effects of mining?",
-        answer: "Because the environmental damage to the land is irreversible and impossible to reclaim; nothing can ever grow on land that has been ravaged by galamsey."
-      },
-      {
-        subId: "(e)",
-        question: "Explain the following expressions in your own words:\n(i) milk the country dry;\n(ii) leaving the land worthless.",
-        answer: "(i) **milk the country dry:** To exploit and exhaust the nation's precious natural wealth and mineral resources completely for selfish gain, leaving little or nothing behind for citizens.\n(ii) **leaving the land worthless:** Rendering the soil completely barren, unproductive, and unusable for agriculture, human settlement, or future development."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\n(i) vast;\n(ii) sole;\n(iii) reclaim;\n(iv) mounds;\n(v) glittering.",
-        answer: "(i) **vast:** huge / enormous / extensive / immense / large.\n(ii) **sole:** only / single / exclusive.\n(iii) **reclaim:** restore / rehabilitate / recover / salvage.\n(iv) **mounds:** heaps / piles / hillocks / ridges.\n(v) **glittering:** shining / sparkling / gleaming / shimmering."
-      }
-    ]
-  },
-  sectionC_literature: {
-    title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
-    questions: [
-      {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Oliver was trapped among criminals in London, forced to participate in burglary...\"",
-        question: "Who was the notorious master criminal that trained young boys to become pickpockets in London?",
-        answer: "Fagin (the old Jewish fence who led the gang of juvenile thieves)."
-      },
-      {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "The tragic demise of Nancy...",
-        question: "Why did Bill Sikes brutally murder Nancy in the novel?",
-        answer: "Because he discovered that Nancy had secretly met with Rose Maylie and Mr. Brownlow to reveal Fagin's criminal conspiracy to save Oliver."
-      },
-      {
-        subId: "5(c)",
-        textSource: "KEN SARO-WIWA: Home Sweet Home",
-        extract: "\"Dukana was a small village, isolated from the bustling modern world...\"",
-        question: "What is the central theme of Ken Saro-Wiwa's short story 'Home Sweet Home'?",
-        answer: "The theme of deep nostalgia, communal belonging, rural poverty, and the enduring attachment an educated person feels toward their ancestral homeland."
-      },
-      {
-        subId: "5(d)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"ATO: Why don't you understand? It is our private affair!\nESI KOM: A marriage is never a private affair of two individuals.\"",
-        question: "What cultural conflict is dramatized in this exchange between Ato and his mother?",
-        answer: "The conflict between modern Western individualism (marriage as a private matter) and traditional African communalism (marriage as an alliance of families and clans)."
-      },
-      {
-        subId: "5(e)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "The dilemma facing Ato Yawson...",
-        question: "Why is Ato Yawson described as a 'ghost' in the play?",
-        answer: "Because he is caught helplessly between two worlds—his traditional Akan heritage and his acquired Western education—belonging fully to neither and lacking the moral courage to reconcile them."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. vast\nII. sole\nIII. reclaim\nIV. mounds\nV. glittering",
+        answer: "I. vast: expansive, immense, huge, extensive, broad.\nII. sole: only, single, exclusive, lone.\nIII. reclaim: restore, rehabilitate, recover, renew.\nIV. mounds: heaps, piles, hillocks, ridges.\nV. glittering: sparkling, shining, gleaming, lustrous."
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    id: `lit_${q.subId}`,
-    partLabel: `Part C: Literature - ${q.textSource} [${q.subId}]`,
-    prompt: (q.extract ? `Extract:\n"${q.extract}"\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 2
-  }))
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  }
 ];
 
 async function seedBeceEnglish2016Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2016 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2016 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -670,6 +637,7 @@ async function seedBeceEnglish2016Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2016");
   await docRef.set({
     year: 2016,
@@ -683,25 +651,54 @@ async function seedBeceEnglish2016Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasLiteratureComponent: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 17",
+          questions: balancedPaper1.slice(0, 17)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 18 to 22",
+          questions: balancedPaper1.slice(17, 22)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 23 to 27",
+          questions: balancedPaper1.slice(22, 27)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 28 to 32",
+          questions: balancedPaper1.slice(27, 32)
+        },
+        partII_literature: {
+          title: "Part II: Literature in English",
+          questionRange: "Questions 33 to 40",
+          questions: balancedPaper1.slice(32, 40)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay and Reading Comprehension",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2016 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2016 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2016Calibrated()

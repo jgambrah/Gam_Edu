@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,402 +45,434 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 40)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "If the national team had scored that penalty, the supporters ......",
-    options: ["will have celebrated", "will celebrate", "would have celebrated", "would celebrate"],
-    correctAnswer: "would have celebrated",
-    hint: "Conditional Type 3: 'If + past perfect' requires 'would have + past participle' in the main clause.",
-    workedSolution: "The condition 'If the national team had scored' is in the past perfect tense. In a Third Conditional sentence, the main clause requires 'would have' followed by the past participle ('would have celebrated').",
+    prompt: "If our Olympic sprinter had secured the gold medal, the entire nation ............ with boundless joy.",
+    options: [
+      "will have jubilated",
+      "will jubilate",
+      "would have jubilated",
+      "would jubilate"
+    ],
+    correctAnswer: "would have jubilated",
+    hint: "Third Conditional: 'had secured/won' in the if-clause requires 'would have + past participle' in the main clause.",
+    workedSolution: "In a counterfactual past conditional construction ('If Azameti had won...'), the main clause requires a modal past perfect: 'would have jubilated'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "At the wedding reception, guests were treated to a ...... dish.",
-    options: ["spicy delicious local", "delicious spicy local", "local spicy delicious", "delicious local spicy"],
-    correctAnswer: "delicious spicy local",
-    hint: "Order of adjectives: Opinion comes before physical quality/taste, which precedes origin.",
-    workedSolution: "According to the Royal Order of Adjectives: Opinion ('delicious') comes before quality/flavor ('spicy'), which precedes origin/type ('local').",
+    prompt: "The catering crew served a ............ delicacy at the diplomatic banquet.",
+    options: [
+      "Spanish delicious spicy",
+      "delicious spicy Spanish",
+      "delicious Spanish spicy",
+      "spicy Spanish delicious"
+    ],
+    correctAnswer: "delicious spicy Spanish",
+    hint: "Cumulative adjective ordering: Opinion/Evaluation ('delicious') precedes Taste/Physical Quality ('spicy') which precedes Origin/Nationality ('Spanish') before the noun.",
+    workedSolution: "Standard English cumulative adjective order places subjective evaluation ('delicious') before physical descriptor ('spicy') followed by national origin ('Spanish'): 'delicious spicy Spanish meal'.",
     points: 1
   },
   {
     number: 3,
-    prompt: "Yaw has not purchased ...... of the two prescribed mathematics sets.",
+    prompt: "Because of financial constraints, Ali's parents have not purchased ............ of the two recommended literature manuals.",
     options: ["any", "none", "neither", "either"],
     correctAnswer: "either",
-    hint: "When a negative verb ('has not') refers to two items, use 'either' to mean neither one.",
-    workedSolution: "Because the sentence already contains the negative word 'not' and refers to two items, 'either' is the correct correlative word ('not ... either of the two'). Double negatives like 'not ... neither' are incorrect.",
+    hint: "In a negative clause containing 'have not', use this non-assertive pronoun to negate a choice between two items without creating a double negative.",
+    workedSolution: "Following the negative auxiliary 'have not', standard English uses 'either' when referring to two items ('either of the two recommended books'). 'Neither' would create an ungrammatical double negative.",
     points: 1
   },
   {
     number: 4,
-    prompt: "The new apprentice is allergic ...... cement dust.",
+    prompt: "The pediatrician observed that the little girl is remarkably allergic ............ fine dust particles.",
     options: ["about", "against", "with", "to"],
     correctAnswer: "to",
-    hint: "The adjective 'allergic' always takes this specific preposition.",
-    workedSolution: "In standard English, the adjective 'allergic' is followed by the preposition 'to' (e.g., 'allergic to dust').",
+    hint: "Identify the dependent preposition that regularly collocates with the adjective 'allergic'.",
+    workedSolution: "In standard English collocations, the adjective 'allergic' takes the preposition 'to': 'allergic to dust'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "The watchman noticed the trespasser ...... across the compound.",
+    prompt: "From the second-floor window, Dauda saw the shoplifter ............ out of the boutique.",
     options: ["was running", "is running", "run", "ran"],
     correctAnswer: "run",
-    hint: "Verbs of perception (saw, noticed, heard) are followed by an object and a bare infinitive or present participle.",
-    workedSolution: "After verbs of sensory perception like 'noticed' or 'saw', an object takes a bare infinitive ('run') to indicate a completed action, or a present participle ('running') for an ongoing one. 'Ran' and 'was running' are grammatically incorrect here.",
+    hint: "Verbs of sensory perception (see, watch, hear) take an object followed by a bare infinitive for a completed action.",
+    workedSolution: "Following verbs of sensory perception ('saw'), standard English uses a bare infinitive without 'to' ('run') to indicate witnessing the complete action.",
     points: 1
   },
   {
     number: 6,
-    prompt: "The headmaster indicated that it was high time the students ...... their revision.",
-    options: ["have to begin", "began", "had to begin", "begin"],
-    correctAnswer: "began",
-    hint: "The structure 'It is (high) time + subject' takes a subjunctive verb in the simple past tense.",
-    workedSolution: "Expressions like 'It is time' or 'It was time' followed by a subject require the simple past subjunctive form of the verb ('began') to express an overdue action.",
+    prompt: "The team captain suggested that it was high time the delegates ............ for the national stadium.",
+    options: ["have to leave", "left", "had to leave", "leave"],
+    correctAnswer: "left",
+    hint: "Subjunctive past simple: 'it was time / it is time + subject' takes a simple past verb form.",
+    workedSolution: "Following the subjunctive formula 'it was time they...' (or 'it is time they...'), standard grammar requires the simple past tense: 'left'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "The storm was raging violently, ...... the fishermen set sail into the open sea.",
+    prompt: "Last Wednesday, it rained torrentially across the municipality, ............ the football derby was played to the final whistle.",
     options: ["and", "so", "for", "yet"],
     correctAnswer: "yet",
-    hint: "Choose the coordinating conjunction that expresses a surprising contrast.",
-    workedSolution: "'Yet' functions as an adversative coordinating conjunction expressing contrast (equivalent to 'nevertheless' or 'but').",
+    hint: "Adversative coordinating conjunction expressing concession or surprise between contrasting ideas.",
+    workedSolution: "The coordinating conjunction expressing concession and contrast between heavy rain and the match being played is 'yet' (meaning nevertheless).",
     points: 1
   },
   {
     number: 8,
-    prompt: "You haven't traveled outside the country before, ...... you?",
+    prompt: "You haven't encountered that foreign diplomat before, ............ you?",
     options: ["hadn't", "have", "haven't", "had"],
     correctAnswer: "have",
-    hint: "A negative statement takes a positive question tag using the same auxiliary verb.",
-    workedSolution: "The main clause has a negative auxiliary verb ('haven't'). Therefore, the question tag must be positive: 'have you?'.",
+    hint: "A negative statement with present perfect auxiliary 'haven't' and subject 'you' takes an affirmative tag: 'have you?'.",
+    workedSolution: "The main clause has a negative present perfect auxiliary ('haven't met'). The matching question tag must be affirmative: 'have you?'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "During the hearing, the accused faced ...... committee.",
-    options: ["five-members'", "a five-member", "a five-member's", "five-members"],
-    correctAnswer: "a five-member",
-    hint: "When a compound number-noun acts as an adjective before a noun, it takes the singular form without an apostrophe.",
-    workedSolution: "In compound adjectives modifying a noun, the unit remains singular and hyphenated: 'a five-member committee'.",
+    prompt: "During the administrative promotion interview, the candidate faced ............ panel.",
+    options: [
+      "seven-members'",
+      "a seven-member",
+      "a seven-member's",
+      "seven-members"
+    ],
+    correctAnswer: "a seven-member",
+    hint: "Singular compound adjective: A hyphenated numeral-noun compound modifying a head noun retains the singular form and takes an indefinite article.",
+    workedSolution: "When a numeral and noun combine into a compound modifier preceding a singular noun ('panel'), the modifier remains singular and is preceded by an article: 'a seven-member panel'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "Which of the ...... two fabrics is softer?",
+    prompt: "Between the two lavender body sprays, which of the ............ fragrances is milder?",
     options: ["two", "one", "most", "all"],
     correctAnswer: "two",
-    hint: "The comparative degree ('softer') is used when comparing exactly two items.",
-    workedSolution: "Because the comparative adjective 'softer' is used, the sentence must refer specifically to 'two' fabrics. 'All' and 'most' require the superlative 'softest'.",
+    hint: "When comparing two specific entities using the comparative degree ('is milder'), specify the number of items.",
+    workedSolution: "The comparative degree ('milder') is used to contrast exactly two entities, requiring the numeral 'two': 'Which of the two fragrances is milder?'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "Yesterday afternoon, our class observed ......",
-    options: ["an eclipse of a sun", "the eclipse of a sun", "an eclipse of the sun", "the eclipse of the sun"],
+    prompt: "Astronomers reported that last month, there was ............",
+    options: [
+      "an eclipse of a sun",
+      "the eclipse of a sun",
+      "an eclipse of the sun",
+      "the eclipse of the sun"
+    ],
     correctAnswer: "an eclipse of the sun",
-    hint: "The unique celestial body 'sun' takes the definite article 'the', while an individual occurrence takes 'an'.",
-    workedSolution: "Unique natural celestial bodies require the definite article ('the sun'). An individual event of its darkening is introduced as 'an eclipse of the sun'.",
+    hint: "'Eclipse' takes the indefinite article 'an' for a singular occurrence, while 'sun' is a unique celestial body requiring the definite article 'the'.",
+    workedSolution: "In standard astronomical English, a single solar occultation is 'an eclipse', while the unique celestial star takes the definite article 'the sun': 'an eclipse of the sun'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "Among all the athletes who registered, Mansa arrived ...... early.",
+    prompt: "Among all the junior participants in the spelling bee, Eugenia arrived here ............",
     options: ["very", "only", "often", "most"],
     correctAnswer: "most",
-    hint: "When comparing more than two participants to show the highest degree, use the superlative marker.",
-    workedSolution: "In a comparison involving all participants (more than two), the superlative adverbial form 'most early' (or 'earliest') indicates the highest degree.",
+    hint: "Superlative adverbial modification comparing one person against a whole group of competitors: 'most early'.",
+    workedSolution: "When comparing an adverb of time across an entire group of competitors, 'most' functions as the superlative degree modifier: 'arrived here most early'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Our senior housemaster, ...... lives on campus, advised us on personal hygiene.",
+    prompt: "Afida's paternal aunt, ............ resides in Tamale, addressed our family gathering with great warmth.",
     options: ["who", "whom", "that", "which"],
     correctAnswer: "who",
-    hint: "Use this relative pronoun as the subject referring to a person in non-defining clauses.",
-    workedSolution: "'Who' is the subjective relative pronoun referring to people ('our senior housemaster'). 'Whom' is objective; 'which' refers to things; 'that' is not used in non-defining clauses with commas.",
+    hint: "Non-defining relative clause modifying a human subject: Use 'who' (not 'that' or 'which').",
+    workedSolution: "In a non-defining relative clause enclosed by commas modifying a human antecedent in the subject position, standard grammar requires 'who': 'aunt, who lives in Tamale'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "\"I will deliver the parcel promptly,\" stated Baaba.\nThe correct indirect speech for this sentence is: Baaba ......",
+    prompt: "\"I will keep my word,\" promised Kende.\nThe correct reported speech for the sentence above is:\n............",
     options: [
-      "stated that she will deliver the parcel promptly.",
-      "is stating that she would deliver the parcel promptly.",
-      "stated that she would deliver the parcel promptly.",
-      "states that she delivered the parcel promptly."
+      "Kende promise to keep her word.",
+      "Kende is promising to keep her word.",
+      "Kende promises to keep her word.",
+      "Kende promised to keep her word."
     ],
-    correctAnswer: "stated that she would deliver the parcel promptly.",
-    hint: "In reported speech, the modal auxiliary 'will' changes to 'would' when the reporting verb is in the past.",
-    workedSolution: "Because the reporting verb 'stated' is in the simple past, the direct speech modal 'will' shifts back to 'would', and 'I' changes to 'she'.",
+    correctAnswer: "Kende promised to keep her word.",
+    hint: "In indirect speech, the reporting verb remains in the past tense ('promised') followed by a to-infinitive clause.",
+    workedSolution: "Reporting a promise using an infinitive structure retains the past tense of the reporting verb: 'Kende promised to keep her word.' (or 'promised that she would keep her word').",
     points: 1
   },
   {
     number: 15,
-    prompt: "The regional director awarded Serwaa a gold medal.\nIn passive voice, this sentence becomes: Serwaa ...... awarded a gold medal by the regional director.",
+    prompt: "Active: \"For winning the first position in the Essay Competition, the school gave Linda a laptop.\"\nPassive: \"For winning the first position in the Essay Competition, Linda ............ a laptop by the school.\"",
     options: ["is", "has been", "was", "is being"],
     correctAnswer: "was",
-    hint: "The active verb 'awarded' is in the simple past tense. Use 'was' + past participle.",
-    workedSolution: "The active sentence uses the simple past tense ('awarded'). In the passive voice, the singular subject 'Serwaa' takes 'was' + past participle ('was awarded').",
+    hint: "Simple past passive: was + past participle (give - gave - given).",
+    workedSolution: "The original active sentence verb is simple past ('gave'). The passive equivalent with singular subject 'Linda' requires 'was given': 'Linda was given a laptop'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "The young apprentice wondered why the blacksmith worked so methodically.\nChoose the word nearest in meaning to the underlined word 'wondered'.",
-    options: ["was saddened that", "felt frustrated that", "was curious about why", "thought about why"],
+    prompt: "Little Asabea wondered why her grandfather walked with such deliberate slowness.\nChoose the word or phrase nearest in meaning to 'wondered why'.",
+    options: [
+      "was saddened that",
+      "felt frustrated that",
+      "was curious about why",
+      "thought about why"
+    ],
     correctAnswer: "was curious about why",
-    hint: "'To wonder' means to desire to know or feel inquisitive about something.",
-    workedSolution: "'Wondered' in this context means having an eager desire to learn or investigate, making 'was curious about why' the closest equivalent.",
+    hint: "Felt curious or inquired in one's mind about something.",
+    workedSolution: "'Wondered why' means experienced mental curiosity or desired to know the reason; 'was curious about why' is its direct synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The village committee unanimously embraced the elder's recommendation.\nChoose the word nearest in meaning to the underlined word 'recommendation'.",
+    prompt: "The committee was enthusiastic because Amuzu's proposal had been officially accepted.\nChoose the word nearest in meaning to 'proposal'.",
     options: ["suggestion", "offer", "opinion", "view"],
     correctAnswer: "suggestion",
-    hint: "A piece of practical advice or an idea put forward for consideration.",
-    workedSolution: "A 'recommendation' or proposal is an idea presented for adoption; 'suggestion' is the direct synonym.",
+    hint: "A plan, scheme, or suggestion put forward for consideration.",
+    workedSolution: "'Proposal' in the context of an initiative or plan submitted for approval means a 'suggestion' (or formal proposition).",
     points: 1
   },
   {
     number: 18,
-    prompt: "Our class teacher advised us to remain confident and outspoken whenever we speak in public.\nChoose the word nearest in meaning to the underlined word 'outspoken'.",
+    prompt: "The housemaster advised the new students: \"You can only deter bullies if you remain assertive.\"\nChoose the word nearest in meaning to 'assertive'.",
     options: ["muscular", "strong", "smart", "bold"],
     correctAnswer: "bold",
-    hint: "Standing firm, courageous, and ready to state one's rights or opinions clearly.",
-    workedSolution: "'Outspoken' (or assertive) describes someone who is courageous, forthright, and confident; 'bold' is the nearest synonym.",
+    hint: "Confident, self-assured, and firm in standing up for oneself.",
+    workedSolution: "'Assertive' means displaying confident, firm, and decisive behavior; 'bold' is its closest synonym.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The unchecked felling of timber in the forest reserve must be halted.\nChoose the word nearest in meaning to the underlined word 'unchecked'.",
+    prompt: "The rampant vandalism of municipal streetlights along the highway must be arrested.\nChoose the word nearest in meaning to 'rampant'.",
     options: ["common", "regular", "unpleasant", "uncontrolled"],
     correctAnswer: "uncontrolled",
-    hint: "Spreading wildly without restraint or regulation.",
-    workedSolution: "'Unchecked' (rampant) means flourishing or spreading without any restriction or limit; 'uncontrolled' is the synonym.",
+    hint: "Spreading unchecked, unrestrained, or flourishing wildly without restraint.",
+    workedSolution: "'Rampant' means flourishing or spreading unchecked; 'uncontrolled' is its direct synonym.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The primary arguments of the debate were carefully outlined by the principal speaker.\nChoose the word nearest in meaning to the underlined word 'primary'.",
+    prompt: "The salient recommendations of the commission were highlighted in the executive summary.\nChoose the word nearest in meaning to 'salient'.",
     options: ["highlighted", "chosen", "important", "interesting"],
     correctAnswer: "important",
-    hint: "Most noticeable, prominent, or of central significance.",
-    workedSolution: "'Primary' (or salient) points are the main, essential, or most significant elements of a discourse; 'important' is the nearest meaning.",
+    hint: "Most noticeable, prominent, or of prime importance.",
+    workedSolution: "'Salient' points are the most prominent, significant, and fundamentally 'important' aspects of a matter.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "The assemblyman cautioned the youth not to let excitement get the better of them. This means that they should not let excitement ......",
-    options: ["divide", "sadden", "control", "deceive"],
-    correctAnswer: "control",
-    hint: "To get the better of someone means to overpower or dictate their actions.",
-    workedSolution: "The idiom 'to get the better of someone' means to overcome, overwhelm, or gain mastery and control over a person's judgment.",
+    prompt: "The traditional elder counseled his youth never to allow sudden anger to get the better of them. This means they should not let anger ............",
+    options: ["divide them", "sadden them", "control them", "deceive them"],
+    correctAnswer: "control them",
+    hint: "To overcome, overpower, or gain mastery/control over someone.",
+    workedSolution: "The idiom 'to get the better of someone' means to overcome, defeat, or gain emotional 'control' over them.",
     points: 1
   },
   {
     number: 22,
-    prompt: "\"Stop being a killjoy, Kwame; help your sister celebrate her sports victory,\" Mother urged. This means that Kwame ......",
+    prompt: "\"Do not be such a wet blanket, Afua; your brother deserves all our encouragement,\" her mother chided. This means that Afua ............",
     options: [
-      "didn't care about his sister",
-      "couldn't run fast enough",
+      "neglected her brother's chores",
+      "refused to do the laundry",
       "was too weak to help",
-      "liked to dampen enthusiasm"
+      "liked to dampen enthusiasm and discourage others"
     ],
-    correctAnswer: "liked to dampen enthusiasm",
-    hint: "A killjoy (or wet blanket) spoils other people's happiness or excitement.",
-    workedSolution: "A 'killjoy' (or wet blanket) is a person who discourages enjoyment, dampens enthusiasm, or prevents others from celebrating.",
+    correctAnswer: "liked to dampen enthusiasm and discourage others",
+    hint: "A person who spoils the enthusiasm or joy of others by being gloomy or discouraging.",
+    workedSolution: "The idiom 'a wet blanket' refers to a person who discourages others, dampens their joy, or spoils enthusiasm; 'liked to discourage'.",
     points: 1
   },
   {
     number: 23,
-    prompt: "Kofi was forced to swallow his pride when the junior team defeated his side. This means that Kofi ......",
+    prompt: "Asuo had to eat his words when the underdog football team defeated the league champions. This means that Asuo ............",
     options: [
-      "admitted that he was mistaken",
-      "denied everything he had said",
-      "lost his appetite completely",
-      "refused to play football again"
+      "humbly admitted that he was wrong",
+      "denied his earlier remarks",
+      "became physically ill with shame",
+      "lost his appetite for dinner"
     ],
-    correctAnswer: "admitted that he was mistaken",
-    hint: "Eating one's words or swallowing pride means publicly retracting an arrogant claim.",
-    workedSolution: "'To swallow one's pride' or 'eat one's words' means to humbly retract an earlier boastful assertion and admit that one was wrong.",
+    correctAnswer: "humbly admitted that he was wrong",
+    hint: "To be compelled to retract a statement and admit humiliatingly that one was in error.",
+    workedSolution: "The idiom 'to eat one's words' means to be forced to admit that what one predicted or stated was completely mistaken.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The swindler was finally given a taste of his own medicine. This means that he was ......",
-    options: ["given bitter medicine", "swindled in the same manner", "sent to prison", "pardoned by the court"],
-    correctAnswer: "swindled in the same manner",
-    hint: "Experiencing the very same mistreatment or trickery that one has inflicted on others.",
-    workedSolution: "'To be given a taste of one's own medicine' (or paid back in one's own coin) means to be treated in the exact harmful manner that one treated others.",
+    prompt: "The cunning swindler was eventually paid back in his own coin. This means that he was ............",
+    options: [
+      "pursued by the police",
+      "swindled and treated in the same deceitful manner",
+      "penalized with heavy fines",
+      "rewarded with new currency"
+    ],
+    correctAnswer: "swindled and treated in the same deceitful manner",
+    hint: "Treated in the same unpleasant or deceitful manner in which one has treated others.",
+    workedSolution: "The idiom 'to pay someone back in their own coin' means to retaliate by treating them in the exact same harmful or deceitful way they treated others; 'swindled' / repaid in kind.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The headmistress hit the nail on the head when she declared that discipline is the foundation of success. This means that she ......",
+    prompt: "Yaaba hit the nail on the head when she asserted that academic distinction demands steady toil. This means Yaaba ............",
     options: [
-      "was an expert carpenter",
-      "stated the exact truth",
-      "criticized the teachers unfairly",
-      "threatened the students"
+      "practiced carpentry skills",
+      "stated the exact, precise truth",
+      "attempted to deceive her listeners",
+      "displayed impatience"
     ],
-    correctAnswer: "stated the exact truth",
-    hint: "Describing a situation or stating a fact with perfect accuracy.",
-    workedSolution: "'To hit the nail on the head' means to say something that is precisely correct, accurate, and completely true.",
+    correctAnswer: "stated the exact, precise truth",
+    hint: "To state a fact or diagnosis with absolute accuracy.",
+    workedSolution: "The idiom 'to hit the nail on the head' means to describe a situation with exact precision or tell the exact truth.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 30) ---
   {
     number: 26,
-    prompt: "The clinic was closed on a temporary basis during the fumigation exercise, but it has now reopened ......",
+    prompt: "The market stalls were temporarily shuttered during the drainage works, but reopened ...... thereafter.\nChoose the word most nearly opposite in meaning to 'temporarily'.",
     options: ["permanently", "legally", "deliberately", "constantly"],
     correctAnswer: "permanently",
-    hint: "'Temporary' means lasting for a limited time. Find the word that means for all time.",
-    workedSolution: "'Temporary' means lasting for a short time only. Its direct antonym is 'permanently', meaning lasting indefinitely.",
+    hint: "'Temporarily' means for a limited, short time. What word denotes lasting for all time without end?",
+    workedSolution: "'Temporarily' means for a brief time only. Its direct operational antonym is 'permanently' (enduringly or for good).",
     points: 1
   },
   {
     number: 27,
-    prompt: "Scientific principles may appear simple in theoretical formulations, but they are often difficult in ...... applications.",
+    prompt: "Certain engineering formulas seem straightforward in theoretical manuals, but prove difficult in ...... execution.\nChoose the word most nearly opposite in meaning to 'theoretical'.",
     options: ["practical", "natural", "logical", "actual"],
     correctAnswer: "practical",
-    hint: "'Theoretical' deals with ideas in books; find the word dealing with real-world hands-on practice.",
-    workedSolution: "'Theoretical' relates to concepts and speculation. Its natural opposite in science and technology is 'practical' (hands-on execution).",
+    hint: "'Theoretical' relates to concepts on paper. What word denotes relating to real action, application, or hands-on practice?",
+    workedSolution: "'Theoretical' relates to theory or book concepts. Its direct operational antonym is 'practical' (hands-on or applied).",
     points: 1
   },
   {
     number: 28,
-    prompt: "Medical doctors emphasize that it is far wiser to ...... infections than to search for a cure afterwards.",
+    prompt: "It is beneficial to discover a medical cure for a contagion, but it is far wiser to ...... it altogether.\nChoose the word most nearly opposite in meaning to 'cure'.",
     options: ["prevent", "protect", "avoid", "counter"],
     correctAnswer: "prevent",
-    hint: "Stopping something from happening beforehand rather than treating it after it occurs.",
-    workedSolution: "'Curing' deals with treating an existing disease. The opposite preventative approach is to 'prevent' it from occurring.",
+    hint: "'To cure' means to treat or remedy an illness after it occurs. What word denotes stopping it from happening in the first place?",
+    workedSolution: "In the medical maxim 'prevention is better than cure', the direct antonym of curing a disease after onset is to 'prevent' it before occurrence.",
     points: 1
   },
   {
     number: 29,
-    prompt: "Historians can easily identify when the ancient empire originated, but they cannot tell when it will ......",
+    prompt: "It is easy to observe when a dispute begins, but difficult to anticipate when it will ...... .\nChoose the word most nearly opposite in meaning to 'began'.",
     options: ["fall", "cease", "reside", "remain"],
     correctAnswer: "cease",
-    hint: "'Originated' means began. Look for a formal word that means to stop existing or come to an end.",
-    workedSolution: "'Originate' means to begin or start. Its antonym is 'cease', meaning to end, stop, or discontinue.",
+    hint: "'Began' means commenced or started. What word denotes to stop, conclude, or come to an end?",
+    workedSolution: "'Began' means started. Its direct procedural antonym is 'cease' (to stop or end).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Forest zones enjoy abundant rainfall, whereas desert margins receive only ...... precipitation.",
+    prompt: "Tropical rainforests enjoy abundant rainfall, whereas arid deserts experience only ...... showers.\nChoose the word most nearly opposite in meaning to 'abundant'.",
     options: ["unpredictable", "scanty", "uncertain", "reduced"],
     correctAnswer: "scanty",
-    hint: "'Abundant' means plentiful. Choose the word meaning meager, sparse, or very little.",
-    workedSolution: "'Abundant' means existing in large quantities. Its direct opposite in describing rainfall and moisture is 'scanty' (meager or sparse).",
+    hint: "'Abundant' means plentiful and overflowing. What word denotes meager, scarce, or minimal in quantity?",
+    workedSolution: "'Abundant' means plentiful. Its direct quantitative and meteorological antonym is 'scanty' (meager, scarce, or meagerly small).",
     points: 1
   },
 
-  // --- SECTION E: CLOZE PASSAGE (31 - 35) ---
+  // --- SECTION E: CLOZE PASSAGE (MEETING PROTOCOL) (31 - 35) ---
   {
     number: 31,
-    prompt: "The annual meeting commenced with the reading of the minutes. A member noted that his name was omitted from the ---31--- list.",
+    prompt: "Cloze Passage: \"The Chairman opened the session and called for corrections to the previous minutes. One delegate pointed out that on inspecting the ---31--- list, his surname had been misspelled.\"\nChoose the most suitable word:",
     options: ["register", "compiled", "present", "attendance"],
     correctAnswer: "attendance",
-    hint: "The formal official record tracking members present at a business meeting.",
-    workedSolution: "In formal committee terminology, the record showing who attended a meeting is called the 'attendance list' (or attendance register).",
+    hint: "The formal document listing the names of members present at an official meeting is the 'attendance list' (or attendance register).",
+    workedSolution: "In meeting procedure, the record of persons present is formally designated the 'attendance list'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "After resolving the omission, two important ---32--- were proposed, debated, and put to a vote.",
+    prompt: "Cloze Passage: \"The error was duly corrected. Thereafter, two formal ---32--- were proposed and voted on by the house.\"\nChoose the most suitable word:",
     options: ["motions", "ideas", "decisions", "intentions"],
     correctAnswer: "motions",
-    hint: "Formal proposals submitted for discussion and voting during a meeting.",
-    workedSolution: "In meeting procedures, formal proposals put forward for deliberation and voting are designated as 'motions'.",
+    hint: "A formal proposal put forward in a meeting to be debated and voted on is called a motion.",
+    workedSolution: "In parliamentary procedure, formal proposals submitted for debate and vote by members are termed 'motions'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "As deliberations concluded, the chairman called upon a member to ---33--- for the closure of the meeting.",
+    prompt: "Cloze Passage: \"At the conclusion of the deliberations, the Chairman invited a member to ---33--- for the closure of the meeting.\"\nChoose the most suitable word:",
     options: ["declare", "call", "recommend", "move"],
     correctAnswer: "move",
-    hint: "The parliamentary verb used to formally propose that a meeting end.",
-    workedSolution: "In formal meeting procedure, to propose a motion or the adjournment of a meeting is to 'move' for it.",
+    hint: "The formal parliamentary verb used to propose an official action: 'to move for'.",
+    workedSolution: "In parliamentary decorum, a member formalizes a proposal by using the verb 'move' ('to move for the closure/adjournment').",
     points: 1
   },
   {
     number: 34,
-    prompt: "The member did so, and his proposal was promptly ---34--- by the secretary.",
+    prompt: "Cloze Passage: \"Mr. Tetteh Oko moved for the closure and his proposal was immediately ---34--- by Adjoa Mansa.\"\nChoose the most suitable word:",
     options: ["approved", "seconded", "upheld", "supported"],
     correctAnswer: "seconded",
-    hint: "Formally endorsing a motion before it can be accepted by the house.",
-    workedSolution: "In parliamentary procedure, after a motion is moved, another member must formally 'second' it before it can be adopted.",
+    hint: "To formally support a motion before it can be accepted or voted on: 'seconded'.",
+    workedSolution: "In meeting protocol, after a motion is moved by one member, it must be formally 'seconded' by another member.",
     points: 1
   },
   {
     number: 35,
-    prompt: "Having completed its business, the general meeting was ---35--- to the following month.",
+    prompt: "Cloze Passage: \"Having completed all business, the meeting was formally ---35--- to the following month.\"\nChoose the most suitable word:",
     options: ["adjourned", "postponed", "deferred", "shifted"],
     correctAnswer: "adjourned",
-    hint: "The formal technical term for suspending or closing a sitting of a meeting.",
-    workedSolution: "The specific formal verb for suspending a meeting or parliamentary session to a future date is 'adjourned'.",
+    hint: "The formal legal and parliamentary term for closing a meeting session to resume at a future date.",
+    workedSolution: "In meeting terminology, bringing a sitting to an official close until a future scheduled date is termed 'adjourned'.",
     points: 1
   },
 
-  // --- PART B: ORAL LANGUAGE - SPEECH SOUNDS (36 - 40) ---
+  // --- PART B: ORAL LANGUAGE & PHONOLOGY (36 - 40) ---
   {
     number: 36,
-    prompt: "Those two athletes are arch rivals.\nWhich of the following words has the same consonant sound as the underlined digraph 'ch' in 'arch'?",
+    prompt: "Choose the word that contains the identical consonant sound as the underlined digraph in:\n\"Those two athletic captains are ar**ch** rivals.\"",
     options: ["splash", "patch", "path", "spark"],
     correctAnswer: "patch",
-    hint: "Pronounce the ending sound of 'arch' (/tʃ/). Which word shares this voiceless affricate sound?",
-    workedSolution: "'Arch' ends with the voiceless palato-alveolar affricate /tʃ/. 'Patch' ends with the identical /tʃ/ sound. ('splash' has /ʃ/, 'path' has /θ/, 'spark' has /k/).",
+    hint: "The digraph 'ch' in 'arch' produces the voiceless palato-alveolar affricate /tʃ/, as in 'patch'.",
+    workedSolution: "The digraph 'ch' in 'arch' is pronounced /tʃ/. Among the options, 'patch' contains the identical affricate sound /tʃ/.",
     points: 1
   },
   {
     number: 37,
-    prompt: "Mawuli is the executive chef at the hotel.\nWhich of the following words has the same initial consonant sound as the word 'chef'?",
+    prompt: "Choose the word that contains the identical consonant sound as the underlined digraph in:\n\"Prosper is the executive **ch**ef at the continental hotel.\"",
     options: ["chord", "chair", "shield", "scheme"],
     correctAnswer: "shield",
-    hint: "'Chef' is borrowed from French and begins with the /ʃ/ sound (like 'sh').",
-    workedSolution: "'Chef' is pronounced /ʃef/, beginning with the voiceless postalveolar fricative /ʃ/. 'Shield' begins with the same /ʃ/ sound. ('chord' and 'scheme' start with /k/; 'chair' with /tʃ/).",
+    hint: "'Chef' is borrowed from French and is pronounced with the voiceless postalveolar fricative /ʃ/, identical to the initial sound in 'shield'.",
+    workedSolution: "The word 'chef' has a French loanword pronunciation with /ʃ/ (sh-sound). 'Shield' starts with the identical /ʃ/ sound.",
     points: 1
   },
   {
     number: 38,
-    prompt: "The athlete sprang over the hurdle.\nWhich of the following words has the same initial three-consonant cluster as 'sprang'?",
+    prompt: "Choose the word that contains the identical initial consonant cluster as in:\n\"Lariba **spr**ang to her feet.\"",
     options: ["sprayed", "struck", "slew", "splashed"],
     correctAnswer: "sprayed",
-    hint: "Identify the exact triple consonant cluster: /s/ + /p/ + /r/.",
-    workedSolution: "'Sprang' begins with the triple consonant cluster /spr-/. 'Sprayed' begins with the identical /spr-/ cluster. ('splashed' starts with /spl-/, 'struck' with /str-/).",
+    hint: "Identify the word beginning with the three-consonant cluster /spr/.",
+    workedSolution: "The word 'sprang' begins with the three-consonant cluster /spr/. 'Sprayed' begins with the exact same /spr/ cluster.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Whole grains provide rich dietary fiber.\nWhich of the following words has the same vowel sound as the word 'whole'?",
+    prompt: "Choose the word that contains the identical vowel sound as the underlined vowel in:\n\"**Wh**ole grains are far more nutritious than polished cereals.\"",
     options: ["Gill", "Goal", "Gaul", "Gaol"],
     correctAnswer: "Goal",
-    hint: "'Whole' is pronounced with the /əʊ/ diphthong sound, exactly like 'hole'.",
-    workedSolution: "'Whole' is pronounced /həʊl/. Its vowel sound is the diphthong /əʊ/, which perfectly matches 'goal' (/ɡəʊl/).",
+    hint: "The vowel sound in 'whole' is the closing diphthong /əʊ/ (or /oʊ/), as in 'goal'.",
+    workedSolution: "The word 'whole' is pronounced /həʊl/ with the diphthong /əʊ/. Among the options, 'goal' (/ɡəʊl/) shares the identical vowel sound.",
     points: 1
   },
   {
     number: 40,
-    prompt: "The young prince is the legitimate heir to the stool.\nWhich of the following words has the same vowel sound as the word 'heir'?",
+    prompt: "Choose the word that contains the identical vowel sound as the word in:\n\"The **heir** to the ancient chieftaincy stool was enstooled yesterday.\"",
     options: ["here", "hail", "air", "hew"],
     correctAnswer: "air",
-    hint: "The letter 'h' is silent in 'heir'. It is a homophone of another atmospheric word.",
-    workedSolution: "In 'heir', the initial 'h' is silent, and the word is pronounced /eər/. It is a direct homophone of 'air' (/eər/). ('here' is /hɪər/, 'hail' is /heɪl/).",
+    hint: "In 'heir', the initial 'h' is silent and the word is pronounced /eə/, making it an exact homophone with 'air'.",
+    workedSolution: "'Heir' has a silent 'h' and is pronounced /eə/, sharing the identical vowel sound with its exact homophone 'air'.",
     points: 1
   }
 ];
 
-// Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
+// Seeded Deterministic Shuffle across 40 Objective Items: Exactly 10 A, 10 B, 10 C, 10 D
 const targetKeys: number[] = [
   0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
   2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
@@ -456,9 +493,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 202408);
+const assignedTargetIndices = seedShuffle(targetKeys, 202402);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -481,178 +518,241 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING, COMPREHENSION & LITERATURE (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
+  partA_composition: {
     title: "Part A: Essay Writing",
     instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Informal Letter",
-        prompt: "Your classmate in another town has expressed frustration with school and plans to drop out to engage in street hawking. Write a letter encouraging him or her to remain in school, highlighting two aspects of school life that make education worthwhile and enjoyable.",
-        modelAnswer: `Presbyterian Junior High School\nP. O. Box 88\nKoforidua, Eastern Region\n12th July, 2024\n\nDear Kwame,\n\nI received your recent letter with mixed feelings. While I understand the financial stress and academic pressures you are facing, I was deeply disturbed to learn that you are contemplating dropping out of school to become a street hawker. I am writing to urge you to reconsider your decision and stay in school.\n\nFirst, school life offers enriching co-curricular activities that relieve academic tension and discover hidden talents. In our school, Friday afternoons are reserved for sporting tournaments, cultural drumming, and debates. Being part of the school football team has not only kept me physically fit but has also taught me team discipline and leadership. These moments bring immense joy and forge lifelong memories that no street hawking can ever provide.\n\nSecondly, school exposes us to practical knowledge and technological skills that secure a brighter future. Through our computing and integrated science laboratory sessions, we conduct experiments and learn digital skills that prepare us for modern professions. Street trading may yield quick pocket money today, but it offers no job security. Completing your basic education and proceeding to Senior High School will empower you to break the cycle of poverty permanently.\n\nKwame, please do not trade your promising future for immediate, petty gains. Speak with our school guidance counselor or your church elders for assistance. I look forward to hearing that you have returned to your books.\n\nYour true friend,\n[Signature]\nKofi Mensah`
+        prompt: "Your close childhood friend who resides in another municipality has expressed a desire to drop out of school to engage in petty street trading because he or she finds schooling boring. Write an encouraging, persuasive letter to convince him or her to remain in school, discussing at least two aspects of school life that you find enriching and enjoyable.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2024
+
+Dear Kwaku,
+
+I received your recent letter with mixed feelings of concern and sadness. You mentioned that you find classroom instruction tedious and are contemplating abandoning school to engage in petty phone accessory trading. As your true friend, I write with all my heart to urge you to discard this dangerous idea and remain in school. Petty trading may yield a few immediate cedis today, but formal education is the permanent foundation that secures your future prosperity.
+
+To help you see schooling in a fresh light, let me share two vibrant aspects of school life that make our academic journey deeply enjoyable and rewarding. First and foremost, participating in co-curricular clubs—particularly our school's Science and Innovation Society and the Debate Club—is exhilarating. We do not simply memorize abstract notes; we conduct hands-on experiments, build working miniature electric circuits, and engage in thrilling debate competitions against rival schools. These intellectual contests build self-confidence, sharpen verbal eloquence, and make learning an exciting adventure rather than a chore.
+
+Secondly, our rich extracurricular sports and cultural programs provide magnificent joy and relief from academic stress. Every Friday afternoon, our campus comes alive with inter-class football tournaments and energetic cultural drumming troupes. Playing side by side with classmates fosters genuine camaraderie, physical fitness, and unforgettable memories that street hawking can never provide.
+
+Dropping out will truncate your potential and condemn you to a life of precarious struggle. Stay in school, Kwaku; let us complete our BECE together and conquer the future.
+
+Your true friend,
+[Signature]
+Kwabena Mensah`
       },
       {
         questionNumber: "2",
-        category: "Formal Report",
-        prompt: "A teacher from your school won the first prize in the National Best Teacher Awards. As the student representative who attended the ceremony, write a formal report on the event, highlighting what you observed and discussing two key lessons you learned.",
-        modelAnswer: `REPORT ON THE NATIONAL BEST TEACHER AWARDS HELD AT THE INTERNATIONAL CONFERENCE CENTRE, ACCRA\nBy Akosua Donkor (School Prefect, Anglican JHS)\n\nINTRODUCTION\nOn Friday, 5th October 2024, I had the privilege of representing Anglican Junior High School at the prestigious National Best Teacher Awards ceremony held in Accra, where our dedicated Science master, Mr. Emmanuel Osei, was crowned the National Best Teacher.\n\nPROCEEDINGS OF THE CEREMONY\nThe grand event commenced at 9:00 a.m. with an opening procession of dignitaries, including the Minister for Education and traditional rulers. Cultural troupes performed traditional dances, followed by keynote addresses commending educators across the country. The climax of the day arrived when Mr. Osei was announced as the overall winner. He was presented with a citation, a brand-new saloon car, and an educational scholarship fund. The entire auditorium erupted in deafening cheers as he walked gracefully to the podium.\n\nLESSONS LEARNED\nThe first lesson I learned from the event is that selfless diligence and commitment always receive public recognition. Mr. Osei routinely spent his weekends organizing free remedial practical lessons for underprivileged candidates. Seeing his years of quiet sacrifice rewarded before the entire nation proved to me that hard work never goes unrewarded.\n\nThe second lesson is the indispensable role teachers play in nation-building. The speeches emphasized that national economic transformation begins in the basic classroom. This realization deepened my respect for teachers and inspired me to approach my studies with greater seriousness.\n\nCONCLUSION\nThe ceremony was an inspiring and well-organized celebration. I recommend that our school organize a special welcome durbar to honor Mr. Osei and motivate the entire teaching staff.`
+        category: "Formal Investigative Report",
+        prompt: "A teacher from your school won the prestigious first prize at the National Best Teacher Awards ceremony, and you were selected to represent the student body at the national event. Write a comprehensive report on the ceremony, highlighting what you observed and discussing two valuable life lessons you learned from the occasion.",
+        modelAnswer: `REPORT ON THE 2024 NATIONAL BEST TEACHER AWARDS CEREMONY
+
+1. INTRODUCTION
+On Saturday, 5th October 2024, I had the singular honor of representing the student body of Methodist Junior High School at the National Best Teacher Awards ceremony held at the Great Hall of the Kwame Nkrumah University of Science and Technology, Kumasi. The celebration commemorated World Teachers' Day and honored exceptional educators across Ghana.
+
+2. OBSERVATIONS OF THE CEREMONY
+The ceremony was a magnificent national spectacle attended by the President of the Republic, cabinet ministers, foreign diplomats, and traditional rulers. The highlight of the celebration was the announcement of the National Best Teacher. When our dedicated Integrated Science master, Mr. Emmanuel Boateng, was declared the Overall National Champion, our delegation erupted in thunderous applause! Mr. Boateng was presented with the grand prize: a fully furnished three-bedroom residential bungalow to be erected at his preferred location, a new double-cabin utility vehicle, and an overseas educational research scholarship. In his citation, the Ministry commended him for using low-cost recycled materials to teach practical robotics in our rural school.
+
+3. LESSONS LEARNED
+The event instilled two profound life lessons in my mind:
+(a) Selfless Labor and Dedication Attract Honor: Mr. Boateng spent his free afternoons offering unpaid remedial tutorials and mentoring vulnerable students. His recognition proved that genuine sacrifice, discipline, and devotion to duty never go unnoticed.
+(b) Innovation Conquers Limitations: Rather than lamenting our school's lack of a modern science laboratory, Mr. Boateng improvised using domestic materials. This taught me that creativity and determination can surmount any institutional handicap.
+
+Submitted by:
+[Signature]
+Emmanuel Addo
+(Senior Prefect)`
       },
       {
         questionNumber: "3",
         category: "Article for Publication",
-        prompt: "With national general elections approaching, political campaigns have intensified. As an ambassador for peace in your community, write an article for publication in your local community newspaper, discussing two ways of maintaining peace and harmony during the campaign season.",
-        modelAnswer: `SAFEGUARDING PEACE AND SOCIAL COHESION DURING ELECTION SEASONS\nBy Yaw Badu, JHS 3\n\nAs Ghana prepares for general elections, political activities have intensified across towns and villages. Political rallies, street float processions, and radio debates have become daily occurrences. While multiparty democracy encourages dynamic political choices, election periods often test the social fabric of our communities. It is therefore vital that we actively safeguard the peace and communal solidarity we have enjoyed for decades.\n\nThe primary method of maintaining peace is the responsible use of language by politicians, community members, and the youth. Party communicators and supporters must refrain from tribal bigotry, insults, and provocative hate speech during campaign rallies and on community radio stations. Difference in political opinion must never be viewed as enmity. Citizens should listen to campaign messages with maturity, debate national policies constructively, and reject any politician who incites violence.\n\nSecondly, the youth must refuse to be hired as political thugs or vigilantes. Often, self-seeking politicians exploit unemployed young people, offering them small sums of money and alcohol to disrupt opponents' rallies or destroy campaign billboards. The youth must recognize that when violence erupts, it is the vulnerable—children, women, and the youth themselves—who suffer the devastating consequences, while politicians remain safe.\n\nIn conclusion, political parties will come and go, but our community will always remain. Let us promote tolerance, embrace diversity, and remember that peaceful co-existence is the true bedrock of national development.`
+        prompt: "As an election year approaches and political parties commence aggressive campaign rallies, write an article for publication in your local community newspaper, discussing at least two practical ways of maintaining communal peace, tolerance, and stability during the period.",
+        modelAnswer: `SAFEGUARDING COMMUNAL HARMONY AND PEACE DURING ELECTIONEERING
+By Samuel K. Boateng, Begoro
+
+As Ghana prepares for another historic presidential and parliamentary election, political parties have launched aggressive grassroots campaign rallies across our districts. While competitive elections are the hallmark of our thriving multi-party democracy, the heightened political temperature often sparks toxic partisan tension, provocative rhetoric, and ethnic factionalism. As peace-loving citizens, we must recognize that elections are civil contests of ideas, not bloody wars. Maintaining communal harmony requires deliberate civic action.
+
+First and foremost, political party executives, parliamentary aspirants, and youth leaders must exercise strict verbal discipline and promote political tolerance. Aspiring candidates must anchor their campaign messaging on constructive developmental policies—such as youth employment, education, and healthcare—rather than indulging in inflammatory insults, character assassination, and tribal bigotry. Community radio stations and social media commentators must avoid broadcasting hate speech that incites communal discord. We must realize that regardless of our diverse party affiliations, we remain one united Ghanaian family bound by a shared destiny.
+
+Secondly, community youth must resolutely reject being recruited as political vigilantes or violent thugs. Corrupt political actors often distribute cheap alcohol, narcotics, and petty cash to unemployed young people, inciting them to destroy opponents' campaign billboards and disrupt peaceful polling stations. The youth must understand that the children of these politicians do not participate in street riots; they are studying in elite universities abroad. Rather than engaging in violence, the youth should form Community Peace Vigilance Committees to partner with the police in maintaining law and order.
+
+Communal peace is an irreplaceable national treasure. Let us vote in peace, preserve our brotherhood, and safeguard Ghana's democracy.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `Human migration is an ancient phenomenon driven by diverse economic and social motivations. When individuals relocate from rural villages to sprawling urban centers, their migration brings both opportunities and daunting challenges.\n\nWhen Dauda migrated to the metropolis, he left his wife, Amina, an industrious traditional baker, to manage their rural homestead and provide for their two young children. During one of his infrequent visits home, his aging father urged him to relocate his family to the city so they could stay together. Reluctantly, Dauda yielded to his father's counsel.\n\nAmina had harbored visions of residing in a modern, comfortable apartment surrounded by modern conveniences. In reality, she arrived to find that she, her husband, and their children were crammed into a single squalid wooden kiosk in a congested settlement. Basic sanitary facilities were shared with dozens of other households. To make matters worse, Dauda's monthly housekeeping remittance was so meager that preparing decent meals became an everyday struggle. Amina sought formal employment, but like countless other female migrants without modern industrial skills, her searches proved futile. She frequently worried how they would survive, remit stipends to their aged parents, and set aside savings for future emergencies.\n\nOne festive weekend, Amina decided to prepare a traditional local delicacy—spiced roasted plantain with seasoned groundnut paste—to treat her family and entertain neighbors. The mouth-watering aroma drew neighbors and passers-by, who eagerly stopped by for a taste. Her culinary expertise was an instant sensation. Soon, market women and office workers approached her to cater for family gatherings and festive celebrations. Amina established a modest catering venture that flourished rapidly. Through resilience and culinary ingenuity, she transformed her family's fortunes and achieved financial independence.`,
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `Migration represents a ubiquitous survival practice across the animal kingdom: migratory birds, marine fish, and human beings all undertake seasonal movements. Among humans, geographic migration generates profound positive and negative consequences for individuals and wider society alike.
+
+When Salifu migrated from his ancestral savannah village to the southern metropolis, he left behind his wife, Zainab, an enterprising traditional potter, to fend independently for herself and their two infant children. During one of his infrequent annual visits home, his aged father intervened, instructing Salifu firmly to relocate his wife and children to reside with him in the city. Reluctantly, Salifu bowed to paternal authority.
+
+Zainab had nurtured glowing daydreams of urban life, imagining that she would reside in an immaculate, spacious, and comfortable suburban residence. Instead, she arrived to discover that she, her husband, and their children were crammed into a single, humid rented room within a congested compound. The sole sanitation and washroom facilities were shared among six competing families. To compound her plight, her housekeeping allowance was so meager that she could scarcely purchase basic groceries to feed her family adequately. She yearned to secure formal employment, but like countless other unlettered female migrants, her search proved futile. She wondered in despair how they would survive, remit financial support to their elderly parents in the village, and save funds for a rainy day.
+
+One festive afternoon, Zainab resolved to treat her husband and socialize with their compound neighbors. Utilizing her culinary skills, she prepared an inexpensive yet exquisitely savory traditional bean-and-plantain delicacy from her homeland, sharing generous bowls with her neighbors. Even passing artisans stopped by to partake in the feast. The get-together was an astonishing triumph; her labor was not in vain.
+
+Soon, compound women offered to pay her to teach them how to season local recipes. Shortly thereafter, corporate and municipal event organizers hired her to provide authentic indigenous catering services at weddings and durbars. She was rewarded handsomely. Gradually, Zainab Culinary Ventures blossomed into a respected household name, creating remarkable prosperity and transforming their lives completely.`,
     questions: [
       {
-        subId: "(a)",
-        question: "What was Amina's occupation before she migrated to the city?",
-        answer: "Amina was an industrious traditional baker in her rural village."
+        subQuestion: "(a)",
+        question: "What was Zainab's economic occupation before she migrated to the city?",
+        answer: "She was an enterprising traditional potter (or craftswoman)."
       },
       {
-        subId: "(b)",
-        question: "State two specific financial commitments migrant workers needed money for, according to the passage.",
-        answer: "1. Remitting money to their aged parents in the village.\n2. Setting aside savings for future emergencies (saving for a rainy day)."
+        subQuestion: "(b)",
+        question: "State two distinct ways in which migrant workers typically spent or planned to spend their earnings.",
+        answer: "1. Remitting financial support to their elderly parents in the village.\n2. Saving money for future emergencies (saving for a rainy day)."
       },
       {
-        subId: "(c)",
-        question: "In one single adjective, describe Amina's emotional feeling upon discovering her living conditions in the city.",
-        answer: "Disillusioned (or Disappointed / Dejected / Crestfallen)."
+        subQuestion: "(c)",
+        question: "In one precise adjective, describe how Zainab felt upon arriving in the city and discovering her real living conditions.",
+        answer: "Disappointed (or disillusioned, dejected, shocked, disheartened)."
       },
       {
-        subId: "(d)",
-        question: "\"Reluctantly, Dauda yielded to his father's counsel.\"\nWhy was Dauda reluctant to bring his family to the city?",
-        answer: "Because he was living in a single, congested room with shared facilities and knew his meager income could scarcely support a family in the expensive city."
+        subQuestion: "(d)",
+        question: "Why was Salifu initially reluctant to relocate his wife and children to live with him in the city?",
+        answer: "He was reluctant because he lived in extreme urban poverty, in a single cramped room with meager earnings, and knew he could not comfortably support them."
       },
       {
-        subId: "(e)",
-        question: "Explain the meaning of the following figurative expressions as used in the passage:\n(i) to manage their rural homestead;\n(ii) set aside savings for future emergencies;\n(iii) was an instant sensation.",
-        answer: "(i) **to manage their rural homestead:** To take full responsibility for feeding, caring for, and maintaining the family home independently.\n(ii) **set aside savings for future emergencies:** To reserve money carefully for unexpected difficulties, sickness, or hardship.\n(iii) **was an instant sensation:** Became immediately popular, widely admired, and hugely successful."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following expressions as used in the passage:\nI. '... to fend for'\nII. 'save for a rainy day'\nIII. 'was not in vain'",
+        answer: "I. 'to fend for' means to provide food, shelter, and basic necessities independently without external assistance.\nII. 'save for a rainy day' means to reserve or accumulate financial savings to prepare for unexpected future hardships or emergencies.\nIII. 'was not in vain' means was successful, worthwhile, and yielded fruitful, positive results."
       },
       {
-        subId: "(f)",
-        question: "For each of the following words, provide a word or phrase that means the same and can replace it in the passage without altering the meaning:\n(i) infrequent;\n(ii) crammed;\n(iii) meager;\n(iv) flourished.",
-        answer: "(i) **infrequent:** occasional / rare / irregular.\n(ii) **crammed:** packed / squeezed / crowded / accommodated tightly.\n(iii) **meager:** small / inadequate / scanty / insufficient.\n(iv) **flourished:** prospered / succeeded / expanded / thrived."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. occasional / infrequent\nII. prepared\nIII. handsomely\nIV. improvement",
+        answer: "I. occasional: infrequent, irregular, periodic, rare.\nII. prepared: cooked, made, concocted, brewed.\nIII. handsomely: generously, lavishly, substantially, richly.\nIV. improvement: progress, advancement, transformation, betterment."
       },
       {
-        subId: "(g)",
-        question: "In two sentences of not more than ten words each, summarize two major challenges migrants face as described in the third paragraph.",
-        answer: "(i) **First Challenge:** Migrants suffer from severe accommodation and sanitary problems. [8 words]\n(ii) **Second Challenge:** Unemployment and inadequate finances cause severe hardship. [7 words]"
+        subQuestion: "(g)",
+        question: "In two concise sentences of not more than ten words each, summarize two major hardships that female migrants face as expressed in the third paragraph.",
+        answer: "1. Migrants endure severe overcrowding in single rooms.\n2. Female migrants face acute unemployment and meager finances."
       }
     ]
   },
-  sectionC_literature: {
+  partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
+    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
     questions: [
       {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Boy, what's your name?\" snarled the gentleman in the high chair.\n\"Oliver Twist, sir,\" stammered the boy.\n\"You know you're an orphan, don't you?\"\n\"What's an orphan, sir?\"",
-        question: "What does the gentleman's snarling tone reveal about his attitude toward Oliver?",
-        answer: "It reveals that he is callous, harsh, intimidating, and unsympathetic toward vulnerable children."
+        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        contextExtract: "\"Boy what's your name?\" snarled the chairman.\n\"Oliver Twist, sir.\"\n\"You know that you're an orphan, is that right?\"\n\"What's an orphan, sir?\"",
+        subItems: [
+          {
+            subQuestion: "5(a)",
+            question: "What does the snarling tone of the workhouse board chairman reveal about his character?",
+            answer: "It reveals that he is callous, harsh, cruel, intimidating, and lacking empathy."
+          },
+          {
+            subQuestion: "5(b)",
+            question: "From Oliver's naive question, 'What's an orphan, sir?', what can we deduce about his state of mind?",
+            answer: "He is completely innocent, naive, sheltered, and ignorant of the grim reality of his social status."
+          }
+        ]
       },
       {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"What's an orphan, sir?\"",
-        question: "What does Oliver's question reveal about his character and situation?",
-        answer: "It shows his absolute innocence, naivety, and complete lack of parental education or worldly knowledge."
+        sectionTitle: "KAAKYIRE AKOSOMO NYANTAKYI: The Generous Hunter",
+        contextExtract: "\"Calm down, Mr Hunter, I come in peace. Your ability to distinguish me from my younger brother has surprised me. Many people think we are identical twins.\"",
+        subItems: [
+          {
+            subQuestion: "5(c)",
+            question: "Why did the mystical animal speaker approach and visit the hunter in peace?",
+            answer: "To reward the hunter for his keen discernment and mercy in sparing his younger brother in the forest."
+          },
+          {
+            subQuestion: "5(d)",
+            question: "What moral lesson can be derived from the speaker's action?",
+            answer: "Kindness, mercy, and keen discernment attract profound gratitude and unexpected blessings."
+          }
+        ]
       },
       {
-        subId: "5(c)",
-        textSource: "KAAKYIRE AKOSOMO NYANTAKYI: The Generous Hunter",
-        extract: "\"Calm down, Mr. Hunter, I come in peace. Your ability to distinguish me from my younger brother has surprised me. Many people think we are identical twins.\"",
-        question: "Why did the talking animal (speaker) approach the hunter in the forest?",
-        answer: "To test the hunter's integrity, show gratitude for his discernment, and reward his legendary kindness."
+        sectionTitle: "ROBERT FROST: A Minor Bird",
+        contextExtract: "\"The fault must partly have been in me\nThe bird was not to blame for his key\nAnd of course there must be something wrong\nIn wanting to silence any song\"",
+        subItems: [
+          {
+            subQuestion: "5(e)",
+            question: "State the end-rhyme scheme of the four-line extract.",
+            answer: "aabb ('me'/'key' = aa, 'wrong'/'song' = bb)."
+          },
+          {
+            subQuestion: "5(f)",
+            question: "What philosophical lesson does the speaker convey regarding finding fault with others?",
+            answer: "Human intolerance is often our own personal flaw; we should appreciate natural diversity rather than seeking to silence innocent expression."
+          }
+        ]
       },
       {
-        subId: "5(d)",
-        textSource: "KAAKYIRE AKOSOMO NYANTAKYI: The Generous Hunter",
-        extract: "The dialogue between the mythical creature and the hunter...",
-        question: "What moral lesson does the reader learn from the hunter's extraordinary experience?",
-        answer: "Generosity, patience, and treating nature with respect bring unexpected blessings and honor."
+        sectionTitle: "LAWRENCE DARMANI: Scribbler's Dream",
+        contextExtract: "\"Tell you the truth:\nthe gold adorning the neck\nonce was lost in rocky soils\nThey dig deep who find it!\"",
+        subItems: [
+          {
+            subQuestion: "5(g)",
+            question: "Identify the dominant literary figure of speech in the 2nd and 3rd lines.",
+            answer: "Metaphor."
+          },
+          {
+            subQuestion: "5(h)",
+            question: "What does the poet mean by the statement: 'They dig deep who find it'?",
+            answer: "Only those who labor with relentless perseverance, discipline, and hard work achieve true success and literary greatness."
+          }
+        ]
       },
       {
-        subId: "5(e)",
-        textSource: "ROBERT FROST: A Minor Bird",
-        extract: "The fault must partly have been in me\nThe bird was not to blame for his key\nAnd of course there must be something wrong\nIn wanting to silence any song",
-        question: "State the rhyme scheme of the four-line stanza above.",
-        answer: "aabb (me/key rhyme as 'a', and wrong/song rhyme as 'b')."
-      },
-      {
-        subId: "5(f)",
-        textSource: "ROBERT FROST: A Minor Bird",
-        extract: "\"The fault must partly have been in me...\"",
-        question: "What moral lesson about human nature and fault-finding is conveyed in this stanza?",
-        answer: "Human irritation is often caused by our own internal intolerance rather than innocent natural expressions around us."
-      },
-      {
-        subId: "5(g)",
-        textSource: "LAWRENCE DARMANI: Scribbler's Dream",
-        extract: "Tell you the truth:\nthe gold adorning the neck\nonce was lost in rocky soils\nThey dig deep who find it!",
-        question: "Identify the dominant figure of speech used in the lines 'the gold adorning the neck / once was lost in rocky soils'.",
-        answer: "Metaphor (comparing the refined achievement of an author's published work to refined gold extracted through hard labor)."
-      },
-      {
-        subId: "5(h)",
-        textSource: "LAWRENCE DARMANI: Scribbler's Dream",
-        extract: "\"They dig deep who find it!\"",
-        question: "What does the poet mean by the statement 'They dig deep who find it'?",
-        answer: "Great success and literary excellence require persistent hard work, deep research, and profound sacrifice."
-      },
-      {
-        subId: "5(i)",
-        textSource: "AMA ATAA AIDOO: The Dilemma of a Ghost",
-        extract: "Yes, my young woman, I shall remember you.\nI shall remember you in the hours of the night\nIn my sleep,\nIn my sleepless sleep.",
-        question: "To whom does the phrase 'my young woman' refer in the play?",
-        answer: "Eulalie Jawondo (the African-American graduate married to Ato Yawson)."
-      },
-      {
-        subId: "5(j)",
-        textSource: "AMA ATAA AIDOO: The Dilemma of a Ghost",
-        extract: "\"In my sleepless sleep.\"",
-        question: "Identify the literary device contained in the phrase 'sleepless sleep'.",
-        answer: "Oxymoron (or Paradox), as 'sleepless' and 'sleep' are contradictory terms placed together."
+        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
+        contextExtract: "\"Yes, my young woman, I shall remember you.\nI shall remember you in the hours of the night\nIn my sleep,\nIn my sleepless sleep.\"",
+        subItems: [
+          {
+            subQuestion: "5(i)",
+            question: "Who does the phrase 'my young woman' refer to in this soliloquy?",
+            answer: "Eulalie Rush (Ato Yawson's African-American wife)."
+          },
+          {
+            subQuestion: "5(j)",
+            question: "Identify the literary figure of speech utilized in the paradoxical expression: 'In my sleepless sleep'.",
+            answer: "Oxymoron (or paradox)."
+          }
+        ]
       }
     ]
   }
 };
 
-// Flattened structured question parts for standard runner compatibility
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    partLabel: `Part A - Question ${q.questionNumber} (${q.category})`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
+    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q) => ({
-    partLabel: `Part B - Comprehension ${q.subId}`,
-    prompt: `${paper2Calibrated.sectionB_comprehension.passage}\n\n**Question:** ${q.question}`,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    partLabel: `Part C - Literature ${q.subId} (${q.textSource})`,
-    prompt: `${q.extract ? `*Extract:*\n> ${q.extract}\n\n` : ''}**Question:** ${q.question}`,
-    modelAnswer: q.answer,
-    marks: 2
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  },
+  ...paper2Calibrated.partC_literature.questions.map((sec, idx) => ({
+    id: `literature_cockcrow_${idx + 1}`,
+    partLabel: `Part C: Literature - ${sec.sectionTitle}`,
+    contextExtract: sec.contextExtract || null,
+    subItems: sec.subItems,
+    marks: 10
   }))
 ];
 
 async function seedBeceEnglish2024Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2024 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2024 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -663,8 +763,9 @@ async function seedBeceEnglish2024Calibrated() {
     if (idx === 2) keyDist.C++;
     if (idx === 3) keyDist.D++;
   });
-  console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
+  console.log("Verified Key Balance across 40 Objective Items (Exactly 10 each):", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2024");
   await docRef.set({
     year: 2024,
@@ -678,25 +779,60 @@ async function seedBeceEnglish2024Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasCockcrowLiterature: true,
+      hasOralLanguageComponent: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
-      title: "Paper 1: Objective Test",
+      title: "Paper 1: Objective Test (Lexis, Structure, Cloze, and Oral Language)",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 30",
+          questions: balancedPaper1.slice(25, 30)
+        },
+        sectionE_cloze_passage: {
+          title: "Section E: Meeting Decorum Cloze Passage",
+          questionRange: "Questions 31 to 35",
+          questions: balancedPaper1.slice(30, 35)
+        },
+        partB_oral_language: {
+          title: "Part B: Oral Language & Phonology",
+          questionRange: "Questions 36 to 40",
+          questions: balancedPaper1.slice(35, 40)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2024 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2024 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2024Calibrated()

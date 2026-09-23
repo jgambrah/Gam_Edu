@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,375 +45,392 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2010
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 40)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "Our mathematics master was late for class because his vehicle ............ a punctured tyre on the way.",
+    prompt: "The school bus driver arrived late at the terminal because the vehicle ............ a punctured tire.",
     options: ["had", "will have", "is having", "has"],
     correctAnswer: "had",
-    hint: "The main clause is in the simple past ('was late'), so the reason must also be in the past tense.",
-    workedSolution: "Past narrative consistency: The main clause 'was late' expresses a past event. The cause ('he had a punctured tyre') must also be in the simple past tense ('had').",
+    hint: "Past simple tense: The sentence describes a completed past incident ('arrived late').",
+    workedSolution: "The main clause expresses a completed past event ('arrived late'). The causal clause requires the simple past tense: 'had'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "We had lunch at a popular local restaurant where I ............ delicious jollof rice.",
+    prompt: "We celebrated our graduation at a seaside eatery where I ............ grilled tilapia.",
     options: ["am enjoying", "will enjoy", "enjoyed", "would enjoy"],
     correctAnswer: "enjoyed",
-    hint: "Maintain sequence of tenses: The past action 'had lunch' governs the relative clause.",
-    workedSolution: "The narrative frame is in the simple past ('We had lunch'). The past action within that setting is correctly expressed in the simple past tense ('enjoyed').",
+    hint: "Sequence of past narrative tenses: Governed by the past tense 'celebrated'.",
+    workedSolution: "To maintain narrative past tense consistency with 'We celebrated...', the simple past indicative 'enjoyed' is required.",
     points: 1
   },
   {
     number: 3,
-    prompt: "The headmistress asked the school prefect to choose ............ Kwame and Kofi.",
+    prompt: "The school counselor advised Mansa to choose ............ the two senior high schools.",
     options: ["among", "from", "with", "between"],
     correctAnswer: "between",
-    hint: "Use 'between' when a choice or relationship involves exactly two entities.",
-    workedSolution: "'Between' is used when distinguishing or choosing between two individuals ('Kwame and Kofi'). 'Among' is used for three or more.",
+    hint: "Preposition used when distinguishing or selecting between exactly two choices.",
+    workedSolution: "'Between' is used when choosing between two options or individuals. 'Among' applies to three or more.",
     points: 1
   },
   {
     number: 4,
-    prompt: "Kweku is recovering from a fever and is not ............ enough to walk to school.",
+    prompt: "Kofi contracted typhoid and is not ............ enough to write the promotional test.",
     options: ["good", "well", "fine", "free"],
     correctAnswer: "well",
-    hint: "'Well' functions as an adjective meaning healthy or free from illness.",
-    workedSolution: "'Well' is an adjective denoting good physical health ('not well enough'). 'Good' refers to moral character, quality, or skill, not physical health in this context.",
+    hint: "Predicative adjective describing bodily physical health and freedom from illness.",
+    workedSolution: "In the context of health and recovery from sickness, 'well' functions as a predicative adjective meaning healthy: 'not well enough to write the test'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "The school cadet corps ............ twice every week on the sports oval.",
+    prompt: "The municipal brass band ............ three evenings every week.",
     options: ["practise", "are practising", "practises", "were practising"],
     correctAnswer: "practises",
-    hint: "A collective entity acting as a single unit with a habitual schedule takes a singular verb.",
-    workedSolution: "The collective subject 'The school cadet corps' functions as a single singular unit and describes a regular habitual action ('twice every week'), requiring the singular verb 'practises'.",
+    hint: "Singular collective subject ('The municipal brass band') taking a habitual simple present verb.",
+    workedSolution: "The collective noun 'The municipal brass band' acts as a singular unit taking the third-person singular present verb 'practises'. (In British/Ghanaian English, 'practise' is the verb and 'practice' is the noun).",
     points: 1
   },
   {
     number: 6,
-    prompt: "Philomina ............ passed the examination with distinction if she had revised more consistently.",
+    prompt: "The sprinter ............ won the gold medal if he had trained more vigorously.",
     options: ["could have", "will have", "may have", "could"],
     correctAnswer: "could have",
-    hint: "Third Conditional: 'If + past perfect' requires 'could have / would have + past participle' in the main clause.",
-    workedSolution: "In a Third Conditional sentence expressing past ability or possibility that was unfulfilled ('if she had tried harder'), the main clause takes 'could have + past participle' ('could have passed').",
+    hint: "Third conditional: 'if + past perfect (`had trained`)' takes 'could have / would have + past participle'.",
+    workedSolution: "In a counterfactual past conditional construction ('if he had trained...'), the main clause requires a modal past perfect: 'could have [won]'.",
     points: 1
   },
   {
     number: 7,
-    prompt: "The constitutional amendment was passed in conformity with established legal .............",
+    prompt: "The environmental statute was drafted in conformity with established constitutional ............ .",
     options: ["cases", "principles", "rules", "issues"],
     correctAnswer: "principles",
-    hint: "Identify the formal legal collocation denoting fundamental doctrines or rules of conduct.",
-    workedSolution: "In jurisprudence, fundamental tenets, doctrines, and foundational standards are formally designated as 'legal principles'.",
+    hint: "Formal legal doctrines, foundations, and established tenets of jurisprudence.",
+    workedSolution: "The established phrase in law referring to fundamental tenets and doctrines is 'constitutional principles' (or 'legal principles').",
     points: 1
   },
   {
     number: 8,
-    prompt: "The historical novel, as well as several anthologies on the shelf, ............. fascinating reading.",
+    prompt: "The textbook, as well as several supplementary readers, ............ fascinating reading.",
     options: ["makes", "are to make", "are making", "make"],
     correctAnswer: "makes",
-    hint: "Parenthetical additions like 'as well as...' do not change the number of the singular head subject ('The historical novel').",
-    workedSolution: "Parenthetical additions introduced by 'as well as' do not affect the grammatical number of the subject. The singular head noun 'The historical novel' governs the singular verb 'makes'.",
+    hint: "Parenthetical additions introduced by 'as well as' do not alter the singular subject 'The textbook'.",
+    workedSolution: "Parenthetical phrases like 'as well as several supplementary readers' do not pluralize the singular subject 'The textbook', requiring the singular verb 'makes'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "............ the striker scored the decisive goal, he sustained a severe sprain during the tackle.",
+    prompt: "............ the striker clinched the winning goal, he fractured his ankle during the match.",
     options: ["But", "Nevertheless", "Although", "Furthermore"],
     correctAnswer: "Although",
-    hint: "Identify the subordinating conjunction of concession that joins two contrasting clauses.",
-    workedSolution: "'Although' is a subordinating conjunction of concession used to introduce an adverbial clause contrasting with the main clause. 'Nevertheless' is a conjunctive adverb.",
+    hint: "Subordinating conjunction of concession introducing a dependent contrasting clause.",
+    workedSolution: "'Although' is a subordinating conjunction of concession connecting the contrasting dependent clause to the main clause.",
     points: 1
   },
   {
     number: 10,
-    prompt: "Neither Kojo nor his classmates ............ the instructions on the examination paper clearly.",
+    prompt: "Neither the class prefect nor his desk-mate ............ the algebraic equation clearly.",
     options: ["understands", "have understood", "understand", "is understanding"],
-    correctAnswer: "understand",
-    hint: "With 'neither... nor', the verb agrees in number with the subject closer to it ('classmates').",
-    workedSolution: "Proximity rule of concord: When subjects of different numbers are joined by 'neither... nor', the verb agrees with the closer subject ('his classmates', plural present: 'understand').",
+    correctAnswer: "understands",
+    hint: "Proximity rule with 'neither... nor': The verb agrees with the nearer subject ('his desk-mate', singular).",
+    workedSolution: "When subjects are linked by 'neither... nor', the verb agrees in number with the nearer subject ('his desk-mate', singular third-person), requiring 'understands'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "The new ............ vocational training institute is located on the outskirts of the town.",
+    prompt: "The new ............ vocational institute is located near the municipal gardens.",
     options: ["womens'", "woman", "womans'", "women's"],
     correctAnswer: "women's",
-    hint: "'Women' is an irregular plural noun that forms its possessive by adding an apostrophe and 's'.",
-    workedSolution: "'Women' is an irregular plural noun. Its possessive form is constructed by adding ''s' ('women's'), not an apostrophe after 's'.",
+    hint: "'Women' is an irregular plural noun; plurals not ending in -s form their possessive with 's.",
+    workedSolution: "'Women' is an irregular plural noun. Plural nouns that do not end in -s form their possessive by adding apostrophe + 's': 'women's institute'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "One of the bullocks ............ from the herd into the adjoining farm.",
+    prompt: "One of the bullocks ............ from the grazing enclosure.",
     options: ["has strayed", "have strayed", "have been strayed", "has been strayed"],
     correctAnswer: "has strayed",
-    hint: "The subject is 'One', not 'bullocks'. Use the singular active present perfect form.",
-    workedSolution: "In 'One of the bullocks', the true head noun is the singular pronoun 'One'. It requires the singular active verb 'has strayed'. 'Stray' is an intransitive verb and cannot take a passive form.",
+    hint: "The true grammatical head is 'One' (singular), requiring a singular active verb.",
+    workedSolution: "The subject head is 'One' (singular) of the bullocks, requiring the third-person singular present perfect active verb 'has strayed'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "At the wedding reception, the committee placed an order for a large ............ of fruit juice.",
+    prompt: "For the annual harvest banquet, the organizers ordered a massive ............ of fruit juice.",
     options: ["count", "total", "quantity", "sum"],
     correctAnswer: "quantity",
-    hint: "Identify the noun used to denote an amount or volume of an uncountable liquid commodity.",
-    workedSolution: "Uncountable items, bulk supplies, and liquids like fruit juice are measured by 'quantity' ('a large quantity of drinks/juice'). 'Sum' is used for money; 'count' and 'total' for discrete numbers.",
+    hint: "Mass non-count liquids and bulk beverages are measured in volume or quantity.",
+    workedSolution: "Beverages and liquids are uncountable bulk items measured by volume, requiring 'quantity' ('a massive quantity of fruit juice').",
     points: 1
   },
   {
     number: 14,
-    prompt: "The classroom was so congested that it could ............ accommodate all the registered pupils.",
+    prompt: "The examination hall was so congested that it could ............ accommodate all the candidates.",
     options: ["rarely", "comfortably", "conveniently", "hardly"],
     correctAnswer: "hardly",
-    hint: "Use this negative adverb meaning scarcely or almost not at all.",
-    workedSolution: "'Hardly' means scarcely or with great difficulty, fitting the context of a congested room that could barely hold everyone.",
+    hint: "Negative adverb of degree meaning scarcely or with extreme difficulty.",
+    workedSolution: "'Hardly' is a negative adverb of degree meaning barely or scarcely: 'could hardly accommodate all of us'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "If I were the school dining hall prefect, I ............ ensure balanced rations for every student.",
+    prompt: "If I were the school headmaster, I ............ abolish all compulsory afternoon prep.",
     options: ["will", "shall", "would", "must"],
     correctAnswer: "would",
-    hint: "Second Conditional: 'If + past subjunctive (were)' requires 'would + base verb' in the main clause.",
-    workedSolution: "In a hypothetical Second Conditional sentence ('If I were...'), the main clause takes 'would + base verb' ('I would ensure').",
+    hint: "Second conditional (hypothetical unreal present): 'If I were..., I would...'.",
+    workedSolution: "In a Second Conditional sentence expressing an unreal or hypothetical present condition ('If I were...'), the main clause takes 'would': 'I would abolish'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "Florence performs creditably in all her terminal examinations.\nChoose the word nearest in meaning to the underlined word 'creditably'.",
+    prompt: "Master Darko performs creditably in all his inter-school debates.\nChoose the word nearest in meaning to 'creditably'.",
     options: ["fairly", "well", "graciously", "good"],
     correctAnswer: "well",
-    hint: "In a praiseworthy, satisfactory, or commendable manner.",
-    workedSolution: "'Creditably' means in a manner worthy of praise, honor, or esteem; 'well' is its closest adverbial synonym.",
+    hint: "In a praiseworthy, commendable manner or to a high standard.",
+    workedSolution: "'Creditably' means in a manner deserving praise, honor, or doing something 'well'; 'well' is its direct adverbial synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The school choir sang melodious hymns at the thanksgiving service.\nChoose the word nearest in meaning to the underlined word 'melodious'.",
+    prompt: "The traditional choir rendered some melodious anthems during the festival.\nChoose the word nearest in meaning to 'melodious'.",
     options: ["loud", "pleasant", "soft", "musical"],
     correctAnswer: "pleasant",
-    hint: "Sweet-sounding, agreeable, and harmonious to the ear.",
-    workedSolution: "'Melodious' means having a pleasant tune or sounding agreeable to the ear; 'pleasant' is its closest synonym.",
+    hint: "Harmonious, sweet-sounding, and agreeable to the ears.",
+    workedSolution: "'Melodious' means producing sweet, harmonious, and pleasing sounds; 'pleasant' is its closest synonym.",
     points: 1
   },
   {
     number: 18,
-    prompt: "The senior prefect is always immaculately dressed in her school uniform.\nChoose the word nearest in meaning to the underlined word 'immaculately'.",
+    prompt: "The senior prefect is always immaculately attired for morning parade.\nChoose the word nearest in meaning to 'immaculately'.",
     options: ["modestly", "correctly", "neatly", "scantily"],
     correctAnswer: "neatly",
-    hint: "Flawlessly clean, spotless, and impeccably tidy.",
-    workedSolution: "'Immaculately' means spotlessly clean, tidy, and without blemish; 'neatly' is the closest equivalent.",
+    hint: "Spotlessly clean, tidy, and impeccably turned out.",
+    workedSolution: "'Immaculately' means spotlessly, flawlessly, and impeccably clean; 'neatly' is its closest equivalent.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The coastal hamlet was completely enveloped in a dense morning fog.\nChoose the word nearest in meaning to the underlined word 'enveloped'.",
+    prompt: "The coastal town was enveloped in an impenetrable harmattan haze.\nChoose the word nearest in meaning to 'enveloped'.",
     options: ["built", "put", "shaped", "covered"],
     correctAnswer: "covered",
-    hint: "Wrapped up, enclosed, or completely surrounded by something.",
-    workedSolution: "'Enveloped' means wrapped around, covered entirely, or shrouded; 'covered' is its direct synonym.",
+    hint: "Wrapped up, shrouded, or submerged from sight.",
+    workedSolution: "'Enveloped' means completely wrapped up, surrounded, or 'covered'.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The inquisitive journalist asked several probing questions during the interview.\nChoose the word nearest in meaning to the underlined word 'inquisitive'.",
+    prompt: "The inquisitive journalist asked several probing questions at the briefing.\nChoose the word nearest in meaning to 'inquisitive'.",
     options: ["curious", "pompous", "intelligent", "cowardly"],
     correctAnswer: "curious",
-    hint: "Eager to investigate, learn, or ask questions.",
-    workedSolution: "'Inquisitive' means eager to acquire knowledge or investigate details; 'curious' is its direct synonym.",
+    hint: "Eager for information; actively asking questions to investigate.",
+    workedSolution: "'Inquisitive' means eager for knowledge, inquiring, or 'curious'.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "Whenever Kweku travels to Kumasi, he puts up with his uncle. This means that Kweku ............",
-    options: ["helps his uncle", "stays with his uncle", "converses with his uncle", "avoids his uncle"],
-    correctAnswer: "stays with his uncle",
-    hint: "Lodging or being accommodated temporarily in someone's home.",
-    workedSolution: "The phrasal verb 'to put up with someone' in this lodging context means to stay or lodge temporarily at their home.",
+    prompt: "Whenever Yaw visits the capital city, he puts up with his grand-uncle. This means that Yaw ............",
+    options: ["helps his grand-uncle", "stays with his grand-uncle", "converses with his grand-uncle", "avoids his grand-uncle"],
+    correctAnswer: "stays with his grand-uncle",
+    hint: "To lodge or reside temporarily with someone.",
+    workedSolution: "In the context of lodging, the phrasal verb 'to put up with someone' means to lodge or 'stay with' them temporarily.",
     points: 1
   },
   {
     number: 22,
-    prompt: "The candidate glanced over the examination papers before handing them in. This means that the candidate ............",
-    options: ["quickly wrote", "critically analyzed", "merely saw", "quickly read through"],
-    correctAnswer: "quickly read through",
-    hint: "Reading through something hastily without detailed scrutiny.",
-    workedSolution: "'To glance over' means to read or inspect something rapidly, cursorily, or briefly.",
+    prompt: "I glanced over the examination guidelines while commuting to school. This means that I quickly ............ the guidelines.",
+    options: ["wrote", "analysed", "saw", "read"],
+    correctAnswer: "read",
+    hint: "To skim, review, or read through cursorily and quickly.",
+    workedSolution: "'To glance over' a text means to skim through or 'read' it briefly and quickly.",
     points: 1
   },
   {
     number: 23,
-    prompt: "The mother entered the hall to find her daughter with her eyes glued to the television. This means that the daughter was ............",
-    options: ["smiling at the screen", "repairing the television", "intently watching the screen", "cleaning the screen"],
+    prompt: "Mother entered the hall to find her son with his eyes glued to the television screen. This means that her son was ............",
+    options: [
+      "smiling at the screen",
+      "dismantling the set",
+      "intently watching the screen",
+      "dusting the television"
+    ],
     correctAnswer: "intently watching the screen",
-    hint: "Watching with fixed, undivided, and captivated visual attention.",
-    workedSolution: "The idiom 'eyes glued to' means watching something with total, undivided, and concentrated attention.",
+    hint: "Watching with undivided, fixed attention without looking away.",
+    workedSolution: "The idiom 'eyes glued to something' means looking at or 'intently watching' it with complete, rapt attention.",
     points: 1
   },
   {
     number: 24,
-    prompt: "Kojo was escorted to the disciplinary committee like a lamb to the slaughter. This means that Kojo went ............",
-    options: ["with great difficulty", "without offering any resistance", "carrying a farm animal", "without any clothes on"],
-    correctAnswer: "without offering any resistance",
-    hint: "Going quietly, innocently, or submissively without resistance into a difficult situation.",
-    workedSolution: "'Like a lamb to the slaughter' describes going quietly, submissively, and without resistance into a punitive or dangerous situation.",
+    prompt: "The apprentice was dragged to the disciplinary committee like a lamb to the slaughter. This means he went ............",
+    options: [
+      "with immense physical difficulty",
+      "quietly without offering any resistance",
+      "carrying a live animal",
+      "without any shoes on"
+    ],
+    correctAnswer: "quietly without offering any resistance",
+    hint: "Submissively, helplessly, and without offering any resistance.",
+    workedSolution: "The idiom 'like a lamb to the slaughter' describes going somewhere helplessly, submissively, or without offering resistance.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The senior master instructed the bully to leave the junior boys alone. This means that the bully was told ............",
-    options: ["not to walk with them", "to accompany them everywhere", "not to disturb or tease them", "to tutor them properly"],
-    correctAnswer: "not to disturb or tease them",
-    hint: "Ceasing harassment, teasing, or unwanted interference.",
-    workedSolution: "The idiom 'to leave someone alone' means to stop bothering, teasing, interfering with, or harassing them.",
+    prompt: "The senior boy was warned to leave the new junior pupil alone. This means the senior was instructed ............",
+    options: [
+      "not to accompany him home",
+      "to accompany him everywhere",
+      "not to disturb or tease him",
+      "to coach him in athletics"
+    ],
+    correctAnswer: "not to disturb or tease him",
+    hint: "To stop bothering, harassing, or interfering with someone.",
+    workedSolution: "The idiom 'to leave someone alone' means to stop bothering, harassing, or 'disturbing' them.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 32) ---
   {
     number: 26,
-    prompt: "While some of the guests at the reception were rude, the host was remarkably ...... .",
+    prompt: "While several patrons at the durbar were rude, the master of ceremonies was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'rude'.",
     options: ["courteous", "bold", "friendly", "shy"],
     correctAnswer: "courteous",
-    hint: "'Rude' means impolite and insolent. Find the word that denotes polite, well-mannered conduct.",
-    workedSolution: "'Rude' means discourteous and ill-mannered. Its direct antonym is 'courteous' (polite and respectful).",
+    hint: "'Rude' means impolite and ill-mannered. What word denotes polite and well-mannered?",
+    workedSolution: "'Rude' means discourteous or impolite. Its direct behavioral antonym is 'courteous' (polite).",
     points: 1
   },
   {
     number: 27,
-    prompt: "The defense attorney supported his plea with copious evidence, but the prosecutor offered only ...... documentation.",
+    prompt: "The state prosecutor presented copious documentation, but the defense had only ...... records.\nChoose the word most nearly opposite in meaning to 'copious'.",
     options: ["inconsistent", "scanty", "bad", "unconvincing"],
     correctAnswer: "scanty",
-    hint: "'Copious' means abundant and extensive. Find the word meaning meager or in short supply.",
-    workedSolution: "'Copious' means abundant in quantity. Its direct antonym is 'scanty' (meager, sparse, or deficient).",
+    hint: "'Copious' means abundant and plentiful. What word denotes meager, scarce, or insufficient?",
+    workedSolution: "'Copious' means abundant or plentiful. Its direct quantitative antonym is 'scanty' (meager or scarce).",
     points: 1
   },
   {
     number: 28,
-    prompt: "To judge fairly, an arbiter must remain objective rather than ...... .",
+    prompt: "A fair investigator must remain objective, rather than being swayed by ...... biases.\nChoose the word most nearly opposite in meaning to 'objective'.",
     options: ["subjective", "positive", "active", "emotive"],
     correctAnswer: "subjective",
-    hint: "'Objective' means impartial and based on facts. Find the word meaning influenced by personal feelings.",
-    workedSolution: "'Objective' means unbiased and based on observable facts. Its direct philosophical and linguistic antonym is 'subjective' (based on personal feelings).",
+    hint: "'Objective' means impartial, factual, and unbiased. What word denotes based on personal feelings or bias?",
+    workedSolution: "'Objective' means factual, neutral, and unbiased. Its direct antonym is 'subjective' (biased by personal feelings).",
     points: 1
   },
   {
     number: 29,
-    prompt: "Leaving the dormitory after lights-out is strictly prohibited, but studying in the reading room is ...... .",
+    prompt: "In our dormitory, loud noise during prep hours is prohibited, while silent study is ...... .\nChoose the word most nearly opposite in meaning to 'prohibited'.",
     options: ["advised", "ignored", "permitted", "admitted"],
     correctAnswer: "permitted",
-    hint: "'Prohibited' means forbidden by authority. Find the word meaning officially allowed.",
-    workedSolution: "'Prohibited' means officially forbidden. Its direct antonym is 'permitted' (allowed).",
+    hint: "'Prohibited' means forbidden by rule. What word denotes officially allowed?",
+    workedSolution: "'Prohibited' means forbidden by regulation. Its direct antonym is 'permitted' (allowed).",
     points: 1
   },
   {
     number: 30,
-    prompt: "The surest way for an athletic team to avoid defeat is to strive relentlessly for ...... .",
+    prompt: "The team strove to avoid defeat by securing a resounding ...... in the tournament.\nChoose the word most nearly opposite in meaning to 'defeat'.",
     options: ["position", "victory", "knowledge", "ability"],
     correctAnswer: "victory",
-    hint: "'Defeat' means losing a contest. Find the word meaning winning.",
-    workedSolution: "'Defeat' means loss in a contest or battle. Its direct antonym is 'victory' (winning or triumph).",
+    hint: "'Defeat' means losing a contest. What word denotes triumph or winning?",
+    workedSolution: "'Defeat' denotes failure or loss in a contest. Its direct opposite is 'victory' (triumph or winning).",
     points: 1
   },
   {
     number: 31,
-    prompt: "Rather than clearing suddenly, the rain clouds dispersed ...... over several hours.",
-    options: ["continuously", "gradually", "heavily", "immediately"],
-    correctAnswer: "gradually",
-    hint: "'Suddenly' means quickly and unexpectedly. Find the word meaning slowly over time in small steps.",
-    workedSolution: "'Suddenly' means quickly and abruptly. Its direct antonym is 'gradually' (slowly step-by-step over time).",
+    prompt: "Suddenly the bright morning sky turned pitch-black before the storm broke.\nChoose the word most nearly opposite in meaning to 'Suddenly'.",
+    options: ["Continuously", "Gradually", "Heavily", "Immediately"],
+    correctAnswer: "Gradually",
+    hint: "'Suddenly' means quickly and unexpectedly. What word denotes slowly over time step-by-step?",
+    workedSolution: "'Suddenly' means abruptly or unexpectedly. Its direct temporal antonym is 'Gradually' (slowly over time).",
     points: 1
   },
   {
     number: 32,
-    prompt: "The runner looked dejected after losing the medal, but the champion appeared utterly ...... .",
+    prompt: "The goalkeeper looked dejected after conceding the goal, but his supporters remained ...... .\nChoose the word most nearly opposite in meaning to 'dejected'.",
     options: ["angry", "calm", "strong", "excited"],
     correctAnswer: "excited",
-    hint: "'Dejected' means sad, depressed, and crestfallen. Find the word meaning joyful and elevated in spirit.",
-    workedSolution: "'Dejected' means downcast, depressed, and sad. Its opposite in this emotional context is 'excited' (elated, joyful, and thrilled).",
+    hint: "'Dejected' means sad, downcast, and dispirited. What word denotes joyful, enthusiastic, and upbeat?",
+    workedSolution: "'Dejected' means depressed, sad, or dispirited. Its direct emotional antonym among the options is 'excited' (cheerful, joyful).",
     points: 1
   },
 
   // --- PART II: LITERATURE IN ENGLISH (33 - 40) ---
   {
     number: 33,
-    prompt: "Read the poetic lines below:\n\"Young lady, you are like / The moon that walks beautifully across the sky, / An eagle feather worn by a husband.\"\nThis literary extract is written in verse form and is an example of ............",
+    prompt: "Read the poetic extract carefully:\n'Graceful maiden, you are like\nThe silver moon that glides across the evening sky,\nA precious eagle feather in an elder's crown.'\n\nThis literary extract is an example of ............ .",
     options: ["prose", "poetry", "drama", "dialogue"],
     correctAnswer: "poetry",
-    hint: "Arranged in lines, stanzas, and figurative verse rather than continuous sentences and paragraphs.",
-    workedSolution: "The extract is composed in figurative verse lines and stanzas; it is an example of 'poetry'.",
+    hint: "Composed in verse lines and stanzas utilizing figurative imagery.",
+    workedSolution: "The literary piece is composed in metered lines and stanzas utilizing figurative imagery, which defines 'poetry'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "In the poem above, the poet's primary subject of praise and admiration is ............",
-    options: ["a shiny mirror", "an eagle feather", "the evening moon", "a beautiful young lady"],
-    correctAnswer: "a beautiful young lady",
-    hint: "The direct addressee and subject of the similes.",
-    workedSolution: "The poem is an encomium (song of praise) directly praising the grace, beauty, and honor of 'a beautiful young lady'.",
+    prompt: "Read the poetic extract carefully:\n'Graceful maiden, you are like\nThe silver moon that glides across the evening sky,\nA precious eagle feather in an elder's crown.'\n\nThe central subject of this extract is ............ .",
+    options: ["a shiny mirror", "an eagle feather", "the night sky", "a beautiful young maiden"],
+    correctAnswer: "a beautiful young maiden",
+    hint: "The extract directly addresses and praises this specific individual.",
+    workedSolution: "The poem is an encomium directly addressing and praising 'a beautiful young maiden' using celestial and royal imagery.",
     points: 1
   },
   {
     number: 35,
-    prompt: "In the line \"The moon that walks beautifully across the sky\", the literary device employed is ............",
+    prompt: "'The silver moon that glides across the evening sky'\nThis line is an example of ............ .",
     options: ["metaphor", "hyperbole", "alliteration", "personification"],
     correctAnswer: "personification",
-    hint: "Giving the celestial moon the human physical action of 'walking'.",
-    workedSolution: "'Personification' endows inanimate nature or non-human objects with human attributes or actions (attributing the human act of walking to the moon).",
+    hint: "Attributing human actions (gliding like a dancer) to an inanimate celestial body.",
+    workedSolution: "Attributing intentional human locomotion ('glides gracefully') to an inanimate celestial entity (the moon) is 'personification'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "The figurative expression \"Young lady, you are like / An eagle feather worn by a husband\" is an example of a/an ............",
+    prompt: "'Graceful maiden, you are like ... A precious eagle feather in an elder's crown'\nThis comparison is an example of ............ .",
     options: ["simile", "metaphor", "alliteration", "assonance"],
     correctAnswer: "simile",
-    hint: "An explicit comparison between two things using the connective word 'like'.",
-    workedSolution: "A 'simile' explicitly compares two distinct entities using the comparative connective word 'like' or 'as'.",
+    hint: "A direct figurative comparison using the connective word 'like'.",
+    workedSolution: "A figure of speech making a direct comparison between two distinct things using 'like' or 'as' is a 'simile'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "A literary artist who composes verse in stanzas and poetic meter is designated as ............",
+    prompt: "An author who composes poems and verse literature is called ............ .",
     options: ["a novelist", "a poet", "a playwright", "an actor"],
     correctAnswer: "a poet",
-    hint: "A writer of poems.",
-    workedSolution: "A writer or creator of poetry is a 'poet'. A novelist writes prose novels, and a playwright writes dramatic plays.",
+    hint: "A novelist writes prose, a playwright writes plays, and this artist composes verse.",
+    workedSolution: "A person who writes or composes poems is called 'a poet'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "The poetic line \"The potter puts the pots in the pans\" demonstrates the sound device called ............",
+    prompt: "'Peter picked polished pumpkins from the pantry.'\nThis sentence is an example of ............ .",
     options: ["metaphor", "simile", "alliteration", "personification"],
     correctAnswer: "alliteration",
-    hint: "Repetition of the initial voiceless bilabial plosive consonant sound /p/.",
-    workedSolution: "'Alliteration' is the deliberate repetition of identical initial consonant sounds in neighboring words (/p/ in 'potter puts pots pans').",
+    hint: "Repetition of the initial consonant sound /p/ across adjacent words.",
+    workedSolution: "The repetition of the identical initial consonant sound (/p/) across adjacent words ('**P**eter **p**icked **p**olished **p**umpkins from the **p**antry') is 'alliteration'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Read the verse below:\n\"Twinkle, twinkle, little star, (a)\nHow I wonder what you are! (a)\nUp above the world so high, (b)\nLike a diamond in the sky.\" (b)\nThe rhyme scheme of this traditional stanza is ............",
+    prompt: "Read the verse carefully:\n'Twinkle, twinkle, little star,\nHow I wonder what you are!\nUp above the world so high,\nLike a diamond in the sky.'\n\nThe rhyme scheme of this verse is ............ .",
     options: ["abab", "aabc", "abcc", "aabb"],
     correctAnswer: "aabb",
-    hint: "Paired rhyming couplets: 'star' / 'are' (aa) and 'high' / 'sky' (bb).",
-    workedSolution: "The end words form rhyming couplets: 'star' rhymes with 'are' (aa), and 'high' rhymes with 'sky' (bb), resulting in an 'aabb' rhyme scheme.",
+    hint: "Line 1 (star) & Line 2 (are) rhyme ('aa'); Line 3 (high) & Line 4 (sky) rhyme ('bb').",
+    workedSolution: "The terminal rhymes are: 'star' / 'are' (end sounds A, A) and 'high' / 'sky' (end sounds B, B), yielding an 'aabb' rhyme scheme.",
     points: 1
   },
   {
     number: 40,
-    prompt: "The expression \"Afua Bonsu is the apple of my eye\" is an example of a/an ............",
+    prompt: "'Afua Bonsu is the apple of my eye.'\nThis sentence is an example of ............ .",
     options: ["metaphor", "simile", "alliteration", "personification"],
     correctAnswer: "metaphor",
-    hint: "A direct figurative equation without using 'like' or 'as'.",
-    workedSolution: "'Metaphor' directly identifies one person or thing as another without using comparison markers ('like' or 'as'). Describing someone as 'the apple of my eye' equates them directly to a cherished treasure.",
+    hint: "Directly equating one entity to another without using 'like' or 'as'.",
+    workedSolution: "A figure of speech that directly equates one entity to another without the connective words 'like' or 'as' is a 'metaphor'.",
     points: 1
   }
 ];
@@ -434,9 +456,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 201001);
+const assignedTargetIndices = seedShuffle(targetKeys, 201004);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -459,93 +481,145 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY & COMPREHENSION
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING & COMPREHENSION (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
-    title: "Part A: Essay Writing",
-    instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
+  partA_composition: {
+    title: "Part A: Composition",
+    instructions: "Answer one question only from this section. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
-        category: "Informal Letter",
-        prompt: "Write a letter to your father asking for permission and financial support to join your classmates on an educational excursion to the Akosombo Hydroelectric Dam and the Volta Lake.",
-        modelAnswer: `St. Anthony's Junior High School\nP. O. Box 32\nNkawkaw, Eastern Region\n14th June, 2010\n\nDear Father,\n\nI hope this letter finds you in excellent health, peaceful spirits, and thriving in your business. I am writing to formally request your kind permission and financial assistance to join my classmates on our annual school educational excursion scheduled for the end of this month.\n\nOur school Science and Social Studies clubs have organized a three-day educational tour to the Akosombo Hydroelectric Dam, the Shai Hills Resource Reserve, and the historical castles along the coast. As you know, we are currently studying energy transformations and colonial history in our BECE syllabus. Visiting the Akosombo Generating Station will provide me with a practical, first-hand understanding of how falling water turns massive turbines to generate electric power for the entire nation.\n\nFurthermore, our teachers have arranged guided lectures with electrical engineers and conservation officers, which will greatly enrich our preparation for the upcoming national examinations. The total excursion fee is sixty Ghana Cedis, which covers return transportation by commercial tour bus, safe hostel accommodation, guided site fees, and feeding for the entire duration.\n\nMy class teacher has appealed that all payments be finalized by next Friday to secure seat reservations. I promise to be on my best behavior throughout the trip and take detailed notes. I would be immensely grateful if you could send the amount through my senior housemaster.\n\nPlease extend my warmest greetings to Mother and my younger siblings.\n\nYour loving son,\n[Signature]\nKwame Osei`
+        category: "Formal / Parental Permission Letter",
+        prompt: "Write a letter to your father who lives in another town, asking for his permission and financial assistance to join your schoolmates on an educational excursion to the Volta Region.",
+        modelAnswer: `Methodist Junior High School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2010
+
+Dear Father,
+
+I hope this letter finds you in excellent health, peace of mind, and thriving in your business enterprises in Accra. Everyone at home is doing well, and Mother constantly sends her prayers for your safety.
+
+I write to respectfully seek your permission and financial support to participate in an upcoming educational excursion organized by our school's Science and Social Studies Club to the Volta Region from Friday, 18th June to Sunday, 20th June 2010.
+
+This excursion is designed to provide practical academic exposure that directly complements our final BECE curriculum. We are scheduled to tour the Akosombo Hydroelectric Dam to observe the conversion of kinetic water energy into electrical power, which is a major topic in our Integrated Science syllabus. In addition, we will visit the Tafi Atome Monkey Sanctuary and Mount Afadja to study tropical biodiversity, physical geography, and eco-tourism. Witnessing these landmarks first-hand will transform abstract classroom notes into vivid realities.
+
+The total fee for the excursion is forty Ghana cedis (GH¢ 40.00), which covers chartered return transportation, secured dormitory accommodation at Mawuli School, meals, and facility entrance levies. Our headmaster and three senior masters will accompany the delegation to maintain strict discipline.
+
+Knowing how deeply you value my academic advancement, I pray that you will grant your paternal blessing and remit the funds before the registration deadline on 5th June.
+
+Thank you for your endless love and sacrifices for my education.
+
+Your loving son,
+[Signature]
+Kwabena Mensah
+(JHS Form Three Gold)`
       },
       {
         questionNumber: "2",
         category: "Article for Publication",
-        prompt: "Write an article for publication in a local community newspaper on the topic: \"Why Every Basic School Should Have a Well-Stocked Library.\"",
-        modelAnswer: `THE URGENT NEED FOR FUNCTIONAL LIBRARIES IN OUR BASIC SCHOOLS\nBy Gladys Arthur, JHS 3\n\nIn contemporary Ghanaian society, literacy and sound education are universally acknowledged as the bedrock of national progress. Yet, a visit to many public basic schools in our municipality reveals a heartbreaking deficiency: the total absence of functional, well-stocked libraries. Establishing modern libraries in every basic school is an urgent developmental imperative.\n\nFirst and foremost, a school library is the primary engine that cultivates a sustainable reading culture and sharpens language proficiency. Many pupils in our communities come from underprivileged homes where parents cannot afford leisure reading storybooks or reference encyclopedias. A well-stocked library bridges this socio-economic divide, granting every child equal access to fiction, poetry, and supplementary readers. Regular reading enriches vocabulary, improves spelling, and equips learners with the grammatical competence needed to write compelling essays in national examinations.\n\nSecondly, a library provides a serene environment that fosters independent learning and intellectual curiosity. True education goes beyond memorizing chalkboard notes dictated by teachers. When learners have access to historical atlases, science journals, and past examination compendiums, they learn to research questions independently. This nurtures analytical problem-solving skills and intellectual self-reliance, preparing them adequately for Senior High School education.\n\nIn conclusion, a school without a library is like a body without a soul. The Municipal Education Directorate, our Member of Parliament, and local philanthropic bodies must join hands to construct and equip libraries in all basic schools to safeguard the intellectual future of our youth.`
+        prompt: "Write an article for publication in a national newspaper on the topic: \"Every Basic School Should Have a Modern Library.\"",
+        modelAnswer: `EVERY BASIC SCHOOL SHOULD HAVE A MODERN LIBRARY
+By Samuel K. Boateng, Begoro
+
+In the contemporary information age, education is the foundation of national socio-economic progress. While governments and communities invest heavily in constructing classrooms and procuring textbooks, one indispensable academic facility remains glaringly absent in thousands of basic schools across Ghana: a functional, well-equipped school library.
+
+A modern school library is not an educational luxury; it is the beating intellectual heart of any serious academic institution. First and foremost, a library cultivates an enduring reading culture among young learners. In an era dominated by distracting digital media, having access to an organized sanctuary stocked with diverse literature, historical encyclopedias, and creative fiction stimulates children's curiosity and fosters independent study habits. Regular reading sharpens grammatical accuracy, expands vocabulary, and improves analytical writing skills, directly reversing the alarming decline in basic English literacy.
+
+Secondly, a school library bridges the socio-economic inequality gap. Many children from low-income homes cannot afford expensive reference encyclopedias, supplementary readers, or past question compendiums. A stocked library democratizes access to knowledge, ensuring that every student—regardless of parental wealth—has access to the reference materials needed to excel in national examinations like the BECE.
+
+Furthermore, integrating modern basic libraries with internet-connected computers equips students with essential digital literacy, enabling them to conduct academic research and compete with peers worldwide.
+
+To secure Ghana's intellectual future, the Ministry of Education, municipal assemblies, and corporate organizations must partner to construct and furnish libraries in every public basic school. A school without a library is like a tree without roots.`
       },
       {
         questionNumber: "3",
-        category: "Narrative Essay",
-        prompt: "Write an engaging, realistic story illustrating the timeless truth of the proverb: \"All that glitters is not gold.\"",
-        modelAnswer: `During the long vacation following our Form Two examinations, a stylish young man named Marcus arrived in our quiet village of Asamankese. He dressed in immaculate designer suits, wore flashy gold-plated wristwatches, and drove a sleek, customized sports saloon car. He claimed to be an international gold exporter and real estate tycoon operating from Switzerland. Within days, his free-spending generosity and dazzling promises captivated the entire village.\n\nMarcus announced that he was establishing an overseas educational scholarship fund and private gold refinery that would employ over two hundred local school leavers. He promised young school leavers lucrative overseas travel visas and luxury salaries, provided their families deposited a registration fee of five hundred Ghana Cedis each to process their travel documents. Blinded by his glittering lifestyle and polished eloquence, many villagers, including my uncle Kwadwo, sold cocoa farms and livestock to register their children. Marcus organized lavish dinners at the local guest house, displaying counterfeit visa approval letters stamped with international seals.\n\nOn the morning scheduled for the departure of the first batch of beneficiaries to the airport in Accra, the villagers gathered at the village square in festive attire, beating drums and singing songs of praise. To their utter horror, the guest house manager announced that Marcus had secretly packed his luggage and fled in the dead of night, leaving behind unpaid lodging bills and a rented car. A subsequent police investigation revealed that he was a notorious convicted swindler from the metropolis who had fabricated everything.\n\nWatching my uncle weep over his squandered farm savings, I realized the bitter truth of the ancient saying: All that glitters is not gold.`
+        category: "Narrative Moral Essay",
+        prompt: "Write an interesting, realistic story illustrating the timeless truth of the traditional saying: \"All that glitters is not gold.\"",
+        modelAnswer: `ALL THAT GLITTERS IS NOT GOLD
+
+During our final year in junior high school, my close friend, Kofi Mensah, was easily dazzled by outward appearances and material luxury. While our teachers continually emphasized humility, honest labor, and academic discipline, Kofi daydreamed about designer sneakers, expensive wristwatches, and the extravagant lifestyle of metropolitan socialites.
+
+His obsession deepened when a smooth-talking young stranger named Patrick moved into our neighborhood. Dressed in shimmering silk suits, driving a rented sports car, and flashing stacks of crisp foreign banknotes, Patrick quickly became Kofi's hero. Patrick mocked schooling as a sluggish, pointless pathway to wealth, boasting that his lucrative "import-export brokerage" in the city earned him millions without sweat. Disregarding my warnings, Kofi began skipping morning revision classes to run private errands for Patrick, completely intoxicated by the prospect of becoming rich overnight.
+
+One Friday evening, Patrick promised to introduce Kofi to the "big league" of his international business. He gave Kofi a locked leather briefcase and directed him to deliver it to a luxury hotel suite near the highway, promising him two thousand dollars upon successful delivery. Believing he had achieved his dream, Kofi took a taxi to the venue with his heart pounding in excitement.
+
+However, as he stepped into the hotel lobby, a crack squad of anti-narcotics police officers swarmed him, weapons drawn. Forcing the briefcase open, the detectives uncovered bundles of illicit contraband drugs and counterfeit currency. Patrick was an undercover syndicate courier using my naive friend as a disposable decoy.
+
+Weeping bitterly in handcuffs at the police station, Kofi realized that Patrick's dazzling glamour was a toxic facade that led straight to prison. It was a harrowing lesson: All that glitters is not gold.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `When I was about eleven years old, I was unable to stay at one place for long; I was always on the move. Many people thought and said I was troublesome. Prominent among those who described me as such was my aunt, Araba Oboshea.\n\nAunt Araba was particularly mean. She would sit on her stool under the gum tree in front of the house and wait for me to return from wherever I had gone. As soon as I arrived she would call me and, without asking me any question or telling me anything, take my left ear between the forefinger and the thumb of her right hand and give my ear a silent, violent twist. I cannot describe the pain I endured. She would do the same to my right ear. She explained that she was paying for my absence that I had sold to her! Aunt Araba would continue to twist both ears of mine simultaneously with her forefingers and thumbs.\n\nI would scream silently, gritting my teeth so that I could not utter any sound because of pain. That way I was spared the next stage of being given countless strokes of any stick she could lay hands on. One strange thing about Aunt Araba was that she would never hit me with her hands.\n\nAunt Araba went on treating me this way because she could hardly understand why I was always on the move. I could also not have the courage to explain why it was so because I was afraid of her and began to hate her.\n\nOn Thursday evening when I was going through my usual ordeal, an elderly man, Agya Manu, who usually visited her, appeared on the scene. He pleaded with her to leave me, and asked for the reason for such punishment. After he had been told my 'sin', Agya Manu, who knew me very well, explained to my auntie that I was always on the move not because I was in any bad company, but because I was the favourite for errands. I had been running several errands for him and many other people. Agya Manu then advised me not to spend all my time running errands for others but rather, do all my duties at home.`,
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `When I was about eleven years of age, remaining stationary in one place was an impossibility for me; I was perpetually on the move across our village. Neighbors and relatives frequently declared that I was incorrigibly troublesome. Foremost among those who held this opinion was my stern aunt, Auntie Serwaa.
+
+Auntie Serwaa was extraordinarily severe and unforgiving. She would take her seat upon a low wooden stool beneath the spreading branches of the ancient nim tree in the courtyard, waiting patiently for my return from wherever my restless feet had carried me. The moment I stepped through the entrance, she would beckon me forward and, without demanding any explanation or uttering a single greeting, grip the cartilage of my left ear between the thumb and forefinger of her right hand and execute a silent, agonizing twist. The searing pain I endured was indescribable. She would repeat the exact torment upon my right ear, declaring grimly that she was "purchasing the hours of absence I had sold away"! Often, she would seize both of my ears simultaneously with both hands and twist them in unison. I would bite my lip and grit my teeth in silent agony, knowing that if I let out the slightest cry of protest, she would immediately reach for a bundle of supple cane switches to administer a merciless flogging. Strangely enough, she never struck me with her bare palms.
+
+Auntie Serwaa persisted in this harsh treatment because she could not fathom why I was perpetually wandering away from the compound. For my part, I lacked the courage to enlighten her, paralyzed by fear and nurturing a growing resentment toward her cruelty.
+
+One Thursday evening, while I was enduring my customary torture under the tree, an elderly community patriarch, Opanyin Kwaw, arrived to pay his respects. Startled by the sight of my contorted, tearful face, he intervened and urged my aunt to release me, asking what grievous offense justified such punishment. Upon hearing her complaint, Opanyin Kwaw burst into hearty laughter and enlightened my aunt. He explained that I was perpetually absent not because I kept vicious company or engaged in mischief, but because I was the most dependable and willing errand boy in the entire neighborhood. I was constantly running grocery and message errands for him and several other infirm elders who relied on my swift feet. Turning to me, Opanyin Kwaw advised me gently to balance my eagerness to assist neighbors with fulfilling my domestic duties at home.`,
     questions: [
       {
-        subId: "(a)",
-        question: "What was the writer's characteristic behavior when he was about eleven years old?",
-        answer: "He was restless, hyperactive, unable to stay in one place for long, and always on the move."
+        subQuestion: "(a)",
+        question: "What was the writer's behaviour when he was about eleven years old?",
+        answer: "He was hyperactive, restless, incapable of sitting still in one place, and constantly running about the neighborhood."
       },
       {
-        subId: "(b)",
-        question: "\"... I was always on the move.\"\nWhat is the meaning of this expression as used in the passage?",
-        answer: "He was constantly wandering about, running errands, and never staying still at home."
+        subQuestion: "(b)",
+        question: "What is the meaning of the expression '... I was perpetually on the move'?",
+        answer: "It means that the writer was continuously active, constantly walking or running about on errands, and never remaining at home."
       },
       {
-        subId: "(c)",
-        question: "From the passage, describe the character of Aunt Araba.",
-        answer: "She was mean, harsh, cruel, unsympathetic, impatient, and abusive in her disciplinary methods."
+        subQuestion: "(c)",
+        question: "From the passage, what is the character of Auntie Serwaa?",
+        answer: "She was severe, harsh, cruel, impatient, and quick to administer harsh physical punishment without investigation."
       },
       {
-        subId: "(d)",
-        question: "Why did Aunt Araba keep punishing the writer so severely?",
-        answer: "Because she could not understand why he was constantly absent from home, assuming he was merely roaming about and being troublesome."
+        subQuestion: "(d)",
+        question: "Why did Auntie Serwaa keep punishing the writer?",
+        answer: "She punished him because she could not comprehend his prolonged absences from the compound, mistakenly assuming he was stubborn, unruly, and loafing in bad company."
       },
       {
-        subId: "(e)",
-        question: "How did Agya Manu rescue the writer from his painful ordeal?",
-        answer: "He pleaded with Aunt Araba to stop twisting his ears and explained the truth: that the boy was not in bad company, but had been running helpful errands for him and other community elders."
+        subQuestion: "(e)",
+        question: "How did Opanyin Kwaw rescue the writer?",
+        answer: "Opanyin Kwaw intervened by asking Auntie Serwaa to release the boy, clarified that the child was only absent because he was running helpful errands for elderly neighbors, and counseled the boy to balance his errands with his domestic responsibilities."
       },
       {
-        subId: "(f)",
-        question: "For each of the following words, give one word or phrase that means the same and can fit into the passage:\n(i) endured;\n(ii) countless.",
-        answer: "(i) **endured:** suffered / bore / underwent / tolerated.\n(ii) **countless:** numerous / innumerable / many / uncounted."
+        subQuestion: "(f)",
+        question: "For each of the following words, give one word or phrase which means the same:",
+        subItems: [
+          { word: "I. endured", answer: "suffered, bore, tolerated, underwent, experienced" },
+          { word: "II. countless", answer: "innumerable, numerous, many, unnumbered, endless" }
+        ]
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId.replace(/[()]/g, '_')}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  }))
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  }
 ];
 
 async function seedBeceEnglish2010Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2010 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2010 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -558,6 +632,7 @@ async function seedBeceEnglish2010Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2010");
   await docRef.set({
     year: 2010,
@@ -571,25 +646,54 @@ async function seedBeceEnglish2010Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)"],
-      status: "calibrated",
+      hasLiteratureComponent: true,
+      passageFirstLayout: false, // 2010 comprehension is in Paper 2
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 32",
+          questions: balancedPaper1.slice(25, 32)
+        },
+        partII_literature: {
+          title: "Part II: Literature in English",
+          questionRange: "Questions 33 to 40",
+          questions: balancedPaper1.slice(32, 40)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay and Reading Comprehension",
+      title: "Paper 2: Written Essay and Reading Comprehension",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2010 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2010 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2010Calibrated()

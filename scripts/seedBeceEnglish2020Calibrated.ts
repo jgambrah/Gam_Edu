@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,387 +45,319 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 30)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "Kofi has prepared and ............ a bowl of hot porridge.",
+    prompt: "Seth has procured and ............ an entire loaf of butter bread.",
     options: ["ate", "eats", "eaten", "eating"],
     correctAnswer: "eaten",
-    hint: "The auxiliary verb 'has' governs both coordinate verbs joined by 'and'. Both must be past participles.",
-    workedSolution: "The auxiliary 'has' applies to both coordinated verbs ('has prepared and [has] eaten'). Therefore, the past participle 'eaten' is required.",
+    hint: "Coordinated verbs governed by the auxiliary 'has' must both appear in the past participle form (procured and eaten).",
+    workedSolution: "The auxiliary 'has' governs both coordinated verbs in the compound predicate, requiring the past participle: 'has bought and eaten'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "My elder brother and ............ visited our sick grandmother in hospital.",
+    prompt: "Yesterday morning, my mother and ............ paid a courtesy call on the parish priest.",
     options: ["I", "myself", "me", "ourselves"],
     correctAnswer: "I",
-    hint: "Test the pronoun by removing the other person: '...... visited our sick grandmother.'",
-    workedSolution: "The pronoun is part of the compound subject of the verb 'visited'. The subjective case pronoun 'I' is correct ('My elder brother and I').",
+    hint: "Subject pronoun case: The pronoun functions as part of the compound grammatical subject of 'visited/paid'.",
+    workedSolution: "In the subject position of a clause, the subjective personal pronoun 'I' is required: 'My mum and I visited...'. ('Me' is objective).",
     points: 1
   },
   {
     number: 3,
-    prompt: "The hunter saw the leopard ............ in wait for its prey in the bush.",
+    prompt: "The leopard ............ motionless in the tall savannah grass waiting to ambush the gazelle.",
     options: ["lie", "lain", "laid", "lay"],
     correctAnswer: "lay",
-    hint: "'Lie' (to recline/rest) has the simple past form 'lay'. 'Laid' is the past tense of 'lay' (to place something down).",
-    workedSolution: "The intransitive verb 'lie' (to rest or recline in wait) has the simple past tense 'lay' (lie - lay - lain). 'Laid' is the past form of the transitive verb 'lay' (to place).",
+    hint: "Simple past tense of the intransitive verb 'lie' (to recline or stay hidden): lie - lay - lain.",
+    workedSolution: "The intransitive verb meaning rested or stayed hidden in the past is 'lay' (present 'lie', past 'lay', past participle 'lain'). 'Laid' is transitive.",
     points: 1
   },
   {
     number: 4,
-    prompt: "It is about time the candidates ......... revising seriously for the final examination.",
+    prompt: "It is about time the candidates ............ revising their notes with utmost seriousness.",
     options: ["start", "should start", "started", "are starting"],
     correctAnswer: "started",
-    hint: "The structure 'It is (about/high) time + subject' requires a subjunctive verb in the simple past tense.",
-    workedSolution: "Expressions like 'It is about time' followed by a subject require the simple past subjunctive form ('started') to express an overdue action.",
+    hint: "Subjunctive past simple: 'It is about time + subject' requires a simple past verb form.",
+    workedSolution: "Following the subjunctive formula 'It's about time / It's high time' with a specified subject, standard English requires the simple past tense: 'started'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "Kweku now wishes he ............ his agricultural project earlier in the term.",
-    options: ["began", "had begun", "begins", "has begun"],
+    prompt: "Ben now keenly wishes he ............ his academic preparations much earlier in the term.",
+    options: ["began", "begun", "begins", "had begun"],
     correctAnswer: "had begun",
-    hint: "A regret or wish about a past event requires the past perfect tense ('had + past participle').",
-    workedSolution: "Wishes referring to unfulfilled past actions require the past perfect tense ('had begun').",
+    hint: "Past counterfactual wish: Regretting a past failure to act requires the past perfect tense ('had + past participle').",
+    workedSolution: "When 'wish' expresses regret concerning an action that did not take place in the past, standard English requires the past perfect: 'wishes he had begun'.",
     points: 1
   },
   {
     number: 6,
-    prompt: "Honesty in leadership is exactly ............ our chief tried to emphasize.",
+    prompt: "This is precisely ............ our class tutor endeavored to explain to you.",
     options: ["all what", "all that", "something that", "something which"],
     correctAnswer: "all that",
-    hint: "The indefinite pronoun 'all' is followed by the relative pronoun 'that', never 'what'.",
-    workedSolution: "In standard English, 'all' is modified by the relative pronoun 'that' ('all that'), not 'what' or 'which'.",
+    hint: "Following the universal quantifier 'all' referring to inanimate speech, standard English requires the relative pronoun 'that'.",
+    workedSolution: "When the antecedent is 'all', standard grammar requires the relative pronoun 'that': 'all that our mum tried to make you understand'. Standard English rejects *all what.",
     points: 1
   },
   {
     number: 7,
-    prompt: "Would you rather we ...... the town before sunset?",
+    prompt: "Would you rather the delegation ............ for the capital early tomorrow morning?",
     options: ["should leave", "are leaving", "leave", "left"],
     correctAnswer: "left",
-    hint: "'Would rather + subject' takes a simple past subjunctive verb.",
-    workedSolution: "When 'would rather' is followed by a different subject clause ('we'), it takes the past subjunctive form of the verb ('left') to express preference.",
+    hint: "Past subjunctive after 'Would you rather + subject' expressing a preference regarding another party's action.",
+    workedSolution: "When 'would rather' is followed by a different subject clause ('we/they'), standard English requires the past subjunctive form: 'left'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "Akosua is my ........... sister by two years.",
+    prompt: "Aba is my ............ sister by two years.",
     options: ["senior", "elder", "older", "matured"],
     correctAnswer: "elder",
-    hint: "When comparing the seniority of siblings within the same family, use this comparative adjective.",
-    workedSolution: "'Elder' is the specific attributive adjective used to denote seniority among family members, especially brothers and sisters ('elder sister').",
+    hint: "Attributive adjective placed directly before the noun to denote birth seniority among siblings.",
+    workedSolution: "When describing familial seniority between siblings directly before a noun, 'elder' is standard: 'my elder sister'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "The canteen vendor could not serve porridge because she had ........... sugar left.",
+    prompt: "We cannot prepare the morning porridge because we have ............ sugar left in the bowl.",
     options: ["a little", "very little", "a few", "very few"],
     correctAnswer: "very little",
-    hint: "'Sugar' is an uncountable noun. To show an insufficient amount with a negative meaning, use this quantifier without an article.",
-    workedSolution: "'Sugar' is non-count. 'Very little' has a negative meaning indicating scarcely any, explaining why porridge could not be served. 'A little' has a positive meaning (some).",
+    hint: "'Sugar' is an uncountable non-count noun. Choose the negative modifier denoting an insufficient, near-zero quantity.",
+    workedSolution: "'Sugar' is non-count. 'Very little' expresses an extreme scarcity (virtually none), explaining why breakfast cannot be made.",
     points: 1
   },
   {
     number: 10,
-    prompt: "You must not disclose our confidential plans to ........... in the community.",
+    prompt: "This is a strictly confidential plan; you should not mention it to ............",
     options: ["no other", "nobody", "any other", "anyone"],
     correctAnswer: "anyone",
-    hint: "A negative clause containing 'not' takes an open non-assertive pronoun to avoid a double negative.",
-    workedSolution: "Because the sentence already contains the negative particle 'not', the indefinite pronoun 'anyone' must be used to avoid a double negative like 'not ... nobody'.",
+    hint: "Following the negative modal 'should not', use this non-assertive indefinite pronoun to avoid a double negative.",
+    workedSolution: "In negative clauses containing 'not', standard English requires the non-assertive pronoun 'anyone' (or 'anyone else') to prevent ungrammatical double negatives.",
     points: 1
   },
   {
     number: 11,
-    prompt: "A dedicated prefect ........... bear the burden of school discipline alone.",
+    prompt: "A true statesman ............ bear the burden of administrative failure in isolation.",
     options: ["needs not", "need not", "needs not to", "need not to"],
     correctAnswer: "need not",
-    hint: "When 'need' functions as a semi-modal auxiliary verb in the negative, it takes no third-person '-s' and no 'to'.",
-    workedSolution: "When 'need' functions as a modal auxiliary, it remains 'need not' (without the third-person singular '-s') and is followed by a bare infinitive without 'to' ('need not bear').",
+    hint: "As a semi-modal auxiliary verb in the negative, 'need' does not take third-person '-s' and is followed by a bare infinitive without 'to'.",
+    workedSolution: "When used as a modal auxiliary in the negative, 'need' has no '-s' in the third person and takes a bare infinitive: 'need not suffer'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The traditional water cooler is made .......... clay.",
+    prompt: "This traditional cooling pot is skillfully crafted ............ red alluvial clay.",
     options: ["with", "by", "of", "in"],
     correctAnswer: "of",
-    hint: "When a material maintains its basic physical identity after manufacturing, use 'made of'.",
-    workedSolution: "'Made of' is used when the basic material has not undergone a chemical transformation and is still recognizable in the finished product ('made of clay').",
+    hint: "Use 'made of' when the primary physical material retains its original nature without chemical transformation.",
+    workedSolution: "When a material retains its physical identity in the finished product without chemical synthesis, 'made of' is standard: 'made of clay'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Let us go to the school farm and weed the maize plot, ..........?",
+    prompt: "Let us assemble our sports kits and proceed to the field, ............?",
     options: ["will you", "shall we", "can you", "would you"],
     correctAnswer: "shall we",
-    hint: "Proposals or suggestions beginning with 'Let's' or 'Let us' take a specific first-person plural question tag.",
-    workedSolution: "Imperative sentences beginning with 'Let us' or 'Let's' express a joint proposal and invariably take the question tag 'shall we?'.",
+    hint: "Imperative suggestions beginning with 'Let's / Let us' take a mandatory first-person plural question tag.",
+    workedSolution: "Sentences expressing collective cohort proposals beginning with 'Let's' require the question tag 'shall we?'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "Ama would have passed the scholarship interview ........... she prepared thoroughly.",
+    prompt: "Sarah would have secured admission with distinction ............ she prepared with disciplined consistency.",
     options: ["should", "had", "has", "could"],
     correctAnswer: "had",
-    hint: "In an inverted Third Conditional without 'if', the auxiliary verb starts the conditional clause.",
-    workedSolution: "Inverted conditional clauses replace 'if she had prepared' with the inversion 'had she prepared'.",
+    hint: "Inverted Third Conditional clause omitting 'if': 'Had she studied hard, she would have passed'.",
+    workedSolution: "In formal inverted Third Conditional clauses omitting 'if', the auxiliary 'had' moves before the subject: 'had she studied hard'.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The four village elders haven't spoken to ........... since the land dispute began.",
-    options: ["theirself", "each another", "themselves", "one another"],
-    correctAnswer: "one another",
-    hint: "When reciprocal action involves more than two individuals, use this phrase.",
-    workedSolution: "'One another' is preferred when reciprocal action involves more than two entities ('the four village elders'). 'Each other' is traditionally used for two.",
+    prompt: "The four estranged brothers have not communicated with ............ since their father passed away.",
+    options: [
+      "theirself",
+      "each another",
+      "themselves",
+      "each other"
+    ],
+    correctAnswer: "each other",
+    hint: "Standard WAEC key convention treats 'each other' as the accepted reciprocal pronoun for mutual interaction among family members.",
+    workedSolution: "While classical prescription sometimes reserves 'one another' for three or more persons, WAEC standard conventions accept 'each other' as the standard reciprocal pronoun for mutual interaction: 'haven't seen each other'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "The trembling child shook with intense terror when the thunder roared.\nChoose the word nearest in meaning to the underlined word 'terror'.",
+    prompt: "Upon catching sight of the charging mastiff, Celia trembled with fright.\nChoose the word nearest in meaning to 'fright'.",
     options: ["excitement", "cheerfulness", "hope", "fear"],
     correctAnswer: "fear",
-    hint: "An unpleasant emotion caused by the threat of danger, pain, or harm.",
-    workedSolution: "'Terror' (fright) refers to an overwhelming feeling of dread or alarm; 'fear' is its direct synonym.",
+    hint: "A sudden intense feeling of terror, alarm, or dread.",
+    workedSolution: "'Fright' refers to a sudden surge of acute dread or terror; 'fear' is its direct synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Community radio is a potent instrument for grassroots development in rural Ghana.\nChoose the word nearest in meaning to the underlined word 'potent'.",
+    prompt: "Community radio remains a potent instrument for disseminating agricultural advice.\nChoose the word nearest in meaning to 'potent'.",
     options: ["fast", "necessary", "powerful", "sound"],
     correctAnswer: "powerful",
-    hint: "Having great power, influence, or effect.",
-    workedSolution: "'Potent' means having great strength, efficacy, or influence; 'powerful' is its direct synonym.",
+    hint: "Possessing great influence, efficacy, or power.",
+    workedSolution: "'Potent' means having great power, influence, or effect; 'powerful' is its direct synonym.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Commercial poultry farming in peri-urban areas is a lucrative agricultural enterprise.\nChoose the word nearest in meaning to the underlined word 'lucrative'.",
+    prompt: "Commercial cocoa farming is a lucrative agricultural enterprise in the forest zone.\nChoose the word nearest in meaning to 'lucrative'.",
     options: ["profitable", "legitimate", "desirable", "cherished"],
     correctAnswer: "profitable",
-    hint: "Producing a great deal of financial gain or profit.",
-    workedSolution: "'Lucrative' means producing wealth or substantial profit; 'profitable' is its exact equivalent.",
+    hint: "Producing a substantial monetary gain, wealth, or financial return.",
+    workedSolution: "'Lucrative' describes an enterprise that yields substantial financial profit; 'profitable' is its direct equivalent.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The acute deficit of qualified mathematics teachers in rural schools is alarming.\nChoose the word nearest in meaning to the underlined word 'deficit'.",
+    prompt: "The acute scarcity of medical doctors in rural districts is a matter of grave public concern.\nChoose the word nearest in meaning to 'scarcity'.",
     options: ["weakness", "shortage", "suffering", "indiscipline"],
     correctAnswer: "shortage",
-    hint: "A state of being in short supply or having an inadequate amount.",
-    workedSolution: "'Deficit' (scarcity) refers to an insufficiency or lack in quantity; 'shortage' is the closest synonym.",
+    hint: "The state of being scarce, in short supply, or difficult to obtain.",
+    workedSolution: "'Scarcity' means a state where supply falls critically short of demand; 'shortage' is its direct synonym.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The young apprentice was exceptionally inquisitive, asking questions about every engine component.\nChoose the word nearest in meaning to the underlined word 'inquisitive'.",
+    prompt: "My twin brother is remarkably inquisitive about mechanical engines.\nChoose the word nearest in meaning to 'inquisitive'.",
     options: ["curious", "brilliant", "friendly", "talkative"],
     correctAnswer: "curious",
-    hint: "Eager for knowledge and inquiring into details.",
-    workedSolution: "'Inquisitive' means eager to know, learn, and investigate; 'curious' is its direct synonym.",
+    hint: "Eager for knowledge; habitually inquiring and investigating.",
+    workedSolution: "'Inquisitive' means eager to learn, investigate, or ask questions; 'curious' is its direct synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "The coach made the boastful player eat his words after losing the championship match. This means that the player had to ......",
-    options: ["become shocked", "be punished", "admit he was wrong", "face the consequences of his actions"],
-    correctAnswer: "admit he was wrong",
-    hint: "Being forced to retract an arrogant statement and acknowledge an error.",
-    workedSolution: "The idiom 'to eat one's words' means to be forced to admit humbly that what one previously said was mistaken or incorrect.",
+    prompt: "I am determined to prove that your allegations are false and make you eat your words. This means that you will ............",
+    options: [
+      "become deeply shocked",
+      "be physically punished",
+      "humbly admit that you were wrong",
+      "face legal prosecution"
+    ],
+    correctAnswer: "humbly admit that you were wrong",
+    hint: "To be forced to retract what one has said and admit error.",
+    workedSolution: "The idiom 'to eat one's words' means to be forced to retract an earlier boast or claim and admit humiliatingly that one was wrong.",
     points: 1
   },
   {
     number: 22,
-    prompt: "The politician's children were born with a silver spoon in their mouths. This means that the children were born ......",
-    options: ["with their mouths full of silver", "in good health", "in happy homes", "in wealth and luxury"],
-    correctAnswer: "in wealth and luxury",
-    hint: "Born into an affluent, prosperous family with privileged circumstances.",
-    workedSolution: "'Born with a silver spoon in one's mouth' is an idiom meaning born into an inherited background of great wealth and privilege.",
+    prompt: "Those privileged children were born with a silver spoon in their mouths. This means that the children were born ............",
+    options: [
+      "with precious metal in their mouths",
+      "in robust physical health",
+      "in exceptionally joyful homes",
+      "into great wealth, privilege, and luxury"
+    ],
+    correctAnswer: "into great wealth, privilege, and luxury",
+    hint: "Born into an affluent, wealthy family possessing aristocratic advantages.",
+    workedSolution: "The idiom 'born with a silver spoon in one's mouth' means born into an inherited state of great wealth and luxury.",
     points: 1
   },
   {
     number: 23,
-    prompt: "The injured driver passed out momentarily upon seeing the wreckage. This means that the driver ......",
-    options: ["ran away", "died", "fainted", "vomited"],
-    correctAnswer: "fainted",
-    hint: "Losing consciousness temporarily due to shock or physical trauma.",
-    workedSolution: "The phrasal verb 'to pass out' means to lose consciousness temporarily or faint.",
+    prompt: "The exhausted driver passed out immediately after the collision occurred. This means that the driver ............",
+    options: ["fled from the scene", "died instantly", "fainted and lost consciousness", "vomited repeatedly"],
+    correctAnswer: "fainted and lost consciousness",
+    hint: "To lose consciousness temporarily.",
+    workedSolution: "The phrasal verb 'to pass out' means to faint or lose consciousness temporarily.",
     points: 1
   },
   {
     number: 24,
-    prompt: "Before the announcement of the BECE placement results, Mansa was on edge. This means that Mansa was ......",
-    options: ["confused", "surprised", "nervous", "unhappy"],
-    correctAnswer: "nervous",
-    hint: "In a state of tense, anxious anticipation.",
-    workedSolution: "The idiom 'on edge' means feeling anxious, irritable, nervous, or tense.",
+    prompt: "Susan was on edge throughout the tense investigation. This means that Susan was ............",
+    options: [
+      "mildly confused",
+      "surprised by the questions",
+      "nervous, irritable, and anxious",
+      "unhappy with the panel"
+    ],
+    correctAnswer: "nervous, irritable, and anxious",
+    hint: "Tense, nervous, and irritable with anticipation or worry.",
+    workedSolution: "The idiom 'on edge' means nervous, irritable, apprehensive, or anxious.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The suspects went to the police charge office like a lamb to the slaughter. This means that they went there ......",
-    options: ["with their clothes removed", "without resistance", "with difficulty", "in a violent manner"],
-    correctAnswer: "without resistance",
-    hint: "Unaware of danger, calm, and offering no struggle or opposition.",
-    workedSolution: "'Like a lamb to the slaughter' describes someone who goes quietly, calmly, and without resistance into a dangerous or fatal situation.",
+    prompt: "The suspects were marched to the tribunal like a lamb to the slaughter. This means they went ............",
+    options: [
+      "without protective clothing",
+      "submissively without offering any resistance",
+      "under extreme physical restraint",
+      "in a violent, disruptive manner"
+    ],
+    correctAnswer: "submissively without offering any resistance",
+    hint: "Going somewhere innocently, helplessly, or submissively without resisting.",
+    workedSolution: "The idiom 'like a lamb to the slaughter' describes going somewhere helplessly, submissively, and without offering any resistance.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 30) ---
   {
     number: 26,
-    prompt: "The safety guidelines were strictly observed by the factory workers, but the visitors ...... them.",
+    prompt: "While several careless students infringed the campus regulations, the prefects ...... them strictly.\nChoose the word most nearly opposite in meaning to 'infringed'.",
     options: ["observed", "violated", "changed", "formulated"],
-    correctAnswer: "violated",
-    hint: "'Observed' means followed or complied with. Find the word that denotes breaking a rule.",
-    workedSolution: "'Observed' means obeyed or complied with. Its direct antonym is 'violated' (infringed or broken).",
+    correctAnswer: "observed",
+    hint: "'Infringed' means broke or violated a rule. What word denotes followed, respected, and obeyed?",
+    workedSolution: "'Infringed' means violated or broken. Its direct legal and disciplinary antonym is 'observed' (obeyed or adhered to).",
     points: 1
   },
   {
     number: 27,
-    prompt: "While the conversation in the staff room was informal, the speech delivered by the headmaster was thoroughly ......",
+    prompt: "While his conversational remarks were colloquial, his formal dissertation was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'colloquial'.",
     options: ["informal", "archaic", "formal", "modern"],
     correctAnswer: "formal",
-    hint: "'Informal' (or colloquial) is casual. Find the word that denotes ceremonial or standard official usage.",
-    workedSolution: "'Informal' (colloquial) refers to casual everyday speech. Its antonym is 'formal' (official, serious, and standard).",
+    hint: "'Colloquial' language is casual and informal. What word denotes serious, standard, and official language?",
+    workedSolution: "'Colloquial' describes informal, everyday conversational speech. Its direct linguistic antonym is 'formal'.",
     points: 1
   },
   {
     number: 28,
-    prompt: "The girl's natural timidity made her stammer, but her elder brother spoke with remarkable ......",
+    prompt: "The candidate's timidity during the interview surprised the panel, as they expected ...... .\nChoose the word most nearly opposite in meaning to 'timidity'.",
     options: ["hostility", "sincerity", "boldness", "carelessness"],
     correctAnswer: "boldness",
-    hint: "'Timidity' means shyness and lack of confidence. Select the word meaning courage and confidence.",
-    workedSolution: "'Timidity' means shyness, hesitation, and fearfulness. Its direct opposite is 'boldness' (confidence and courage).",
+    hint: "'Timidity' means shyness, fearfulness, and lack of confidence. What word denotes courage, confidence, and audacity?",
+    workedSolution: "'Timidity' means shyness or fearfulness. Its direct psychological antonym is 'boldness' (confidence and courage).",
     points: 1
   },
   {
     number: 29,
-    prompt: "Electoral authorities replaced all opaque ballot containers with ...... glass boxes.",
+    prompt: "Opaque ballot boxes have been decommissioned in favor of ...... ones.\nChoose the word most nearly opposite in meaning to 'Opaque'.",
     options: ["covered", "transparent", "painted", "dark"],
     correctAnswer: "transparent",
-    hint: "'Opaque' means not letting light through (cannot be seen through). Find the word meaning completely clear.",
-    workedSolution: "'Opaque' describes an object that cannot be seen through. Its direct scientific and linguistic antonym is 'transparent'.",
+    hint: "'Opaque' means not allowing light to pass through so nothing can be seen inside. What word denotes clear and see-through?",
+    workedSolution: "'Opaque' means not letting light through. Its direct physical and optical antonym is 'transparent' (see-through and clear).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Instead of walking briskly to the assembly ground, the reluctant student strolled along ......",
+    prompt: "While the urgent messenger walked briskly to the chief's palace, the tired porter moved ...... .\nChoose the word most nearly opposite in meaning to 'briskly'.",
     options: ["slowly", "carefully", "reluctantly", "clumsily"],
     correctAnswer: "slowly",
-    hint: "'Briskly' means quickly and energetically. Find the word denoting an unhurried, low speed.",
-    workedSolution: "'Briskly' means quickly, actively, and energetically. Its direct antonym is 'slowly'.",
-    points: 1
-  },
-
-  // --- SECTION E: CLOZE TEST (31 - 35) ---
-  {
-    number: 31,
-    prompt: "In the past, students were dedicated to scholarly excellence. They understood the true ---31--- of education.",
-    options: ["essence", "profit", "outcome", "reward"],
-    correctAnswer: "essence",
-    hint: "The fundamental nature, core quality, or most important feature of something.",
-    workedSolution: "In philosophical and educational contexts, the fundamental meaning or core value of a concept is its 'essence'.",
-    points: 1
-  },
-  {
-    number: 32,
-    prompt: "To attain superior grades, ambitious learners would frequently burn the midnight ---32--- reviewing their notes.",
-    options: ["oil", "lamp", "candle", "light"],
-    correctAnswer: "oil",
-    hint: "Complete the historical idiom referring to studying or working late into the night: 'burn the midnight ......'.",
-    workedSolution: "The fixed English idiomatic expression is 'to burn the midnight oil' (meaning to work or study late into the night).",
-    points: 1
-  },
-  {
-    number: 33,
-    prompt: "However, excessive addiction to social networking platforms has ---33--- many youth of study hours.",
-    options: ["deprived", "isolated", "removed", "refused"],
-    correctAnswer: "deprived",
-    hint: "To dispossess, deny, or prevent someone from possessing or enjoying something.",
-    workedSolution: "The verb 'deprive' takes the preposition 'of' ('deprived of study hours') to indicate being denied a necessary resource.",
-    points: 1
-  },
-  {
-    number: 34,
-    prompt: "Consequently, examination malpractices and academic failure have become the ---34--- of the day.",
-    options: ["order", "custom", "habit", "rule"],
-    correctAnswer: "order",
-    hint: "Complete the common idiom meaning a widespread, customary, or daily occurrence.",
-    workedSolution: "The standard English idiom is 'the order of the day' (referring to something very common or fashionable at a particular time).",
-    points: 1
-  },
-  {
-    number: 35,
-    prompt: "Educators urge that students must remain focused in order to ---35--- the negative consequences of technology.",
-    options: ["eradicate", "dismiss", "forget", "ignore"],
-    correctAnswer: "eradicate",
-    hint: "To destroy completely, eliminate, or root out an undesirable condition.",
-    workedSolution: "'Eradicate' means to wipe out, eliminate completely, or root out a social problem or disease.",
-    points: 1
-  },
-
-  // --- SECTION F: ORAL LANGUAGE (36 - 40) ---
-  {
-    number: 36,
-    prompt: "The congregation sang a peaceful hymn.\nWhich of the following words ends with a silent consonant letter just like the letter 'n' in 'hymn'?",
-    options: ["autumn", "action", "spoon", "drain"],
-    correctAnswer: "autumn",
-    hint: "In 'hymn' (/hɪm/), the letter 'n' is completely silent.",
-    workedSolution: "'Hymn' ends with the /m/ sound; the final 'n' is silent. In 'autumn' (/ˈɔː.təm/), the final 'n' is also silent. In the other words, the 'n' is pronounced.",
-    points: 1
-  },
-  {
-    number: 37,
-    prompt: "The hunter shot an arrow with his bow.\nWhich of the following words has the exact same vowel sound as 'bow' (the weapon)?",
-    options: ["doe", "now", "how", "plough"],
-    correctAnswer: "doe",
-    hint: "'Bow' (the weapon) contains the diphthong /əʊ/ (rhyming with 'go' and 'no').",
-    workedSolution: "'Bow' (the weapon) is pronounced /bəʊ/. 'Doe' (/dəʊ/) shares the identical /əʊ/ diphthong. ('now', 'how', 'plough' contain the diphthong /aʊ/).",
-    points: 1
-  },
-  {
-    number: 38,
-    prompt: "The mason used a plumb line to verify the wall.\nWhich of the following words contains a silent consonant letter just like the 'b' in 'plumb'?",
-    options: ["comb", "crab", "globe", "club"],
-    correctAnswer: "comb",
-    hint: "In 'plumb' (/plʌm/), the final letter 'b' is completely silent.",
-    workedSolution: "In 'plumb', the final 'b' is silent. In 'comb' (/kəʊm/), the final 'b' is also silent. In 'crab', 'globe', and 'club', the 'b' is voiced.",
-    points: 1
-  },
-  {
-    number: 39,
-    prompt: "The choir sang in four-part harmony.\nWhich of the following words begins with the same initial consonant sound as the digraph 'ch' in 'choir'?",
-    options: ["chemistry", "charity", "chapel", "channel"],
-    correctAnswer: "chemistry",
-    hint: "'Choir' begins with the voiceless velar plosive /k/.",
-    workedSolution: "'Choir' is pronounced /ˈkwaɪ.ər/, beginning with the /k/ sound. 'Chemistry' (/ˈkem.ɪ.stri/) begins with the same /k/ sound. ('charity', 'chapel', 'channel' begin with /tʃ/).",
-    points: 1
-  },
-  {
-    number: 40,
-    prompt: "The doctor touched the patient's chest.\nWhich of the following words contains the same vowel sound as the word 'chest'?",
-    options: ["bread", "bead", "bleed", "breeze"],
-    correctAnswer: "bread",
-    hint: "'Chest' contains the short front open-mid vowel sound /e/.",
-    workedSolution: "'Chest' contains the short vowel sound /e/. 'Bread' (/bred/) contains the identical short /e/ sound. ('bead', 'bleed', 'breeze' contain the long /iː/ vowel sound).",
+    hint: "'Briskly' means quickly, actively, and energetically. What word denotes at a low pace with little speed?",
+    workedSolution: "'Briskly' means quickly and energetically. Its direct adverbial antonym is 'slowly'.",
     points: 1
   }
 ];
 
-// Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
+// Seeded Deterministic Shuffle across 30 Objective Items: Exactly 8 A, 7 B, 8 C, 7 D
 const targetKeys: number[] = [
   0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
   2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3
+  0, 1, 2, 3, 0, 1, 2, 3, 0, 2
 ];
 
 function seedShuffle<T>(array: T[], seed: number): T[] {
@@ -436,9 +373,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 202004);
+const assignedTargetIndices = seedShuffle(targetKeys, 202002);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -461,232 +398,239 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING, COMPREHENSION & LITERATURE (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
+  partA_composition: {
     title: "Part A: Essay Writing",
     instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Article for Publication",
-        prompt: "Write an article for publication in a national newspaper on the topic: \"The Harmful Effects of Examination Malpractice on Students and the Nation.\"",
-        modelAnswer: `THE CANCER OF EXAMINATION MALPRACTICE: A THREAT TO OUR NATION'S FUTURE
-By Kofi Boakye, JHS 3
+        prompt: "Write a persuasive article for publication in a national daily newspaper on the topic: \"The Destructive Effects of Examination Malpractice on Students and the Nation.\"",
+        modelAnswer: `THE CANCER OF EXAMINATION MALPRACTICE: A THREAT TO OUR FUTURE
+By Samuel K. Boateng, Begoro
 
-In recent years, the integrity of national examinations in Ghana has been severely undermined by the scourge of examination malpractice. From smuggling unauthorized materials into examination halls to the circulation of leaked examination papers on social media platforms, this fraudulent behavior poses grave consequences for individual students and the nation as a whole.
+In contemporary basic and secondary schools across Ghana, an alarming moral cancer has taken deep root: the epidemic of examination malpractice. Driven by the desperate obsession to achieve brilliant grades without honest preparation, candidates resort to smuggling concealed notes into examination halls, colluding with corrupt invigilators, and purchasing leaked examination papers online. This intellectual fraud constitutes an existential threat to personal integrity and national development.
 
-The primary harmful effect on students is the destruction of academic self-confidence and genuine learning habits. When learners rely on leaked questions—popularly termed 'apor'—they abandon disciplined study, critical thinking, and regular class attendance. In the long run, candidates who cheat their way into Senior High Schools and universities find themselves academically deficient, unable to cope with advanced studies. Many end up disqualified, rusticated, or dismissed in disgrace.
+First and foremost, examination malpractice inflicts irreparable psychological damage on students, breeding intellectual emptiness and false confidence. The core objective of schooling is to master knowledge, develop critical thinking, and acquire problem-solving competencies. When candidates cheat to obtain distinction certificates, they bypass authentic learning. Upon transitioning to universities or professional workplaces, their intellectual shallowness is swiftly exposed, leading to dismissal, humiliation, and career failure. A society led by fraudulent professionals—such as quack engineers who build collapsing bridges or uncertified doctors who prescribe lethal dosages—is marching toward catastrophe.
 
-On a national level, examination malpractice produces incompetent professionals and degrades the international credibility of Ghanaian academic certificates. When unmerited candidates cheat their way into sensitive professions such as medicine, nursing, engineering, and teaching, the results are catastrophic: collapsing buildings, medical negligence, and substandard instruction in schools. Furthermore, international examining bodies and universities begin to doubt the authenticity of certificates issued by the West African Examinations Council (WAEC).
+Secondly, examination malpractice attracts devastating institutional sanctions that truncate young futures. The West African Examinations Council (WAEC) imposes severe punitive measures on culprits, including the cancellation of entire subject results, outright disqualification of entire school centers, and multi-year bans from sitting national examinations. In severe cases, offenders face criminal prosecution and imprisonment. Sacrificing years of hard schooling for a fleeting, dishonest advantage is supreme foolishness.
 
-To arrest this menace, school administrations and parents must instill moral values into students and stop funding illegal examination syndicates. Additionally, law enforcement agencies must arrest and prosecute rogue website operators and corrupt invigilators. Let us uphold academic honesty, for a nation built on fraudulent credentials is bound to collapse.`
+To eradicate this menace, parents, school authorities, and security agencies must strictly uphold examination security and celebrate honest effort. Integrity is the true measure of an educated mind.`
       },
       {
         questionNumber: "2",
         category: "Formal Letter",
-        prompt: "As the senior prefect of your school, write a letter to the headmaster, discussing two reasons why the school administration should actively instill moral values into the students.",
+        prompt: "As the Senior Prefect of your school, write a formal letter to your Headmaster, presenting at least two compelling reasons why the school curriculum and co-curricular programs should actively instill sound moral values into students.",
         modelAnswer: `Methodist Junior High School
-P. O. Box 80
+P. O. Box 54
 Bekwai, Ashanti Region
-12th October, 2020
+14th May, 2020
 
 The Headmaster
 Methodist Junior High School
-P. O. Box 80
+P. O. Box 54
 Bekwai
 
 Dear Sir,
 
-THE NEED TO INTENSIFY THE INSTILLATION OF MORAL VALUES AMONG STUDENTS
+PETITION ON THE URGENT NEED TO INSTILL MORAL VALUES IN STUDENTS
 
-On behalf of the student representative council, I respectfully write to submit two compelling reasons why our school administration should actively intensify the instillation of moral values and ethical discipline into our students.
+On behalf of the prefectorial board and the disciplined student body of Methodist Junior High School, I respectfully write to petition your administration to strengthen institutional programs dedicated to instilling sound moral values into our students.
 
-First, instilling strong moral values fosters a disciplined and peaceful learning environment. In recent times, cases of bullying, theft of textbooks, insolence toward teachers, and vandalism of school property have risen among junior students. When our school curriculum and weekly assemblies emphasize foundational virtues such as honesty, humility, respect for authority, and empathy, students develop positive peer relations. This reduces disciplinary problems and allows teachers to concentrate on instructional delivery without constant disruptions.
+First and foremost, moral training provides the indispensable ethical foundation that protects adolescents from social vices and juvenile delinquency. In contemporary society, young people are inundated with corrupting influences from unmonitored internet media, violent video games, and reckless peer pressure. Without a solid moral compass anchored in honesty, sexual purity, and temperance, students easily succumb to drug abuse, bullying, truancy, and teenage pregnancy, permanently truncating their academic aspirations. Formal character education fosters internal discipline and conscience, empowering learners to reject destructive temptations voluntarily.
 
-Secondly, moral education produces upright, responsible future citizens who will shun corruption and social vices. Academic brilliance without moral integrity is dangerous; history teaches us that clever individuals devoid of ethics often become sophisticated fraudsters, corrupt officials, and destructive leaders. By incorporating character education, ethical debates, and peer counseling into our school life, our school will nurture well-rounded scholars who will serve their communities with patriotism and integrity.
+Secondly, academic brilliance without moral character produces dangerous citizens who harm society. The primary purpose of education is not merely to produce clever mathematicians or scientific geniuses, but to mold responsible, compassionate, and patriotic nation-builders. A brilliant student who lacks integrity will inevitably become a corrupt civil servant, an embezzling accountant, or a fraudulent politician who robs the state. Equipping students with core virtues—such as humility, empathy, accountability, and respect for human dignity—guarantees that our graduates will use their intellectual talents to serve humanity selflessly.
 
-I therefore propose that the administration introduce a weekly 'Character and Values' session during Friday assemblies and institute awards for students who demonstrate exemplary integrity.
+We humbly recommend that the school administration introduce weekly moral guidance and counseling sessions, invite inspirational civic mentors, and establish an annual Character and Integrity Award to celebrate virtuous conduct.
 
-Thank you for your continuous dedication to our welfare.
+Thank you for your visionary leadership.
 
 Yours faithfully,
 [Signature]
-Samuel Osei
+Kwabena Mensah
 (Senior Prefect)`
       },
       {
         questionNumber: "3",
-        category: "Public Speech",
-        prompt: "Write a speech you will deliver to the chiefs and people of your community during a town hall meeting on: \"How to Keep Our Environment Clean and Healthy.\"",
-        modelAnswer: `A SPEECH DELIVERED BY YAA ADOMAH TO THE CHIEFS AND PEOPLE OF ASUKWAU COMMUNITY ON KEEPING OUR ENVIRONMENT CLEAN AND HEALTHY
+        category: "Speech / Civic Address",
+        prompt: "Write the speech you will deliver to the chiefs, elders, and residents of your local community during a communal durbar on practical strategies to keep our local environment clean and disease-free.",
+        modelAnswer: `A CALL TO SANITARY CITIZENSHIP: CLEANING OUR SACRED HABITAT
+Delivered by the Youth Ambassador to the Chiefs and People of Bekwai
 
-Nana Chairman, Respected Chiefs and Elders, Assembly Members, Fellow Youth, and Distinguished Members of our Community:
+Nana Chairman, Respected Queenmother, Honorable Assembly Members, Elders, and Fellow Citizens:
 
-I stand before you this morning as a youth of Asukwau to share a few thoughts on how we can collectively restore the cleanliness, beauty, and health of our beloved town.
+I stand before you this morning on behalf of the organized youth of Bekwai to address a matter of urgent survival: the deteriorating state of sanitation in our beloved community and our collective duty to restore environmental cleanliness.
 
-Nananom, it is heartbreaking to observe that our streets and open gutters have been overwhelmed by plastic waste and domestic garbage. Indiscriminate littering and stagnant gutters have made our community a breeding ground for swarms of mosquitoes and houseflies, resulting in frequent outbreaks of malaria, cholera, and typhoid among our infants and aged parents. Cleanliness, as our elders say, is next to godliness, and we cannot fold our arms while filth destroys our health.
+Look across our neighborhood avenues and market squares. It is deeply heartbreaking to witness single-use plastic sachets, black polythene bags, and empty tins littering our streets. During heavy rainfall, these non-biodegradable wastes choke our drainage ditches, creating stagnant pools of foul, black water. These clogged gutters become breeding grounds for disease-carrying mosquitoes and houseflies, directly causing the recurrent outbreaks of malaria, cholera, and typhoid fever that hospitalize our infants and aged parents. Filth is not merely an eyesore; it is a deadly silent killer.
 
-To overcome this menace, we must first revive our communal labor tradition. In the past, the sound of the 'gong-gong' mobilized every household on the first Saturday of every month to desilt gutters, clear overgrown weeds around water sources, and sweep public spaces. Our traditional council, led by Nana, should reinstate and strictly enforce these communal clean-up exercises.
+To restore our community's dignity and health, we must implement three immediate, practical interventions. First, let us revive our ancestral spirit of communal labor. Every household must actively participate in our bi-weekly Saturday morning clean-up exercises to desilt open gutters, sweep public markets, and weed overgrown bushy paths around community standpipes.
 
-Secondly, our local assembly must provide communal waste collection containers at market squares and residential quarters, and enforce sanitation bye-laws. Anyone found dumping refuse into open gutters must be fined by the unit committee. Furthermore, every household should construct a decent toilet facility to eradicate open defecation.
+Secondly, the Town Development Committee must enforce strict bylaws against indiscriminate dumping of domestic waste. We must establish designated, fenced refuse collection points and penalize recalcitrant residents who dump refuse into streams.
 
-Let us remember that a clean community is a healthy and prosperous community. Together, we can make Asukwau a model of environmental cleanliness.
+Finally, let us plant shade trees and flowering hedges along our walkways to beautify our community and purify the air we breathe.
 
-Thank you all for your kind attention!`
+Cleanliness is the foundation of physical health and spiritual prosperity. Let us make Bekwai a model of environmental purity.
+
+Thank you.`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `The academic performance of students in the olden days was golden. Students knew the essence of education and made efforts to achieve excellence. Reading whatever material they came across not only helped their mental development but also made them self-reliant and confident. Students burned the midnight oil in order to make grades and to come out of school as better people.
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `The academic performance of students in previous generations was truly golden. Scholars understood the profound value of education and made relentless personal sacrifices to achieve academic distinction. Reading widely across every informative material they encountered not only accelerated their intellectual cognitive development, but also molded them into self-reliant, confident, and articulate individuals. Students regularly burned the midnight oil, laboring through demanding books by the flickering light of kerosene lanterns in order to secure top grades and emerge as refined, useful citizens.
 
-Unfortunately, the same cannot be said of students today. Whatever students achieved in the past is considered archaic. The emergence of improper technology has bedeviled the society. Students prefer staying in touch with friends and loved ones. The use of social media, such as Facebook, Twitter, WhatsApp, and Instagram, has taken over their entire being. Reading useful materials like dailies, storybooks, and others is now a thing of the past.
+Regrettably, the same dedication cannot be ascribed to contemporary students. Whatever academic discipline was practiced in the past is often dismissed as archaic and obsolete. The emergence of modern digital technology has become a double-edged sword that has bedeviled our youth. Students overwhelmingly prefer staying in perpetual electronic contact with acquaintances. The obsessive consumption of social media networks—such as Facebook, Twitter, WhatsApp, and Instagram—has virtually conquered their entire being. Reading useful literature, such as national newspapers, classic novels, and scientific journals, has become a relic of the past. This electronic addiction has crippled students' intellectual capacity, making examination malpractice, mass failure, and degraded grammar the order of the day.
 
-The negative influence of social media has deprived students of achieving excellence. Examination malpractices, mass failure in examination, and bad language have become the order of the day.
+Nevertheless, modern technology possesses immense positive benefits. In addition to powering corporate commerce and industrial automation, it empowers disciplined students to access boundless global knowledge and digital educational archives instantly. Furthermore, it facilitates rapid communication between families and study circles.
 
-Modern technology has its own benefits. In addition to serving as a great tool for businesses, it enables students to access information easily. What is more, it enables easy interactions between friends and loved ones. As much as these are important, students should realize that, without good moral practices, education, and reading, the future remains blurred. Students can eradicate the negative effects modern technology has on them if only they remain focused on their academic work.`,
+As beneficial as these digital tools are, young learners must realize that without sound moral character, diligent reading, and deep critical inquiry, their future remains blurred. Students can eradicate the toxic influence of modern technology only if they remain unyieldingly focused on their academic duties.`,
     questions: [
       {
-        subId: "(a)",
-        question: "State two benefits of reading mentioned in the passage.",
-        answer: "1. It helped students' mental development.\n2. It made students self-reliant and confident."
+        subQuestion: "(a)",
+        question: "State two specific benefits of wide reading mentioned in the opening paragraph of the passage.",
+        answer: "1. It accelerates and promotes mental/cognitive intellectual development.\n2. It makes students self-reliant, articulate, and confident."
       },
       {
-        subId: "(b)",
-        question: "For what two reasons did students study late into the night (burn the midnight oil) in the past?",
-        answer: "1. In order to make good grades.\n2. To come out of school as better people."
+        subQuestion: "(b)",
+        question: "For what two reasons did students in the past study late into the night (burn the midnight oil)?",
+        answer: "1. To make good grades (achieve academic excellence/pass examinations).\n2. To emerge from school as refined, useful, and better citizens."
       },
       {
-        subId: "(c)",
-        question: "State two benefits of modern technology mentioned in the passage.",
-        answer: "1. It serves as a great tool for businesses.\n2. It enables students to access information easily (and facilitates easy interaction among friends)."
+        subQuestion: "(c)",
+        question: "State two positive benefits of modern digital technology identified by the author.",
+        answer: "1. It enables students to access global information and educational knowledge easily.\n2. It serves as a great tool for businesses (and enables easy communication among friends and families)."
       },
       {
-        subId: "(d)",
-        question: "How can students get rid of the harmful influence of modern technology and social media?",
-        answer: "By remaining focused on their academic work (along with maintaining good moral practices and consistent reading habits)."
+        subQuestion: "(d)",
+        question: "How can contemporary students successfully get rid of the harmful influences of social media and modern technology?",
+        answer: "They can get rid of its harmful effects by remaining strictly disciplined and focused on their academic studies and duties."
       },
       {
-        subId: "(e)",
-        question: "Explain in your own words the following expressions as used in the passage:\n(i) Burn the midnight oil;\n(ii) Taken over their entire being;\n(iii) The order of the day.",
-        answer: "(i) **Burn the midnight oil:** To study or work late into the night.\n(ii) **Taken over their entire being:** Completely dominated their attention, time, and lifestyle.\n(iii) **The order of the day:** Very common, customary, or widespread occurrences."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following idiomatic expressions as used in the passage:\nI. 'Burn the midnight oil'\nII. 'Taken over their being'\nIII. 'The order of the day'",
+        answer: "I. 'Burn the midnight oil' means to study or work diligently late into the night.\nII. 'Taken over their being' means completely dominated and consumed their minds, attention, time, and lifestyle.\nIII. 'The order of the day' means very common, customary, widespread, and happening regularly."
       },
       {
-        subId: "(f)",
-        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\n(i) golden;\n(ii) excellence;\n(iii) archaic;\n(iv) blurred;\n(v) eradicate.",
-        answer: "(i) **golden:** glorious / outstanding / excellent / splendid.\n(ii) **excellence:** high quality / distinction / superiority / great success.\n(iii) **archaic:** outdated / old-fashioned / antiquated / obsolete.\n(iv) **blurred:** dim / uncertain / gloomy / unclear.\n(v) **eradicate:** eliminate / wipe out / remove / destroy."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. golden\nII. excellence\nIII. archaic\nIV. blurred\nV. eradicate",
+        answer: "I. golden: glorious, excellent, remarkable, magnificent, prime.\nII. excellence: distinction, brilliance, high standard, greatness.\nIII. archaic: outdated, obsolete, old-fashioned, primitive.\nIV. blurred: uncertain, bleak, dim, indistinct, obscure.\nV. eradicate: eliminate, abolish, wipe out, remove, destroy."
       }
     ]
   },
-  sectionC_literature: {
+  partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
+    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
     questions: [
       {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Oliver was given a slice of bread and a simple outfit with a brown cap to wear outside. He meekly followed him outside the workhouse to his new home. Once there, he was brought before a committee of ten men\"",
-        question: "Write the name of the person referred to as \"him\" in the extract.",
-        answer: "Mr. Bumble (the parish beadle)."
+        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        contextExtract: "\"Oliver was given a slice of bread and a simple outfit with a brown cap to wear outside. He meekly followed him outside the workhouse to his new home. Once there, he was brought before a committee of ten men\"",
+        subItems: [
+          {
+            subQuestion: "5(a)",
+            question: "Name the character referred to as 'him' whom Oliver meekly followed outside the workhouse.",
+            answer: "Mr. Bumble (the parish beadle)."
+          },
+          {
+            subQuestion: "5(b)",
+            question: "State one critical piece of information that Oliver learns from the 'committee of ten men' (the workhouse board).",
+            answer: "He learns that he has been apprenticed to Mr. Sowerberry, the parish undertaker, to learn coffin-making and manual trade."
+          },
+          {
+            subQuestion: "5(c)",
+            question: "How does Oliver react emotionally to the information he receives from the workhouse committee?",
+            answer: "He breaks down, weeps bitterly, and pleads not to be sent away to the dreadful undertaker."
+          }
+        ]
       },
       {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Once there, he was brought before a committee of ten men...\"",
-        question: "State one thing Oliver learns from the \"committee of ten men\".",
-        answer: "He learns that he is an orphan and that he is to be apprenticed to Mr. Sowerberry, the undertaker, to make coffins."
+        sectionTitle: "PETER PAUL ADOLINAMA: Ripples",
+        contextExtract: "\"Abi, which of your sons died recently or was it your business which collapsed?............ You have not been yourself these few days\"",
+        subItems: [
+          {
+            subQuestion: "5(d)",
+            question: "Identify the dramatic speaker in this extract.",
+            answer: "Dr. Asamoah (or Abi's close friend / colleague)."
+          },
+          {
+            subQuestion: "5(e)",
+            question: "What is Abi deeply worried and distressed about?",
+            answer: "She is distressed about her husband's infidelity, marital breakdown, and the mysterious disappearance/illness affecting her household."
+          }
+        ]
       },
       {
-        subId: "5(c)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "Oliver before the board...",
-        question: "How does Oliver react to the information and harsh treatment he receives from the committee?",
-        answer: "He breaks down and weeps bitterly out of fear, loneliness, and despair."
+        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
+        contextExtract: "1st WOMAN: If her son gets goodly bag by the month,\nWhy has Esi Kom still not..........\n2nd WOMAN: They never ask \"Why\".\nIs it not the young man's wife?\n1st WOMAN: What has she done now?\n2nd WOMAN: Listen. I hear she swallows money\nAs a hen does corn.",
+        subItems: [
+          {
+            subQuestion: "5(f)",
+            question: "Who is referred to as 'the young man's wife' in the dialogue?",
+            answer: "Eulalie Rush (Ato Yawson's African-American wife)."
+          },
+          {
+            subQuestion: "5(g)",
+            question: "State the literary device utilized in the question: 'Is it not the young man's wife?'",
+            answer: "Rhetorical question."
+          },
+          {
+            subQuestion: "5(h)",
+            question: "What is the metaphorical meaning of the expression: 'she swallows money as a hen does corn'?",
+            answer: "She spends money recklessly, extravagantly, and wastefully on frivolous luxuries."
+          }
+        ]
       },
       {
-        subId: "5(d)",
-        textSource: "PETER PAUL ADOLINAMA: Ripples",
-        extract: "\"Abi, which of your sons died recently or was it your business which collapsed?............ You have not been yourself these few days\"",
-        question: "Identify the speaker of the extract above.",
-        answer: "Dr. Baako (Abi's close friend and medical doctor)."
-      },
-      {
-        subId: "5(e)",
-        textSource: "PETER PAUL ADOLINAMA: Ripples",
-        extract: "\"You have not been yourself these few days...\"",
-        question: "What is Abi deeply worried about in the story?",
-        answer: "He is distressed by complex family disputes, mysterious village rumors, and anxiety over chieftaincy succession."
-      },
-      {
-        subId: "5(f)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "1st WOMAN: If her son gets goodly bag by the month,\nWhy has Esi Kom still not..........\n2nd WOMAN: They never ask \"Why\".\nIs it not the young man's wife?\n1st WOMAN: What has she done now?\n2nd WOMAN: Listen. I hear she swallows money\nAs a hen does corn.",
-        question: "Who is referred to as \"the young man's wife\"?",
-        answer: "Eulalie Jawondo (Ato Yawson's African-American wife)."
-      },
-      {
-        subId: "5(g)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"Is it not the young man's wife?\"",
-        question: "State the literary device used in the line \"Is it not the young man's wife?\".",
-        answer: "Rhetorical question (a question asked for dramatic effect or assertion without expecting an answer)."
-      },
-      {
-        subId: "5(h)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"I hear she swallows money / As a hen does corn.\"",
-        question: "What is the meaning of the expression \"she swallows money as a hen does corn\"?",
-        answer: "It means that she spends money recklessly, greedily, and excessively (she is a spendthrift)."
-      },
-      {
-        subId: "5(i)",
-        textSource: "A. A. AMOAKO: Sleep Without Wake",
-        extract: "\"You put me through my infant paces\nOn Gold Coast Ga ShikpƆŋ\nTaa taa, tuu tuu, in your maternal steps,\nMaame Tutuaa, condolences!\"",
-        question: "Identify the main literary device used in the title of the poem \"Sleep Without Wake\".",
-        answer: "Euphemism (or Metaphor), using 'sleep without wake' to soften and refer to permanent physical death."
-      },
-      {
-        subId: "5(j)",
-        textSource: "A. A. AMOAKO: Sleep Without Wake",
-        extract: "\"Taa taa, tuu tuu, in your maternal steps...\"",
-        question: "The words 'Taa taa, tuu tuu' appeal to the reader's sense of ............",
-        answer: "Sense of sound (auditory sense) or kinesthetic sense (movement of a toddler learning to walk)."
+        sectionTitle: "A. A. AMOAKO: Sleep Without Wake",
+        contextExtract: "\"You put me through my infant paces\nOn Gold Coast Ga ShikpƆŋ\nTaa taa, tuu tuu, in your maternal steps,\nMaame Tutuaa, condolences!\"",
+        subItems: [
+          {
+            subQuestion: "5(i)",
+            question: "Identify the primary literary device utilized in the title of the poem: 'Sleep Without Wake'.",
+            answer: "Euphemism (or paradox/metaphor for mortal death)."
+          },
+          {
+            subQuestion: "5(j)",
+            question: "The rhythmic onomatopoeic words 'Taa taa, tuu tuu' appeal primarily to the reader's sense of ............",
+            answer: "hearing (auditory imagery) and movement/touch (kinetic/tactile imagery)."
+          }
+        ]
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    id: `lit_${q.subId}`,
-    partLabel: `Part C: Literature - ${q.textSource} [${q.subId}]`,
-    prompt: (q.extract ? `Extract:\n"${q.extract}"\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 2
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  },
+  ...paper2Calibrated.partC_literature.questions.map((sec, idx) => ({
+    id: `literature_cockcrow_${idx + 1}`,
+    partLabel: `Part C: Literature - ${sec.sectionTitle}`,
+    contextExtract: sec.contextExtract || null,
+    subItems: sec.subItems,
+    marks: 10
   }))
 ];
 
 async function seedBeceEnglish2020Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2020 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2020 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -697,8 +641,9 @@ async function seedBeceEnglish2020Calibrated() {
     if (idx === 2) keyDist.C++;
     if (idx === 3) keyDist.D++;
   });
-  console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
+  console.log("Verified Key Balance across 30 Objective Items:", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2020");
   await docRef.set({
     year: 2020,
@@ -712,25 +657,49 @@ async function seedBeceEnglish2020Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasCockcrowLiterature: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
-      title: "Paper 1: Objective Test",
+      title: "Paper 1: Objective Test (Lexis and Structure)",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 30",
+          questions: balancedPaper1.slice(25, 30)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2020 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2020 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2020Calibrated()

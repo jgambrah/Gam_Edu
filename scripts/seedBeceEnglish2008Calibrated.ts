@@ -1,8 +1,11 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -12,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -34,331 +38,371 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2008
-const passage1Text = "### 📖 PASSAGE I\n\nEver since the construction of the District Hospital at Kpota, an attractive cluster of new residential buildings had sprung up around the medical complex. These well-planned, elegant houses caught the eye of anyone visiting the area, and they especially took the fancy of Mr. Akpaloo, who was searching for an ideal architectural model for his own proposed residence.\n\nResolving to build a home of identical design, Mr. Akpaloo visited the Hospital Administrator, Dr. Agbetor, to inquire about obtaining the building plans. Dr. Agbetor informed him that the houses had been designed and built under the personal supervision of Dr. Grant, who lived in a magnificent house at Tokoe and still kept the original blueprints.\n\nMr. Akpaloo immediately traveled to Tokoe to see Dr. Grant. However, after listening to his request, Dr. Grant politely declined to release the original drawings, explaining that it was not prudent to hand out specialized blueprints commissioned for institutional projects. Instead, he advised Mr. Akpaloo to visit the site caretaker, inspect the rooms carefully, and make his own sketch. When Mr. Akpaloo visited the site, he was astonished to discover that what looked like modest two-bedroom bungalows from afar were actually spacious four-bedroom houses, demonstrating that distance can dramatically alter human perception.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: MR. AKPALOO'S ARCHITECTURAL QUEST (CALIBRATED)
+// =========================================================================
+const passage1Title = "Passage I: Mr. Akpaloo's Architectural Quest at Kpota";
+const passage1Text = `Following the official commissioning of the modern District Hospital at Kpota, an attractive cluster of new residential buildings began springing up across the adjoining landscape. One particular group of elegant structures caught the admiring eye of Mr. Akpaloo, who resolved in his heart that whenever he accumulated sufficient capital to construct his own family home, it would follow that exact architectural style.
 
-const passage2Text = "### 📖 PASSAGE II\n\nOnce upon a time, an impoverished fisherman cast his net into the sea four times without catching a single fish. On his fourth attempt, his net felt exceptionally heavy. Straining with all his strength, he dragged ashore not a monstrous fish, but a heavy copper pot sealed securely with lead and stamped with a royal seal.\n\nHoping to find hidden gold inside, the fisherman took out his knife and pried open the lead stopper. Instantly, a thick plume of black smoke billowed out of the vessel, rising into the sky and condensing into a terrifying, colossal genie whose head brushed the clouds. Instead of thanking the fisherman, the fierce genie roared that he would kill him on the spot.\n\nThinking quickly, the clever fisherman feigned disbelief and asked: \"How could a magnificent, enormous being like you fit inside this tiny copper pot? I will not believe it until I see it with my own eyes.\" Proud and anxious to prove his magical power, the genie turned back into smoke and poured himself back into the narrow vessel. In a flash, the fisherman slammed the heavy lead cover back in place and cast the trapped genie back into the bottom of the sea.";
+When Mr. Akpaloo felt the time had arrived to commence his building project, his initial step was to track down the architectural drawings of the dwellings he had so long admired. He visited the administrative block of the hospital to confer with Dr. Agbetor, the Hospital Administrator. Dr. Agbetor explained that those specific residences had been erected under the supervision of Dr. Grant, who still kept the original architectural blueprints in his private custody. Clearly, the proper authority to consult was Dr. Grant.
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2008
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+Mr. Akpaloo traveled to Dr. Grant's magnificent country residence at Tokoe. The doctor received him courteously but explained that it was simply not prudent or ethical to release proprietary plans designed specifically for those projects. Nevertheless, he offered practical counsel: he advised Mr. Akpaloo to visit the Kpota site and meet the resident caretaker, who would guide him through the interior rooms. Mr. Akpaloo could then commission a draftsman to sketch an original adaptation.
+
+Mr. Akpaloo set off for the site without delay. Upon his arrival, the caretaker escorted him through the premises. What had appeared from the highway to be a modest two-bedroom bungalow turned out, at close quarters, to be an expansive four-bedroom residence. It was a vivid lesson in how perspective and distance can alter human perception!`;
+
+const passage1QuestionsRaw = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, at what point in time were the residential houses at Kpota constructed?`,
-    passage: passage1Text,
+    prompt: "According to Passage I, at what point in time were the admired residential structures built at Kpota?",
     options: [
-      "When the hospital foundation was first dug",
-      "Long before the hospital was ever planned",
-      "After the district hospital had been constructed",
-      "They were built simultaneously with the hospital wards"
+      "At the very commencement of the hospital foundation",
+      "Decades before the hospital was conceived",
+      "Only after the District Hospital had been completed",
+      "Simultaneously alongside the hospital wards"
     ],
-    correctAnswer: "After the district hospital had been constructed",
-    hint: "Reread the opening clause: 'Since the building of the District Hospital at Kpota, there had sprung up...'",
-    workedSolution: "The opening sentence indicates that the cluster of houses sprang up after the district hospital had been constructed in the locality.",
+    correctAnswer: "Only after the District Hospital had been completed",
+    hint: "Reread the opening sentence: since the building of the hospital, residential structures had sprung up around it.",
+    workedSolution: "The narrative states that the residential buildings arose following the construction and commissioning of the District Hospital.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, why did Dr. Grant decline to hand over his original architectural blueprint to Mr. Akpaloo?`,
-    passage: passage1Text,
+    prompt: "Why did Dr. Grant decline to hand over the original architectural blueprints to Mr. Akpaloo in Passage I?",
     options: [
-      "The residential properties did not belong to him",
-      "Mr. Akpaloo was already a certified draftsman",
-      "He believed it was unwise to give out a customized design",
-      "The site caretaker had already misplaced the plan"
+      "He believed it was neither wise nor prudent to give away custom plans",
+      "The residential properties were no longer his personal possession",
+      "He insisted that Mr. Akpaloo must hire his own private architect",
+      "The resident caretaker had misplaced the blueprint files"
     ],
-    correctAnswer: "He believed it was unwise to give out a customized design",
-    hint: "Dr. Grant explained that 'it was not prudent to give out the plan...'",
-    workedSolution: "The passage notes that Dr. Grant explained that 'it was not prudent [wise] to give out the plan that had been specifically designed for those projects'.",
+    correctAnswer: "He believed it was neither wise nor prudent to give away custom plans",
+    hint: "Check paragraph three: 'The latter explained that it was not prudent to give out the plan...'",
+    workedSolution: "Dr. Grant refused to hand over the drawings because he considered it unwise and improper to give away plans customized for a specific project.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, what immediate action did Mr. Akpaloo take when he resolved to build his own residence?`,
-    passage: passage1Text,
+    prompt: "What preliminary action did Mr. Akpaloo undertake as soon as he felt ready to build his own residence?",
     options: [
-      "He made a direct sketch of the building site",
-      "He submitted his own architectural drawings to Dr. Grant",
-      "He sought out the blueprint of the houses he admired",
-      "He ensured he had accumulated sufficient funds"
+      "He made an immediate freehand sketch of the building layout",
+      "He searched for the original architectural drawings of the houses he admired",
+      "He submitted an application for an institutional bank loan",
+      "He purchased a parcel of land near the hospital administrator's office"
     ],
-    correctAnswer: "He sought out the blueprint of the houses he admired",
-    hint: "Check paragraph two: '...one of the things he did was to look for the plan of the houses...'",
-    workedSolution: "The text explains that when Mr. Akpaloo felt ready to build, he went looking for the blueprint/plan of the houses he had admired around the hospital.",
+    correctAnswer: "He searched for the original architectural drawings of the houses he admired",
+    hint: "Paragraph two notes: 'one of the things he did was to look for the plan of the houses that he so admired.'",
+    workedSolution: "Before commencing work, Mr. Akpaloo actively sought to obtain the design plans of the houses he had admired from afar.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the word 'magnificent' in 'his magnificent house at Tokoe' means ............`,
-    passage: passage1Text,
-    options: ["massive in size", "strikingly beautiful and splendid", "moderately good", "extremely expensive"],
-    correctAnswer: "strikingly beautiful and splendid",
-    hint: "Grand, stately, and remarkably attractive in appearance.",
-    workedSolution: "'Magnificent' means impressively beautiful, elaborate, or splendid in appearance; 'strikingly beautiful and splendid' is the exact equivalent.",
+    prompt: "In Passage I, the word 'magnificent' in 'his magnificent house at Tokoe' means ............",
+    options: [
+      "massive and gigantic",
+      "splendid, grand, and beautiful",
+      "costly and exorbitant",
+      "ancient and historical"
+    ],
+    correctAnswer: "splendid, grand, and beautiful",
+    hint: "'Magnificent' denotes impressive grandeur, beauty, and elegance.",
+    workedSolution: "'Magnificent' describes exceptional grandeur, visual beauty, and splendor; 'splendid, grand, and beautiful' is its direct meaning.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the expression 'took the fancy of Mr. Akpaloo' means that Mr. Akpaloo ............`,
-    passage: passage1Text,
+    prompt: "In Passage I, the expression 'took the fancy of Mr. Akpaloo' means that Mr. Akpaloo ............",
     options: [
-      "mocked and laughed at the houses",
-      "was completely confused by the layout",
-      "found the design appealing and attractive",
-      "harbored a strong dislike for the buildings"
+      "found the design of the houses exceptionally attractive",
+      "was completely confused by the architectural style",
+      "derided the materials used in constructing the houses",
+      "drew a comical sketch of the residential cluster"
     ],
-    correctAnswer: "found the design appealing and attractive",
-    hint: "To 'take someone's fancy' means to attract, please, or appeal to them.",
-    workedSolution: "The idiom 'to take someone's fancy' means to appeal to them, capture their interest, or be found attractive.",
+    correctAnswer: "found the design of the houses exceptionally attractive",
+    hint: "To take someone's fancy means to appeal to them or attract their interest.",
+    workedSolution: "The idiom 'to take someone's fancy' means to appeal to them, capture their admiration, or be found attractive.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE FISHERMAN AND THE ENCHANTED JAR (CALIBRATED)
+// =========================================================================
+const passage2Title = "Passage II: The Wily Fisherman and the Bottled Genie";
+const passage2Text = `One evening, a destitute fisherman cast his nets into the coastal waters and caught nothing after hours of grueling labor. Disheartened and about to steer his canoe homeward, he felt his hemp net suddenly grow heavy beneath the surface. Supposing he had captured an enormous fish, he dragged the net ashore with great excitement. To his dismay, the net contained no fish at all, but rather a heavy copper jar sealed tightly with molten lead.
+
+Convinced that such an ancient, sealed vessel must contain buried gold or precious gems, the fisherman retrieved his pocketknife, cut away the lead seal, and inverted the vessel. For a brief moment, nothing emerged; then, thick smoke began billowing from the mouth of the jar, rising into the sky like a dense, swirling cloud of fog. To the fisherman's terror, the smoky cloud condensed into a towering, terrifying genie.
+
+"Fall to your knees and prepare to perish!" bellowed the spirit in a voice of thunder.
+
+"Why should you take my life?" the trembling fisherman stammered. "Have you forgotten that I broke your seal and restored your liberty?"
+
+"That is true," the genie replied with a cruel laugh, "yet I have sworn a solemn oath to slay you. I am an ancient spirit who rebelled against the Sovereign Creator. To chastise my pride, He imprisoned me in this copper jar and cast me into the deep. During the first century of my captivity, I swore to bestow boundless riches upon anyone who liberated me. During my second century, I swore to grant my savior three wishes. But as centuries rolled by and no one appeared, rage consumed my heart, and I swore to slay my rescuer without mercy."
+
+"If perish I must," said the quick-witted fisherman, "at least swear that your massive frame was truly enclosed within that tiny pot. It is far too small to hold even your little finger. Unless my own eyes witness it, I shall never believe it."
+
+"Behold with your own eyes and believe!" roared the proud genie.
+
+The giant figure slowly dissolved into plumes of smoke and poured himself back into the narrow copper pot. Instantly, the fisherman slammed the lead seal onto the neck, secured the stopper, and hurled the jar back into the depths of the sea.`;
+
+const passage2QuestionsRaw = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what did the poor fisherman haul out of the sea after casting his net all day?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, what did the fisherman actually drag ashore in his net?",
     options: [
-      "A valuable pot filled with gold",
-      "A heavy sealed copper vessel",
-      "A monstrous deep-sea fish",
-      "A tangled cluster of empty nets"
+      "A massive deep-sea fish",
+      "A chest filled with silver coins",
+      "A heavy sealed copper jar containing no fish",
+      "A broken lead net weight"
     ],
-    correctAnswer: "A heavy sealed copper vessel",
-    hint: "Reread the opening paragraph: 'he found only a heavy copper pot sealed with lead'.",
-    workedSolution: "The fisherman caught no fish; instead, he dragged ashore a heavy copper pot sealed with lead containing a trapped spirit.",
+    correctAnswer: "A heavy sealed copper jar containing no fish",
+    hint: "Reread paragraph one: he thought he had caught a fish, but found only a heavy copper pot sealed with lead.",
+    workedSolution: "The text explains that the fisherman caught no fish at all; his net held only a sealed copper jar.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, what was the true supernatural nature of the genie?`,
-    passage: passage2Text,
+    prompt: "In Passage II, what entity was released when the seal was broken?",
     options: [
-      "A giant marine fish",
-      "An enchanted copper vessel",
-      "A poisonous cloud of ocean smoke",
-      "A rebellious spirit punished by the Creator"
+      "A venomous sea serpent",
+      "An enchanted supernatural spirit",
+      "A toxic volcanic gas",
+      "A magical talking fish"
     ],
-    correctAnswer: "A rebellious spirit punished by the Creator",
-    hint: "Look at the genie's explanation: 'I'm a spirit that rebelled against the Creator...'",
-    workedSolution: "The genie explicitly explains his identity: 'I'm a spirit that rebelled against the Creator and to punish me he shut me up in this copper pot'.",
+    correctAnswer: "An enchanted supernatural spirit",
+    hint: "The smoke turned into a genie, which identified itself as a spirit that rebelled against the Creator.",
+    workedSolution: "The entity in the jar was a genie—an ancient, powerful supernatural spirit.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, the word 'captivity' as used in 'During the first century of my captivity' means ............`,
-    passage: passage2Text,
-    options: ["total financial loss", "the moment of birth", "state of confinement and imprisonment", "military defeat"],
-    correctAnswer: "state of confinement and imprisonment",
-    hint: "Being held in a cell, container, or prison against one's will.",
-    workedSolution: "'Captivity' refers to the condition of being trapped, locked up, or imprisoned; 'state of confinement and imprisonment' is its direct meaning.",
+    prompt: "In Passage II, the word 'captivity' in 'the first century of my captivity' means ............",
+    options: [
+      "birth and infancy",
+      "military defeat",
+      "confinement or imprisonment",
+      "rebellion against authority"
+    ],
+    correctAnswer: "confinement or imprisonment",
+    hint: "'Captivity' refers to the state of being locked up, confined, or imprisoned.",
+    workedSolution: "'Captivity' denotes the condition of being trapped, locked up, or imprisoned; 'confinement or imprisonment' is its direct meaning.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, how many distinct vows did the genie swear during his prolonged centuries of imprisonment?`,
-    passage: passage2Text,
-    options: ["One solemn vow", "Two separate vows", "Three distinct vows", "Four consecutive vows"],
-    correctAnswer: "Three distinct vows",
-    hint: "First century: make liberator rich; second century: grant 3 wishes; afterwards: kill liberator without mercy.",
-    workedSolution: "The passage lists three vows: 1st century (make anyone rich), 2nd century (grant three wishes), and subsequent centuries (slay his liberator without mercy).",
+    prompt: "How many distinct vows or oaths did the genie make across the centuries in Passage II?",
+    options: [
+      "A single initial oath",
+      "Two consecutive oaths",
+      "Three separate progressive oaths",
+      "Four unrecorded oaths"
+    ],
+    correctAnswer: "Three separate progressive oaths",
+    hint: "Century 1: make his savior rich. Century 2: grant three wishes. Century 3: kill his rescuer without mercy. That equals three vows.",
+    workedSolution: "The genie made three successive oaths: to make his savior rich, to grant three wishes, and finally to kill whoever freed him.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nHow did the fisherman ultimately save his own life from the murderous genie in Passage II?`,
-    passage: passage2Text,
+    prompt: "According to the outcome of Passage II, the fisherman successfully saved his own life because he ............",
     options: [
-      "He physically overpowered the giant spirit",
-      "He outwitted the genie into re-entering the container",
-      "He called other village fishermen to his aid",
-      "He paid the genie a ransom with gold"
+      "slayed the genie with his pocketknife",
+      "relied on his wits and cunning to trick the spirit back into the jar",
+      "accepted the genie's offer of boundless wealth",
+      "called other coastal fishermen to assist him"
     ],
-    correctAnswer: "He outwitted the genie into re-entering the container",
-    hint: "He feigned disbelief that so vast a spirit could fit into so small a vessel.",
-    workedSolution: "The fisherman used his wits by challenging the genie to prove he could fit inside the small pot; once the genie entered as smoke, the fisherman sealed the lid.",
+    correctAnswer: "relied on his wits and cunning to trick the spirit back into the jar",
+    hint: "He feigned disbelief, tricked the proud genie into shrinking back into smoke, and resealed the pot.",
+    workedSolution: "The fisherman used his sharp intellect and cunning to challenge the genie's pride, tricking him back into the pot and casting him into the ocean.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// =========================================================================
+const generalQuestionsRaw = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "Ama was persuaded by her senior brother to pursue accounting instead of arts.\nChoose the word nearest in meaning to the underlined word 'persuaded'.",
-    options: ["convinced", "commanded", "told", "advised"],
+    prompt: "Ama was persuaded by her elder brother to alter her academic programme.\nChoose the word nearest in meaning to 'persuaded'.",
+    options: ["convinced", "commanded", "directed", "compelled"],
     correctAnswer: "convinced",
-    hint: "To cause someone to believe or agree to something through reasoning.",
-    workedSolution: "'Persuaded' means caused someone to do something through sound reasoning or argument; 'convinced' is its direct synonym.",
+    hint: "Induced by argument, reasoning, or entreaty to believe or do something.",
+    workedSolution: "'Persuaded' means moved by argument to a decision; 'convinced' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The talented striker scored three brilliant goals during the finals.\nChoose the word nearest in meaning to the underlined word 'talented'.",
-    options: ["trained", "serious", "gifted", "skilled"],
+    prompt: "The talented striker scored two sensational goals during the finals.\nChoose the word nearest in meaning to 'talented'.",
+    options: ["trained", "vigorous", "gifted", "practiced"],
     correctAnswer: "gifted",
-    hint: "Possessing natural aptitude, ability, or exceptional flair.",
+    hint: "Possessing natural aptitude or extraordinary ability.",
     workedSolution: "'Talented' means possessing natural creative or athletic ability; 'gifted' is its exact equivalent.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Araba was saddened because she failed to secure the regional scholarship award.\nChoose the word nearest in meaning to the underlined word 'saddened'.",
-    options: ["furious", "amazed", "excited", "sorrowful"],
+    prompt: "Araba was saddened when she learned of her companion's misfortune.\nChoose the word nearest in meaning to 'saddened'.",
+    options: ["sorrowful", "furious", "astonished", "perplexed"],
     correctAnswer: "sorrowful",
-    hint: "Feeling grief, disappointment, or unhappiness.",
-    workedSolution: "'Saddened' means made to feel grief, distress, or unhappiness; 'sorrowful' is its closest synonym.",
+    hint: "Filled with or expressing grief, sorrow, or unhappiness.",
+    workedSolution: "'Saddened' means made to feel sorrow or grief; 'sorrowful' is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The unruly apprentice was reprimanded for displaying disrespect toward his master.\nChoose the word nearest in meaning to the underlined word 'unruly'.",
-    options: ["impolite", "strange", "indecent", "wicked"],
+    prompt: "The candidate was cautioned after behaving in an unruly manner toward the invigilator.\nChoose the word nearest in meaning to 'unruly'.",
+    options: ["impolite", "peculiar", "boisterous", "reckless"],
     correctAnswer: "impolite",
-    hint: "Disorderly, disrespectful, and lacking proper manners.",
-    workedSolution: "'Unruly' when describing conduct toward figures of authority denotes ill-mann manners, disorderly, and insolent behavior; 'impolite' is the nearest equivalent.",
+    hint: "Disorderly, disruptive, and lacking good manners or respect.",
+    workedSolution: "'Unruly' describes disorderly, disrespectful, or ill-mannered behavior; 'impolite' (or ill-mannered) is its closest synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Our class teacher is exceptionally enthusiastic regarding our upcoming science fair.\nChoose the word nearest in meaning to the underlined word 'enthusiastic'.",
-    options: ["anxious", "frank", "aware", "hopeful"],
+    prompt: "My mother is remarkably enthusiastic about my admission into technical college.\nChoose the word nearest in meaning to 'enthusiastic'.",
+    options: ["apprehensive", "frank", "vigilant", "hopeful"],
     correctAnswer: "hopeful",
-    hint: "Having or showing intense interest, keen expectation, and positive excitement.",
-    workedSolution: "'Enthusiastic' means showing intense, eager enjoyment and optimism; 'hopeful' is the closest synonym in this context.",
+    hint: "Having or showing intense, eager interest, anticipation, and optimism.",
+    workedSolution: "'Enthusiastic' implies keen interest and positive, eager anticipation; 'hopeful' (or eager) is its closest equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "The elderly statesman died without clearing his name. This means that the man failed to ............",
+    prompt: "The former cashier passed away without clearing his name. This means he died without ............",
     options: [
-      "prove his legal innocence",
-      "erase his name from official registers",
-      "draw up a legal will",
-      "win his land dispute in court"
+      "proving his complete innocence of the embezzlement charges",
+      "writing his last will and testament",
+      "erasing his signature from the ledger",
+      "withdrawing his financial savings"
     ],
-    correctAnswer: "prove his legal innocence",
-    hint: "Removing suspicion and proving that one is innocent of an accusation.",
-    workedSolution: "The idiom 'to clear one's name' means to prove one's innocence and vindicate one's reputation from accusations or disgrace.",
+    correctAnswer: "proving his complete innocence of the embezzlement charges",
+    hint: "To clear one's name means to prove that one is innocent of a crime or accusation.",
+    workedSolution: "The idiom 'to clear one's name' means to prove one's innocence and restore a damaged reputation.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The tutor advised the candidates to go over their answers before submission. This means they should ............",
-    options: [
-      "rewrite all the compositions",
-      "remember all key dates",
-      "repeat the questions aloud",
-      "review and check their work carefully"
-    ],
-    correctAnswer: "review and check their work carefully",
-    hint: "Inspecting, reading through, or examining work to catch errors.",
-    workedSolution: "The phrasal verb 'to go over' means to review, examine, or check through something carefully.",
+    prompt: "The master advised us to go over our calculation sheets before submitting them. This means we should ...... our work.",
+    options: ["rewrite", "recalculate", "review", "resubmit"],
+    correctAnswer: "review",
+    hint: "To inspect, verify, check, or examine carefully.",
+    workedSolution: "The phrasal verb 'to go over' written work means to inspect, check, or 'review' it carefully for errors.",
     points: 1
   },
   {
     number: 18,
-    prompt: "You did not have to act so high and mighty regarding your examination grades. This means you should not be ............",
-    options: ["positive", "confused", "strong", "arrogant"],
-    correctAnswer: "arrogant",
-    hint: "Acting in a proud, haughty, and condescending manner.",
-    workedSolution: "The idiom 'high and mighty' describes an attitude of haughty pride, conceit, and arrogance toward others.",
+    prompt: "You do not have to be so high and mighty whenever someone offers you advice. This means you should not be ............",
+    options: ["confident", "arrogant and haughty", "confused", "indifferent"],
+    correctAnswer: "arrogant and haughty",
+    hint: "Acting superior, haughty, or condescending toward others.",
+    workedSolution: "The idiom 'high and mighty' refers to acting in an arrogant, haughty, and condescending manner.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The clan elder urged the two quarreling brothers to mend their fences. This means the brothers should ............",
+    prompt: "The traditional elder urged the two rival factions to mend their fences. This means they should ............",
     options: [
-      "reconstruct their damaged farm boundaries",
-      "reconcile and make peace",
-      "be careful in speech",
-      "defend their heritage"
+      "rebuild their damaged compound walls",
+      "settle their dispute and make peace",
+      "fortify their borders with fencing",
+      "take their grievances to a modern court"
     ],
-    correctAnswer: "reconcile and make peace",
-    hint: "Settling disputes and restoring friendly, peaceful relations.",
-    workedSolution: "The idiom 'to mend fences' means to repair damaged relationships, resolve differences, and make peace.",
+    correctAnswer: "settle their dispute and make peace",
+    hint: "To repair damaged relationships and resolve a quarrel.",
+    workedSolution: "The idiom 'to mend one's fences' means to repair damaged interpersonal relations, resolve differences, and make peace.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The truant was cautioned about his conduct but he turned a deaf ear to the advice. This means that he ............",
-    options: ["could not hear the words", "laughed at the master", "was angry with the elders", "ignored the counsel completely"],
-    correctAnswer: "ignored the counsel completely",
-    hint: "Refusing to listen, obey, or pay attention.",
-    workedSolution: "'To turn a deaf ear' is an idiom meaning to deliberately refuse to listen to, notice, or obey counsel or warnings.",
+    prompt: "He was warned against riding the bicycle without brakes, but he turned a deaf ear to the counsel. This means that he ............",
+    options: [
+      "could not hear the verbal warning",
+      "laughed sarcastically at the speaker",
+      "completely ignored and disregarded the advice",
+      "became infuriated by the counsel"
+    ],
+    correctAnswer: "completely ignored and disregarded the advice",
+    hint: "To deliberately refuse to listen or comply.",
+    workedSolution: "The idiom 'to turn a deaf ear' means to deliberately refuse to listen, disregard, or ignore counsel.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "While Uncle Musa is known throughout the village to be generous, his brother is notoriously ...... .",
-    options: ["stingy", "selfish", "strict", "serious"],
+    prompt: "While Uncle Kwame is generous to travelers, his younger brother is notoriously ...... .\nChoose the word most nearly opposite in meaning to 'generous'.",
+    options: ["stingy", "strict", "severe", "hostile"],
     correctAnswer: "stingy",
-    hint: "'Generous' means willing to give and share freely. Find the word that denotes mean and ungiving.",
-    workedSolution: "'Generous' means liberal and open-handed in giving. Its direct antonym is 'stingy' (miserly, tight-fisted, or ungenerous).",
+    hint: "'Generous' means willing to give and share. What word denotes unwilling to spend or share money?",
+    workedSolution: "'Generous' means giving or liberal with money. Its direct economic opposite is 'stingy' (miserly).",
     points: 1
   },
   {
     number: 22,
-    prompt: "The headmaster rebuked the tardy students, but ...... the punctual candidates.",
-    options: ["admitted", "praised", "admired", "embraced"],
+    prompt: "The headmaster rebuked the latecomers, but ...... the punctual monitors.\nChoose the word most nearly opposite in meaning to 'rebuked'.",
+    options: ["praised", "admitted", "excused", "embraced"],
     correctAnswer: "praised",
-    hint: "'Rebuked' means scolded or reprimanded sharply. Find the word meaning commended or applauded.",
-    workedSolution: "'Rebuked' means expressed sharp disapproval or censure. Its direct antonym is 'praised' (commended or commended publicly).",
+    hint: "'Rebuked' means scolded or reprimanded. What word denotes expressed approval and admiration?",
+    workedSolution: "'Rebuked' means reprimanded or sharply criticized. Its direct antonym is 'praised' (commended).",
     points: 1
   },
   {
     number: 23,
-    prompt: "Mansah answered the interviewer's queries with confidence, whereas her rival responded with ...... .",
-    options: ["joy", "firmness", "timidity", "uncertainty"],
+    prompt: "Naa approached the podium with confidence, whereas her rival displayed obvious ...... .\nChoose the word most nearly opposite in meaning to 'confidence'.",
+    options: ["firmness", "timidity", "sorrow", "humility"],
     correctAnswer: "timidity",
-    hint: "'Confidence' means self-assurance and boldness. Find the word meaning shyness, hesitation, and fear.",
-    workedSolution: "'Confidence' denotes assurance and bold conviction. Its direct opposite in interpersonal behavior is 'timidity' (shyness and lack of courage).",
+    hint: "'Confidence' means self-assurance and boldness. What word denotes shyness, fearfulness, or lack of courage?",
+    workedSolution: "'Confidence' denotes boldness and self-assurance. Its direct psychological antonym is 'timidity' (shyness or fearfulness).",
     points: 1
   },
   {
     number: 24,
-    prompt: "Judicial arbiters are sworn to remain impartial, rather than ...... in their verdicts.",
-    options: ["biased", "proud", "disrespectful", "bold"],
+    prompt: "Judicial magistrates are required to remain impartial, rather than ...... toward wealthy litigants.\nChoose the word most nearly opposite in meaning to 'impartial'.",
+    options: ["biased", "severe", "disrespectful", "insolent"],
     correctAnswer: "biased",
-    hint: "'Impartial' means fair and unswayed by favoritism. Find the word denoting unfair preference.",
-    workedSolution: "'Impartial' means fair and completely unbiased. Its direct antonym is 'biased' (prejudiced or showing unfair favoritism).",
+    hint: "'Impartial' means fair and unbiased. What word denotes showing prejudice or unfair favoritism?",
+    workedSolution: "'Impartial' means completely unbiased and objective. Its direct judicial antonym is 'biased' (or prejudiced).",
     points: 1
   },
   {
     number: 25,
-    prompt: "Scripture teaches that we should humble ourselves before God, rather than ...... our own virtues.",
-    options: ["exalt", "raise", "decorate", "train"],
-    correctAnswer: "exalt",
-    hint: "'Humble' means to lower or make modest. Find the word meaning to elevate, glorify, or praise excessively.",
-    workedSolution: "'To humble oneself' means to adopt a modest, submissive posture. Its direct antonym is 'to exalt' (to elevate, glorify, or boast).",
+    prompt: "Scripture teaches that those who exalt themselves will be brought low, but the humble will be lifted up.\nChoose the word most nearly opposite in meaning to 'exalt'.",
+    options: ["humble", "discipline", "chastise", "diminish"],
+    correctAnswer: "humble",
+    hint: "'Exalt' means to raise high in rank or praise haughtily. What word denotes to make modest or lower in pride?",
+    workedSolution: "'Exalt' means to elevate, raise high, or praise proudly. Its direct opposite is 'humble' (to lower in pride or status).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Kofi promised his parents that he ...... study with unwavering diligence.",
+    prompt: "Kofi promised his parents that he ...... study with relentless diligence.",
     options: ["would", "should", "will", "can"],
     correctAnswer: "would",
-    hint: "In indirect speech, the future modal 'will' shifts back to 'would' after a past reporting verb ('promised').",
-    workedSolution: "Because the reporting verb 'promised' is in the simple past tense, the future auxiliary modal shifts from 'will' to 'would'.",
+    hint: "Reported speech sequence: Past reporting verb 'promised' requires the backshift of 'will' to 'would'.",
+    workedSolution: "In indirect reported speech governed by a past reporting verb ('promised'), the future modal 'will' shifts to 'would'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "If Kofi ...... me for assistance, I would have helped him complete the assignment.",
+    prompt: "If Kofi ...... me for assistance earlier, I would have helped him.",
     options: ["had asked", "asks", "has asked", "asked"],
     correctAnswer: "had asked",
-    hint: "Third Conditional: The main clause 'would have helped' requires 'had + past participle' in the if-clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause must use the past perfect tense ('had asked').",
+    hint: "Third Conditional: 'would have helped' in the main clause requires 'had + past participle' in the if-clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause requires the past perfect tense: 'had asked'.",
     points: 1
   },
   {
@@ -366,118 +410,125 @@ const rawQuestions = [
     prompt: "Let us assemble our tools and depart immediately, Akosua, ......?",
     options: ["may we", "can we", "must we", "shall we"],
     correctAnswer: "shall we",
-    hint: "Suggestions beginning with 'Let's' or 'Let us' take a specific first-person plural question tag.",
-    workedSolution: "Imperative sentences expressing joint suggestions beginning with 'Let's' take 'shall we?' as their mandatory question tag.",
+    hint: "Cohort suggestions beginning with 'Let's' or 'Let us' take the mandatory question tag 'shall we?'.",
+    workedSolution: "Imperative sentences expressing collective suggestions beginning with 'Let's / Let us' require the tag 'shall we?'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "The young apprentice is ...... inexperienced to manage the workshop alone.",
+    prompt: "Adjo is ...... young to shoulder marital responsibilities.",
     options: ["so", "very", "too", "much"],
     correctAnswer: "too",
-    hint: "Identify the degree adverb that pairs with an infinitive ('too + adjective + to-infinitive') to show an impossible excess.",
-    workedSolution: "The correlative pattern 'too + adjective + to-infinitive' conveys that an extreme degree prevents an action ('too inexperienced to manage').",
+    hint: "Correlative degree modifier pairing with an infinitive to denote an excessive quality: 'too + adjective + to-infinitive'.",
+    workedSolution: "The degree adverb 'too' pairs with the infinitive 'to marry' to denote an excessive degree resulting in unsuitability: 'too young to marry'.",
     points: 1
   },
   {
     number: 30,
-    prompt: "Hand that blue notebook of ...... to the class prefect.",
+    prompt: "Hand over that reference notebook of ...... to Mansah immediately.",
     options: ["their", "yours", "my", "your's"],
     correctAnswer: "yours",
     hint: "Double possessive construction: 'that [noun] of' requires an absolute possessive pronoun without an apostrophe.",
-    workedSolution: "In double possessive constructions ('that book of...'), the absolute possessive pronoun 'yours' is required. Possessive pronouns never take apostrophes.",
+    workedSolution: "Double possessive constructions ('that book of...') require the absolute possessive pronoun 'yours'. Forms like 'your's' are ungrammatical.",
     points: 1
   },
   {
     number: 31,
-    prompt: "...... the torrential rains and heavy storms, the daring fishermen launched their canoes.",
+    prompt: "...... the warnings issued by the marine meteorologist, the fishermen sailed into the storm.",
     options: ["In spite of", "Apart from", "In case of", "Instead of"],
     correctAnswer: "In spite of",
-    hint: "Which prepositional phrase expresses contrast or concession followed by a noun phrase?",
-    workedSolution: "'In spite of' is a prepositional phrase expressing concession and contrast, correctly followed by the noun phrase 'the torrential rains'.",
+    hint: "Prepositional phrase denoting concession or contrast followed by a noun phrase: 'In spite of + noun'.",
+    workedSolution: "The prepositional phrase expressing concession followed by a noun phrase is 'In spite of' (meaning notwithstanding the warning).",
     points: 1
   },
   {
     number: 32,
-    prompt: "Our family has been residing in this municipality ...... 2001.",
+    prompt: "Our family has resided in this municipal bungalow ...... the year 2001.",
     options: ["since", "by", "in", "for"],
     correctAnswer: "since",
-    hint: "Use 'since' with a specific point in time or calendar year, and 'for' for a total duration.",
-    workedSolution: "The preposition 'since' indicates the specific starting point in time ('since 2001') for an action continuing to the present.",
+    hint: "Use 'since' with the Present Perfect Continuous to denote a specific starting point in time.",
+    workedSolution: "The preposition 'since' indicates a specific starting point in the past ('since 2001') for an action continuing into the present.",
     points: 1
   },
   {
     number: 33,
-    prompt: "The witness informed the magistrate that he had seen the suspect two days ...... .",
+    prompt: "The witness testified that he had encountered the suspect two days ......",
     options: ["before", "ago", "now", "then"],
     correctAnswer: "before",
-    hint: "In indirect reported speech, 'two days ago' shifts back to 'two days before' or 'earlier'.",
-    workedSolution: "In reported speech following a past reporting verb ('informed... had seen'), the time adverbial 'ago' changes to 'before' ('two days before').",
+    hint: "Indirect reported speech time shift: In past reported speech, 'ago' shifts to 'before' or 'earlier'.",
+    workedSolution: "In indirect reported speech governed by a past reporting verb ('told/testified'), the past time adverb 'ago' shifts to 'before': 'two days before'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "The clerk has been formally accused ...... embezzling company funds.",
+    prompt: "The cashier was falsely accused ...... misappropriating public funds.",
     options: ["with", "for", "of", "on"],
     correctAnswer: "of",
-    hint: "Identify the preposition that regularly collocates with the verb 'accused'.",
-    workedSolution: "In standard English grammar, one is 'accused of' a crime or misdeed, never 'accused with' or 'accused for'.",
+    hint: "Identify the preposition that regularly collocates with the verb 'accuse'.",
+    workedSolution: "In standard English grammar, the verb 'accuse' requires the preposition 'of' ('accused of stealing').",
     points: 1
   },
   {
     number: 35,
-    prompt: "This is the civil engineer ...... we met at the municipal assembly yesterday.",
+    prompt: "This is the dedicated postal clerk ...... I met at the lorry station.",
     options: ["who", "whose", "whom", "which"],
     correctAnswer: "whom",
-    hint: "Use the objective relative pronoun when referring to the person who receives the action of the verb ('met').",
-    workedSolution: "'Whom' is the objective relative pronoun used to refer to a person who functions as the object of the verb ('whom we met').",
+    hint: "Objective relative pronoun used when the pronoun functions as the grammatical object of the relative clause ('I met [him]').",
+    workedSolution: "In formal prescriptive English, 'whom' is the objective relative pronoun used when referring to a human object: 'the man whom I met'.",
     points: 1
   },
   {
     number: 36,
-    prompt: "My elder sister is remarkably talented and good ...... written English.",
+    prompt: "Kwame is remarkably good ...... solving complex algebraic equations.",
     options: ["on", "at", "for", "with"],
     correctAnswer: "at",
-    hint: "Which preposition follows 'good' when denoting skill or competence in an academic subject?",
-    workedSolution: "The adjective 'good' takes the preposition 'at' when expressing skill, proficiency, or aptitude in a discipline ('good at English').",
+    hint: "Identify the preposition that regularly collocates with the adjective 'good' regarding skills or subjects.",
+    workedSolution: "In standard English, the adjective 'good' takes the preposition 'at' when denoting proficiency in a subject or skill: 'good at English'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "I hear the cultural symposium was inspiring; I wish I ...... present.",
+    prompt: "The concert was reportedly fascinating; I truly wish I ...... present.",
     options: ["am", "were", "was", "have been"],
     correctAnswer: "were",
-    hint: "Subjunctive mood: An unfulfilled hypothetical wish regarding a past or unreal situation takes 'were'.",
-    workedSolution: "In formal standard English, the subjunctive form 'were' is used after 'wish' to express an unreal or counterfactual condition ('I wish I were present').",
+    hint: "Past subjunctive mood expressing an unrealized, counterfactual wish about a past/present state.",
+    workedSolution: "In formal English, the subjunctive form 'were' is used following 'wish' to express a hypothetical or counterfactual desire: 'I wish I were there'.",
     points: 1
   },
   {
     number: 38,
-    prompt: "Reverend Mensah is now the ...... senior pastor among the church presbytery.",
+    prompt: "Reverend Osei is currently the ...... senior among all the ministers in the presbytery.",
     options: ["much", "more", "most", "far"],
     correctAnswer: "most",
-    hint: "When singling out the highest degree among a group of three or more, use this superlative modifier.",
-    workedSolution: "When comparing an individual across an entire group of three or more ('among the church presbytery'), the superlative adverb 'most' is required ('the most senior').",
+    hint: "Superlative modification when identifying the foremost individual among a group of three or more preceded by 'the'.",
+    workedSolution: "When distinguishing the highest-ranking individual among a collective group ('of the pastors'), the superlative 'most' preceded by 'the' is required: 'the most senior'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "Our grandmother prefers traditional herbal tea ...... sweetened carbonated beverages.",
+    prompt: "Our grandmother prefers sweet oranges ...... bitter lemons.",
     options: ["to", "than", "against", "from"],
     correctAnswer: "to",
     hint: "The comparative verb 'prefer' takes the preposition 'to', never 'than'.",
-    workedSolution: "The verb 'prefer' takes 'to' when expressing a choice of one item over another ('prefer X to Y').",
+    workedSolution: "In standard English grammar, the verb 'prefer' requires the preposition 'to': 'prefer oranges to mangoes'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "The coach hopes the school football team ...... perform better in the upcoming tournament.",
+    prompt: "The athletic coach expresses confidence that the squad ...... perform brilliantly next season.",
     options: ["would", "will", "should", "shall"],
     correctAnswer: "will",
-    hint: "The verb 'hope' expresses a realistic future expectation and takes the indicative future modal 'will'.",
-    workedSolution: "Unlike 'wish' (which expresses unreality and takes 'would'), the verb 'hope' conveys a realistic future expectation and takes 'will' ('hope the team will perform').",
+    hint: "Future indicative expectation governed by a present reporting verb ('hope / expresses confidence').",
+    workedSolution: "When governed by a present tense verb of expectation ('I hope'), the future indicative modal 'will' is required: 'hope the team will perform'.",
     points: 1
   }
+];
+
+// Combine raw items
+const allRawQuestions = [
+  ...passage1QuestionsRaw,
+  ...passage2QuestionsRaw,
+  ...generalQuestionsRaw
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -501,9 +552,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200801);
+const assignedTargetIndices = seedShuffle(targetKeys, 200802);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -515,21 +566,48 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
-  return {
+
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (idx < 5) {
+    passageTitle = passage1Title;
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (idx < 10) {
+    passageTitle = passage2Title;
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
+  const item: QuestionItem = {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
     points: q.points
   };
+
+  if (passageTitle) {
+    item.passageTitle = passageTitle;
+    item.passageText = passageText;
+    item.passage = passage;
+  }
+
+  return item;
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -538,109 +616,104 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Informal Letter",
-        prompt: "A close friend of your father has promised to grant you any three wishes if you pass your BECE with distinction. Write a letter to him, thanking him for his benevolence, describing the three specific things you want him to do for you, and giving convincing reasons for each choice.",
-        modelAnswer: `Methodist Junior High School
-P. O. Box 45
-Nkawie, Ashanti Region
-12th June, 2008
+        prompt: "A close friend of your father has promised to grant you any three wishes if you successfully pass your Basic Education Certificate Examination (BECE). Write a letter to him describing the three specific things you want him to do for you and explaining clearly why you need each of them.",
+        modelAnswer: `Methodist Junior Secondary School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2008
 
-Dear Uncle Arthur,
+Dear Uncle Kwame,
 
-I hope this letter finds you in excellent health, peace of mind, and prosperity. I write with deep humility and heartfelt gratitude to thank you for your generous promise to sponsor my wishes if I pass the upcoming Basic Education Certificate Examination (BECE) with flying colors. Your promise has energized my revision immensely. As requested, I am presenting the three specific wishes that will shape my future.
+I hope this letter finds you in fine health, peace of mind, and thriving in your business endeavors in Accra. I write with deep gratitude to thank you for your generous promise to grant me any three wishes if I pass my upcoming Basic Education Certificate Examination (BECE) with distinction. That pledge has served as a powerful motivation for me to study with relentless discipline. With all humility, I write to describe the three specific wishes I hold closest to my heart.
 
-First and foremost, I wish for you to sponsor my boarding school fees and supply the prescribed textbooks for my Senior High School education. Gaining admission into an endowed school like Prempeh College requires significant financial expenditure for uniforms, boarding house supplies, and science laboratory kits. Sponsoring my secondary schooling will lift a heavy financial burden off my parents and allow me to focus entirely on academic distinction.
+First and foremost, I plead for your sponsorship to enroll in a comprehensive computer programming and digital literacy course during the upcoming vacation. In this emerging technological era, computer proficiency is an indispensable tool for academic research and future employment. Acquiring practical skills in typing, coding, and software management will provide me with a solid head start when I enter Senior High School.
 
-Secondly, I wish for a personal desktop computer equipped with educational software and digital science encyclopedias. We live in an era governed by information technology. Having a computer at home will enable me to master typing, practice foundational programming, and conduct research without spending hours in commercial internet cafes.
+Secondly, I request that you purchase a modern, complete science textbook and mathematical set for my secondary education. My ambition is to pursue the General Science programme at Prempeh College to realize my dream of studying electrical engineering. Having my own reference materials will enable me to study independently without relying solely on limited library copies.
 
-Finally, I wish for you to enroll me in a driving and automotive mechanics apprenticeship during the long vacation. Acquiring practical technical skills will give me self-reliance and practical knowledge that will serve me throughout my adult life.
+Finally, I humbly ask for a sturdy, durable bicycle. My intended secondary school is situated several kilometers from our family house, and having personal transport will ensure I commute punctually every morning without relying on erratic commercial buses.
 
-I promise to study relentlessly to secure aggregate six in the final examination to justify your benevolence.
+I promise to study with all my might to achieve aggregate six to justify your faith in me. May God richly reward your benevolent heart.
 
-Yours respectfully,
+Your grateful nephew,
 [Signature]
-Kwame Boateng`
+Kwabena Mensah`
       },
       {
         questionNumber: "2",
         category: "Formal Letter",
-        prompt: "Write a letter to the Chairman of your school's Parent-Teacher Association (PTA), highlighting the urgent need to establish modern recreational and sports facilities in your school.",
-        modelAnswer: `St. Theresa's Junior High School
+        prompt: "Write a formal letter to the Chairman of your school's Parent-Teacher Association (PTA) highlighting the urgent need to provide modern recreational and sporting facilities in your school.",
+        modelAnswer: `Presbyterian Junior Secondary School
 P. O. Box 80
-Berekum, Bono Region
-15th October, 2008
+Begoro, Eastern Region
+18th October, 2008
 
 The Chairman
 Parent-Teacher Association
-St. Theresa's Junior High School
-Berekum
+Presbyterian JSS, Begoro
 
 Dear Sir,
 
-AN APPEAL FOR THE PROVISION OF MODERN RECREATIONAL AND SPORTS FACILITIES IN OUR SCHOOL
+PETITION FOR THE PROVISION OF MODERN RECREATIONAL AND SPORTING FACILITIES
 
-On behalf of the Student Representative Council, I respectfully write to bring to your attention a pressing deficiency in our school infrastructure and to appeal for the provision of standard recreational and sports facilities for our pupils.
+On behalf of the student body of Presbyterian Junior Secondary School, Begoro, I respectfully write to appeal to the Parent-Teacher Association to provide modern recreational and sporting facilities for our school.
 
-First and foremost, our school lacks basic recreational amenities for physical exercise and relaxation. Currently, our football pitch is an uneven, rocky field that becomes an eroded mud pit during rainy seasons. We have no basketball court, volleyball court, or indoor table tennis boards. Consequently, students have nowhere to channel their youthful energy during recess and physical education periods, which often leads to idle roaming, loitering in town, and classroom fatigue.
+Currently, our school of over three hundred and fifty students lacks even the most basic recreational infrastructure. Our compound has only an uneven, rocky field devoid of standard goalposts, while court games like volleyball, basketball, and table tennis are completely absent. During physical education periods and recess, pupils are forced to play in hazardous surroundings, leading to frequent sprains and injuries. Furthermore, our school cannot host inter-school friendly matches or train our gifted athletes effectively.
 
-Secondly, standard recreational facilities are essential for uncovering and nurturing hidden athletic talents. Modern basic education emphasizes holistic development—training both the mind and the body. Our district is endowed with gifted sprinters and footballers who, due to the lack of training tracks and sports gear, fail to compete favorably during inter-schools championships. Providing volleyball nets, table tennis tables, and a leveled pitch will foster discipline, team cooperation, and mental alertness among learners.
+Recreational facilities are not luxury amenities; they are vital instruments for holistic education. Engaging in organized sports relieves academic stress, improves cardiovascular health, and instills lifelong values of teamwork, perseverance, and discipline. Moreover, sports provide a positive outlet that deters students from juvenile delinquency, truancy, and loitering during leisure hours. Many of our students possess raw athletic talents that, if nurtured on standard courts, could win national scholarships and bring glory to our community.
 
-I propose that the PTA consider levying a modest development contribution on parents and organizing a fundraising durbar during the upcoming Speech Day to finance this project.
+We humbly appeal to the PTA to construct a multi-purpose asphalt court for volleyball and basketball, level our football pitch, and procure standard table tennis boards before the next academic year resumes.
 
-Thank you for your continuous dedication to our welfare.
+We count on your parental benevolence and commitment to our physical and intellectual development.
+
+Thank you.
 
 Yours faithfully,
 [Signature]
-Esi Asantewaa
-(School Prefect)`
+Emmanuel Addo
+(Sports Prefect)`
       },
       {
         questionNumber: "3",
-        category: "Speech Writing",
-        prompt: "As the Senior Prefect of your school, write an orientation speech to be delivered to newly admitted Form One students, highlighting at least three practical principles that will make their academic and social stay in the school successful.",
-        modelAnswer: `AN ORIENTATION ADDRESS DELIVERED BY KWABENA ADJEI, SENIOR PREFECT OF PRESBYTERIAN JHS, TO INCOMING FORM ONE STUDENTS
+        category: "Speech / Orientation Address",
+        prompt: "As the Senior Prefect of your school, write the orientation speech you will deliver to newly admitted students, outlining at least three critical principles that will make their stay in the school successful and rewarding.",
+        modelAnswer: `AN ORIENTATION ADDRESS DELIVERED BY THE SENIOR PREFECT TO NEWLY ADMITTED BASIC SEVEN STUDENTS
 
-Respected Headmaster, Dedicated Teachers, Outgoing Prefects, and Our Cherished Fresh Students:
+Respected Headmaster, Dedicated Teachers, and My Dear Junior Brothers and Sisters:
 
-On behalf of the entire student body, I warmly welcome you to Presbyterian Junior High School. Entering junior high school is a significant milestone that marks the beginning of your journey toward adult responsibility. Today, I wish to share three essential principles that will guarantee your success in our noble institution.
+On behalf of the entire prefectorial board and senior students, I extend a hearty and joyful welcome to every one of you as you begin your academic journey at Methodist Junior Secondary School. Gaining admission into this prestigious institution is a privileged opportunity, and I am here to share three fundamental principles that will guarantee your stay here is successful and memorable.
 
-First, cultivate unwavering self-discipline and strict time management. Unlike primary school, junior high school demands rigorous independence. You must respect the school bell at all times: attend morning assembly promptly, avoid unexcused absence, and never loiter during class changeovers. Cultivate the habit of completing all homework and project assignments on the day they are assigned. Procrastination is the thief of time and the mother of academic failure.
+First and foremost, you must embrace unyielding academic discipline and time management. Basic school education moves at a rapid pace, and procrastination is the greatest thief of success. Ensure that you arrive at school punctually, listen attentively during instructional periods, and complete all classwork and homework assignments before going to bed. Establish personal study timetables and visit our school library frequently. Remember that academic excellence is not an accident; it is the product of steady, daily labor.
 
-Secondly, choose your friends wisely and embrace good moral conduct. The company you keep will either inspire you to greatness or drag you into ruin. Steer completely clear of truancy, bullying, theft, and insolence toward teachers. Associate with focused, hardworking classmates who spend their leisure time in the library solving past questions. A good name, as our elders say, is far better than riches.
+Secondly, you must uphold absolute obedience to school rules and moral integrity. Our institution has zero tolerance for truancy, bullying, destruction of school property, and insolence toward teachers and seniors. Treat your classmates with kindness, honesty, and mutual respect. Cultivate wholesome friendships with peers who inspire you to study rather than those who tempt you to wander into town during classes.
 
-Finally, balance your academics with active participation in co-curricular activities. Join the school debating society, the science club, the cultural troupe, or the cadet corps. These activities develop leadership, build self-confidence, and keep your body healthy.
+Finally, participate actively in extracurricular activities. Join our school debate club, the science society, the sports squad, or the cultural drumming troupe. Education is not confined to the chalkboard; developing your physical and artistic talents will build your self-confidence and mold you into a balanced individual.
 
-If you abide by these three guideposts, your three-year stay here will be rewarding and triumphant. Once again, welcome to our family!
+Our prefects and teachers are always here to support you. Welcome once again, and may your years here be crowned with distinction.
 
-Thank you all.`
+Thank you.`
       },
       {
         questionNumber: "4",
-        category: "Narrative Essay",
-        prompt: "Write an interesting, realistic story that illustrates the timeless wisdom of the proverb: \"Two heads are better than one.\"",
-        modelAnswer: `For three consecutive years, our school had suffered humiliating defeats in the Municipal Science and Mathematics Quiz Competition. Our brilliant candidate, Isaac, was exceptionally gifted in theoretical mathematics, but he was stubborn and arrogant. He insisted on working entirely alone, refusing to consult his teammates, Kofi and me. Consequently, during rapid-fire problem-solving rounds, his solitary thinking often broke down under pressure, costing us the championship trophy.
+        category: "Narrative Moral Essay",
+        prompt: "Write an engaging, realistic story that illustrates the timeless truth of the traditional saying: \"Two heads are better than one.\"",
+        modelAnswer: `Kofi and Kwame were two bright but fiercely competitive basic school classmates who lived in our farming village. Whenever our science master assigned class projects, Kofi preferred working in haughty isolation, boasting that his sharp intellect alone was sufficient to master any scientific problem. Kwame, though equally intelligent, was patient, practical, and receptive to constructive collaboration.
 
-When our dedicated science master, Mr. Mensah, registered us for the 2008 municipal tournament, he instituted a strict rule: no individual was allowed to answer a question without consulting his partners for at least five seconds. Initially, Isaac grumbled, believing his speed would be compromised. However, during the intense final contest against our arch-rivals, Anglican JHS, the wisdom of collective thinking became vividly clear.
+At the beginning of our final year, the district education directorate announced the Annual Basic Schools Science and Technology Innovation Competition. The challenge was formidable: students were required to design and fabricate a working solar-powered water filtration device capable of purifying muddy river water for rural households. The winning project would earn a prestigious national scholarship.
 
-We trailed by two points entering the fourth and final round, which required designing a working electronic circuit and solving a complex velocity calculation. Isaac computed the initial resistance figure but overlooked a critical internal battery resistance factor. Fortunately, Kofi noticed the omission in time and whispered the correction, while I rapidly verified the formula and wired the components. By pooling our diverse strengths—Isaac's mathematical speed, Kofi's sharp eye for detail, and my practical circuitry skills—we solved the problem flawlessly with three seconds to spare.
+Driven by stubborn pride, Kofi locked himself in his room for three weeks, drawing complex theoretical circuit diagrams and refusing to consult anyone. Kwame, on the other hand, approached his classmate Mensah, an agile apprentice at the local carpentry workshop. Kwame realized that while he understood the biological filtration layers of charcoal and silica sand, Mensah possessed practical mastery of woodwork and waterproof sealing.
 
-When the quiz mistress announced our school as the overall champions, the auditorium erupted in deafening cheers. Holding the trophy aloft, Isaac smiled humbly, embraced us, and confessed: Two heads are truly better than one.`
+The two boys combined their complementary strengths. While Kwame calculated flow rates and chemical filtration ratios, Mensah skillfully fabricated a lightweight, leak-proof timber housing equipped with tilted solar mirrors to heat and sterilize the water.
+
+On the day of the district exhibition, disaster struck Kofi's solitary project. His filtration casing, built hurriedly without technical assistance, ruptured under water pressure, flooding the exhibition table amidst embarrassing chuckles from the judges.
+
+Conversely, Kwame and Mensah's collaborative prototype functioned flawlessly, transforming thick brown stream water into sparkling, drinkable water in minutes. The judges awarded them first prize with distinction. Looking at his shattered contraption, Kofi humbly conceded the eternal truth: Two heads are better than one.`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2008Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2008 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2008 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -667,37 +740,63 @@ async function seedBeceEnglish2008Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: The Architectural Plan of Kpota Hospital Houses",
+          title: passage1Title,
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
         },
         {
           id: "passage_2",
-          title: "Passage II: The Fisherman and the Genie in the Copper Pot",
+          title: passage2Title,
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: passage1Title,
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: passage2Title,
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2008 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2008 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2008Calibrated()

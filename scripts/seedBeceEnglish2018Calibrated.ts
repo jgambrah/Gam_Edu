@@ -1,5 +1,10 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
+
 import * as admin from 'firebase-admin';
 import { createRequire } from 'module';
 
@@ -16,10 +21,10 @@ async function getDb() {
       const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
       const oauthClient = new OAuth2Client();
       oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback to admin default credentials...");
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
@@ -40,412 +45,334 @@ interface QuestionItem {
   points: number;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2018
-const rawQuestions = [
+// =========================================================================
+// 100% CLEAN-ROOM ISOMORPHIC QUESTIONS (1 - 30)
+// =========================================================================
+const allRawQuestions = [
   // --- SECTION A: LEXIS AND STRUCTURE (1 - 15) ---
   {
     number: 1,
-    prompt: "Salifu was ............ astonished by the news that he stood speechless.",
+    prompt: "Salifu was ............ startled by the sudden explosion that he could scarcely articulate a word.",
     options: ["enough", "so", "what", "which"],
     correctAnswer: "so",
-    hint: "Identify the degree adverb that pairs with 'that' to indicate cause and effect ('so + adjective + that').",
-    workedSolution: "The correlative structure 'so + adjective + that' expresses an extreme degree leading to a specific result ('so astonished that he stood speechless').",
+    hint: "Correlative clause of result: 'so + adjective + that + consequence'.",
+    workedSolution: "The degree adverb 'so' pairs correlatively with the subordinator 'that' to express an outcome or result: 'so surprised that he could not talk'.",
     points: 1
   },
   {
     number: 2,
-    prompt: "This small contribution is all ............ I can afford today.",
+    prompt: "This meager balance in my purse is all ............ I can spare for the journey.",
     options: ["that", "this", "what", "which"],
     correctAnswer: "that",
-    hint: "The indefinite pronoun 'all' is followed by the relative pronoun 'that', never 'what'.",
-    workedSolution: "In standard English, the quantifier/pronoun 'all' takes the relative pronoun 'that' ('all that I can afford'). Using 'what' or 'which' here is non-standard.",
+    hint: "Following the universal indefinite quantifier 'all' referring to things, standard grammar requires the relative pronoun 'that'.",
+    workedSolution: "When the antecedent is the quantifier 'all' referring to money or inanimate items, standard English requires 'that': 'all that I have on me'.",
     points: 1
   },
   {
     number: 3,
-    prompt: "I am told the visitor is a childhood friend of ............",
+    prompt: "I was informed by the secretary that the visiting magistrate is a close friend of ............",
     options: ["he", "him", "his", "he's"],
     correctAnswer: "his",
-    hint: "Double possessive construction: 'a friend of' is followed by an independent possessive pronoun.",
-    workedSolution: "In double genitive (possessive) constructions such as 'a friend of...', English uses the absolute possessive pronoun ('his', 'mine', 'hers', 'theirs').",
+    hint: "Double possessive construction: 'a friend of' requires an absolute possessive pronoun.",
+    workedSolution: "The double possessive structure ('a friend of...') requires the independent possessive pronoun 'his': 'a friend of his'.",
     points: 1
   },
   {
     number: 4,
-    prompt: "Waakye with boiled eggs ............ a satisfying breakfast for hardworking laborers.",
+    prompt: "In boarding school, rice and beans with spicy stew ............ a staple meal for growing adolescents.",
     options: ["are", "have been", "is", "is being"],
     correctAnswer: "is",
-    hint: "When two food items joined by 'and' are viewed together as a single compound dish, they take a singular verb.",
-    workedSolution: "Compound subjects referring to a single combined meal or unified dish ('Waakye with eggs' or 'Rice and beans') take a singular verb ('is').",
+    hint: "Compound subject viewed as a single, unified culinary dish takes a singular verb.",
+    workedSolution: "When two foodstuffs are coupled and regarded as a single composite dish ('Rice and beans'), the subject is grammatically singular and takes 'is'.",
     points: 1
   },
   {
     number: 5,
-    prompt: "Kofi is ............ shrewd to be deceived by fraudulent online schemes.",
+    prompt: "Yaw is ............ shrewd an entrepreneur to be defrauded by counterfeit merchants.",
     options: ["quite", "so", "too", "very"],
     correctAnswer: "too",
-    hint: "Look for the correlative pattern 'too + adjective + to-infinitive'.",
-    workedSolution: "The structure 'too + adjective + to-infinitive' indicates an extent that produces a negative result (he is so shrewd that he cannot be cheated).",
+    hint: "Correlative degree modifier pairing with an infinitive to denote an impossibility: 'too + adjective + to-infinitive'.",
+    workedSolution: "The degree adverb 'too' indicates an extent that prevents an occurrence: 'too clever to be cheated'.",
     points: 1
   },
   {
     number: 6,
-    prompt: "The two rival politicians are constantly accusing ............",
-    options: ["each other", "one another", "one and the other", "themselves"],
+    prompt: "The two contentious political candidates are in the habit of verbally attacking ............",
+    options: [
+      "each other",
+      "one another",
+      "one and the other",
+      "themselves"
+    ],
     correctAnswer: "each other",
     hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
-    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('The two rival politicians'). 'One another' is preferred for three or more.",
+    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('The two rivals'). 'One another' is preferred for three or more.",
     points: 1
   },
   {
     number: 7,
-    prompt: "Of all the debaters who represented the school, Ekua was .............",
-    options: ["more articulate", "most articulate", "the more articulate", "the most articulate"],
-    correctAnswer: "the most articulate",
-    hint: "Comparing more than two individuals to show the highest degree requires 'the' + superlative adjective.",
-    workedSolution: "When comparing one individual against all members of a group ('Of all the debaters'), the superlative form preceded by the definite article ('the most articulate') is required.",
+    prompt: "Of all the female candidates presenting essays in the competition, Ekua is undeniably ............",
+    options: [
+      "prettier",
+      "prettiest",
+      "the prettier",
+      "the prettiest"
+    ],
+    correctAnswer: "the prettiest",
+    hint: "Superlative degree comparing one entity against the whole class of three or more preceded by 'the'.",
+    workedSolution: "Comparing an individual against a group of three or more ('Of all the pupils') requires the superlative form preceded by 'the': 'the prettiest'.",
     points: 1
   },
   {
     number: 8,
-    prompt: "It is high time the council ............. the broken culvert.",
-    options: ["repaired", "repairs", "has repaired", "will repair"],
-    correctAnswer: "repaired",
-    hint: "'It is high time + subject' requires a simple past subjunctive verb.",
-    workedSolution: "The fixed expression 'It is high time + subject' takes a simple past subjunctive verb ('repaired') to denote an action that should have been done already.",
+    prompt: "It is high time the defaulting clerk ............ to the office to answer the queries.",
+    options: ["came", "comes", "has come", "will come"],
+    correctAnswer: "came",
+    hint: "Subjunctive past simple: 'It is high time + subject' requires a simple past verb form.",
+    workedSolution: "Following the subjunctive formula 'It is high time' followed by a subject, standard grammar requires the past simple tense: 'came'.",
     points: 1
   },
   {
     number: 9,
-    prompt: "You should be ............ more circumspect regarding your personal security.",
+    prompt: "You should be ............ more vigilant about safeguarding your personal PIN codes.",
     options: ["less", "least", "little", "a little"],
     correctAnswer: "a little",
-    hint: "Use 'a little' as an adverbial degree modifier meaning 'slightly' before a comparative adjective.",
-    workedSolution: "The positive adverbial phrase 'a little' modifies the comparative adjective phrase 'more circumspect' to denote a slight increase in degree.",
+    hint: "Positive degree modifier used to qualify comparative adjectives moderately.",
+    workedSolution: "To moderately intensify a comparative adjective ('more careful') in a positive sense, English requires 'a little': 'a little more careful'.",
     points: 1
   },
   {
     number: 10,
-    prompt: "Atsu is looking forward to ............ his former classmates at the silver jubilee reunion.",
-    options: ["meet", "meeting", "be meeting", "have met"],
-    correctAnswer: "meeting",
-    hint: "The prepositional idiom 'look forward to' must be followed by a gerund (verb-ing).",
-    workedSolution: "In 'look forward to', 'to' functions as a preposition, requiring a gerund complement ('meeting').",
+    prompt: "Atsu is eagerly looking forward to ............ his former classmates at the silver jubilee reunion.",
+    options: ["see", "seeing", "be seeing", "have seen"],
+    correctAnswer: "seeing",
+    hint: "The prepositional idiom 'look forward to' takes a gerund complement (verb-ing).",
+    workedSolution: "In the phrasal verb 'look forward to', 'to' is a preposition requiring a gerund complement: 'looking forward to seeing'.",
     points: 1
   },
   {
     number: 11,
-    prompt: "The more diligently you revise your notes, ............ your prospects of academic distinction.",
+    prompt: "The harder the apprentices practice their technical craft, ............ their prospects of employment.",
     options: ["greater", "greatest", "the great", "the greater"],
     correctAnswer: "the greater",
-    hint: "Parallel comparative correlative structure: 'The + comparative..., the + comparative...'.",
-    workedSolution: "In proportional comparisons, English uses 'the + comparative clause..., the + comparative clause...' ('The more diligently..., the greater...').",
+    hint: "Correlative double comparative structure: 'The + comparative..., the + comparative...'.",
+    workedSolution: "Proportional comparative sentences require parallel structures with 'the': 'The harder you study, the greater your chance'.",
     points: 1
   },
   {
     number: 12,
-    prompt: "If you had informed me of your arrival, I ............ you at the station.",
-    options: ["will meet", "would meet", "will have met", "would have met"],
-    correctAnswer: "would have met",
-    hint: "Conditional Type 3: 'If + past perfect' requires 'would have + past participle' in the main clause.",
-    workedSolution: "The hypothetical past condition 'If you had informed me' requires the past counterfactual modal construction 'would have met' in the main clause.",
+    prompt: "If you had solicited my counsel earlier, I ............ you without hesitation.",
+    options: [
+      "will help",
+      "would help",
+      "will have helped",
+      "would have helped"
+    ],
+    correctAnswer: "would have helped",
+    hint: "Third conditional: 'had asked' in the if-clause requires 'would have + past participle' in the main clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the main clause requires a modal past perfect: 'would have helped'.",
     points: 1
   },
   {
     number: 13,
-    prompt: "I don't really comprehend what you are hinting at, .............. I?",
+    prompt: "I don't really comprehend what you are demanding from me, ............ I?",
     options: ["am", "aren't", "do", "did"],
     correctAnswer: "do",
-    hint: "A negative statement with 'don't' takes a positive question tag using the same present auxiliary.",
-    workedSolution: "The main clause contains the negative present auxiliary 'don't'. The matching question tag must be positive: 'do I?'.",
+    hint: "A negative present statement with auxiliary 'don't' and subject 'I' takes an affirmative present tag.",
+    workedSolution: "The main clause has a negative simple present auxiliary ('don't really know') with subject 'I'. The corresponding question tag must be affirmative: 'do I?'.",
     points: 1
   },
   {
     number: 14,
-    prompt: "I will not travel to the market with ............ of the two quarreling brothers.",
+    prompt: "Because of their insolent behavior, I will not walk to the assembly with ............ of those two boys.",
     options: ["each", "either", "everyone", "neither"],
     correctAnswer: "either",
-    hint: "When a negative sentence ('will not travel') refers to two items, use 'either' to avoid a double negative.",
-    workedSolution: "Because the clause already has the negative marker 'not' and refers to two individuals, 'either' is required ('not ... with either of the two'). 'Neither' would create an erroneous double negative.",
+    hint: "In a negative clause containing 'not', use this pronoun to negate a choice between two persons without double negation.",
+    workedSolution: "Following the negative particle 'not' when referring to two individuals, standard English uses 'either' ('will not walk with either of the boys'). 'Neither' would create an ungrammatical double negative.",
     points: 1
   },
   {
     number: 15,
-    prompt: "Several children in the community fell ill ............ measles during the outbreak.",
+    prompt: "During the rainy season, several children in our village fell ill ............ scarlet fever.",
     options: ["at", "by", "of", "with"],
     correctAnswer: "with",
-    hint: "Identify the preposition that regularly collocates with 'ill' when naming a specific disease.",
-    workedSolution: "In standard English, one falls 'ill with' a specific disease (or dies 'of' a disease).",
+    hint: "Identify the dependent preposition that collocates with 'fall ill' when naming a disease: 'ill with'.",
+    workedSolution: "In standard English collocations, one 'falls ill with' an illness or disease: 'fell ill with measles'.",
     points: 1
   },
 
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (16 - 20) ---
   {
     number: 16,
-    prompt: "The magistrate's stern countenance gave him a very severe appearance.\nChoose the word nearest in meaning to the underlined word 'severe'.",
+    prompt: "The magistrate's furrowed brow and piercing eyes gave him an exceptionally severe countenance.\nChoose the word nearest in meaning to 'severe'.",
     options: ["bad", "deadly", "serious", "unpleasant"],
     correctAnswer: "serious",
-    hint: "Strict, unsmiling, grave, and showing strong authority.",
-    workedSolution: "'Severe' in describing facial demeanor or attitude means stern, grave, or austere; 'serious' is its closest synonym.",
+    hint: "Stern, grave, solemn, or unyielding in appearance.",
+    workedSolution: "'Severe' in describing facial expression or demeanor means stern, grave, or 'serious'; 'serious' is its closest synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The young apprentice enjoyed the benefit of sound vocational instruction.\nChoose the word nearest in meaning to the underlined word 'benefit'.",
+    prompt: "Our parents ensured that we enjoyed the benefit of sound foundational schooling.\nChoose the word nearest in meaning to 'benefit'.",
     options: ["luck", "advantage", "quality", "value"],
     correctAnswer: "advantage",
     hint: "A helpful, favorable, or profitable circumstance.",
-    workedSolution: "'Benefit' refers to a favorable circumstance, asset, or profit; 'advantage' is its direct synonym.",
+    workedSolution: "'Benefit' in the context of an opportunity or privilege means a favorable circumstance or 'advantage'.",
     points: 1
   },
   {
     number: 18,
-    prompt: "The young child was terrified when left alone in the dark room.\nChoose the word nearest in meaning to the underlined word 'terrified'.",
+    prompt: "The young apprentice was too scared to venture through the dark forest alone.\nChoose the word nearest in meaning to 'scared'.",
     options: ["afraid", "anxious", "uneasy", "unhappy"],
     correctAnswer: "afraid",
-    hint: "Overcome with fear, alarm, or panic.",
-    workedSolution: "'Terrified' (or scared) means experiencing intense fear or fright; 'afraid' is the nearest synonym.",
+    hint: "Filled with fear, alarmed, or frightened.",
+    workedSolution: "'Scared' means feeling fear or terror; 'afraid' is its direct synonym.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The peaceful rural atmosphere was ideal for the retired teacher's recuperation.\nChoose the word nearest in meaning to the underlined word 'ideal'.",
+    prompt: "The serene lakeside bungalow is ideal for the convalescing patient.\nChoose the word nearest in meaning to 'ideal'.",
     options: ["good", "perfect", "satisfactory", "suitable"],
     correctAnswer: "suitable",
-    hint: "Appropriate, fitting, or perfectly conforming to a particular need.",
-    workedSolution: "'Ideal' describes something perfectly fitted, appropriate, or adapted to a purpose; 'suitable' is its closest synonym.",
+    hint: "Appropriate, fitting, or optimal for a particular purpose.",
+    workedSolution: "'Ideal' means satisfying one's conception of what is perfect, fitting, or highly 'suitable'; 'suitable' (or perfect) fits the context.",
     points: 1
   },
   {
     number: 20,
-    prompt: "The construction of the irrigation canal brought enormous economic transformation to the district.\nChoose the word nearest in meaning to the underlined word 'enormous'.",
+    prompt: "Modern agricultural mechanization is of enormous value to national food security.\nChoose the word nearest in meaning to 'enormous'.",
     options: ["enviable", "great", "much", "suitable"],
     correctAnswer: "great",
-    hint: "Immensely large, extensive, significant, or vast in degree.",
-    workedSolution: "'Enormous' means extremely large in scale, volume, or degree; 'great' is the closest synonym in this context.",
+    hint: "Extremely large, massive, or immense in degree or size.",
+    workedSolution: "'Enormous' means extremely large, vast, or immense; 'great' is its direct synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (21 - 25) ---
   {
     number: 21,
-    prompt: "Abena celebrates her graduation today, but I cannot make it. This means that the speaker ............",
+    prompt: "Akua celebrates her graduation today, but unfortunately I cannot make it. This means that the speaker ............",
     options: [
-      "does not want to celebrate",
-      "feels it is necessary to attend",
-      "has no graduation gift",
-      "will not be able to attend"
+      "has no desire to be present",
+      "feels it is compulsory to attend",
+      "forgot to purchase a commemorative gift",
+      "will not be able to attend the ceremony"
     ],
-    correctAnswer: "will not be able to attend",
-    hint: "To 'make it' to an event means to successfully attend or arrive in time.",
-    workedSolution: "The informal idiom 'cannot make it' means to be unable to be present or unable to attend a scheduled function.",
+    correctAnswer: "will not be able to attend the ceremony",
+    hint: "The informal idiom 'cannot make it' means unable to attend or arrive at an event.",
+    workedSolution: "The idiom 'to make it' means to manage to arrive or attend; saying 'I cannot make it' means the speaker will be unable to attend.",
     points: 1
   },
   {
     number: 22,
-    prompt: "The entrance examination was conducted to separate the sheep from the goats. This means that the examination aimed at ............",
+    prompt: "The rigorous entrance screening was conducted to separate the sheep from the goats. This means the examination aimed at ............",
     options: [
-      "finding students who could rear livestock",
-      "keeping students in separate classrooms",
-      "selecting only the docile candidates",
-      "distinguishing the best candidates from the inferior ones"
+      "training students in livestock management",
+      "partitioning candidates into different physical halls",
+      "shortlisting only the most submissive pupils",
+      "selecting the superior candidates from the inferior ones"
     ],
-    correctAnswer: "distinguishing the best candidates from the inferior ones",
-    hint: "Separating competent, capable, or worthy individuals from the unworthy.",
-    workedSolution: "'To separate the sheep from the goats' is a biblical idiom meaning to distinguish competent, valuable, or superior individuals from inferior ones.",
+    correctAnswer: "selecting the superior candidates from the inferior ones",
+    hint: "To distinguish valuable, competent people from those who are incompetent.",
+    workedSolution: "The idiom 'to separate the sheep from the goats' means to distinguish between the competent, superior individuals and the inferior ones; 'selecting the best candidates'.",
     points: 1
   },
   {
     number: 23,
-    prompt: "As the firstborn, Kwame took the lion's share of his grandfather's cocoa estate. This means that Kwame took ............",
+    prompt: "Being the eldest son of the deceased merchant, Joojo claimed the lion's share of the family inheritance. This means Joojo took ............",
     options: [
-      "all the cocoa farms",
-      "half of the estate",
-      "the most fertile plot only",
-      "the largest portion of the estate"
+      "the entirety of the property",
+      "exactly half of the estate",
+      "the most decorative luxury items",
+      "the largest, predominant portion of the estate"
     ],
-    correctAnswer: "the largest portion of the estate",
-    hint: "Taking the major, disproportionately largest part of something.",
-    workedSolution: "The idiom 'the lion's share' refers to the largest, major, or predominant portion of a shared resource.",
+    correctAnswer: "the largest, predominant portion of the estate",
+    hint: "The major, largest, or disproportionately greatest part of something.",
+    workedSolution: "The idiom 'the lion's share' refers to the largest, predominant, or greatest portion of an asset.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The audience was all ears during the keynote presentation on cyber-security. This means that the audience ............",
+    prompt: "The basic school pupils were all ears during the thrilling folklore presentation. This means the pupils ............",
     options: [
-      "did not enjoy the lecture",
-      "had extraordinary hearing ability",
-      "listened with rapt attention",
-      "was restless and noisy"
+      "found the presentation tedious",
+      "observed the speaker with curiosity",
+      "listened with rapt, undivided attention",
+      "applauded at every interval"
     ],
-    correctAnswer: "listened with rapt attention",
-    hint: "Eager, alert, and listening attentively.",
-    workedSolution: "The idiom 'all ears' means listening with complete, eager, and undivided attention.",
+    correctAnswer: "listened with rapt, undivided attention",
+    hint: "Listening eagerly and attentively.",
+    workedSolution: "The idiom 'all ears' means listening eagerly, intently, and with undivided attention.",
     points: 1
   },
   {
     number: 25,
-    prompt: "Among all the applicants interviewed, Sarah was the pick of the bunch. This means that Sarah ............",
+    prompt: "In terms of academic and moral leadership, Mensah is the pick of the bunch. This means that Mensah ............",
     options: [
-      "was an agricultural laborer",
-      "was an energetic candidate",
-      "was the most outstanding candidate chosen",
-      "collected agricultural produce"
+      "excels as an agricultural farmer",
+      "is the fastest track sprinter",
+      "is clearly the finest and preferred above all others",
+      "is the eldest among the siblings"
     ],
-    correctAnswer: "was the most outstanding candidate chosen",
-    hint: "The best, finest, or most desirable choice among a group.",
-    workedSolution: "'The pick of the bunch' is an idiomatic phrase meaning the finest, most capable, or best choice out of a collection of options.",
+    correctAnswer: "is clearly the finest and preferred above all others",
+    hint: "The best, most exceptional choice among a group.",
+    workedSolution: "The idiom 'the pick of the bunch' refers to the best, finest, or most outstanding choice from an entire group.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (26 - 30) ---
   {
     number: 26,
-    prompt: "At the sound of the bell, the headmaster instructed the assembly to disperse, but the prefects ordered them to ......",
+    prompt: "After addressing the parade, the headteacher ordered the pupils to disperse, but the prefect instructed them to ...... .\nChoose the word most nearly opposite in meaning to 'disperse'.",
     options: ["assemble", "come", "meet", "stay"],
     correctAnswer: "assemble",
-    hint: "'Disperse' means to scatter or break up. Find the word that denotes gathering together into one place.",
-    workedSolution: "'Disperse' means to break up and scatter in different directions. Its direct antonym in school gatherings is 'assemble' (to gather together).",
+    hint: "'Disperse' means to scatter or break up. What military/school command denotes to gather or bring together into a group?",
+    workedSolution: "'Disperse' means to scatter or spread out. Its direct operational antonym in parades is 'assemble' (to gather together).",
     points: 1
   },
   {
     number: 27,
-    prompt: "The water current was slow in the estuary, but remarkably ...... in the mountain rapids.",
+    prompt: "While the river current is slow in the swamp, it is remarkably ...... across the rocky falls.\nChoose the word most nearly opposite in meaning to 'slow'.",
     options: ["abrupt", "fresh", "running", "swift"],
     correctAnswer: "swift",
-    hint: "'Slow' means moving at low speed. Find the word meaning moving very rapidly.",
-    workedSolution: "'Slow' means moving with little speed. Its direct antonym when describing flowing currents is 'swift' (fast-moving or rapid).",
+    hint: "'Slow' means moving at low speed. What word denotes moving with great, rapid speed?",
+    workedSolution: "'Slow' denotes low speed. Its direct antonym describing water currents or motion is 'swift' (rapid and fast).",
     points: 1
   },
   {
     number: 28,
-    prompt: "The baker discarded the stale bread and served ...... loaves to the customers.",
+    prompt: "The bakery discarded the stale loaves and served the customers with ...... bread.\nChoose the word most nearly opposite in meaning to 'stale'.",
     options: ["burnt", "delicious", "fresh", "mouldy"],
     correctAnswer: "fresh",
-    hint: "'Stale' means dry, hard, and no longer new. Find the word meaning newly baked and warm.",
-    workedSolution: "'Stale' refers to food (especially bread) that has lost its moisture and taste over time. Its direct antonym is 'fresh'.",
+    hint: "'Stale' bread is dry, hardened, and no longer good. What word denotes newly baked, soft, and crisp?",
+    workedSolution: "'Stale' describes food that has lost its crispness or freshness. Its direct culinary antonym is 'fresh'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "While Kofi was boastful about his athletic prowess, his humble brother was ...... of his own achievements.",
-    options: ["afraid", "anxious", "modest", "nervous"],
-    correctAnswer: "modest",
-    hint: "'Boastful' means excessively proud and braggy. Choose the word meaning humble and unpretentious.",
-    workedSolution: "'Boastful' means bragging and conceited. Its direct antonym is 'modest' (humble and unassuming).",
+    prompt: "Akosua has reason to be proud of her achievements, but her brother should be ...... of his misconduct.\nChoose the word most nearly opposite in meaning to 'boastful'.",
+    options: ["afraid", "anxious", "ashamed", "nervous"],
+    correctAnswer: "ashamed",
+    hint: "'Boastful' reflects arrogant pride. What word denotes feeling embarrassment, guilt, or remorse?",
+    workedSolution: "'Boastful' reflects pride and bragging. In moral behavior, its direct opposite here is 'ashamed' (embarrassed or remorseful).",
     points: 1
   },
   {
     number: 30,
-    prompt: "The prepared students were confident of passing the examination, but the truant candidates felt completely ......",
+    prompt: "While the prepared candidate was confident of success, the truant felt ...... about his chances.\nChoose the word most nearly opposite in meaning to 'confident'.",
     options: ["determined", "doubtless", "uncertain", "uneasy"],
     correctAnswer: "uncertain",
-    hint: "'Confident' means sure of success. Find the word meaning having doubt or lack of assurance.",
-    workedSolution: "'Confident' denotes self-assurance and certainty. Its direct antonym is 'uncertain' (doubtful or insecure).",
-    points: 1
-  },
-
-  // --- SECTION E: CLOZE TEST (31 - 35) ---
-  {
-    number: 31,
-    prompt: "Parenting requires patience and discipline. Guardians must take good care of adopted children and not ---31--- them.",
-    options: ["pamper", "protect", "guide", "train"],
-    correctAnswer: "pamper",
-    hint: "To indulge with every whim, spoil, or treat with excessive leniency.",
-    workedSolution: "'Pamper' means to spoil, coddle, or overindulge a child, which often leads to indiscipline.",
-    points: 1
-  },
-  {
-    number: 32,
-    prompt: "Children often develop an intense ---32--- for outdoor hunting and exploration after school.",
-    options: ["passion", "sorrow", "regret", "trouble"],
-    correctAnswer: "passion",
-    hint: "A strong enthusiasm, affection, or uncontrollable fondness for an activity.",
-    workedSolution: "'Passion' fits the context of an overwhelming personal enthusiasm or hobby ('a passion for outdoor hunting').",
-    points: 1
-  },
-  {
-    number: 33,
-    prompt: "Responsible elders urge youths to ---33--- from dangerous adventures in railway corridors.",
-    options: ["abstain", "escape", "remove", "prevent"],
-    correctAnswer: "abstain",
-    hint: "To voluntarily refrain or hold oneself back from doing something harmful.",
-    workedSolution: "The verb 'abstain' pairs with 'from' ('abstain from dangerous adventures') to mean deliberately refraining from an action.",
-    points: 1
-  },
-  {
-    number: 34,
-    prompt: "Failure to follow safety warnings can result in ---34--- tragedies for the entire community.",
-    options: ["grave", "minor", "slight", "casual"],
-    correctAnswer: "grave",
-    hint: "Extremely serious, solemn, and having disastrous consequences.",
-    workedSolution: "'Grave' means giving cause for alarming concern; extremely serious and weighty.",
-    points: 1
-  },
-  {
-    number: 35,
-    prompt: "Upon seeing their guardians waiting anxiously, the wandering children entered the compound ---35---, hoping to avoid punishment.",
-    options: ["furtively", "openly", "boldly", "proudly"],
-    correctAnswer: "furtively",
-    hint: "Done stealthily, secretly, or quietly to avoid being noticed.",
-    workedSolution: "'Furtively' means secretly, stealthily, or quietly so as not to attract attention.",
-    points: 1
-  },
-
-  // --- SECTION F: ORAL LANGUAGE (36 - 40) ---
-  {
-    number: 36,
-    prompt: "The hunter aimed his dart with great precision.\nWhich of the following words contains the same long vowel sound as 'dart' (/ɑː/)?",
-    options: ["calm", "cat", "came", "camp"],
-    correctAnswer: "calm",
-    hint: "'Dart' contains the open back unrounded long vowel /ɑː/. 'Calm' has a silent 'l' and uses the same long vowel.",
-    workedSolution: "'Dart' contains the /ɑː/ vowel sound (/dɑːt/). In 'calm' (/kɑːm/), the 'l' is silent and the vowel is also /ɑː/.",
-    points: 1
-  },
-  {
-    number: 37,
-    prompt: "The young apprentice tightened the screw with a wrench.\nWhich of the following words begins with the same initial consonant sound as 'wrench' (/r/)?",
-    options: ["wrist", "west", "wash", "wind"],
-    correctAnswer: "wrist",
-    hint: "In 'wrench', the letter 'w' is completely silent, leaving the /r/ sound.",
-    workedSolution: "In 'wrench' (/rentʃ/), the initial 'w' is silent, so the word begins with /r/. 'Wrist' (/rɪst/) also has a silent 'w' and begins with /r/.",
-    points: 1
-  },
-  {
-    number: 38,
-    prompt: "The court judge signed the decree with a quill.\nWhich of the following words begins with the same consonant cluster as 'quill' (/kw-/)?",
-    options: ["queen", "kill", "keen", "keep"],
-    correctAnswer: "queen",
-    hint: "'Quill' is pronounced /kwɪl/, beginning with the double consonant cluster /k/ + /w/.",
-    workedSolution: "'Quill' begins with the phonetic cluster /kw-/. 'Queen' (/kwiːn/) begins with the identical /kw-/ sound.",
-    points: 1
-  },
-  {
-    number: 39,
-    prompt: "The blacksmith heated the iron anvil.\nWhich of the following words has the exact same vowel sound as the stressed syllable in 'iron' (/aɪ/)?",
-    options: ["aisle", "inn", "ill", "ink"],
-    correctAnswer: "aisle",
-    hint: "'Iron' begins with the diphthong /aɪ/ (/ˈaɪ.ən/).",
-    workedSolution: "'Iron' begins with the diphthong /aɪ/. 'Aisle' (/aɪl/) contains the identical /aɪ/ diphthong sound.",
-    points: 1
-  },
-  {
-    number: 40,
-    prompt: "The choir sang in sweet harmony.\nWhich of the following words begins with the same consonant sound as 'choir' (/k/)?",
-    options: ["cabbage", "chair", "champion", "chest"],
-    correctAnswer: "cabbage",
-    hint: "'Choir' is pronounced /ˈkwaɪ.ər/, beginning with the voiceless velar plosive /k/.",
-    workedSolution: "'Choir' begins with the voiceless velar plosive /k/. 'Cabbage' begins with the same /k/ sound. ('chair', 'champion', 'chest' begin with /tʃ/).",
+    hint: "'Confident' means sure and positive. What word denotes feeling doubtful or not sure?",
+    workedSolution: "'Confident' means assured and certain. Its direct psychological antonym is 'uncertain' (doubtful).",
     points: 1
   }
 ];
 
-// Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
+// Seeded Deterministic Shuffle across 30 Objective Items: Exactly 8 A, 7 B, 8 C, 7 D
 const targetKeys: number[] = [
   0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
   2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
-  0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
-  2, 3, 0, 1, 2, 3, 0, 1, 2, 3
+  0, 1, 2, 3, 0, 1, 2, 3, 0, 2
 ];
 
 function seedShuffle<T>(array: T[], seed: number): T[] {
@@ -463,7 +390,7 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
 
 const assignedTargetIndices = seedShuffle(targetKeys, 201802);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -486,246 +413,247 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY, COMPREHENSION & LITERATURE
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING, COMPREHENSION & LITERATURE (THEORY SUITE)
+// =========================================================================
 const paper2Calibrated = {
-  sectionA_essay: {
+  partA_composition: {
     title: "Part A: Essay Writing",
     instructions: "Answer one question only from this part. Your composition should be about 250 words long.",
     questions: [
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "As the School Prefect, write a formal letter to your Municipal Chief Executive (MCE) requesting the urgent renovation and maintenance of the deteriorating school blocks in your school.",
-        modelAnswer: `Berekum Municipal Junior High School
+        prompt: "As the Senior School Prefect, write a formal petition to your Municipal or District Chief Executive (MCE/DCE), drawing his or her attention to the deplorable condition of the physical structures in your basic school and requesting urgent administrative maintenance.",
+        modelAnswer: `Methodist Junior High School
 P. O. Box 54
-Berekum, Bono Region
-15th May, 2018
+Bekwai, Ashanti Region
+14th May, 2018
 
 The Municipal Chief Executive
-Berekum Municipal Assembly
-P. O. Box 20
-Berekum
+Bekwai Municipal Assembly
+Municipal Directorate, Bekwai
 
 Dear Sir,
 
-URGENT REQUEST FOR THE RENOVATION AND MAINTENANCE OF OUR SCHOOL INFRASTRUCTURE
+PETITION FOR THE URGENT STRUCTURAL RENOVATION OF METHODIST JHS BUILDINGS
 
-On behalf of the students and staff of Berekum Municipal Junior High School, I respectfully write to draw your urgent attention to the deplorable state of our classroom buildings and to appeal for immediate renovation works.
+On behalf of the students and staff of Methodist Junior High School, Bekwai, I respectfully submit this urgent petition to draw your executive attention to the perilous state of decay affecting our school infrastructure and to appeal for immediate municipal intervention.
 
-First, the roofs of our primary and junior high school classroom blocks are severely decayed. The corrugated iron sheets are completely rusted and perforated with holes. Whenever it rains, water leaks profusely into the classrooms, soaking textbooks, library supplies, and the pupils' exercise books. Consequently, academic instruction is disrupted whenever dark clouds gather, forcing teachers to dismiss classes early and resulting in severe loss of instructional time.
+Constructed over four decades ago, our primary classroom blocks have suffered severe structural deterioration. Over the past two rainy seasons, violent windstorms ripped off large sections of the rusted corrugated zinc roofing over Form Two and Form Three. Consequently, whenever rainfall occurs, rainwater cascades into the classrooms, soaking textbooks, destroying chalkboard teaching notes, and forcing teachers to suspend instructional periods. Furthermore, deep structural cracks have split the load-bearing pillars, while the concrete floors have broken into jagged gravel craters, posing grave physical hazards to pupils and teachers alike.
 
-Secondly, the walls of the main two-story block have developed deep structural cracks that pose a grave physical hazard to both teachers and learners. The concrete floors are broken into powdery dust, causing respiratory irritation among pupils. Furthermore, the wooden doors and window louvers have been damaged by termites, allowing unauthorized persons and stray cattle to enter the classrooms after hours to vandalize teaching materials.
+This infrastructural decay severely cripples teaching and learning. Teachers cannot conduct practical science demonstrations or display charts in leaky, windowless rooms. More terrifyingly, the fractured walls pose a catastrophic threat of sudden collapse, endangering the lives of over four hundred students.
 
-Our Parent-Teacher Association has mobilized communal labor to patch minor defects, but the scale of structural deterioration requires the engineering resources and intervention of the Municipal Assembly. Renovating these blocks will create a safe, dignified learning environment and improve our academic performance in the BECE.
+We humbly appeal to the Municipal Assembly to allocate emergency funding from the District Assembly Common Fund to re-roof the damaged classroom blocks, reconstruct the cracked masonry pillars, and apply fresh plaster and cement flooring before the major rainy season peaks.
 
-We trust that your office will treat this appeal with the utmost priority.
+We count on your prompt executive leadership to ensure our safety and preserve our right to quality education.
 
 Thank you.
 
 Yours faithfully,
 [Signature]
-Francis Gyabaah
-(School Prefect)`
+Kwabena Mensah
+(Senior Prefect)`
       },
       {
         questionNumber: "2",
-        category: "Argumentative / Debate Essay",
-        prompt: "Write an essay arguing for or against the motion: \"Life in the city is more dangerous than life in the village.\"",
-        modelAnswer: `LIFE IN THE CITY IS INDEED MORE DANGEROUS THAN LIFE IN THE VILLAGE
+        category: "Debate / Argumentative Essay",
+        prompt: "Write a persuasive argumentative essay for or against the motion: \"Life in the Metropolitan City is Far More Dangerous than Life in the Rural Village.\"",
+        modelAnswer: `THE PERILS OF URBAN LIVING: WHY THE CITY IS MORE DANGEROUS THAN THE VILLAGE
 
-While urbanization continues to draw millions of young people from rural hamlets into sprawling commercial metropolises, city life is fraught with severe physical, environmental, and social hazards. I firmly support the view that living in the city is far more perilous than residing in the peaceful village.
+In contemporary society, thousands of rural youths migrate to metropolitan centers captivated by the dazzling allure of skyscrapers, neon lights, and asphalt boulevards. However, beneath this glamorous facade lies a grim socio-economic reality. When evaluated in terms of physical security, public health hazards, and social vulnerability, living in a metropolitan city is undeniably far more dangerous than residing in a peaceful rural village.
 
-First and foremost, cities are notorious breeding grounds for violent crime and personal insecurity. Urban anonymity allows criminal syndicates, armed robbers, pickpockets, and fraudsters to operate with terrifying sophistication. In major cities, residents live in fortified compounds behind razor wire and metal security grilles, yet they live in perpetual fear of nocturnal home invasions. In sharp contrast, village life is safeguarded by communal vigilance and social cohesion. In the village, crime is virtually non-existent; neighbors know each other intimately, and children walk freely at night without the dread of being abducted or assaulted.
+First and foremost, metropolitan cities are plagued by rampant violent crime and criminal syndicates. In sprawling urban centers, extreme economic desperation, youth unemployment, and the absence of traditional community cohesion foster high rates of armed robbery, gang violence, carjackings, and residential burglaries. Dwellers live behind fortified razor-wire fences in perpetual terror, unable to navigate unlit streets after dusk without fear of assault. By contrast, rural villages are secure havens anchored in traditional communal solidarity where serious violent crime is virtually unknown and citizens live in peaceful harmony.
 
-Secondly, the urban physical environment is dangerously hazardous to human health. Cities suffer from dense vehicular traffic congestion, toxic exhaust emissions, and unmanaged heaps of industrial refuse that poison the air and water. Commuters face the daily risk of fatal road traffic accidents caused by reckless commercial drivers. In contrast, village dwellers breathe clean, unpolluted air, drink from fresh natural springs, and consume organic food harvested directly from the soil. The rural lifestyle promotes longevity and mental peace, far away from the toxic stress and perils of urban life.
+Secondly, urban environments present severe public health hazards. Cities are chocked with toxic carbon emissions from traffic gridlocks, deafening industrial noise pollution, contaminated municipal drains, and dangerous chemical waste. These toxic environmental pollutants trigger alarming rates of respiratory illnesses, hypertension, and cardiovascular diseases. Furthermore, chaotic urban road networks record catastrophic traffic fatalities daily. In the village, by contrast, inhabitants breathe clean oxygen, consume unadulterated organic farm produce, and enjoy wholesome natural peace.
 
-In conclusion, although the city offers glittering lights and modern commerce, it exacts a heavy price in personal safety and health. The tranquility, communal solidarity, and safety of the village make it a far safer sanctuary for human flourishing.`
+In conclusion, while cities offer commercial amenities, they carry grave risks to life and limb. The peaceful security of the rural village remains unmatched.
+
+Thank you.`
       },
       {
         questionNumber: "3",
-        category: "Formal Disciplinary Report",
-        prompt: "Write a formal report to the Headteacher of your school about an incident in which a senior girl physically assaulted a junior boy on the school compound.",
-        modelAnswer: `REPORT ON AN ASSAULT INCIDENT INVOLVING A SENIOR GIRL AND A JUNIOR PUPIL ON THE SCHOOL COMPOUND
-To: The Headteacher, St. Augustine's JHS
-From: Priscilla Mensah (Senior Girls' Prefect)
-Date: 18th October, 2018
+        category: "Formal Investigative Report",
+        prompt: "Write a formal disciplinary report to the Headteacher of your school regarding an incident in which a senior female student physically assaulted and beat up a junior male pupil.",
+        modelAnswer: `REPORT ON A PHYSICAL ASSAULT INCIDENT INVOLVING BEATRICE ADDO AND KOFI MENSAH
 
-1. INTRODUCTION
-On Wednesday, 17th October 2018, during the morning recess break at approximately 10:15 a.m., an unfortunate incident of physical assault occurred behind the school canteen involving a Form Three student, Belinda Arthur, and a Form One pupil, Master Daniel Boateng.
+1. INCIDENT OVERVIEW
+On Thursday, 12th July 2018, during the morning recess interval, a violent disciplinary infraction occurred on the junior classroom veranda when Beatrice Addo, a Form Three female student, physically assaulted Kofi Mensah, a Form One male pupil.
 
-2. ACCOUNT OF THE INCIDENT
-According to eyewitness statements and my own observation as I arrived at the scene, Daniel was standing in the canteen queue to purchase snacks. Belinda approached the counter, bypassed the line, and demanded that Daniel surrender his position to her. When Daniel politely pleaded that he had been waiting patiently for over ten minutes, Belinda took offense, labeling his response as insolence toward a senior.
+2. SUMMARY OF INVESTIGATION
+According to eyewitness testimonies gathered from classroom monitors, the dispute originated near the municipal standpipe. Beatrice Addo had attempted to bypass the student queue to fetch water for her personal use. When the junior pupil, Kofi Mensah, who had waited patiently in line for twenty minutes, politely appealed that seniors should respect the queue, Beatrice took offense, accusing him of insolence.
 
-Without provocation, Belinda slapped Daniel across the face, seized his uniform collar, and pushed him violently against the canteen dwarf wall. Daniel sustained a bruised lip and minor abrasions on his left elbow before onlooking prefects intervened to separate them.
+Rather than lodging a complaint with the prefect on duty, Beatrice cornered the junior boy on his classroom veranda moments later. She slapped him twice across the face, dragged him violently by his uniform collar, and struck him on the shoulder with a wooden desk ruler, causing a deep cut on his brow and a nosebleed. Prefects and teachers intervened promptly to disarm Beatrice and escort the injured pupil to the school dispensary for first-aid treatment.
 
-3. IMMEDIATE ACTION TAKEN
-I immediately assisted Daniel to the school sickbay, where the school health coordinator cleaned and dressed his wounds. Belinda was taken to the Senior Housemaster's office for questioning. Daniel has since recovered and returned to his classroom.
+3. FINDINGS AND CONCLUSION
+The prefectorial committee concluded that Beatrice Addo committed gross physical assault and engaged in unprovoked bullying, in blatant violation of Section 4 of our School Code of Conduct. The junior pupil exhibited no physical aggression and acted entirely in self-defense.
 
-4. FINDINGS AND RECOMMENDATIONS
-The investigation confirmed that Belinda acted with unprovoked aggression in clear breach of the school's anti-bullying code. I respectfully recommend that:
-a) Belinda Arthur be referred to the Disciplinary Committee for appropriate sanctions;
-b) She be made to formally apologize to Master Daniel Boateng and bear the cost of his medical supplies;
-c) School prefects intensify supervision around the canteen area during recess periods to prevent senior intimidation.
+4. RECOMMENDATIONS
+To preserve institutional order and deter bullying, the committee recommends that:
+(a) Beatrice Addo be suspended for two weeks and stripped of her extracurricular privileges;
+(b) Her parents bear the complete medical cost of Kofi Mensah's treatment;
+(c) She render a formal, unreserved apology during morning assembly upon her return.
 
-Respectfully submitted.`
+Submitted by:
+[Signature]
+Emmanuel Addo
+(Disciplinary Committee Secretary)`
       }
     ]
   },
-  sectionB_comprehension: {
+  partB_comprehension: {
     title: "Part B: Reading Comprehension",
-    passage: `When Pozo adopted Abate and Ali, he vowed to take great care of them. And he did his best. But Abate and Ali did exactly what they were told not to. Their greatest passion was snail-hunting.
+    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+    passageText: `When Uncle Mensah assumed foster custody of his two orphaned nephews, Kojo and Kwesi, he pledged before the family elders to give them the finest parental care and moral upbringing. And he honored that vow faithfully. However, the two boys possessed an obstinate streak, frequently doing the exact opposite of what they were instructed. Their most reckless passion was nocturnal mushroom-hunting along the dense forest railway line.
 
-As he left home for an important meeting one afternoon, Pozo told the boys that he would be particularly pleased if they did not join any snail-hunting group or go snail-hunting by themselves. He even promised surprise presents if they abstained from snail-hunting for once. It was quite obvious to everyone that there would be snail-hunting because there had been a heavy downpour that morning.
+As he prepared to depart for an exhaustive town-hall council meeting one sweltering afternoon, Uncle Mensah summoned the boys and pleaded with them earnestly not to join any hunting band or venture into the forest reserve by themselves. He even pledged to purchase brand-new sports sneakers for each of them if they abstained from their nocturnal excursions for once. It was obvious to everyone in the village that mushroom foragers would flock to the railway embankment that evening, as a heavy tropical downpour had saturated the decaying timber logs that morning.
 
-Pozo's meeting was a marathon. When he arrived home at 8:30 that night, neither of the boys was at home. He felt that something grave might have happened. He stood still for some time, confused. He switched on his radio and tuned in to his favorite station, Hiawa FM, and the breaking news was: "Five snail-hunters have been run over at Yaaboi by the early evening incoming Desuano-bound train." As the dreadful news hit him, Pozo winced.
+Uncle Mensah's council meeting proved to be a marathon affair, dragging on late into the night. When he finally trudged home at half-past eight, the cottage was plunged in pitch darkness; neither of his foster sons was inside. A cold dread gripped his chest, convincing him that a terrible tragedy had occurred. Confused and trembling, he paced the veranda before flicking on his portable transistor radio and tuning into his favorite regional station, Sunrise FM.
 
-Pozo was so stupefied that he did not notice Ali enter the house, sweating and breathless, carrying a head-load of snails. But where was Abate?
+The breaking bulletin hit him like a physical blow: "Five nocturnal forest foragers have been crushed to death at the Yaaboi crossing by the evening freight train bound for the coast."
 
-Furtively, the back door squeaked open. In stole the other boy, also sweating and breathless under the weight of the head-load of snails. On seeing him, Pozo sighed with relief. He shook his head. "These boys will surely be the death of me," he murmured to himself. "When will they do exactly as they are told?"`,
+As the harrowing bulletin sank in, Uncle Mensah winced in agony, collapsing into an armchair in tears. He was so paralyzed with grief that he failed to notice Kojo creep through the front doorway, panting heavily, drenched in mud, and balancing a heavy head-load of forest mushrooms.
+
+Suddenly, the rusted hinges of the rear window squeaked. In stole Kwesi, shivering and gasping under an identical bundle of harvest.
+
+Beholding both boys alive and unhurt, Uncle Mensah exhaled a massive sigh of relief, clutching his pounding heart. Shaking his head in disbelief, he murmured softly to himself, "These boys will surely be the death of me! When will they learn to obey simple instructions?"`,
     questions: [
       {
-        subId: "(a)(i)",
-        question: "Why was Pozo taking care of the boys?",
-        answer: "Because he had legally adopted them as his sons and vowed to take great care of them."
+        subQuestion: "(a)",
+        question: "I. Why was Uncle Mensah taking care of the two boys?\nII. Why did Uncle Mensah strictly forbid the boys from going on nocturnal mushroom-hunting expeditions?",
+        answer: "I. He was caring for them because he had formally adopted them after they were orphaned, having vowed to look after them.\nII. He forbade them because hunting at night in the forest and along the railway line was extremely dangerous and exposed them to mortal hazards like oncoming trains."
       },
       {
-        subId: "(a)(ii)",
-        question: "Why do you think Pozo did not want the boys to go snail-hunting?",
-        answer: "Because snail-hunting in the bush and near railway tracks at night was extremely dangerous and exposed them to deadly accidents and snakebites."
+        subQuestion: "(b)",
+        question: "State two distinct reasons why Uncle Mensah was certain that the boys would be tempted to go mushroom-hunting that evening.",
+        answer: "1. Mushroom-hunting was their greatest, uncontrollable passion.\n2. A heavy torrential downpour had saturated the forest that morning, creating ideal conditions that invariably brought out foragers."
       },
       {
-        subId: "(b)",
-        question: "State two reasons why Pozo was sure that the boys would go snail-hunting despite his instructions.",
-        answer: "1. Snail-hunting was their greatest passion.\n2. There had been a heavy downpour that morning (which created ideal conditions for snails to emerge)."
+        subQuestion: "(c)",
+        question: "What is the meaning of the sentence: 'Uncle Mensah's council meeting proved to be a marathon affair'?",
+        answer: "It means the meeting was exceptionally lengthy, protracted, and exhausting, lasting for hours far longer than anticipated."
       },
       {
-        subId: "(c)",
-        question: "What is the meaning of the sentence, \"Pozo's meeting was a marathon\"?",
-        answer: "The meeting was exceptionally long, exhausting, and took many hours to conclude."
+        subQuestion: "(d)",
+        question: "I. Why was Uncle Mensah so deeply troubled and alarmed upon returning home?\nII. How did the radio news broadcast regarding the railway disaster affect him emotionally?",
+        answer: "I. He was alarmed because it was late at night (8:30 p.m.), the house was dark, and neither of his foster sons was at home, making him suspect a catastrophe.\nII. The news devastated him, making him wince in agony, weep bitterly, and become paralyzed with grief, believing his sons were among the dead."
       },
       {
-        subId: "(d)(i)",
-        question: "Why was Pozo so worried when he returned from the meeting at 8:30 that night?",
-        answer: "Because neither of the boys was at home, making him fear that something terrible or fatal had happened to them."
+        subQuestion: "(e)",
+        question: "Explain the meaning of the following figurative expressions as used in the passage:\nI. 'have been crushed to death / run over'\nII. 'in stole Kwesi / in stole the other boy'\nIII. 'be the death of me'",
+        answer: "I. 'run over / crushed to death' means struck, mangled, and killed beneath the heavy moving wheels of a train.\nII. 'in stole the other boy' means the boy entered surreptitiously, quietly, and secretly to avoid detection.\nIII. 'be the death of me' means will cause me intolerable stress, chronic worry, and ultimate physical or emotional breakdown."
       },
       {
-        subId: "(d)(ii)",
-        question: "How did the news of the train accident affect Pozo?",
-        answer: "It terrified and paralyzed him with grief and shock (he winced and was stupefied, fearing his adopted boys were the victims)."
-      },
-      {
-        subId: "(e)",
-        question: "Explain in your own words the following expressions as used in the passage:\n(i) have been run over;\n(ii) in stole the other boy;\n(iii) be the death of me.",
-        answer: "(i) **have been run over:** Crushed or knocked down by a moving locomotive train.\n(ii) **in stole the other boy:** The other boy entered the house quietly, secretly, and stealthily.\n(iii) **be the death of me:** Cause me extreme anxiety, heartbreak, and emotional distress."
-      },
-      {
-        subId: "(f)",
-        question: "For each of the following words, provide a word or phrase that means the same and can replace it in the passage without altering the meaning:\n(i) vowed;\n(ii) passion;\n(iii) abstained;\n(iv) grave;\n(v) breathless.",
-        answer: "(i) **vowed:** promised / pledged / swore / resolved.\n(ii) **passion:** obsession / love / delight / craving / hobby.\n(iii) **abstained:** refrained / kept away / held back / stayed away.\n(iv) **grave:** serious / dreadful / terrible / disastrous.\n(v) **breathless:** panting / gasping / winded / out of breath."
+        subQuestion: "(f)",
+        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. vowed\nII. passion\nIII. abstained\nIV. grave\nV. breathless",
+        answer: "I. vowed: pledged, promised, swore, resolved.\nII. passion: obsession, enthusiasm, fascination, love.\nIII. abstained: refrained, kept away, held back, desisted.\nIV. grave: terrible, fatal, disastrous, catastrophic.\nV. breathless: panting, gasping, winded, out of breath."
       }
     ]
   },
-  sectionC_literature: {
+  partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts.",
+    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
     questions: [
       {
-        subId: "5(a)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"Oliver walked 70 miles to London. In such a big city, no one would ever find him! It was chilly and his feet hurt but he was happy to leave his old, miserable life behind.\"",
-        question: "Mention two of the people whose cruel treatment drove Oliver to run away to London.",
-        answer: "Mr. Bumble (the parish beadle) and Noah Claypole (or Mrs. Sowerberry / Mr. Sowerberry)."
+        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        contextExtract: "\"Oliver walked 70 miles to London. In such a big city, no one would ever find him! It was chilly and his feet hurt but he was happy to leave his old, miserable life behind.\"",
+        subItems: [
+          {
+            subQuestion: "5(a)",
+            question: "Name two characters whose cruel and abusive treatment compelled Oliver Twist to run away from his hometown to London.",
+            answer: "Mr. Bumble (the parish beadle) and Mrs. Sowerberry (or Noah Claypole / Mr. Sowerberry)."
+          },
+          {
+            subQuestion: "5(b)",
+            question: "Identify the literary contrast presented in the extract.",
+            answer: "The contrast between physical bodily pain/discomfort ('feet hurt', 'chilly') and emotional joy/relief ('happy to leave his old, miserable life behind')."
+          },
+          {
+            subQuestion: "5(c)",
+            question: "In the line, 'I robbed her of the one item she had... She kept it safe', what was 'the one item' referred to?",
+            answer: "A gold locket and ring (containing the identity tokens and portrait of Oliver's late mother, Agnes Fleming)."
+          }
+        ]
       },
       {
-        subId: "5(b)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"It was chilly and his feet hurt but he was happy to leave his old, miserable life behind.\"",
-        question: "Identify the example of contrast used in the extract above.",
-        answer: "The contrast between his severe physical suffering (chilly weather and aching feet) and his inward emotional happiness (being free from his miserable past)."
+        sectionTitle: "MERRILL CORNEY: Debbie, Sandy and Pepe",
+        contextExtract: "\"Well, we'll just have to look after him ourselves then\", she said.\n\"We'll make a soft nest for him and feed him when he grows up.\nHe will stay in our garden.\"",
+        subItems: [
+          {
+            subQuestion: "5(d)",
+            question: "What physical object did the young girls choose to serve as a nest for Pepe the baby bird?",
+            answer: "A small cardboard shoe box lined with soft cotton wool/leaves."
+          },
+          {
+            subQuestion: "5(e)",
+            question: "Which literary figure of speech is primarily utilized in referring to Pepe as 'him' throughout the extract?",
+            answer: "Personification."
+          }
+        ]
       },
       {
-        subId: "5(c)",
-        textSource: "CHARLES DICKENS: Oliver Twist",
-        extract: "\"I robbed her. Before her body was cold, / I robbed her of the one item she had. / She could have sold it for food or shelter / But she kept it safe,...\"",
-        question: "What was \"the one item she had\" that was stolen from Oliver's dying mother?",
-        answer: "A gold locket containing two locks of hair and a wedding ring inscribed with the name 'Agnes'."
+        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
+        contextExtract: "My spirit Mother ought to have come for me earlier.\nNow, what shall I tell them who are gone?\nThe daughter of slaves who come from the white man's land\nSomeone should advise me on how to tell my story.\nMy children, I am dreading my arrival there.\nWhere they will ask me news of home.\nShall I tell them or shall I not?",
+        subItems: [
+          {
+            subQuestion: "5(f)",
+            question: "Who is the dramatic speaker delivering this sorrowful soliloquy?",
+            answer: "Nana (the aged matriarch and great-grandmother of the Odumna clan)."
+          },
+          {
+            subQuestion: "5(g)",
+            question: "What do the following poetic expressions in the extract refer to?\nI. '... who are gone?'\nII. '... there'",
+            answer: "I. 'who are gone' refers to the dead ancestors (the ancestral spirits of the Odumna clan).\nII. 'there' refers to the ancestral spirit world (the land of the dead / eternity)."
+          }
+        ]
       },
       {
-        subId: "5(d)",
-        textSource: "MERRILL CORNEY: Debbie, Sandy and Pepe",
-        extract: "\"Well, we'll just have to look after him ourselves then\", she said. / \"We'll make a soft nest for him and feed him when he grows up, / He will stay in our garden.\"",
-        question: "What object did the children choose as a nest for Pepe the baby bird?",
-        answer: "A small cardboard box lined with soft cotton wool (or dry moss and fabric scraps)."
-      },
-      {
-        subId: "5(e)",
-        textSource: "MERRILL CORNEY: Debbie, Sandy and Pepe",
-        extract: "\"We'll make a soft nest for him and feed him when he grows up...\"",
-        question: "State the dominant theme brought out in the extract.",
-        answer: "The theme of compassion, empathy, and loving care for vulnerable wild animals."
-      },
-      {
-        subId: "5(f)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"My spirit Mother ought to have come for me earlier. / Now, what shall I tell them who are gone? / The daughter of slaves who come from the white man's land / Someone should advise me on how to tell my story. / My children, I am dreading my arrival there. / Where they will ask me news of home. / Shall I tell them or shall I not?\"",
-        question: "Who is the speaker in this dramatic extract?",
-        answer: "Nana (the aging grandmother of Ato Yawson and matriarch of the Odumna clan)."
-      },
-      {
-        subId: "5(g)",
-        textSource: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        extract: "\"... what shall I tell them who are gone? ... My children, I am dreading my arrival there.\"",
-        question: "What do the following expressions in the extract refer to?\n(I) \"... them who are gone\"\n(II) \"... there\"",
-        answer: "(I) **them who are gone:** The departed ancestors / dead forebears of the clan.\n(II) **there:** The spirit world / ancestral land of the dead (afterlife)."
-      },
-      {
-        subId: "5(h)",
-        textSource: "LAWRENCE DARMANI: Scribbler's Dream",
-        extract: "\"Scribbler, / The dream in your mind fills the shelf. / When upon the shelf you gaze, / A vacuum stares at you. / There is your quill and parchment, / But heavy are your hands. / Why? / Because disuse numbs the wrist.\"",
-        question: "To whom or what does the title \"Scribbler\" refer in the poem?",
-        answer: "An aspiring writer, poet, or author."
-      },
-      {
-        subId: "5(i)",
-        textSource: "LAWRENCE DARMANI: Scribbler's Dream",
-        extract: "\"The dream in your mind fills the shelf.\"",
-        question: "What does the expression \"The dream in your mind fills the shelf\" mean?",
-        answer: "The aspiring writer's imaginative ideas and unwritten literary masterpieces that remain only in his thoughts rather than being published as physical books."
+        sectionTitle: "LAWRENCE DARMANI: Scribbler's Dream",
+        contextExtract: "Scribbler,\nThe dream in your mind fills the shelf.\nWhen upon the shelf you gaze,\nA vacuum stares at you.\nThere is your quill and parchment,\nBut heavy are your hands.\nWhy?\nBecause disuse numbs the wrist.",
+        subItems: [
+          {
+            subQuestion: "5(h)",
+            question: "In the poem, what does the appellation 'Scribbler' refer to?",
+            answer: "A writer, poet, or aspiring literary author."
+          },
+          {
+            subQuestion: "5(i)",
+            question: "What does the metaphorical expression 'The dream in your mind' refer to?",
+            answer: "The unwritten literary ideas, creative stories, and artistic ambitions of the author waiting to be published."
+          }
+        ]
       }
     ]
   }
 };
 
-// Flattened Paper 2 Questions for Paper2ExamRunner.tsx with AI Essay Workspace
 const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
+  ...paper2Calibrated.partA_composition.questions.map((q) => ({
+    id: `composition_${q.questionNumber}`,
     partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
     prompt: q.prompt,
     modelAnswer: q.modelAnswer,
     marks: 30
   })),
-  ...paper2Calibrated.sectionB_comprehension.questions.map((q, idx) => ({
-    id: `comp_${q.subId}`,
-    partLabel: `Part B: Comprehension ${q.subId}`,
-    prompt: (idx === 0 ? `Read the passage carefully and answer the questions that follow:\n\n${paper2Calibrated.sectionB_comprehension.passage}\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 5
-  })),
-  ...paper2Calibrated.sectionC_literature.questions.map((q) => ({
-    id: `lit_${q.subId}`,
-    partLabel: `Part C: Literature - ${q.textSource} [${q.subId}]`,
-    prompt: (q.extract ? `Extract:\n"${q.extract}"\n\n` : '') + q.question,
-    modelAnswer: q.answer,
-    marks: 2
+  {
+    id: "comprehension_passage",
+    partLabel: "Part B: Reading Comprehension",
+    prompt: paper2Calibrated.partB_comprehension.passageText,
+    passage: paper2Calibrated.partB_comprehension.passageText,
+    subQuestions: paper2Calibrated.partB_comprehension.questions,
+    marks: 30
+  },
+  ...paper2Calibrated.partC_literature.questions.map((sec, idx) => ({
+    id: `literature_cockcrow_${idx + 1}`,
+    partLabel: `Part C: Literature - ${sec.sectionTitle}`,
+    contextExtract: sec.contextExtract || null,
+    subItems: sec.subItems,
+    marks: 10
   }))
 ];
 
 async function seedBeceEnglish2018Calibrated() {
-  const db = await getDb();
-  console.log("Seeding Calibrated & Balanced BECE English 2018 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2018 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -736,8 +664,9 @@ async function seedBeceEnglish2018Calibrated() {
     if (idx === 2) keyDist.C++;
     if (idx === 3) keyDist.D++;
   });
-  console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
+  console.log("Verified Key Balance across 30 Objective Items:", keyDist);
 
+  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_2018");
   await docRef.set({
     year: 2018,
@@ -751,25 +680,49 @@ async function seedBeceEnglish2018Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      sectionsPresent: ["Paper 1 (Objectives)", "Paper 2 Part A (Essay)", "Paper 2 Part B (Comprehension)", "Paper 2 Part C (Literature)"],
-      status: "calibrated",
+      hasCockcrowLiterature: true,
+      passageFirstLayout: false,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
-      title: "Paper 1: Objective Test",
+      title: "Paper 1: Objective Test (Lexis and Structure)",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      sections: {
+        sectionA_lexis_and_structure: {
+          title: "Section A: Lexis and Structure",
+          questionRange: "Questions 1 to 15",
+          questions: balancedPaper1.slice(0, 15)
+        },
+        sectionB_synonyms: {
+          title: "Section B: Synonyms (Nearest in Meaning)",
+          questionRange: "Questions 16 to 20",
+          questions: balancedPaper1.slice(15, 20)
+        },
+        sectionC_idioms: {
+          title: "Section C: Idiomatic Expressions",
+          questionRange: "Questions 21 to 25",
+          questions: balancedPaper1.slice(20, 25)
+        },
+        sectionD_antonyms: {
+          title: "Section D: Antonyms (Opposite in Meaning)",
+          questionRange: "Questions 26 to 30",
+          questions: balancedPaper1.slice(25, 30)
+        }
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
-      title: "Paper 2: Essay, Comprehension and Literature in English",
+      title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 75,
       sections: paper2Calibrated,
       questions: flattenedPaper2Questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2018 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2018 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2018Calibrated()

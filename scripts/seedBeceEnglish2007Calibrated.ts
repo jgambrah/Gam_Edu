@@ -1,8 +1,11 @@
+import * as dns from 'dns';
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -12,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -34,423 +38,442 @@ async function getDb() {
 interface QuestionItem {
   number: number;
   prompt: string;
-  passage?: string;
   options: string[];
   correctAnswer: string;
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// Verified Authentic Reading Comprehension Passages for BECE 2007
-const passage1Text = "### 📖 PASSAGE I\n\nIn the middle of the night, piercing shouts and frantic alarms suddenly echoed through the sleeping town. Barimah was jolted awake by the commotion. Sensing that grave physical danger lurked outside, he firmly instructed his wife, Fosua, to remain indoors with the children while he stepped out to investigate.\n\nStepping into the compound, a dramatic and terrifying spectacle confronted him. The pitch-dark night was illuminated by towering sheets of fire; the residential building of their neighbor, Agya Atta, was completely engulfed in roaring flames. Neighbors were running in all directions, some hurling buckets of water and sand, while others helped haul salvaged property into the street.\n\nBarimah rushed forward without hesitation to join the rescue effort. He helped lead Agya Atta's weeping wife, Araba, and their terrified children to safety inside his own home, keeping watch over their belongings until morning. The entire community grieved deeply with Araba, whose kindness, generosity, and good deeds had won the hearts of everyone in the town.";
+// =========================================================================
+// ISOMORPHIC PASSAGE I: THE MIDNIGHT RESCUE (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Title = "Passage I: The Midnight Rescue";
+const passage1Text = `"Help! Help! Fire!" These piercing cries, accompanied by the violent slamming of wooden shutters and crunching footsteps along the gravel path, jolted Barimah awake.
 
-const passage2Text = "### 📖 PASSAGE II\n\nIn recent years, the menace of tobacco smoking has attracted intense concern across the globe. Both national governments and international organizations like the United Nations have launched aggressive public campaigns to oppose the killer habit, designating special days each year to educate people about the deadly consequences of tobacco consumption.\n\nScientific and medical research has decisively established that smoking causes fatal diseases, including lung cancer, coronary heart disease, and chronic bronchitis. Expectant mothers who smoke risk severe complications such as miscarriages, premature birth, and delivering underweight infants.\n\nFurthermore, smoking harms not only the smoker but also innocent bystanders. Non-smokers who inhale secondhand smoke in closed rooms or public transport suffer as 'passive smokers', facing identical health risks. Consequently, many societies now treat the public smoker as a social misfit who selfishly prioritizes a destructive craving over public safety and environmental health.";
+"An emergency has occurred; something must be done immediately," he declared to his wife, Fosua, who had already sat up in terror. Pulling on his trousers and shirt in haste, he unlatched the front door and instructed his wife firmly not to step outside into the night.
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 2007
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 10) ---
+It was pitch-black outside; the only illumination came from the roaring inferno consuming Agya Atta's residential compound across the road. By the time Barimah dashed to the scene, the roof was enveloped in blazing sheets of fire. A frantic crowd of neighbors had already assembled, hurriedly hauling metal buckets of water and mounds of sand to pour over the leaping flames. Everyone was laboring desperately to put out the blaze.
+
+Meanwhile, a few courageous youths had managed to drag out a small bundle of personal belongings from the front veranda. To protect these salvaged items from being looted by opportunistic bystanders in the dark, Barimah directed that they be transferred immediately to his own secure compound. He then escorted Agya Atta's weeping wife and trembling children into his living room for shelter before sprinting back to rejoin the bucket line fighting the fire.
+
+Araba, Agya Atta's wife, had won the affection of the entire township through her benevolence, humility, and countless good deeds. It was therefore heartbreaking for the community to witness her lose all her household property and the beautiful dwelling that she and her husband had toiled for decades to erect.`;
+
+const passage1QuestionsRaw = [
   {
     number: 1,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did Barimah urge his wife Fosua to remain indoors when the alarm sounded?`,
-    passage: passage1Text,
+    prompt: "In Passage I, why did Barimah instruct his wife, Fosua, to remain indoors?",
     options: [
-      "People were running about in wild confusion",
-      "The noise outside was deafening",
-      "He suspected that grave physical danger lurked outside",
-      "The compound was completely dark"
+      "People were running in chaotic confusion along the lane",
+      "A deafening and frightening noise was echoing outside",
+      "He suspected that severe danger and peril lurked in the dark",
+      "The compound surroundings were enveloped in thick darkness"
     ],
-    correctAnswer: "He suspected that grave physical danger lurked outside",
-    hint: "Think about why a husband would warn his wife not to step out into a chaotic, dark compound.",
-    workedSolution: "Barimah advised his wife to stay inside to protect her from the unknown, lethal hazards of the raging fire and falling debris outside.",
+    correctAnswer: "He suspected that severe danger and peril lurked in the dark",
+    hint: "Reread paragraph one and two: he told her not to leave because he sensed an emergency and suspected danger outside.",
+    workedSolution: "Barimah ordered his wife to stay inside for her safety because he realized an unpredictable, dangerous emergency was unfolding outside.",
     points: 1
   },
   {
     number: 2,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, what dramatic sight confronted Barimah immediately as he stepped outside?`,
-    passage: passage1Text,
+    prompt: "What scene met Barimah's eyes the moment he stepped outside his house?",
     options: [
-      "Araba fighting the blaze single-handedly",
-      "Neighbors hastily packing salvaged goods",
-      "A crowd shouting across the street",
-      "Agya Atta's residential building engulfed in flames"
+      "Araba frantically hauling buckets of water to fight the flames",
+      "Neighbors gathering household belongings along the roadside",
+      "People screaming and running aimlessly in the street",
+      "Agya Atta's residential house burning furiously in the dark"
     ],
-    correctAnswer: "Agya Atta's residential building engulfed in flames",
-    hint: "Reread paragraph two: 'the only light came from the flaming house of Agya Atta...'",
-    workedSolution: "The narrative notes that the pitch-dark night was illuminated solely by the blazing fire consuming Agya Atta's house.",
+    correctAnswer: "Agya Atta's residential house burning furiously in the dark",
+    hint: "Paragraph two states: the only light came from the flaming house of Agya Atta, which was truly in flames.",
+    workedSolution: "Upon stepping out, the only illumination in the pitch darkness came from Agya Atta's residence engulfed in blazing flames.",
     points: 1
   },
   {
     number: 3,
-    prompt: `${passage1Text}\n\n---\nIn Passage I, the phrase 'put out' as used in 'to put out the fire' means ............`,
-    passage: passage1Text,
-    options: ["control", "extinguish", "reduce", "destroy"],
+    prompt: "In Passage I, the phrasal verb 'put out' in 'to put out the fire' means to ............",
+    options: ["control", "extinguish", "suppress", "dismantle"],
     correctAnswer: "extinguish",
     hint: "To quench or stop a fire from burning.",
-    workedSolution: "The phrasal verb 'to put out' in reference to flames or a blaze means to quench or 'extinguish'.",
+    workedSolution: "The phrasal verb 'to put out' a fire means to quench, douse, or 'extinguish' the flames completely.",
     points: 1
   },
   {
     number: 4,
-    prompt: `${passage1Text}\n\n---\nFrom the actions described in Passage I, what was the true relationship between the Barimahs and the Agya Attas?`,
-    passage: passage1Text,
+    prompt: "From the actions described in Passage I, what can we infer regarding the relationship between the Barimahs and the Agya Attas?",
     options: [
-      "School classmates",
-      "Kind, supportive, and caring neighbors",
-      "Close matrimonial in-laws",
-      "Members of the same youth age-grade"
+      "They were former primary school classmates",
+      "They were caring, helpful, and dependable neighbors",
+      "They were related through marriage as in-laws",
+      "They were members of the same age-grade society"
     ],
-    correctAnswer: "Kind, supportive, and caring neighbors",
-    hint: "Barimah risked his life to fight the fire, sheltered Atta's family, and protected their property.",
-    workedSolution: "Barimah's readiness to protect Agya Atta's family and safeguard their salvaged goods demonstrates that they were devoted, supportive neighbors.",
+    correctAnswer: "They were caring, helpful, and dependable neighbors",
+    hint: "Barimah risked his life to fight the fire, protected their salvaged property, and sheltered their family.",
+    workedSolution: "Barimah's readiness to protect their property, shelter their family, and fight the flames shows that they were compassionate, reliable neighbors.",
     points: 1
   },
   {
     number: 5,
-    prompt: `${passage1Text}\n\n---\nAccording to Passage I, why did the community show immense sympathy toward Araba?`,
-    passage: passage1Text,
+    prompt: "Why did the gathered townspeople feel profound sympathy and grief for Araba?",
     options: [
-      "She had been deserted by her husband",
+      "She had been abandoned by her husband in the burning house",
       "She had labored alongside her husband to build the house",
-      "She was a kind-hearted woman known for her good deeds",
-      "She was deeply sorrowful and weeping"
+      "She was an exceptionally kind, virtuous, and benevolent woman",
+      "She was weeping bitterly in Barimah's living room"
     ],
-    correctAnswer: "She was a kind-hearted woman known for her good deeds",
-    hint: "Check the final paragraph: 'Araba had won the hearts of many people by her good deeds and kindness...'",
-    workedSolution: "The passage explicitly notes that the community grieved with Araba because her benevolence and good deeds had won the hearts of everyone.",
+    correctAnswer: "She was an exceptionally kind, virtuous, and benevolent woman",
+    hint: "Check the final paragraph: Araba had won the hearts of many people by her good deeds and kindness.",
+    workedSolution: "The community sympathized deeply with Araba because her personal kindness, generosity, and good deeds had earned the love and respect of everyone.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE TOBACCO MENACE (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Title = "Passage II: The Tobacco Menace";
+const passage2Text = `Numerous habitual smokers deliberately disregard the medical warnings concerning the grave hazards of tobacco, despite sustained national campaigns organized to curb the habit. Indeed, the United Nations, through the World Health Organization, has designated an annual global day of observance to educate humanity against this fatal addiction.
+
+Consider the tragic account of a promising young artisan who succumbed to smoking. Within a few short years, he developed chronic pulmonary complications and died in excruciating agony, plunging his surviving widow and infant children into sudden destitution. Rigorous scientific research demonstrates that a habitual smoker is exponentially more prone to contract, if not perish from, lethal pathologies like malignant lung cancer and cardiovascular heart failure compared to a non-smoker.
+
+Furthermore, medical evidence confirms that smoking during pregnancy produces devastating obstetric outcomes. Expectant mothers who inhale tobacco smoke frequently deliver severely underweight infants. They are also significantly more prone to suffer spontaneous miscarriages, deliver stillborn babies, or lose their newborns to infant respiratory distress. Even when such vulnerable infants survive to school-going age, they frequently suffer cognitive deficits and struggle academically.
+
+Perhaps the most infuriating dimension of the tobacco menace is the severe jeopardy inflicted upon passive smokers. Innocent non-smokers who involuntarily inhale second-hand fumes drifting from nearby cigarettes, pipes, or cigars face identical risks of contracting the deadly cardiovascular and respiratory diseases that plague active smokers. If smokers truly grasped the deep resentment and revulsion non-smokers feel toward them, they would discard the habit. The unrepentant smoker is widely regarded as a selfish social misfit—an individual who recklessly sacrifices the public health and welfare of others to indulge his personal craving.`;
+
+const passage2QuestionsRaw = [
   {
     number: 6,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what collective action has modern society taken against the menace of smoking?`,
-    passage: passage2Text,
+    prompt: "According to Passage II, what collective action has organized society taken against tobacco smoking?",
     options: [
-      "It has prosecuted all smokers in court",
-      "It has provided free medical drugs to smokers",
-      "It has completely ignored tobacco use",
-      "It has launched public campaigns and opposed the habit"
+      "It has arrested and prosecuted all smokers in legal tribunals",
+      "It has provided free psychiatric therapy to tobacco vendors",
+      "It has largely ignored the habit as a private domestic affair",
+      "It has actively opposed, campaigned against, and condemned the habit"
     ],
-    correctAnswer: "It has launched public campaigns and opposed the habit",
-    hint: "Reread paragraph one: 'there is a national campaign against the habit. The United Nations has set aside a day...'",
-    workedSolution: "The author notes that both national governments and the United Nations actively campaign against and oppose tobacco consumption.",
+    correctAnswer: "It has actively opposed, campaigned against, and condemned the habit",
+    hint: "Paragraph one notes there is a national campaign against the habit and a UN day set aside against it.",
+    workedSolution: "Society, through national campaigns and UN global observances, has actively opposed, condemned, and campaigned against smoking.",
     points: 1
   },
   {
     number: 7,
-    prompt: `${passage2Text}\n\n---\nAccording to scientific findings cited in Passage II, which lethal condition is directly linked to tobacco smoking?`,
-    passage: passage2Text,
+    prompt: "According to medical evidence presented in Passage II, which of the following fatal diseases is directly caused by smoking?",
     options: [
-      "Severe acute malaria",
-      "Infectious measles",
+      "Acute cerebral malaria",
+      "Infectious childhood measles",
       "Malignant cancer of the lungs",
-      "Pulmonary tuberculosis"
+      "Severe amoebic dysentery"
     ],
     correctAnswer: "Malignant cancer of the lungs",
-    hint: "Paragraph three mentions smokers dying of 'lung cancer and heart failure'.",
-    workedSolution: "The passage specifically identifies lung cancer and heart failure as primary fatal diseases caused by tobacco smoking.",
+    hint: "Paragraph two explicitly mentions lung cancer and heart failure as fatal diseases caused by tobacco.",
+    workedSolution: "The text identifies malignant lung cancer and heart failure as primary fatal pathologies caused by smoking.",
     points: 1
   },
   {
     number: 8,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, what grave risk confronts pregnant women who smoke cigarettes?`,
-    passage: passage2Text,
+    prompt: "Which of the following medical outcomes is true regarding pregnant women who smoke in Passage II?",
     options: [
-      "They are likely to deliver stillborn or underweight infants",
-      "They completely lose the ability to breastfeed",
-      "They are genetically predisposed to having twins",
-      "They experience sudden dramatic weight loss"
+      "They are highly prone to deliver stillborn or dead babies",
+      "They permanently lose the physical capability to breastfeed",
+      "They frequently deliver healthy identical twins",
+      "They gain excessive bodily weight during pregnancy"
     ],
-    correctAnswer: "They are likely to deliver stillborn or underweight infants",
-    hint: "Check paragraph four regarding maternal smoking and pregnancy complications.",
-    workedSolution: "The text explains that pregnant smokers produce underweight babies and run high risks of miscarriage and stillbirth.",
+    correctAnswer: "They are highly prone to deliver stillborn or dead babies",
+    hint: "Check paragraph three: women who smoke are likely to miscarry, have still-born babies, or deliver underweight infants.",
+    workedSolution: "The passage notes that pregnant smokers are at high risk of having stillborn (dead) babies, miscarrying, or delivering underweight infants.",
     points: 1
   },
   {
     number: 9,
-    prompt: `${passage2Text}\n\n---\nIn Passage II, passive smokers are defined as individuals who ............`,
-    passage: passage2Text,
+    prompt: "In Passage II, who are 'passive smokers'?",
     options: [
-      "befriend chronic smokers in public",
-      "are hopelessly addicted to tobacco",
-      "abstain completely from lighting cigarettes",
-      "inhale secondhand smoke from others' cigarettes"
+      "Individuals who maintain close friendships with smokers",
+      "Addicts who smoke mild herbal cigarettes occasionally",
+      "Non-smokers who involuntarily breathe in smoke from other people's cigarettes",
+      "Smokers who have successfully given up the addiction"
     ],
-    correctAnswer: "inhale secondhand smoke from others' cigarettes",
-    hint: "Paragraph five explains the danger to non-smokers breathing in smoke from other people's pipes and cigarettes.",
-    workedSolution: "Passive smokers are non-smokers who involuntary breathe in secondhand smoke produced by active smokers in their environment.",
+    correctAnswer: "Non-smokers who involuntarily breathe in smoke from other people's cigarettes",
+    hint: "Reread paragraph four: passive smokers are non-smokers breathing in smoke from other people's cigarettes, pipes, and cigars.",
+    workedSolution: "Passive smokers are non-smoking bystanders who involuntarily inhale the second-hand tobacco smoke exhaled by active smokers.",
     points: 1
   },
   {
     number: 10,
-    prompt: `${passage2Text}\n\n---\nAccording to Passage II, why do non-smokers view the chronic smoker as a social misfit?`,
-    passage: passage2Text,
+    prompt: "How does the passage characterize habitual smokers who smoke indiscriminately in public?",
     options: [
-      "He is completely fearless of death",
-      "He is selfish, pursuing his habit without regard for others' health",
-      "He is arrogant and boastful",
-      "He speaks disrespectfully to elders"
+      "Courageous and fearless",
+      "Selfish, inconsiderate, and indifferent to the welfare of others",
+      "Proud of their personal independence",
+      "Ignorant of basic personal hygiene"
     ],
-    correctAnswer: "He is selfish, pursuing his habit without regard for others' health",
-    hint: "Look at the final sentence: 'one who does not consider the welfare of others but his own interest...'",
-    workedSolution: "The author notes that society regards the smoker as selfish because he prioritizes his own pleasure while disregarding the health and welfare of innocent people.",
+    correctAnswer: "Selfish, inconsiderate, and indifferent to the welfare of others",
+    hint: "The final sentence describes the smoker as a social misfit who considers only his own interest and ignores the welfare of others.",
+    workedSolution: "The author characterizes public smokers as selfish social misfits who disregard the health and comfort of surrounding people to satisfy their addiction.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// =========================================================================
+const generalQuestionsRaw = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "Senyo struggled in vain to prevent his companion from stealing the orchard fruits.\nChoose the word nearest in meaning to the underlined phrase 'in vain'.",
-    options: ["hard", "timidly", "angrily", "unsuccessfully"],
+    prompt: "Senyo pleaded in vain to dissuade his companion from stealing the orchard oranges.\nChoose the word nearest in meaning to 'in vain'.",
+    options: ["angrily", "timidly", "unsuccessfully", "vigorously"],
     correctAnswer: "unsuccessfully",
-    hint: "Without producing any intended or positive result.",
-    workedSolution: "'In vain' is an idiomatic phrase meaning without success or to no effect; 'unsuccessfully' is its direct synonym.",
+    hint: "Without producing the desired result; fruitlessly.",
+    workedSolution: "'In vain' means fruitlessly or without success; 'unsuccessfully' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "Through persistent diligence and resilience, the community can overcome any crisis.\nChoose the word nearest in meaning to the underlined word 'overcome'.",
-    options: ["get", "avoid", "stop", "solve"],
+    prompt: "With disciplined persistence and teamwork, we can overcome any engineering challenge.\nChoose the word nearest in meaning to 'overcome'.",
+    options: ["solve", "avoid", "contain", "endure"],
     correctAnswer: "solve",
-    hint: "To conquer, master, surmount, or resolve a difficulty.",
-    workedSolution: "'To overcome' a problem means to conquer or successfully resolve it; 'solve' is the closest equivalent in this context.",
+    hint: "To conquer, master, or find a solution to a problem.",
+    workedSolution: "'Overcome' a problem means to surmount, master, or 'solve' it successfully.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The food prepared for the festival guests was exceptionally delicious.\nChoose the word nearest in meaning to the underlined word 'delicious'.",
-    options: ["fine", "tasty", "sweet", "nutritious"],
+    prompt: "Auntie Araba prepared a delicious pot of groundnut soup for the festive reception.\nChoose the word nearest in meaning to 'delicious'.",
+    options: ["nutritious", "tasty", "wholesome", "sweet"],
     correctAnswer: "tasty",
-    hint: "Highly pleasing to the sense of taste; appetizing.",
-    workedSolution: "'Delicious' refers to food that is highly pleasing and appetizing to the palate; 'tasty' is its direct synonym.",
+    hint: "Highly pleasant to the taste; delectable.",
+    workedSolution: "'Delicious' means having a highly pleasing flavor; 'tasty' (or palatable) is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The audience enthusiastically applauded the young actors at the conclusion of the play.\nChoose the word nearest in meaning to the underlined word 'applauded'.",
-    options: ["booed", "invited", "rewarded", "cheered"],
+    prompt: "The enthusiastic spectators applauded the actors at the end of the dramatic presentation.\nChoose the word nearest in meaning to 'applauded'.",
+    options: ["cheered", "rewarded", "saluted", "welcomed"],
     correctAnswer: "cheered",
-    hint: "Clapped, praised, or acclaimed with enthusiastic approval.",
-    workedSolution: "'Applauded' means expressed approval by clapping or shouting acclaim; 'cheered' is its closest synonym.",
+    hint: "Expressed praise or approval by clapping hands and shouting.",
+    workedSolution: "'Applauded' means showed approval by clapping or shouting acclaim; 'cheered' is its closest synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The young shepherd lamented the tragic loss of his faithful hunting dog.\nChoose the word nearest in meaning to the underlined word 'lamented'.",
-    options: ["regretted", "mourned", "remembered", "discovered"],
+    prompt: "Jasper lamented the tragic loss of his loyal hunting hound.\nChoose the word nearest in meaning to 'lamented'.",
+    options: ["mourned", "regretted", "recalled", "confessed"],
     correctAnswer: "mourned",
-    hint: "Expressed deep sorrow, grief, or mourning for someone lost.",
-    workedSolution: "'Lamented' means expressed passionate grief, sorrow, or mourning over a loss; 'mourned' is its direct equivalent.",
+    hint: "Expressed passionate grief, sorrow, or mourning for someone lost.",
+    workedSolution: "'Lamented' means expressed deep grief or sorrow over a loss; 'mourned' is its exact equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "Kofi remains remarkably light-hearted despite his family's economic hardships. This means that Kofi is always ............",
-    options: ["careless", "cheerful", "cool", "proud"],
-    correctAnswer: "cheerful",
-    hint: "Carefree, cheerful, optimistic, and merry in spirit.",
-    workedSolution: "The idiom 'light-hearted' describes a person who is cheerful, buoyant, optimistic, and free from gloomy cares.",
+    prompt: "John always remains light-hearted despite his domestic financial constraints. This means that John is always ............",
+    options: ["careless", "cheerful and carefree", "quiet and reserved", "arrogant"],
+    correctAnswer: "cheerful and carefree",
+    hint: "Carefree, cheerful, and unburdened by gloom.",
+    workedSolution: "The idiom 'light-hearted' describes someone who is cheerful, buoyant, and free from gloomy anxiety.",
     points: 1
   },
   {
     number: 17,
-    prompt: "Following the fatal road crash, Ayorkor has really gone through the mill. This means that Ayorkor has ............",
+    prompt: "Following the vehicular collision, Ayorkor has really gone through the mill. This means Ayorkor has ............",
     options: [
-      "radically altered her daily habits",
-      "acquired worldly wisdom",
-      "suffered a lot of severe hardship",
-      "received substantial compensation"
+      "reformed her daily lifestyle",
+      "become much wiser in judgment",
+      "endured intense suffering and hardship",
+      "received substantial monetary compensation"
     ],
-    correctAnswer: "suffered a lot of severe hardship",
-    hint: "Undergoing an intense, grinding, and painful trial or ordeal.",
-    workedSolution: "The idiom 'to go through the mill' means to experience a prolonged period of severe suffering, trial, or grueling hardship.",
+    correctAnswer: "endured intense suffering and hardship",
+    hint: "To experience a grueling, painful, or difficult ordeal.",
+    workedSolution: "The idiom 'to go through the mill' means to undergo a difficult, painful, and grueling ordeal; 'endured intense suffering and hardship' is its exact meaning.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Moro felt very much at home throughout his stay at the boarding house. This means that Moro was ............",
+    prompt: "Moro felt completely at home during his vacation at his roommate's family residence. This means Moro was ............",
     options: [
-      "familiar with the architecture",
       "comfortable, relaxed, and at ease",
-      "disappointed with the food",
-      "living with his biological relatives"
+      "familiar with the architectural floor plan",
+      "treated like an employee",
+      "longing to return to his own village"
     ],
     correctAnswer: "comfortable, relaxed, and at ease",
-    hint: "Feeling welcome, relaxed, and unconstrained as if in one's own home.",
-    workedSolution: "'At home' is an idiom meaning comfortable, relaxed, completely at ease, and welcome in a setting.",
+    hint: "To feel as comfortable as if one were in one's own house.",
+    workedSolution: "The idiom 'at home' means relaxed, comfortable, and feeling at ease in one's surroundings.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The pupils were all ears during the storytelling session. This means that the pupils ............",
+    prompt: "The basic school candidates were all ears throughout the career guidance lecture. This means the students ............",
     options: [
-      "shouted answers continuously",
-      "gazed around the hall",
-      "covered their ears",
-      "listened with rapt attention"
+      "raised difficult questions",
+      "observed the speaker intently",
+      "listened with rapt, undivided attention",
+      "sat with their hands over their ears"
     ],
-    correctAnswer: "listened with rapt attention",
-    hint: "Listening with complete, undivided, and eager concentration.",
-    workedSolution: "The idiom 'all ears' means listening with keen, total, and undivided attention.",
+    correctAnswer: "listened with rapt, undivided attention",
+    hint: "Listening eagerly and attentively.",
+    workedSolution: "The idiom 'all ears' means listening eagerly, intently, and with complete attention.",
     points: 1
   },
   {
     number: 20,
-    prompt: "It took our newly appointed senior prefect several weeks to find his feet. This means that he took time before he ............",
+    prompt: "It took the newly appointed house prefect several weeks before he could find his feet. This means it took him weeks before he ............",
     options: [
-      "recognized every pupil",
-      "gained confidence and competence",
-      "won a leadership prize",
-      "became popular among teachers"
+      "knew every student by name",
+      "became confident and accustomed to his duties",
+      "won the principal's prize",
+      "became popular across the school"
     ],
-    correctAnswer: "gained confidence and competence",
-    hint: "Becoming familiar with and confident in managing a new role.",
-    workedSolution: "The idiom 'to find one's feet' means to become confident, competent, and accustomed to managing a new role or responsibility.",
+    correctAnswer: "became confident and accustomed to his duties",
+    hint: "To become confident and comfortable in a new situation.",
+    workedSolution: "The idiom 'to find one's feet' means to become confident, established, and familiar with a new environment or role.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "While the assemblyman is renowned for being generous, his deputy is notoriously ...... to constituents.",
-    options: ["honourable", "proud", "talkative", "unkind"],
+    prompt: "While our Assemblyman is generous and assists the needy, the previous representative was ...... .\nChoose the word most nearly opposite in meaning to 'generous'.",
+    options: ["unkind", "proud", "talkative", "insolent"],
     correctAnswer: "unkind",
-    hint: "'Generous' means benevolent, giving, and helpful. Find the word denoting mean and harsh behavior.",
-    workedSolution: "'Generous' implies open-hearted benevolence and giving. In describing moral disposition, its direct antonym is 'unkind' (or ungenerous/harsh).",
+    hint: "'Generous' means showing kindness and readiness to give. What word denotes harsh, ungiving, or mean?",
+    workedSolution: "'Generous' means benevolent, liberal, and giving. Its direct antonym in personal disposition is 'unkind' (or stingy/mean).",
     points: 1
   },
   {
     number: 22,
-    prompt: "If you are indolent during class hours, you will fail, but if you are ...... you will triumph.",
-    options: ["hardworking", "rude", "careless", "honest"],
-    correctAnswer: "hardworking",
-    hint: "'Indolent' means lazy and avoiding physical or mental labor. Find the word meaning industrious.",
-    workedSolution: "'Indolent' means habitually lazy and slothful. Its direct antonym in academic study is 'hardworking' (diligent or industrious).",
+    prompt: "If you remain indolent, you will fail; but if you are ......, you will achieve distinction.\nChoose the word most nearly opposite in meaning to 'indolent'.",
+    options: ["hard working", "respectful", "honest", "cautious"],
+    correctAnswer: "hard working",
+    hint: "'Indolent' means lazy and avoiding physical exertion. What word denotes industrious and diligent?",
+    workedSolution: "'Indolent' means lazy, idle, or sluggish. Its direct antonym is 'hard working' (or industrious).",
     points: 1
   },
   {
     number: 23,
-    prompt: "When interrogated about the theft, Kwame pleaded that he was guilty, but his partner was proven ...... .",
-    options: ["surprised", "afraid", "absent", "innocent"],
+    prompt: "The magistrate pronounced the ringleader guilty, while releasing his accomplice as ...... .\nChoose the word most nearly opposite in meaning to 'guilty'.",
+    options: ["surprised", "innocent", "fearful", "absent"],
     correctAnswer: "innocent",
-    hint: "'Guilty' means having committed an offense. Find the legal and moral word meaning free from blame.",
-    workedSolution: "'Guilty' denotes culpability for a crime. Its direct legal and ethical antonym is 'innocent' (free from blame).",
+    hint: "'Guilty' means responsible for a crime. What word denotes free from guilt, blameless, or not guilty?",
+    workedSolution: "'Guilty' means convicted of a wrongful offense. Its direct judicial antonym is 'innocent'.",
     points: 1
   },
   {
     number: 24,
-    prompt: "Handle the porcelain vase with care because it is fragile, unlike the metal cup which is ...... .",
-    options: ["rigid", "beautiful", "unbreakable", "new"],
+    prompt: "Handle the porcelain vase with care, for it is fragile, unlike the brass urn which is ...... .\nChoose the word most nearly opposite in meaning to 'fragile'.",
+    options: ["unbreakable", "rigid", "polished", "dull"],
     correctAnswer: "unbreakable",
-    hint: "'Fragile' means easily broken or delicate. Find the word meaning incapable of being shattered.",
-    workedSolution: "'Fragile' means delicate and easily shattered. Its direct antonym regarding durability is 'unbreakable'.",
+    hint: "'Fragile' means easily broken or delicate. What word denotes resistant to breaking?",
+    workedSolution: "'Fragile' describes an object easily broken or damaged. Its direct physical antonym is 'unbreakable' (or durable/tough).",
     points: 1
   },
   {
     number: 25,
-    prompt: "While some ancient practices are old-fashioned, our community embraces ...... sanitation methods.",
-    options: ["modern", "attractive", "interesting", "funny"],
+    prompt: "Certain traditional farming practices are old-fashioned, but mechanized irrigation methods are ...... .\nChoose the word most nearly opposite in meaning to 'old-fashioned'.",
+    options: ["modern", "attractive", "complex", "costly"],
     correctAnswer: "modern",
-    hint: "'Old-fashioned' means antiquated and out of date. Find the word meaning contemporary and current.",
-    workedSolution: "'Old-fashioned' refers to styles or practices belonging to the past. Its direct antonym is 'modern' (contemporary).",
+    hint: "'Old-fashioned' means antiquated or belonging to the past. What word denotes contemporary and up-to-date?",
+    workedSolution: "'Old-fashioned' means out of date or antiquated. Its direct antonym is 'modern' (or contemporary).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Of all the seven siblings in the Brown family, Ato is undoubtedly ......",
-    options: ["the short", "the shorter", "the shortest", "short"],
+    prompt: "Of all the five Brown brothers, Ato is undeniably ......",
+    options: ["the short", "the shorter", "the shortest", "shortest"],
     correctAnswer: "the shortest",
-    hint: "Comparing more than two individuals to show the highest or lowest degree requires 'the' + superlative adjective.",
-    workedSolution: "When comparing an individual against a group of three or more ('seven siblings'), the superlative degree preceded by 'the' ('the shortest') is required.",
+    hint: "When comparing three or more entities, standard English requires the superlative degree preceded by 'the'.",
+    workedSolution: "Comparing five individuals requires the superlative form of the one-syllable adjective ('short') preceded by 'the': 'the shortest'.",
     points: 1
   },
   {
     number: 27,
-    prompt: "Amma was so frightened by the sudden lightning flash ...... she collapsed onto the floor.",
+    prompt: "Amma was so terrified by the violent thunderstorm ...... she fainted.",
     options: ["so", "as", "then", "that"],
     correctAnswer: "that",
-    hint: "Identify the subordinating conjunction that pairs with 'so' to express cause and result ('so + adjective + that').",
-    workedSolution: "The correlative construction 'so + adjective + that' expresses a degree that produces a specific result ('so frightened that she collapsed').",
+    hint: "Correlative result clause: 'so + adjective + that + consequence'.",
+    workedSolution: "The degree adverb 'so' pairs correlatively with the subordinator 'that' to introduce a clause of result: 'so frightened that she fainted'.",
     points: 1
   },
   {
     number: 28,
-    prompt: "Grandmother has ...... loyal friends who regularly visit her cottage.",
+    prompt: "Grandmother is lonely, yet she has ...... trusted friends who regularly visit her.",
     options: ["few", "much", "a little", "a few"],
     correctAnswer: "a few",
-    hint: "'Friends' is a countable plural noun. To show a small but positive number, use this quantifier with an article.",
-    workedSolution: "'Friends' is a countable plural noun. 'A few' has a positive meaning denoting some/a small number. 'Few' without an article has a negative meaning (almost none).",
+    hint: "'Friends' is a plural countable noun. Use the positive quantifier meaning a small number.",
+    workedSolution: "Plural countable nouns ('friends') take 'a few' to express a positive small number. 'Few' without an article has a negative meaning (almost none); 'much/little' apply to non-count nouns.",
     points: 1
   },
   {
     number: 29,
-    prompt: "Kofi is the hardworking student to ...... the scholarship prize was awarded.",
+    prompt: "Kofi is the disciplined scholar to ...... I presented the science encyclopedia.",
     options: ["whose", "which", "whom", "who"],
     correctAnswer: "whom",
-    hint: "When referring to a person immediately following a preposition ('to'), use the objective relative pronoun.",
-    workedSolution: "'Whom' is the objective relative pronoun required immediately after a preposition ('to whom'). 'Who' is used only as a subject.",
+    hint: "Formal relative pronoun: Following a preposition ('to'), use the objective relative pronoun for persons.",
+    workedSolution: "When preceded by a preposition ('to'), standard prescriptive grammar requires the objective relative pronoun 'whom': 'to whom I gave the pen'.",
     points: 1
   },
   {
     number: 30,
-    prompt: "You are feeling exhausted after that long marathon race, ......?",
+    prompt: "You are feeling thoroughly exhausted after the football match, ......?",
     options: ["aren't you", "don't you", "isn't it", "not so"],
     correctAnswer: "aren't you",
-    hint: "An affirmative present statement with the primary auxiliary 'are' takes a negative tag using 'are'.",
-    workedSolution: "The statement is affirmative present using the verb 'are' with subject 'you'. Its tag must be negative: 'aren't you?'.",
+    hint: "An affirmative present statement with copula 'are' and subject 'you' takes the negative tag 'aren't you?'.",
+    workedSolution: "The statement is affirmative present using 'are' with subject 'you'. The corresponding question tag must be negative: 'aren't you?'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "The guest speaker promised that he ...... attend our Speech Day celebration.",
+    prompt: "The visiting lecturer promised that he ...... attend our speech-and-prize ceremony.",
     options: ["will", "would", "has", "have"],
     correctAnswer: "would",
-    hint: "In reported speech following a past reporting verb ('promised'), 'will' shifts back to 'would'.",
-    workedSolution: "Because the reporting verb 'promised' is in the simple past tense, the future modal auxiliary 'will' shifts to its past equivalent 'would'.",
+    hint: "Reported speech backshift: Past reporting verb 'promised' requires the past modal 'would'.",
+    workedSolution: "In indirect reported speech governed by a past reporting verb ('said/promised'), the future modal 'will' shifts to its past form 'would'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "By the time Father arrived from the farm, Mother ...... preparing the evening supper.",
+    prompt: "By the time Father arrived home from the farm, Mother ...... preparing the evening meal.",
     options: ["has", "had", "have", "having"],
     correctAnswer: "had",
-    hint: "Use the past perfect auxiliary ('had + past participle') for an action completed before another past event.",
-    workedSolution: "The past perfect tense ('had finished') is used to describe an action completed prior to another past event ('When Daddy arrived').",
+    hint: "Use the past perfect auxiliary 'had' for an action completed before another past event ('arrived').",
+    workedSolution: "The completion of cooking preceded Father's past arrival, requiring the Past Perfect tense: 'had [finished cooking]'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "The athlete was ...... fatigued that he could not complete the final lap.",
+    prompt: "The marathon runner was ...... exhausted that he collapsed before the finish line.",
     options: ["much", "too", "so", "very"],
     correctAnswer: "so",
-    hint: "Identify the intensifier that pairs with 'that' to indicate cause and effect.",
-    workedSolution: "The correlative pattern 'so + adjective + that' indicates an extreme degree leading to a result ('so fatigued that he could not finish').",
+    hint: "Correlative structure introducing a result clause with 'that': 'so + adjective + that'.",
+    workedSolution: "The result clause introduced by 'that' requires the intensifier 'so' ('so tired that he couldn't finish'). 'Too' pairs with 'to-infinitive', not 'that'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "While weeding the cocoa plot, the farmer was ...... by a venomous viper.",
+    prompt: "While clearing the overgrown orchard, the farmer was ...... by a venomous viper.",
     options: ["bitten", "beaten", "bit", "beat"],
     correctAnswer: "bitten",
-    hint: "Passive voice: Auxiliary 'was' requires the past participle of 'bite'.",
-    workedSolution: "The verb 'bite' has the principal forms bite - bit - bitten. In the passive voice ('was + past participle'), the correct form is 'bitten'.",
+    hint: "Passive voice of 'bite': was + past participle (bite - bit - bitten).",
+    workedSolution: "The passive voice construction requires the past participle form of 'bite', which is 'bitten': 'was bitten by a poisonous snake'.",
     points: 1
   },
   {
     number: 35,
-    prompt: "The canteen cook has put too ...... sugar into the kettle of porridge.",
+    prompt: "You have added far too ...... sugar to my morning tea.",
     options: ["many", "much", "few", "small"],
     correctAnswer: "much",
-    hint: "'Sugar' is an uncountable noun. Use 'too much' to indicate an excessive quantity.",
-    workedSolution: "'Sugar' is an uncountable (mass) noun, which requires 'much' ('too much sugar'). 'Many' and 'few' apply strictly to count nouns.",
+    hint: "'Sugar' is an uncountable non-count noun. Use the quantifier of excessive quantity.",
+    workedSolution: "'Sugar' is an uncountable mass noun. Following 'too', it takes the non-count quantifier 'much' ('too much sugar'). 'Many' applies only to count nouns.",
     points: 1
   },
   {
     number: 36,
-    prompt: "Our senior housemaster is a ......",
+    prompt: "Our new physical education instructor is a ......",
     options: [
       "handsome, tall man",
       "handsome man tall",
@@ -458,46 +481,63 @@ const rawQuestions = [
       "man, tall, handsome"
     ],
     correctAnswer: "tall, handsome man",
-    hint: "General physical dimension/height ('tall') commonly precedes subjective aesthetic evaluation ('handsome') before the noun.",
-    workedSolution: "In standard descriptive noun phrases, the physical dimension adjective ('tall') combines naturally with aesthetic opinion ('handsome') immediately before the head noun ('tall, handsome man').",
+    hint: "Cumulative adjective ordering: Physical dimension/Height ('tall') precedes General opinion/Evaluation ('handsome') before the head noun ('man').",
+    workedSolution: "Standard English adjective order places size/height dimension ('tall') before subjective evaluation ('handsome') preceding the noun: 'tall, handsome man'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "Having lived in the countryside for years, I am ...... to walking long distances daily.",
+    prompt: "Living in a rural village, I am ...... to walking long distances every morning.",
     options: ["using", "uses", "use", "used"],
     correctAnswer: "used",
-    hint: "The structure 'to be used to' means accustomed or habituated to something.",
-    workedSolution: "The predicate adjective construction 'to be used to' means accustomed to something and takes a gerund or noun ('used to walking').",
+    hint: "Habitual state structure: 'be used to + gerund/noun' expressing familiarity or habit.",
+    workedSolution: "The idiomatic structure expressing established familiarity is 'am used to' followed by a gerund ('used to walking').",
     points: 1
   },
   {
     number: 38,
-    prompt: "The auto-mechanic succeeded ...... the faulty diesel generator.",
-    options: ["at repairing", "in repairing", "to repair", "with repairing"],
+    prompt: "After working all afternoon, the auto mechanic succeeded ...... the faulty diesel generator.",
+    options: [
+      "at repairing",
+      "in repairing",
+      "to repair",
+      "with repairing"
+    ],
     correctAnswer: "in repairing",
-    hint: "Identify the preposition that regularly collocates with the verb 'succeeded'.",
-    workedSolution: "In standard English, the verb 'succeed' takes the preposition 'in' followed by a gerund ('succeeded in repairing').",
+    hint: "Identify the preposition that regularly collocates with the verb 'succeed': 'succeed in + gerund'.",
+    workedSolution: "In standard English grammar, the verb 'succeed' takes the preposition 'in' followed by a gerund: 'succeeded in repairing'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "If I ...... with my grandparents in the village, I would have enjoyed traditional folklore.",
-    options: ["had lived", "have lived", "have been living", "am living"],
+    prompt: "If I ...... with my grandparents in the village, I would have learned traditional drumming.",
+    options: [
+      "had lived",
+      "have lived",
+      "have been living",
+      "am living"
+    ],
     correctAnswer: "had lived",
-    hint: "Third Conditional: The main clause 'would have enjoyed' requires 'had + past participle' in the if-clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause requires the past perfect tense ('had lived').",
+    hint: "Third Conditional: 'would have learned' in the main clause requires 'had + past participle' in the if-clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause takes the past perfect tense: 'had lived'.",
     points: 1
   },
   {
     number: 40,
-    prompt: "Following the doctor's stern warning, Uncle Atia has finally given ...... his pipe smoking.",
+    prompt: "Following the physician's stern medical warning, Atia has given ...... smoking entirely.",
     options: ["off", "out", "up", "in"],
     correctAnswer: "up",
-    hint: "Identify the phrasal verb meaning to quit, abandon, or cease a chronic habit.",
-    workedSolution: "The phrasal verb 'to give up' means to quit, discontinue, or abandon an unhealthy habit ('given up smoking').",
+    hint: "Identify the phrasal verb meaning to cease, abandon, or discontinue a habit.",
+    workedSolution: "The phrasal verb 'to give up' means to discontinue, cease, or abandon an addiction or habit: 'given up smoking'.",
     points: 1
   }
+];
+
+// Combine raw items
+const allRawQuestions = [
+  ...passage1QuestionsRaw,
+  ...passage2QuestionsRaw,
+  ...generalQuestionsRaw
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -521,9 +561,9 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 200701);
+const assignedTargetIndices = seedShuffle(targetKeys, 200702);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+const balancedPaper1: QuestionItem[] = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -535,21 +575,48 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
-  return {
+
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (idx < 5) {
+    passageTitle = passage1Title;
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (idx < 10) {
+    passageTitle = passage2Title;
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
+  const item: QuestionItem = {
     number: q.number,
     prompt: q.prompt,
-    ...((q as any).passage ? { passage: (q as any).passage } : {}),
     options: options,
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
     points: q.points
   };
+
+  if (passageTitle) {
+    item.passageTitle = passageTitle;
+    item.passageText = passageText;
+    item.passage = passage;
+  }
+
+  return item;
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -558,112 +625,113 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Informal Letter",
-        prompt: "Write a letter to your pen friend living abroad, explaining the historical significance of Ghana's Independence Day celebrations and describing how the anniversary is commemorated across schools and communities.",
-        modelAnswer: `Anglican Junior High School
-P. O. Box 85
-Koforidua, Eastern Region
-15th March, 2007
+        prompt: "Write a letter to your pen-pal living abroad, describing in vivid detail how Ghana's Independence Day is celebrated annually across the country.",
+        modelAnswer: `Methodist Junior Secondary School
+P. O. Box 54
+Bekwai, Ashanti Region
+14th May, 2007
 
-Dear David,
+Dear Sarah,
 
-I hope this letter finds you in fine health and high spirits in London. I was thrilled to receive your recent letter asking about the historical significance of our national holidays. I am excited to explain how Ghana commemorates our historic Independence Day every 6th of March.
+I hope this letter finds you in fine health and peace of mind in London. In your recent letter, you inquired about Ghana's national holidays and how we celebrate our national identity. I write with great pride to share with you how we commemorate our Independence Day every year on the sixth of March.
 
-Independence Day marks the momentous occasion in 1957 when our beloved nation broke free from British colonial rule, becoming the first sub-Saharan African nation to achieve sovereignty. It is a day of profound national pride, honoring the visionary leadership of Osagyefo Dr. Kwame Nkrumah and our founding patriots who sacrificed their lives for our liberation.
+Independence Day marks the momentous occasion in 1957 when Ghana became the first sub-Saharan African nation to break free from British colonial rule. Across all regional capitals and district townships, the day is celebrated with colorful ceremonial pageantry and patriotic fervor. The national celebration takes place at the historic Black Star Square in Accra, presided over by the President of the Republic.
 
-Across the country, the day is commemorated with magnificent military and school parades. In our regional capital, the celebration takes place at the municipal sports stadium. Contingents of pupils from basic and secondary schools, smartly turned out in immaculate uniforms, march past the presidential dais to the stirring tunes of brass bands. Security services—the army, police, and fire service—display thrilling drills and precision maneuvers. The atmosphere is electrified with traditional drumming, cultural dances, and the singing of our patriotic national anthem.
+The highlight of the day is the grand parade. Smartly attired contingents of the Ghana Armed Forces, the Police Service, and the Fire Service march past the presidential dais in crisp, coordinated formations, accompanied by stirring brass band anthems. Following the security services, hundreds of basic and secondary school students—including school cadet corps and cultural dance troupes—march proudly, waving miniature red, gold, and green national flags bearing our iconic black star.
 
-At the climax of the ceremony, the regional minister reads the national presidential address, reminding the youth of our duty to protect our hard-won freedom and work toward economic self-reliance. Families spend the afternoon picnicking and enjoying local dishes like jollof rice and fried plantain.
+In our district in Bekwai, the celebrations conclude with exhilarating cultural performances, school sports tournaments, and festive family picnics. Street vendors sell savory Ghanaian delicacies like spicy jollof rice, roasted plantain, and fried tilapia, while traditional drummers fill the air with pulsating rhythms. It is an inspiring national celebration that unites all Ghanaians in gratitude and patriotism.
 
-I hope you will visit Ghana someday to experience this patriotic spectacle firsthand.
+Please write back soon and share how national holidays are marked in England.
 
 Your true friend,
 [Signature]
-Kwaku Mensah`
+Kwabena Mensah`
       },
       {
         questionNumber: "2",
         category: "Formal Letter",
-        prompt: "Write a formal letter to your District Chief Executive (DCE) highlighting the acute shortage of potable drinking water in your community and suggesting at least two practical measures to solve the crisis.",
-        modelAnswer: `Presbyterian Junior High School
-P. O. Box 44
-Nsawam, Eastern Region
+        prompt: "Write a formal letter to your District Chief Executive (DCE) drawing his attention to the acute shortage of potable drinking water in your community, and suggesting at least two practical measures to solve the crisis.",
+        modelAnswer: `Presbyterian Junior Secondary School
+P. O. Box 80
+Begoro, Eastern Region
 18th October, 2007
 
 The District Chief Executive
-Akuapem South Municipal Assembly
-Nsawam
+Fanteakwa District Assembly
+Municipal Directorate, Begoro
 
 Dear Sir,
 
-PETITION REGARDING THE SEVERE WATER CRISIS IN NSAWAM COMMUNITY AND PROPOSALS FOR INTERVENTION
+PETITION REGARDING ACUTE WATER SHORTAGE IN BEGORO AND PROPOSALS FOR INTERVENTION
 
-On behalf of the youth and citizens of Nsawam, I respectfully write to draw your urgent attention to the acute shortage of potable drinking water confronting our community, and to propose sustainable solutions to avert an impending public health catastrophe.
+On behalf of the residents, market traders, and basic school students of the Begoro municipality, I respectfully submit this petition to draw your urgent attention to the perennial scarcity of potable drinking water in our community and to propose two practical interventions.
 
-For over four months, our community taps have run completely dry due to broken distribution pipelines. Consequently, women and school children walk several miles daily to fetch untreated water from the polluted Densu River. Pupils spend early morning hours queuing at private hand-dug wells instead of attending school, resulting in chronic classroom lateness and physical fatigue. Even worse, the consumption of contaminated water has triggered recurrent outbreaks of waterborne diseases, including cholera, dysentery, and bilharzia among children.
+For over five continuous months, municipal taps in our township have run completely dry due to broken pumping mains and heavy siltation at the primary treatment headworks. Consequently, women and school children are forced to trek more than four kilometers every morning to fetch untreated water from stagnant streams shared with grazing livestock. This crisis severely disrupts basic education, as pupils arrive at school exhausted after carrying heavy water basins, missing crucial morning instructional periods. Even more alarming, our municipal hospital has recorded a sharp increase in waterborne diseases such as cholera, bilharzia, and dysentery.
 
-To resolve this crisis, I suggest that the District Assembly collaborate with the Ghana Water Company Limited to urgently repair the damaged intake valves at the municipal pumping station and replace decayed distribution pipelines that have paralyzed water delivery.
+To resolve this crisis, I suggest, first, that the District Assembly allocate funds from the District Assembly Common Fund to drill and mechanize four industrial boreholes equipped with solar-powered pumps and high-capacity overhead storage tanks across major electoral zones. This will provide immediate, decentralized access to safe drinking water.
 
-Secondly, I recommend that your administration allocate emergency funds to drill and mechanize four commercial boreholes equipped with solar-powered overhead storage tanks at strategic locations, including our school compound and the central market square. These mechanized boreholes will provide reliable, clean groundwater and serve as a permanent buffer against municipal supply disruptions.
+Secondly, the assembly should partner with the Community Water and Sanitation Agency to dredge the silted municipal reservoir and replace rusted distribution pipes to restore pipe-borne water supply permanently.
 
-We trust that your esteemed office will treat this humanitarian appeal with the utmost urgency.
+We count on your executive leadership to end our long-suffering water crisis.
 
 Thank you.
 
 Yours faithfully,
 [Signature]
-Samuel Addo
+Emmanuel Addo
 (Youth Secretary)`
       },
       {
         questionNumber: "3",
-        category: "Speech Writing",
-        prompt: "As the Senior Prefect, write the valedictory speech you will deliver at your school's annual Speech and Prize-Giving Day, evaluating the school's achievements and appealing for infrastructural support.",
-        modelAnswer: `A SPEECH DELIVERED BY KWASI BOATENG, SENIOR PREFECT OF METHODIST JHS, AT THE 12TH ANNUAL SPEECH AND PRIZE-GIVING DAY
+        category: "Speech / Public Address",
+        prompt: "As the Senior Prefect of your school, write the valedictory speech you will deliver at your school's Annual Speech and Prize-Giving Day.",
+        modelAnswer: `A SPEECH DELIVERED BY THE SENIOR PREFECT ON THE OCCASION OF THE 2007 SPEECH AND PRIZE-GIVING DAY
 
-Mr. Chairman, Respected Headmaster, Dedicated Teachers, Revered Traditional Elders, Cherished Parents, and Fellow Students:
+Mr. Chairman, Respected District Director of Education, Dedicated Headmaster, Inspiring Teachers, Esteemed Parents, and Fellow Students:
 
-It is a distinct honor to address this distinguished gathering on this memorable occasion marking our annual Speech and Prize-Giving Day.
+It is a profound honor and privilege to stand before you today on behalf of the graduating Class of 2007 to reflect on our three-year basic school journey, celebrate our collective triumphs, and express our heartfelt gratitude to those who molded our minds and character.
 
-This academic year has been one of extraordinary milestones for our institution. Academically, our school placed first in the District Science and Technology Fair, designing an innovative solar water purifier. In sports, our football team won the zonal championship trophy, while our cultural troupe represented the municipality at the regional cultural festival with distinction. These successes testify to the dedication of our hardworking teachers and the discipline of our students.
+Three years ago, we walked through the gates of Methodist Junior Secondary School as timid, uncertain children. Today, we stand before you as disciplined, confident, and ambitious young scholars equipped to conquer the future. Our stay here has been characterized by academic excellence, athletic glory, and moral growth. In the recently released national mock examinations, our school achieved the highest distinction in the district, a testament to the unyielding dedication of our teaching staff.
 
-However, our progress is seriously threatened by acute infrastructural deficits. Our school library lacks foundational textbooks and reference materials, forcing learners to rely entirely on classroom notes. Furthermore, our information technology laboratory contains only three functioning desktop computers for over three hundred students, making practical computer lessons nearly impossible. Our classrooms are also overcrowded, with students squeezed onto damaged dual desks.
+To our headmaster and dedicated teachers, words are inadequate to express our gratitude. You were not merely academic tutors; you were patient mentors and compassionate parents who sacrificed your free afternoons to provide remedial tutorials and instill in us the virtues of integrity, punctuality, and hard work. You taught us to view challenges not as stumbling blocks, but as stepping stones to excellence.
 
-I therefore use this momentous platform to appeal passionately to our Member of Parliament, the District Assembly, our generous alumni, and the PTA to come to our aid. We urgently require thirty modern computers, two hundred dual desks, and contemporary library books to sustain our academic excellence.
+To our beloved parents, thank you for your financial sacrifices, your moral counsel, and your unconditional love. We promise to justify your investments by excelling in the upcoming BECE and gaining admission into premier secondary academies.
 
-To my fellow students and prize winners, I congratulate you and urge you to remain disciplined, for hard work is the sole bridge between dreams and reality.
+To my fellow graduating students, as we step out into the wider world, let us remember our school motto: "Knowledge and Industry." Let us carry the banner of integrity high wherever we go.
 
-Long live our noble school! Thank you all.`
+Thank you, and may God bless our school.`
       },
       {
         questionNumber: "4",
-        category: "Expository / Descriptive Essay",
-        prompt: "Write an engaging and clear expository essay describing to a foreign friend how your favorite traditional Ghanaian game is played and explaining why it is beneficial.",
-        modelAnswer: `THE ART AND STRATEGY OF PLAYING 'OWARE': GHANA'S ANCIENT BOARD GAME
+        category: "Descriptive / Instructional Guide",
+        prompt: "Write a letter to your close friend in another school, describing in clear, structured steps how your favorite outdoor game or sport is played.",
+        modelAnswer: `Anglican Junior Secondary School
+P. O. Box 112
+Mampong, Ashanti Region
+12th June, 2007
 
-Among the diverse traditional games played across Ghana, my absolute favorite is 'Oware', an ancient and intellectually stimulating board game that has entertained generations of Ghanaians for centuries. Carved from fine hardwood, the game is a contest of foresight, mathematical precision, and tactical cunning.
+Dear Kwesi,
 
-The game is played by two contestants seated opposite each other across an elongated wooden board containing two parallel rows of six hollow circular pits (cups), with a large storage cup carved at either end. The game begins with forty-eight smooth round seeds, usually gray marble-like 'oware' seeds, placed evenly four into each of the twelve playing cups.
+I hope this letter finds you in fine health and peace of mind in Kumasi. In your previous letter, you mentioned that you wanted to learn a new, exciting outdoor sport to play during recess. I am thrilled to introduce you to my absolute favorite outdoor game: volleyball. It is a thrilling, fast-paced team sport that builds physical agility, cardiovascular endurance, and teamwork.
 
-The objective is to capture the majority of the opponent's seeds. Players take turns selecting all the seeds from one of the cups on their side of the board and distributing them, one by one, counter-clockwise into consecutive cups in a rhythmic process known as sowing. If the final seed of a turn lands in an opponent's cup containing one or two seeds, raising the total to exactly two or three, the player captures those seeds and stores them in his end cup. If the preceding cups also contain two or three seeds, they are captured in a rewarding chain reaction. A player must always sow seeds in a manner that leaves the opponent with legal moves. The game concludes when one player captures twenty-five or more seeds.
+Volleyball is played on a rectangular court eighteen meters long and nine meters wide, divided equally by a raised central net. Two teams of six players face each other on opposite sides. The primary objective is to hit a lightweight leather ball over the net and ground it within the opponent's court boundaries while preventing the opposing team from doing the same.
 
-'Oware' is far more than entertainment; it sharpens mental arithmetic, quickens calculation speed, and teaches strategic planning. It fosters patience, sportsmanship, and deep social camaraderie among players.`
+The game commences with a service. A player stands behind the baseline and strikes the ball over the net into the opponent's half. The receiving team is allowed a maximum of three consecutive touches to return the ball across the net. Typically, the first player executes a "bump" or forearm pass to absorb the serve; the second player executes an overhead "set" to loft the ball near the net; and the third player performs a powerful jumping "spike" to smash the ball into the opponent's court.
+
+A team scores a point whenever the opponent fails to return the ball, hits it out of bounds, touches the net, or commits a ball-handling fault. A standard set is won by the first team to reach twenty-five points with a two-point advantage.
+
+Try forming a team at your school; I am certain you will fall in love with the game!
+
+Your true friend,
+[Signature]
+Kwaku Mensah`
       }
     ]
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `essay_${q.questionNumber}`,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish2007Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 2007 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 2007 into Firestore...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -690,37 +758,63 @@ async function seedBeceEnglish2007Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
-        paper1: {
+    questions: balancedPaper1,
+    paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
       passages: [
         {
           id: "passage_1",
-          title: "Passage I: Barimah and the Midnight Fire Alarm",
+          title: passage1Title,
           text: passage1Text,
-          questionRange: [1, 5]
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
         },
         {
           id: "passage_2",
-          title: "Passage II: The Menace of Smoking and Global Campaigns",
+          title: passage2Title,
           text: passage2Text,
-          questionRange: [6, 10]
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
         }
       ],
-      questions: balancedPaper1
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: passage1Title,
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: passage2Title,
+          text: passage2Text,
+          questionRange: "Questions 6 to 10",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 11 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 2007 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 2007 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish2007Calibrated()
