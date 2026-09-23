@@ -1523,7 +1523,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
     // 2026 BECE ENGLISH LANGUAGE BENCHMARK
     // ==========================================
     {
-        title: "2026 BECE English Language Paper 1 (Objective & Oral Language)",
+        title: "BECE-Aligned English Language Paper 1 (2026 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1546,7 +1546,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2026 BECE English Language Paper 2 (Essay, Comprehension & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2026 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1570,7 +1570,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
     },
 
     {
-        title: "2025 BECE English Language Paper 1 (Objective & Comprehension)",
+        title: "BECE-Aligned English Language Paper 1 (2025 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1593,7 +1593,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2025 BECE English Language Paper 2 (Essay, Comprehension & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2025 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1616,7 +1616,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2024 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2024 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1639,7 +1639,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2024 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2024 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1662,7 +1662,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2023 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2023 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1685,7 +1685,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2023 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2023 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1708,7 +1708,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2022 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2022 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1731,7 +1731,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2022 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2022 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1754,7 +1754,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2021 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2021 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1777,7 +1777,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2021 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2021 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1800,7 +1800,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2020 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2020 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1823,7 +1823,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2020 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2020 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1846,7 +1846,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2019 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2019 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1869,7 +1869,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2019 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2019 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1892,7 +1892,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2018 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2018 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1915,7 +1915,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2018 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2018 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1938,7 +1938,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2017 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (2017 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -1961,7 +1961,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2017 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2017 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -1984,7 +1984,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2016 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2016 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2007,7 +2007,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2016 BECE English Language Paper 2 (Essay & Literature)",
+        title: "BECE-Aligned English Language Paper 2 (2016 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2030,7 +2030,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2015 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2015 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2053,7 +2053,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2015 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2015 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2076,7 +2076,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2014 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2014 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2099,7 +2099,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2014 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2014 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2122,7 +2122,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2013 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2013 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2145,7 +2145,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2013 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2013 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2168,7 +2168,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2012 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2012 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2191,7 +2191,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2012 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2012 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2214,7 +2214,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2011 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2011 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2237,7 +2237,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2011 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2011 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2260,7 +2260,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2010 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2010 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2283,7 +2283,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2010 BECE English Language Paper 2 (Essay & Comprehension)",
+        title: "BECE-Aligned English Language Paper 2 (2010 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2306,7 +2306,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2009 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2009 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2329,7 +2329,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2009 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2009 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2352,7 +2352,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2008 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2008 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2375,7 +2375,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2008 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2008 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2398,7 +2398,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2007 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2007 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2421,7 +2421,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2007 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2007 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2444,7 +2444,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2006 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2006 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2467,7 +2467,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2006 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2006 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2490,7 +2490,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2005 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2005 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2513,7 +2513,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2005 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2005 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2536,7 +2536,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2004 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2004 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2559,7 +2559,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2004 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2004 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2582,7 +2582,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2003 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2003 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2605,7 +2605,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2003 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2003 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2628,7 +2628,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2001 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2001 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2651,7 +2651,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2001 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2001 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2674,7 +2674,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2000 BECE English Language Paper 1 (Objective Test)",
+        title: "BECE-Aligned English Language Paper 1 (2000 Model)",
         domain: "B7–B9.1 ORAL LANGUAGE & B7–B9.2 GRAMMAR",
         strandName: "Strand 2: Grammar & Lexis",
         strandCode: "B7-B9.2",
@@ -2697,7 +2697,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2000 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (2000 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2723,7 +2723,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
     // CLASSIC ERA BECE ENGLISH LANGUAGE (1990 - 1999)
     // ==========================================
     {
-        title: "1999 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1999 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2746,7 +2746,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1999 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1999 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2769,7 +2769,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1998 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1998 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2792,7 +2792,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1998 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1998 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2815,7 +2815,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1997 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1997 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2838,7 +2838,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1997 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1997 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2861,7 +2861,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1996 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1996 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2884,7 +2884,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1996 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1996 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2907,7 +2907,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1995 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1995 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2930,7 +2930,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1995 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1995 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2953,7 +2953,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1994 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1994 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -2976,7 +2976,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1994 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1994 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -2999,7 +2999,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1993 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1993 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -3022,7 +3022,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1993 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1993 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -3045,7 +3045,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1992 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1992 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -3068,7 +3068,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1992 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1992 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -3091,7 +3091,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1991 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1991 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -3114,7 +3114,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1991 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1991 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
@@ -3137,7 +3137,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1990 BECE English Language Paper 1 (Objective)",
+        title: "BECE-Aligned English Language Paper 1 (1990 Model)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
         strandName: "Strand 3: Grammar & Usage",
         strandCode: "B7-B9.3",
@@ -3160,7 +3160,7 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1990 BECE English Language Paper 2 (Essay Writing)",
+        title: "BECE-Aligned English Language Paper 2 (1990 Model)",
         domain: "B7–B9.4 WRITING & COMPOSITION",
         strandName: "Strand 4: Writing",
         strandCode: "B7-B9.4",
