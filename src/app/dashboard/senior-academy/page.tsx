@@ -3387,14 +3387,14 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
 const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
     // NaCCA CCP Integrated Science Discovery Assessment Series (B7 - B9)
     {
-        title: "NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)",
+        title: "Junior Integrated Science • Comprehensive CCP Preparatory Exam",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 & STRAND 2",
         strandCode: "S1/S2",
         subStrand: "50-Item Preparatory Assessment Blueprint",
         gradeTier: "Junior Secondary (JHS)",
         meta: "50 CBT Questions • 60 mins • Live Stepper",
-        description: "Official 50-item balanced preparatory examination covering all 5 NaCCA strands with instant grading, vector SVG diagrams, and KaTeX equations.",
+        description: "Balanced 50-item preparatory assessment covering all 5 NaCCA curriculum strands with instant scoring, responsive vector diagrams, and LaTeX equations.",
         difficulty: "Core",
         kind: "exam_series",
         setId: "paper_nacca_sample_variant_p1",
@@ -3405,12 +3405,12 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         setNumber: 70,
         era: "NaCCA Common Core Programme (CCP)",
         questionCount: 50,
-        examTag: "50 CBT Questions • Official Blueprint",
+        examTag: "50 CBT Questions • Curriculum Blueprint",
         subject: "Integrated Science",
         status: "ready"
     },
     {
-        title: "NaCCA Integrated Science CCP Practical & Theory Exam (Set 71)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (NaCCA CCP Benchmark)",
         domain: "SYSTEMS & FORCES AND ENERGY",
         strandName: "STRAND 3 & STRAND 4",
         strandCode: "S3/S4",
@@ -3433,7 +3433,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2024 BECE Integrated Science Paper 1 (Set 120 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2024 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3456,7 +3456,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2024 BECE Integrated Science Paper 2 (Set 120 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2024 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3479,7 +3479,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2023 BECE Integrated Science Paper 1 (Set 121 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2023 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3502,7 +3502,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2023 BECE Integrated Science Paper 2 (Set 121 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2023 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3525,7 +3525,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2025 BECE Integrated Science Paper 1 (Set 118 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2025 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3548,7 +3548,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2025 BECE Integrated Science Paper 2 (Set 119 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2025 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3571,7 +3571,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2026 BECE Integrated Science Paper 1 (Set 72 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2026 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3594,7 +3594,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2026 BECE Integrated Science Paper 2 (Set 73 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2026 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3617,7 +3617,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2014 BECE Integrated Science Paper 1 (Set 74 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2014 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3640,7 +3640,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2014 BECE Integrated Science Paper 2 (Set 75 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2014 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3663,7 +3663,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2010 BECE Integrated Science Paper 1 (Set 96 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2010 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3686,7 +3686,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2010 BECE Integrated Science Paper 2 (Set 97 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2010 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3709,7 +3709,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1990 BECE Integrated Science Paper 1 (Set 98 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1990 Model)",
         domain: "FOUNDATIONAL SCIENTIFIC INQUIRY & RETRO ARCHIVE",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3732,7 +3732,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1990 BECE Integrated Science Paper 2 (Set 99 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1990 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "THEORY & PRACTICAL",
         strandCode: "PRACTICAL-THEORY",
@@ -3755,7 +3755,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2009 BECE Integrated Science Paper 1 (Set 100 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2009 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3778,7 +3778,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2009 BECE Integrated Science Paper 2 (Set 101 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2009 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3801,7 +3801,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2008 BECE Integrated Science Paper 1 (Set 102 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2008 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3824,7 +3824,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2008 BECE Integrated Science Paper 2 (Set 103 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2008 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3847,7 +3847,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2007 BECE Integrated Science Paper 1 (Set 104 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2007 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3870,7 +3870,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2007 BECE Integrated Science Paper 2 (Set 105 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2007 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3893,7 +3893,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2006 BECE Integrated Science Paper 1 (Set 106 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2006 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3917,7 +3917,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2006 BECE Integrated Science Paper 2 (Set 107 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2006 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3940,7 +3940,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2005 BECE Integrated Science Paper 1 (Set 108 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2005 Model)",
         domain: "SCIENTIFIC INQUIRY, LIVING THINGS & PHYSICAL PHENOMENA",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -3964,7 +3964,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2005 BECE Integrated Science Paper 2 (Set 109 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2005 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -3987,7 +3987,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2004 BECE Integrated Science Paper 1 (Set 110 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2004 Model)",
         domain: "SCIENTIFIC INQUIRY, LIVING THINGS & PHYSICAL PHENOMENA",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4011,7 +4011,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2004 BECE Integrated Science Paper 2 (Set 111 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2004 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -4034,7 +4034,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2003 BECE Integrated Science Paper 1 (Set 112 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2003 Model)",
         domain: "SCIENTIFIC INQUIRY, LIVING THINGS & PHYSICAL PHENOMENA",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4058,7 +4058,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2003 BECE Integrated Science Paper 2 (Set 113 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2003 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "THEORY & PRACTICAL ESSAYS",
         strandCode: "THEORY-ESSAY",
@@ -4081,7 +4081,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2001 BECE Integrated Science Paper 1 (Set 114 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2001 Model)",
         domain: "SCIENTIFIC INQUIRY, LIVING THINGS & PHYSICAL PHENOMENA",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4104,7 +4104,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2001 BECE Integrated Science Paper 2 (Set 115 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2001 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "THEORY & PRACTICAL ESSAYS",
         strandCode: "THEORY-ESSAY",
@@ -4127,7 +4127,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2000 BECE Integrated Science Paper 1 (Set 116 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2000 Model)",
         domain: "SCIENTIFIC INQUIRY, LIVING THINGS & PHYSICAL PHENOMENA",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4150,7 +4150,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2000 BECE Integrated Science Paper 2 (Set 117 Theory & Practical)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2000 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "THEORY & PRACTICAL ESSAYS",
         strandCode: "THEORY-ESSAY",
@@ -4173,7 +4173,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2011 BECE Integrated Science Paper 1 (Set 94 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2011 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4196,7 +4196,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2011 BECE Integrated Science Paper 2 (Set 95 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2011 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -4219,7 +4219,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2015 BECE Integrated Science Paper 1 (Set 76 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2015 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4242,7 +4242,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2015 BECE Integrated Science Paper 2 (Set 77 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2015 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4265,7 +4265,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2016 BECE Integrated Science Paper 1 (Set 78 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2016 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4288,7 +4288,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2016 BECE Integrated Science Paper 2 (Set 79 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2016 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4311,7 +4311,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2017 BECE Integrated Science Paper 1 (Set 80 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2017 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4334,7 +4334,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2017 BECE Integrated Science Paper 2 (Set 81 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2017 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4357,7 +4357,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
         {
-        title: "2019 BECE Integrated Science Paper 1 (Set 82 Objective CBT)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2019 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL CONCEPTS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4380,7 +4380,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
 {
-        title: "2019 BECE Integrated Science Paper 2 (Set 83 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2019 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4403,7 +4403,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2018 BECE Integrated Science Paper 1 (Set 84 Objective CBT)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2018 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL CONCEPTS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4426,7 +4426,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2018 BECE Integrated Science Paper 2 (Set 85 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2018 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4449,7 +4449,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2021 BECE Integrated Science Paper 1 (Set 86 Objective CBT)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2021 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL CONCEPTS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4472,7 +4472,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2021 BECE Integrated Science Paper 2 (Set 87 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2021 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4495,14 +4495,14 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2022 BECE Integrated Science Paper 1 (Set 88 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2022 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
         subStrand: "2022 BECE Standardized Objective Examination",
         gradeTier: "Junior Secondary (JHS)",
         meta: "Paper 1 (40 Questions) • 45 mins • 40 Marks",
-        description: "Official isomorphic practice variant of the 2022 BECE Integrated Science Paper 1. Contains 40 balanced objective questions with responsive vector circuit/transistor SVGs, diagnostic hints, and full step-by-step solutions.",
+        description: "Standardized isomorphic practice model of the 2022 Integrated Science Paper 1. Contains 40 balanced objective questions with responsive vector circuit/transistor SVGs, diagnostic hints, and full step-by-step solutions.",
         difficulty: "Intermediate",
         kind: "exam_series",
         setId: "paper_2022_variant",
@@ -4518,7 +4518,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2012 BECE Integrated Science Paper 2 (Set 93 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2012 Benchmark)",
         domain: "EXPERIMENTAL SCIENTIFIC INVESTIGATION & APPLIED SCIENCE",
         strandName: "SECTION A & SECTION B",
         strandCode: "PRACTICAL-THEORY",
@@ -4541,7 +4541,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2022 BECE Integrated Science Paper 2 (Set 89 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2022 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4564,7 +4564,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2013 BECE Integrated Science Paper 1 (Set 122 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2013 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4587,7 +4587,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2013 BECE Integrated Science Paper 2 (Set 122 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (2013 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4610,7 +4610,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1991 BECE Integrated Science Paper 1 (Set 123 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1991 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4633,14 +4633,14 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1991 BECE Integrated Science Paper 2 (Set 123 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1991 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
         subStrand: "1991 BECE Practical & Theory Essay Examination",
         gradeTier: "Junior Secondary (JHS)",
         meta: "4 Questions • 75 mins • 80 Marks",
-        description: "Standardized practical and theory essay examination variant featuring floral pollination, optics of reflection on a plane mirror with responsive vector SVG, carbon dioxide chemistry, physiological excretion and respiration, cholera public health precautions, and classification of matter.",
+        description: "Standardized practical and theory model featuring floral pollination, optics of reflection on plane mirrors with vector SVG, carbon dioxide chemistry, and human excretion.",
         difficulty: "Intermediate",
         kind: "exam_series",
         setId: "paper_1991_variant_p2",
@@ -4656,7 +4656,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1992 BECE Integrated Science Paper 1 (Set 124 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1992 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4679,14 +4679,14 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1992 BECE Integrated Science Paper 2 (Set 124 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1992 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
         subStrand: "1992 BECE Practical & Theory Essay Examination",
         gradeTier: "Junior Secondary (JHS)",
         meta: "4 Questions • 75 mins • 80 Marks",
-        description: "Standardized practical and theory essay examination variant featuring density determination, parasite epidemiology table, Class 1 lever mechanics with vector SVG, soil sedimentation cylinder stratification with vector SVG, and teleost bony fish morphology and respiration with vector SVG.",
+        description: "Standardized practical and theory model featuring density determination, parasite epidemiology, Class 1 lever mechanics, and teleost bony fish morphology with vector SVG.",
         difficulty: "Intermediate",
         kind: "exam_series",
         setId: "paper_1992_variant_p2",
@@ -4702,7 +4702,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1993 BECE Integrated Science Paper 1 (Set 125 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1993 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4725,7 +4725,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1993 BECE Integrated Science Paper 2 (Set 125 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1993 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4748,7 +4748,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1994 BECE Integrated Science Paper 1 (Set 126 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1994 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4771,7 +4771,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1994 BECE Integrated Science Paper 2 (Set 126 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1994 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4794,7 +4794,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1995 BECE Integrated Science Paper 1 (Set 127 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1995 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4817,7 +4817,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1995 BECE Integrated Science Paper 2 (Set 127 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1995 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4840,7 +4840,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1996 BECE Integrated Science Paper 1 (Set 128 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1996 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4863,7 +4863,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1996 BECE Integrated Science Paper 2 (Set 128 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1996 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4886,7 +4886,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1997 BECE Integrated Science Paper 1 (Set 129 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1997 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4909,7 +4909,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1997 BECE Integrated Science Paper 2 (Set 129 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1997 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4932,7 +4932,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1998 BECE Integrated Science Paper 1 (Set 130 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1998 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4955,7 +4955,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1998 BECE Integrated Science Paper 2 (Set 130 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1998 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -4978,7 +4978,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1999 BECE Integrated Science Paper 1 (Set 131 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (1999 Model)",
         domain: "DIVERSITY OF MATTER & CYCLES",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -5001,7 +5001,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "1999 BECE Integrated Science Paper 2 (Set 131 Practical & Theory)",
+        title: "Junior Integrated Science • Paper 2 Theory Suite (1999 Benchmark)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
@@ -5066,7 +5066,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
-        title: "2012 BECE Integrated Science Paper 1 (Set 92 Objective)",
+        title: "BECE-Aligned Integrated Science Paper 1 (2012 Model)",
         domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL SKILLS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",

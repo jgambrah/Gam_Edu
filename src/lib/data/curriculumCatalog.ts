@@ -36,7 +36,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2026_variant',
-    title: '2026 BECE Integrated Science Paper 1 (Set 72 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2026 Model)',
     year: 2026,
     setNumber: 72,
     paperType: 1,
@@ -49,7 +49,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2026_variant_p2',
-    title: '2026 BECE Integrated Science Paper 2 (Set 73 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2026 Benchmark)',
     year: 2026,
     setNumber: 73,
     paperType: 2,
@@ -62,7 +62,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2014_variant',
-    title: '2014 BECE Integrated Science Paper 1 (Set 74 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2014 Model)',
     year: 2014,
     setNumber: 74,
     paperType: 1,
@@ -75,7 +75,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2014_variant_p2',
-    title: '2014 BECE Integrated Science Paper 2 (Set 75 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2014 Benchmark)',
     year: 2014,
     setNumber: 75,
     paperType: 2,
@@ -88,7 +88,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2015_variant',
-    title: '2015 BECE Integrated Science Paper 1 (Set 76 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2015 Model)',
     year: 2015,
     setNumber: 76,
     paperType: 1,
@@ -101,7 +101,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2015_variant_p2',
-    title: '2015 BECE Integrated Science Paper 2 (Set 77 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2015 Benchmark)',
     year: 2015,
     setNumber: 77,
     paperType: 2,
@@ -114,7 +114,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2016_variant',
-    title: '2016 BECE Integrated Science Paper 1 (Set 78 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2016 Model)',
     year: 2016,
     setNumber: 78,
     paperType: 1,
@@ -127,7 +127,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2016_variant_p2',
-    title: '2016 BECE Integrated Science Paper 2 (Set 79 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2016 Benchmark)',
     year: 2016,
     setNumber: 79,
     paperType: 2,
@@ -140,7 +140,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2017_variant',
-    title: '2017 BECE Integrated Science Paper 1 (Set 80 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2017 Model)',
     year: 2017,
     setNumber: 80,
     paperType: 1,
@@ -153,7 +153,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2017_variant_p2',
-    title: '2017 BECE Integrated Science Paper 2 (Set 81 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2017 Benchmark)',
     year: 2017,
     setNumber: 81,
     paperType: 2,
@@ -166,7 +166,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
     {
     id: 'paper_2019_variant',
-    title: '2019 BECE Integrated Science Paper 1 (Set 82 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2019 Model)',
     year: 2019,
     setNumber: 82,
     paperType: 1,
@@ -179,7 +179,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
 {
     id: 'paper_2019_variant_p2',
-    title: '2019 BECE Integrated Science Paper 2 (Set 83 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2019 Benchmark)',
     year: 2019,
     setNumber: 83,
     paperType: 2,
@@ -192,7 +192,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2018_variant',
-    title: '2018 BECE Integrated Science Paper 1 (Set 84 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2018 Model)',
     year: 2018,
     setNumber: 84,
     paperType: 1,
@@ -205,7 +205,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2018_variant_p2',
-    title: '2018 BECE Integrated Science Paper 2 (Set 85 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2018 Benchmark)',
     year: 2018,
     setNumber: 85,
     paperType: 2,
@@ -218,7 +218,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2021_variant',
-    title: '2021 BECE Integrated Science Paper 1 (Set 86 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2021 Model)',
     year: 2021,
     setNumber: 86,
     paperType: 1,
@@ -231,7 +231,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2021_variant_p2',
-    title: '2021 BECE Integrated Science Paper 2 (Set 87 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2021 Benchmark)',
     year: 2021,
     setNumber: 87,
     paperType: 2,
@@ -244,7 +244,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2022_variant',
-    title: '2022 BECE Integrated Science Paper 1 (Set 88 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2022 Model)',
     year: 2022,
     setNumber: 88,
     paperType: 1,
@@ -257,7 +257,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2022_variant_p2',
-    title: '2022 BECE Integrated Science Paper 2 (Set 89 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2022 Benchmark)',
     year: 2022,
     setNumber: 89,
     paperType: 2,
@@ -270,7 +270,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2013_variant',
-    title: '2013 BECE Integrated Science Paper 1 (Set 90 Objective)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2013 Model)',
     year: 2013,
     setNumber: 90,
     paperType: 1,
@@ -283,7 +283,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'paper_2013_variant_p2',
-    title: '2013 BECE Integrated Science Paper 2 (Set 91 Practical & Essay)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2013 Benchmark)',
     year: 2013,
     setNumber: 91,
     paperType: 2,
@@ -660,7 +660,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   // ==========================================
   {
     id: 'bece-science-2024-p1',
-    title: '2024 BECE Integrated Science Paper 1 (Objective CBT)',
+    title: 'BECE-Aligned Integrated Science Paper 1 (2024 Model)',
     year: 2024,
     paperType: 1,
     subject: 'Integrated Science',
@@ -672,7 +672,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'bece-science-2024-p2',
-    title: '2024 BECE Integrated Science Paper 2 (Theory & Practicals)',
+    title: 'Junior Integrated Science • Paper 2 Theory Suite (2024 Benchmark)',
     year: 2024,
     paperType: 2,
     subject: 'Integrated Science',
