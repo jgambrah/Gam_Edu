@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -43,349 +43,339 @@ interface QuestionItem {
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// ==========================================
-// PASSAGE I: SIGHTSEEING IN ACCRA
-// ==========================================
-const passage1Text = `When Mr. Appiah looked at the two happy faces of his nephews, he forgot about his aching feet and smiled. He had spent the whole day showing Asare and Attah, who came from the village, around Accra. He was satisfied that they were happy. It was not until they were seated on a bench in the public garden that he realized how hot, tired and dusty he was.
+// =========================================================================
+// ISOMORPHIC PASSAGE I: TOURING THE METROPOLIS (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `Observing the bright, wonder-filled expressions on the faces of his young nephews, Mr. Kwame Antwi overlooked the dull throbbing in his ankles and broke into a warm smile. He had spent the entire morning and early afternoon guiding Kwabena and Kofi, who had traveled from their secluded farming hamlet, through the commercial districts of Kumasi. He took deep satisfaction in seeing their absolute delight. It was only when they finally rested on a shaded stone bench in the municipal public park that he realized just how parched, exhausted, and covered in road dust he truly was.
 
-It was a long time since he had walked so much. Like many other successful men, Mr. Appiah had acquired the habit of going everywhere in his car, so that day's sight-seeing expedition had worn him out.
+It had been years since he had undertaken such extensive walking. Like many thriving civil servants, Mr. Antwi had grown accustomed to traveling everywhere in his air-conditioned saloon car, so that day's walking expedition across the city had drained his physical reserves.
 
-"Well, what do you think of Accra?" he asked the boys.
+"Tell me, boys, what do you make of the regional capital?" he asked them gently.
 
-"Oh!" exclaimed Attah. "It's a wonderful place!"
+"Oh, Uncle!" exclaimed Kofi with wide eyes. "It is an astonishing place!"
 
-"I didn't imagine any place could be like this, Uncle," said Asare. "Everything is so splendid. The roads are very wide and the buildings magnificent."
+"I never conceived that any town could be so grand," added Kwabena. "Everything is so magnificent. The dual carriageways are extraordinarily broad, and the administrative edifices are majestic."
 
-"Boys, don't get the wrong impression. Today you've seen the best parts of our city, but there are bad areas with buildings falling apart, narrow streets and insanitary conditions. However, these buildings are being demolished," said Mr. Appiah.`;
+"Do not form a lopsided judgment, my boys," Mr. Antwi cautioned with a gentle wave of his hand. "Today you have observed only the polished commercial avenues. There are blighted peripheral suburbs riddled with decaying wooden shacks, congested gutters, and deplorable insanitary conditions. Fortunately, the city council has begun pulling down those hazardous structures to pave way for modern redevelopment."`;
 
-const passage1QuestionsRaw = [
+const passage1Questions = [
   {
     number: 1,
-    prompt: "According to Passage I, why was Mr. Appiah hot, tired, and dusty by late afternoon?",
+    prompt: "According to Passage I, why did Mr. Antwi feel dusty, thirsty, and physically exhausted by afternoon?",
     options: [
-      "He had traveled on foot to bring his nephews from their distant village",
-      "He had climbed to the topmost floors of the skyscrapers",
-      "He had spent the entire day walking around Accra guiding his nephews on tour",
-      "He had physically assisted the workers demolishing dilapidated structures"
+      "He had walked all the way from the farming hamlet to bring the boys",
+      "He had climbed the top tower of the regional administrative edifice",
+      "He had spent long hours walking on foot to guide his nephews through the city",
+      "He had personally assisted municipal laborers in clearing roadside debris"
     ],
-    correctAnswer: "He had spent the entire day walking around Accra guiding his nephews on tour",
-    hint: "Reread paragraph one: he had spent the whole day showing Asare and Attah around Accra on foot.",
-    workedSolution: "Mr. Appiah was exhausted because he spent the entire day walking on foot guiding his visiting nephews around the sights of the capital city.",
+    correctAnswer: "He had spent long hours walking on foot to guide his nephews through the city",
+    hint: "Reread paragraph one and two: he had walked for hours showing them around because he normally drove everywhere.",
+    workedSolution: "The narrative explains that Mr. Antwi was exhausted because he spent the entire day walking on foot with his nephews, an exertion he was unaccustomed to.",
     points: 1
   },
   {
     number: 2,
-    prompt: "Where did Asare and Attah reside prior to their excursion to Accra in Passage I?",
+    prompt: "Where did Kwabena and Kofi live prior to their excursion in Passage I?",
     options: [
-      "In the tall commercial skyscrapers",
-      "In their rural country village",
-      "In modern suburban bungalows",
-      "In the landscaped public gardens"
+      "In the commercial quarter of Kumasi",
+      "In a secluded rural farming village",
+      "Near the stone benches of the public park",
+      "In a suburban residential quarter"
     ],
-    correctAnswer: "In their rural country village",
-    hint: "Paragraph one notes that his nephews 'came from the village'.",
-    workedSolution: "The narrative explicitly notes that the two boys had traveled from their rural village to visit Accra.",
+    correctAnswer: "In a secluded rural farming village",
+    hint: "Paragraph one notes they had traveled from their 'secluded farming hamlet'.",
+    workedSolution: "The text explicitly states that the two young boys resided in a secluded rural farming hamlet before visiting their uncle.",
     points: 1
   },
   {
     number: 3,
-    prompt: "In Passage I, the expression 'Everything is so splendid' means that everything is ............",
+    prompt: "In Passage I, the phrase 'Everything is so magnificent' means that the boys found the city to be ............",
     options: [
-      "merely satisfactory and adequate",
-      "grand, magnificent, and strikingly impressive",
-      "politically important to the nation",
-      "radiantly illuminated with lights"
+      "barely tolerable and crowded",
+      "grand, majestic, and strikingly impressive",
+      "strictly dedicated to political governance",
+      "brilliantly painted in bright colors"
     ],
-    correctAnswer: "grand, magnificent, and strikingly impressive",
-    hint: "'Splendid' denotes magnificent, glorious, and grand in quality or appearance.",
-    workedSolution: "'Splendid' means magnificent, grand, or impressive; 'grand, magnificent, and strikingly impressive' is its direct meaning.",
+    correctAnswer: "grand, majestic, and strikingly impressive",
+    hint: "'Magnificent' denotes splendor, grandeur, and exceptional visual beauty.",
+    workedSolution: "'Magnificent' means splendid, grand, or majestically impressive; 'grand, majestic, and strikingly impressive' captures the exact meaning.",
     points: 1
   },
   {
     number: 4,
-    prompt: "According to Passage I, what daily transport habit is common among many successful urban gentlemen?",
+    prompt: "According to Passage I, what daily transport habit is typical of many prosperous urban professionals?",
     options: [
-      "Walking extensive distances around the city center",
-      "Commuting daily by public transport buses",
-      "Driving everywhere in their private motorcars rather than walking",
-      "Resting on public benches in the gardens"
+      "Walking extensive miles through crowded central avenues",
+      "Relying on municipal passenger buses for their commutes",
+      "Commuting everywhere in private vehicles rather than walking",
+      "Resting frequently in landscaped public gardens"
     ],
-    correctAnswer: "Driving everywhere in their private motorcars rather than walking",
-    hint: "Check paragraph two: 'Like many other successful men, Mr. Appiah had acquired the habit of going everywhere in his car...'",
-    workedSolution: "The passage notes that affluent professionals habitually drive their private cars everywhere and rarely walk on foot.",
+    correctAnswer: "Commuting everywhere in private vehicles rather than walking",
+    hint: "Paragraph two highlights: 'Like many thriving civil servants, Mr. Antwi had grown accustomed to traveling everywhere in his air-conditioned saloon car...'",
+    workedSolution: "The author observes that affluent professionals habitually commute in private motorcars and rarely engage in long walking journeys.",
     points: 1
   },
   {
     number: 5,
     prompt: "Which of the following assertions is NOT true according to Passage I?",
     options: [
-      "Every single neighborhood across the capital city of Accra is splendid and luxurious",
-      "Mr. Appiah routinely relies on his private automobile for movement",
-      "Asare and Attah were experiencing the capital city for the first time",
-      "The uncle and his nephews sat to rest on a bench in the public gardens"
+      "Every single neighborhood across the metropolis is clean and magnificent",
+      "Mr. Antwi routinely drives his private automobile for personal transit",
+      "Kwabena and Kofi were visiting the regional capital for the very first time",
+      "The uncle and his nephews sat down to rest on a park bench"
     ],
-    correctAnswer: "Every single neighborhood across the capital city of Accra is splendid and luxurious",
-    hint: "Mr. Appiah cautions the boys that there are poor, crowded areas with narrow streets and insanitary conditions.",
-    workedSolution: "Mr. Appiah explicitly corrects the boys by explaining that there are blighted slum areas falling apart; claiming that every part of the city is splendid is false.",
+    correctAnswer: "Every single neighborhood across the metropolis is clean and magnificent",
+    hint: "Notice Mr. Antwi's warning regarding neglected suburbs and decaying shacks.",
+    workedSolution: "Mr. Antwi explicitly corrects his nephews by explaining that neglected, unhygienic slums also exist in the city; claiming every neighborhood is magnificent is false.",
     points: 1
   },
   {
     number: 6,
-    prompt: "In Passage I, the term 'insanitary conditions' in the final paragraph refers to places that are ............",
+    prompt: "In Passage I, the expression 'insanitary conditions' in the final paragraph refers to an environment that is ............",
     options: [
-      "inhabited by mentally disordered individuals",
-      "filthy, unhygienic, dirty, and hazardous to health",
-      "experiencing extreme atmospheric heat",
-      "unreported in public municipal newspapers"
+      "inhabited by mentally disturbed individuals",
+      "filthy, unhygienic, and hazardous to public health",
+      "subject to extreme atmospheric harmattan haze",
+      "completely unfamiliar to visiting travelers"
     ],
-    correctAnswer: "filthy, unhygienic, dirty, and hazardous to health",
-    hint: "Sanitation deals with cleanliness and public hygiene. 'Insanitary' means unhygienic and dirty.",
-    workedSolution: "'Insanitary' describes unhygienic, dirty, and polluted environments that harbor disease; 'filthy, unhygienic, dirty, and hazardous to health' is the exact equivalent.",
+    correctAnswer: "filthy, unhygienic, and hazardous to public health",
+    hint: "Sanitation relates to hygiene and cleanliness. 'Insanitary' means dirty and disease-breeding.",
+    workedSolution: "'Insanitary' describes dirty, unhygienic, and squalid conditions that breed diseases; 'filthy, unhygienic, and hazardous to public health' is the exact equivalent.",
     points: 1
   },
   {
     number: 7,
-    prompt: "In Passage I, the word 'demolished' in 'these buildings are being demolished' means ............",
+    prompt: "In Passage I, the word 'demolished' in 'these buildings are being demolished' means that the dilapidated structures are being ............",
     options: [
-      "renovated and re-roofed",
-      "freshly painted with white wash",
-      "pulled down and razed to the ground",
-      "sold to private developers"
+      "re-roofed with treated timber",
+      "freshly whitewashed and repaired",
+      "razed and pulled down to the ground",
+      "advertised for commercial rental"
     ],
-    correctAnswer: "pulled down and razed to the ground",
-    hint: "To tear down, raze, or destroy dilapidated structures.",
-    workedSolution: "'Demolished' means torn down, dismantled, or razed to the ground; 'pulled down and razed to the ground' is the direct synonym.",
+    correctAnswer: "razed and pulled down to the ground",
+    hint: "To demolish an old building means to knock it down or tear it apart.",
+    workedSolution: "'Demolished' means systematically pulled down, flattened, or razed; 'razed and pulled down to the ground' is its direct meaning.",
     points: 1
   }
 ];
 
-// ==========================================
-// PASSAGE II: THE AKOSOMBO DAM AND POWER
-// ==========================================
-const passage2Text = `The Akosombo Dam and the great Volta Lake are famous all over the world. The two main reasons for building the dam were to generate electricity and to use the electricity for the production of aluminium from bauxite. Aluminium is used throughout the world; so both the production of electricity and the production of aluminium are of great value to Ghana.
+// =========================================================================
+// ISOMORPHIC PASSAGE II: HYDROPOWER AND INDUSTRY (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Text = `The engineering marvel of the Akosombo Hydroelectric Scheme and the sprawling inland expanse of Lake Volta enjoy worldwide acclaim. The twin strategic purposes that inspired the construction of the massive dam were the generation of abundant electrical energy and the deployment of that power to smelt high-grade aluminum from domestic bauxite deposits. Because aluminum is an indispensable industrial metal across the globe, the domestic production of both electrical energy and refined metal constitutes a cornerstone of Ghana's industrial economy.
 
-It may seem strange to talk about producing electricity by building a dam, but in fact a lot of dams have been built all over the world for this purpose. What happens is that a concrete wall, called a dam, is constructed across a river at a narrow point. A large lake then develops behind the wall. Tunnels are made in the dam so that water from the lake can rush fiercely through them. This powerful flow of water is used to drive huge machines called turbines, to generate electricity. All that the engineers need is the water rushing down from the lake, and all this costs them nothing! But of course the building of the dam and the fixing of the machines cost a great deal of money.
+To the uninitiated, generating electric power by blocking an open river basin may appear puzzling, yet numerous hydro dams have been erected globally on identical principles. In engineering practice, a towering reinforced concrete barrier—termed a dam—is thrown across a river gorge at an optimal narrow neck. A deep, extensive artificial reservoir then accumulates behind the barrier wall. Reinforced penstock tunnels are engineered through the base of the dam structure, allowing pressurized water from the lake to rush downward with tremendous force.
 
-Big dams have been built in many parts of the world. The Akosombo Dam is one of the biggest. However, the lake which has been formed is in fact the biggest man-made lake in the world.`;
+This violent hydraulic flow strikes and spins massive subterranean waterwheels known as turbines, which drive heavy generators to produce electrical current. The operational force driving the entire complex is simply the natural weight of falling water, and this raw hydraulic resource costs the operational authority nothing. Nevertheless, the initial capital required to survey the gorge, pour millions of tons of concrete, and install the imported electro-mechanical turbines represents a massive financial outlay.
 
-const passage2QuestionsRaw = [
+While gigantic dams have been constructed across various continents, Akosombo ranks among the most formidable. More significantly, the reservoir formed behind its concrete crest remains the largest man-made lake on earth by surface area.`;
+
+const passage2Questions = [
   {
     number: 8,
-    prompt: "According to Passage II, what were the primary statutory objectives behind constructing the Akosombo Dam?",
+    prompt: "According to Passage II, what were the two foundational objectives that motivated the construction of the Akosombo Dam?",
     options: [
-      "To generate hydroelectric power and utilize it to smelt aluminum from bauxite ore",
-      "To extract bauxite directly from the depths of the riverbed",
-      "To build tourist holiday resorts along the riverbanks",
-      "To supply drinking water exclusively to the city of Accra"
+      "To produce electrical power and utilize that energy to process bauxite into aluminum",
+      "To dredge the river bed and extract gold dust from submerged gravel",
+      "To establish luxury vacation islands along the river basin",
+      "To supply municipal treated tap water exclusively to urban ports"
     ],
-    correctAnswer: "To generate hydroelectric power and utilize it to smelt aluminum from bauxite ore",
-    hint: "Reread paragraph one: 'to generate electricity and to use the electricity for the production of aluminium from bauxite.'",
-    workedSolution: "The dam was constructed to generate hydroelectricity and use that electrical power to process local bauxite into aluminum.",
+    correctAnswer: "To produce electrical power and utilize that energy to process bauxite into aluminum",
+    hint: "Check paragraph one: electricity generation and aluminum smelting from bauxite.",
+    workedSolution: "The passage explicitly identifies the twin purposes as generating electrical energy and utilizing it to smelt aluminum from bauxite.",
     points: 1
   },
   {
     number: 9,
-    prompt: "According to Passage II, what raw natural mineral ore is refined to produce aluminum?",
-    options: ["Concrete", "Bauxite", "Turbine rock", "Granite gravel"],
+    prompt: "According to Passage II, what mineral ore serves as the raw material for aluminum smelting?",
+    options: ["Limestone", "Bauxite", "Granite", "Bitumen"],
     correctAnswer: "Bauxite",
-    hint: "Check paragraph one: 'production of aluminium from bauxite.'",
-    workedSolution: "The text identifies 'bauxite' as the primary mineral resource mined and smelted into metallic aluminum.",
+    hint: "Reread paragraph one: 'smelt high-grade aluminum from domestic bauxite deposits.'",
+    workedSolution: "The text identifies 'bauxite' as the primary mineral ore that is refined into aluminum.",
     points: 1
   },
   {
     number: 10,
-    prompt: "Across the world, concrete river dams are constructed primarily to ............",
+    prompt: "Across the world, concrete river dams are engineered primarily to ............",
     options: [
-      "extract mineral ores from inland reservoirs",
-      "impound water under high pressure to drive turbines and generate electricity",
-      "dredge river bottoms for commercial irrigation",
-      "provide municipal treated drinking water"
+      "quarry industrial building stone from submerged gorges",
+      "harness pressurized falling water to spin turbines and produce electricity",
+      "drain inland marshes for agricultural estate development",
+      "provide shallow waterways for recreational boating"
     ],
-    correctAnswer: "impound water under high pressure to drive turbines and generate electricity",
-    hint: "Paragraph two explains that water rushing through tunnels drives massive turbines to produce electric power.",
-    workedSolution: "Dams block rivers to create deep lakes whose rushing water turns mechanical turbines to generate electrical power.",
+    correctAnswer: "harness pressurized falling water to spin turbines and produce electricity",
+    hint: "Paragraph two details how water rushing through tunnels turns turbines to generate electricity.",
+    workedSolution: "Dams are erected to create reservoirs whose rushing hydraulic force drives mechanical turbines to generate electricity.",
     points: 1
   },
   {
     number: 11,
-    prompt: "Which of the following assertions is NOT true according to Passage II?",
+    prompt: "Which of the following statements is NOT true according to Passage II?",
     options: [
-      "The Akosombo Dam structure itself is the largest concrete dam in the world",
-      "Both electricity generation and aluminum production are of enormous economic value to Ghana",
-      "High-pressure water from the Volta Lake rushes through specialized intake tunnels",
-      "The engineering infrastructure of the dam required heavy capital investment"
+      "The physical concrete wall at Akosombo is the single largest dam wall in existence",
+      "Both aluminum smelting and electrical generation yield immense economic benefits to Ghana",
+      "Pressurized reservoir water surges through engineered penstock tunnels",
+      "Building a hydroelectric dam requires massive capital investment"
     ],
-    correctAnswer: "The Akosombo Dam structure itself is the largest concrete dam in the world",
-    hint: "Paragraph three states the dam is 'one of the biggest', but the *lake* is the biggest man-made lake.",
-    workedSolution: "The passage notes that the Volta Lake is the biggest man-made lake in the world, while the dam is only 'one of the biggest'. Claiming the dam itself is the biggest in the world is false.",
+    correctAnswer: "The physical concrete wall at Akosombo is the single largest dam wall in existence",
+    hint: "Paragraph four notes that the dam is 'among the most formidable', but the *lake* is the largest man-made lake.",
+    workedSolution: "The text affirms that Lake Volta is the largest man-made lake, while the dam is only 'one of the most formidable'; asserting that the dam wall itself is the largest in existence is false.",
     points: 1
   },
   {
     number: 12,
-    prompt: "According to the operational details in Passage II, which statement is factually true?",
+    prompt: "According to the mechanical principles outlined in Passage II, which assertion is factually accurate?",
     options: [
-      "Engineers dam rivers at their widest floodplain points",
-      "The mechanical kinetic energy of rushing water is harnessed to generate electricity",
-      "Constructing concrete dams and installing heavy turbines costs zero capital",
-      "Hydroelectric power generation requires immense quantities of petroleum fuel"
+      "Engineers throw dam walls across rivers at their widest alluvial plains",
+      "The natural kinetic force of rushing water is captured to drive electricity generators",
+      "Procuring turbine machinery and pouring dam concrete requires zero financial expenditure",
+      "Hydroelectric power generation consumes millions of barrels of crude petroleum daily"
     ],
-    correctAnswer: "The mechanical kinetic energy of rushing water is harnessed to generate electricity",
-    hint: "Rushing water turning turbines generates clean hydroelectric energy without burning fuel.",
-    workedSolution: "The text explains that the force of water rushing through tunnels drives turbines to generate electricity.",
+    correctAnswer: "The natural kinetic force of rushing water is captured to drive electricity generators",
+    hint: "Falling water spins turbines without burning petroleum fuel.",
+    workedSolution: "The passage explains that the mechanical energy of falling water turns heavy turbines to generate electricity without consuming combustible fuel.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Which of the following headings serves as the most suitable title for Passage II?",
+    prompt: "Which of the following titles is most appropriate for Passage II?",
     options: [
-      "Bauxite Mining in Ghana",
-      "Hydroelectric Power Generation from Water",
-      "Global Shipping and River Dams",
-      "Industrial Aluminium Smelting"
+      "The Geological Origins of Bauxite",
+      "Generating Electrical Energy from Hydropower",
+      "The World's Deepest Inland Waterways",
+      "International Metal Smelting Technologies"
     ],
-    correctAnswer: "Hydroelectric Power Generation from Water",
-    hint: "The central thesis of the passage explains how dams block rivers to produce electricity using rushing water.",
-    workedSolution: "The passage focuses on the technical principles and national value of building dams to generate electricity from rushing water; 'Hydroelectric Power Generation from Water' is the best title.",
+    correctAnswer: "Generating Electrical Energy from Hydropower",
+    hint: "The overarching theme of the text is how river dams harness water power to produce electricity.",
+    workedSolution: "The central focus is the engineering and national significance of generating electric power from dammed river water; 'Generating Electrical Energy from Hydropower' is the most accurate title.",
     points: 1
   }
 ];
 
-// ==========================================
-// GENERAL LEXIS AND STRUCTURE (14 - 40)
-// ==========================================
-const generalQuestionsRaw = [
+// =========================================================================
+// GENERAL SECTIONS B - D: SYNONYMS, STRUCTURE & ANTONYMS (CALIBRATED)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (14 - 17) ---
   {
     number: 14,
-    prompt: "Your woven fabric is inferior to what was imported from the textile factory. This means that your fabric is ............",
-    options: [
-      "of poor quality and lower standard",
-      "exceptionally beautiful",
-      "brightly colored",
-      "costly and expensive"
-    ],
-    correctAnswer: "of poor quality and lower standard",
-    hint: "Lower in rank, status, quality, or standard.",
-    workedSolution: "'Inferior' means lower in quality or standard; 'of poor quality and lower standard' is its direct meaning.",
+    prompt: "The imported fabric you bought is inferior to our locally handwoven kente cloth.\nChoose the word nearest in meaning to 'inferior'.",
+    options: ["substandard in quality", "wonderfully patterned", "delicately textured", "moderately priced"],
+    correctAnswer: "substandard in quality",
+    hint: "Lower in grade, durability, or quality.",
+    workedSolution: "'Inferior' means lower in rank, standard, or excellence; 'substandard in quality' is its direct contextual meaning.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The apprentice is a spendthrift who squandered all his savings on expensive shoes. This means he is ............",
-    options: ["careless in work", "bold and audacious", "extravagant and wasteful with money", "benevolent and kind"],
-    correctAnswer: "extravagant and wasteful with money",
-    hint: "A person who spends money wastefully and extravagantly.",
-    workedSolution: "'Spendthrift' describes an individual who spends money recklessly and wastefully; 'extravagant and wasteful with money' is its exact equivalent.",
+    prompt: "The young apprentice proved to be a spendthrift who squandered all his allowances on luxury watches.\nChoose the word nearest in meaning to 'spendthrift'.",
+    options: ["an indolent youth", "a reckless gambler", "a profligate spender", "a rebellious person"],
+    correctAnswer: "a profligate spender",
+    hint: "A person who wastes money carelessly and extravagantly.",
+    workedSolution: "'Spendthrift' denotes an individual who spends money wastefully and lavishly; 'a profligate spender' is its exact equivalent.",
     points: 1
   },
   {
     number: 16,
-    prompt: "The basic school pupils often participate actively in communal activities. This means they assist in ............",
-    options: [
-      "all recreational sports",
-      "intellectually interesting tasks",
-      "shared public community activities",
-      "routine personal chores"
-    ],
-    correctAnswer: "shared public community activities",
-    hint: "Shared, collective, and belonging to the entire local community.",
-    workedSolution: "'Communal' means shared by all members of a community; 'shared public community activities' is its direct definition.",
+    prompt: "The youth of our township actively assist in communal sanitation exercises.\nChoose the word nearest in meaning to 'communal'.",
+    options: ["private household", "compulsory athletic", "collective civic", "customary ceremonial"],
+    correctAnswer: "collective civic",
+    hint: "Undertaken collectively by members of a community for public benefit.",
+    workedSolution: "'Communal' refers to activities shared or participated in by all community members; 'collective civic' is its direct synonym.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The mouth-watering aroma of Auntie Mansa's soup made the guests hungry. This means the food ............",
-    options: [
-      "has a pleasant and appetizing smell",
-      "is excessively hot to the taste",
-      "contains expensive condiments",
-      "is highly valuable"
-    ],
-    correctAnswer: "has a pleasant and appetizing smell",
-    hint: "A distinctive, pervasive, and pleasant smell, typically of food or spices.",
-    workedSolution: "'Aroma' refers specifically to a pleasant, savory smell; 'has a pleasant and appetizing smell' is its direct synonym.",
+    prompt: "The savory aroma of the simmering palm-nut soup made our mouths water.\nChoose the word nearest in meaning to 'aroma'.",
+    options: ["appetizing scent", "excessive heat", "tangy flavor", "radiant appearance"],
+    correctAnswer: "appetizing scent",
+    hint: "A distinctive, pleasant, and savory fragrance of food.",
+    workedSolution: "'Aroma' refers specifically to a pleasant, fragrant, or appetizing smell; 'appetizing scent' is its direct meaning.",
     points: 1
   },
 
-  // --- SECTION C: QUESTION TAGS & CLAUSES (18 - 25) ---
+  // --- SECTION C: QUESTION TAGS & STRUCTURE (18 - 35) ---
   {
     number: 18,
-    prompt: "Kwame wasn't present at the scene of the vehicular collision, ......?",
+    prompt: "Kwaku wasn't present during the emergency council deliberation, ......?",
     options: ["wasn't he", "isn't it", "did he", "was he"],
     correctAnswer: "was he",
-    hint: "A negative past statement with 'wasn't' takes an affirmative tag: 'was he?'.",
-    workedSolution: "The main clause has a negative past auxiliary ('wasn't'). The question tag must be affirmative: 'was he?'.",
+    hint: "A negative statement with 'wasn't' takes an affirmative tag: 'was he?'.",
+    workedSolution: "The main clause has a negative auxiliary ('wasn't'). Its corresponding question tag must be affirmative: 'was he?'.",
     points: 1
   },
   {
     number: 19,
-    prompt: "You don't understand the Chinese language, ......?",
+    prompt: "You don't understand the Spanish dialect spoken by the sailors, ......?",
     options: ["do you", "can you", "don't you", "won't you"],
     correctAnswer: "do you",
     hint: "A negative present statement with 'don't' takes an affirmative tag: 'do you?'.",
-    workedSolution: "The statement contains a negative auxiliary ('don't'). Its corresponding question tag must be affirmative: 'do you?'.",
+    workedSolution: "The statement is negative present simple ('don't understand'). The question tag must be affirmative: 'do you?'.",
     points: 1
   },
   {
     number: 20,
-    prompt: "We worked relentlessly during our final academic year, ......?",
+    prompt: "Our debating team worked diligently throughout the term, ......?",
     options: ["did we", "isn't it", "aren't we", "didn't we"],
     correctAnswer: "didn't we",
-    hint: "The main verb 'worked' is affirmative simple past with subject 'we'. Form a negative tag with 'did'.",
-    workedSolution: "The main clause is affirmative simple past ('worked'). The question tag must be negative: 'didn't we?'.",
+    hint: "An affirmative past simple clause ('worked') takes a negative tag using 'did'.",
+    workedSolution: "The main clause contains an affirmative simple past verb ('worked') with subject 'we'. The tag must be negative: 'didn't we?'.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The national soccer squad have lost the championship match, ......?",
+    prompt: "The defending champions have conceded two goals, ......?",
     options: ["didn't they", "isn't it", "haven't they", "is it"],
     correctAnswer: "haven't they",
-    hint: "An affirmative present perfect clause with 'have' takes a negative tag using 'have'.",
-    workedSolution: "The statement has an affirmative auxiliary ('have lost') with plural subject ('They'). The question tag must be negative: 'haven't they?'.",
+    hint: "An affirmative present perfect clause with 'have' takes a negative tag with 'have'.",
+    workedSolution: "The main clause is affirmative in the Present Perfect ('have conceded') with a plural subject. The tag is 'haven't they?'.",
     points: 1
   },
   {
     number: 22,
-    prompt: "The burglar has stolen the carved wooden box ............",
+    prompt: "The burglar broke into the wooden chest ............",
     options: [
-      "in which we kept the ancestral gold chain",
-      "which we kept in the ancestral gold chain",
-      "we kept the gold chain inside",
-      "where we kept the ancestral gold chain"
+      "in which we kept the ceremonial regalia",
+      "which we kept in the ceremonial regalia",
+      "we kept the ceremonial regalia inside",
+      "where we kept the ceremonial regalia inside"
     ],
-    correctAnswer: "in which we kept the ancestral gold chain",
-    hint: "Formal relative clause: The preposition 'in' precedes the relative pronoun 'which' modifying 'box'.",
-    workedSolution: "Formal standard English requires the prepositional relative clause 'in which we kept...', correctly indicating containment inside the box.",
+    correctAnswer: "in which we kept the ceremonial regalia",
+    hint: "Formal relative clause: The preposition 'in' precedes the relative pronoun 'which' modifying 'chest'.",
+    workedSolution: "Formal standard English requires 'in which we kept...', correctly indicating that the regalia was stored inside the chest.",
     points: 1
   },
   {
     number: 23,
-    prompt: "...... hard the candidate tried, he could not solve the complex mathematical riddle.",
+    prompt: "...... hard the apprentice labored, the master craftsman remained dissatisfied.",
     options: ["Whatever", "How", "Whenever", "However"],
     correctAnswer: "However",
-    hint: "Concessive adverb of degree modifying an adjective/adverb: 'However + hard + subject + verb'.",
-    workedSolution: "'However' functions as a concessive adverb of degree ('However hard he tried...'), meaning 'no matter how hard'.",
+    hint: "Concessive adverb of degree modifying an adverb/adjective: 'However + hard + subject + verb'.",
+    workedSolution: "'However' functions as a concessive adverb of degree ('However hard the apprentice labored...'), meaning 'no matter how hard'.",
     points: 1
   },
   {
     number: 24,
-    prompt: "Akwetey completed the athletic cross-country race ............",
+    prompt: "Kofi finished the grueling cross-country race ............",
     options: [
-      "even though he was severely fatigued",
-      "during which he was severely fatigued",
-      "but he was severely fatigued",
-      "for which he was severely fatigued"
+      "even though he had sprained his ankle",
+      "during which he had sprained his ankle",
+      "but he had sprained his ankle",
+      "for which he had sprained his ankle"
     ],
-    correctAnswer: "even though he was severely fatigued",
+    correctAnswer: "even though he had sprained his ankle",
     hint: "Identify the subordinating conjunction of concession that introduces an adverse condition.",
-    workedSolution: "'Even though' is a subordinating conjunction of concession introducing a subordinate clause contrasting with the main achievement.",
+    workedSolution: "'Even though' introduces a subordinate concessive clause that contrasts with the main clause achievement.",
     points: 1
   },
   {
     number: 25,
-    prompt: "Basic school pupils are strictly forbidden ............",
+    prompt: "Visitors to the botanical gardens are strictly forbidden ............",
     options: [
       "to walk at the lawn",
       "to be walking across the lawn",
@@ -393,156 +383,154 @@ const generalQuestionsRaw = [
       "to walk across the lawn"
     ],
     correctAnswer: "to walk across the lawn",
-    hint: "The passive verb 'are not allowed / forbidden' takes a full to-infinitive complement with 'across'.",
-    workedSolution: "In standard English verb catenation, the passive 'not allowed' takes a to-infinitive followed by the directional preposition 'across' ('to walk across the lawn').",
+    hint: "The passive structure 'are forbidden' takes a full to-infinitive followed by the directional preposition 'across'.",
+    workedSolution: "In standard English verb catenation, the passive 'are forbidden' takes a full to-infinitive ('to walk across the lawn').",
     points: 1
   },
-
-  // --- SECTION C (CONT.): PREPOSITIONS, PHRASALS & CONDITIONALS (26 - 35) ---
   {
     number: 26,
-    prompt: "The entire congregation was deeply pleased ...... the visiting pastor's inspiring sermon.",
+    prompt: "The entire congregation was highly pleased ...... the visiting evangelist's sermon.",
     options: ["for", "in", "with", "at"],
     correctAnswer: "with",
-    hint: "Identify the preposition that regularly collocates with the adjective 'pleased' regarding an object or person.",
+    hint: "Identify the preposition that regularly collocates with the adjective 'pleased' regarding an object or sermon.",
     workedSolution: "The adjective 'pleased' takes the preposition 'with' when expressing satisfaction with something ('pleased with the sermon').",
     points: 1
   },
   {
     number: 27,
-    prompt: "The headmaster warmly congratulated the senior prefect ...... his academic triumph in the BECE.",
+    prompt: "The headmaster warmly congratulated the senior prefect ...... his exemplary conduct.",
     options: ["on", "during", "at", "to"],
     correctAnswer: "on",
     hint: "Identify the preposition that regularly collocates with the verb 'congratulate'.",
-    workedSolution: "In standard English, one 'congratulates' someone 'on' an achievement or milestone, never 'for' or 'at'.",
+    workedSolution: "In standard English grammar, one 'congratulates' someone 'on' an achievement, milestone, or conduct.",
     points: 1
   },
   {
     number: 28,
-    prompt: "The clinic patient is steadily recovering ...... his acute bout of typhoid fever.",
+    prompt: "The hospital patient is steadily recovering ...... the effects of the surgical operation.",
     options: ["from", "with", "for", "during"],
     correctAnswer: "from",
     hint: "Identify the preposition that regularly collocates with the verb 'recover'.",
-    workedSolution: "The verb 'recover' takes the preposition 'from' when indicating the illness or injury being overcome ('recovering from his illness').",
+    workedSolution: "The verb 'recover' takes the preposition 'from' when indicating the ailment or condition being overcome.",
     points: 1
   },
   {
     number: 29,
-    prompt: "The boarders have resided in this dormitory facility ...... three continuous years now.",
+    prompt: "The boarding pupils have lived in this hostel ...... four continuous years now.",
     options: ["since", "in", "by", "for"],
     correctAnswer: "for",
-    hint: "Use 'for' to denote a total duration of elapsed time, and 'since' for a specific starting point.",
-    workedSolution: "The preposition 'for' is used to measure a duration or period of time ('for three years').",
+    hint: "Use 'for' to measure a period or duration of time, and 'since' for a specific starting point.",
+    workedSolution: "The preposition 'for' is used to measure an elapsed duration or span of time ('for four years').",
     points: 1
   },
   {
     number: 30,
-    prompt: "It would be utterly foolish to ...... the golden opportunity of studying abroad.",
-    options: ["throw away", "throw in", "throw over", "throw by"],
-    correctAnswer: "throw away",
-    hint: "Identify the phrasal verb meaning to waste, discard, or fail to exploit a valuable opportunity.",
-    workedSolution: "The phrasal verb 'to throw away' means to waste, squander, or discard an advantageous opportunity.",
+    prompt: "It would be reckless to ...... the rare privilege of pursuing university studies.",
+    options: ["cast away", "cast in", "cast over", "cast by"],
+    correctAnswer: "cast away",
+    hint: "Identify the phrasal verb meaning to squander, discard, or waste an advantageous opportunity.",
+    workedSolution: "The phrasal verb 'to cast away' (or 'throw away') means to discard, forfeit, or squander an advantageous opportunity.",
     points: 1
   },
   {
     number: 31,
-    prompt: "Koku grieved deeply over the loss of his mother, but with time he will ...... the sorrow.",
+    prompt: "The sudden bereavement saddened Koku deeply, but with time he will ...... the grief.",
     options: ["get along", "get on", "get by", "get over"],
     correctAnswer: "get over",
-    hint: "Identify the phrasal verb meaning to recover from an illness, shock, or grief.",
-    workedSolution: "The phrasal verb 'to get over' means to overcome, recover from, or heal after an emotional shock or bereavement.",
+    hint: "Identify the phrasal verb meaning to recover from an illness, shock, or sorrow.",
+    workedSolution: "The phrasal verb 'to get over' means to overcome, heal, or recover from emotional sorrow or illness.",
     points: 1
   },
   {
     number: 32,
-    prompt: "When you encounter technical jargon, ...... the definitions in an encyclopedia.",
-    options: ["Look around", "Look on", "Look up", "Look about"],
-    correctAnswer: "Look up",
-    hint: "Identify the phrasal verb meaning to search for information in a reference dictionary or book.",
-    workedSolution: "The phrasal verb 'to look up' means to consult a reference book to locate facts or definitions.",
+    prompt: "Whenever you encounter obscure terminology, ...... the definition in an authoritative lexicon.",
+    options: ["look around", "look on", "look up", "look about"],
+    correctAnswer: "look up",
+    hint: "Identify the phrasal verb meaning to search for information in a reference dictionary.",
+    workedSolution: "The phrasal verb 'to look up' means to consult a reference book or dictionary to ascertain the meaning of a word.",
     points: 1
   },
   {
     number: 33,
-    prompt: "If the candidate ...... the municipal primary election, he would have become an assemblyman.",
+    prompt: "If the candidate ...... the municipal primary election, he would have represented our district.",
     options: ["won", "has won", "had won", "should win"],
     correctAnswer: "had won",
-    hint: "Third Conditional: 'would have become' in the main clause requires 'had + past participle' in the if-clause.",
+    hint: "Third Conditional: 'would have represented' in the main clause requires 'had + past participle' in the if-clause.",
     workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause takes the past perfect tense: 'had won'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "If Kofi continues to revise with dedication, he ...... his final examinations with flying colors.",
-    options: ["will pass", "is passing", "has passed", "would pass"],
-    correctAnswer: "will pass",
+    prompt: "If the young apprentice continues to apply himself, he ...... his trade certificate with ease.",
+    options: ["will earn", "is earning", "has earned", "would earn"],
+    correctAnswer: "will earn",
     hint: "First Conditional: Simple present in the if-clause ('continues') requires the future modal in the main clause.",
-    workedSolution: "In a First Conditional sentence expressing a realistic future outcome, the main clause requires 'will + base verb': 'will pass'.",
+    workedSolution: "In a First Conditional sentence expressing a realistic future outcome, the main clause requires 'will + base verb': 'will earn'.",
     points: 1
   },
   {
     number: 35,
-    prompt: "The radio news broadcast concerning the industrial disaster ...... distressing.",
+    prompt: "The sensational news broadcast on the radio ...... alarming to the entire community.",
     options: ["are", "were", "has been", "was"],
     correctAnswer: "was",
-    hint: "'News' is an uncountable noun that takes a singular verb, despite ending in '-s'.",
-    workedSolution: "'News' is a singular non-count noun. In a past narrative frame, it requires the singular past copula 'was'.",
+    hint: "'News' is a singular uncountable mass noun that requires a singular verb.",
+    workedSolution: "'News' is singular and non-count. In a past narrative setting, it requires the singular past copula 'was'.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (36 - 40) ---
   {
     number: 36,
-    prompt: "The school management commended the tutors for a wonderful performance, but criticized the janitor for ...... work.",
-    options: ["quick", "difficult", "big", "bad"],
-    correctAnswer: "bad",
-    hint: "'Wonderful' means exceptionally good and admirable. Find the word meaning substandard or poor.",
-    workedSolution: "'Wonderful' means extraordinarily good. Its direct evaluative antonym in work performance is 'bad'.",
+    prompt: "While the master carpenter produced splendid furniture, his apprentice turned out ...... products.\nChoose the word most nearly opposite in meaning to 'splendid'.",
+    options: ["speedy", "onerous", "massive", "shoddy"],
+    correctAnswer: "shoddy",
+    hint: "'Splendid' means magnificent and of top quality. Find the word meaning poorly made or inferior.",
+    workedSolution: "'Splendid' denotes work of exceptional excellence. Its direct opposite in craft quality is 'shoddy' (poorly made, inferior, or bad).",
     points: 1
   },
   {
     number: 37,
-    prompt: "While irresponsible youths indulge in narcotics abuse, disciplined students ...... such vices.",
-    options: ["avoid", "increase", "discourage", "disallow"],
-    correctAnswer: "avoid",
-    hint: "'Indulge in' means to participate freely and excessively in an activity. Find the word meaning to shun or stay away from.",
-    workedSolution: "'Indulge in' means to allow oneself to partake in a habit. Its direct behavioral antonym is 'avoid' (to shun or steer clear of).",
+    prompt: "While reckless youths indulge in substance abuse, prudent students deliberately ...... such perilous habits.\nChoose the word most nearly opposite in meaning to 'indulge in'.",
+    options: ["shun", "propagate", "condone", "tolerate"],
+    correctAnswer: "shun",
+    hint: "'Indulge in' means to engage in freely. Find the word meaning to avoid or steer clear of.",
+    workedSolution: "'Indulge in' means to partake freely in an activity. Its direct antonym is 'shun' (to avoid or steer clear of).",
     points: 1
   },
   {
     number: 38,
-    prompt: "Our grandmother prefers lean beef, whereas my father enjoys ...... meat.",
-    options: ["uncooked", "fatty", "spoilt", "bloody"],
+    prompt: "Our grandmother prefers lean beef, whereas my father enjoys ...... cuts of meat.\nChoose the word most nearly opposite in meaning to 'lean'.",
+    options: ["raw", "fatty", "decayed", "bloody"],
     correctAnswer: "fatty",
-    hint: "'Lean' meat contains little or no fat. Find the word meaning containing abundant fat.",
+    hint: "'Lean' meat contains little or no fat. Find the word meaning rich in fat.",
     workedSolution: "'Lean' in meat describes meat having minimal or no fat. Its direct dietary antonym is 'fatty'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "The headmistress was reluctant to accept the truant's excuse, but ...... to assist the disciplined orphan.",
-    options: ["willing", "afraid", "unable", "planning"],
-    correctAnswer: "willing",
-    hint: "'Reluctant' means hesitant and unwilling. Find the word meaning ready, inclined, and eager.",
-    workedSolution: "'Reluctant' means unwilling or hesitant. Its direct opposite is 'willing' (ready and inclined).",
+    prompt: "The headmaster was hesitant to endorse the truant's petition, but ...... to assist the disciplined orphan.\nChoose the word most nearly opposite in meaning to 'hesitant'.",
+    options: ["eager", "terrified", "incapable", "tentative"],
+    correctAnswer: "eager",
+    hint: "'Hesitant' means reluctant and slow to act. Find the word denoting keen readiness.",
+    workedSolution: "'Hesitant' means reluctant or unwilling. Its direct opposite is 'eager' (keen, willing, and prompt).",
     points: 1
   },
   {
     number: 40,
-    prompt: "The trade union executive decided to hold the scheduled congress, while management wanted them to ...... it.",
-    options: ["continue", "delay", "cancel", "support"],
+    prompt: "The union executive decided to convene the scheduled congress, while management pressured them to ...... it.\nChoose the word most nearly opposite in meaning to 'convene'.",
+    options: ["prolong", "adjourn", "cancel", "endorse"],
     correctAnswer: "cancel",
-    hint: "'Hold' in reference to a meeting means to proceed with and conduct it. Find the word meaning to call off completely.",
-    workedSolution: "'To hold' an event means to convene and conduct it. Its direct organizational antonym is 'cancel' (to call off).",
+    hint: "'Convene' means to assemble and hold a meeting. Find the word meaning to call off completely.",
+    workedSolution: "'To convene' (or hold) an assembly means to bring it together. Its direct antonym is 'cancel' (to call off entirely).",
     points: 1
   }
 ];
 
 // Combine all 40 raw questions
 const allRawQuestions = [
-  ...passage1QuestionsRaw,
-  ...passage2QuestionsRaw,
-  ...generalQuestionsRaw
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -566,8 +554,10 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 199101);
+const assignedTargetIndices = seedShuffle(targetKeys, 199102);
 
+// Attach Passage I and Passage II directly to questions 1-13 so that
+// the passage ALWAYS comes first before any question is displayed!
 const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
@@ -580,6 +570,22 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 7) {
+    passageTitle = "Passage I: Touring the Metropolis";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 8 && qNum <= 13) {
+    passageTitle = "Passage II: Hydropower and Industry";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
@@ -587,18 +593,21 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
 // Partition Questions for Passage-First UI Rendering
-const passage1Questions = balancedPaper1.slice(0, 7);
-const passage2Questions = balancedPaper1.slice(7, 13);
-const remainingQuestions = balancedPaper1.slice(13);
+const passage1Items = balancedPaper1.slice(0, 7);
+const passage2Items = balancedPaper1.slice(7, 13);
+const remainingItems = balancedPaper1.slice(13);
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -607,7 +616,7 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "Your class teacher has punished you severely for an act of indiscipline that you did not commit. Write a formal letter of appeal to your Headmaster explaining the truth of what transpired and politely requesting that your disciplinary record be cleared.",
+        prompt: "Your class teacher has punished you severely for an act of vandalism you did not commit. Write a formal letter of appeal to your Headmaster explaining the truth of what transpired and politely requesting that your disciplinary record be cleared.",
         modelAnswer: `Methodist Junior Secondary School
 P. O. Box 54
 Bekwai, Ashanti Region
@@ -620,17 +629,17 @@ Bekwai
 
 Dear Sir,
 
-PETITION AGAINST UNJUST DISCIPLINARY SANCTION AND APPEAL FOR INVESTIGATION
+PETITION AGAINST UNJUST DISCIPLINARY SANCTION AND APPEAL FOR REDRESS
 
-I respectfully write to place before your high office a formal appeal regarding a severe disciplinary punishment imposed on me by my class teacher, Mr. J. K. Mensah, for an offense of which I am entirely innocent.
+I respectfully write to place before your high office a formal appeal regarding a severe disciplinary punishment imposed on me by my class teacher, Mr. J. K. Mensah, for an act of vandalism of which I am entirely innocent.
 
-Yesterday morning, during the mid-morning changeover of periods, someone defaced the classroom blackboard with vulgar drawings and broke two wooden dual desks in Form Two Blue. Upon entering the room, Mr. Mensah discovered the damage. In a state of intense anger, he singled me out because I was standing near the blackboard and accused me of being the perpetrator. Despite my respectful protestations that I had just returned from delivering laboratory exercise books to the staff room, he refused to listen and sentenced me to two days of manual labor weeding the school football park.
+Yesterday morning, during the changeover of instructional periods, an unknown person defaced the classroom blackboard with offensive drawings and damaged two dual desks in Form Two Blue. Upon entering the room, Mr. Mensah discovered the damage. In a state of intense anger, he singled me out because I was standing near the blackboard and accused me of being the culprit. Despite my respectful explanation that I had just returned from delivering laboratory exercise books to the staff room, he refused to listen and sentenced me to two days of manual labor weeding the sports park.
 
-I wish to state categorically that I had no hand in that act of vandalism. My science master, Mr. Emmanuel Osei, can confirm that I was in his office assisting him to sort test scripts during the entire ten-minute recess. Furthermore, two of my classmates, Kwaku Boateng and Samuel Addo, witnessed two Form Three students rushing out of our classroom moments before the teacher arrived.
+I wish to state categorically that I had no hand in that misconduct. My science master, Mr. Emmanuel Osei, can confirm that I was in his office sorting test scripts during the entire ten-minute recess. Furthermore, two of my classmates, Kwaku Boateng and Samuel Addo, witnessed two senior students running out of our classroom moments before the teacher arrived.
 
-I have always upheld exemplary moral discipline, having served as our classroom library monitor without blemish. Suffering this undeserved punishment publicly stains my academic reputation and causes me deep emotional distress.
+I have always upheld exemplary moral discipline, serving as our classroom library monitor without blemish. Suffering this undeserved punishment publicly stains my academic record and causes me deep emotional distress.
 
-I humbly appeal that your benevolent office investigate this incident, clear my name, and cancel the unwarranted punishment.
+I humbly appeal to your benevolent office to investigate this incident, clear my name, and rescind the unwarranted sanction.
 
 Thank you for your fatherly justice and consideration.
 
@@ -650,11 +659,11 @@ Begoro, Eastern Region
 
 Dear Uncle Kwesi,
 
-I hope this letter finds you in fine health, peace of mind, and thriving in your business enterprises in Accra. As I approach the conclusion of my final year in junior secondary school, I write to share an urgent personal crisis and to appeal for your benevolent financial sponsorship.
+I hope this letter finds you in fine health, peace of mind, and thriving in your business enterprises in Accra. As I approach the completion of my final year in junior secondary school, I write to share an urgent personal crisis and to appeal for your benevolent financial sponsorship.
 
-Recently, my parents informed me that due to recurring crop failures on our family cocoa farm, they cannot afford the financial expenditure required to enroll me in Senior Secondary School. They have suggested that I terminate my formal schooling and learn commercial tailoring in town. While I respect their domestic constraints, my heart is deeply broken because academic learning is my greatest passion.
+Recently, my parents informed me that due to recurring crop failures on our family cocoa farm, they cannot afford the financial expenditure required to enroll me in Senior Secondary School. They have suggested that I terminate my schooling and take up commercial tailoring in town. While I respect their domestic constraints, my heart is broken because academic learning is my greatest passion.
 
-Throughout my three years at Begoro Presbyterian JSS, I have consistently achieved academic distinction, placing first in my class in Mathematics, Integrated Science, and English. In the recently conducted regional mock examinations, I secured Aggregate Six. My teachers have affirmed that I possess the scholastic aptitude to pursue the General Science programme at Prempeh College and eventually study human medicine at the university.
+Throughout my three years at Begoro Presbyterian JSS, I have consistently achieved academic distinction, placing first in my class in Mathematics, Integrated Science, and English. In the recently conducted regional mock examinations, I secured Aggregate Six. My teachers have affirmed that I possess the scholastic aptitude to pursue the General Science programme at Prempeh College and eventually study medicine at the university.
 
 Abandoning my schooling now would extinguish these dreams permanently. I humbly appeal to your generosity to sponsor my secondary school education—covering my boarding fees, uniforms, and textbooks. I promise to study with relentless diligence and secure distinction in the Senior Secondary Certificate Examination to justify your benevolence.
 
@@ -683,7 +692,7 @@ As dusk settles and kerosene lanterns flicker to life, weary traders count their
       {
         questionNumber: "4",
         category: "Narrative Essay",
-        prompt: "Write an engaging, realistic story that concludes with the sentence: \"I suddenly woke up and realised it was all a dream.\"",
+        prompt: 'Write an engaging, realistic story that concludes with the sentence: "I suddenly woke up and realised it was all a dream."',
         modelAnswer: `It was the eve of our national sports championship, and tension hung heavily over our dormitory. In my subconscious mind that night, a thrilling drama unfolded.
 
 In the dream, I was standing on the Olympic-standard synthetic track of an enormous sports stadium packed with over fifty thousand cheering spectators. The afternoon sun sparkled off giant silver and gold trophies arrayed on the VIP dais. I looked down and found myself wearing the golden athletic vest of Ghana, laced with sleek spiked running shoes that felt as light as air.
@@ -700,10 +709,10 @@ Suddenly, a loud bell began clanging relentlessly. I blinked against the morning
   }
 };
 
-const flattenedPaper2Questions = paper2Calibrated.sectionA_essay.questions;
-
 async function seedBeceEnglish1991Calibrated() {
-  console.log("Seeding Calibrated & Passage-First BECE English 1991 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 1991 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -716,7 +725,6 @@ async function seedBeceEnglish1991Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_1991");
   await docRef.set({
     year: 1991,
@@ -733,46 +741,58 @@ async function seedBeceEnglish1991Calibrated() {
       passageFirstLayout: true,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      // Section A: Passage-First Comprehension Architecture
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Touring the Metropolis",
+          text: passage1Text,
+          questionRange: "Questions 1 to 7"
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: Hydropower and Industry",
+          text: passage2Text,
+          questionRange: "Questions 8 to 13"
+        }
+      ],
       sectionA_comprehension: {
         title: "Section A: Reading Comprehension",
         instructions: "Read the following passages carefully and answer the questions that follow each passage.",
         passage1: {
-          passageTitle: "Passage I: Sightseeing in Accra",
+          passageTitle: "Passage I: Touring the Metropolis",
           text: passage1Text,
           questionRange: "Questions 1 to 7",
-          questions: passage1Questions
+          questions: passage1Items
         },
         passage2: {
-          passageTitle: "Passage II: The Akosombo Dam and Power",
+          passageTitle: "Passage II: Hydropower and Industry",
           text: passage2Text,
           questionRange: "Questions 8 to 13",
-          questions: passage2Questions
+          questions: passage2Items
         }
       },
-      // Sections B - D: Lexis, Synonyms, Structure, and Antonyms
       sectionB_to_D: {
-        title: "Sections B - D: Lexis, Question Tags, Structure and Antonyms",
+        title: "Sections B - D: Synonyms, Question Tags, Structure and Antonyms",
         questionRange: "Questions 14 to 40",
-        questions: remainingQuestions
+        questions: remainingItems
       },
-      // Flat Sequences for test runners and compatibility
-      allQuestions: balancedPaper1,
-      questions: balancedPaper1
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated & Passage-First BECE English 1991 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 1991 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish1991Calibrated()
