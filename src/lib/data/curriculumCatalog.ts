@@ -19,7 +19,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     badge: 'NaCCA CBT Set 70',
     questionCount: 50,
     topic: 'NaCCA 50-Item Preparatory Assessment Blueprint',
-    description: 'Official 50-item randomized CBT examination with immediate grading, vector diagrams, and KaTeX equations aligned with B7-B9 strands.'
+    description: 'Standardized 50-item randomized CBT model examination with immediate grading, vector diagrams, and KaTeX equations aligned with B7-B9 strands.'
   },
   {
     id: 'paper_nacca_sample_variant_p2',
@@ -335,7 +335,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     badge: 'BECE 2024 Theory',
     questionCount: 6,
     topic: 'Quadratics, Polygons & Probability',
-    description: 'Official-standard structured paper covering polygon angle theorems, linear inequalities, and probability distributions.'
+    description: 'Curriculum-calibrated structured paper model covering polygon angle theorems, linear inequalities, and probability distributions.'
   },
   {
     id: 'paper_2024_p1_variant',
@@ -486,7 +486,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   // ==========================================
   {
     id: 'jhs-math-mastery-series-01',
-    title: 'Junior Core Math • Objective Mastery Series (Set 1 / 2012 Variant)',
+    title: 'BECE-Aligned Mathematics Paper 1 (2012 Model)',
     year: 2012,
     setNumber: 1,
     paperType: 1,
@@ -499,7 +499,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'jhs-math-mastery-series-02',
-    title: 'Junior Core Math • Structured Problem-Solving (Set 2 / 2012 Variant)',
+    title: 'Junior Core Mathematics • Paper 2 Theory Suite (2012 Benchmark)',
     year: 2012,
     setNumber: 2,
     paperType: 2,
@@ -512,7 +512,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'jhs-math-mastery-series-03',
-    title: 'Junior Core Math • Objective Mastery Series (Set 3 / 2011 Variant)',
+    title: 'Junior Core Mathematics • Objective Mastery (2011 Benchmark)',
     year: 2011,
     setNumber: 3,
     paperType: 1,
@@ -525,7 +525,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'jhs-math-mastery-series-04',
-    title: 'Junior Core Math • Structured Problem-Solving (Set 4 / 2011 Variant)',
+    title: 'Junior Core Mathematics • Paper 2 Theory Suite (2011 Benchmark)',
     year: 2011,
     setNumber: 4,
     paperType: 2,
@@ -538,7 +538,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'jhs-math-mastery-series-05',
-    title: 'Junior Core Math • Objective Mastery Series (Set 5 / 2010 Variant)',
+    title: 'Junior Core Mathematics • Objective Mastery (2010 Benchmark)',
     year: 2010,
     setNumber: 5,
     paperType: 1,
@@ -551,7 +551,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   },
   {
     id: 'jhs-math-mastery-series-06',
-    title: 'Junior Core Math • Structured Problem-Solving (Set 6 / 2010 Variant)',
+    title: 'Junior Core Mathematics • Paper 2 Theory Suite (2010 Benchmark)',
     year: 2010,
     setNumber: 6,
     paperType: 2,
@@ -628,7 +628,7 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     badge: 'WASSCE Series',
     questionCount: 40,
     topic: 'Calculus, Polynomials & Vectors',
-    description: 'Official-standard SHS WASSCE examination series covering differentiation, matrices, and vectors.'
+    description: 'Curriculum-aligned SHS mathematics examination series covering differentiation, matrices, and vectors.'
   },
   {
     id: 'shs-math-algebra-01',
