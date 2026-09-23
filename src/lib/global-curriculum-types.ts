@@ -70,6 +70,8 @@ export interface CurriculumQuestion {
   points: number;
   diagramSvg?: string;
   parts?: StructuredQuestionPart[];
+  passageTitle?: string;
+  passageText?: string;
 }
 
 export interface CurriculumQuestionSet {
@@ -87,6 +89,7 @@ export interface CurriculumQuestionSet {
   version: number;
   format?: 'multiple_choice' | 'structured_essay';
   questions: CurriculumQuestion[];
+  sectionA_comprehension?: any;
   seededAt?: string;
   lastUpdated?: string;
 }

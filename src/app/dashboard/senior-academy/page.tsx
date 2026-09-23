@@ -7521,7 +7521,8 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                     format: isP2 ? 'structured_essay' : 'objective',
                                     paperType: isP2 ? 2 : 1,
                                     totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 3 : 40),
-                                    questions: finalQuestions
+                                    questions: finalQuestions,
+                                    sectionA_comprehension: pData.sectionA_comprehension || ppData.paper1?.sectionA_comprehension
                                 } as CurriculumQuestionSet;
                             }
                         }
@@ -7551,7 +7552,8 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                     format: isP2 ? 'structured_essay' : (targetSet.format || 'objective'),
                     paperType: isP2 ? 2 : 1,
                     totalQuestions: pData?.totalQuestions || extractedQuestions.length || (isP2 ? 4 : 40),
-                    questions: extractedQuestions
+                    questions: extractedQuestions,
+                    sectionA_comprehension: pData?.sectionA_comprehension || (targetSet as any)?.sectionA_comprehension
                 } as CurriculumQuestionSet;
 
                 console.log("[senior-academy] Activated target set:", targetSet.id, targetSet.title, `(${targetSet.questions?.length} questions)`);

@@ -564,6 +564,60 @@ export function QuestionRunner({
               )}
             </div>
 
+            {/* Reading Comprehension Passage (Passage Comes First) */}
+            {(() => {
+              const qNum = currentQuestion.number ?? (currentIndex + 1);
+              const secA = (questionSet as any)?.sectionA_comprehension;
+              
+              let passageTitle = currentQuestion.passageTitle;
+              let passageText = currentQuestion.passageText;
+
+              if (!passageText && secA) {
+                if (qNum <= 6 && secA.passage1?.text) {
+                  passageTitle = passageTitle || secA.passage1.passageTitle || 'Passage I';
+                  passageText = secA.passage1.text;
+                } else if (qNum > 6 && qNum <= 11 && secA.passage2?.text) {
+                  passageTitle = passageTitle || secA.passage2.passageTitle || 'Passage II';
+                  passageText = secA.passage2.text;
+                }
+              }
+
+              if (!passageText) return null;
+
+              return (
+                <div className="my-4 rounded-2xl border border-indigo-500/40 bg-gradient-to-br from-indigo-950/50 via-slate-900/90 to-slate-950 p-5 sm:p-7 shadow-2xl backdrop-blur-sm transition-all duration-200">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-indigo-500/20 pb-3 mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-400 shadow-sm">
+                        <BookOpen className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold block">
+                          Reading Comprehension Passage
+                        </span>
+                        <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                          {passageTitle || 'Passage'}
+                        </h4>
+                      </div>
+                    </div>
+                    <Badge className="bg-indigo-600/30 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                      Read Passage First
+                    </Badge>
+                  </div>
+
+                  <div className="max-h-[380px] overflow-y-auto pr-3 text-slate-100 text-sm sm:text-base leading-relaxed sm:leading-loose whitespace-pre-line font-serif bg-slate-950/70 p-4 sm:p-6 rounded-xl border border-slate-800/80 shadow-inner selection:bg-indigo-500/30">
+                    {passageText}
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-center gap-2 text-xs text-indigo-300/80 font-medium">
+                    <span>↓</span>
+                    <span>Read the passage above carefully, then answer the question below</span>
+                    <span>↓</span>
+                  </div>
+                </div>
+              );
+            })()}
+
             {currentQuestion.title && (
               <h3 className="text-lg sm:text-xl font-black text-white">
                 {currentQuestion.title}
