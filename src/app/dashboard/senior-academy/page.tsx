@@ -36,6 +36,7 @@ import { SET_BECE_MOCK_8_SCIENCE_P1, SET_BECE_MOCK_8_SCIENCE_P2 } from '@/lib/da
 import { SET_BECE_MOCK_9_SCIENCE_P1, SET_BECE_MOCK_9_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-140';
 import { SET_BECE_MOCK_10_SCIENCE_P1, SET_BECE_MOCK_10_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-141';
 import { SET_BECE_MOCK_11_SCIENCE_P1, SET_BECE_MOCK_11_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-142';
+import { SET_BECE_MOCK_1_ENGLISH_P1, SET_BECE_MOCK_1_ENGLISH_P2 } from '@/lib/data/bece-english-mock-1';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -6970,7 +6971,54 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
     }
 ];
 
+const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
+    {
+        mockNum: 1,
+        setNum: 1,
+        title: "BECE English Language National Mock Examination 1",
+        description: "Full isomorphic English Language mock simulation: Third conditional syntax, adjective ordering, pronoun concord, meeting minutes cloze register, oral phonology, Keta-Nkwanta tidal surge comprehension, and The Cockcrow anthology.",
+        paper1Details: "40 Multiple Choice CBT • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "3 Sections (9 Questions) • 90 Mins • Part A Composition + Part B Comprehension + Part C Cockcrow."
+    }
+];
+
     const handleLaunchMockPaper = async (mockNum: number, paperNum: 1 | 2) => {
+        console.log(`[senior-academy] handleLaunchMockPaper called for ${subject} Mock ${mockNum}, Paper ${paperNum}`);
+        if (subject === 'english') {
+            if (mockNum === 1) {
+                await handleLaunchModule({
+                    title: paperNum === 1 
+                        ? "BECE English Language National Mock 1 (Paper 1 Objective CBT)" 
+                        : "BECE English Language National Mock 1 (Paper 2 Theory & Literature)",
+                    domain: paperNum === 1 ? "LEXIS, STRUCTURE, CLOZE & ORAL PHONOLOGY" : "COMPOSITION, COMPREHENSION & LITERATURE",
+                    strandName: "ENGLISH LANGUAGE CURRICULUM",
+                    strandCode: "ENG-MOCK",
+                    subStrand: paperNum === 1 
+                        ? "National Mock 1 Objective Examination (40 Questions)" 
+                        : "National Mock 1 Theory, Comprehension & Cockcrow (9 Questions)",
+                    gradeTier: "Junior Secondary (JHS)",
+                    meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Paper 2 (3 Sections • 9 Questions) • 90 mins • 60 Marks",
+                    description: paperNum === 1 
+                        ? "Standardized 40-question objective examination covering Lexis and Structure, Synonyms, Idioms, Antonyms, Meeting Cloze Register, and Oral Phonology with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                        : "Paper 2 Written Composition (Formal Letter to DCE, Teenage Pregnancy Article, Moral Story), Keta-Nkwanta Coastal Surge Comprehension, and prescribed Cockcrow literature selections.",
+                    difficulty: paperNum === 1 ? "Core" : "Advanced",
+                    kind: "mock_suite",
+                    setId: paperNum === 1 ? "mock_1" : "mock_1_p2",
+                    topicId: "mock_exams",
+                    format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                    paperType: paperNum,
+                    year: 2026,
+                    setNumber: 1,
+                    era: "modern",
+                    isMock: true,
+                    questionCount: paperNum === 1 ? 40 : 9,
+                    examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Literature • 60 Marks",
+                    subject: "English Language",
+                    status: "ready"
+                });
+            }
+            return;
+        }
         console.log(`[senior-academy] handleLaunchMockPaper called for Mock ${mockNum}, Paper ${paperNum}`);
         if (mockNum === 1) {
             await handleLaunchModule({
@@ -7324,18 +7372,31 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
 
         // 0. Direct Dedicated Mock Exam Loader with zero friction
         if (mod.isMock || mod.setId?.includes('mock') || mod.topicId === 'mock_exams' || (mod.title && mod.title.toLowerCase().includes('mock 1'))) {
-            setActiveTopicMeta({ title: mod.title || 'BECE Integrated Science Mock 1', topicId: 'mock_exams' });
+            const isEnglishMock = mod.subject === 'English Language' || subject === 'english' || (mod.title && mod.title.toLowerCase().includes('english'));
+            setActiveTopicMeta({ title: mod.title || (isEnglishMock ? 'BECE English Language Mock 1' : 'BECE Integrated Science Mock 1'), topicId: 'mock_exams' });
             setIsLoadingSet(true);
             try {
                 let pData: any = null;
                 const cleanMockId = (mod.setId || 'mock_1').replace(/_p\d+$/, '').replace(/^paper_/, '');
                 if (firestore) {
                     try {
-                        const mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/science/mock_exams/${cleanMockId}`));
-                        if (mockSnap.exists()) {
-                            const mData = mockSnap.data();
-                            const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                            pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
+                        if (isEnglishMock) {
+                            let mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/english/mocks/${cleanMockId}`));
+                            if (!mockSnap.exists()) {
+                                mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/english/mock_exams/${cleanMockId}`));
+                            }
+                            if (mockSnap.exists()) {
+                                const mData = mockSnap.data();
+                                const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                                pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
+                            }
+                        } else {
+                            const mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/science/mock_exams/${cleanMockId}`));
+                            if (mockSnap.exists()) {
+                                const mData = mockSnap.data();
+                                const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                                pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
+                            }
                         }
                     } catch (fErr) {
                         console.warn('[senior-academy] Firestore mock fetch warning:', fErr);
@@ -7345,45 +7406,50 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                 // Robust fallback to bundled data
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                    if (cleanMockId === 'mock_11' || mod.setId?.includes('mock_11')) {
-                        pData = isP2 ? SET_BECE_MOCK_11_SCIENCE_P2 : SET_BECE_MOCK_11_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_10' || mod.setId?.includes('mock_10')) {
-                        pData = isP2 ? SET_BECE_MOCK_10_SCIENCE_P2 : SET_BECE_MOCK_10_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_9' || mod.setId?.includes('mock_9')) {
-                        pData = isP2 ? SET_BECE_MOCK_9_SCIENCE_P2 : SET_BECE_MOCK_9_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_8' || mod.setId?.includes('mock_8')) {
-                        pData = isP2 ? SET_BECE_MOCK_8_SCIENCE_P2 : SET_BECE_MOCK_8_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_7' || mod.setId?.includes('mock_7')) {
-                        pData = isP2 ? SET_BECE_MOCK_7_SCIENCE_P2 : SET_BECE_MOCK_7_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_6' || mod.setId?.includes('mock_6')) {
-                        pData = isP2 ? SET_BECE_MOCK_6_SCIENCE_P2 : SET_BECE_MOCK_6_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_5' || mod.setId?.includes('mock_5')) {
-                        pData = isP2 ? SET_BECE_MOCK_5_SCIENCE_P2 : SET_BECE_MOCK_5_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_4' || mod.setId?.includes('mock_4')) {
-                        pData = isP2 ? SET_BECE_MOCK_4_SCIENCE_P2 : SET_BECE_MOCK_4_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_3' || mod.setId?.includes('mock_3')) {
-                        pData = isP2 ? SET_BECE_MOCK_3_SCIENCE_P2 : SET_BECE_MOCK_3_SCIENCE_P1;
-                    } else if (cleanMockId === 'mock_2' || mod.setId?.includes('mock_2')) {
-                        pData = isP2 ? SET_BECE_MOCK_2_SCIENCE_P2 : SET_BECE_MOCK_2_SCIENCE_P1;
+                    if (isEnglishMock) {
+                        pData = isP2 ? SET_BECE_MOCK_1_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P1;
                     } else {
-                        pData = isP2 ? SET_BECE_MOCK_1_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P1;
+                        if (cleanMockId === 'mock_11' || mod.setId?.includes('mock_11')) {
+                            pData = isP2 ? SET_BECE_MOCK_11_SCIENCE_P2 : SET_BECE_MOCK_11_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_10' || mod.setId?.includes('mock_10')) {
+                            pData = isP2 ? SET_BECE_MOCK_10_SCIENCE_P2 : SET_BECE_MOCK_10_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_9' || mod.setId?.includes('mock_9')) {
+                            pData = isP2 ? SET_BECE_MOCK_9_SCIENCE_P2 : SET_BECE_MOCK_9_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_8' || mod.setId?.includes('mock_8')) {
+                            pData = isP2 ? SET_BECE_MOCK_8_SCIENCE_P2 : SET_BECE_MOCK_8_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_7' || mod.setId?.includes('mock_7')) {
+                            pData = isP2 ? SET_BECE_MOCK_7_SCIENCE_P2 : SET_BECE_MOCK_7_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_6' || mod.setId?.includes('mock_6')) {
+                            pData = isP2 ? SET_BECE_MOCK_6_SCIENCE_P2 : SET_BECE_MOCK_6_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_5' || mod.setId?.includes('mock_5')) {
+                            pData = isP2 ? SET_BECE_MOCK_5_SCIENCE_P2 : SET_BECE_MOCK_5_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_4' || mod.setId?.includes('mock_4')) {
+                            pData = isP2 ? SET_BECE_MOCK_4_SCIENCE_P2 : SET_BECE_MOCK_4_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_3' || mod.setId?.includes('mock_3')) {
+                            pData = isP2 ? SET_BECE_MOCK_3_SCIENCE_P2 : SET_BECE_MOCK_3_SCIENCE_P1;
+                        } else if (cleanMockId === 'mock_2' || mod.setId?.includes('mock_2')) {
+                            pData = isP2 ? SET_BECE_MOCK_2_SCIENCE_P2 : SET_BECE_MOCK_2_SCIENCE_P1;
+                        } else {
+                            pData = isP2 ? SET_BECE_MOCK_1_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P1;
+                        }
                     }
                 }
 
                 if (pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                    const pQuestions = pData.questions || (isP2 ? [...(pData.sectionA || []), ...(pData.sectionB || [])] : []);
+                    const pQuestions = pData.questions || pData.allQuestions || (isP2 ? (pData.questions || [...(pData.sectionA || []), ...(pData.sectionB || []), ...(pData.sectionC || [])]) : []);
                     const resolvedMockSet: CurriculumQuestionSet = {
-                        id: mod.setId || (isP2 ? 'paper_mock_1_p2' : 'paper_mock_1'),
+                        id: mod.setId || (isP2 ? (isEnglishMock ? 'mock_1_p2' : 'paper_mock_1_p2') : (isEnglishMock ? 'mock_1' : 'paper_mock_1')),
                         title: pData.title || mod.title,
                         tier: 'Junior Secondary (JHS)',
-                        subject: 'Integrated Science',
+                        subject: isEnglishMock ? 'English Language' : 'Integrated Science',
                         topic: mod.title,
                         format: (isP2 ? 'structured_essay' : 'multiple_choice') as any,
                         paperType: isP2 ? 2 : 1,
-                        durationMinutes: pData.durationMinutes || (isP2 ? 105 : 45),
-                        totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
-                        questions: pQuestions
+                        durationMinutes: pData.durationMinutes || (isP2 ? (isEnglishMock ? 90 : 105) : 45),
+                        totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? (isEnglishMock ? 9 : 5) : 40),
+                        questions: pQuestions,
+                        sections: pData.sections || undefined
                     } as any;
                     console.log('[senior-academy] Mock Exam Activated Successfully:', resolvedMockSet.id, resolvedMockSet.title, `(${resolvedMockSet.questions?.length} questions)`);
                     setActiveQuestionSet(resolvedMockSet);
@@ -7392,6 +7458,18 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
             } catch (mockErr) {
                 console.error('[senior-academy] Error activating mock exam:', mockErr);
                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                if (isEnglishMock) {
+                    const fallbackData = isP2 ? SET_BECE_MOCK_1_ENGLISH_P2 : SET_BECE_MOCK_1_ENGLISH_P1;
+                    setActiveQuestionSet({
+                        ...fallbackData,
+                        id: mod.setId || (isP2 ? 'mock_1_p2' : 'mock_1'),
+                        tier: 'Junior Secondary (JHS)',
+                        subject: 'English Language',
+                        paperType: isP2 ? 2 : 1,
+                        durationMinutes: fallbackData.durationMinutes || (isP2 ? 90 : 45)
+                    } as any);
+                    return;
+                }
                 const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
                 const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
                 const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
@@ -7865,7 +7943,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                 {viewMode === 'predictive_mocks' ? (
                                     <>
                                         <Sparkles className="w-4 h-4 text-emerald-400" />
-                                        <span>Mock Examination Suite • {activeGrade}</span>
+                                        <span>{subject === 'english' ? 'BECE English Mock Examination Suite' : 'BECE Integrated Science Mock Suite'} • {activeGrade}</span>
                                     </>
                                 ) : viewMode === 'exam_series' ? (
                                     <>
@@ -7881,7 +7959,9 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                             </h3>
                             <p className="text-xs text-slate-400 mt-0.5">
                                 {viewMode === 'predictive_mocks'
-                                    ? "Unified CBT Objective (Paper 1) and Practical & Theory Essay (Paper 2) mock suites."
+                                    ? (subject === 'english'
+                                        ? "Dedicated BECE English Language CBT Objective (Paper 1) and Composition, Comprehension & Literature (Paper 2) mock suites."
+                                        : "Unified CBT Objective (Paper 1) and Practical & Theory Essay (Paper 2) mock suites.")
                                     : viewMode === 'exam_series' 
                                     ? "Historical WAEC examination papers from 1990 to 2026. Paper 1 objective steppers and Paper 2 structured theory rubrics."
                                     : "Subject-by-subject unit drills, conceptual frameworks, and interactive laboratory problems."}
@@ -7900,7 +7980,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                 <span>{isRefreshing ? "Refreshing..." : "Refresh Resources"}</span>
                             </Button>
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
-                                {viewMode === 'predictive_mocks' ? '11 Mock Suites' : `${filteredModules.length} ${viewMode === 'exam_series' ? 'Past Papers' : 'Topical Labs'}`}
+                                {viewMode === 'predictive_mocks' ? (subject === 'english' ? `${ENGLISH_MOCK_SUITES.length} Mock Suite` : '11 Mock Suites') : `${filteredModules.length} ${viewMode === 'exam_series' ? 'Past Papers' : 'Topical Labs'}`}
                             </span>
                         </div>
                     </div>
@@ -7933,7 +8013,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                     )}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-                                    <span>Mock Examination Suite (Mock 1–11)</span>
+                                    <span>{subject === 'english' ? 'English Mock Suite' : 'Mock Examination Suite (Mock 1–11)'}</span>
                                 </button>
                             </div>
                         </div>
@@ -8054,134 +8134,188 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                     {/* MOCK EXAM SUITE WORKSTATION */}
                     {viewMode === 'predictive_mocks' ? (
                         <div className="space-y-6 animate-in fade-in duration-300">
-                            {/* Hero Header */}
-                            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/40 via-slate-900 to-indigo-950/30 border border-emerald-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
-                                <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-                                <div className="relative z-10 max-w-3xl space-y-3">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-extrabold uppercase tracking-wider">
-                                        <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                                        <span>Dedicated Examination Suite • 2027–2029 Standards</span>
+                            {/* Dedicated Header for English vs Integrated Science */}
+                            {subject === 'english' ? (
+                                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950/50 via-slate-900 to-purple-950/40 border border-indigo-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                                    <div className="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                                    <div className="relative z-10 max-w-3xl space-y-3">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-[11px] font-extrabold uppercase tracking-wider">
+                                            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                                            <span>Dedicated English Examination Suite • NaCCA / WAEC Standards</span>
+                                        </div>
+                                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                                            <span>📖</span>
+                                            <span>BECE English Language Mock Examinations</span>
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                            Isomorphic, standardized English Language mock examination suites strictly calibrated to WAEC BECE standards. Each mock packages a 45-minute timed objective CBT test (Paper 1: 40 questions covering Lexis &amp; Structure, Synonyms, Idioms, Antonyms, Meeting Cloze Register, and Oral Phonology) and a 90-minute Paper 2 theory examination (Part A Composition, Part B Reading Comprehension, and Part C The Cockcrow Literature).
+                                        </p>
                                     </div>
-                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">
-                                        BECE Integrated Science Mock Examinations
-                                    </h2>
-                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                        Isomorphic, high-fidelity mock practice suites calibrated from 35+ years of longitudinal WAEC syllabus standards. Each mock packages a 45-minute timed objective test (Paper 1) and a 105-minute practical & theory essay paper (Paper 2) in a single unified room with zero friction transitions.
-                                    </p>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/40 via-slate-900 to-indigo-950/30 border border-emerald-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                                    <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                                    <div className="relative z-10 max-w-3xl space-y-3">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-extrabold uppercase tracking-wider">
+                                            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                                            <span>Dedicated Examination Suite • 2027–2029 Standards</span>
+                                        </div>
+                                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">
+                                            BECE Integrated Science Mock Examinations
+                                        </h2>
+                                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                            Isomorphic, high-fidelity mock practice suites calibrated from 35+ years of longitudinal WAEC syllabus standards. Each mock packages a 45-minute timed objective test (Paper 1) and a 105-minute practical &amp; theory essay paper (Paper 2) in a single unified room with zero friction transitions.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Mocks Grid - Strict 2-Column Responsive Layout */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                                {SCIENCE_MOCK_SUITES.map((mock) => (
-                                    <div
-                                        key={mock.mockNum}
-                                        className="col-span-1 h-full flex flex-col justify-between rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/95 via-slate-900/85 to-slate-950 p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:border-emerald-500/40 transition-all duration-300 relative overflow-hidden group"
-                                    >
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+                                {(subject === 'english' ? ENGLISH_MOCK_SUITES : SCIENCE_MOCK_SUITES).map((mock) => {
+                                    const isEnglish = subject === 'english';
+                                    return (
+                                        <div
+                                            key={mock.mockNum}
+                                            className={cn(
+                                                "col-span-1 h-full flex flex-col justify-between rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/95 via-slate-900/85 to-slate-950 p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group",
+                                                isEnglish ? "hover:border-indigo-500/40" : "hover:border-emerald-500/40"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors",
+                                                isEnglish ? "bg-indigo-500/5 group-hover:bg-indigo-500/10" : "bg-emerald-500/5 group-hover:bg-emerald-500/10"
+                                            )} />
 
-                                        {/* Top Content Area */}
-                                        <div className="pt-1 space-y-4 flex-1 flex flex-col justify-between">
-                                            <div className="space-y-3">
-                                                {/* Header Badges & Live Status */}
-                                                <div className="flex items-center justify-between gap-2 flex-wrap overflow-visible">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <Badge className="bg-emerald-600/90 hover:bg-emerald-600 text-white text-[11px] sm:text-xs font-black px-2.5 py-1 rounded-lg border border-emerald-400/30 leading-normal">
-                                                            MOCK {mock.mockNum} • SET {mock.setNum}
-                                                        </Badge>
-                                                        <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg leading-normal">
-                                                            150 Mins Total • 140 Marks
-                                                        </Badge>
+                                            {/* Top Content Area */}
+                                            <div className="pt-1 space-y-4 flex-1 flex flex-col justify-between">
+                                                <div className="space-y-3">
+                                                    {/* Header Badges & Live Status */}
+                                                    <div className="flex items-center justify-between gap-2 flex-wrap overflow-visible">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <Badge className={cn(
+                                                                "text-white text-[11px] sm:text-xs font-black px-2.5 py-1 rounded-lg border leading-normal",
+                                                                isEnglish 
+                                                                    ? "bg-indigo-600/90 hover:bg-indigo-600 border-indigo-400/30" 
+                                                                    : "bg-emerald-600/90 hover:bg-emerald-600 border-emerald-400/30"
+                                                            )}>
+                                                                {isEnglish ? `ENGLISH MOCK ${mock.mockNum}` : `MOCK ${mock.mockNum} • SET ${mock.setNum}`}
+                                                            </Badge>
+                                                            <Badge variant="outline" className={cn(
+                                                                "text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg leading-normal",
+                                                                isEnglish 
+                                                                    ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-300" 
+                                                                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                                                            )}>
+                                                                {isEnglish ? "135 Mins Total • 100 Marks" : "150 Mins Total • 140 Marks"}
+                                                            </Badge>
+                                                        </div>
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border shrink-0 leading-normal",
+                                                            isEnglish 
+                                                                ? "text-indigo-400 bg-indigo-500/10 border-indigo-500/30" 
+                                                                : "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                                                        )}>
+                                                            <span className={cn(
+                                                                "w-2 h-2 rounded-full animate-ping",
+                                                                isEnglish ? "bg-indigo-400" : "bg-emerald-400"
+                                                            )} />
+                                                            Live &amp; Calibrated
+                                                        </span>
                                                     </div>
-                                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 shrink-0 leading-normal">
-                                                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                                        Live &amp; Calibrated
-                                                    </span>
+
+                                                    {/* Mock Title & Normalized Description */}
+                                                    <div>
+                                                        <h3 className={cn(
+                                                            "text-base sm:text-lg font-black text-white transition-colors leading-snug line-clamp-1",
+                                                            isEnglish ? "group-hover:text-indigo-300" : "group-hover:text-emerald-300"
+                                                        )}>
+                                                            {mock.title}
+                                                        </h3>
+                                                        <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+                                                            {mock.description}
+                                                        </p>
+                                                    </div>
                                                 </div>
 
-                                                {/* Mock Title & Normalized Description */}
-                                                <div>
-                                                    <h3 className="text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors leading-snug line-clamp-1">
-                                                        {mock.title}
-                                                    </h3>
-                                                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed line-clamp-2 min-h-[2.5rem]">
-                                                        {mock.description}
-                                                    </p>
+                                                {/* Standardized Micro-Grid for Paper 1 and Paper 2 */}
+                                                <div className="grid grid-cols-2 gap-3 pt-3 mt-auto">
+                                                    {/* Paper 1 Metrics Box */}
+                                                    <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-sky-500/40 transition-colors">
+                                                        <div className="flex items-center justify-between gap-1 overflow-visible">
+                                                            <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5 min-w-0 leading-tight">
+                                                                <ListChecks className="w-3.5 h-3.5 shrink-0" />
+                                                                <span className="truncate">Paper 1: Objective</span>
+                                                            </span>
+                                                            <span className="text-[10px] font-bold text-sky-300 bg-sky-500/10 border border-sky-500/20 px-1.5 py-0.5 rounded leading-none shrink-0">
+                                                                45 Mins
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
+                                                            {mock.paper1Details}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Paper 2 Metrics Box */}
+                                                    <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-amber-500/40 transition-colors">
+                                                        <div className="flex items-center justify-between gap-1 overflow-visible">
+                                                            <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5 min-w-0 leading-tight">
+                                                                <FileText className="w-3.5 h-3.5 shrink-0" />
+                                                                <span className="truncate">{isEnglish ? "Paper 2: Theory & Lit" : "Paper 2: Practical & Theory"}</span>
+                                                            </span>
+                                                            <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded leading-none shrink-0">
+                                                                {isEnglish ? "90 Mins" : "105 Mins"}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
+                                                            {mock.paper2Details}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Standardized Micro-Grid for Paper 1 and Paper 2 */}
-                                            <div className="grid grid-cols-2 gap-3 pt-3 mt-auto">
-                                                {/* Paper 1 Metrics Box */}
-                                                <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-sky-500/40 transition-colors">
-                                                    <div className="flex items-center justify-between gap-1 overflow-visible">
-                                                        <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5 min-w-0 leading-tight">
-                                                            <ListChecks className="w-3.5 h-3.5 shrink-0" />
-                                                            <span className="truncate">Paper 1: Objective</span>
-                                                        </span>
-                                                        <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 border border-sky-500/30 px-1.5 py-0.5 rounded shrink-0 leading-tight">
-                                                            40 Marks
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
-                                                        {mock.paper1Details}
-                                                    </p>
-                                                </div>
-
-                                                {/* Paper 2 Metrics Box */}
-                                                <div className="p-3 sm:p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 flex flex-col justify-between space-y-2 hover:border-amber-500/40 transition-colors">
-                                                    <div className="flex items-center justify-between gap-1 overflow-visible">
-                                                        <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5 min-w-0 leading-tight">
-                                                            <FileText className="w-3.5 h-3.5 shrink-0" />
-                                                            <span className="truncate">Paper 2: Practical &amp; Theory</span>
-                                                        </span>
-                                                        <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 px-1.5 py-0.5 rounded shrink-0 leading-tight">
-                                                            100 Marks
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[11px] text-slate-300/90 leading-snug line-clamp-2">
-                                                        {mock.paper2Details}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Harmonized Action Buttons Row (Baseline Aligned) */}
-                                        <div className="pt-4 border-t border-slate-800/80 mt-5 space-y-2">
-                                            {/* Primary CTA: Start Unified Mock */}
-                                            <Button
-                                                onClick={() => handleLaunchMockPaper(mock.mockNum, 1)}
-                                                className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
-                                            >
-                                                <Rocket className="w-4 h-4" />
-                                                <span>Start Unified Mock {mock.mockNum} (Paper 1 → Paper 2)</span>
-                                                <ChevronRight className="w-4 h-4 ml-0.5" />
-                                            </Button>
-
-                                            {/* Secondary CTAs: Outlined Ghost Buttons with Universal Labels */}
-                                            <div className="grid grid-cols-2 gap-2">
+                                            {/* Harmonized Action Buttons Row (Baseline Aligned) */}
+                                            <div className="pt-4 border-t border-slate-800/80 mt-5 space-y-2">
+                                                {/* Primary CTA: Start Unified Mock */}
                                                 <Button
-                                                    variant="outline"
-                                                    size="sm"
                                                     onClick={() => handleLaunchMockPaper(mock.mockNum, 1)}
-                                                    className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
+                                                    className={cn(
+                                                        "w-full text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]",
+                                                        isEnglish 
+                                                            ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 shadow-indigo-600/25" 
+                                                            : "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/25"
+                                                    )}
                                                 >
-                                                    <ListChecks className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                                                    <span className="truncate">Take Paper 1 (CBT)</span>
+                                                    <Rocket className="w-4 h-4" />
+                                                    <span>Start Unified Mock {mock.mockNum} (Paper 1 → Paper 2)</span>
+                                                    <ChevronRight className="w-4 h-4 ml-0.5" />
                                                 </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleLaunchMockPaper(mock.mockNum, 2)}
-                                                    className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
-                                                >
-                                                    <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                                                    <span className="truncate">Take Paper 2 (Essay)</span>
-                                                </Button>
+
+                                                {/* Secondary CTAs: Outlined Ghost Buttons with Universal Labels */}
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleLaunchMockPaper(mock.mockNum, 1)}
+                                                        className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
+                                                    >
+                                                        <ListChecks className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                                                        <span className="truncate">Take Paper 1 (CBT)</span>
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleLaunchMockPaper(mock.mockNum, 2)}
+                                                        className="border border-slate-700 bg-slate-800/40 hover:bg-slate-800 text-slate-200 hover:text-white text-xs h-9 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors font-medium"
+                                                    >
+                                                        <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                                        <span className="truncate">{isEnglish ? "Take Paper 2 (Theory)" : "Take Paper 2 (Essay)"}</span>
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     ) : showPrepNotice ? (
