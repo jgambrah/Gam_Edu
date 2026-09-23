@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -43,294 +43,313 @@ interface QuestionItem {
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// ==========================================
-// PASSAGE I: AKWASI SETH'S HOMECOMING
-// ==========================================
-const passage1Text = `When the car suddenly screeched to a halt sending tons of dust into the air, the children of the village ran helter-skelter. Then they rushed to Mr. Opiah's compound where the car had stopped. They were delighted to see a car again after a very long time and marvelled at its beauty.
+// =========================================================================
+// ISOMORPHIC PASSAGE I: THE RETURN OF THE NATIVE SON (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `When the saloon car screeched abruptly to a halt kicking up a swirling cloud of red dust, the children playing by the lane scattered in all directions. Once the dust settled, they rushed excitedly toward Opanyin Kwabena's compound where the vehicle had parked. Having not seen a private motorcar in their farming hamlet for nearly a year, they marveled at its gleaming metallic exterior.
 
-Akwasi Seth, Mr. Opiah's eldest son, the darling boy of the village, had finally arrived. The day before, the gong-gong had been beaten to announce the arrival of the first son of the village who had gone to learn the ways of the white man. Everybody was prepared to give him a rousing welcome. Fervent preparations started there and then. However, the children's only anxiety was to see what the man had brought and listen to what he had to say.
+Yaw Boakye, Opanyin Kwabena's eldest son and the pride of the entire village, had finally returned. The previous afternoon, the town crier had beaten the gong-gong through every quarter, proclaiming the homecoming of their native son who had traveled overseas to acquire university knowledge. The community had prepared a rousing reception for him. Eager villagers had swept the pathways and hung woven palm arches, while the children's main preoccupation was to see what foreign gifts he had brought and listen to his travel tales.
 
-Meanwhile, Mr. Opiah and his family, immaculately dressed and full of joy and anxiety, were seated in the house. There was great expectation written all over their faces. They had been told that their son would arrive at 7 a.m. but by 1 p.m. there was still no sign of him. So when they heard the screeching of the car, they all heaved sighs of relief. They were extremely happy when Akwasi Seth entered the compound. The women began to sing his praises.
+Inside the family house, Opanyin Kwabena and his household sat dressed in pristine white cloths, torn between joy and mounting anxiety. The telegram had indicated that their son would arrive at seven in the morning, but by one in the afternoon, there had still been no sign of his vehicle along the trunk road. Thus, when the sharp squeal of rubber tires reached their ears, an overwhelming sigh of relief washed over them. As Yaw Boakye stepped across the threshold, women burst into melodious praise songs.
 
-Akwasi had not forgotten his culture. He went round shaking hands with everybody. When it was his father's turn, the old man hugged him beaming with smiles. His mother also hugged him and shed tears of joy.`;
+Mindful of his roots, Yaw went round the courtyard greeting each elder with traditional decorum. When he reached his father, the old man embraced him tightly with tears wetting his wrinkled cheeks, while his mother wept aloud with uncontained joy.`;
 
-const passage1QuestionsRaw = [
+const passage1Questions = [
   {
     number: 1,
-    prompt: "In Passage I, why did the village children initially scatter helter-skelter?",
+    prompt: "According to Passage I, why did the village children initially scatter in all directions?",
     options: [
-      "They were eagerly awaiting a vehicle",
-      "They were startled by the sudden screeching halt and dust of the vehicle",
-      "They had never seen a mechanical motorcar before",
-      "The car was extraordinarily marvelous"
+      "They were startled by the sudden screeching stop and dust of the vehicle",
+      "They were running to alert Opanyin Kwabena of the arrival",
+      "They had never seen a mechanical motorcar in their entire lives",
+      "They were frightened by the loud cheers of the welcoming crowd"
     ],
-    correctAnswer: "They were startled by the sudden screeching halt and dust of the vehicle",
-    hint: "Reread the opening sentence: the sudden screeching noise and cloud of dust startled them into running in all directions.",
-    workedSolution: "The children ran in wild confusion because the unexpected, violent screeching stop of the car kicking up dust frightened them.",
+    correctAnswer: "They were startled by the sudden screeching stop and dust of the vehicle",
+    hint: "Reread the opening sentence: the car screeched abruptly, throwing up red dust as children scattered.",
+    workedSolution: "The narrative explains that the children scattered because the unexpected, screeching halt of the car throwing up dust startled them.",
     points: 1
   },
   {
     number: 2,
-    prompt: "How did the entire community learn that Akwasi Seth would be arriving on that specific day in Passage I?",
+    prompt: "How did the community members learn that Yaw Boakye would arrive on that specific day in Passage I?",
     options: [
-      "The vehicle parked directly in front of Mr. Opiah's house",
-      "The traditional town crier had beaten the gong-gong to broadcast it",
-      "Mr. Opiah had personally visited every household",
-      "The children shouted the news across the village"
+      "Opanyin Kwabena had personally visited every household in town",
+      "The car honked its horn as it entered the outskirts of town",
+      "The town crier had beaten the gong-gong to announce it",
+      "The children spotted the vehicle descending the mountain ridge"
     ],
-    correctAnswer: "The traditional town crier had beaten the gong-gong to broadcast it",
-    hint: "Check paragraph two: 'The day before, the gong-gong had been beaten to announce the arrival...'",
-    workedSolution: "The arrival was formally announced to the village the previous day by beating the traditional gong-gong.",
+    correctAnswer: "The town crier had beaten the gong-gong to announce it",
+    hint: "Check paragraph two: 'the town crier had beaten the gong-gong through every quarter...'",
+    workedSolution: "The text explicitly states that the community learned of the arrival through the town crier who beat the gong-gong the previous afternoon.",
     points: 1
   },
   {
     number: 3,
-    prompt: "Why were members of Mr. Opiah's household filled with anxiety while waiting inside the house?",
+    prompt: "Why were Opanyin Kwabena and his family experiencing intense anxiety inside the house?",
     options: [
-      "Their son had delayed for six hours beyond his scheduled morning arrival time",
-      "They were still organizing welcoming gifts for him",
-      "They feared Akwasi Seth would no longer recognize his relatives",
-      "They were astonished by how much he had changed"
+      "They were afraid that Yaw Boakye would no longer respect his native culture",
+      "Their son was delayed for six hours beyond his scheduled morning arrival time",
+      "They had not finished preparing the festive meal for the visitors",
+      "They feared that political unrest had disrupted the highway journey"
     ],
-    correctAnswer: "Their son had delayed for six hours beyond his scheduled morning arrival time",
-    hint: "He was scheduled to arrive at 7 a.m., but by 1 p.m. he had still not appeared.",
-    workedSolution: "The family was anxious because six hours had passed past his 7 a.m. expected arrival time without any word or sight of him.",
+    correctAnswer: "Their son was delayed for six hours beyond his scheduled morning arrival time",
+    hint: "Paragraph three notes the telegram said 7:00 a.m., but by 1:00 p.m. he had not arrived.",
+    workedSolution: "The family was anxious because six hours had elapsed past his expected 7:00 a.m. arrival time without any word from him.",
     points: 1
   },
   {
     number: 4,
-    prompt: "According to Passage I, Akwasi Seth was ............",
+    prompt: "From the narrative in Passage I, Yaw Boakye was regarded by the villagers as ............",
     options: [
-      "an unruly truant who avoided chores",
-      "the only person who was immaculately dressed",
-      "weeping bitterly on his knees",
-      "the cherished and beloved native son of the community"
+      "an unruly traveler who avoided manual work",
+      "the cherished and admired native son of the community",
+      "a haughty academic who disdained local customs",
+      "a stranger who rarely greeted the family elders"
     ],
-    correctAnswer: "the cherished and beloved native son of the community",
-    hint: "He is described in paragraph two as 'the darling boy of the village'.",
-    workedSolution: "The passage explicitly describes Akwasi Seth as 'the darling boy of the village', indicating he was deeply loved by everyone.",
+    correctAnswer: "the cherished and admired native son of the community",
+    hint: "Paragraph two describes him as 'the pride of the entire village'.",
+    workedSolution: "The passage notes that he was the pride of the entire community, indicating that he was deeply loved and respected by all.",
     points: 1
   },
   {
     number: 5,
-    prompt: "In Passage I, the word 'marvelled' in 'marvelled at its beauty' means ............",
+    prompt: "In Passage I, the word 'marveled' in 'marveled at its gleaming metallic exterior' means that the children ............",
     options: [
-      "laughed boisterously",
-      "gathered closely around",
-      "wondered with great admiration",
-      "entered inside"
+      "surrounded the vehicle in anger",
+      "wondered with great admiration and astonishment",
+      "chuckled loudly among themselves",
+      "examined the mechanical parts closely"
     ],
-    correctAnswer: "wondered with great admiration",
-    hint: "To be filled with wonder, astonishment, or pleasant surprise.",
-    workedSolution: "'Marvelled' means filled with wonder, astonishment, or admiration; 'wondered with great admiration' is the exact equivalent.",
+    correctAnswer: "wondered with great admiration and astonishment",
+    hint: "To marvel means to be filled with wonder, astonishment, or admiration.",
+    workedSolution: "'Marveled' means filled with wonder or admiration; 'wondered with great admiration and astonishment' is its direct meaning.",
     points: 1
   },
   {
     number: 6,
-    prompt: "Why did Akwasi Seth's mother weep tears of joy upon seeing him?",
+    prompt: "Why did Yaw Boakye's mother shed tears when she embraced him?",
     options: [
-      "Akwasi appeared sickly and pale",
-      "She was suffering from physical pain",
-      "She was overwhelmed with supreme happiness and relief",
-      "Akwasi had forgotten his native tongue"
+      "She noticed that her son appeared weak and malnourished",
+      "She had suffered a sudden physical pain in her chest",
+      "She was completely overwhelmed with profound happiness and relief",
+      "She realized that her son had forgotten his native tongue"
     ],
-    correctAnswer: "She was overwhelmed with supreme happiness and relief",
-    hint: "Tears of joy are shed when happiness and emotional relief are intensely felt.",
-    workedSolution: "Shedding 'tears of joy' signifies an overwhelming emotional release of pure happiness, gratitude, and relief at seeing her son safely back.",
+    correctAnswer: "She was completely overwhelmed with profound happiness and relief",
+    hint: "Weeping with joy occurs when emotions of gratitude, love, and relief are overwhelming.",
+    workedSolution: "Shedding tears of joy signifies an emotional release of pure relief and profound happiness at seeing her son safely back home.",
     points: 1
   }
 ];
 
-// ==========================================
-// PASSAGE II: MASTER TWUM'S SCHOOL
-// ==========================================
-const passage2Text = `At the far end of the village beyond the houses, in its grounds, stood the village school, ruled over by the head teacher, Mr. Kodwo Twum. Surrounded by shady trees and with a large games field to one side, it was one of the best schools in the area.
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE PILLAR OF VILLAGE EDUCATION (CALIBRATED)
+// =========================================================================
+const passage2Text = `At the far boundary of the settlement beyond the cocoa sheds stood the village basic school, overseen by the veteran headmaster, Master Kwesi Boateng. Framed by expansive nim trees and bordered on its western flank by a manicured football park, it ranked among the most disciplined schools in the rural district.
 
-Mr. Twum himself was a teacher of the old school, of the days when education had to be fought for, for the boys walked many kilometres for a chance to read and write. He was very strict, but was held in such esteem by both parents and teachers that no one resented his discipline. He took a personal interest in all his pupils and was affectionately known as "Master" by the big men in the city who had passed through his hands.
+Master Boateng was an educator of the old dispensation—an era when basic literacy had to be fiercely fought for, when eager boys trekked eight kilometers bare-footed for the opportunity to master arithmetic and English grammar. He was unyielding in his standards, yet held in such deep veneration by parents and teachers alike that no one resented his discipline. He maintained a fatherly interest in every learner, and prominent magistrates and directors in the metropolis who had passed through his hands affectionately addressed him as "Master."
 
-The ground round the school was always well kept and tidy, for cutting and weeding the grass was one of the punishments given to inattentive or insolent children. A small farm belonging to the school stretched down the hillside behind it and the children were taught the elements of farming as part of their lessons.
+The compound surrounding the school was consistently spotless and orderly, as cutting turf and desilting gutters formed the standard corrective discipline for inattentive or insolent pupils. A flourishing vegetable plot belonging to the institution sloped down the valley behind the classrooms, where agriculture masters instructed boys and girls in practical crop rotation as part of their weekly curriculum.
 
-Master Twum's house was across the road from the school and next to that belonging to John Agyemang the catechist, so that the two men were often seen gossiping together in the evenings or going into the small village church to discuss parish affairs.`;
+Master Boateng's modest bungalow was located directly across the murram road from the school, adjacent to that of Catechist Agyeman. Consequently, the two elderly gentlemen were frequently seen conversing on the front porch during twilight or walking together to the village chapel to manage church and school matters.`;
 
-const passage2QuestionsRaw = [
+const passage2Questions = [
   {
     number: 7,
     prompt: "According to Passage II, where was the village basic school situated?",
     options: [
-      "On the outskirts beyond the village houses",
-      "In the bustling commercial center of the town",
-      "Directly behind the district palace",
-      "In the middle of the residential streets"
+      "On the outskirts beyond the village cocoa sheds",
+      "In the bustling market center of the township",
+      "Directly behind Master Boateng's residential garden",
+      "Beside the municipal assembly hall"
     ],
-    correctAnswer: "On the outskirts beyond the village houses",
-    hint: "Reread the opening sentence: 'At the far end of the village beyond the houses...'",
-    workedSolution: "The passage notes that the school was located at the far end of the community beyond the settlement, which corresponds to the outskirts.",
+    correctAnswer: "On the outskirts beyond the village cocoa sheds",
+    hint: "Reread the opening sentence: 'At the far boundary of the settlement beyond the cocoa sheds...'",
+    workedSolution: "The text explains that the school stood at the far edge of the settlement beyond the cocoa sheds, on the outskirts of town.",
     points: 1
   },
   {
     number: 8,
-    prompt: "According to Passage II, the school grounds were bordered and surrounded by ............",
-    options: ["shady trees", "a bustling sports stadium", "other competing schools", "mud residential houses"],
-    correctAnswer: "shady trees",
-    hint: "Check paragraph one: 'Surrounded by shady trees and with large games field to one side...'",
-    workedSolution: "The narrative describes the school compound as being surrounded by green, shady trees.",
+    prompt: "According to Passage II, the school compound was framed and bordered by ............",
+    options: [
+      "ancient nim trees and a manicured football park",
+      "untrimmed bamboo thickets and swampy pools",
+      "a cluster of rival commercial academies",
+      "mud dwelling huts and cattle kraals"
+    ],
+    correctAnswer: "ancient nim trees and a manicured football park",
+    hint: "Check paragraph one: framed by expansive nim trees with a football park on its western flank.",
+    workedSolution: "The narrative describes the school grounds as framed by expansive nim trees and bordered by a manicured football park.",
     points: 1
   },
   {
     number: 9,
-    prompt: "Which of the following statements is NOT true concerning Mr. Kodwo Twum in Passage II?",
+    prompt: "Which of the following assertions is NOT true regarding Master Kwesi Boateng in Passage II?",
     options: [
-      "He was revered and held in high esteem by parents",
-      "He was a firm, strict disciplinarian",
-      "He was widely hated and resented by the community",
-      "He took a dedicated personal interest in all his pupils"
+      "He was revered and held in high esteem by parents and teachers",
+      "He enforced unyielding discipline on the school compound",
+      "He was widely despised and resented by the local community",
+      "Former pupils who attained prominence in the city remembered him with affection"
     ],
-    correctAnswer: "He was widely hated and resented by the community",
-    hint: "Paragraph two states that no one resented his discipline and he was held in high esteem.",
-    workedSolution: "Mr. Twum was universally respected and admired; asserting that he was hated or resented by people is completely false.",
+    correctAnswer: "He was widely despised and resented by the local community",
+    hint: "Paragraph two states that no one resented his discipline and he was held in deep veneration.",
+    workedSolution: "Master Boateng was deeply venerated and respected by all; asserting that he was despised or resented is completely false.",
     points: 1
   },
   {
     number: 10,
-    prompt: "In Passage II, the word 'insolent' in 'inattentive or insolent children' means ............",
-    options: ["ruffian", "stubbornly difficult", "disrespectful and rude", "habitually lazy"],
-    correctAnswer: "disrespectful and rude",
-    hint: "Showing a rude and arrogant lack of respect toward authority.",
-    workedSolution: "'Insolent' means showing insolence, rudeness, or contemptuous disrespect; 'disrespectful and rude' is its exact equivalent.",
+    prompt: "In Passage II, the word 'insolent' in 'inattentive or insolent pupils' means ............",
+    options: [
+      "clumsy and physically awkward",
+      "disrespectful, rude, and contemptuous",
+      "academically backward",
+      "habitually sluggish and timid"
+    ],
+    correctAnswer: "disrespectful, rude, and contemptuous",
+    hint: "'Insolent' means showing a rude and arrogant lack of respect.",
+    workedSolution: "'Insolent' means displaying rude, disrespectful, or contemptuous behavior toward authority; 'disrespectful, rude, and contemptuous' is its exact equivalent.",
     points: 1
   },
   {
     number: 11,
-    prompt: "Why were Master Twum and Catechist John Agyemang able to converse and fellowship together so frequently?",
+    prompt: "Why were Master Boateng and Catechist Agyeman able to fellowship and converse together so frequently?",
     options: [
-      "They were the only literate adults in the village",
-      "They had abundant idle leisure time",
-      "They lived as immediate next-door neighbors across from the school",
-      "They were both full-time church administrators"
+      "They were the only literate elders residing in the district",
+      "They had retired from active public service duties",
+      "Their residential bungalows were situated side by side across from the school",
+      "They were biological siblings belonging to the same clan"
     ],
-    correctAnswer: "They lived as immediate next-door neighbors across from the school",
-    hint: "Look at paragraph four: Master Twum's house was next to that of the catechist across the road.",
-    workedSolution: "Their frequent companionship was facilitated by geographical proximity: their residential houses were situated side by side.",
+    correctAnswer: "Their residential bungalows were situated side by side across from the school",
+    hint: "Look at paragraph four: Master Boateng's bungalow was adjacent to that of Catechist Agyeman.",
+    workedSolution: "Their close companionship was enabled by proximity: their residential homes were situated directly next to each other.",
     points: 1
   }
 ];
 
-// ==========================================
-// GENERAL LEXIS AND STRUCTURE (12 - 40)
-// ==========================================
-const generalQuestionsRaw = [
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 1997 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (12 - 16) ---
   {
     number: 12,
-    prompt: "The new accountant is exceptionally sincere in all her official financial dealings.\nChoose the word nearest in meaning to the underlined word 'sincere'.",
-    options: ["free", "careful", "good", "honest"],
+    prompt: "The new accounts officer is exceptionally sincere in all her official audit reports.\nChoose the word nearest in meaning to 'sincere'.",
+    options: ["candid", "honest", "prudent", "generous"],
     correctAnswer: "honest",
-    hint: "Free from pretense or deceit; truthful and genuine.",
-    workedSolution: "'Sincere' means free from deceit or hypocrisy; 'honest' is its direct synonym.",
+    hint: "Truthful, upright, and free from deceit.",
+    workedSolution: "'Sincere' means free from pretense or deceit; 'honest' is its direct synonym.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The shoppers could not stand the foul scent emanating from the clogged gutter.\nChoose the word nearest in meaning to the underlined word 'scent'.",
-    options: ["rush", "sight", "smell", "noise"],
-    correctAnswer: "smell",
-    hint: "A distinctive odor or aroma.",
-    workedSolution: "'Scent' refers to an odor or olfactory impression; 'smell' is its direct synonym.",
+    prompt: "The shoppers could not tolerate the foul scent emanating from the clogged gutter.\nChoose the word nearest in meaning to 'scent'.",
+    options: ["vapor", "haze", "odor", "smoke"],
+    correctAnswer: "odor",
+    hint: "A distinctive, pervasive smell (often unpleasant in this context).",
+    workedSolution: "'Scent' refers to a smell or olfactory perception; in the context of a gutter, 'odor' (or smell) is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "My elder brother needs an apprentice to assist him complete the carpentry order.\nChoose the word nearest in meaning to the underlined word 'assist'.",
-    options: ["help", "encourage", "join", "guide"],
-    correctAnswer: "help",
-    hint: "To give support, aid, or help in completing a task.",
-    workedSolution: "'Assist' means to give support or aid to someone in undertaking work; 'help' is its direct equivalent.",
+    prompt: "The master builder hired two laborers to assist him in laying the stone foundation.\nChoose the word nearest in meaning to 'assist'.",
+    options: ["guide", "encourage", "aid", "supervise"],
+    correctAnswer: "aid",
+    hint: "To help or give support to someone completing a task.",
+    workedSolution: "'Assist' means to give help or support; 'aid' is its direct synonym.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The historic mud courthouse was demolished by the violent rainstorm.\nChoose the word nearest in meaning to the underlined word 'demolished'.",
-    options: ["opened", "built", "destroyed", "painted"],
-    correctAnswer: "destroyed",
-    hint: "Pulled down, broken to pieces, or completely ruined.",
-    workedSolution: "'Demolished' means torn down, razed, or shattered; 'destroyed' is its closest synonym.",
+    prompt: "The dilapidated wooden warehouse was demolished by the municipal engineering department.\nChoose the word nearest in meaning to 'demolished'.",
+    options: ["renovated", "flattened", "auctioned", "surveyed"],
+    correctAnswer: "flattened",
+    hint: "Pulled down, razed, or destroyed.",
+    workedSolution: "'Demolished' means torn down, razed, or leveled; 'flattened' (or destroyed) is its closest equivalent.",
     points: 1
   },
   {
     number: 16,
-    prompt: "The visiting tourists admired the calm and serene atmosphere of the coastal village.\nChoose the word nearest in meaning to the underlined word 'calm'.",
-    options: ["neat", "good", "lovely", "peaceful"],
-    correctAnswer: "peaceful",
-    hint: "Tranquil, quiet, and free from disturbance or agitation.",
-    workedSolution: "'Calm' describes an environment free from agitation, turmoil, or noise; 'peaceful' is its exact equivalent.",
+    prompt: "The visiting patrons appreciated the calm and quiet surroundings of the nature sanctuary.\nChoose the word nearest in meaning to 'calm'.",
+    options: ["scenic", "tranquil", "tidy", "sheltered"],
+    correctAnswer: "tranquil",
+    hint: "Peaceful, serene, and free from noise or agitation.",
+    workedSolution: "'Calm' describes an environment free from turmoil, agitation, or noise; 'tranquil' is its exact equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (17 - 21) ---
   {
     number: 17,
-    prompt: "Ekua visits her aged grandmother in the village once in a blue moon. This means that Ekua visits her grandmother ............",
-    options: ["every month", "once a week", "occasionally and very rarely", "quite often"],
-    correctAnswer: "occasionally and very rarely",
-    hint: "Very seldom; happening on rare occasions.",
-    workedSolution: "The idiom 'once in a blue moon' means very rarely or on very infrequent occasions.",
+    prompt: "Uncle Kofi visits his ancestral village once in a blue moon. This means that Uncle Kofi visits ............",
+    options: [
+      "at the conclusion of every harvest",
+      "exclusively on moonlit evenings",
+      "very rarely on rare occasions",
+      "frequently throughout the dry season"
+    ],
+    correctAnswer: "very rarely on rare occasions",
+    hint: "Happening very seldom or infrequently.",
+    workedSolution: "The idiom 'once in a blue moon' means very rarely or on extremely infrequent occasions.",
     points: 1
   },
   {
     number: 18,
-    prompt: "Joana is a brilliant scholar and will come out of her examinations with flying colours. This means that ............",
+    prompt: "Baaba studied methodically and will come out of her examinations with flying colours. This means that Baaba ............",
     options: [
-      "she will pass in her favorite subjects only",
-      "she will excel in a few subjects",
-      "her examination results will be exceptionally good",
-      "she will work harder next term"
+      "will secure distinction and excellent marks",
+      "will pass in her favorite elective subjects only",
+      "will celebrate with colorful paper streamers",
+      "will barely achieve the minimum pass mark"
     ],
-    correctAnswer: "her examination results will be exceptionally good",
-    hint: "Passing or succeeding with distinction and great honor.",
-    workedSolution: "'With flying colours' is an idiom meaning with outstanding distinction, brilliance, or remarkable success.",
+    correctAnswer: "will secure distinction and excellent marks",
+    hint: "To achieve outstanding success or victory.",
+    workedSolution: "The idiom 'with flying colours' means with outstanding distinction, brilliance, or remarkable success.",
     points: 1
   },
   {
     number: 19,
-    prompt: "The general manager hit the nail on the head regarding the causes of revenue decline. This means the manager ............",
+    prompt: "The managing director hit the nail on the head regarding the cause of revenue loss. This means the director ............",
     options: [
-      "spoke the exact truth accurately",
-      "was evasive and not straightforward",
-      "criticized the workers harshly",
-      "was displeased with the executive board"
+      "spoke in an aggressive and harsh manner",
+      "stated the exact truth with precision",
+      "spoke in vague, evasive generalities",
+      "expressed disappointment with the staff"
     ],
-    correctAnswer: "spoke the exact truth accurately",
-    hint: "Identifying or describing a situation with precise accuracy.",
-    workedSolution: "The idiom 'to hit the nail on the head' means to describe a situation with precise accuracy or state the exact truth.",
+    correctAnswer: "stated the exact truth with precision",
+    hint: "To identify or explain something with absolute accuracy.",
+    workedSolution: "The idiom 'to hit the nail on the head' means to describe an issue with precise accuracy or state the exact truth.",
     points: 1
   },
   {
     number: 20,
-    prompt: "Akosua agreed to attend the musical concert if Adjei would foot the bill. This means that she will attend if ............",
+    prompt: "Akua agreed to attend the excursion if her uncle would foot the bill. This means she will attend if her uncle ............",
     options: [
-      "Adjei escorts her there on foot",
-      "the two of them travel together",
-      "Adjei pays all her expenses",
-      "she walks alongside her classmates"
+      "escorts her there on foot",
+      "pays the full financial cost of the trip",
+      "registers her name on the passenger list",
+      "travels alongside her in the bus"
     ],
-    correctAnswer: "Adjei pays all her expenses",
-    hint: "To settle or pay the entire financial cost of an undertaking.",
-    workedSolution: "The idiom 'to foot the bill' means to pay the full financial expense or settle the account for something.",
+    correctAnswer: "pays the full financial cost of the trip",
+    hint: "To pay the expenses or settle the account for something.",
+    workedSolution: "The idiom 'to foot the bill' means to pay the full financial cost or settle the bill for an undertaking.",
     points: 1
   },
   {
     number: 21,
-    prompt: "The traditional priest urged the two rival factions to bury the hatchet. This means they must ............",
+    prompt: "The community elders urged the two rival factions to bury the hatchet. This means the factions should ............",
     options: [
-      "hide their farming implements in the barn",
-      "collaborate on a communal farm",
-      "forget their grievances and make peace",
-      "bury their ancestral relics"
+      "lock their farming cutlasses in the storeroom",
+      "labor together on a communal farm",
+      "settle their grievances and reconcile in peace",
+      "bury their ancestral relics underground"
     ],
-    correctAnswer: "forget their grievances and make peace",
-    hint: "To cease fighting, settle a dispute, and reconcile.",
+    correctAnswer: "settle their grievances and reconcile in peace",
+    hint: "To end a dispute and make peace.",
     workedSolution: "'To bury the hatchet' is an idiom meaning to end a conflict, forgive past offenses, and make peace.",
     points: 1
   },
@@ -338,117 +357,117 @@ const generalQuestionsRaw = [
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (22 - 26) ---
   {
     number: 22,
-    prompt: "The reading hall was too dim for comfortable study, so we relocated to a ...... room.",
-    options: ["bright", "shining", "clear", "lit"],
+    prompt: "The dormitory corridor was too dim for safe walking, so we moved into a ...... hall.\nChoose the word most nearly opposite in meaning to 'dim'.",
+    options: ["clean", "bright", "spacious", "lofty"],
     correctAnswer: "bright",
-    hint: "'Dim' means poorly illuminated. Find the word that denotes well supplied with light.",
-    workedSolution: "'Dim' means lacking light or poorly lit. Its direct luminous antonym is 'bright' (well-illuminated).",
+    hint: "'Dim' means lacking adequate light. Find the word that denotes well-supplied with light.",
+    workedSolution: "'Dim' means poorly illuminated. Its direct antonym regarding illumination is 'bright' (well-lit).",
     points: 1
   },
   {
     number: 23,
-    prompt: "The royal vault contains expensive ornaments, but the local market sells ...... beads.",
-    options: ["beautiful", "cheap", "better", "fine"],
+    prompt: "The royal vault contains costly jewelry, while the market vendor sells ...... trinkets.\nChoose the word most nearly opposite in meaning to 'costly'.",
+    options: ["shoddy", "cheap", "crude", "inferior"],
     correctAnswer: "cheap",
-    hint: "'Expensive' means costing a high price. Find the word meaning low in price.",
-    workedSolution: "'Expensive' means high-priced or costly. Its direct commercial antonym is 'cheap' (inexpensive).",
+    hint: "'Costly' means expensive. Find the word meaning low in price.",
+    workedSolution: "'Costly' means expensive or of high price. Its direct commercial antonym is 'cheap' (inexpensive).",
     points: 1
   },
   {
     number: 24,
-    prompt: "The transit passengers assembled in the arrival hall while travelers awaiting boarding gathered in the ...... hall.",
-    options: ["departure", "return", "acceptance", "common"],
+    prompt: "Disembarking passengers assembled in the arrival concourse, while outgoing travelers stood in the ...... lounge.\nChoose the word most nearly opposite in meaning to 'arrival'.",
+    options: ["transit", "return", "departure", "boarding"],
     correctAnswer: "departure",
-    hint: "'Arrival' means coming in. Find the word meaning leaving or taking off.",
-    workedSolution: "'Arrival' denotes the act of reaching a terminal. Its direct logistical and operational antonym is 'departure' (leaving).",
+    hint: "'Arrival' denotes reaching a destination. Find the word denoting leaving or setting out.",
+    workedSolution: "'Arrival' denotes coming into a terminal. Its direct logistical antonym is 'departure' (leaving).",
     points: 1
   },
   {
     number: 25,
-    prompt: "It is unlikely that the delayed coach will arrive today, but it is ...... that it will appear tomorrow.",
-    options: ["similar", "credible", "close", "possible"],
-    correctAnswer: "possible",
-    hint: "'Unlikely' means improbable or not expected to happen. Find the word meaning capable of happening.",
-    workedSolution: "'Unlikely' means improbable or doubtful. Its direct antonym regarding probability is 'possible' (or likely).",
+    prompt: "It is unlikely that the morning coach will arrive on time, but it is ...... that it will arrive by noon.\nChoose the word most nearly opposite in meaning to 'unlikely'.",
+    options: ["certain", "probable", "obvious", "evident"],
+    correctAnswer: "probable",
+    hint: "'Unlikely' means improbable or doubtful. Find the word meaning likely to happen.",
+    workedSolution: "'Unlikely' means improbable or doubtful. Its direct antonym regarding probability is 'probable' (or likely).",
     points: 1
   },
   {
     number: 26,
-    prompt: "While this laboratory sample is made of artificial fibers, that traditional fabric is composed of ...... cotton.",
-    options: ["new", "preserved", "wonderful", "natural"],
+    prompt: "This fabric is spun from artificial fibers, unlike traditional kente which is made from ...... cotton.\nChoose the word most nearly opposite in meaning to 'artificial'.",
+    options: ["coarse", "authentic", "natural", "pure"],
     correctAnswer: "natural",
-    hint: "'Artificial' means human-made or synthetic. Find the word meaning produced by nature.",
-    workedSolution: "'Artificial' denotes synthetic, man-made materials. Its direct antonym is 'natural' (derived from nature).",
+    hint: "'Artificial' means synthetic or human-made. Find the word meaning produced by nature.",
+    workedSolution: "'Artificial' denotes synthetic or human-made products. Its direct antonym is 'natural'.",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (27 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (27 - 40) ---
   {
     number: 27,
-    prompt: "The senior master raised an objection ...... your participating in the regional debate.",
+    prompt: "The senior prefect raised an objection ...... your joining the library committee.",
     options: ["on", "by", "at", "to"],
     correctAnswer: "to",
-    hint: "The noun 'objection' and verb 'object' collocate with this specific preposition.",
-    workedSolution: "In standard English grammar, both the verb 'object' and noun 'objection' take the preposition 'to' ('object to / objection to').",
+    hint: "Both the verb 'object' and the noun 'objection' collocate with this preposition.",
+    workedSolution: "In standard English grammar, both the verb 'object' and noun 'objection' take the preposition 'to' ('objection to your joining').",
     points: 1
   },
   {
     number: 28,
-    prompt: "This confidential matter must remain strictly ...... you and me.",
+    prompt: "This private matter must remain strictly ...... you and me.",
     options: ["for", "with", "in", "between"],
     correctAnswer: "between",
-    hint: "Use 'between' when connecting or sharing confidentiality between exactly two persons.",
+    hint: "Use 'between' when sharing a secret or relation connecting exactly two persons.",
     workedSolution: "'Between' is required when referring to a relationship, secret, or distribution connecting two entities ('between you and me'). Note the objective pronoun 'me'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "The benevolent patron presented a parcel of books to ...... in the graduating class.",
-    options: ["all and each one", "all and everyone", "each and all", "each and everyone"],
-    correctAnswer: "each and everyone",
-    hint: "Identify the idiomatic emphatic pronoun phrase meaning every single individual without exception.",
-    workedSolution: "The standard English emphatic coordinating phrase is 'each and everyone' (meaning every single person without exception).",
+    prompt: "The generous patron presented a boxed set of past questions to ...... in the graduating class.",
+    options: ["all and each one", "all and everyone", "each and all", "each and every one"],
+    correctAnswer: "each and every one",
+    hint: "Identify the idiomatic emphatic phrase meaning every single individual without exception.",
+    workedSolution: "The standard English emphatic coordinating phrase is 'each and every one' (meaning every single person without exception).",
     points: 1
   },
   {
     number: 30,
-    prompt: "Tokyo is reputed to be the ...... expensive metropolitan capital in the world.",
+    prompt: "Tokyo is reputed to be the ...... costly metropolitan city in the world.",
     options: ["most", "much", "more", "very"],
     correctAnswer: "most",
     hint: "Form the superlative degree of multi-syllable adjectives preceded by 'the'.",
-    workedSolution: "Adjectives of three or more syllables ('expensive') form their superlative degree using 'most' preceded by 'the': 'the most expensive'.",
+    workedSolution: "Adjectives of two or more syllables like 'costly' or 'expensive' take 'most' preceded by 'the' in the superlative degree: 'the most costly'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "You have to assist your aged parents with farm chores, ......?",
+    prompt: "You have to assist your parents with farm chores, ......?",
     options: ["have you", "you do", "isn't it", "don't you"],
     correctAnswer: "don't you",
-    hint: "'Have to' functions as a semi-modal in the present simple, requiring a question tag formed with 'do'.",
-    workedSolution: "In 'You have to...', 'have' functions as a lexical verb of obligation in the present simple. Its question tag is formed with 'do': 'don't you?'.",
+    hint: "'Have to' functions as a lexical verb of obligation in the present simple, taking a question tag with 'do'.",
+    workedSolution: "In 'You have to...', 'have' functions as a lexical verb in the present simple. Its question tag is formed with 'do': 'don't you?'.",
     points: 1
   },
   {
     number: 32,
-    prompt: "The saloon vehicle my uncle purchased was the ......",
+    prompt: "The agricultural tractor our cooperative bought was the ......",
     options: [
-      "model latest of the Benz",
-      "Benz latest of the model",
-      "latest model of the Benz",
-      "latest Benz of the model"
+      "model latest of the machine",
+      "machine latest of the model",
+      "latest model of the tractor",
+      "latest tractor of the model"
     ],
-    correctAnswer: "latest model of the Benz",
-    hint: "Standard noun phrase word order: Superlative adjective ('latest') + Head noun ('model') + Prepositional modifier ('of the Benz').",
-    workedSolution: "Correct noun phrase syntax places the superlative adjective before the head noun: 'the latest model of the Benz'.",
+    correctAnswer: "latest model of the tractor",
+    hint: "Standard noun phrase word order: Superlative adjective ('latest') + Head noun ('model') + Prepositional modifier ('of the tractor').",
+    workedSolution: "Correct noun phrase syntax places the superlative adjective before the head noun: 'the latest model of the tractor'.",
     points: 1
   },
   {
     number: 33,
-    prompt: "I will wash my school uniform as soon as I ...... home from class.",
+    prompt: "I will wash my school uniform as soon as I ...... home from afternoon prep.",
     options: ["went", "have gone", "could go", "go"],
     correctAnswer: "go",
-    hint: "In future conditional and time clauses ('as soon as / when...'), use the simple present tense.",
-    workedSolution: "Adverbial time clauses referring to future events use the simple present tense ('when I go home'), rather than a future or past form.",
+    hint: "In future adverbial time clauses ('as soon as / when...'), standard grammar requires the simple present tense.",
+    workedSolution: "Adverbial time clauses referring to future events use the simple present tense ('when I go / as soon as I go'), rather than a future modal or past form.",
     points: 1
   },
   {
@@ -457,39 +476,39 @@ const generalQuestionsRaw = [
     options: ["since", "as", "though", "even"],
     correctAnswer: "though",
     hint: "Identify the subordinating conjunction of concession that introduces a contrasting circumstance.",
-    workedSolution: "'Though' (or 'although') is a subordinating conjunction of concession connecting two contrasting propositions.",
+    workedSolution: "'Though' (or 'although') is a subordinating conjunction of concession connecting two contrasting clauses.",
     points: 1
   },
   {
     number: 35,
-    prompt: "If you ...... more attentive during the demonstration, you wouldn't have been in this predicament.",
+    prompt: "If you ...... more attentive during the demonstration, you wouldn't have ruined the experiment.",
     options: ["are", "were", "had been", "could"],
     correctAnswer: "had been",
-    hint: "Third Conditional: 'wouldn't have been' in the main clause requires the past perfect in the if-clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause requires 'had + past participle' ('had been').",
+    hint: "Third Conditional: 'wouldn't have ruined' in the main clause requires the past perfect in the if-clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause takes 'had + past participle' ('had been').",
     points: 1
   },
   {
     number: 36,
-    prompt: "Kwabena often ...... his grandparents in the village after school hours.",
+    prompt: "Kwabena often ...... his grandparents in their village after school hours.",
     options: ["had visited", "visited", "has visited", "visits"],
     correctAnswer: "visits",
-    hint: "Singular third-person subject ('Kwabena') with a habitual frequency adverb ('often') takes a simple present verb.",
-    workedSolution: "The singular subject 'Kwabena' combined with the frequency adverb 'often' expressing a habitual routine requires the simple present inflection 'visits'.",
+    hint: "Third-person singular subject ('Kwabena') with a habitual frequency adverb ('often') takes a simple present verb.",
+    workedSolution: "The singular subject 'Kwabena' combined with the frequency adverb 'often' expressing a habitual routine takes the simple present inflection 'visits'.",
     points: 1
   },
   {
     number: 37,
-    prompt: "The farmer had saved ...... money to sponsor his daughter through nursing college.",
+    prompt: "The farmer had saved ...... capital to sponsor his daughter through teacher training college.",
     options: ["few", "enough", "most", "plenty"],
     correctAnswer: "enough",
-    hint: "'Money' is an uncountable noun. Choose the determiner meaning a sufficient quantity.",
-    workedSolution: "'Enough' functions as a determiner of sufficiency modifying the non-count noun 'money' ('enough money'). 'Few' applies only to count nouns.",
+    hint: "'Capital' is an uncountable noun. Choose the determiner denoting a sufficient quantity.",
+    workedSolution: "'Enough' functions as a determiner of sufficiency modifying the non-count noun 'capital' ('enough capital'). 'Few' applies only to count nouns.",
     points: 1
   },
   {
     number: 38,
-    prompt: "This mathematical compass is mine; that one on the desk is ......",
+    prompt: "This mathematical instrument is mine; that one on the desk is ......",
     options: ["your's", "your", "yours", "yours'"],
     correctAnswer: "yours",
     hint: "Absolute possessive pronouns never take an apostrophe.",
@@ -498,10 +517,10 @@ const generalQuestionsRaw = [
   },
   {
     number: 39,
-    prompt: "\"Birds fly, don't they?\"\n\"............\"",
+    prompt: "\"Swallows migrate, don't they?\"\n\"............\"",
     options: ["Yes, they don't", "No, they do", "Yes, they do", "Yes, they can't"],
     correctAnswer: "Yes, they do",
-    hint: "Standard English polarity: An affirmative confirmation of a fact uses 'Yes' paired with a positive auxiliary.",
+    hint: "Standard English polarity: An affirmative confirmation of a fact pairs 'Yes' with a positive auxiliary.",
     workedSolution: "In standard English response conventions, answering 'Yes' to confirm an affirmative truth requires pairing with the positive verb: 'Yes, they do'.",
     points: 1
   },
@@ -516,11 +535,11 @@ const generalQuestionsRaw = [
   }
 ];
 
-// Combine all 40 raw questions
+// Combine all raw items
 const allRawQuestions = [
-  ...passage1QuestionsRaw,
-  ...passage2QuestionsRaw,
-  ...generalQuestionsRaw
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -544,8 +563,10 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 199701);
+const assignedTargetIndices = seedShuffle(targetKeys, 199702);
 
+// Attach Passage I and Passage II directly to questions 1-11 so that
+// the passage ALWAYS comes first before any question is displayed!
 const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
@@ -558,6 +579,22 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 6) {
+    passageTitle = "Passage I: The Return of the Native Son";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 7 && qNum <= 11) {
+    passageTitle = "Passage II: The Pillar of Village Education";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
@@ -565,18 +602,21 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
-// Partition Questions for Passage-First Rendering
-const passage1Questions = balancedPaper1.slice(0, 6);
-const passage2Questions = balancedPaper1.slice(6, 11);
-const remainingQuestions = balancedPaper1.slice(11);
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 6);
+const passage2Items = balancedPaper1.slice(6, 11);
+const remainingItems = balancedPaper1.slice(11);
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -585,7 +625,7 @@ const paper2Calibrated = {
       {
         questionNumber: "1",
         category: "Formal Letter",
-        prompt: "You have been offered admission into a Senior Secondary School, but financial and domestic hardships have prevented you from reporting on the scheduled reopening date. Write a letter to the headmaster explaining your predicament and politely requesting a brief extension of time to report.",
+        prompt: "You have been offered provisional admission into a prestigious Senior Secondary School, but financial hardship and domestic challenges prevent you from reporting on the scheduled date. Write a formal letter to the Headmaster explaining your predicament and politely requesting a brief extension of time to report.",
         modelAnswer: `Methodist Junior Secondary School
 P. O. Box 42
 Nsawam, Eastern Region
@@ -602,7 +642,7 @@ APPLICATION FOR AN EXTENSION OF TIME TO REPORT FOR ADMISSION
 
 I respectfully write to express my profound gratitude for the provisional admission offered me to pursue the General Science programme in your prestigious institution for the 1997/1998 academic year. However, I regret to inform you that due to unforeseen financial and domestic circumstances, I am unable to report on the official reopening date of 20th October 1997.
 
-Recently, our family was struck by a severe economic misfortune when our father's commercial cocoa barn was accidentally gutted by a bushfire, destroying our entire seasonal harvest. Consequently, my parents have had to scramble to mobilize funds to pay for my boarding house fees, prescribed uniforms, and science textbooks. My father has negotiated a modest agricultural loan from the local cooperative credit union, which will be disbursed by the end of next week.
+Recently, our family was struck by severe economic misfortune when our father's commercial cocoa barn was accidentally gutted by a bushfire, destroying our entire seasonal harvest. Consequently, my parents have had to scramble to mobilize funds to pay for my boarding house fees, prescribed uniforms, and science textbooks. My father has negotiated a modest agricultural loan from the local cooperative credit union, which will be disbursed by the end of next week.
 
 Furthermore, my mother was hospitalized with severe acute malaria three days ago, requiring my assistance at home to care for my younger siblings while my father finalized the banking arrangements. Fortunately, her condition has stabilized, and she has been discharged.
 
@@ -676,21 +716,10 @@ The visit instilled in me a deep commitment to environmental conservation. Kakum
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `q${q.questionNumber}`,
-    questionNumber: q.questionNumber,
-    section: "A",
-    category: q.category,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish1997Calibrated() {
-  console.log("Seeding Calibrated & Passage-First BECE English 1997 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 1997 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -703,7 +732,6 @@ async function seedBeceEnglish1997Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_1997");
   await docRef.set({
     year: 1997,
@@ -720,46 +748,58 @@ async function seedBeceEnglish1997Calibrated() {
       passageFirstLayout: true,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      // Section A: Passage-First Comprehension Architecture
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Return of the Native Son",
+          text: passage1Text,
+          questionRange: "Questions 1 to 6"
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Pillar of Village Education",
+          text: passage2Text,
+          questionRange: "Questions 7 to 11"
+        }
+      ],
       sectionA_comprehension: {
         title: "Section A: Reading Comprehension",
         instructions: "Read the following passages carefully and answer the questions that follow each passage.",
         passage1: {
-          passageTitle: "Passage I: Akwasi Seth's Homecoming",
+          passageTitle: "Passage I: The Return of the Native Son",
           text: passage1Text,
           questionRange: "Questions 1 to 6",
-          questions: passage1Questions
+          questions: passage1Items
         },
         passage2: {
-          passageTitle: "Passage II: Master Kodwo Twum's School",
+          passageTitle: "Passage II: The Pillar of Village Education",
           text: passage2Text,
           questionRange: "Questions 7 to 11",
-          questions: passage2Questions
+          questions: passage2Items
         }
       },
-      // Sections B - E: Lexis, Synonyms, Idioms, Antonyms, and Structure
       sectionB_to_E: {
-        title: "Sections B - E: Lexis, Idioms, Antonyms and Structure",
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
         questionRange: "Questions 12 to 40",
-        questions: remainingQuestions
+        questions: remainingItems
       },
-      // Complete Flat Sequence for standard computerized test runners
-      allQuestions: balancedPaper1,
-      questions: balancedPaper1
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated & Passage-First BECE English 1997 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 1997 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish1997Calibrated()

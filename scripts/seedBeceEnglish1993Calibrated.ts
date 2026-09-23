@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -43,207 +43,216 @@ interface QuestionItem {
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// ==========================================
-// PASSAGE I: BAKO'S MISFORTUNE
-// ==========================================
-const passage1Text = `Bako was both intelligent and hardworking, so he soon learnt all that Garba taught him of the art of reading and writing. Now he was able to earn a little extra income as a letter-writer and reader to his fellow illiterate labourers. All the people trusted him because he never revealed any information he got from the letters to anyone.
+// =========================================================================
+// ISOMORPHIC PASSAGE I: AMADU'S LITERACY AND MISFORTUNE (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `Because Amadu was exceptionally sharp and attentive, he quickly absorbed all that Master Bukari taught him regarding the fundamentals of reading and writing. Before long, he began earning supplementary income by serving as an informal scribe and reader for his fellow unlettered timber laborers. The workmen placed absolute confidence in him because he never divulged a single confidential detail contained in their family correspondence.
 
-Bako's happiest moments came on Saturdays when he received his pay and on Mondays when the labourers returned to work bringing with them all the gossip and laughter of their villages. Unfortunately, a misfortune befell Bako. One day, as he stood gazing proudly at a big tree which he had just felled, another tree being cut down by a fellow labourer struck him on the head. The branches tore his face and he fell unconscious. His friends carried him to Adom Hospital.
+Amadu took his greatest pleasure on Saturdays when he received his weekly wage packet, and on Monday mornings when the laborers returned from their hometowns brimming with fresh village gossip and hearty laughter. Tragically, an unforeseen calamity altered Amadu's fortunes. One morning, as he stood admiring a giant mahogany tree he had just felled, a neighboring tree cut by another logger toppled unexpectedly in his direction. A heavy branch struck him violently across the forehead, tearing deep gashes across his face and knocking him senseless to the ground. His frantic coworkers carried his limp body to the St. Martin's Catholic Hospital.
 
-The accident changed Bako's life. His handsome face became permanently scarred. He lost his strength and his job. At first, he hoped that in time he would regain his strength, but Bako grew weaker and weaker.`;
+The catastrophe changed Amadu's life permanently. His handsome facial features were marred by prominent scars, his physical vigor deserted him, and he lost his timber employment. Although he initially nursed the hope that his strength would return with time, Amadu grew feebler with every passing month.`;
 
-const passage1QuestionsRaw = [
+const passage1Questions = [
   {
     number: 1,
-    prompt: "According to Passage I, what valuable skill did Garba teach Bako?",
+    prompt: "According to Passage I, what practical skill did Master Bukari impart to Amadu?",
     options: [
-      "How to use a sharp machete properly",
-      "How to fell commercial timber trees",
-      "The practical art of reading and writing",
-      "How to entertain laborers with village gossip"
+      "The safe handling of timber cutting equipment",
+      "The technique of harvesting valuable mahogany trees",
+      "The fundamental art of reading and writing",
+      "The custom of entertaining laborers with folklore"
     ],
-    correctAnswer: "The practical art of reading and writing",
-    hint: "Reread the opening sentence: 'learnt all that Garba taught him of the art of reading and writing.'",
-    workedSolution: "The passage explicitly opens by stating that Garba instructed Bako in the literacy skills of reading and writing.",
+    correctAnswer: "The fundamental art of reading and writing",
+    hint: "Reread the opening sentence: he absorbed all that was taught regarding reading and writing.",
+    workedSolution: "The narrative opens by stating that Master Bukari taught Amadu the literacy skills of reading and writing.",
     points: 1
   },
   {
     number: 2,
-    prompt: "In Passage I, Bako earned supplementary income among the timber workers by ............",
+    prompt: "In Passage I, Amadu generated supplementary income on the timber concession by ............",
     options: [
-      "felling giant trees in the forest",
-      "selling medications from the hospital",
-      "entertaining his companions on Mondays",
-      "serving as a confidential letter-writer and reader"
+      "clearing giant forest logs for contractors",
+      "selling emergency medications from the clinic",
+      "entertaining the logging crew on Monday mornings",
+      "serving as a trusted confidential scribe and reader"
     ],
-    correctAnswer: "serving as a confidential letter-writer and reader",
-    hint: "Check paragraph one: 'earn a little extra income as a letter-writer and reader to his fellow illiterate labourers.'",
-    workedSolution: "Bako capitalized on his literacy to read and draft personal correspondence for his illiterate coworkers for a fee.",
+    correctAnswer: "serving as a trusted confidential scribe and reader",
+    hint: "Look at paragraph one: he earned extra income as an informal letter-writer and reader.",
+    workedSolution: "Amadu leveraged his literacy to read and write private letters for illiterate coworkers in exchange for modest fees.",
     points: 1
   },
   {
     number: 3,
-    prompt: "Why did the illiterate laborers place absolute trust in Bako in Passage I?",
+    prompt: "Why did the illiterate laborers place unconditional trust in Amadu in Passage I?",
     options: [
-      "He kept their confidential private matters strictly secret",
-      "He read and penned their letters free of charge",
-      "He joined them in laughing and sharing gossip",
-      "He was the strongest timber cutter on the site"
+      "He maintained strict secrecy over the private contents of their letters",
+      "He penned and read their correspondence free of charge",
+      "He participated actively in their humorous village gossip",
+      "He was the strongest and most skillful woodcutter in the camp"
     ],
-    correctAnswer: "He kept their confidential private matters strictly secret",
-    hint: "Look at paragraph one: 'because he never revealed any information he got from the letters to anyone.'",
-    workedSolution: "Bako earned their complete confidence by maintaining strict confidentiality over the private secrets disclosed in their letters.",
+    correctAnswer: "He maintained strict secrecy over the private contents of their letters",
+    hint: "Paragraph one notes: 'because he never divulged a single confidential detail...'",
+    workedSolution: "The workmen trusted him completely because he kept all personal information disclosed in their letters strictly secret.",
     points: 1
   },
   {
     number: 4,
-    prompt: "What devastating long-term impact did the logging accident inflict on Bako in Passage I?",
+    prompt: "What long-term consequences did the forest accident inflict on Amadu in Passage I?",
     options: [
-      "He lost his mental reasoning and sanity",
-      "He completely lost the ability to read and write",
-      "He suffered permanent physical weakness, severe facial scarring, and unemployment",
-      "He was permanently confined to a hospital bed"
+      "He suffered permanent mental instability and disorientation",
+      "He completely lost his intellectual ability to read and write",
+      "He suffered severe facial scarring, loss of bodily vigor, and unemployment",
+      "He was permanently paralyzed in a hospital ward"
     ],
-    correctAnswer: "He suffered permanent physical weakness, severe facial scarring, and unemployment",
-    hint: "Check paragraph three: 'His handsome face became permanently scarred. He lost his strength and job... grew weaker and weaker.'",
-    workedSolution: "The tragic accident cost him his physical strength, scarred his handsome features, and resulted in the loss of his livelihood.",
+    correctAnswer: "He suffered severe facial scarring, loss of bodily vigor, and unemployment",
+    hint: "Check the final paragraph: permanent scars, loss of strength, and loss of his job.",
+    workedSolution: "The text explains that the falling tree scarred his face, drained his strength, and caused him to lose his job as he grew progressively weaker.",
     points: 1
   },
   {
     number: 5,
-    prompt: "According to Passage I, why were Monday mornings particularly enjoyable for Bako?",
+    prompt: "According to Passage I, why did Amadu eagerly anticipate Monday mornings?",
     options: [
-      "Monday represented the start of the working week",
-      "He reunited with his fellow laborers and enjoyed their village gossip and humor",
-      "He received his weekly wages on Mondays",
-      "He spent the entire day reading literature"
+      "Monday signaled the start of a productive working week",
+      "He reunited with his companions and enjoyed their hometown news and humor",
+      "He received his weekly cash wages on Mondays",
+      "He dedicated the entire day to private literary studies"
     ],
-    correctAnswer: "He reunited with his fellow laborers and enjoyed their village gossip and humor",
-    hint: "Paragraph two notes that on Mondays the laborers returned bringing gossip and laughter.",
-    workedSolution: "Bako loved Mondays because his coworkers returned from their villages sharing joyful news, humor, and lively stories.",
+    correctAnswer: "He reunited with his companions and enjoyed their hometown news and humor",
+    hint: "Reread paragraph two: laborers returned on Mondays bringing gossip and laughter from their villages.",
+    workedSolution: "Amadu enjoyed Mondays because his friends returned from the weekend sharing jokes, news, and lively gossip from their respective villages.",
     points: 1
   },
   {
     number: 6,
-    prompt: "In Passage I, the expression 'he fell unconscious' means that Bako ............",
+    prompt: "In Passage I, the expression 'knocking him senseless' indicates that Amadu ............",
     options: [
-      "drifted into a deep restful sleep",
-      "became mentally deranged",
-      "lost all his personal self-confidence",
-      "lost physical awareness and sensation of his surroundings"
+      "drifted into a peaceful evening slumber",
+      "became mentally deranged and irrational",
+      "forfeited his self-esteem and confidence",
+      "lost conscious sensory perception of his surroundings"
     ],
-    correctAnswer: "lost physical awareness and sensation of his surroundings",
-    hint: "To be knocked out cold; lacking conscious sensory perception.",
-    workedSolution: "'Unconscious' describes a comatose state of lacking sensory perception and environmental awareness caused by physical trauma.",
+    correctAnswer: "lost conscious sensory perception of his surroundings",
+    hint: "Knocked senseless means rendered totally unconscious by a physical blow.",
+    workedSolution: "'Knocked senseless' (or falling unconscious) means being deprived of sensory awareness and environmental consciousness.",
     points: 1
   }
 ];
 
-// ==========================================
-// PASSAGE II: FRIENDSHIP AND LEADERSHIP DUTY
-// ==========================================
-const passage2Text = `We can have close friends for a very long time. But when friendship and duty come into conflict, as I once experienced, many problems may occur.
+// =========================================================================
+// ISOMORPHIC PASSAGE II: LEADERSHIP AND FRIENDSHIP (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Text = `One can maintain warm friendships over many years, but when personal loyalty clashes with official responsibility, serious complications inevitably arise.
 
-Almost all my friends and I were leading members of our school's Supporters Club. In the beginning of our final year, it was time to elect new officers for the club. Everyone stood the chance of being elected. When I was elected as President, I knew it would be a tough job because I would be in charge of my closest friends. The real test would come when the sports season started.
+Almost all my companions and I were prominent members of our basic school's Athletic Supporters Club. At the start of our final academic year, the club convened to elect a new executive committee. Every member had an equal opportunity to contest for office. When I was chosen as President, I realized immediately that my assignment would be delicate, as I would be exercising authority over my closest personal friends. The crucial trial presented itself when the inter-schools sports tournament commenced.
 
-Just as I had imagined, there were many disputes. No one listened to what I said. Everyone just wanted to have fun instead of cheering our athletes. I knew I had to motivate them and use discipline, and that was exactly what I did.
+Precisely as I had feared, recurring disagreements broke out. My peers refused to heed my directives. Instead of leading organized cheering chants for our athletes on the track, they preferred roaming the stadium grounds to have idle fun. Knowing that leadership demanded both motivation and firm discipline, I enforced strict attendance rules.
 
-Many of my friends could not understand this. While some of them stopped coming to the games, others were not talking to me at all.
+Several of my companions took deep offense at this approach. While some boycotted subsequent athletic meets, others gave me the cold shoulder and refused to converse with me.
 
-I finally decided to have a talk with everyone. I frankly admitted that I did not like the job, but since I had it, I was determined to do my best. I also told them to leave sports matters on the field because my friends were more important to me than the job. From that little talk, I had everything resolved.`;
+Recognizing the growing rift, I summoned an open meeting with everyone. I admitted candidly that managing the club was burdensome, but since the mandate had fallen on me, I was resolved to execute my responsibilities faithfully. I appealed to them to leave sports rivalries on the field, assuring them that our personal bond of friendship meant far more to me than temporary prestige. That frank conversation cleared the air, and harmony was restored.`;
 
-const passage2QuestionsRaw = [
+const passage2Questions = [
   {
     number: 7,
-    prompt: "Why did the writer anticipate that serving as Supporters Club President would be exceptionally challenging?",
+    prompt: "Why did the narrator foresee that presiding over the Supporters Club would prove difficult?",
     options: [
-      "The other club members were all final-year candidates",
-      "He would be required to enforce discipline over his own intimate friends",
-      "He lacked prior organizational leadership experience",
-      "He was forced to lead unfamiliar junior students"
+      "The general membership comprised final-year candidates only",
+      "He was required to enforce institutional discipline over his intimate personal friends",
+      "He had never participated in school athletics before",
+      "He was forced to lead a hostile group of junior pupils"
     ],
-    correctAnswer: "He would be required to enforce discipline over his own intimate friends",
+    correctAnswer: "He was required to enforce institutional discipline over his intimate personal friends",
     hint: "Paragraph two states: 'I knew it would be a tough job because I would be in charge of my closest friends.'",
-    workedSolution: "The narrator recognized that exerting authority and enforcing rules over close personal friends creates interpersonal friction.",
+    workedSolution: "The narrator anticipated friction because exercising disciplinary authority over close friends inevitably creates social awkwardness and resentment.",
     points: 1
   },
   {
     number: 8,
-    prompt: "Which of the following adjectives best characterizes the initial conduct of the writer's friends during the sports season?",
-    options: ["Uncooperative and unruly", "Envious and malicious", "Openly abusive and hostile", "Humorous and helpful"],
+    prompt: "Which of the following phrases best captures the initial posture of the narrator's friends during the sports meets?",
+    options: [
+      "Uncooperative and unruly",
+      "Malicious and envious",
+      "Violently confrontational",
+      "Humorous and supportive"
+    ],
     correctAnswer: "Uncooperative and unruly",
-    hint: "They refused to listen, neglected cheering, and boycotted games.",
-    workedSolution: "The friends refused to follow instructions, preferred idle fun, and boycotted activities, showing uncooperative behavior.",
+    hint: "They refused to listen, neglected cheering, and wandered about for fun.",
+    workedSolution: "The friends exhibited an uncooperative and unruly attitude by ignoring directives and choosing idle fun over their assigned club duties.",
     points: 1
   },
   {
     number: 9,
-    prompt: "According to Passage II, which of the following statements is true regarding the final outcome?",
+    prompt: "According to Passage II, what was the ultimate resolution of the interpersonal conflict?",
     options: [
-      "The writer successfully resolved the misunderstanding through open, honest dialogue",
-      "The writer permanently severed communication with his friends",
-      "The writer lost all his intimate childhood friends",
-      "The writer resigned immediately as club president"
+      "The narrator resolved the misunderstanding through honest, transparent dialogue",
+      "The narrator permanently severed ties with his childhood friends",
+      "The narrator stepped down immediately as club president",
+      "The school authorities dissolved the Supporters Club"
     ],
-    correctAnswer: "The writer successfully resolved the misunderstanding through open, honest dialogue",
-    hint: "Check the final paragraph: 'From that little talk, I had everything resolved.'",
-    workedSolution: "By convening a frank meeting and distinguishing between leadership duty and personal friendship, the writer amicably settled the rift.",
+    correctAnswer: "The narrator resolved the misunderstanding through honest, transparent dialogue",
+    hint: "Check the final paragraph: the frank conversation cleared the air and resolved everything.",
+    workedSolution: "By convening an open meeting and frankly separating leadership responsibilities from personal friendship, the narrator successfully resolved the rift.",
     points: 1
   },
   {
     number: 10,
-    prompt: "In Passage II, the word 'disputes' in 'there were many disputes' means ............",
+    prompt: "In Passage II, the word 'disagreements' in 'recurring disagreements broke out' means ............",
     options: [
-      "secret misgivings",
+      "secret domestic resentments",
       "formal academic debates",
-      "verbal disagreements and quarrels",
-      "physical combat"
+      "verbal quarrels and disputes",
+      "physical boxing matches"
     ],
-    correctAnswer: "verbal disagreements and quarrels",
-    hint: "Arguments, controversies, or heated disagreements.",
-    workedSolution: "'Disputes' refers to arguments, conflicts, or verbal disagreements between parties; 'verbal disagreements and quarrels' is its direct meaning.",
+    correctAnswer: "verbal quarrels and disputes",
+    hint: "'Disputes' or 'disagreements' refer to verbal conflicts and arguments.",
+    workedSolution: "'Disagreements' or 'disputes' refers to arguments, controversies, or verbal friction between individuals.",
     points: 1
   }
 ];
 
-// ==========================================
-// GENERAL LEXIS AND STRUCTURE (11 - 40)
-// ==========================================
-const generalQuestionsRaw = [
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 1993 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "The transport manager was dismissed from service for gross inefficiency.\nChoose the word nearest in meaning to the underlined word 'inefficiency'.",
-    options: ["laziness", "dishonesty", "incompetence", "misconduct"],
+    prompt: "The production supervisor was dismissed from the factory for gross inefficiency.\nChoose the word nearest in meaning to 'inefficiency'.",
+    options: ["sloth", "dishonesty", "incompetence", "truancy"],
     correctAnswer: "incompetence",
-    hint: "Inability to perform work or duties satisfactorily.",
-    workedSolution: "'Inefficiency' means failure to produce desired results due to lack of competence or skill; 'incompetence' is its direct synonym.",
+    hint: "Inability to perform duties to the required professional standard.",
+    workedSolution: "'Inefficiency' means failure to produce adequate results due to lack of ability or competence; 'incompetence' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "Through government subsidies, the retail prices of essential commodities have been fairly controlled.\nChoose the word nearest in meaning to the underlined phrase 'controlled'.",
+    prompt: "Through prudent economic management, inflation has been fairly controlled.\nChoose the phrase nearest in meaning to 'controlled'.",
     options: ["kept down", "kept away", "kept off", "kept out"],
     correctAnswer: "kept down",
-    hint: "Restrained, held back, or prevented from escalating.",
-    workedSolution: "The phrasal verb 'to keep down' means to limit, restrain, or prevent prices from rising.",
+    hint: "Restrained, held back, or prevented from rising.",
+    workedSolution: "The phrasal verb 'to keep down' means to limit, restrain, or prevent prices/inflation from escalating.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Candidates are strongly reminded to look over their scripts before submitting.\nChoose the word nearest in meaning to the underlined phrase 'look over'.",
-    options: ["watch carefully", "look on", "oversee", "read through and inspect"],
-    correctAnswer: "read through and inspect",
-    hint: "To examine, review, or check through written work.",
-    workedSolution: "'To look over' means to inspect, review, or read through something carefully to detect mistakes.",
+    prompt: "Make sure you look over your calculation sheet before handing it in.\nChoose the phrase nearest in meaning to 'look over'.",
+    options: ["watch steadily", "look on", "supervise", "read through and verify"],
+    correctAnswer: "read through and verify",
+    hint: "To inspect, check, or examine written work for errors.",
+    workedSolution: "'To look over' means to inspect, review, or read through something carefully to verify accuracy.",
     points: 1
   },
   {
     number: 14,
-    prompt: "Although the casual laborers agreed to weed the compound, they worked reluctantly.\nChoose the word nearest in meaning to the underlined word 'reluctantly'.",
-    options: ["leisurely", "nervously", "unwillingly", "sparingly"],
+    prompt: "Although the casual laborers undertook the task, they worked reluctantly.\nChoose the word nearest in meaning to 'reluctantly'.",
+    options: ["leisurely", "nervously", "unwillingly", "cautiously"],
     correctAnswer: "unwillingly",
     hint: "With hesitation, disinclination, or lack of enthusiasm.",
     workedSolution: "'Reluctantly' means in an unwilling or hesitant manner; 'unwillingly' is its direct synonym.",
@@ -251,78 +260,78 @@ const generalQuestionsRaw = [
   },
   {
     number: 15,
-    prompt: "The petty shoplifter was thoroughly humiliated when apprehended in the market.\nChoose the word nearest in meaning to the underlined word 'humiliated'.",
-    options: ["sentenced", "cautioned", "beaten up", "disgraced"],
+    prompt: "The market pickpocket was thoroughly humiliated when apprehended by the crowd.\nChoose the word nearest in meaning to 'humiliated'.",
+    options: ["penalized", "cautioned", "beaten up", "disgraced"],
     correctAnswer: "disgraced",
-    hint: "Made to feel profound shame, dishonor, or public embarrassment.",
-    workedSolution: "'Humiliated' means subjected to public shame and loss of pride; 'disgraced' is its closest equivalent.",
+    hint: "Subjected to public shame, loss of dignity, or dishonor.",
+    workedSolution: "'Humiliated' means subjected to intense shame and loss of respect; 'disgraced' is its closest equivalent.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (16 - 20) ---
   {
     number: 16,
-    prompt: "I dislike associating with Ben because he is fond of pulling my legs. This means Ben is always ............",
+    prompt: "I dislike chatting with Ben because he is fond of pulling my leg. This means Ben is always ............",
     options: [
-      "tripping me onto the floor",
-      "spreading malicious gossip about me",
+      "tripping me onto the pavement",
+      "spreading slanderous rumors about me",
       "teasing me playfully with falsehoods",
-      "borrowing my personal shoes"
+      "borrowing my sports footwear"
     ],
     correctAnswer: "teasing me playfully with falsehoods",
-    hint: "To fool, tease, or joke with someone by telling untrue stories.",
-    workedSolution: "The idiom 'to pull someone's leg' means to tease or deceive them playfully as a practical joke.",
+    hint: "To tease, fool, or deceive someone playfully.",
+    workedSolution: "The idiom 'to pull someone's leg' means to tease or joke with them playfully by telling them something untrue.",
     points: 1
   },
   {
     number: 17,
-    prompt: "The judge turned a deaf ear to the plea of the hardened armed robber. This means the judge ............",
+    prompt: "The arbitrator turned a deaf ear to the contractor's flimsy excuses. This means the arbitrator ............",
     options: [
-      "suffered from acute hearing loss",
-      "deliberately ignored what the convict pleaded",
-      "favored the convict unconditionally",
-      "pretended to take detailed notes"
+      "suffered from partial deafness",
+      "deliberately ignored the contractor's excuses",
+      "upheld the contractor's arguments unconditionally",
+      "pretended to record the contractor's testimony"
     ],
-    correctAnswer: "deliberately ignored what the convict pleaded",
-    hint: "Refusing to listen, notice, or grant consideration to a request.",
-    workedSolution: "'To turn a deaf ear' is an idiom meaning to deliberately refuse to listen to, notice, or grant attention to a statement.",
+    correctAnswer: "deliberately ignored the contractor's excuses",
+    hint: "Refusing to listen to or notice a plea or excuse.",
+    workedSolution: "'To turn a deaf ear' is an idiom meaning to deliberately refuse to listen to or pay attention to an appeal.",
     points: 1
   },
   {
     number: 18,
-    prompt: "To avoid chronic debt, the accountant advised us to cut our coat according to our cloth. This means we should ............",
+    prompt: "To avoid bankruptcy, the financial advisor urged the entrepreneur to cut his coat according to his cloth. This means he should ............",
     options: [
-      "live strictly within our financial income",
-      "tailor our clothes personally",
-      "purchase fabric before sowing",
-      "wear traditional cloths and coats"
+      "live strictly within his financial income",
+      "sew his garments personally",
+      "procure cheap fabric for his family",
+      "wear traditional attire to the office"
     ],
-    correctAnswer: "live strictly within our financial income",
-    hint: "Living and spending within one's available means and resources.",
-    workedSolution: "The proverb 'cut your coat according to your cloth' means to adjust one's lifestyle and spending according to one's financial capacity.",
+    correctAnswer: "live strictly within his financial income",
+    hint: "Living and spending within one's available financial means.",
+    workedSolution: "The proverb 'cut your coat according to your cloth' means to adjust one's lifestyle and spending according to one's resources.",
     points: 1
   },
   {
     number: 19,
-    prompt: "Were it not for the timely arrival of the police, the demonstrators would have rioted. From this statement we know that ............",
+    prompt: "Were it not for the swift intervention of the lifeguards, the swimmers would have drowned. This means that ............",
     options: [
-      "the police joined the rioting workers",
-      "the police intervention prevented the demonstration from turning into a riot",
-      "the police encouraged the workers to riot",
-      "the workers assaulted the police detachment"
+      "the lifeguards joined the swimmers in the deep pool",
+      "the prompt action of the lifeguards prevented the swimmers from drowning",
+      "the lifeguards arrived after the swimmers had drowned",
+      "the swimmers rescued the lifeguards from the current"
     ],
-    correctAnswer: "the police intervention prevented the demonstration from turning into a riot",
-    hint: "Counterfactual inversion: the intervention of the police successfully stopped the riot.",
-    workedSolution: "The inverted conditional clause 'Were it not for...' indicates that the presence of the police was the decisive factor that prevented the riot from happening.",
+    correctAnswer: "the prompt action of the lifeguards prevented the swimmers from drowning",
+    hint: "Counterfactual inversion: the intervention of the lifeguards was the decisive factor that prevented disaster.",
+    workedSolution: "The inverted conditional clause 'Were it not for...' indicates that the lifeguards' action successfully prevented the tragedy.",
     points: 1
   },
   {
     number: 20,
-    prompt: "Razak has been in a bad way since the bus accident. This means that Razak has been ............",
+    prompt: "Kweku has been in a bad way since the vehicular collision. This means that Kweku has been ............",
     options: [
-      "harshly treated by his peers",
-      "unable to find food for days",
-      "misbehaving toward his elders",
+      "harshly treated by his employer",
+      "destitute and unable to buy food",
+      "behaving rebelliously toward relatives",
       "seriously ill and in poor health"
     ],
     correctAnswer: "seriously ill and in poor health",
@@ -334,63 +343,63 @@ const generalQuestionsRaw = [
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "While our secondary school is now famous across the country, it was previously ...... .",
-    options: ["popular", "anonymous", "unknown", "irrelevant"],
-    correctAnswer: "unknown",
-    hint: "'Famous' means widely known and celebrated. Find the word meaning not known to the public.",
-    workedSolution: "'Famous' means widely known and recognized. Its direct antonym regarding public reputation is 'unknown' (obscure).",
+    prompt: "While our secondary school is now famous across the district, it was formerly ...... .\nChoose the word most nearly opposite in meaning to 'famous'.",
+    options: ["renowned", "anonymous", "obscure", "disregarded"],
+    correctAnswer: "obscure",
+    hint: "'Famous' means widely known. Find the word meaning unknown or not prominent.",
+    workedSolution: "'Famous' means celebrated and widely known. Its direct antonym regarding public reputation is 'obscure' (or unknown).",
     points: 1
   },
   {
     number: 22,
-    prompt: "Our resident pastor is exceptionally modest in his demeanor, unlike his predecessor who was ...... .",
-    options: ["friendly", "kind", "particular", "boastful"],
+    prompt: "Our new headmaster is remarkably modest in his conduct, unlike his predecessor who was ...... .\nChoose the word most nearly opposite in meaning to 'modest'.",
+    options: ["cordial", "generous", "particular", "boastful"],
     correctAnswer: "boastful",
-    hint: "'Modest' means humble and unpretentious. Find the word meaning proud and bragging.",
-    workedSolution: "'Modest' means humble, reserved, and unpretentious. Its direct antonym is 'boastful' (arrogant and bragging).",
+    hint: "'Modest' means humble and unassuming. Find the word meaning arrogant and bragging.",
+    workedSolution: "'Modest' means humble, unassuming, and unpretentious. Its direct antonym is 'boastful' (arrogant and bragging).",
     points: 1
   },
   {
     number: 23,
-    prompt: "Issa was severely cautioned for being rude to the matron, but his brother remained ...... .",
-    options: ["respectful", "polite", "obedient", "truthful"],
-    correctAnswer: "polite",
-    hint: "'Rude' means impolite and ill-mannered. Find the word that denotes refined, courteous manners.",
-    workedSolution: "'Rude' means impolite and discourteous. Its direct behavioral antonym is 'polite' (or courteous).",
+    prompt: "The prefect was cautioned for being rude to the visitor, while his assistant was commended for being ...... .\nChoose the word most nearly opposite in meaning to 'rude'.",
+    options: ["respectful", "courteous", "submissive", "truthful"],
+    correctAnswer: "courteous",
+    hint: "'Rude' means impolite and ill-mannered. Find the word denoting polite, refined manners.",
+    workedSolution: "'Rude' means discourteous and impolite. Its direct behavioral antonym is 'courteous' (or polite).",
     points: 1
   },
   {
     number: 24,
-    prompt: "The children walked along the smooth walkway and avoided the ...... gravel path.",
-    options: ["hard", "rough", "coarse", "slippery"],
+    prompt: "The pedestrians walked on the smooth sidewalk and avoided the ...... surface.\nChoose the word most nearly opposite in meaning to 'smooth'.",
+    options: ["solid", "rough", "coarse", "uneven"],
     correctAnswer: "rough",
-    hint: "'Smooth' means having an even surface. Find the word denoting an uneven, coarse surface.",
+    hint: "'Smooth' means even and flat. Find the word denoting uneven, coarse texture.",
     workedSolution: "'Smooth' describes an even, flat surface. Its direct physical antonym regarding pavement texture is 'rough'.",
     points: 1
   },
   {
     number: 25,
-    prompt: "The military dictator was denounced by the populace, but the democratic leader was ...... .",
-    options: ["elected", "welcomed", "supported", "advised"],
+    prompt: "The tyrannical ruler was denounced by the populace, whereas the democratic leader was enthusiastically ...... .\nChoose the word most nearly opposite in meaning to 'denounced'.",
+    options: ["elected", "saluted", "supported", "counseled"],
     correctAnswer: "supported",
-    hint: "'Denounced' means publicly condemned or opposed. Find the word meaning backed, upheld, or approved.",
+    hint: "'Denounced' means publicly condemned. Find the word meaning backed or upheld.",
     workedSolution: "'Denounced' means publicly condemned, criticized, or disowned. Its direct political antonym is 'supported' (backed or upheld).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Our ancestors have ...... to us rich cultural heritage and oral folklore.",
+    prompt: "Our ancestors have ...... to us priceless cultural values and oral traditions.",
     options: ["handed in", "passed out", "passed through", "handed down"],
     correctAnswer: "handed down",
-    hint: "Identify the phrasal verb meaning to transmit traditions or knowledge across generations.",
+    hint: "Identify the phrasal verb meaning to transmit heritage across generations.",
     workedSolution: "The phrasal verb 'to hand down' means to pass traditions, values, or wisdom from older to younger generations.",
     points: 1
   },
   {
     number: 27,
-    prompt: "The Ministry of Education has set ...... an expert committee on basic school curriculum reform.",
+    prompt: "The Ministry of Health has set ...... a specialized taskforce to curb the epidemic.",
     options: ["apart", "up", "in", "by"],
     correctAnswer: "up",
     hint: "Identify the phrasal verb meaning to establish, institute, or organize a committee.",
@@ -399,38 +408,38 @@ const generalQuestionsRaw = [
   },
   {
     number: 28,
-    prompt: "None of the arrested burglary suspects ...... his involvement in the crime.",
+    prompt: "None of the arrested trespassers ...... his guilt before the panel.",
     options: ["admit", "admits", "are admitting", "have admitted"],
     correctAnswer: "admits",
-    hint: "In formal prescriptive English concord, the indefinite pronoun 'None' followed by of-phrase takes a singular verb.",
-    workedSolution: "In formal English, 'none' meaning 'not one' takes the third-person singular present verb 'admits'.",
+    hint: "In formal prescriptive English concord, 'None' meaning 'not one' takes a singular verb.",
+    workedSolution: "In formal prescriptive English, 'none' meaning 'not one' takes the third-person singular present verb 'admits'.",
     points: 1
   },
   {
     number: 29,
-    prompt: "Amidu promised to remain patient in the workshop until his damaged bicycle ...... repaired.",
+    prompt: "Kofi promised to wait patiently at the workshop until his bicycle ...... repaired.",
     options: ["has been", "will be", "was", "can be"],
     correctAnswer: "was",
-    hint: "Past sequence of tenses: The past reporting verb 'promised' governs the past passive time clause.",
+    hint: "Past sequence of tenses: The past verb 'promised' governs the past passive time clause.",
     workedSolution: "To maintain sequence of tenses following the past verb 'promised', the simple past passive 'was [repaired]' is required.",
     points: 1
   },
   {
     number: 30,
-    prompt: "The Headmaster, together with his administrative assistant, ...... inspecting the new science block.",
+    prompt: "The headmaster, together with his administrative assistant, ...... inspecting the new science block.",
     options: ["will have been", "are", "have been", "is"],
     correctAnswer: "is",
-    hint: "Parenthetical phrases like 'together with...' do not affect the singular head noun 'The Headmaster'.",
-    workedSolution: "Parenthetical additions introduced by 'together with' or 'with' do not pluralize the singular subject 'The Headmaster', requiring the singular verb 'is'.",
+    hint: "Parenthetical additions like 'together with...' do not alter the singular subject 'The headmaster'.",
+    workedSolution: "Parenthetical additions introduced by 'together with' do not pluralize the singular subject 'The headmaster', taking singular 'is'.",
     points: 1
   },
   {
     number: 31,
-    prompt: "I would have informed you about the wedding date if I ...... of it earlier.",
+    prompt: "I would have informed you about the wedding if I ...... of it earlier.",
     options: ["have known", "know", "had known", "have been knowing"],
     correctAnswer: "had known",
-    hint: "Third Conditional: 'would have + past participle' in the main clause requires 'had + past participle' in the if-clause.",
-    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause must use the past perfect tense: 'had known'.",
+    hint: "Third Conditional: 'would have informed' in the main clause requires 'had + past participle' in the if-clause.",
+    workedSolution: "In a Third Conditional sentence expressing an unfulfilled past condition, the if-clause takes the past perfect tense: 'had known'.",
     points: 1
   },
   {
@@ -444,25 +453,25 @@ const generalQuestionsRaw = [
   },
   {
     number: 33,
-    prompt: "You will fall ill if you ...... unwashed street food.",
+    prompt: "You will fall ill if you ...... unwashed market fruits.",
     options: ["are eating", "eat", "had eaten", "ate"],
     correctAnswer: "eat",
     hint: "First Conditional: 'will + base verb' in the main clause requires the simple present in the if-clause.",
-    workedSolution: "In a First Conditional sentence expressing a realistic future outcome ('You will be ill'), the conditional if-clause takes the simple present tense: 'eat'.",
+    workedSolution: "In a First Conditional sentence expressing a realistic future outcome, the conditional if-clause takes the simple present tense: 'eat'.",
     points: 1
   },
   {
     number: 34,
-    prompt: "If it ...... necessary, I shall visit your office again at six o'clock.",
+    prompt: "If it ...... necessary, I shall visit your office again at five o'clock.",
     options: ["is", "had been", "is being", "was"],
     correctAnswer: "is",
-    hint: "First Conditional: The main clause future modal 'shall see' requires the simple present copula in the if-clause.",
+    hint: "First Conditional: Main clause future modal 'shall visit' requires the simple present indicative copula in the if-clause.",
     workedSolution: "In a future real conditional sentence governed by 'shall/will', the if-clause takes the simple present indicative copula: 'is'.",
     points: 1
   },
   {
     number: 35,
-    prompt: "If the municipal assembly had not demolished the unauthorized stalls, the traders ...... operating there.",
+    prompt: "If the town council had not demolished the unauthorized stalls, the traders ...... operating there.",
     options: [
       "shall still be",
       "will still be",
@@ -476,7 +485,7 @@ const generalQuestionsRaw = [
   },
   {
     number: 36,
-    prompt: "Mr. Adu has never been satisfied with his children's terminal performance, ......?",
+    prompt: "Mr. Mensah has never been satisfied with his workers' output, ......?",
     options: ["hasn't he", "didn't he", "has he", "did he"],
     correctAnswer: "has he",
     hint: "The sentence contains the negative adverb 'never' and present auxiliary 'has', requiring a positive tag.",
@@ -494,25 +503,25 @@ const generalQuestionsRaw = [
   },
   {
     number: 38,
-    prompt: "The cashier was exceptionally disrespectful to his supervisor, ......?",
+    prompt: "The store clerk was exceptionally disrespectful to his supervisor, ......?",
     options: ["was he", "wasn't he", "did he", "didn't he"],
     correctAnswer: "wasn't he",
-    hint: "An affirmative past statement with the linking verb 'was' and masculine subject takes the negative tag 'wasn't he?'.",
+    hint: "An affirmative past statement with copula 'was' and masculine subject takes the negative tag 'wasn't he?'.",
     workedSolution: "The statement is affirmative past with the copular verb 'was'. The corresponding question tag must be negative: 'wasn't he?'.",
     points: 1
   },
   {
     number: 39,
-    prompt: "These days, many basic school pupils are not keenly interested ...... learning French.",
+    prompt: "These days, many basic school pupils are not keenly interested ...... studying agricultural science.",
     options: ["on", "about", "of", "in"],
     correctAnswer: "in",
     hint: "Identify the preposition that regularly collocates with the adjective 'interested'.",
-    workedSolution: "In standard English grammar, the adjective 'interested' is followed by the preposition 'in' ('interested in improving').",
+    workedSolution: "In standard English grammar, the adjective 'interested' is followed by the preposition 'in' ('interested in studying').",
     points: 1
   },
   {
     number: 40,
-    prompt: "During the harvest festival, Kofi consumed ...... food than anyone else at the banquet.",
+    prompt: "During the annual yam festival, Kwesi consumed ...... food than anyone else at the banquet.",
     options: ["more", "most", "much", "too much"],
     correctAnswer: "more",
     hint: "Comparing two quantities of a non-count noun ('food') followed by the comparative marker 'than'.",
@@ -523,9 +532,9 @@ const generalQuestionsRaw = [
 
 // Combine all 40 raw questions
 const allRawQuestions = [
-  ...passage1QuestionsRaw,
-  ...passage2QuestionsRaw,
-  ...generalQuestionsRaw
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -549,8 +558,10 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 199301);
+const assignedTargetIndices = seedShuffle(targetKeys, 199302);
 
+// Attach Passage I and Passage II directly to questions 1-10 so that
+// the passage ALWAYS comes first before any question is displayed!
 const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
@@ -563,6 +574,22 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 6) {
+    passageTitle = "Passage I: Amadu's Literacy and Misfortune";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 7 && qNum <= 10) {
+    passageTitle = "Passage II: Leadership and Friendship";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
@@ -570,18 +597,21 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
 // Partition Questions for Passage-First UI Rendering
-const passage1Questions = balancedPaper1.slice(0, 6);
-const passage2Questions = balancedPaper1.slice(6, 10);
-const remainingQuestions = balancedPaper1.slice(10);
+const passage1Items = balancedPaper1.slice(0, 6);
+const passage2Items = balancedPaper1.slice(6, 10);
+const remainingItems = balancedPaper1.slice(10);
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -680,21 +710,10 @@ Just as the crushing stone walls touched my shoulders, I jolted awake with a lou
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `q${q.questionNumber}`,
-    questionNumber: q.questionNumber,
-    section: "A",
-    category: q.category,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish1993Calibrated() {
-  console.log("Seeding Calibrated & Passage-First BECE English 1993 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 1993 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -707,7 +726,6 @@ async function seedBeceEnglish1993Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_1993");
   await docRef.set({
     year: 1993,
@@ -724,46 +742,58 @@ async function seedBeceEnglish1993Calibrated() {
       passageFirstLayout: true,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      // Section A: Passage-First Comprehension Architecture
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Amadu's Literacy and Misfortune",
+          text: passage1Text,
+          questionRange: "Questions 1 to 6"
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: Leadership and Friendship",
+          text: passage2Text,
+          questionRange: "Questions 7 to 10"
+        }
+      ],
       sectionA_comprehension: {
         title: "Section A: Reading Comprehension",
         instructions: "Read the following passages carefully and answer the questions that follow each passage.",
         passage1: {
-          passageTitle: "Passage I: Bako's Misfortune",
+          passageTitle: "Passage I: Amadu's Literacy and Misfortune",
           text: passage1Text,
           questionRange: "Questions 1 to 6",
-          questions: passage1Questions
+          questions: passage1Items
         },
         passage2: {
-          passageTitle: "Passage II: Friendship and Leadership Duty",
+          passageTitle: "Passage II: Leadership and Friendship",
           text: passage2Text,
           questionRange: "Questions 7 to 10",
-          questions: passage2Questions
+          questions: passage2Items
         }
       },
-      // Sections B - E: Lexis, Synonyms, Idioms, Antonyms, and Structure
       sectionB_to_E: {
-        title: "Sections B - E: Lexis, Idioms, Antonyms and Structure",
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
         questionRange: "Questions 11 to 40",
-        questions: remainingQuestions
+        questions: remainingItems
       },
-      // Complete Flat Sequence for standard computerized test runners
-      allQuestions: balancedPaper1,
-      questions: balancedPaper1
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated & Passage-First BECE English 1993 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 1993 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish1993Calibrated()

@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -43,244 +43,284 @@ interface QuestionItem {
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// 40 Concept-Mapped, Original Pedagogical Adaptations for BECE English 1999
-const rawQuestions = [
-  // --- PART I: SECTION A - READING COMPREHENSION PASSAGES (1 - 11) ---
+// =========================================================================
+// ISOMORPHIC PASSAGE I: THE UNSCHEDULED ASSEMBLY (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `The persistent, clanging toll of the brass bell at that unusual hour of the morning took everyone by surprise. What emergency could have occurred? Jostling and bumping into one another along the verandas, the pupils sprinted toward the assembly hall. Within moments, Mr. Darko, the headmaster, stood upon the dais with a stern, unyielding expression. He lifted his right palm, and instant silence fell across the hall.
+
+"Students," he began in measured tones, "the reason I have summoned this emergency gathering is to inform you that, at long last, the school authorities have uncovered the culprits who broke into the staff room and stole the school's public address microphones. Bring them forward!" he commanded.
+
+Heads turned and necks craned eagerly to catch sight of the thieves. First to emerge was Kofi Badu, the school's star football striker. Eyes widened in disbelief. "Good heavens!" gasped several pupils in astonishment. Next stepped Kwabena Ofori. "Impossible!" someone whispered from the back row. "Is that not our respected Form Two Class Prefect?" To crown the spectacle, Kwame Asare appeared last, his withered leg swinging between a pair of wooden crutches. The assembly hall exploded into uncontrollable laughter. The Senior Prefect had to shout at the top of his lungs before order could be restored. Everyone was utterly at a loss as to what had possessed the unlikely trio to commit such an ignominious crime.
+
+In a voice that brooked no debate, the headmaster announced their penalty—two weeks' rustication.`;
+
+const passage1Questions = [
   {
     number: 1,
-    prompt: "In Passage I, why was everyone in the school taken by surprise when the big bell tolled?",
+    prompt: "In Passage I, why was everyone surprised when the brass bell began tolling?",
     options: [
-      "The students bumped into each other along the corridors",
-      "They had to sprint urgently to the assembly hall",
-      "They saw the headmaster standing grimly on the dais",
-      "The bell was rung unexpectedly outside the normal scheduled hours"
+      "The students were bumping into each other along the veranda",
+      "They had to abandon their classes and sprint to the hall",
+      "The headmaster was standing sternly on the raised platform",
+      "The bell was sounded unexpectedly outside the scheduled timetable"
     ],
-    correctAnswer: "The bell was rung unexpectedly outside the normal scheduled hours",
-    hint: "Reread the opening sentence: 'The persistent sound of the big bell at that time of the day surprised everybody.'",
-    workedSolution: "The surprise was caused by the timing: the school bell was rung at an unusual hour when students were not expecting an assembly.",
+    correctAnswer: "The bell was sounded unexpectedly outside the scheduled timetable",
+    hint: "Reread the opening sentence: the persistent tolling at that unusual hour took everyone by surprise.",
+    workedSolution: "The surprise was caused by the timing: the school bell was rung at an unexpected hour outside the regular school schedule.",
     points: 1
   },
   {
     number: 2,
-    prompt: "Why did the students race frantically to the assembly hall in Passage I?",
+    prompt: "Why did the students race frantically toward the assembly hall in Passage I?",
     options: [
-      "The headmaster was visibly angry",
-      "The headmaster commanded them to gather immediately",
-      "The emergency bell tolled repeatedly and persistently",
-      "The bell signaled the end of the school day"
+      "The headmaster was visibly furious with them",
+      "The class prefects instructed them to assemble immediately",
+      "The persistent and continuous ringing signaled an urgent emergency",
+      "The bell signified the formal close of the school session"
     ],
-    correctAnswer: "The emergency bell tolled repeatedly and persistently",
-    hint: "A persistent, continuous bell signals an emergency summons requiring an instant response.",
-    workedSolution: "The persistent ringing of the big bell signaled an urgent emergency, compelling all pupils to run to the assembly hall at once.",
+    correctAnswer: "The persistent and continuous ringing signaled an urgent emergency",
+    hint: "A continuous, persistent bell outside scheduled hours communicates an urgent summons.",
+    workedSolution: "The persistent ringing of the bell signaled an emergency, compelling all pupils to rush to the assembly hall without delay.",
     points: 1
   },
   {
     number: 3,
     prompt: "In Passage I, why did the students burst into spontaneous, uncontrollable laughter?",
     options: [
-      "Mr. Amoh stood before them with a grim countenance",
-      "Kofi Smith the school footballer was among the thieves",
-      "Akwesi Ameko the class prefect was unmasked",
-      "Akwasi Osei, who was physically challenged on a crutch, was revealed as one of the thieves"
+      "Mr. Darko looked comical as he mounted the dais",
+      "Kofi Badu the footballer attempted to deny the charges",
+      "Kwabena Ofori the class prefect looked confused",
+      "Kwame Asare, who was physically challenged on crutches, was among the thieves"
     ],
-    correctAnswer: "Akwasi Osei, who was physically challenged on a crutch, was revealed as one of the thieves",
-    hint: "The spectacle of a student with a withered leg on crutches participating in a burglary struck the crowd as absurd.",
-    workedSolution: "The students exploded into laughter when Akwasi Osei appeared on a crutch, as no one expected a physically challenged student to engage in stealing.",
+    correctAnswer: "Kwame Asare, who was physically challenged on crutches, was among the thieves",
+    hint: "Paragraph three describes how the sight of a crippled boy on crutches participating in a burglary struck the crowd as absurd.",
+    workedSolution: "The students exploded into laughter when Kwame Asare appeared on crutches, as no one expected a physically challenged pupil to take part in stealing.",
     points: 1
   },
   {
     number: 4,
-    prompt: "In Passage I, the idiomatic expression 'at a loss' in 'Everybody was at a loss' means ............",
-    options: ["dissatisfied", "angry", "completely bewildered and confused", "deeply sorrowful"],
-    correctAnswer: "completely bewildered and confused",
-    hint: "Puzzled, unable to understand or explain why something occurred.",
-    workedSolution: "'At a loss' is an idiom meaning completely puzzled, perplexed, or unable to understand; 'completely bewildered and confused' is the exact meaning.",
+    prompt: "In Passage I, the idiomatic phrase 'at a loss' in 'Everyone was utterly at a loss' means ............",
+    options: [
+      "deeply sorrowful",
+      "indignant and angry",
+      "completely bewildered and unable to comprehend",
+      "dissatisfied with the investigation"
+    ],
+    correctAnswer: "completely bewildered and unable to comprehend",
+    hint: "Perplexed, baffled, or unable to understand how something happened.",
+    workedSolution: "'At a loss' is an idiom meaning completely puzzled, perplexed, or unable to comprehend a situation; 'completely bewildered and unable to comprehend' is its exact meaning.",
     points: 1
   },
   {
     number: 5,
-    prompt: "What statutory disciplinary sanction did the headmaster impose on the three culprits in Passage I?",
+    prompt: "What disciplinary sanction did the headmaster impose on the three culprits in Passage I?",
     options: [
-      "He cautioned them sternly never to repeat the offense",
-      "He ordered the senior housemaster to cane them publicly",
-      "He summoned their parents for a formal conference",
+      "He cautioned them sternly never to repeat the misconduct",
+      "He directed the senior housemaster to cane them publicly",
+      "He summoned their parents to reimburse the cost of the microphones",
       "He suspended them from attending school for two weeks"
     ],
     correctAnswer: "He suspended them from attending school for two weeks",
-    hint: "Check the final sentence: 'the headmaster handed down the punishment – two weeks' suspension.'",
-    workedSolution: "The headmaster officially handed down a disciplinary sentence of two weeks' rustication/suspension from the school.",
+    hint: "Check the final sentence: the headmaster announced their penalty—two weeks' rustication.",
+    workedSolution: "The headmaster officially handed down a disciplinary sentence of two weeks' rustication (suspension) from the school.",
     points: 1
-  },
+  }
+];
+
+// =========================================================================
+// ISOMORPHIC PASSAGE II: FESTIVE VANITY AT CHRISTMAS (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Text = `Before Kofi Mensah stepped out of his house that bright morning for the Christmas church service, he spent twenty minutes admiring his brand-new attire and a velvet cap richly embroidered with radiant yellow thread. He tilted the cap at various fashionable angles, consulting a pocket mirror to determine the most dashing posture.
+
+Throughout the chapel liturgy, Kofi caught himself constantly stroking his new clothes. Whenever the congregation sat down, he transferred his attention from his tunic to his shiny new shoes, nicknamed "Walking Jet"—the very first pair of footwear he had ever possessed. He was not alone in this display. Even the choristers, who ought to have marched in the liturgical procession, chose to sit among the ordinary worshippers in the nave so that everyone could admire their festive outfits. The chapel itself wore a radiant holiday appearance, decorated with palm fronds, crepe ribbons, and fresh lilies.
+
+Kofi's sole irritation was that traditional chapel etiquette forbade males from wearing caps indoors. Outside, the harmattan winds blew dry and dusty, parching one's throat. One could scarcely smile without chapping one's lips. In spite of the biting haze, Kofi preferred loitering outdoors where he could proudly flaunt his embroidered cap. Consequently, when the resident pastor ascended the pulpit to deliver the holiday homily, Kofi fabricated an excuse to the church warden, claiming that he needed to relieve himself outside.`;
+
+const passage2Questions = [
   {
     number: 6,
-    prompt: "According to Passage II, why was Obu hopelessly inattentive throughout the Christmas church service?",
+    prompt: "According to Passage II, why was Kofi Mensah thoroughly inattentive during the chapel service?",
     options: [
-      "He was exhausted by the Christmas celebrations",
-      "The harmattan haze was irritating his eyes",
-      "He was completely captivated by admiring his new festive clothes and shoes",
-      "He was fascinated by the church decorations"
+      "He was overwhelmed by physical fatigue from Christmas preparations",
+      "The harmattan haze was irritating his eyes and throat",
+      "He was completely absorbed in admiring his new clothes and footwear",
+      "He was captivated by the floral decorations in the sanctuary"
     ],
-    correctAnswer: "He was completely captivated by admiring his new festive clothes and shoes",
-    hint: "Paragraph two notes that he caught himself admiring his clothes and shoes whenever the congregation sat down.",
-    workedSolution: "Obu's vanity and total absorption in admiring his brand-new clothes and shoes made him inattentive to the church sermon.",
+    correctAnswer: "He was completely absorbed in admiring his new clothes and footwear",
+    hint: "Paragraph two notes that he constantly stroked his tunic and admired his shoes whenever the congregation sat down.",
+    workedSolution: "Kofi's vanity and total absorption in admiring his brand-new festive clothes and shoes made him inattentive to the church service.",
     points: 1
   },
   {
     number: 7,
-    prompt: "Why were Obu's shoes particularly special and treasured by him in Passage II?",
+    prompt: "Why were Kofi Mensah's shoes exceptionally precious to him in Passage II?",
     options: [
-      "They were popularly nicknamed 'stand by'",
+      "They carried the fashionable nickname 'Walking Jet'",
       "They represented the very first pair of footwear he had ever owned",
-      "They made loud creaking noises as he walked",
-      "They were imported from abroad"
+      "They produced a rhythmic creaking sound as he walked",
+      "They had been imported from an overseas metropolitan city"
     ],
     correctAnswer: "They represented the very first pair of footwear he had ever owned",
-    hint: "Check paragraph two: '...his shoes, nicknamed \"stand by\", his first pair ever.'",
-    workedSolution: "The narrative emphasizes that the shoes were precious to Obu because they were the first pair of shoes he had ever possessed in his life.",
+    hint: "Check paragraph two: '...his shoes, nicknamed \'Walking Jet\'—the very first pair of footwear he had ever possessed.'",
+    workedSolution: "The narrative emphasizes that the shoes were precious to Kofi because they were the very first pair of shoes he had ever owned in his life.",
     points: 1
   },
   {
     number: 8,
-    prompt: "What does Passage II reveal concerning the conduct of the church choristers that morning?",
+    prompt: "According to Passage II, what unusual choice did the church choristers make that morning?",
     options: [
-      "They refused to wear their traditional choir robes",
-      "They disliked singing Christmas hymns",
-      "They sat in the pews to display their new festive clothes",
-      "They felt too exhausted to stand during the procession"
+      "They refused to sing the prescribed Christmas hymns",
+      "They boycotted the service due to the harmattan haze",
+      "They sat in the pews with the congregation to display their new clothes",
+      "They remained outside because they disliked their choir gowns"
     ],
-    correctAnswer: "They sat in the pews to display their new festive clothes",
-    hint: "Paragraph two states: 'Even the choristers who should have joined the procession preferred to sit with the rest of the congregation in order to show off their new clothes.'",
-    workedSolution: "Like Obu, the choristers prioritized showing off their new holiday attire over their liturgical duties in the procession.",
+    correctAnswer: "They sat in the pews with the congregation to display their new clothes",
+    hint: "Paragraph two states: 'Even the choristers... chose to sit among the ordinary worshippers in the nave so that everyone could admire their festive outfits.'",
+    workedSolution: "Like Kofi, the choristers prioritized displaying their new holiday outfits over their formal role in the choir procession.",
     points: 1
   },
   {
     number: 9,
-    prompt: "What was Obu's real motive for fabricating an excuse to go outside the chapel in Passage II?",
+    prompt: "What was Kofi Mensah's real motive for asking permission to leave the chapel in Passage II?",
     options: [
-      "The interior of the chapel had become unbearably warm",
-      "He disliked the catechist's preaching style",
-      "He genuinely needed to use the restroom",
-      "He wanted to wear and display his embroidered cap in public"
+      "The interior of the sanctuary had become uncomfortably warm",
+      "He disliked the pastor's preaching style and sermon topic",
+      "He genuinely needed to make use of the washroom facilities",
+      "He wished to wear and exhibit his embroidered cap in public"
     ],
-    correctAnswer: "He wanted to wear and display his embroidered cap in public",
-    hint: "He could not wear his cap inside church, so he preferred the dusty outdoor weather where his cap could be seen.",
-    workedSolution: "Obu went outside specifically so he could put on his embroidered cap, which church etiquette forbade him from wearing indoors.",
+    correctAnswer: "He wished to wear and exhibit his embroidered cap in public",
+    hint: "He could not wear his cap inside the chapel, so he slipped outside where he could display it despite the dusty harmattan.",
+    workedSolution: "Kofi went outside specifically so he could put on his embroidered cap, which church decorum prohibited him from wearing indoors.",
     points: 1
   },
   {
     number: 10,
-    prompt: "In Passage II, the observation 'He was not alone' signifies that Obu ............",
+    prompt: "In Passage II, the statement 'He was not alone in this display' signifies that Kofi ............",
     options: [
-      "was accompanied by his biological brothers",
-      "sat beside his mother in the pew",
-      "was not the only person eager to flaunt new holiday clothing",
-      "walked with the church warden"
+      "was accompanied by his biological brothers in church",
+      "was seated beside his parents on the wooden pew",
+      "was not the only worshipper eager to flaunt new holiday clothing",
+      "walked out of the chapel in the company of the church warden"
     ],
-    correctAnswer: "was not the only person eager to flaunt new holiday clothing",
-    hint: "The author observes that other churchgoers and even choristers were displaying their new garments.",
-    workedSolution: "The phrase indicates that many other congregation members shared the same vanity of showing off their new clothes on Christmas Day.",
+    correctAnswer: "was not the only worshipper eager to flaunt new holiday clothing",
+    hint: "The narrator observes that other congregants and even the choristers were eager to show off their new clothes.",
+    workedSolution: "The phrase indicates that many other worshippers in the chapel shared the same vanity of showing off their new holiday outfits on Christmas Day.",
     points: 1
   },
   {
     number: 11,
-    prompt: "In Passage II, the word 'relieve' in 'relieve himself outside' functions as a polite euphemism meaning to ............",
+    prompt: "In Passage II, the phrase 'relieve himself' functions as a polite euphemism meaning to ............",
     options: [
-      "alleviate his physical pain",
-      "display his festive attire",
+      "alleviate his physical bodily pain",
+      "display his festive embroidered attire",
       "urinate or empty one's bowels",
-      "rest from the church singing"
+      "rest from singing the liturgical hymns"
     ],
     correctAnswer: "urinate or empty one's bowels",
-    hint: "A standard polite euphemism for using the toilet.",
+    hint: "A standard polite English euphemism for using the toilet.",
     workedSolution: "'To relieve oneself' is a formal euphemism meaning to urinate or defecate; 'urinate or empty one's bowels' is the exact literal meaning.",
     points: 1
-  },
+  }
+];
 
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 1999 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (12 - 16) ---
   {
     number: 12,
-    prompt: "The team's lackluster performance made the head coach very anxious.\nChoose the word nearest in meaning to the underlined word 'anxious'.",
-    options: ["hopeful", "angry", "jealous", "worried"],
-    correctAnswer: "worried",
+    prompt: "The candidate's poor performance in the trial test made the head coach very anxious.\nChoose the word nearest in meaning to 'anxious'.",
+    options: ["hopeful", "indignant", "envious", "apprehensive"],
+    correctAnswer: "apprehensive",
     hint: "Experiencing worry, nervousness, or unease about an uncertain outcome.",
-    workedSolution: "'Anxious' means experiencing apprehension, nervousness, or concern; 'worried' is its direct synonym.",
+    workedSolution: "'Anxious' means experiencing worry, nervousness, or unease; 'apprehensive' (or worried) is its direct synonym.",
     points: 1
   },
   {
     number: 13,
-    prompt: "The Disciplinary Committee was directed to investigate the laboratory break-in.\nChoose the word nearest in meaning to the underlined word 'investigate'.",
-    options: ["condemn", "go into", "determine", "look for"],
-    correctAnswer: "go into",
-    hint: "To inquire into, examine systematically, or probe deeply.",
-    workedSolution: "The phrasal verb 'to go into' means to investigate, probe, or examine the details of a matter.",
+    prompt: "The disciplinary panel was directed to investigate the laboratory burglary.\nChoose the phrase nearest in meaning to 'investigate'.",
+    options: ["condemn", "probe into", "settle", "search for"],
+    correctAnswer: "probe into",
+    hint: "To inquire into, examine systematically, or look into the details.",
+    workedSolution: "The phrasal verb 'to probe into' (or 'go into') means to investigate or examine the facts of an issue systematically.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The invigilator could not bear the persistent whispering in the examination hall.\nChoose the word nearest in meaning to the underlined word 'bear'.",
-    options: ["tolerate", "understand", "take in", "make out"],
-    correctAnswer: "tolerate",
-    hint: "To endure, put up with, or suffer without surrender.",
-    workedSolution: "'Bear' in the context of enduring unpleasant conditions means to endure or 'tolerate'.",
+    prompt: "The invigilator could not bear the incessant whispering in the examination hall.\nChoose the word nearest in meaning to 'bear'.",
+    options: ["endure", "comprehend", "absorb", "discern"],
+    correctAnswer: "endure",
+    hint: "To put up with, tolerate, or suffer without surrender.",
+    workedSolution: "'Bear' in the sense of putting up with unpleasant circumstances means to 'endure' or tolerate.",
     points: 1
   },
   {
     number: 15,
-    prompt: "In a fit of temper, the student spoke to the headmaster in an impolite manner.\nChoose the word nearest in meaning to the underlined word 'impolite'.",
-    options: ["foolish", "loud", "brave", "rude"],
-    correctAnswer: "rude",
+    prompt: "In a fit of temper, the student spoke to the teacher in an impolite manner.\nChoose the word nearest in meaning to 'impolite'.",
+    options: ["foolish", "boisterous", "insolent", "fearless"],
+    correctAnswer: "insolent",
     hint: "Lacking good manners, civility, or proper respect.",
-    workedSolution: "'Impolite' means discourteous, ill-mannered, and disrespectful; 'rude' is its direct equivalent.",
+    workedSolution: "'Impolite' means discourteous, rude, or ill-mannered; 'insolent' (or rude) is its direct synonym.",
     points: 1
   },
   {
     number: 16,
-    prompt: "Florence Nightingale was a renowned humanitarian and pioneer of modern nursing.\nChoose the word nearest in meaning to the underlined word 'renowned'.",
-    options: ["strict", "humble", "brave", "famous"],
-    correctAnswer: "famous",
-    hint: "Known, celebrated, or acclaimed by many people.",
-    workedSolution: "'Renowned' means famous, celebrated, and widely acclaimed; 'famous' is its exact synonym.",
+    prompt: "Dr. Mensah was a renowned surgeon who pioneered rural healthcare.\nChoose the word nearest in meaning to 'renowned'.",
+    options: ["austere", "modest", "valiant", "celebrated"],
+    correctAnswer: "celebrated",
+    hint: "Widely known, acclaimed, or famous.",
+    workedSolution: "'Renowned' means famous, acclaimed, and widely recognized; 'celebrated' is its exact synonym.",
     points: 1
   },
 
   // --- SECTION C: IDIOMS & FIGURATIVE EXPRESSIONS (17 - 21) ---
   {
     number: 17,
-    prompt: "The announcement of the director's sudden inspection kept the prefects on their toes. This means the prefects ............",
-    options: ["stood up immediately", "ran away from school", "were alert and ready for action", "became thoroughly fatigued"],
-    correctAnswer: "were alert and ready for action",
+    prompt: "The news of the director's surprise inspection kept all the school prefects on their toes. This means the prefects ............",
+    options: [
+      "stood up immediately in the corridor",
+      "fled from the school compound",
+      "were watchful, alert, and fully prepared for duty",
+      "became completely exhausted"
+    ],
+    correctAnswer: "were watchful, alert, and fully prepared for duty",
     hint: "Staying vigilant, prepared, and actively attentive.",
-    workedSolution: "The idiom 'on one's toes' means alert, watchful, energetic, and fully prepared for any immediate duty.",
+    workedSolution: "The idiom 'on one's toes' means alert, watchful, and fully prepared to act or handle any emergency.",
     points: 1
   },
   {
     number: 18,
-    prompt: "During his revision for the national examinations, Kwame left no stone unturned. This means that Kwame ............",
+    prompt: "During his preparation for the national examinations, Kwame left no stone unturned. This means that Kwame ............",
     options: [
-      "found the syllabus difficult to master",
-      "investigated and studied everything thoroughly",
-      "was guaranteed a distinction",
-      "cleared all stones from the compound"
+      "found the syllabus difficult to comprehend",
+      "explored every possible avenue and studied thoroughly",
+      "was guaranteed a distinction beforehand",
+      "cleared all the loose gravel from the compound"
     ],
-    correctAnswer: "investigated and studied everything thoroughly",
-    hint: "Doing everything possible and exploring every avenue to achieve a goal.",
+    correctAnswer: "explored every possible avenue and studied thoroughly",
+    hint: "Doing everything possible and using every resource to achieve a goal.",
     workedSolution: "The idiom 'to leave no stone unturned' means to do everything possible and explore every resource or method thoroughly.",
     points: 1
   },
   {
     number: 19,
-    prompt: "For the sake of peaceful reconciliation, Kofi gave in to his brother after their bitter dispute. This means that Kofi ............",
+    prompt: "For the sake of peaceful reconciliation, Kofi gave in to his partner after their bitter dispute. This means that Kofi ............",
     options: [
-      "admitted defeat and yielded",
-      "avoided his brother completely",
-      "abandoned his family home",
-      "defeated his brother in court"
+      "yielded and surrendered his position",
+      "avoided his partner completely",
+      "abandoned his commercial enterprise",
+      "defeated his partner in court"
     ],
-    correctAnswer: "admitted defeat and yielded",
+    correctAnswer: "yielded and surrendered his position",
     hint: "Ceasing resistance and surrendering to another's position.",
-    workedSolution: "The phrasal idiom 'to give in' means to cease opposition, yield, surrender, or admit defeat.",
+    workedSolution: "The phrasal idiom 'to give in' means to cease opposition, yield, or surrender to another person's demands.",
     points: 1
   },
   {
@@ -290,10 +330,10 @@ const rawQuestions = [
       "John was the tallest student in the class",
       "John withdrew himself from group studies",
       "we stood directly in front of John",
-      "we reached the exact same level of achievement as John"
+      "we attained the exact same standard of achievement as John"
     ],
-    correctAnswer: "we reached the exact same level of achievement as John",
-    hint: "Closing a distance or gap and attaining parity with a competitor.",
+    correctAnswer: "we attained the exact same standard of achievement as John",
+    hint: "Closing a gap and reaching the same level as someone ahead.",
     workedSolution: "'To catch up with someone' means to reach the same standard, level, or position after lagging behind.",
     points: 1
   },
@@ -302,11 +342,11 @@ const rawQuestions = [
     prompt: "Kwadwo turned a deaf ear to his mother's wise counsel. This means that Kwadwo ............",
     options: [
       "turned his damaged ear toward her",
-      "deliberately refused to listen or obey",
-      "blocked his ears with cotton",
-      "had impaired hearing ability"
+      "deliberately refused to listen or comply",
+      "blocked his ears with cotton wool",
+      "suffered from acute hearing impairment"
     ],
-    correctAnswer: "deliberately refused to listen or obey",
+    correctAnswer: "deliberately refused to listen or comply",
     hint: "Refusing to pay attention, listen, or comply with advice.",
     workedSolution: "'To turn a deaf ear' is an idiom meaning to deliberately ignore, disregard, or refuse to listen to counsel.",
     points: 1
@@ -315,67 +355,67 @@ const rawQuestions = [
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (22 - 26) ---
   {
     number: 22,
-    prompt: "While Mensah was hopeful of securing the academic scholarship, his sister was remarkably ...... .",
-    options: ["mindful", "afraid", "careful", "doubtful"],
-    correctAnswer: "doubtful",
-    hint: "'Hopeful' means feeling optimistic expectation. Find the word denoting uncertainty or lack of confidence.",
-    workedSolution: "'Hopeful' means optimistic and expectant. Its direct antonym regarding expectations is 'doubtful' (uncertain or skeptical).",
+    prompt: "While Mensah was hopeful of securing the scholarship, his sister was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'hopeful'.",
+    options: ["mindful", "fearful", "prudent", "skeptical"],
+    correctAnswer: "skeptical",
+    hint: "'Hopeful' means optimistic. Find the word denoting doubt or lack of confidence.",
+    workedSolution: "'Hopeful' means optimistic and expectant. Its direct antonym regarding expectations is 'skeptical' (or doubtful).",
     points: 1
   },
   {
     number: 23,
-    prompt: "The headmaster condemned the prefect's unruly conduct, but ...... the library monitor's honesty.",
-    options: ["reported", "pardoned", "confirmed", "praised"],
-    correctAnswer: "praised",
-    hint: "'Condemned' means expressed severe disapproval. Find the word that denotes expressing high approval.",
-    workedSolution: "'Condemned' means officially denounced or criticized. Its direct antonym is 'praised' (commended or lauded).",
+    prompt: "The headmaster condemned the prefect's unruly conduct, but ...... the library monitor's honesty.\nChoose the word most nearly opposite in meaning to 'condemned'.",
+    options: ["recorded", "excused", "certified", "lauded"],
+    correctAnswer: "lauded",
+    hint: "'Condemned' means expressed severe disapproval. Find the word denoting high praise.",
+    workedSolution: "'Condemned' means officially denounced or criticized. Its direct antonym is 'lauded' (praised or commended).",
     points: 1
   },
   {
     number: 24,
-    prompt: "Mary looked exceptionally attractive in her new ceremonial attire, whereas her partner appeared rather ...... .",
-    options: ["comfortable", "clumsy", "happy", "proud"],
-    correctAnswer: "clumsy",
-    hint: "'Attractive' means pleasing, neat, and appealing in appearance. Find the word meaning awkward, inelegant, or unappealing.",
-    workedSolution: "'Attractive' implies elegance and pleasing grace. In describing aesthetic posture and appearance, its antonym here is 'clumsy' (inelegant and awkward).",
+    prompt: "Mary looked exceptionally attractive in her new ceremonial attire, whereas her partner appeared rather ...... .\nChoose the word most nearly opposite in meaning to 'attractive'.",
+    options: ["comfortable", "shabby", "cheerful", "proud"],
+    correctAnswer: "shabby",
+    hint: "'Attractive' means elegant and pleasing in appearance. Find the word meaning untidy, inelegant, or unappealing.",
+    workedSolution: "'Attractive' implies elegance and neat appeal. In describing aesthetic posture and clothing, its antonym here is 'shabby' (or clumsy/untidy).",
     points: 1
   },
   {
     number: 25,
-    prompt: "The melodious hymn soothed the congregation, whereas the brass band sounded harsh and ...... .",
-    options: ["triumphant", "old", "strange", "discordant"],
+    prompt: "The melodious hymn soothed the congregation, whereas the brass band sounded harsh and ...... .\nChoose the word most nearly opposite in meaning to 'melodious'.",
+    options: ["triumphant", "archaic", "unfamiliar", "discordant"],
     correctAnswer: "discordant",
-    hint: "'Melodious' means sweet-sounding and harmonious. Find the word denoting clashing, unharmonious, and harsh sounds.",
-    workedSolution: "'Melodious' means sweet and harmonious in sound. Its direct musical antonym is 'discordant' (harsh, clashing, and lacking harmony).",
+    hint: "'Melodious' means sweet-sounding and harmonious. Find the word denoting clashing, unharmonious sounds.",
+    workedSolution: "'Melodious' means sweet and harmonious in sound. Its direct musical antonym is 'discordant' (harsh and clashing).",
     points: 1
   },
   {
     number: 26,
-    prompt: "The landlord was indifferent to the tenant's domestic plight, but the neighbors were deeply ...... .",
-    options: ["similar", "concerned", "stern", "kind"],
-    correctAnswer: "concerned",
-    hint: "'Indifferent' means uncaring, unconcerned, or cold. Find the word meaning caring and anxious about someone's welfare.",
-    workedSolution: "'Indifferent' means showing a lack of interest, care, or sympathy. Its direct antonym is 'concerned' (caring, interested, and attentive).",
+    prompt: "The landlord was indifferent to the tenant's domestic plight, but the neighbors were deeply ...... .\nChoose the word most nearly opposite in meaning to 'indifferent'.",
+    options: ["similar", "compassionate", "austere", "courteous"],
+    correctAnswer: "compassionate",
+    hint: "'Indifferent' means uncaring and unconcerned. Find the word meaning caring and sympathetic.",
+    workedSolution: "'Indifferent' means showing a lack of care or interest. Its direct antonym is 'compassionate' (concerned or sympathetic).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (27 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (27 - 40) ---
   {
     number: 27,
-    prompt: "Children should always look ...... their parents and guardians for guidance and moral support.",
+    prompt: "Children should always look ...... their parents and teachers for moral guidance.",
     options: ["about", "up to", "at", "up for"],
     correctAnswer: "up to",
     hint: "Identify the phrasal verb meaning to view someone with respect, admiration, and expectation of guidance.",
-    workedSolution: "The phrasal verb 'to look up to someone' means to respect, admire, and look to them as a role model or source of help.",
+    workedSolution: "The phrasal verb 'to look up to someone' means to respect, admire, and look to them as a role model.",
     points: 1
   },
   {
     number: 28,
     prompt: "Complete the mathematics test promptly and ...... your answer scripts to the invigilator.",
-    options: ["hand up", "hand out", "hand down", "hand over"],
-    correctAnswer: "hand over",
-    hint: "Identify the phrasal verb meaning to submit, surrender, or deliver something formally into someone's custody.",
-    workedSolution: "The phrasal verb 'to hand over' means to deliver, surrender, or submit documents or authority formally to an official.",
+    options: ["hand up", "hand out", "hand in", "hand down"],
+    correctAnswer: "hand in",
+    hint: "Identify the phrasal verb meaning to submit, surrender, or deliver completed schoolwork to an authority.",
+    workedSolution: "The phrasal verb 'to hand in' (or 'hand over') means to submit or deliver documents formally to an official.",
     points: 1
   },
   {
@@ -392,7 +432,7 @@ const rawQuestions = [
     prompt: "Amina is an exceptionally well-behaved girl, ......?",
     options: ["isn't it", "doesn't she", "does she", "isn't she"],
     correctAnswer: "isn't she",
-    hint: "An affirmative present statement with the linking verb 'is' and subject 'Amina' takes a negative tag: 'isn't she?'.",
+    hint: "An affirmative present statement with copula 'is' and feminine subject takes the negative tag 'isn't she?'.",
     workedSolution: "The statement is affirmative with the copula 'is' and feminine subject 'Amina'. Its question tag must be negative: 'isn't she?'.",
     points: 1
   },
@@ -419,8 +459,8 @@ const rawQuestions = [
     prompt: "Akosua ...... the classroom floor when the headmaster entered.",
     options: ["swept", "is sweeping", "has swept", "was sweeping"],
     correctAnswer: "was sweeping",
-    hint: "An ongoing past continuous action interrupted by a sudden past simple event ('called / entered').",
-    workedSolution: "The past continuous tense ('was sweeping') is required to express an ongoing past background activity interrupted by another past action.",
+    hint: "An ongoing past continuous action interrupted by a sudden past simple event ('entered').",
+    workedSolution: "The past continuous tense ('was sweeping') is required to express an ongoing past background activity interrupted by another past event.",
     points: 1
   },
   {
@@ -429,16 +469,16 @@ const rawQuestions = [
     options: ["one another", "each other", "one other", "each another"],
     correctAnswer: "each other",
     hint: "Reciprocal pronoun used when an action is mutually exchanged between exactly two individuals.",
-    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('the two boxers'). 'One another' is preferred for three or more.",
+    workedSolution: "'Each other' is the reciprocal pronoun used when referring to two persons ('the two competitors'). 'One another' is preferred for three or more.",
     points: 1
   },
   {
     number: 35,
-    prompt: "The villagers testified that Mr. Mensah was the ...... hardworking cocoa farmer in the district.",
+    prompt: "The villagers testified that Mr. Mensah was the ...... industrious cocoa farmer in the district.",
     options: ["very most", "very more", "most", "more"],
     correctAnswer: "most",
     hint: "Form the superlative degree of multi-syllable adjectives preceded by 'the'.",
-    workedSolution: "Multi-syllable adjectives like 'hardworking' form their superlative degree with 'most' ('the most hardworking'). 'Very most' is redundant.",
+    workedSolution: "Multi-syllable adjectives like 'industrious' form their superlative degree with 'most' preceded by 'the' ('the most industrious').",
     points: 1
   },
   {
@@ -471,21 +511,28 @@ const rawQuestions = [
   {
     number: 39,
     prompt: "The Oseis are our reliable neighbors; they ...... beside our compound for twenty years now.",
-    options: ["stay", "were stayed", "stayed", "have stayed"],
-    correctAnswer: "have stayed",
+    options: ["stay", "were stayed", "stayed", "have resided"],
+    correctAnswer: "have resided",
     hint: "An action that began in the past and continues up to the present with 'for twenty years now' requires the Present Perfect tense.",
-    workedSolution: "The duration phrase 'for twenty years now' indicating an ongoing state from the past into the present requires the Present Perfect tense ('have stayed').",
+    workedSolution: "The duration phrase 'for twenty years now' indicating an ongoing state from the past into the present requires the Present Perfect tense ('have resided' / 'have stayed').",
     points: 1
   },
   {
     number: 40,
-    prompt: "The clerk was certain that he had handed the ledger to ...... else in the office.",
+    prompt: "The storekeeper was certain that he had handed the change to ...... else in the shop.",
     options: ["anyone", "someone", "somebody", "everybody"],
     correctAnswer: "someone",
     hint: "Use 'someone' in affirmative statements to denote an unspecified person.",
-    workedSolution: "In affirmative declarative sentences, 'someone' is standard when referring to an unspecified person ('someone else'). 'Anyone' is used in questions and negative clauses.",
+    workedSolution: "In affirmative declarative sentences, 'someone' is standard when referring to an unspecified person ('someone else'). 'Anyone' is used primarily in negatives and interrogatives.",
     points: 1
   }
+];
+
+// Combine all 40 raw questions
+const allRawQuestions = [
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -509,9 +556,11 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 199901);
+const assignedTargetIndices = seedShuffle(targetKeys, 199902);
 
-const balancedPaper1 = rawQuestions.map((q, idx) => {
+// Attach Passage I (Q1-5) and Passage II (Q6-11) directly to questions so that
+// the passage ALWAYS comes first before any question is displayed!
+const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
   const rawDistractors = q.options.filter(opt => opt !== q.correctAnswer);
@@ -523,6 +572,22 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 5) {
+    passageTitle = "Passage I: The Unscheduled Assembly";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 6 && qNum <= 11) {
+    passageTitle = "Passage II: Festive Vanity at Christmas";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
@@ -530,13 +595,21 @@ const balancedPaper1 = rawQuestions.map((q, idx) => {
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 11);
+const remainingItems = balancedPaper1.slice(11);
+
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -570,17 +643,17 @@ Kwabena Osei`
       {
         questionNumber: "2",
         category: "Formal Letter",
-        prompt: "Write a letter to your local Assemblyman or Assemblywoman highlighting two pressing social amenities that should be urgently provided for the people in your electoral area.",
+        prompt: "Write a letter to your local Assemblywoman highlighting two pressing social amenities that should be urgently provided for the people in your electoral area.",
         modelAnswer: `Presbyterian Junior Secondary School
 P. O. Box 80
 Dormaa Ahenkro, Bono Region
 18th October, 1999
 
-The Assemblyman
+The Assemblywoman
 Dormaa Central Electoral Area
 Municipal Assembly, Dormaa Ahenkro
 
-Dear Sir,
+Dear Madam,
 
 PETITION FOR THE PROVISION OF POTABLE WATER AND A COMMUNITY CLINIC IN OUR ELECTORAL AREA
 
@@ -618,7 +691,7 @@ The competition closed with the presentation of trophies and certificates by the
       {
         questionNumber: "4",
         category: "Narrative Essay",
-        prompt: "Your parents traveled out of town and left you in charge of the family house for an entire day. Narrate to your friends what you did and how you managed the household responsibilities.",
+        prompt: "Your parents traveled out of town and left you in charge of the house for an entire day. Narrate to your friends what you did and how you managed the household responsibilities.",
         modelAnswer: `MY DAY AS HEAD OF THE HOUSEHOLD
 
 Last Saturday, my parents traveled to Kumasi to attend the funeral of an elderly relative, leaving me in complete charge of our four-bedroom family house and my two younger siblings, Kwaku and Akosua. It was my first time shouldering such domestic responsibility, and I was determined to prove my maturity.
@@ -635,21 +708,10 @@ When Mother and Father returned at nine o'clock that evening to find the house p
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `q${q.questionNumber}`,
-    questionNumber: q.questionNumber,
-    section: "A",
-    category: q.category,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish1999Calibrated() {
-  console.log("Seeding Calibrated & Balanced BECE English 1999 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 1999 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -662,7 +724,6 @@ async function seedBeceEnglish1999Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_1999");
   await docRef.set({
     year: 1999,
@@ -676,23 +737,61 @@ async function seedBeceEnglish1999Calibrated() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
+      passageFirstLayout: true,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      questions: balancedPaper1
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: The Unscheduled Assembly",
+          text: passage1Text,
+          questionRange: "Questions 1 to 5"
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: Festive Vanity at Christmas",
+          text: passage2Text,
+          questionRange: "Questions 6 to 11"
+        }
+      ],
+      sectionA_comprehension: {
+        title: "Section A: Reading Comprehension",
+        instructions: "Read the following passages carefully and answer the questions that follow each passage.",
+        passage1: {
+          passageTitle: "Passage I: The Unscheduled Assembly",
+          text: passage1Text,
+          questionRange: "Questions 1 to 5",
+          questions: passage1Items
+        },
+        passage2: {
+          passageTitle: "Passage II: Festive Vanity at Christmas",
+          text: passage2Text,
+          questionRange: "Questions 6 to 11",
+          questions: passage2Items
+        }
+      },
+      sectionB_to_E: {
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
+        questionRange: "Questions 12 to 40",
+        questions: remainingItems
+      },
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated BECE English 1999 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 1999 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish1999Calibrated()

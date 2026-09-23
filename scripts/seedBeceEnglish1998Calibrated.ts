@@ -6,7 +6,6 @@ process.env.GCLOUD_PROJECT = 'gamedu-69888475-f5783';
 process.env.GOOGLE_CLOUD_PROJECT = 'gamedu-69888475-f5783';
 
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
 import { createRequire } from 'module';
 
 const req = typeof require !== 'undefined' ? require : createRequire(import.meta.url);
@@ -16,21 +15,22 @@ async function getDb() {
   try {
     const { OAuth2Client } = req('google-auth-library');
     const { Firestore } = req('@google-cloud/firestore');
-    const configPath = 'C:\\Users\\DELL\\.config\\configstore\\firebase-tools.json';
-    if (fs.existsSync(configPath)) {
-      const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (cfg?.tokens?.access_token) {
-        const oauthClient = new OAuth2Client();
-        oauthClient.setCredentials({ access_token: cfg.tokens.access_token });
-        return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
-      }
+    const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+    const account = auth.getGlobalDefaultAccount();
+    if (account && account.tokens) {
+      const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
+      const oauthClient = new OAuth2Client();
+      oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
+      return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
     }
   } catch (e) {
-    console.log("Fallback from token config:", e);
+    console.log("Fallback to admin default credentials...", e);
   }
 
   if (!fbAdmin.apps?.length) {
-    fbAdmin.initializeApp({ credential: fbAdmin.credential.applicationDefault() });
+    fbAdmin.initializeApp({
+      credential: fbAdmin.credential.applicationDefault(),
+    });
   }
   return fbAdmin.firestore();
 }
@@ -43,195 +43,214 @@ interface QuestionItem {
   hint: string;
   workedSolution: string;
   points: number;
+  passageTitle?: string;
+  passageText?: string;
+  passage?: string;
 }
 
-// ==========================================
-// PASSAGE I: OKONKWO AND NWAKIBIE
-// ==========================================
-const passage1Text = `After the palm wine had been drunk, Okonkwo laid his difficulties before Nwakibie. "I have come to you for help," he said. "Perhaps you can already guess what it is. I have cleared a farm but have no yams to sow. I know what it is to ask a man to trust another with his yams, especially these days when young men are afraid of hard work. I am not afraid of work. The lizard that jumped from the high iroko tree to the ground said he would praise himself if no one else did. I began to fend for myself at an age when most people still suck at their mothers' breast. If you give me some yam seeds I shall not fail you."
+// =========================================================================
+// ISOMORPHIC PASSAGE I: KWAME BEMPAH'S AGRARIAN QUEST (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage1Text = `When the calabashes of fresh palm wine had been drained, Kwame Bempah laid his agricultural predicament before Opanyin Danquah. "I have come to your compound to seek your assistance," he stated with quiet dignity. "You can perhaps guess my errand. I have cleared three acres of fertile loam near the river, yet I possess no seed yams to plant. I know what it means to ask a venerable elder to entrust another with his precious crop, especially in these changing times when young men flee from manual labor. But I am not afraid of toil. The hawk that plunged from the towering silk-cotton tree to the clearing said he would praise himself if no one else did. I began to fend for myself at an age when my agemates were still clinging to their mothers' cloth. If you grant me some seed yams, I shall not disappoint you."
 
-Nwakibie cleared his throat. "It pleases me to see a determined young man like you these days when our youth have gone so soft. Many young men have come to me to ask for yams but I have refused because I knew they would just dump them in the earth and leave them to be choked by weeds. When I say no to them they think I am hard-hearted. But it is not so. Eneke the bird says that since men have learnt to shoot without missing, he has learnt to fly without perching. I have learnt to be stingy with my yams. But I can trust you. I know it as I look at you. As our fathers said, you can tell a ripe corn by its look. I shall give you four hundred yams. Go ahead and prepare your farm."`;
+Opanyin Danquah cleared his throat with a slow nod. "It gladdens my heart to meet a resolute youth in an age when our young people have grown fragile. Countless young men have come to me pleading for seed, yet I dismissed them because I knew they would merely bury them in the mounds and leave them to be choked by weeds. When I refuse them, they complain that I am hard-hearted. But it is not so. As our fathers observed, when the archer learns to shoot without missing, the weaverbird learns to fly without perching. I have learned to be stingy with my seed yams. But I can trust you. I recognize industry in your eyes. A ripe cob of maize announces itself by its look. I will give you four hundred seed yams. Return to your plot and prepare your farm."`;
 
-const passage1QuestionsRaw = [
+const passage1Questions = [
   {
     number: 1,
     prompt: "In Passage I, the full grammatical form of the clause 'if no one else did' is 'if no one else .........'",
     options: ["jumped", "looked", "was afraid", "praised him"],
     correctAnswer: "praised him",
-    hint: "The auxiliary 'did' acts as a pro-verb substituting for the preceding predicate phrase 'would praise himself'.",
+    hint: "The auxiliary 'did' functions as a pro-verb replacing the earlier predicate 'would praise himself'.",
     workedSolution: "In the sentence 'he would praise himself if no one else did', the auxiliary 'did' substitutes for 'praised him' to avoid repetition.",
     points: 1
   },
   {
     number: 2,
-    prompt: "In Passage I, the expression 'I began to fend for myself' means that Okonkwo ............",
-    options: ["defended his village in war", "protected his siblings", "worked to support and feed himself independently", "cleared farms for neighbors"],
-    correctAnswer: "worked to support and feed himself independently",
-    hint: "To 'fend for oneself' means to manage, survive, and provide for one's own needs without external assistance.",
-    workedSolution: "The idiom 'to fend for oneself' means to look after, feed, and provide for one's own physical livelihood independently.",
+    prompt: "In Passage I, the expression 'I began to fend for myself' means that Kwame Bempah ............",
+    options: [
+      "defended his community in local disputes",
+      "protected his younger siblings from bullies",
+      "labored to feed and support himself independently",
+      "hunted wild animals in the forest"
+    ],
+    correctAnswer: "labored to feed and support himself independently",
+    hint: "To 'fend for oneself' means to manage, survive, and provide for one's own basic livelihood.",
+    workedSolution: "The idiom 'to fend for oneself' means to look after, feed, and support oneself independently without parental aid.",
     points: 1
   },
   {
     number: 3,
     prompt: "According to Passage I, to describe a person as being 'hard-hearted' means that the individual ............",
-    options: ["has a solid physical heart", "lacks kindness, pity, or sympathy", "is fierce and wild in battle", "never smiles at children"],
-    correctAnswer: "lacks kindness, pity, or sympathy",
-    hint: "Unsympathetic, unyielding, and devoid of compassion.",
-    workedSolution: "'Hard-hearted' describes a person who lacks compassion, tenderness, or mercy toward others; having no kind feelings.",
+    options: [
+      "has an abnormally solid physical chest",
+      "lacks compassion, kindness, and sympathy",
+      "is excessively fierce in warfare",
+      "habitually refuses to greet neighbors"
+    ],
+    correctAnswer: "lacks compassion, kindness, and sympathy",
+    hint: "'Hard-hearted' denotes unfeeling, unyielding, and devoid of kindness.",
+    workedSolution: "'Hard-hearted' describes someone who lacks pity, tenderness, or mercy toward others; having no kind feelings.",
     points: 1
   },
   {
     number: 4,
-    prompt: "In Passage I, why did Nwakibie consistently refuse to lend seed yams to most other young men in the village?",
+    prompt: "In Passage I, why did Opanyin Danquah consistently refuse to lend seed yams to many other young men?",
     options: [
-      "They were habitually lazy and would leave their farms to be overgrown with weeds",
-      "They were excessively stingy with farm tools",
-      "They were incapable of hunting with guns",
-      "They refused to trust his counsel"
+      "They were habitually lazy and would allow the crops to be smothered by weeds",
+      "They refused to share palm wine when visiting his compound",
+      "They lacked the strength to hunt game birds with bows",
+      "They were unwilling to sign formal agrarian agreements"
     ],
-    correctAnswer: "They were habitually lazy and would leave their farms to be overgrown with weeds",
-    hint: "Check paragraph two: 'I knew they would just dump them in the earth and leave them to be choked by weeds.'",
-    workedSolution: "Nwakibie refused because the other youths lacked work ethic and would allow the seed yams to be choked to death by weeds.",
+    correctAnswer: "They were habitually lazy and would allow the crops to be smothered by weeds",
+    hint: "Paragraph two states: 'I knew they would merely bury them in the mounds and leave them to be choked by weeds.'",
+    workedSolution: "Opanyin Danquah refused because the youths lacked farming diligence and would leave the seed yams to be smothered by weeds.",
     points: 1
   },
   {
     number: 5,
-    prompt: "From the dialogue and characterization in Passage I, Okonkwo is revealed as a ............",
+    prompt: "From the dialogue and characterization in Passage I, Kwame Bempah is portrayed as a ............",
     options: [
-      "boastful young man who only sings his own praises",
-      "determined, hardworking, and resolute young farmer",
-      "cowardly youth who relies on his mother",
-      "greedy and dishonest debtor"
+      "conceited youth who solely flatters himself",
+      "resolute, industrious, and hardworking young farmer",
+      "timid young man dependent on his mother",
+      "reckless borrower who avoids repaying debts"
     ],
-    correctAnswer: "determined, hardworking, and resolute young farmer",
-    hint: "Nwakibie recognizes his industry and commits four hundred seed yams to him.",
-    workedSolution: "Okonkwo is portrayed as an industrious, persevering, and fiercely independent young farmer whose commitment wins Nwakibie's trust.",
+    correctAnswer: "resolute, industrious, and hardworking young farmer",
+    hint: "Opanyin Danquah recognizes his determination and entrusts him with four hundred seed yams.",
+    workedSolution: "Kwame Bempah is depicted as an industrious, self-reliant, and determined young farmer whose integrity earns the elder's trust.",
     points: 1
   }
 ];
 
-// ==========================================
-// PASSAGE II: MIDNIGHT EMERGENCY
-// ==========================================
-const passage2Text = `We were suddenly awakened at dawn by the screams of the tenants in the house. Daddy quickly jumped from his bed and made for the door. Not long after, we heard him screaming. We ran to the hall, switched on the light and saw him lying flat on his back, holding his forehead.
+// =========================================================================
+// ISOMORPHIC PASSAGE II: THE MIDNIGHT INTRUSION (CALIBRATED ORIGINAL)
+// =========================================================================
+const passage2Text = `We were startled from our deep sleep at dawn by the frantic shrieks of tenants residing in our compound. Father bolted instantly from his mattress and lunged for the bedroom door. Barely a minute later, we heard him cry out in agony. We sprinted into the central hall, flicked on the light switch, and found him sprawled flat on his back, clutching his forehead in pain.
 
-In his haste to get to the hall door, he must have forgotten to switch on the light, thus running straight and crashing his head against the pillar in the middle of the hall. When we examined his forehead, we saw a big lump and blood oozing from a deep cut near his eyebrow. Mother, a retired nursing sister, shouted instructions at me to get the first aid box, some ice cubes and Daddy's towel.
+In his desperate rush to unlatch the front door, he had neglected to turn on the corridor light, running headlong into the heavy concrete pillar erected in the middle of the hall. When we inspected his brow, we observed a large swelling and dark blood oozing from a laceration near his right eyebrow. Mother, a retired nursing sister, issued calm, rapid directives to fetch the domestic first-aid kit, a basin of ice cubes, and Father's towel.
 
-When the items were brought, she then set to work first on the cut. She put some ice cubes in the towel and pressed them on the cut for about two minutes. She then wiped the blood gently. Afterwards, she put a little iodine on gauze, placed it on the cut and bandaged it. Then turning to the lump, she massaged it with some ice cubes, which reduced the swelling. She then opened the door and we were confronted with a pathetic scene. Lying in the middle of the house was the body of one of the tenants. Trying to resist an attack by armed robbers, he had been butchered mercilessly and his body left in the middle of the house.`;
+When the supplies arrived, she attended immediately to the bleeding cut. Wrapping several ice cubes within the towel, she pressed the compress firmly against the wound for two minutes to constrict the ruptured vessels. Having wiped away the blood, she applied a swab of iodine gauze over the cut and secured it with a clean bandage. Turning to the swelling, she gently massaged the lump with ice, noticeably reducing the inflammation. She then unlatched the exterior door, confronting us with a pathetic scene. Stretched across the courtyard was the lifeless body of a young tenant. In a desperate attempt to resist an armed robbery gang, he had been butchered mercilessly, his body left in the middle of the compound.`;
 
-const passage2QuestionsRaw = [
+const passage2Questions = [
   {
     number: 6,
-    prompt: "According to Passage II, what initial noise woke the family members from sleep at dawn?",
+    prompt: "According to Passage II, what initial sound woke the household from sleep at dawn?",
     options: [
-      "The loud noise made by the father in the corridor",
+      "The loud groans of the father in the hallway",
       "The frantic screams of the tenants in the compound",
-      "The father's sudden leap from his bed",
-      "The sound of the father crashing into the pillar"
+      "The sudden clatter of the father springing from bed",
+      "The dull thud of the father colliding with the pillar"
     ],
     correctAnswer: "The frantic screams of the tenants in the compound",
-    hint: "Reread the opening sentence: 'We were suddenly awakened at dawn by the screams of the tenants in the house.'",
-    workedSolution: "The household was awakened by the loud screams of tenants in the house who were being attacked by armed intruders.",
+    hint: "Reread the opening sentence: the household was awakened by the shrieks of tenants in the house.",
+    workedSolution: "The narrative explains that the family was awakened at dawn by the loud shrieks of tenants screaming in the compound.",
     points: 1
   },
   {
     number: 7,
-    prompt: "In Passage II, why was the father found lying on his back holding his forehead?",
+    prompt: "In Passage II, why was the father discovered lying on his back holding his brow?",
     options: [
-      "He was running away from robbers",
-      "He slipped on the wet floor tiles",
-      "He failed to put on the light and collided with the pillar",
-      "He was struck by an armed robber"
+      "He had been assaulted by an armed burglar",
+      "He slipped on a puddle of water in the dark",
+      "He ran in total darkness and crashed headlong into the concrete pillar",
+      "He collapsed from acute exhaustion and shock"
     ],
-    correctAnswer: "He failed to put on the light and collided with the pillar",
-    hint: "Check paragraph two: running in the dark caused him to crash directly into the pillar.",
-    workedSolution: "In his rush in the dark hall, he forgot to turn on the light and crashed violently into the central concrete pillar.",
+    correctAnswer: "He ran in total darkness and crashed headlong into the concrete pillar",
+    hint: "Check paragraph two: forgetting to switch on the light caused him to crash into the central pillar.",
+    workedSolution: "In his haste in the dark room, he forgot to turn on the light switch and collided violently with the central concrete pillar.",
     points: 1
   },
   {
     number: 8,
-    prompt: "Which of the following statements is NOT true regarding the medical treatment administered by the mother in Passage II?",
+    prompt: "Which of the following statements is NOT true concerning the medical treatment administered by Mother in Passage II?",
     options: [
-      "Mother was a retired nursing sister",
-      "Mother wrapped ice cubes in Daddy's towel",
-      "Mother applied iodine and ice cubes to treat the injury",
-      "Mother applied warm boiling water to soothe the swelling"
+      "Mother had previously served as a nursing sister",
+      "Mother utilized Father's towel to wrap ice cubes",
+      "Mother dressed the cut using iodine gauze and a bandage",
+      "Mother treated the swollen lump by applying boiling water"
     ],
-    correctAnswer: "Mother applied warm boiling water to soothe the swelling",
-    hint: "Mother used ice cubes to arrest bleeding and massage the lump; warm water was never used.",
-    workedSolution: "The passage notes that Mother used ice cubes to constrict blood vessels and reduce swelling; she did not apply warm water.",
+    correctAnswer: "Mother treated the swollen lump by applying boiling water",
+    hint: "Mother used ice cubes to massage the lump; boiling water was never applied.",
+    workedSolution: "The passage notes that Mother used ice cubes to constrict blood vessels and reduce the swelling; she did not use boiling water.",
     points: 1
   },
   {
     number: 9,
     prompt: "According to Passage II, how did the deceased tenant meet his tragic death?",
     options: [
-      "He collapsed from a sudden stroke",
-      "He was butchered mercilessly by armed robbers after resisting them",
-      "He was accidentally shot by his neighbors",
-      "He died of shock after witnessing the burglary"
+      "He died of shock after observing the burglary",
+      "He was butchered mercilessly by armed robbers after attempting to resist",
+      "He was accidentally injured by escaping neighbors",
+      "He bled to death after collapsing onto the courtyard pavement"
     ],
-    correctAnswer: "He was butchered mercilessly by armed robbers after resisting them",
-    hint: "Reread the final sentence: 'Trying to resist an attack by armed robbers, he had been butchered mercilessly...'",
-    workedSolution: "The tenant was attacked and brutally killed by armed robbers when he attempted to resist their robbery.",
+    correctAnswer: "He was butchered mercilessly by armed robbers after attempting to resist",
+    hint: "Check the final sentence: trying to resist an attack by armed robbers, he had been butchered mercilessly.",
+    workedSolution: "The tenant was attacked and brutally killed by armed robbers when he bravely attempted to resist their robbery.",
     points: 1
   },
   {
     number: 10,
     prompt: "In Passage II, the word 'pathetic' in 'confronted with a pathetic scene' means ............",
-    options: ["deeply sad and distressing", "unusually strange", "exceptionally mighty", "merciless and cruel"],
-    correctAnswer: "deeply sad and distressing",
-    hint: "Evoking deep sorrow, pity, compassion, and grief.",
-    workedSolution: "'Pathetic' refers to a sight or circumstance that arouses profound pity, sorrow, or sympathy; 'deeply sad and distressing' is the direct meaning.",
+    options: [
+      "deeply distressing, sorrowful, and heartbreaking",
+      "extremely baffling and mysterious",
+      "unusually gigantic in size",
+      "barbaric and bloodthirsty"
+    ],
+    correctAnswer: "deeply distressing, sorrowful, and heartbreaking",
+    hint: "'Pathetic' in this narrative context denotes arousing profound pity, sorrow, and sadness.",
+    workedSolution: "'Pathetic' refers to a sight or circumstance that arouses deep pity, grief, and compassion; 'deeply distressing, sorrowful, and heartbreaking' is its exact equivalent.",
     points: 1
   }
 ];
 
-// ==========================================
-// GENERAL LEXIS AND STRUCTURE (11 - 40)
-// ==========================================
-const generalQuestionsRaw = [
+// =========================================================================
+// GENERAL SECTIONS B - E: SYNONYMS, IDIOMS, ANTONYMS, STRUCTURE
+// (ALL ORIGINAL REWRITES MAPPING TO 1998 TARGETS)
+// =========================================================================
+const generalQuestions = [
   // --- SECTION B: NEAREST IN MEANING (SYNONYMS) (11 - 15) ---
   {
     number: 11,
-    prompt: "Candidates were advised to make their handwriting legible.\nChoose the word nearest in meaning to the underlined word 'legible'.",
-    options: ["crooked", "clear", "straight", "deep"],
+    prompt: "Examination candidates were advised to make their script handwriting legible.\nChoose the word nearest in meaning to 'legible'.",
+    options: ["slanting", "clear", "uniform", "bold"],
     correctAnswer: "clear",
     hint: "Easily readable, plain, and decipherable.",
-    workedSolution: "'Legible' means clear enough to be read easily; 'clear' is its direct synonym.",
+    workedSolution: "'Legible' means clear enough to be read without difficulty; 'clear' is its direct synonym.",
     points: 1
   },
   {
     number: 12,
-    prompt: "The supporters assembled to jubilate after winning the championship.\nChoose the word nearest in meaning to the underlined word 'jubilate'.",
-    options: ["embrace the supporters", "reward the players", "rejoice", "feast"],
+    prompt: "The sports supporters gathered to jubilate after winning the championship trophy.\nChoose the word nearest in meaning to 'jubilate'.",
+    options: ["parade", "rejoice", "applaud", "feast"],
     correctAnswer: "rejoice",
     hint: "Expressing great joy, triumph, and happiness.",
-    workedSolution: "'Jubilate' means to feel or express great joy or triumph; 'rejoice' is its exact equivalent.",
+    workedSolution: "'Jubilate' means to feel or express great joy, triumph, or celebration; 'rejoice' is its exact equivalent.",
     points: 1
   },
   {
     number: 13,
-    prompt: "Bullying and senior intimidation have been banned in our basic school.\nChoose the word nearest in meaning to the underlined word 'banned'.",
-    options: ["encouraged", "forbidden", "discussed", "introduced"],
-    correctAnswer: "forbidden",
-    hint: "Officially prohibited or disallowed by authority.",
-    workedSolution: "'Banned' means officially prohibited or outlawed; 'forbidden' is its direct synonym.",
+    prompt: "Senior bullying and physical intimidation have been banned in our school.\nChoose the word nearest in meaning to 'banned'.",
+    options: ["prohibited", "criticized", "debated", "curbed"],
+    correctAnswer: "prohibited",
+    hint: "Officially disallowed or outlawed by authority.",
+    workedSolution: "'Banned' means officially forbidden or outlawed; 'prohibited' is its direct synonym.",
     points: 1
   },
   {
     number: 14,
-    prompt: "The prescribed penalty for examination fraud is expulsion from the institution.\nChoose the word nearest in meaning to the underlined word 'penalty'.",
-    options: ["trouble", "cause", "foul", "punishment"],
+    prompt: "The statutory penalty for examination malpractice is expulsion from the institution.\nChoose the word nearest in meaning to 'penalty'.",
+    options: ["hazard", "charge", "sanction", "punishment"],
     correctAnswer: "punishment",
-    hint: "A sanction or forfeiture imposed for breaking a law or rule.",
-    workedSolution: "'Penalty' refers to a sanction or disciplinary consequence imposed for an offense; 'punishment' is its direct equivalent.",
+    hint: "A disciplinary consequence or forfeit imposed for breaking a rule.",
+    workedSolution: "'Penalty' refers to a disciplinary forfeit or consequence imposed for an offense; 'punishment' is its direct equivalent.",
     points: 1
   },
   {
     number: 15,
-    prompt: "The commotion ceased immediately the senior housemaster stepped into the hall.\nChoose the word nearest in meaning to the underlined word 'ceased'.",
-    options: ["changed over", "dragged on", "stopped", "increased"],
+    prompt: "The classroom murmuring ceased immediately the housemaster appeared at the doorway.\nChoose the word nearest in meaning to 'ceased'.",
+    options: ["slowed down", "stopped", "subsided", "scattered"],
     correctAnswer: "stopped",
     hint: "Came to an end; halted completely.",
     workedSolution: "'Ceased' means brought to an end or discontinued; 'stopped' is its direct synonym.",
@@ -243,35 +262,40 @@ const generalQuestionsRaw = [
     number: 16,
     prompt: "It will serve her right if she misses the excursion bus due to chronic lateness. This means that ............",
     options: [
-      "she will have what she likes",
-      "it will be an extraordinary privilege",
-      "she will suffer what she deservedly brought upon herself",
-      "it will be her legal right to travel"
+      "she will receive an honorable privilege",
+      "she will enjoy what she likes most",
+      "she will suffer a misfortune that she deservedly brought upon herself",
+      "it will be her legitimate legal right to travel"
     ],
-    correctAnswer: "she will suffer what she deservedly brought upon herself",
-    hint: "To get the just, deserved punishment for one's own foolishness or negligence.",
-    workedSolution: "The idiom 'to serve someone right' means that an unpleasant consequence is thoroughly deserved because of the person's own misconduct.",
+    correctAnswer: "she will suffer a misfortune that she deservedly brought upon herself",
+    hint: "To get the just, deserved punishment for one's own negligence.",
+    workedSolution: "The idiom 'to serve someone right' means that an unpleasant outcome is thoroughly deserved because of the person's own foolishness or misconduct.",
     points: 1
   },
   {
     number: 17,
     prompt: "Mr. Mensah appears respectable, but he leads a double life. This means that he ............",
     options: [
-      "arrives at work punctually",
-      "works harder than all his peers",
-      "leads a dishonest private life contrasting with his public image",
-      "holds two legitimate daytime jobs"
+      "reports to the office punctually every morning",
+      "toils harder than all his fellow artisans",
+      "leads a dishonest private life contrasting sharply with his public image",
+      "maintains two legitimate full-time employments"
     ],
-    correctAnswer: "leads a dishonest private life contrasting with his public image",
+    correctAnswer: "leads a dishonest private life contrasting sharply with his public image",
     hint: "Maintaining two contrasting lifestyles, one public and respectable, the other secretive and disreputable.",
-    workedSolution: "The idiom 'to lead a double life' means to conduct a secret life (often immoral or criminal) that conflicts sharply with one's respectable public persona.",
+    workedSolution: "The idiom 'to lead a double life' means to conduct a secret, often disreputable life that conflicts sharply with one's respectable public persona.",
     points: 1
   },
   {
     number: 18,
-    prompt: "My uncle in the diaspora visits our village once in a blue moon. This means that he visits ............",
-    options: ["at the close of every month", "very rarely", "during moonlit nights", "on a daily basis"],
-    correctAnswer: "very rarely",
+    prompt: "My uncle residing in the diaspora visits our village once in a blue moon. This means that he visits ............",
+    options: [
+      "at the close of every month",
+      "very rarely on rare occasions",
+      "exclusively on moonlit nights",
+      "during festive occasions only"
+    ],
+    correctAnswer: "very rarely on rare occasions",
     hint: "Happening very seldom or on rare occasions.",
     workedSolution: "'Once in a blue moon' is an idiom meaning very rarely or on extremely infrequent occasions.",
     points: 1
@@ -280,82 +304,82 @@ const generalQuestionsRaw = [
     number: 19,
     prompt: "Academically, our Science Club is second to none in the entire municipality. This means that the club ............",
     options: [
-      "always takes the second position",
-      "does not perform well in competitions",
-      "is the absolute best and superior to all others",
-      "is the second largest group"
+      "invariably occupies the second position",
+      "performs poorly in national competitions",
+      "is unsurpassed, unrivaled, and the absolute best",
+      "is the second largest student society"
     ],
-    correctAnswer: "is the absolute best and superior to all others",
+    correctAnswer: "is unsurpassed, unrivaled, and the absolute best",
     hint: "Better than all others; having no equal.",
     workedSolution: "The idiom 'second to none' means unsurpassed, equal to the best, or the foremost in quality.",
     points: 1
   },
   {
     number: 20,
-    prompt: "If we had sent the patient to the hospital earlier, he wouldn't have died. This means that ............",
+    prompt: "If we had sent the injured farmer to the hospital earlier, he wouldn't have died. This means that ............",
     options: [
       "we sent him to the clinic promptly",
-      "we did not send him to the hospital at all",
-      "we sent him to the hospital late, resulting in his death",
-      "we were warned not to take him to the hospital"
+      "we did not convey him to the hospital at all",
+      "we delayed in taking him to the hospital, which caused his death",
+      "the clinic physicians refused to attend to him"
     ],
-    correctAnswer: "we sent him to the hospital late, resulting in his death",
+    correctAnswer: "we delayed in taking him to the hospital, which caused his death",
     hint: "Counterfactual conditional: the condition was not met in time.",
-    workedSolution: "The past counterfactual statement implies the reality: they delayed in sending the patient to the hospital, which caused his untimely death.",
+    workedSolution: "The past counterfactual statement reveals the reality: they delayed in transporting the patient to the hospital, resulting in his untimely death.",
     points: 1
   },
 
   // --- SECTION D: OPPOSITE IN MEANING (ANTONYMS) (21 - 25) ---
   {
     number: 21,
-    prompt: "The prefect was punished for being dishonest, while his assistant was commended for being ...... .",
-    options: ["rough", "respectful", "sincere", "tactful"],
-    correctAnswer: "sincere",
-    hint: "'Dishonest' means deceitful and untruthful. Find the word denoting truthfulness and honesty.",
-    workedSolution: "'Dishonest' means deceitful or fraudulent. Its direct antonym is 'sincere' (honest, truthful, and genuine).",
+    prompt: "The prefect was punished for being dishonest, while his assistant was commended for being ...... .\nChoose the word most nearly opposite in meaning to 'dishonest'.",
+    options: ["respectful", "truthful", "tactful", "obedient"],
+    correctAnswer: "truthful",
+    hint: "'Dishonest' means deceitful and fraudulent. Find the word denoting truthfulness and integrity.",
+    workedSolution: "'Dishonest' means deceitful or untruthful. Its direct antonym is 'truthful' (or sincere/honest).",
     points: 1
   },
   {
     number: 22,
-    prompt: "Our teachers always advised us to be humble, rather than ...... .",
-    options: ["arrogant", "gentle", "hardworking", "wicked"],
+    prompt: "Our teachers always advised us to be humble in conduct, rather than ...... .\nChoose the word most nearly opposite in meaning to 'humble'.",
+    options: ["arrogant", "severe", "indolent", "hostile"],
     correctAnswer: "arrogant",
     hint: "'Humble' means modest and unpretentious. Find the word meaning proud and haughty.",
-    workedSolution: "'Humble' means showing a modest estimate of one's importance. Its direct antonym is 'arrogant' (haughty, conceited, and overbearing).",
+    workedSolution: "'Humble' means modest and unpretentious. Its direct antonym is 'arrogant' (haughty, conceited, or proud).",
     points: 1
   },
   {
     number: 23,
-    prompt: "Our headmaster has purchased modern encyclopedias for the library and ...... the outdated volumes.",
-    options: ["selected", "collected", "sold", "lent"],
+    prompt: "Our school library has purchased modern encyclopedias and ...... the outdated volumes.\nChoose the word most nearly opposite in meaning to 'purchased'.",
+    options: ["cataloged", "repaired", "sold", "borrowed"],
     correctAnswer: "sold",
-    hint: "'Purchased' means bought. Find the word that denotes disposing of property for money.",
+    hint: "'Purchased' means bought with money. What word denotes disposing of goods for money?",
     workedSolution: "'Purchased' means bought by paying money. Its direct commercial antonym is 'sold'.",
     points: 1
   },
   {
     number: 24,
-    prompt: "The beef served at the hostel was tough, but the roasted chicken was remarkably ...... .",
-    options: ["big", "soft", "slippery", "rough"],
-    correctAnswer: "soft",
-    hint: "'Tough' in cooked meat means hard to chew. Find the word meaning tender and easily chewed.",
-    workedSolution: "'Tough' in culinary texture means hard or difficult to chew. Its direct culinary antonym is 'soft' (or tender).",
+    prompt: "The beef served at the boarding hostel was tough, but the roasted chicken was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'tough'.",
+    options: ["fresh", "tender", "succulent", "palatable"],
+    correctAnswer: "tender",
+    hint: "'Tough' cooked meat is hard to chew. Find the culinary term meaning soft and easy to chew.",
+    workedSolution: "'Tough' in cooked meat means hard or difficult to chew. Its direct culinary antonym is 'tender' (soft and easily chewed).",
     points: 1
   },
   {
     number: 25,
-    prompt: "Natural vegetation is scanty in arid desert zones, but ...... in equatorial rain forests.",
-    options: ["green", "dry", "little", "dense"],
+    prompt: "Natural vegetation is scanty in arid desert zones, but ...... in equatorial rainforests.\nChoose the word most nearly opposite in meaning to 'scanty'.",
+    options: ["evergreen", "sprawling", "flourishing", "dense"],
     correctAnswer: "dense",
-    hint: "'Scanty' means meager, sparse, or scarce. Find the word meaning thick and closely packed together.",
-    workedSolution: "'Scanty' means meager, sparse, or barely sufficient. Its direct antonym in describing vegetation is 'dense' (thickly clustered).",
+    hint: "'Scanty' means sparse or meager. Find the botanical term meaning thickly clustered together.",
+    workedSolution: "'Scanty' means meager, sparse, or scarce. Its direct antonym in describing vegetation is 'dense' (thickly clustered).",
     points: 1
   },
 
-  // --- SECTION E: LEXIS AND STRUCTURE (26 - 40) ---
+  // --- SECTION E: STRUCTURE & QUESTION TAGS (26 - 40) ---
   {
     number: 26,
-    prompt: "Anto should ...... his teeth before taking his morning breakfast.",
+    prompt: "Anto should ...... his teeth thoroughly before taking his morning breakfast.",
     options: ["clean", "has cleaned", "cleaned", "cleans"],
     correctAnswer: "clean",
     hint: "Modal auxiliaries like 'should' are invariably followed by a bare infinitive verb.",
@@ -367,7 +391,7 @@ const generalQuestionsRaw = [
     prompt: "Mr. Tawiah regularly ...... his evening meal late in the night.",
     options: ["eat", "eats", "eaten", "eating"],
     correctAnswer: "eats",
-    hint: "Singular third-person subject ('Mr. Tawiah') taking a simple present tense verb of habitual frequency ('regularly').",
+    hint: "Third-person singular subject ('Mr. Tawiah') taking a simple present tense verb of habitual frequency ('regularly').",
     workedSolution: "The singular subject 'Mr. Tawiah' combined with the frequency adverb 'regularly' requires the third-person singular present verb 'eats'.",
     points: 1
   },
@@ -385,7 +409,7 @@ const generalQuestionsRaw = [
     prompt: "The earlier we ...... the agricultural project, the better for the school.",
     options: ["have done", "do", "did", "had done"],
     correctAnswer: "do",
-    hint: "Parallel correlative structure with present meaning: 'The earlier we [present]..., the better...'.",
+    hint: "Correlative comparative construction referring to a general or future condition: 'The earlier we [present]..., the better...'.",
     workedSolution: "In the proportional comparative construction referring to a future or general condition, English uses the simple present: 'The earlier we do the work, the better'.",
     points: 1
   },
@@ -394,7 +418,7 @@ const generalQuestionsRaw = [
     prompt: "You will pass this national examination with distinction, ......?",
     options: ["don't you", "have you", "may you", "won't you"],
     correctAnswer: "won't you",
-    hint: "An affirmative future clause with 'will' takes a negative tag with 'will not' (contracted to 'won't').",
+    hint: "An affirmative future clause with 'will' takes a contracted negative tag: 'won't you?'.",
     workedSolution: "The main clause has an affirmative future verb ('will pass'). Its corresponding question tag must be negative: 'won't you?'.",
     points: 1
   },
@@ -403,8 +427,8 @@ const generalQuestionsRaw = [
     prompt: "He showed the police the commercial bus ...... knocked down the pedestrian.",
     options: ["who", "which", "whom", "what"],
     correctAnswer: "which",
-    hint: "Use the relative pronoun for inanimate objects, vehicles, or animals.",
-    workedSolution: "'Which' (or 'that') is the relative pronoun used to refer to non-human entities and inanimate objects like 'the car/bus'.",
+    hint: "Use the relative pronoun for inanimate objects, vehicles, or non-human entities.",
+    workedSolution: "'Which' (or 'that') is the relative pronoun used to refer to non-human entities and inanimate objects like 'the commercial bus'.",
     points: 1
   },
   {
@@ -418,7 +442,7 @@ const generalQuestionsRaw = [
   },
   {
     number: 33,
-    prompt: "The national soccer team is preparing vigorously ...... the upcoming continental tournament.",
+    prompt: "The national soccer team is preparing vigorously ...... the upcoming tournament.",
     options: ["with", "by", "on", "for"],
     correctAnswer: "for",
     hint: "Identify the preposition that regularly collocates with the verb 'prepare'.",
@@ -492,9 +516,9 @@ const generalQuestionsRaw = [
 
 // Combine all 40 raw questions
 const allRawQuestions = [
-  ...passage1QuestionsRaw,
-  ...passage2QuestionsRaw,
-  ...generalQuestionsRaw
+  ...passage1Questions,
+  ...passage2Questions,
+  ...generalQuestions
 ];
 
 // Seeded Deterministic Shuffle to Guarantee Exactly 10 A, 10 B, 10 C, 10 D
@@ -518,8 +542,10 @@ function seedShuffle<T>(array: T[], seed: number): T[] {
   return arr;
 }
 
-const assignedTargetIndices = seedShuffle(targetKeys, 199801);
+const assignedTargetIndices = seedShuffle(targetKeys, 199802);
 
+// Attach Passage I (Q1-5) and Passage II (Q6-10) directly to questions so that
+// the passage ALWAYS comes first before any question is displayed!
 const balancedPaper1 = allRawQuestions.map((q, idx) => {
   const correctIdx = assignedTargetIndices[idx]; // 0=A, 1=B, 2=C, 3=D
   const options: string[] = [];
@@ -532,6 +558,22 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
       options.push(rawDistractors[dCount++]);
     }
   }
+
+  const qNum = q.number;
+  let passageTitle: string | undefined = undefined;
+  let passageText: string | undefined = undefined;
+  let passage: string | undefined = undefined;
+
+  if (qNum >= 1 && qNum <= 5) {
+    passageTitle = "Passage I: Kwame Bempah's Agrarian Quest";
+    passageText = passage1Text;
+    passage = passage1Text;
+  } else if (qNum >= 6 && qNum <= 10) {
+    passageTitle = "Passage II: The Midnight Intrusion";
+    passageText = passage2Text;
+    passage = passage2Text;
+  }
+
   return {
     number: q.number,
     prompt: q.prompt,
@@ -539,18 +581,21 @@ const balancedPaper1 = allRawQuestions.map((q, idx) => {
     correctAnswer: q.correctAnswer,
     hint: q.hint,
     workedSolution: q.workedSolution,
-    points: q.points
+    points: q.points,
+    ...(passageTitle ? { passageTitle } : {}),
+    ...(passageText ? { passageText } : {}),
+    ...(passage ? { passage } : {})
   };
 });
 
-// Partition Questions for Passage-First Rendering
-const passage1Questions = balancedPaper1.slice(0, 5);
-const passage2Questions = balancedPaper1.slice(5, 10);
-const remainingQuestions = balancedPaper1.slice(10);
+// Partition Questions for Passage-First UI Rendering
+const passage1Items = balancedPaper1.slice(0, 5);
+const passage2Items = balancedPaper1.slice(5, 10);
+const remainingItems = balancedPaper1.slice(10);
 
-// ==========================================
-// PAPER 2: ESSAY WRITING (COMPOSITION)
-// ==========================================
+// =========================================================================
+// PAPER 2: ESSAY WRITING (COMPOSITION) - FULL ORIGINAL SUITE
+// =========================================================================
 const paper2Calibrated = {
   sectionA_essay: {
     title: "Part A: Essay Writing",
@@ -640,7 +685,7 @@ He arrived at our gate with two fishing lines and swimming shorts, urging me to 
 
 Disregarding the danger sign, we stripped off our shirts and plunged into the churning water. For thirty minutes, we swam excitedly. Then disaster struck. While swimming toward the center, a powerful underwater whirlpool gripped my legs, pulling me downward like an iron anchor. Panic engulfed me as I swallowed mouthfuls of muddy water, flailing my arms and screaming for help. Kofi was too terrified to swim toward me and stood screaming on the bank.
 
-Just as my strength failed and blackness began clouding my vision, a passing palm-wine tapper, heard our desperate cries. He plunged into the torrent with a long bamboo pole and dragged my limp, unconscious body ashore, where he administered vigorous resuscitation until I coughed up water.
+Just as my strength failed and blackness began clouding my vision, a passing palm-wine tapper heard our desperate cries. He plunged into the torrent with a long bamboo pole and dragged my limp, unconscious body ashore, where he administered vigorous resuscitation until I coughed up water.
 
 When my father arrived at the clinic that evening, his eyes were wet with tears of relief and sorrow. Looking at his trembling hands, a wave of deep shame washed over me. Shivering under the hospital blanket, I whispered through tears: Never will I do that again.`
       }
@@ -648,21 +693,10 @@ When my father arrived at the clinic that evening, his eyes were wet with tears 
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.sectionA_essay.questions.map((q) => ({
-    id: `q${q.questionNumber}`,
-    questionNumber: q.questionNumber,
-    section: "A",
-    category: q.category,
-    partLabel: `Part A (Question ${q.questionNumber}) - ${q.category}`,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    marks: 30
-  }))
-];
-
 async function seedBeceEnglish1998Calibrated() {
-  console.log("Seeding Calibrated & Passage-First BECE English 1998 into Firestore...");
+  console.log("Seeding Fully Rewritten, Clean-Room BECE English 1998 into Firestore...");
+
+  const db = await getDb();
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -675,7 +709,6 @@ async function seedBeceEnglish1998Calibrated() {
   });
   console.log("Verified Key Balance (Exactly 10 of each):", keyDist);
 
-  const db = await getDb();
   const docRef = db.doc("global_curriculum/jhs/subjects/english/past_questions/bece_1998");
   await docRef.set({
     year: 1998,
@@ -692,46 +725,58 @@ async function seedBeceEnglish1998Calibrated() {
       passageFirstLayout: true,
       updatedAt: new Date()
     },
+    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test",
       durationMinutes: 45,
       totalQuestions: balancedPaper1.length,
-      // Section A: Passage-First Comprehension Architecture
+      passages: [
+        {
+          id: "passage_1",
+          title: "Passage I: Kwame Bempah's Agrarian Quest",
+          text: passage1Text,
+          questionRange: "Questions 1 to 5"
+        },
+        {
+          id: "passage_2",
+          title: "Passage II: The Midnight Intrusion",
+          text: passage2Text,
+          questionRange: "Questions 6 to 10"
+        }
+      ],
       sectionA_comprehension: {
         title: "Section A: Reading Comprehension",
         instructions: "Read the following passages carefully and answer the questions that follow each passage.",
         passage1: {
-          passageTitle: "Passage I: Okonkwo and Nwakibie",
+          passageTitle: "Passage I: Kwame Bempah's Agrarian Quest",
           text: passage1Text,
           questionRange: "Questions 1 to 5",
-          questions: passage1Questions
+          questions: passage1Items
         },
         passage2: {
-          passageTitle: "Passage II: The Midnight Emergency",
+          passageTitle: "Passage II: The Midnight Intrusion",
           text: passage2Text,
           questionRange: "Questions 6 to 10",
-          questions: passage2Questions
+          questions: passage2Items
         }
       },
-      // Sections B - E: Lexis, Synonyms, Idioms, Antonyms, and Structure
       sectionB_to_E: {
-        title: "Sections B - E: Lexis, Idioms, Antonyms and Structure",
+        title: "Sections B - E: Synonyms, Idioms, Antonyms and Structure",
         questionRange: "Questions 11 to 40",
-        questions: remainingQuestions
+        questions: remainingItems
       },
-      // Complete Flat Sequence for standard computerized test runners
-      allQuestions: balancedPaper1,
-      questions: balancedPaper1
+      questions: balancedPaper1,
+      allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Essay Writing (Composition)",
       durationMinutes: 75,
       sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      questions: paper2Calibrated.sectionA_essay.questions
     }
   }, { merge: true });
 
-  console.log("✅ Calibrated & Passage-First BECE English 1998 successfully seeded into Firestore!");
+  console.log("✅ Fully Rewritten, Clean-Room BECE English 1998 successfully seeded into Firestore!");
 }
 
 seedBeceEnglish1998Calibrated()
