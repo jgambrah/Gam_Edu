@@ -1508,6 +1508,56 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
     // ==========================================
     // JHS BECE ENGLISH LANGUAGE EXAM SERIES
     // ==========================================
+    // ==========================================
+    // 2026 BECE ENGLISH LANGUAGE BENCHMARK
+    // ==========================================
+    {
+        title: "2026 BECE English Language Paper 1 (Objective & Oral Language)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2026 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective examination variant covering Lexis and Structure, Synonyms, Antonyms, Idiomatic Expressions, Cloze Passage, and Oral Language & Phonetics.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2026_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2026,
+        setNumber: 132,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "2026 BECE English Language Paper 2 (Essay, Comprehension & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2026 BECE English Language Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Standardized 3-part examination featuring Part A Composition (Informal Letter, Debate Speech, Narrative), Part B Reading Comprehension & Summary, and Part C Literature (The Cockcrow).",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2026_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2026,
+        setNumber: 133,
+        era: "modern",
+        questionCount: 20,
+        examTag: "Essay, Comprehension & Literature • Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+
     {
         title: "2025 BECE English Language Paper 1 (Objective & Comprehension)",
         domain: "B7–B9.3 GRAMMAR & VOCABULARY",
@@ -2658,6 +2708,470 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         subject: "English Language",
         status: "ready"
     },
+    // ==========================================
+    // CLASSIC ERA BECE ENGLISH LANGUAGE (1990 - 1999)
+    // ==========================================
+    {
+        title: "1999 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1999 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Comprehension (The Big School Bell, Mansa and the Lion), Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1999_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1999,
+        setNumber: 27,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1999 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1999 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Official composition paper featuring Informal Letter to Elder Brother, Formal Application for Clerical Assistant, Descriptive Account of Local Festival, and Narrative Essay.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1999_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1999,
+        setNumber: 28,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1998 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1998 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Okonkwo and Nwakibie, Animal Camouflage, Synonyms, Antonyms, Idioms, and Lexis and Structure.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1998_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1998,
+        setNumber: 29,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1998 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1998 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized 4-prompt composition covering friendly letter, formal petition to DCE, market day description, and moral narrative essay.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1998_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1998,
+        setNumber: 30,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1997 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1997 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Akwasi Seth's Homecoming, The Earthworm, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1997_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1997,
+        setNumber: 31,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1997 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1997 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Informal Letter, Formal Letter to Headmaster, Descriptive Essay, and Narrative Story with full marking rubric.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1997_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1997,
+        setNumber: 32,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1996 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1996 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Mr. Mensah's Classroom Detection, The Housefly Vector, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1996_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1996,
+        setNumber: 33,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1996 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1996 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition covering Informal Letter, Formal Application, Report on Fire Outbreak, and Speech with model solutions.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1996_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1996,
+        setNumber: 34,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1995 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1995 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Songbirds' Choir, Oral History and Literacy, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1995_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1995,
+        setNumber: 35,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1995 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1995 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Vacation Letter, Formal Petition on Street Lighting, Football Match Narrative, and Career Article.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1995_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1995,
+        setNumber: 36,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1994 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1994 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Crow and Hidden Treasures, Human Skeletons, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1994_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1994,
+        setNumber: 37,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1994 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1994 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Informal Letter, Formal Application for Storekeeper, Speech on Drug Abuse, and Market Day Account.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1994_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1994,
+        setNumber: 38,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1993 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1993 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Bako's Misfortune, The Cocoa Pod Borer, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1993_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1993,
+        setNumber: 39,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1993 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1993 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Informal Letter, Formal Permission Letter, Report on Examination Malpractice, and Article on Deforestation.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1993_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1993,
+        setNumber: 40,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1992 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1992 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering The Balinese Courtship Ritual, Protein & Nutritional Health, Synonyms, Antonyms, Idioms, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1992_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1992,
+        setNumber: 41,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1992 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1992 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Informal Letter, Formal Letter to Headmaster, Disciplinary Altercation Report, and Newspaper Article.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1992_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1992,
+        setNumber: 42,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1991 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1991 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective assessment covering Sightseeing in Accra, The Akosombo Dam and Power, Synonyms, Antonyms, Question Tags, and Lexis.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1991_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1991,
+        setNumber: 43,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1991 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1991 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Standardized composition featuring Formal Petition to Headmaster, Persuasive Letter for Secondary School Sponsorship, Market Day Scene, and Narrative Essay.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1991_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1991,
+        setNumber: 44,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1990 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "1990 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Inaugural 40-question objective assessment covering The Interrupted Grammar Lesson, The Canine Battle, Antonyms, Idioms, and Lexis & Structure.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1990_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 1990,
+        setNumber: 45,
+        era: "classic",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "1990 BECE English Language Paper 2 (Essay Writing)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "1990 BECE Written Essay Composition",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A • 75 mins • Standardized Essay",
+        description: "Inaugural composition paper featuring Educational Excursion Letter, Formal Apprenticeship Application, Sunday Routine, and Asafo Warrior Procession Narrative.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_1990_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 1990,
+        setNumber: 46,
+        era: "classic",
+        questionCount: 4,
+        examTag: "Essay Writing • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+
     // ==========================================
     // SHS WASSCE ENGLISH LANGUAGE EXAM SERIES
     // ==========================================
@@ -5155,24 +5669,58 @@ function EnglishMastery({
         const levelId = mapGradeTierToLevelId(activeGrade);
         const subjectId = 'english';
         
-        let topicId = 'phonics-blends';
+        let topicId = mod.topicId || 'phonics-blends';
         const titleLower = (mod.title || '').toLowerCase();
-        if (titleLower.includes('phonic') || titleLower.includes('blend') || titleLower.includes('rhym')) {
-            topicId = 'phonics-blends';
-        } else {
-            topicId = titleLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (!mod.topicId) {
+            if (titleLower.includes('phonic') || titleLower.includes('blend') || titleLower.includes('rhym')) {
+                topicId = 'phonics-blends';
+            } else {
+                topicId = titleLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            }
         }
 
         setActiveTopicMeta({ title: mod.title, topicId });
         setIsLoadingSet(true);
 
         try {
-            const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
-            if (sets && sets.length > 0) {
-                setActiveQuestionSet(sets[0]);
-            } else {
-                setActiveQuestionSet(null);
+            let targetSet: CurriculumQuestionSet | null = null;
+            if (mod.setId && firestore) {
+                const cleanSetId = mod.setId.replace(/_p\d+$/, '');
+                let ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
+                if (!ppSnap.exists()) {
+                    ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_questions/${cleanSetId}`));
+                }
+                if (ppSnap.exists()) {
+                    const ppData = ppSnap.data();
+                    const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
+                    const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
+                    const pQuestions = pData?.questions || pData?.allQuestions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
+                    const fallbackP2Questions = pData?.sections?.sectionA_essay?.questions || pData?.sections?.partA_writing?.questions || [];
+                    const finalQuestions = pQuestions.length > 0 ? pQuestions : (fallbackP2Questions.length > 0 ? fallbackP2Questions : (pData.paper2?.questions || []));
+                    if (pData && (finalQuestions.length > 0 || pData.paper2?.questions)) {
+                        targetSet = {
+                            id: mod.setId,
+                            title: pData.title || mod.title,
+                            tier: activeGrade,
+                            subject: 'English Language',
+                            topic: mod.title,
+                            format: isP2 ? 'structured_essay' : 'objective',
+                            paperType: isP2 ? 2 : 1,
+                            totalQuestions: pData.totalQuestions || finalQuestions.length || (isP2 ? 4 : 40),
+                            questions: finalQuestions
+                        } as CurriculumQuestionSet;
+                    }
+                }
             }
+
+            if (!targetSet) {
+                const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
+                if (sets && sets.length > 0) {
+                    targetSet = sets[0];
+                }
+            }
+
+            setActiveQuestionSet(targetSet);
         } catch (e) {
             console.warn('Error loading english question set:', e);
             setActiveQuestionSet(null);
@@ -5657,7 +6205,13 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
     39: { year: 1993, paper: 1 },
     40: { year: 1993, paper: 2 },
     41: { year: 1992, paper: 1 },
-    42: { year: 1992, paper: 2 }
+    42: { year: 1992, paper: 2 },
+    43: { year: 1991, paper: 1 },
+    44: { year: 1991, paper: 2 },
+    45: { year: 1990, paper: 1 },
+    46: { year: 1990, paper: 2 },
+    132: { year: 2026, paper: 1 },
+    133: { year: 2026, paper: 2 }
   };
 
   if (setNum && setYearMap[setNum]) {
@@ -5674,7 +6228,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
   if (year) {
     if (year >= 2019 && year <= 2026) era = 'modern';
     else if (year >= 2000 && year <= 2018) era = 'legacy';
-    else if (year >= 1992 && year <= 1999) era = 'classic';
+    else if (year >= 1990 && year <= 1999) era = 'classic';
   } else if (setNum) {
     if (setNum >= 54) era = 'modern';
     else if (setNum >= 1 && setNum <= 26) era = 'legacy';
@@ -6954,8 +7508,10 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         if (ppData) {
                             const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
                             const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
-                            const pQuestions = pData?.questions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
-                            if (pData && (pQuestions.length > 0 || pData.paper2?.questions)) {
+                            const pQuestions = pData?.questions || pData?.allQuestions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
+                            const fallbackP2Questions = pData?.sections?.sectionA_essay?.questions || pData?.sections?.partA_writing?.questions || [];
+                            const finalQuestions = pQuestions.length > 0 ? pQuestions : (fallbackP2Questions.length > 0 ? fallbackP2Questions : (pData.paper2?.questions || []));
+                            if (pData && (finalQuestions.length > 0 || pData.paper2?.questions)) {
                                 targetSet = {
                                     id: mod.setId,
                                     title: pData.title || mod.title,
@@ -6965,7 +7521,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                                     format: isP2 ? 'structured_essay' : 'objective',
                                     paperType: isP2 ? 2 : 1,
                                     totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 3 : 40),
-                                    questions: pQuestions.length > 0 ? pQuestions : (pData.paper2?.questions || [])
+                                    questions: finalQuestions
                                 } as CurriculumQuestionSet;
                             }
                         }
@@ -7069,7 +7625,16 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         studentId={studentId}
                         assignmentId={assignmentId}
                         onProceedToPaper2={() => {
-                            if (activeQuestionSet?.id === 'bece_2025_p1' || activeQuestionSet?.id === 'bece_2025') {
+                            const beceMatch = activeQuestionSet?.id?.match(/bece_(\d{4})(?:_p1)?$/);
+                            if (beceMatch) {
+                                const yr = beceMatch[1];
+                                handleLaunchModule({
+                                    setId: `bece_${yr}_p2`,
+                                    title: `BECE English Language ${yr} (Paper 2: Essay Writing)`,
+                                    paperType: 2,
+                                    subject: 'English Language'
+                                });
+                            } else if (activeQuestionSet?.id === 'bece_2025_p1' || activeQuestionSet?.id === 'bece_2025') {
                                 handleLaunchModule({ setId: 'bece_2025_p2', title: 'BECE English Language 2025 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
                             } else if (activeQuestionSet?.id === 'bece_2024_p1' || activeQuestionSet?.id === 'bece_2024') {
                                 handleLaunchModule({ setId: 'bece_2024_p2', title: 'BECE English Language 2024 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
