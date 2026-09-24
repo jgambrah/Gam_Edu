@@ -358,9 +358,9 @@ const TOPIC_DOC_ALIASES: Record<string, string> = {
  * Strictly 1 Firestore document read.
  */
 function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): TopicalLabDocument {
-  const mapQ = (q: any) => ({
+  const mapQ = (q: any): TopicalPracticeQuestion => ({
     id: q.id || `q_${Math.random().toString(36).substr(2, 6)}`,
-    difficulty: (q.difficulty === 'hard' || q.difficulty === 'high') ? 'hard' : (q.difficulty === 'medium' ? 'medium' : 'low'),
+    difficulty: ((q.difficulty === 'hard' || q.difficulty === 'high') ? 'hard' : (q.difficulty === 'medium' ? 'medium' : 'low')) as TopicalPracticeDifficulty,
     prompt: q.prompt || '',
     options: q.options || [],
     correctAnswer: q.correctAnswer || '',

@@ -6568,25 +6568,31 @@ function MathLab({
                             }
 
                             const isPending = t.status === 'pending_content';
+                            const topicItemTitle = t.title || t.topicTitle || 'Curriculum Module';
+                            const topicItemId = t.id || t.topicId || '';
+                            const topicItemSubStrand = t.subStrand || t.subStrandTitle || '';
+                            const topicItemDesc = t.description || t.summary || (isPending
+                                ? `Official ${strandName} curriculum unit. Interactive tiered learning drills and concept notes are being mapped.`
+                                : `Master ${topicItemTitle} with tiered concept notes, worked examples, and graded practice pools.`);
+                            const topicItemQCount = t.questionCount || t.totalQuestions || (isPending ? 0 : 27);
+
                             scanned.push({
-                                title: t.title,
+                                title: topicItemTitle,
                                 domain: strandName.toUpperCase(),
                                 strandName: strandName,
                                 strandCode: t.strandCode || (subject === 'science' ? 'S1' : 'S1'),
-                                subStrand: t.subStrand,
+                                subStrand: topicItemSubStrand,
                                 levelsAvailable: t.levelsAvailable || ['B7', 'B8', 'B9'],
                                 gradeTier: 'Junior Secondary (JHS)',
                                 meta: isPending
                                     ? `Curriculum Strand • Tiered Notes & Drills in Preparation`
                                     : `Basic 7 – Basic 9 • Concept Notes & Worked Examples`,
-                                description: t.description || (isPending
-                                    ? `Official ${strandName} curriculum unit. Interactive tiered learning drills and concept notes are being mapped.`
-                                    : `Master ${t.title} with tiered concept notes, worked examples, and graded practice pools.`),
-                                topicId: t.id,
-                                setId: t.id,
+                                description: topicItemDesc,
+                                topicId: topicItemId,
+                                setId: topicItemId,
                                 kind: 'topical',
                                 format: 'topical_lab',
-                                questionCount: t.questionCount || (isPending ? 0 : 27),
+                                questionCount: topicItemQCount,
                                 subject: subject === 'science' ? 'Integrated Science' : subject === 'english' ? 'English Language' : 'Mathematics',
                                 status: t.status || 'ready'
                             });
@@ -6713,7 +6719,7 @@ function MathLab({
                     const isScience = dyn.subject?.toLowerCase().includes('science');
                     const isEnglish = dyn.subject?.toLowerCase().includes('english');
                     if ((subject === 'science' && isScience) || (subject === 'english' && isEnglish) || (subject === 'math' && !isScience && !isEnglish)) {
-                        const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                        const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (((m.title || '').toLowerCase() === (dyn.title || '').toLowerCase()) && !!m.title));
                         if (!exists) combined.push(dyn);
                     }
                 }
@@ -6726,15 +6732,16 @@ function MathLab({
             if (mod.gradeTier !== activeGrade) return false;
 
             // 2. Dual-Track Mode Match
+            const modTitle = (mod.title || '').toLowerCase();
             const isExam = mod.kind === 'exam_series' || 
                            (mod as any).variantType === 'past_paper_variant' ||
                            (mod as any).variantType === 'standard' ||
-                           mod.title.toLowerCase().includes('paper 1') || 
-                           mod.title.toLowerCase().includes('paper 2') || 
-                           mod.title.toLowerCase().includes('past paper') ||
-                           mod.title.toLowerCase().includes('objective test') ||
-                           mod.title.toLowerCase().includes('structured essay') ||
-                           mod.title.toLowerCase().includes('mastery series');
+                           modTitle.includes('paper 1') || 
+                           modTitle.includes('paper 2') || 
+                           modTitle.includes('past paper') ||
+                           modTitle.includes('objective test') ||
+                           modTitle.includes('structured essay') ||
+                           modTitle.includes('mastery series');
             
             if (viewMode === 'exam_series') {
                 if (!isExam) return false;
@@ -6757,11 +6764,12 @@ function MathLab({
             }
 
             // 4. Question Format Filter
+            const modMeta = (mod.meta || '').toLowerCase();
             if (filterFormat === 'objective') {
-                const isObj = mod.format === 'objective' || mod.meta.toLowerCase().includes('objective') || mod.title.toLowerCase().includes('paper 1');
+                const isObj = mod.format === 'objective' || modMeta.includes('objective') || modTitle.includes('paper 1');
                 if (!isObj) return false;
             } else if (filterFormat === 'structured_essay') {
-                const isEssay = mod.format === 'structured_essay' || mod.meta.toLowerCase().includes('essay') || mod.title.toLowerCase().includes('paper 2');
+                const isEssay = mod.format === 'structured_essay' || modMeta.includes('essay') || modTitle.includes('paper 2');
                 if (!isEssay) return false;
             }
 
@@ -6793,11 +6801,11 @@ function MathLab({
             // 8. Search Query (debounced instant match over in-memory catalog)
             if (searchQuery.trim()) {
                 const q = searchQuery.toLowerCase().trim();
-                const matchTitle = mod.title.toLowerCase().includes(q);
-                const matchDesc = mod.description.toLowerCase().includes(q);
-                const matchDomain = mod.domain.toLowerCase().includes(q);
+                const matchTitle = (mod.title || '').toLowerCase().includes(q);
+                const matchDesc = (mod.description || '').toLowerCase().includes(q);
+                const matchDomain = (mod.domain || '').toLowerCase().includes(q);
                 const matchStrand = (mod.strandName || '').toLowerCase().includes(q) || (mod.subStrand || '').toLowerCase().includes(q);
-                const matchMeta = mod.meta.toLowerCase().includes(q);
+                const matchMeta = (mod.meta || '').toLowerCase().includes(q);
                 const matchSample = (mod.sampleInstruction || '').toLowerCase().includes(q);
                 const matchTag = (mod.examTag || '').toLowerCase().includes(q);
                 if (!matchTitle && !matchDesc && !matchDomain && !matchStrand && !matchMeta && !matchSample && !matchTag) {
@@ -6844,7 +6852,7 @@ function MathLab({
                 const isScience = dyn.subject?.toLowerCase().includes('science');
                 const isEnglish = dyn.subject?.toLowerCase().includes('english');
                 if ((subject === 'science' && isScience) || (subject === 'english' && isEnglish) || (subject === 'math' && !isScience && !isEnglish)) {
-                    const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                    const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (((m.title || '').toLowerCase() === (dyn.title || '').toLowerCase()) && !!m.title));
                     if (!exists) combined.push(dyn);
                 }
             }
