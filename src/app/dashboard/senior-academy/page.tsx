@@ -48,7 +48,7 @@ import { SET_BECE_MOCK_9_ENGLISH_P1, SET_BECE_MOCK_9_ENGLISH_P2 } from '@/lib/da
 import { SET_BECE_MOCK_10_ENGLISH_P1, SET_BECE_MOCK_10_ENGLISH_P2 } from '@/lib/data/bece-english-mock-10';
 import { SET_BECE_MOCK_11_ENGLISH_P1, SET_BECE_MOCK_11_ENGLISH_P2 } from '@/lib/data/bece-english-mock-11';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
-import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
+import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import {
@@ -6064,6 +6064,23 @@ const MATH_DOMAINS = [
     'STRAND 4: HANDLING DATA'
 ];
 
+const ENGLISH_DOMAINS_TOPICAL = [
+    'ALL STRANDS',
+    'STRAND 1: ORAL LANGUAGE',
+    'STRAND 2: READING & LITERATURE',
+    'STRAND 3: GRAMMAR & USAGE',
+    'STRAND 4: WRITING & COMPOSITION'
+];
+
+const SCIENCE_DOMAINS_TOPICAL = [
+    'ALL STRANDS',
+    'STRAND 1: DIVERSITY OF MATTER',
+    'STRAND 2: CYCLES',
+    'STRAND 3: SYSTEMS',
+    'STRAND 4: FORCES AND ENERGY',
+    'STRAND 5: HUMANS AND THE ENVIRONMENT'
+];
+
 
 interface ResolvedExamMeta {
   year: number | null;
@@ -6688,8 +6705,8 @@ function MathLab({
 
         if (viewMode === 'topical') {
             // In Topical Practice Labs mode, strictly display canonical topical practice labs matching active subject
-            const isSci = (d: any) => d.subject?.toLowerCase().includes('science');
-            const isEng = (d: any) => d.subject?.toLowerCase().includes('english');
+            const isSci = (d: any) => ((d?.subject || '') as string).toLowerCase().includes('science');
+            const isEng = (d: any) => ((d?.subject || '') as string).toLowerCase().includes('english');
             const topicalCards = dynamicSets.filter(d => 
                 (d.kind === 'topical' || d.format === 'topical_lab') &&
                 (subject === 'science' ? isSci(d) : subject === 'english' ? isEng(d) : (!isSci(d) && !isEng(d)))
@@ -6699,7 +6716,25 @@ function MathLab({
             } else if (subject === 'math' && activeGrade === 'Senior Secondary (SHS)') {
                 candidateList = SUGGESTED_MATH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
             } else if (subject === 'english') {
-                candidateList = SUGGESTED_ENGLISH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
+                // Guaranteed fallback to official NaCCA English manifest topics with full 450 question calibration
+                candidateList = DEFAULT_JHS_ENGLISH_MANIFEST.topics.map(t => ({
+                    title: t.title,
+                    domain: (t.strandName || t.strand || 'STRAND 1: ORAL LANGUAGE').toUpperCase(),
+                    strandName: t.strandName || t.strand || 'STRAND 1: ORAL LANGUAGE',
+                    strandCode: t.strandCode || 'S1',
+                    subStrand: t.subStrand || '',
+                    levelsAvailable: t.levelsAvailable || ['B7', 'B8', 'B9'],
+                    gradeTier: 'Junior Secondary (JHS)',
+                    meta: t.id === 'oral_phonology_sounds' ? 'Basic 7 – Basic 9 • 450 Drills & Concept Notes' : 'Curriculum Strand • Tiered Notes & Drills',
+                    description: t.description || '',
+                    topicId: t.id,
+                    setId: t.id,
+                    kind: 'topical',
+                    format: 'topical_lab',
+                    questionCount: t.id === 'oral_phonology_sounds' ? 450 : (t.questionCount || 27),
+                    subject: 'English Language',
+                    status: t.status || 'ready'
+                }));
             } else {
                 candidateList = [];
             }
@@ -6758,7 +6793,7 @@ function MathLab({
             } else if (subject === 'math') {
                 if (modSub.includes('science') || modSub.includes('english')) return false;
             }
-            if (filterSubject !== 'ALL') {
+            if (filterSubject && filterSubject !== 'ALL') {
                 const targetSub = filterSubject.toLowerCase();
                 if (!modSub.includes(targetSub) && !targetSub.includes(modSub)) return false;
             }
@@ -7922,13 +7957,19 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
         }
 
         // 1. Direct handling of Topical Practice Labs (costs strictly 1 Firestore read)
-        if (mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && (mod.topicId.startsWith('topic_') || mod.topicId.startsWith('bs')))) {
+        const isRecognizedTopical = mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && (
+            mod.topicId.startsWith('topic_') || mod.topicId.startsWith('bs') ||
+            mod.topicId.startsWith('oral_') || mod.topicId.startsWith('grammar_') ||
+            mod.topicId.startsWith('reading_') || mod.topicId.startsWith('writing_') ||
+            mod.topicId.startsWith('literature_') || mod.topicId.includes('phonology')
+        ));
+        if (isRecognizedTopical) {
             setIsLoadingSet(true);
             try {
                 const topicDocId = mod.topicId;
-                const labSubject = (mod.subject?.toLowerCase().includes('science') || subject === 'science')
-                    ? 'science'
-                    : ((mod.subject?.toLowerCase().includes('english') || subject === 'english') ? 'english' : 'math');
+                const isEng = ((mod.subject || '') as string).toLowerCase().includes('english') || subject === 'english' || topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('phonology');
+                const isSci = ((mod.subject || '') as string).toLowerCase().includes('science') || subject === 'science' || topicDocId.startsWith('bs');
+                const labSubject = isSci ? 'science' : (isEng ? 'english' : 'math');
                 const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject);
                 if (labDoc) {
                     setActiveTopicalLab(labDoc);
@@ -8456,7 +8497,7 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                     {/* SUBJECT DOMAIN PILL BAR - Rendered only in Topical Practice Labs mode */}
                     {viewMode === 'topical' && (
                         <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                            {(subject === 'science' ? SCIENCE_DOMAINS : MATH_DOMAINS).map((domain) => {
+                            {(subject === 'science' ? SCIENCE_DOMAINS_TOPICAL : subject === 'english' ? ENGLISH_DOMAINS_TOPICAL : MATH_DOMAINS).map((domain) => {
                                 const isActive = selectedDomain === domain;
                                 return (
                                     <button
@@ -10395,7 +10436,7 @@ function SeniorAcademyPageContent() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setActiveSubject('english')}
+                        onClick={() => { setActiveSubject('english'); setFilterSubject('ALL'); }}
                         className={cn(
                             "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
                             activeSubject === 'english'

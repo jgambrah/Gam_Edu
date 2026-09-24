@@ -13,7 +13,9 @@ import { db } from '@/lib/firebase';
 import { curriculumQueryClient, CACHE_CONFIG } from './curriculumService';
 import {
   TopicalLabDocument,
-  SubjectTopicsManifest
+  SubjectTopicsManifest,
+  TopicalPracticeQuestion,
+  TopicalPracticeDifficulty
 } from '@/lib/topical-lab-types';
 import { NACCA_JHS_SCIENCE_TOPICAL_UNITS } from '../data/jhs-science-curriculum';
 
@@ -48,7 +50,8 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
       levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
       hasNotes: true,
-      questionCount: 3,
+      questionCount: 450,
+      totalQuestions: 450,
       description: 'Master pure vowels (monophthongs), closing/centering diphthongs, consonant clusters, silent letters, word stress, and grammatical intonation contours.'
     },
     {
@@ -286,17 +289,24 @@ export async function fetchSubjectTopicsManifest(
   levelId: string = 'jhs',
   subjectId: string = 'math'
 ): Promise<SubjectTopicsManifest> {
+  const normSub = (subjectId || 'math').toLowerCase();
+  const defaultManifest = normSub.includes('english')
+    ? DEFAULT_JHS_ENGLISH_MANIFEST
+    : normSub.includes('science')
+      ? DEFAULT_JHS_SCIENCE_MANIFEST
+      : DEFAULT_JHS_MATH_MANIFEST;
+
   try {
-    // 1. Primary registry path: global_curriculum/jhs/subjects/math/manifests/topical_labs
+    // 1. Primary registry path: global_curriculum/{levelId}/subjects/{subjectId}/manifests/topical_labs
     const primaryRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'manifests', 'topical_labs');
     const primarySnap = await getDoc(primaryRef);
 
     if (primarySnap.exists()) {
       const data = primarySnap.data() as SubjectTopicsManifest;
       return {
-        ...DEFAULT_JHS_MATH_MANIFEST,
+        ...defaultManifest,
         ...data,
-        topics: data.topics && data.topics.length > 0 ? data.topics : DEFAULT_JHS_MATH_MANIFEST.topics
+        topics: data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics
       };
     }
 
@@ -307,16 +317,16 @@ export async function fetchSubjectTopicsManifest(
     if (subjectSnap.exists()) {
       const data = subjectSnap.data() as SubjectTopicsManifest;
       return {
-        ...DEFAULT_JHS_MATH_MANIFEST,
+        ...defaultManifest,
         ...data,
-        topics: data.topics && data.topics.length > 0 ? data.topics : DEFAULT_JHS_MATH_MANIFEST.topics
+        topics: data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics
       };
     }
   } catch (err) {
     console.warn(`[topicalLabService] Error reading manifest (${levelId}/${subjectId}), using fallback:`, err);
   }
 
-  return DEFAULT_JHS_MATH_MANIFEST;
+  return defaultManifest;
 }
 
 /**
@@ -517,7 +527,7 @@ export async function fetchTopicalLabDoc(
       if (aliasSnap.exists()) {
         return {
           ...(aliasSnap.data() as TopicalLabDocument),
-          id: snap.id
+          id: aliasSnap.id
         };
       }
     }
@@ -546,10 +556,13 @@ export async function getTopicalLabDoc(
 /**
  * Invalidates cached topical lab queries.
  */
-export function invalidateTopicalLabCache(topicDocId?: string) {
+export function invalidateTopicalLabCache(topicDocId?: string, subjectId?: string) {
   if (topicDocId) {
-    curriculumQueryClient.invalidateQueries({
-      queryKey: topicalLabKeys.topicDoc('jhs', 'math', topicDocId)
+    const subjects = subjectId ? [subjectId] : ['math', 'english', 'science'];
+    subjects.forEach(sub => {
+      curriculumQueryClient.invalidateQueries({
+        queryKey: topicalLabKeys.topicDoc('jhs', sub, topicDocId)
+      });
     });
   } else {
     curriculumQueryClient.invalidateQueries({

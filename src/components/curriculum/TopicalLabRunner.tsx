@@ -523,7 +523,7 @@ export function TopicalLabRunner({
                 topicTitle={`${topicDoc.title} • ${LEVEL_META[activeLevel].label}`}
                 gradeTier={topicDoc.tier}
                 levelId="jhs"
-                subjectId="mathematics"
+                subjectId={topicDoc.subject?.toLowerCase().includes('english') ? 'english' : topicDoc.subject?.toLowerCase().includes('science') ? 'science' : 'mathematics'}
                 topicId={topicDoc.topicId}
                 tenantId={tenantId}
                 studentId={studentId}

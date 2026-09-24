@@ -81,6 +81,7 @@ export interface TopicManifestItem {
   levelsAvailable: string[];
   status?: 'ready' | 'pending_content' | string;
   questionCount?: number;
+  totalQuestions?: number;
   hasNotes: boolean;
   description?: string;
 }
