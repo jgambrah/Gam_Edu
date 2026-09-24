@@ -1,0 +1,495 @@
+{
+  "topicId": "grammar_lexis_prepositions_and_phrasal_verbs",
+  "subjectId": "english",
+  "strandId": "strand_3_grammar_usage",
+  "strandName": "STRAND 3: GRAMMAR & USAGE",
+  "subStrandTitle": "Sub-Strand 1: Parts of Speech, Phrasal Verbs & Prepositions",
+  "topicTitle": "Nominal Invariables, Cumulative Adjectives, Multi-Word Verbs & Dependent Prepositional Systems",
+  "summary": "Exhaustive NaCCA Common Core Programme (CCP) standards and WAEC/BECE English grammar specification across Basic 7, Basic 8, and Basic 9. Covers nominal structural morphology, zero-plural invariables, taxonomic partitive quantification, reciprocal reference duality, polarity determiners, cumulative OSASCOMP adjective hierarchies, the zero-comma law, multi-word verb structural taxonomies, the pronoun movement law, locked dependent prepositions, prepositional gerund complementation, deceptive infinitival-vs-prepositional distinctions, and accusative case assignment.",
+  "gradeLevels": [
+    "B7 (JHS 1)",
+    "B8 (JHS 2)",
+    "B9 (JHS 3)"
+  ],
+  "curriculumIndicators": [
+    "B7.3.1.1.1",
+    "B7.3.1.1.2",
+    "B7.3.1.1.3",
+    "B8.3.1.1.1",
+    "B8.3.1.1.2",
+    "B8.3.1.1.3",
+    "B9.3.1.1.1",
+    "B9.3.1.1.2",
+    "B9.3.1.1.3"
+  ],
+  "agentInstruction": {
+    "systemRole": "BECE Pedagogical Diagnostic & Assessment Agent",
+    "evaluationDirective": "When testing or generating items for this sub-strand, strictly penalize hypercorrections (e.g., 'between you and I', 'congratulate for', 'furnitures', 'prefer than', 'each other' for three entities). In Section A generation, always test distractors using native mother-tongue calques, coordinate comma violations in cumulative stacks, and illegal pronoun positions in separable phrasal verbs.",
+    "firestorePath": "global_curriculum/jhs/subjects/english/topical/grammar_lexis_prepositions_and_phrasal_verbs"
+  },
+  "pedagogicalFramework": {
+    "strandNumber": 3,
+    "subStrandNumber": 1,
+    "focusAreas": [
+      "Count vs. Non-Count Noun Morphology & Zero-Plural Invariables",
+      "Taxonomic Partitive Quantifier Measurement Systems (Units, Containers, Portions)",
+      "Subject-Verb Concord in Quantified Partitive Structures",
+      "Reciprocal Pronoun Opposition (Strict Duality vs. Open Multiplicity)",
+      "Determiner Polarity Systems (Assertive vs. Non-Assertive)",
+      "Deficit Quantification Matrices (Few/A Few vs. Little/A Little)",
+      "Cumulative Adjective Hierarchy (OSASCOMP Formula & Zero-Comma Rule)",
+      "Multi-Word Verbs: Transitive Separable vs. Inseparable Systems",
+      "The Pronoun Movement Law in Separable Phrasal Verbs",
+      "Three-Part Phrasal-Prepositional Verbal Idioms",
+      "Locked Dependent Preposition Regimes (Verbal, Adjectival, Nominal)",
+      "Prepositional Complementation: The Preposition + Gerund (V-ing) Mandate",
+      "Diagnostic Contrast: True Prepositional 'To' vs. Infinitive Marker 'To'",
+      "Prepositional Accusative Case Assignment (The Objective Case Law)"
+    ]
+  },
+  "conceptNotes": {
+    "section0_diagnostic_remediation_matrix": {
+      "title": "Master BECE Diagnostic & Error Remediation Matrix",
+      "description": "Exhaustive diagnostic checklist identifying and correcting the most penalized syntactic and morphological errors in BECE English Section A (Lexis & Structure) and Section B (Composition Mechanics).",
+      "diagnosticPairs": [
+        {
+          "erroneousConstruction": "The school purchased new furnitures, stationeries, and equipments for the laboratory.",
+          "standardForm": "The school purchased new furniture, stationery, and equipment for the laboratory.",
+          "syntacticRule": "Non-count mass nouns are invariably singular. They admit no morphemic plural inflections ('-s/-es') and cannot take indefinite articles.",
+          "targetLevel": "B7"
+        },
+        {
+          "erroneousConstruction": "The three prize-winning debaters congratulated each other after the contest.",
+          "standardForm": "The three prize-winning debaters congratulated one another after the contest.",
+          "syntacticRule": "Reciprocal Pronoun Duality Law: 'each other' is strictly reserved for two referents, whereas 'one another' governs three or more referents or open groups.",
+          "targetLevel": "B7"
+        },
+        {
+          "erroneousConstruction": "The watchman did not detect some movements near the perimeter fence.",
+          "standardForm": "The watchman did not detect any movements near the perimeter fence.",
+          "syntacticRule": "Non-assertive polarity constraint: negative environments (containing 'not', 'never', 'hardly', 'scarcely') convert assertive determiners ('some') to non-assertive determiners ('any').",
+          "targetLevel": "B7"
+        },
+        {
+          "erroneousConstruction": "He gave me a few water because the well was almost dry.",
+          "standardForm": "He gave me a little water because the well was almost dry.",
+          "syntacticRule": "Category concord: 'water' is non-count and demands the mass quantifier 'a little'. 'A few' modifies count plural nouns exclusively.",
+          "targetLevel": "B7"
+        },
+        {
+          "erroneousConstruction": "The headmaster ordered a modern, large, wooden, executive, rectangular desk.",
+          "standardForm": "The headmaster ordered a large modern rectangular wooden executive desk.",
+          "syntacticRule": "Cumulative adjectives must follow the OSASCOMP sequence (Size -> Age -> Shape -> Material -> Purpose) and must NEVER take intervening commas.",
+          "targetLevel": "B8"
+        },
+        {
+          "erroneousConstruction": "The generator made an irritating sound, so the technician turned off it.",
+          "standardForm": "The generator made an irritating sound, so the technician turned it off.",
+          "syntacticRule": "The Pronoun Movement Law: when the direct object of a transitive separable phrasal verb is a personal pronoun, the particle must move to the right of the pronoun.",
+          "targetLevel": "B8"
+        },
+        {
+          "erroneousConstruction": "The police inspector promised to look up the allegation of extortion.",
+          "standardForm": "The police inspector promised to look into the allegation of extortion.",
+          "syntacticRule": "Semantic phrasal verb confusion: 'look into' means to investigate; 'look up' means to locate data in a reference book or improve.",
+          "targetLevel": "B8"
+        },
+        {
+          "erroneousConstruction": "The prefect congratulated the athletic squad for their exceptional performance.",
+          "standardForm": "The prefect congratulated the athletic squad on their exceptional performance.",
+          "syntacticRule": "Locked dependent preposition regime: the verb 'congratulate' governs 'on' or 'upon', never 'for'.",
+          "targetLevel": "B9"
+        },
+        {
+          "erroneousConstruction": "Our new ICT laboratory is far more superior than their facility.",
+          "standardForm": "Our new ICT laboratory is far superior to their facility.",
+          "syntacticRule": "Latinate comparative governance: adjectives such as 'superior', 'inferior', 'senior', and 'junior' take 'to' and reject 'more' and 'than'.",
+          "targetLevel": "B9"
+        },
+        {
+          "erroneousConstruction": "All the final-year candidates are looking forward to write the examination.",
+          "standardForm": "All the final-year candidates are looking forward to writing the examination.",
+          "syntacticRule": "Prepositional gerund mandate: in 'look forward to', 'to' is a true preposition, not an infinitive marker. Prepositions demand gerundial complementation ('V-ing').",
+          "targetLevel": "B9"
+        },
+        {
+          "erroneousConstruction": "The headteacher distributed the storybooks between Kofi and I.",
+          "standardForm": "The headteacher distributed the storybooks between Kofi and me.",
+          "syntacticRule": "Prepositional Accusative Case Law: prepositions always assign objective case ('me') to governed pronouns, regardless of coordination.",
+          "targetLevel": "B9"
+        }
+      ]
+    },
+
+    "section1_b7_foundations": {
+      "level": "Basic 7 (JHS 1)",
+      "title": "Nominal Structural Classes, Partitive Measurement & Polarity Determiners",
+      "curriculumIndicators": ["B7.3.1.1.1", "B7.3.1.1.2", "B7.3.1.1.3"],
+      "subTopics": {
+        "count_vs_non_count_morphology": {
+          "theoreticalOverview": "English nominals divide fundamentally into Count Nouns (denoting individual, countable entities with distinct singular and plural forms) and Non-Count Nouns (denoting unsegmented mass substances, abstract states, qualities, or collections that cannot be counted directly or pluralized).",
+          "countNounProperties": [
+            "Accept morphemic plural inflections: regular '-s/-es' (desk/desks, tomato/tomatoes) and irregular mutations (child/children, datum/data, oasis/oases).",
+            "Permit direct cardinal quantification (three girls, five hundred cedis).",
+            "Accept singular indefinite determiners in their base singular form (a pen, an orange)."
+          ],
+          "nonCountNounProperties": [
+            "Exhibit invariable singular morphology; suffixing plural '-s/-es' is grammatically unviable.",
+            "Cannot be preceded directly by indefinite articles 'a' or 'an'.",
+            "Reject direct cardinal quantification ('two informations' ❌).",
+            "Require specialized partitive measurement constructions to specify discrete portions."
+          ],
+          "waecInvariableRegistry": [
+            {
+              "noun": "information",
+              "prohibitedForms": ["informations", "an information"],
+              "remedialForm": "a piece of information / some information"
+            },
+            {
+              "noun": "furniture",
+              "prohibitedForms": ["furnitures", "a furniture"],
+              "remedialForm": "pieces of furniture / items of furniture / a suite of furniture"
+            },
+            {
+              "noun": "equipment",
+              "prohibitedForms": ["equipments", "an equipment"],
+              "remedialForm": "pieces of equipment / a set of equipment"
+            },
+            {
+              "noun": "advice",
+              "prohibitedForms": ["advices", "an advice"],
+              "remedialForm": "a word of advice / a piece of advice / some advice"
+            },
+            {
+              "noun": "luggage / baggage",
+              "prohibitedForms": ["luggages", "baggages"],
+              "remedialForm": "pieces of luggage / bags of luggage"
+            },
+            {
+              "noun": "stationery",
+              "prohibitedForms": ["stationeries", "a stationery"],
+              "remedialForm": "items of stationery / packets of stationery"
+            },
+            {
+              "noun": "machinery",
+              "prohibitedForms": ["machineries"],
+              "remedialForm": "pieces of machinery / units of machinery"
+            },
+            {
+              "noun": "news",
+              "prohibitedForms": ["a news", "many news"],
+              "remedialForm": "an item of news / a broadcast of news (Note: 'news' is morphologically singular in concord: 'The news is alarming', NOT 'are')"
+            },
+            {
+              "noun": "rubbish / garbage / refuse",
+              "prohibitedForms": ["rubbishes", "refuses"],
+              "remedialForm": "heaps of rubbish / piles of refuse"
+            },
+            {
+              "noun": "chaff / cutlery",
+              "prohibitedForms": ["chaffs", "cutleries"],
+              "remedialForm": "pieces of cutlery / winnowings of chaff"
+            }
+          ]
+        },
+
+        "partitive_mass_quantifiers": {
+          "formula": "Determiner + Partitive Noun (Unit / Shape / Container / Portion) + OF + Mass Noun",
+          "function": "Functions as a syntactic bridge allowing invariable mass nouns to be partitioned, counted, and pluralized without altering the invariable non-count base noun.",
+          "taxonomicCategories": [
+            {
+              "category": "Units of Form and Physical Shape",
+              "examples": [
+                { "unit": "a bar of", "collocates": ["soap", "chocolate", "iron"] },
+                { "unit": "a loaf of (plural: loaves of)", "collocates": ["bread"] },
+                { "unit": "a grain of", "collocates": ["sand", "rice", "salt", "wheat"] },
+                { "unit": "a sheet of", "collocates": ["paper", "metal", "glass", "sandpaper"] },
+                { "unit": "a block of", "collocates": ["ice", "concrete", "wood"] },
+                { "unit": "a blade of", "collocates": ["grass"] },
+                { "unit": "a roll of", "collocates": ["toilet paper", "film", "cloth"] }
+              ]
+            },
+            {
+              "category": "Units of Portion, Division and Abstraction",
+              "examples": [
+                { "unit": "a slice of", "collocates": ["bread", "cake", "meat", "yam"] },
+                { "unit": "a piece of", "collocates": ["advice", "furniture", "information", "chalk", "land", "evidence"] },
+                { "unit": "an item of", "collocates": ["clothing", "news", "stationery", "expenditure"] },
+                { "unit": "a stroke of", "collocates": ["luck", "lightning", "genius", "paralysis"] },
+                { "unit": "a ray of", "collocates": ["hope", "light", "sunshine"] },
+                { "unit": "a fit of", "collocates": ["anger", "laughter", "coughing"] }
+              ]
+            },
+            {
+              "category": "Units of Container and Vessel",
+              "examples": [
+                { "unit": "a bottle of", "collocates": ["water", "kerosene", "oil", "medicine"] },
+                { "unit": "a sack / bag of", "collocates": ["charcoal", "maize", "cement", "flour", "cocoa"] },
+                { "unit": "a cup / mug of", "collocates": ["tea", "coffee", "cocoa"] },
+                { "unit": "a bucket / pail of", "collocates": ["water", "paint", "sand"] },
+                { "unit": "a tin / can of", "collocates": ["milk", "sardines", "paint"] },
+                { "unit": "a barrel of", "collocates": ["crude oil", "gunpowder", "fuel"] }
+              ]
+            }
+          ],
+          "concordRule": "In partitive structures, grammatical concord is governed strictly by the number of the partitive head noun, NOT by the mass noun in the prepositional complement: 'Three loaves of bread WERE baked' (plural verb agreeing with 'loaves') vs. 'The loaf of bread WAS fresh' (singular verb agreeing with 'loaf')."
+        },
+
+        "reciprocal_pronoun_systems": {
+          "definition": "Closed grammatical system expressing a bilateral or multilateral reciprocal relationship between syntactic agents acting as subject antecedents.",
+          "twoTermOpposition": {
+            "each_other": {
+              "semanticCondition": "Strict Dual Reference",
+              "rule": "Mandatory when the subject antecedent denotes exactly TWO discrete entities.",
+              "canonicalExamples": [
+                "Kofi and Ama looked at each other with deep respect.",
+                "The two rival football captains shook hands with each other before kick-off.",
+                "Both debaters agreed with each other during the rebuttal round."
+              ]
+            },
+            "one_another": {
+              "semanticCondition": "Plural Reference (Three or More Entities / Open Group)",
+              "rule": "Mandatory when the subject antecedent denotes THREE OR MORE entities, or an open collective community.",
+              "canonicalExamples": [
+                "All forty students in Basic 7 congratulated one another after the term examination.",
+                "The eleven players embraced one another on the field after scoring.",
+                "Good citizens must live in peace and harmony with one another."
+              ]
+            }
+          },
+          "inflectionalRule": "Both reciprocal pronouns form their genitive/possessive case by adding an apostrophe and '-s': 'each other's' and 'one another's'. Placing the apostrophe after the 's' or forming plural reciprocals (e.g., 'each others'' / 'each others' ❌) is an automatic mechanical error."
+        },
+
+        "determiners_assertive_vs_non_assertive": {
+          "definition": "Determiners regulate nominal reference. Quantitative determiners operate on a structural polarity system determined by the affirmative, negative, interrogative, or conditional nature of the clause.",
+          "polarityDistribution": {
+            "some_vs_any": {
+              "some": {
+                "syntacticEnvironment": "Assertive (Affirmative declarative clauses; polite offers, requests, or questions expecting an affirmative 'Yes' answer).",
+                "examples": [
+                  "The farmer harvested some fresh maize yesterday. (Affirmative declaration)",
+                  "Would you like some cold water? (Polite offer expecting 'Yes')",
+                  "Could you lend me some money? (Polite request)"
+                ]
+              },
+              "any": {
+                "syntacticEnvironment": "Non-Assertive (Negated clauses containing 'not', 'never', 'scarcely', 'hardly', 'barely', 'without'; open inquiries; conditional 'if'-clauses).",
+                "examples": [
+                  "We did not observe any irregularities during the election. (Negated with 'not')",
+                  "He entered the examination room without any writing materials. ('Without' triggers negative polarity)",
+                  "Is there any fuel left in the generator? (Open question)",
+                  "If you encounter any difficulty, consult the headmaster. (Conditional clause)"
+                ]
+              }
+            },
+            "much_vs_many": {
+              "many": "Modifies count plural nouns in both assertive and non-assertive environments (e.g., 'many books', 'many candidates').",
+              "much": "Modifies non-count mass nouns primarily in negative clauses and inquiries (e.g., 'We do not have much time left', 'Is there much kerosene left?'). In positive declarative sentences, 'a lot of' or 'a great deal of' is standard."
+            },
+            "few_vs_little_deficit_matrix": {
+              "few": "Count plural modifier indicating an extreme deficit or scarcity ('almost none / not many'). Implies negative insufficiency: 'He has few textbooks' (implies he lacks adequate books).",
+              "a_few": "Count plural modifier indicating a positive small number ('some'). Implies reassuring sufficiency: 'He has a few textbooks' (implies he has enough to study).",
+              "little": "Non-count mass modifier indicating an extreme deficit ('almost none'). Implies negative insufficiency: 'There is little food in the granary' (near famine).",
+              "a_little": "Non-count mass modifier indicating a positive small volume ('some'). Implies reassuring sufficiency: 'There is a little water in the flask' (adequate to drink)."
+            }
+          }
+        }
+      }
+    },
+
+    "section2_b8_syntax": {
+      "level": "Basic 8 (JHS 2)",
+      "title": "Cumulative Adjectives & Multi-Word Verbal Predications",
+      "curriculumIndicators": ["B8.3.1.1.1", "B8.3.1.1.2", "B8.3.1.1.3"],
+      "subTopics": {
+        "cumulative_adjectives_osascomp": {
+          "theoreticalOverview": "Unlike coordinate adjectives (which individually and independently modify the noun and can be separated by commas or linked by 'and', e.g., 'a calm, intelligent prefect'), cumulative adjectives stack hierarchically, each adjective qualifying the entire adjectival-noun phrase that follows it. Cumulative adjectives obey the strict OSASCOMP hierarchy and CANNOT be separated by commas.",
+          "hierarchyRanks": [
+            { "rank": 1, "code": "O", "category": "Opinion / Observation", "semanticScope": "Subjective aesthetic, qualitative, or moral judgment.", "exemplars": ["beautiful", "ugly", "magnificent", "splendid", "horrible", "exquisite", "delicious"] },
+            { "rank": 2, "code": "S", "category": "Size", "semanticScope": "Physical dimensions, scale, volume, and height.", "exemplars": ["large", "tiny", "huge", "miniature", "massive", "small", "tall", "short"] },
+            { "rank": 3, "code": "A", "category": "Age", "semanticScope": "Chronological duration, historical era, or antiquity.", "exemplars": ["ancient", "modern", "antique", "new", "vintage", "century-old", "young"] },
+            { "rank": 4, "code": "S", "category": "Shape", "semanticScope": "Geometric configuration, contour, and spatial form.", "exemplars": ["circular", "oval", "triangular", "rectangular", "spherical", "square", "cylindrical"] },
+            { "rank": 5, "code": "C", "category": "Colour", "semanticScope": "Hue, pigmentation, shade, and luminosity.", "exemplars": ["crimson", "indigo", "golden", "jet-black", "brown", "emerald-green", "yellow"] },
+            { "rank": 6, "code": "O", "category": "Origin / Provenance", "semanticScope": "Geographical nationality, regional, clan, or cultural source.", "exemplars": ["Ghanaian", "Ashanti", "African", "Japanese", "British", "Brazilian", "Nigerian"] },
+            { "rank": 7, "code": "M", "category": "Material", "semanticScope": "Physical constituent substance, biological matter, or fabric.", "exemplars": ["wooden", "metallic", "woolen", "clay", "cotton", "bronze", "leather", "silk"] },
+            { "rank": 8, "code": "P", "category": "Purpose", "semanticScope": "Functional qualifier or intended use; frequently a gerund or noun adjunct preceding the head noun.", "exemplars": ["dining (table)", "running (shoes)", "swimming (pool)", "carving (knife)", "sewing (machine)"] }
+          ],
+          "masterFormula": "Determiner + [Opinion -> Size -> Age -> Shape -> Colour -> Origin -> Material -> Purpose] + Head Noun",
+          "zeroCommaRule": "No commas may intervene between cumulative adjectives. Adding a comma (e.g., 'a beautiful, large, wooden desk' ❌) is an automatic mechanical error under WAEC marking rubrics.",
+          "workedSynthesis": {
+            "scrambledElements": "[dining, wooden, antique, splendid, an, mahogany, oval, brown, large, table]",
+            "stepByStepResolution": [
+              "1. Isolate Head Noun: 'table'",
+              "2. Extract Determiner: 'an'",
+              "3. Assign OSASCOMP ranks: splendid (1-Opinion), large (2-Size), antique (3-Age), oval (4-Shape), brown (5-Colour), mahogany (7-Material), dining (8-Purpose)",
+              "4. Synthesize without commas: 'an splendid' -> adjust determiner phonology to 'a' -> 'a splendid large antique oval brown mahogany dining table'"
+            ],
+            "finalCanonicalSentence": "The paramount chief sat behind a splendid large antique oval brown mahogany dining table."
+          }
+        },
+
+        "multi_word_verbs_phrasal_verbs": {
+          "definition": "A syntactic unit comprising a lexical base verb and an adverbial particle, a preposition, or both. The resulting structure possesses an idiomatic, non-compositional semantic meaning distinct from the literal definitions of its components.",
+          "structuralTaxonomy": {
+            "transitive_separable": {
+              "definition": "Verbs requiring a direct object where the adverbial particle can either precede or follow a nominal direct object.",
+              "thePronounMovementLaw": "If the direct object is a noun phrase, particle movement is optional: 'She turned OFF the radio' = 'She turned the radio OFF'. HOWEVER, if the direct object is a personal pronoun ('it', 'them', 'him', 'her', 'us', 'me'), the particle MUST move to the right of the pronoun: 'She turned IT off' (MANDATORY). 'She turned off it' ❌ is an absolute grammatical violation.",
+              "highFrequencyBECEList": [
+                { "verb": "turn off / turn on", "meaning": "deactivate / activate an electrical or mechanical appliance" },
+                { "verb": "put off", "meaning": "postpone or delay an event to a future date" },
+                { "verb": "call off", "meaning": "cancel a scheduled event entirely" },
+                { "verb": "give up", "meaning": "surrender or relinquish effort" },
+                { "verb": "cross out", "meaning": "draw an ink line through written text" },
+                { "verb": "look up", "meaning": "search for data in a reference work (dictionary, encyclopedia)" },
+                { "verb": "blow up", "meaning": "destroy with explosives / inflate with air" },
+                { "verb": "carry out", "meaning": "execute, conduct, or implement a plan/investigation" }
+              ]
+            },
+            "transitive_inseparable": {
+              "definition": "Verbs requiring an object where the particle or preposition must stay fused immediately to the lexical verb regardless of whether the object is a noun or a pronoun.",
+              "highFrequencyBECEList": [
+                { "verb": "look into", "meaning": "investigate an allegation, crime, or issue", "example": "The police are looking into the robbery. (NOT: looking the robbery into ❌)" },
+                { "verb": "come across", "meaning": "discover or encounter unexpectedly by chance", "example": "I came across an ancient coin in the garden." },
+                { "verb": "take after", "meaning": "resemble an older family member in physical appearance or temperament", "example": "Kofi takes after his grandfather." },
+                { "verb": "call on", "meaning": "formally visit a person, or invite someone to speak", "example": "The minister called on the traditional council." },
+                { "verb": "run into", "meaning": "meet someone unexpectedly / collide with an obstacle", "example": "She ran into her former teacher at the market." }
+              ]
+            },
+            "intransitive_verbs": {
+              "definition": "Multi-word verbs that do not take a direct object; the verb and particle remain together permanently.",
+              "highFrequencyBECEList": [
+                { "verb": "break down", "meaning": "cease functioning mechanically; collapse emotionally in tears" },
+                { "verb": "give in", "meaning": "surrender, yield, or succumb to prolonged pressure" },
+                { "verb": "pass away", "meaning": "euphemism for die or cease living" },
+                { "verb": "show up", "meaning": "arrive at an appointed venue or gathering" },
+                { "verb": "take off", "meaning": "depart the ground (aircraft) / leave abruptly" }
+              ]
+            },
+            "phrasal_prepositional_verbs": {
+              "definition": "Three-part multi-word verbs comprising Verb + Adverbial Particle + Preposition. They are strictly transitive and completely inseparable.",
+              "formula": "Lexical Verb + Particle + Preposition + Object",
+              "canonicalBECEInventory": [
+                { "verb": "put up with", "meaning": "tolerate, endure, or bear patiently", "example": "The headmaster refused to put up with continuous absenteeism." },
+                { "verb": "look down on", "meaning": "despise, disdain, or consider oneself superior to", "example": "Do not look down on the impoverished." },
+                { "verb": "run out of", "meaning": "completely exhaust the stock or supply of", "example": "The laboratory has run out of chemical reagents." },
+                { "verb": "do away with", "meaning": "abolish, eliminate, or officially terminate", "example": "The school decided to do away with obsolete regulations." },
+                { "verb": "look forward to", "meaning": "anticipate with positive excitement and pleasure", "example": "We look forward to the inter-district athletic competition." },
+                { "verb": "catch up with", "meaning": "reach the same level or standard as an advancing peer", "example": "Kwame studied diligently to catch up with his peers." },
+                { "verb": "stand up for", "meaning": "defend or support someone or something under attack", "example": "Always stand up for the truth." }
+              ]
+            }
+          }
+        }
+      }
+    },
+
+    "section3_b9_advanced_syntax": {
+      "level": "Basic 9 (JHS 3)",
+      "title": "Dependent Prepositions, Gerundial Syntax & Case Assignment",
+      "curriculumIndicators": ["B9.3.1.1.1", "B9.3.1.1.2", "B9.3.1.1.3"],
+      "subTopics": {
+        "dependent_preposition_regimes": {
+          "theoreticalOverview": "Prepositions in standard English do not combine arbitrarily. In formal grammar, specific verbs, adjectives, and nouns govern non-negotiable partner prepositions. Substituting an ungrammatical preposition due to mother-tongue interference (calquing) is a major diagnostic trap in BECE Section A.",
+          "theMasterBECECollocationRegistry": [
+            { "headWord": "accuse", "pos": "Verb", "governedPreposition": "of", "exemplar": "The prosecutor accused the cashier of embezzlement.", "trap": "accuse for / accuse with ❌" },
+            { "headWord": "acquit", "pos": "Verb", "governedPreposition": "of", "exemplar": "The court acquitted the defendant of armed robbery.", "trap": "acquit from ❌" },
+            { "headWord": "congratulate", "pos": "Verb", "governedPreposition": "on / upon", "exemplar": "We congratulated the valedictorian on her brilliant performance.", "trap": "congratulate for ❌" },
+            { "headWord": "prefer", "pos": "Verb", "governedPreposition": "to", "exemplar": "Kwame prefers reading poetry to playing football.", "trap": "prefer than / prefer over ❌" },
+            { "headWord": "superior / inferior", "pos": "Adjective", "governedPreposition": "to", "exemplar": "Certified seeds are superior to regular grains.", "trap": "superior than ❌" },
+            { "headWord": "senior / junior", "pos": "Adjective", "governedPreposition": "to", "exemplar": "Ama is two years senior to her brother.", "trap": "senior than ❌" },
+            { "headWord": "insist", "pos": "Verb", "governedPreposition": "on / upon", "exemplar": "The supervisor insisted on strict silence in the hall.", "trap": "insist in / insist to ❌" },
+            { "headWord": "prevent / stop", "pos": "Verb", "governedPreposition": "from", "exemplar": "The torrential storm prevented the vehicle from crossing the stream.", "trap": "prevent to cross ❌" },
+            { "headWord": "comply", "pos": "Verb", "governedPreposition": "with", "exemplar": "All commercial vehicles must comply with road safety regulations.", "trap": "comply to ❌" },
+            { "headWord": "differ", "pos": "Verb", "governedPreposition": "from", "exemplar": "Traditional drumming in the north differs from that in the south.", "trap": "differ with ❌" },
+            { "headWord": "immune", "pos": "Adjective", "governedPreposition": "to", "exemplar": "Vaccinated children are immune to polio.", "trap": "immune from / immune against ❌" },
+            { "headWord": "guilty / innocent", "pos": "Adjective", "governedPreposition": "of", "exemplar": "The juror found him guilty of perjury.", "trap": "guilty for ❌" },
+            { "headWord": "suffer", "pos": "Verb", "governedPreposition": "from", "exemplar": "The elderly man suffers from chronic arthritis.", "trap": "suffer with ❌" },
+            { "headWord": "abstain / refrain", "pos": "Verb", "governedPreposition": "from", "exemplar": "Candidates must abstain from unauthorized communications.", "trap": "abstain against ❌" },
+            { "headWord": "remedy / solution", "pos": "Noun", "governedPreposition": "for (remedy) / to (solution)", "exemplar": "Hard work is the remedy for poverty, and science is the solution to disease.", "trap": "solution of ❌" }
+          ]
+        },
+
+        "preposition_plus_gerund_complementation": {
+          "fundamentalRule": "Prepositions govern nominal complements. Consequently, when a verbal action serves as the complement of a preposition, it MUST take the nominalized non-finite form: the Gerund ('V-ing'). A preposition can NEVER be followed by a bare infinitive or a 'to-infinitive'.",
+          "formula": "Preposition + Gerund ('V-ing')",
+          "contrastiveExamples": [
+            { "incorrect": "The boy was punished for arrive late to assembly.", "correct": "The boy was punished for arriving late to assembly." },
+            { "incorrect": "She succeeded in to solve the complicated problem.", "correct": "She succeeded in solving the complicated problem." },
+            { "incorrect": "They discussed about how to renovate the pavilion.", "correct": "They discussed renovating the pavilion. (Note: 'discuss' is a transitive verb that requires NO preposition!)" }
+          ],
+          "theDeceptivePrepositionalToLaw": {
+            "principle": "Candidates frequently confuse the infinitival particle 'to' ('She hopes to write') with the authentic preposition 'to' ('She is accustomed to writing'). When 'to' is a true preposition, it commands a Gerund ('V-ing').",
+            "theNounSubstitutionTest": "To verify if 'to' is an authentic preposition, replace the following verb phrase with a simple noun phrase like 'the contest' or 'it'. If the sentence remains grammatically coherent, 'to' is a true preposition and demands 'V-ing'.",
+            "compulsoryBECEIdiomList": [
+              {
+                "idiom": "look forward to + V-ing",
+                "example": "I look forward to meeting the new regional director. (NOT: look forward to meet ❌)"
+              },
+              {
+                "idiom": "object to + V-ing",
+                "example": "The community members object to dumping waste near the river. (NOT: object to dump ❌)"
+              },
+              {
+                "idiom": "be accustomed to / be used to + V-ing",
+                "example": "The farmers are accustomed to waking before dawn. (NOT: accustomed to wake ❌)"
+              },
+              {
+                "idiom": "with a view to + V-ing",
+                "example": "He enrolled in night school with a view to improving his grades. (NOT: with a view to improve ❌)"
+              },
+              {
+                "idiom": "confess to + V-ing",
+                "example": "The suspect confessed to stealing the laboratory microscope. (NOT: confessed to steal ❌)"
+              },
+              {
+                "idiom": "be committed to / dedicated to + V-ing",
+                "example": "The nursing staff is committed to caring for premature infants. (NOT: committed to care ❌)"
+              }
+            ]
+          }
+        },
+
+        "prepositional_case_assignment": {
+          "rule": "Prepositions govern and assign Accusative (Objective) Case to all following pronouns. Nominative (Subjective) pronouns ('I', 'he', 'she', 'we', 'they', 'who') are structurally forbidden in prepositional complement positions.",
+          "pronounCaseMapping": {
+            "nominativeSubject": ["I", "he", "she", "we", "they", "who"],
+            "objectivePrepositional": ["me", "him", "her", "us", "them", "whom"]
+          },
+          "coordinatePronounTrap": "In coordinate prepositional complements, colloquial habits frequently trigger ungrammatical hypercorrections. The objective case remains strictly mandatory regardless of coordination.",
+          "canonicalExamples": [
+            {
+              "incorrect": "This secret agreement must remain strictly between you and I.",
+              "correct": "This secret agreement must remain strictly between you and me."
+            },
+            {
+              "incorrect": "The headmaster shared the exercise books among we the prefects.",
+              "correct": "The headmaster shared the exercise books among us the prefects."
+            },
+            {
+              "incorrect": "The parcel was delivered to Kofi and she.",
+              "correct": "The parcel was delivered to Kofi and her."
+            },
+            {
+              "incorrect": "To who was the letter addressed?",
+              "correct": "To whom was the letter addressed?"
+            },
+            {
+              "incorrect": "Everyone attended the assembly except he.",
+              "correct": "Everyone attended the assembly except him."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "metadata": {
+    "curriculum": "NaCCA Common Core Programme (CCP) Standard",
+    "strand": "Strand 3: Grammar & Usage",
+    "subStrand": "Sub-Strand 1: Parts of Speech, Phrasal Verbs & Prepositions",
+    "subTopicKey": "nominal_invariables_adjectives_phrasal_verbs_prepositions",
+    "hasCompleteCoverage": true,
+    "scopeRestriction": "Comprehensive for Sub-Strand 1 (Lexis, Adjectives, Phrasal Verbs, and Prepositions). Sibling sub-strands (Tense/Aspect, Concord, and Sentence/Clause Structure) are covered in dedicated modular documents.",
+    "source": "Ghana Ministry of Education (MoE), NaCCA CCP Curriculum & West African Examinations Council (WAEC)",
+    "targetAudience": "Junior High School Teachers, BECE Candidates & Automated Assessment Engines"
+  }
+}
