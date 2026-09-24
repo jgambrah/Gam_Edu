@@ -32,6 +32,119 @@ export const topicalLabKeys = {
 /**
  * Fallback manifest representing the official NaCCA CCP Science strands/topics.
  */
+
+export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
+  subject: 'English Language',
+  tier: 'Junior Secondary (JHS)',
+  totalTopics: 8,
+  topics: [
+    {
+      id: 'oral_phonology_sounds',
+      title: 'Phonology, Intonation & Stress',
+      strandCode: 'S1',
+      strandName: 'STRAND 1: ORAL LANGUAGE',
+      strand: 'STRAND 1: ORAL LANGUAGE',
+      subStrand: 'Speech Sounds, Diphthongs & Stress Patterns',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master pure vowels (monophthongs), closing/centering diphthongs, consonant clusters, silent letters, word stress, and grammatical intonation contours.'
+    },
+    {
+      id: 'oral_listening_conversation',
+      title: 'Listening Comprehension & Public Speaking',
+      strandCode: 'S1',
+      strandName: 'STRAND 1: ORAL LANGUAGE',
+      strand: 'STRAND 1: ORAL LANGUAGE',
+      subStrand: 'Conversation, Listening & Dialogue',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master active listening skills, conversational turn-taking, polite requests, telephone etiquette, debate delivery, and oral presentation protocols.'
+    },
+    {
+      id: 'reading_comprehension_summary',
+      title: 'Textual Analysis & Summary Skills',
+      strandCode: 'S2',
+      strandName: 'STRAND 2: READING & LITERATURE',
+      strand: 'STRAND 2: READING & LITERATURE',
+      subStrand: 'Reading Comprehension & Summarization',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master skim-and-scan techniques, locating explicit information, making deductive inferences, decoding contextual vocabulary, and writing summaries under strict word limits.'
+    },
+    {
+      id: 'literature_cockcrow_canon',
+      title: 'Prose, Drama & Poetry Analysis',
+      strandCode: 'S2',
+      strandName: 'STRAND 2: READING & LITERATURE',
+      strand: 'STRAND 2: READING & LITERATURE',
+      subStrand: 'The Cockcrow Anthology & Literary Devices',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master the prescribed WAEC Cockcrow texts: Dickens Oliver Twist, Aidoo The Dilemma of a Ghost, short stories, prescribed poetry, and literary devices.'
+    },
+    {
+      id: 'grammar_parts_of_speech_lexis',
+      title: 'Lexis, Cumulative Adjectives & Prepositions',
+      strandCode: 'S3',
+      strandName: 'STRAND 3: GRAMMAR USAGE',
+      strand: 'STRAND 3: GRAMMAR USAGE',
+      subStrand: 'Parts of Speech, Phrasal Verbs & Prepositions',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master cumulative adjective order, dependent prepositions, phrasal verbs, reciprocal pronouns, non-assertive determiners, and partitive mass quantifiers.'
+    },
+    {
+      id: 'grammar_syntax_clauses_concord',
+      title: 'Complex Syntax, Concord & Conditionals',
+      strandCode: 'S3',
+      strandName: 'STRAND 3: GRAMMAR USAGE',
+      strand: 'STRAND 3: GRAMMAR USAGE',
+      subStrand: 'Syntax, Clauses, Concord & Conditionals',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master subject-verb proximity concord, 1st/2nd/3rd conditionals, inverted conditionals, the mandative subjunctive, reported speech backshifts, and passive voice.'
+    },
+    {
+      id: 'writing_letter_formats',
+      title: 'Letter Writing & Petitions',
+      strandCode: 'S4',
+      strandName: 'STRAND 4: WRITING & COMPOSITION',
+      strand: 'STRAND 4: WRITING & COMPOSITION',
+      subStrand: 'Formal, Informal & Semi-Formal Letters',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master conventions of personal letters, petitions to administrative authorities (DCE, MCE, Ministers), semi-formal correspondence, layout address rules, and appropriate sign-offs.'
+    },
+    {
+      id: 'writing_essays_articles_debates',
+      title: 'Essays, Articles for Publication & Debates',
+      strandCode: 'S4',
+      strandName: 'STRAND 4: WRITING & COMPOSITION',
+      strand: 'STRAND 4: WRITING & COMPOSITION',
+      subStrand: 'Narrative, Descriptive, Argumentative & Articles',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 3,
+      description: 'Master composition writing: narrative moral stories illustrating proverbs, descriptive travelogues, articles for national daily publication, and competitive debate speeches.'
+    }
+  ]
+};
+
 export const DEFAULT_JHS_SCIENCE_MANIFEST: SubjectTopicsManifest = {
   subject: 'Integrated Science',
   tier: 'Junior Secondary (JHS)',
@@ -244,12 +357,89 @@ const TOPIC_DOC_ALIASES: Record<string, string> = {
  * Path: global_curriculum/{levelId}/subjects/{subjectId}/topics/{topicDocId}
  * Strictly 1 Firestore document read.
  */
+function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): TopicalLabDocument {
+  const mapQ = (q: any) => ({
+    id: q.id || `q_${Math.random().toString(36).substr(2, 6)}`,
+    difficulty: (q.difficulty === 'hard' || q.difficulty === 'high') ? 'hard' : (q.difficulty === 'medium' ? 'medium' : 'low'),
+    prompt: q.prompt || '',
+    options: q.options || [],
+    correctAnswer: q.correctAnswer || '',
+    hint: q.hint || '',
+    workedSolution: q.workedSolution || '',
+    points: q.points || 1,
+    learningCompetency: q.learningCompetency
+  });
+
+  const rawQuestions: any[] = data.questions || [];
+  const b7Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B7');
+  const b8Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B8');
+  const b9Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B9');
+
+  const notesObj = data.conceptNotes || {};
+  const b7Notes = notesObj.b7_overview || data.summary || '';
+  const b8Notes = notesObj.b8_progression || data.summary || '';
+  const b9Notes = notesObj.b9_mastery || data.summary || '';
+
+  const buildPool = (list: any[]) => ({
+    low: list.filter(q => q.difficulty === 'low').map(mapQ),
+    medium: list.filter(q => q.difficulty === 'medium').map(mapQ),
+    hard: list.filter(q => q.difficulty === 'hard' || q.difficulty === 'high').map(mapQ)
+  });
+
+  return {
+    id: docId,
+    topicId: data.topicId || docId,
+    title: data.topicTitle || data.title || docId,
+    subject: data.subject || (data.subjectId === 'english' ? 'English Language' : data.subjectId === 'science' ? 'Integrated Science' : 'Mathematics'),
+    tier: 'Junior Secondary (JHS)',
+    badge: 'NaCCA Common Core Programme (CCP)',
+    description: data.summary || data.description || '',
+    totalPracticeQuestions: rawQuestions.length,
+    version: 1,
+    levels: {
+      b7: {
+        levelTitle: `B7 • ${data.subStrandTitle || data.topicTitle || 'Basic 7 Core'}`,
+        summary: data.summary || '',
+        notes: b7Notes,
+        workedExamples: [],
+        practicePool: buildPool(b7Questions.length > 0 ? b7Questions : rawQuestions)
+      },
+      b8: {
+        levelTitle: `B8 • ${data.subStrandTitle || data.topicTitle || 'Basic 8 Progression'}`,
+        summary: data.summary || '',
+        notes: b8Notes,
+        workedExamples: [],
+        practicePool: buildPool(b8Questions.length > 0 ? b8Questions : rawQuestions)
+      },
+      b9: {
+        levelTitle: `B9 • ${data.subStrandTitle || data.topicTitle || 'Basic 9 Mastery'}`,
+        summary: data.summary || '',
+        notes: b9Notes,
+        workedExamples: [],
+        practicePool: buildPool(b9Questions.length > 0 ? b9Questions : rawQuestions)
+      }
+    },
+    updatedAt: data.metadata?.updatedAt || new Date().toISOString()
+  };
+}
+
 export async function fetchTopicalLabDoc(
   topicDocId: string,
   levelId: string = 'jhs',
   subjectId: string = 'math'
 ): Promise<TopicalLabDocument | null> {
   try {
+    // 0. Primary check in dedicated 'topical' subcollection (e.g. global_curriculum/jhs/subjects/english/topical/[topicDocId])
+    const topicalDocRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId);
+    const topicalDocSnap = await getDoc(topicalDocRef);
+    if (topicalDocSnap.exists()) {
+      const data = topicalDocSnap.data() as any;
+      if (data.levels) {
+        return { ...data, id: topicalDocSnap.id } as TopicalLabDocument;
+      }
+      return adaptEnglishOrGenericDocToTopicalLab(topicalDocSnap.id, data);
+    }
+
     // 1. Primary check in topical_units (e.g. Science units: bs7_strand1_living_cells)
     const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical_units', topicDocId);
     const unitSnap = await getDoc(unitRef);

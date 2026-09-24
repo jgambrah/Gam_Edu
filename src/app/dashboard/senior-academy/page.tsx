@@ -7918,7 +7918,9 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
             setIsLoadingSet(true);
             try {
                 const topicDocId = mod.topicId;
-                const labSubject = (mod.subject?.toLowerCase().includes('science') || subject === 'science') ? 'science' : 'math';
+                const labSubject = (mod.subject?.toLowerCase().includes('science') || subject === 'science')
+                    ? 'science'
+                    : ((mod.subject?.toLowerCase().includes('english') || subject === 'english') ? 'english' : 'math');
                 const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject);
                 if (labDoc) {
                     setActiveTopicalLab(labDoc);
