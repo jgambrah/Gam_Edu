@@ -8,7 +8,7 @@
  * 3. Fallback support when offline.
  */
 
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { curriculumQueryClient, CACHE_CONFIG } from './curriculumService';
 import {
@@ -446,24 +446,35 @@ export async function fetchTopicalLabDoc(
     if (topicalDocSnap.exists()) {
       const data = topicalDocSnap.data() as any;
 
-      // Check subcollection practice_labs for B7_foundation if available
+      // Check subcollection practice_labs for all tiers (e.g. B7_foundation, B8_foundation)
       try {
-        const subLabRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId, 'practice_labs', 'B7_foundation');
-        const subLabSnap = await getDoc(subLabRef);
-        if (subLabSnap.exists()) {
-          const subData = subLabSnap.data() as any;
-          const subItems = subData.tasks || subData.questions || [];
-          if (subItems.length > 0) {
-            if (!data.levels) data.levels = {};
-            if (!data.levels.b7) data.levels.b7 = { practicePool: { low: [] } };
-            if (!data.levels.b7.practicePool) data.levels.b7.practicePool = { low: [] };
-            data.levels.b7.practicePool.low = subItems;
-            data.tasks = subItems;
-            data.questions = subItems;
-          }
+        const labsCollRef = collection(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId, 'practice_labs');
+        const labsSnap = await getDocs(labsCollRef);
+        if (!labsSnap.empty) {
+          if (!data.levels) data.levels = {};
+          labsSnap.forEach(labDoc => {
+            const labId = labDoc.id; // e.g. B7_foundation, B8_foundation
+            const subData = labDoc.data() as any;
+            const subItems = subData.tasks || subData.questions || [];
+            if (subItems.length > 0) {
+              const parts = labId.toLowerCase().split('_');
+              const lvl = parts[0] || 'b7';
+              const diffRaw = parts[1] || 'foundation';
+              const poolKey = diffRaw === 'foundation' ? 'low' : diffRaw === 'intermediate' ? 'medium' : 'hard';
+
+              if (!data.levels[lvl]) data.levels[lvl] = { practicePool: { low: [], medium: [], hard: [] } };
+              if (!data.levels[lvl].practicePool) data.levels[lvl].practicePool = { low: [], medium: [], hard: [] };
+              data.levels[lvl].practicePool[poolKey] = subItems;
+
+              if (labId === 'B7_foundation' || !data.tasks) {
+                data.tasks = subItems;
+                data.questions = subItems;
+              }
+            }
+          });
         }
       } catch (subErr) {
-        console.warn('[topicalLabService] Error reading subcollection lab:', subErr);
+        console.warn('[topicalLabService] Error reading subcollection labs:', subErr);
       }
 
       // Defensively align root tasks and questions
