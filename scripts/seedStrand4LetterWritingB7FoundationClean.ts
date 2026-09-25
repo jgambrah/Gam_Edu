@@ -2700,6 +2700,18 @@ async function getFirestoreDb(): Promise<admin.firestore.Firestore> {
   return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient }) as any;
 }
 
+// Fisher-Yates deterministic shuffle helper
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+export const unique50EpistolaryDrills = objective50Data;
+
 export async function deployStrand4Clean60() {
   console.log("Building clean 60-item Strand 4 B7 Foundation Practice Lab...");
   console.log("   -> 50 Multiple-Choice Drills (Section A: Objective)");
@@ -2708,9 +2720,17 @@ export async function deployStrand4Clean60() {
   const db = await getFirestoreDb();
   const all60Items: (ObjectiveQuestionItem | TheoryEssayItem)[] = [];
 
-  // 1. Build Section A (Questions 1 to 50: Objective Multiple-Choice)
-  objective50Data.forEach((item: any, index: number) => {
+  // 1. Build Section A with randomized option distribution (Questions 1 to 50: Objective Multiple-Choice)
+  unique50EpistolaryDrills.forEach((item: any, index: number) => {
     const qNum = index + 1;
+    const targetAnswer = item.answer;
+    const shuffledOptions: string[] = shuffleArray<string>(item.options);
+
+    // Verify targetAnswer is present in shuffledOptions
+    if (!shuffledOptions.includes(targetAnswer)) {
+      throw new Error(`Integrity check failed: target answer "${targetAnswer}" not found in options for Q${qNum}`);
+    }
+
     all60Items.push({
       id: `B7_S4_OBJ_${qNum < 10 ? "0" + qNum : qNum}`,
       section: "objective",
@@ -2722,8 +2742,8 @@ export async function deployStrand4Clean60() {
       category: "Epistolary Mechanics",
       passageText: item.passage,
       prompt: `📖 PASSAGE / CONTEXT:\n"${item.passage}"\n\n❓ QUESTION ${qNum}:\n${item.question}`,
-      options: item.options,
-      correctAnswer: item.answer,
+      options: shuffledOptions,
+      correctAnswer: targetAnswer, // Stored as the exact matching text string
       hint: item.hint,
       workedSolution: item.solution,
       points: 1,
@@ -2802,9 +2822,13 @@ export async function deployStrand4Clean60() {
           b7: {
             practicePool: {
               low: all60Items
-            }
+            },
+            tasks: all60Items,
+            questions: all60Items
           }
-        }
+        },
+        tasks: all60Items,
+        questions: all60Items
       }, { merge: true });
       console.log(`   ✅ Synchronized Practice Pool: ${mainTopicDoc.path}`);
     }
