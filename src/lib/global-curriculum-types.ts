@@ -60,18 +60,28 @@ export interface CurriculumQuestion {
   indicator?: string;
   level?: string;
   title?: string;
-  format?: 'multiple_choice' | 'structured_essay';
+  shortSummary?: string;
+  category?: string;
+  section?: 'objective' | 'theory' | string;
+  format?: 'multiple_choice' | 'structured_essay' | string;
+  type?: 'multiple_choice' | 'structured_essay' | string;
+  theoryIndex?: number;
   totalMarks?: number;
   prompt?: string;
   options?: string[];
   correctAnswer?: string;
   hint?: string;
   workedSolution?: string;
+  modelAnswer?: string;
   points: number;
   diagramSvg?: string;
   parts?: StructuredQuestionPart[];
   passageTitle?: string;
   passageText?: string;
+  wordCountLimit?: { min: number; target: number; max: number };
+  guidanceScaffold?: any;
+  rubric?: any;
+  [key: string]: any;
 }
 
 export interface CurriculumQuestionSet {
@@ -92,6 +102,8 @@ export interface CurriculumQuestionSet {
   sectionA_comprehension?: any;
   seededAt?: string;
   lastUpdated?: string;
+  theoryTopicList?: any[];
+  [key: string]: any;
 }
 
 /**

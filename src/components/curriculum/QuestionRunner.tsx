@@ -2,6 +2,10 @@
 
 import React, { useState } from 'react';
 import {
+  Compass,
+  ShieldAlert,
+  Check,
+  Layers,
   CheckCircle2,
   XCircle,
   ArrowRight,
@@ -649,6 +653,57 @@ export function QuestionRunner({
           {/* ============================================================ */}
           {isStructuredEssay ? (
             <div className="space-y-6 pt-2">
+              {/* Top Carousel Navigation Bar: Flip Directly to Any Theory Topic */}
+              {Array.isArray((questionSet as any)?.theoryTopicList) && (questionSet as any).theoryTopicList.length > 0 && (
+                <div className="bg-slate-950/80 border border-indigo-500/20 p-4 rounded-3xl space-y-2 mb-2 shadow-xl backdrop-blur-md">
+                  <div className="flex items-center justify-between text-xs text-slate-300 font-bold px-1">
+                    <span className="flex items-center gap-2 text-indigo-400">
+                      <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
+                      <span>Section B: Interactive Theory Writing Tasks (Flip Directly to Any Topic)</span>
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-800">
+                      {(questionSet as any).theoryTopicList.length} Flippable Topics
+                    </span>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                    {(questionSet as any).theoryTopicList.map((topic: any) => {
+                      const isCurrent = currentIndex === (topic.questionNumber - 1);
+                      return (
+                        <button
+                          key={topic.id}
+                          type="button"
+                          onClick={() => {
+                            setCurrentIndex(topic.questionNumber - 1);
+                            setSelectedOption(null);
+                            setIsSubmitted(false);
+                          }}
+                          className={cn(
+                            "px-3.5 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 shrink-0 border",
+                            isCurrent
+                              ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-400/50 shadow-lg shadow-indigo-600/30 scale-[1.02]"
+                              : "bg-slate-900/90 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80"
+                          )}
+                        >
+                          <span className={cn(
+                            "w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center shrink-0",
+                            isCurrent ? "bg-white text-indigo-700" : "bg-slate-800 text-slate-400"
+                          )}>
+                            {topic.theoryIndex}
+                          </span>
+                          <div className="text-left">
+                            <div className="leading-tight">{topic.title}</div>
+                            {topic.category && (
+                              <span className={cn("text-[9px] block font-normal opacity-75", isCurrent ? "text-indigo-200" : "text-slate-500")}>
+                                {topic.category}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {parts.length > 0 ? (
                 parts.map((part, pIdx) => {
                   const partKey = `${currentQuestionId}_p${pIdx}`;
@@ -798,21 +853,148 @@ export function QuestionRunner({
                   const charCount = currentVal.length;
                   const marks = currentQuestion.totalMarks || currentQuestion.points || 30;
 
+                                    const scaffold = (currentQuestion as any).guidanceScaffold;
+                  const rubric = (currentQuestion as any).rubric;
+                  const wordLimit = (currentQuestion as any).wordCountLimit || { min: 180, target: 250, max: 320 };
+                  const wordStatus = wordCount < wordLimit.min ? 'under' : wordCount > wordLimit.max ? 'over' : 'optimal';
+
                   return (
-                    <div className="p-5 sm:p-6 rounded-3xl bg-slate-950/70 border border-slate-800 space-y-4 shadow-lg">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-sm flex items-center justify-center">
+                    <div className="p-5 sm:p-7 rounded-3xl bg-slate-950/80 border border-slate-800 space-y-5 shadow-2xl backdrop-blur-md">
+                      {/* Essay Task Top Bar */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-9 h-9 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-base flex items-center justify-center">
                             ✍️
                           </span>
-                          <span className="text-xs font-semibold text-slate-300">
-                            {(currentQuestion as any).category || currentQuestion.title || 'Written Essay Composition'}
-                          </span>
+                          <div>
+                            <div className="text-sm font-bold text-white flex items-center gap-2">
+                              <span>{(currentQuestion as any).title || (currentQuestion as any).category || 'Written Essay Composition'}</span>
+                              {(currentQuestion as any).theoryIndex && (
+                                <Badge variant="outline" className="border-indigo-500/30 text-indigo-300 bg-indigo-500/10 text-[10px]">
+                                  Topic {(currentQuestion as any).theoryIndex} of 10
+                                </Badge>
+                              )}
+                            </div>
+                            {(currentQuestion as any).shortSummary && (
+                              <p className="text-[11px] text-slate-400 max-w-xl">
+                                {(currentQuestion as any).shortSummary}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-2.5 py-0.5 font-bold">
-                          [{marks} Marks]
-                        </Badge>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline" className={cn(
+                            "text-xs px-3 py-1 font-semibold",
+                            wordStatus === 'optimal'
+                              ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                              : wordStatus === 'under'
+                              ? "bg-amber-950/60 border-amber-500/40 text-amber-300"
+                              : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                          )}>
+                            Target: ~{wordLimit.target} Words ({wordLimit.min}–{wordLimit.max})
+                          </Badge>
+                          <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-3 py-1 font-bold">
+                            [{marks} Marks • WAEC Standard]
+                          </Badge>
+                        </div>
                       </div>
+
+                      {/* Interactive Guidance Scaffold Panel (When Present) */}
+                      {scaffold && (
+                        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-indigo-500/20 space-y-4">
+                          <div className="flex items-center justify-between text-xs font-bold text-indigo-300">
+                            <span className="flex items-center gap-2">
+                              <Compass className="w-4 h-4 text-indigo-400" />
+                              <span>Interactive Writing Scaffold & Architectural Guidance</span>
+                            </span>
+                            <Badge className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-[10px]">
+                              {scaffold.letterType.toUpperCase().replace('_', ' ')}
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            {/* 1. Address Scaffold */}
+                            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                              <span className="font-bold text-slate-200 block text-[11px] uppercase tracking-wider text-indigo-400">
+                                📍 Sender Address Architecture
+                              </span>
+                              <div className="text-[11px] text-slate-300 space-y-0.5 font-mono">
+                                <div>Style: <strong className="text-white capitalize">{scaffold.senderAddress.recommendedStyle}</strong> ({scaffold.senderAddress.recommendedPunctuation} punctuation)</div>
+                                {scaffold.senderAddress.allowedDatingFormats && (
+                                  <div>Dating Rule: <span className="text-emerald-400">{scaffold.senderAddress.allowedDatingFormats.join(' or ')}</span></div>
+                                )}
+                                {scaffold.senderAddress.prohibitedDatingFormats && (
+                                  <div className="text-rose-400 text-[10px]">Banned: {scaffold.senderAddress.prohibitedDatingFormats.join(', ')}</div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* 2. Salutation & Caption Scaffold */}
+                            <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                              <span className="font-bold text-slate-200 block text-[11px] uppercase tracking-wider text-indigo-400">
+                                📜 Salutation & Subject Heading
+                              </span>
+                              <div className="text-[11px] text-slate-300 space-y-0.5">
+                                <div>Salutation: <strong className="text-emerald-300 font-mono">{scaffold.salutationGuide.recommendedSalutation}</strong></div>
+                                {scaffold.captionGuide?.isRequired ? (
+                                  <div>Caption: <span className="font-mono text-cyan-300 font-bold">{scaffold.captionGuide.modelCaption}</span></div>
+                                ) : (
+                                  <div className="text-slate-500 italic">No subject heading required for friendly informal letters</div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Inside Address Warning if Required */}
+                          {scaffold.insideAddress?.isRequired && (
+                            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-start gap-2">
+                              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                              <div className="text-[11px] leading-relaxed">
+                                <strong>Formal Recipient Address Required:</strong> Left-hand margin below date. {scaffold.insideAddress.formatContaminationPenaltyWarning}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 3. 4-Paragraph Body Flow */}
+                          {scaffold.bodyGuidance?.paragraphPrompts && (
+                            <div className="space-y-2 pt-1 border-t border-slate-800">
+                              <span className="font-bold text-slate-300 text-[11px] uppercase tracking-wider block">
+                                📑 4-Paragraph Structural Roadmap:
+                              </span>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                                {scaffold.bodyGuidance.paragraphPrompts.map((p: any) => (
+                                  <div key={p.paragraphIndex} className="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                    <div className="font-bold text-indigo-300 flex items-center justify-between">
+                                      <span>Paragraph {p.paragraphIndex}:</span>
+                                      <span className="text-[10px] text-slate-400 font-mono capitalize">{p.role.replace(/_/g, ' ')}</span>
+                                    </div>
+                                    <p className="text-slate-200 leading-snug">{p.guidingQuestion}</p>
+                                    {p.transitionHints && (
+                                      <div className="text-[10px] text-slate-400 italic">
+                                        Transitions: "{p.transitionHints[0]}"
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 4. Sign-Off Guide */}
+                          {scaffold.signOffGuide && (
+                            <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-300 flex flex-wrap items-center justify-between gap-2">
+                              <div>
+                                <span className="text-indigo-400 font-bold uppercase tracking-wider mr-2">Valediction:</span>
+                                <strong className="text-emerald-300 font-mono">{scaffold.signOffGuide.subscription}</strong>
+                              </div>
+                              <div className="text-slate-400 italic">
+                                {scaffold.signOffGuide.coOccurrenceConstraint}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Essay Working / Answer Workspace */}
                       <div className="space-y-2">
@@ -821,9 +1003,21 @@ export function QuestionRunner({
                             <FileText className="w-3.5 h-3.5 text-indigo-400" />
                             <span>Write your complete essay or written answer:</span>
                           </span>
-                          <span className="font-mono text-indigo-300 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-500/30 text-[11px]">
-                            {wordCount} Words • {charCount} Chars
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "font-mono px-2.5 py-0.5 rounded-lg border text-[11px] font-bold transition-colors",
+                              wordCount >= wordLimit.min && wordCount <= wordLimit.max
+                                ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                                : wordCount < wordLimit.min
+                                ? "bg-amber-950/60 border-amber-500/40 text-amber-300"
+                                : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                            )}>
+                              {wordCount} / {wordLimit.target} Words {wordCount < wordLimit.min && `(${wordLimit.min - wordCount} to min)`}
+                            </span>
+                            <span className="font-mono text-slate-500 text-[10px]">
+                              {charCount} chars
+                            </span>
+                          </div>
                         </div>
                         <Textarea
                           value={currentVal}
@@ -897,6 +1091,38 @@ export function QuestionRunner({
                                 <div className="text-xs font-bold text-white whitespace-pre-line">
                                   <MathRenderer content={(currentQuestion as any).modelAnswer} />
                                 </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {rubric && rubric.criteria && (
+                            <div className="p-4 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-3">
+                              <span className="text-[11px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
+                                🏆 WAEC 4-TIER MARKING RUBRIC BREAKDOWN • [{rubric.totalMarks || 30} TOTAL MARKS]
+                              </span>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                {Object.entries(rubric.criteria).map(([critKey, critVal]: [string, any]) => (
+                                  <div key={critKey} className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                                    <div className="flex items-center justify-between font-bold text-white">
+                                      <span className="capitalize">{critVal.displayName || critKey}</span>
+                                      <Badge className="bg-indigo-600/20 text-indigo-300 text-[10px]">
+                                        {critVal.maxMarks} Marks
+                                      </Badge>
+                                    </div>
+                                    {critVal.scoringGuidelines && (
+                                      <ul className="text-[11px] text-slate-300 list-disc list-inside space-y-0.5">
+                                        {critVal.scoringGuidelines.map((g: string, gi: number) => (
+                                          <li key={gi}>{g}</li>
+                                        ))}
+                                      </ul>
+                                    )}
+                                    {critVal.diagnosticChecklist && (
+                                      <div className="pt-1 text-[10px] text-emerald-400">
+                                        ✓ Checklist: {critVal.diagnosticChecklist.join(' • ')}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
                               </div>
                             </div>
                           )}

@@ -154,15 +154,37 @@ export function TopicalLabRunner({
       totalQuestions: currentPool.length,
       version: 1,
       format: 'multiple_choice',
-      questions: currentPool.map((q) => ({
+      theoryTopicList: currentPool
+        .filter((q: any) => q.section === 'theory' || q.format === 'structured_essay')
+        .map((q: any, idx: number) => ({
+          id: q.id,
+          questionNumber: q.questionNumber || (51 + idx),
+          theoryIndex: q.theoryIndex || (idx + 1),
+          title: q.title || `Topic ${idx + 1}`,
+          category: q.category || 'Structured Essay',
+          shortSummary: q.shortSummary || ''
+        })),
+      questions: currentPool.map((q: any) => ({
+        ...q,
         id: q.id,
         prompt: q.prompt,
         options: q.options,
         correctAnswer: q.correctAnswer,
         hint: q.hint,
         workedSolution: q.workedSolution,
-        points: q.points * 10,
-        diagramSvg: q.diagramSvg
+        points: q.points ? (q.points <= 1 ? 10 : q.points) : 10,
+        totalMarks: q.totalMarks || q.points || (q.format === 'structured_essay' ? 30 : 10),
+        diagramSvg: q.diagramSvg,
+        format: q.format || (q.options && q.options.length > 0 ? 'multiple_choice' : 'structured_essay'),
+        section: q.section || (q.options && q.options.length > 0 ? 'objective' : 'theory'),
+        category: q.category,
+        title: q.title,
+        shortSummary: q.shortSummary,
+        theoryIndex: q.theoryIndex,
+        wordCountLimit: q.wordCountLimit,
+        guidanceScaffold: q.guidanceScaffold,
+        rubric: q.rubric,
+        modelAnswer: q.modelAnswer
       }))
     };
   }, [topicDoc, activeLevel, difficulty, currentPool]);

@@ -23,14 +23,29 @@ export interface WorkedExample {
 
 export interface TopicalPracticeQuestion {
   id: string;
-  difficulty: TopicalPracticeDifficulty;
+  difficulty?: TopicalPracticeDifficulty;
   prompt: string;
-  options: string[];
-  correctAnswer: string;
-  hint: string;
-  workedSolution: string;
+  options?: string[];
+  correctAnswer?: string;
+  hint?: string;
+  workedSolution?: string;
   points: number;
   diagramSvg?: string;
+  section?: 'objective' | 'theory' | string;
+  type?: 'multiple_choice' | 'structured_essay' | string;
+  format?: 'multiple_choice' | 'structured_essay' | string;
+  questionNumber?: number;
+  theoryIndex?: number;
+  title?: string;
+  shortSummary?: string;
+  category?: string;
+  wordCountLimit?: { min: number; target: number; max: number };
+  guidanceScaffold?: any;
+  rubric?: any;
+  modelAnswer?: string;
+  competencyTarget?: string;
+  learningCompetency?: string;
+  [key: string]: any;
 }
 
 export interface TopicalPracticePool {
