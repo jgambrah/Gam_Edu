@@ -128,10 +128,46 @@ export function TopicalLabRunner({
     };
   }, [topicDoc, activeLevel]);
 
-  // Current pool of practice questions
+  // Current pool of practice questions (checks practicePool, tasks, and questions across levels and root)
   const currentPool: TopicalPracticeQuestion[] = useMemo(() => {
-    return currentLevelData.practicePool?.[difficulty] || [];
-  }, [currentLevelData, difficulty]);
+    // 1. Check currentLevelData practicePool for active difficulty
+    const pool = currentLevelData.practicePool?.[difficulty];
+    if (Array.isArray(pool) && pool.length > 0) return pool;
+
+    // 2. Check all difficulties in currentLevelData practicePool
+    const lowPool = currentLevelData.practicePool?.low;
+    if (Array.isArray(lowPool) && lowPool.length > 0) return lowPool;
+    const medPool = currentLevelData.practicePool?.medium;
+    if (Array.isArray(medPool) && medPool.length > 0) return medPool;
+    const hardPool = currentLevelData.practicePool?.hard;
+    if (Array.isArray(hardPool) && hardPool.length > 0) return hardPool;
+
+    // 3. Check currentLevelData tasks or questions
+    if (Array.isArray((currentLevelData as any).tasks) && (currentLevelData as any).tasks.length > 0) {
+      return (currentLevelData as any).tasks;
+    }
+    if (Array.isArray((currentLevelData as any).questions) && (currentLevelData as any).questions.length > 0) {
+      return (currentLevelData as any).questions;
+    }
+
+    // 4. Check root topicDoc tasks or questions
+    if (Array.isArray((topicDoc as any).tasks) && (topicDoc as any).tasks.length > 0) {
+      return (topicDoc as any).tasks;
+    }
+    if (Array.isArray((topicDoc as any).questions) && (topicDoc as any).questions.length > 0) {
+      return (topicDoc as any).questions;
+    }
+
+    // 5. Fallback to topicDoc.levels.b7 practicePool or tasks
+    const b7Lvl = (topicDoc.levels as any)?.b7;
+    if (b7Lvl) {
+      if (Array.isArray(b7Lvl.practicePool?.low) && b7Lvl.practicePool.low.length > 0) return b7Lvl.practicePool.low;
+      if (Array.isArray(b7Lvl.tasks) && b7Lvl.tasks.length > 0) return b7Lvl.tasks;
+      if (Array.isArray(b7Lvl.questions) && b7Lvl.questions.length > 0) return b7Lvl.questions;
+    }
+
+    return [];
+  }, [currentLevelData, difficulty, topicDoc]);
 
   // Adapt currentPool into CurriculumQuestionSet for QuestionRunner
   const adaptedQuestionSet: CurriculumQuestionSet = useMemo(() => {
@@ -155,7 +191,7 @@ export function TopicalLabRunner({
       version: 1,
       format: 'multiple_choice',
       theoryTopicList: currentPool
-        .filter((q: any) => q.section === 'theory' || q.format === 'structured_essay')
+        .filter((q: any) => q.section === 'theory' || q.format === 'structured_essay' || (!q.options && q.section !== 'objective'))
         .map((q: any, idx: number) => ({
           id: q.id,
           questionNumber: q.questionNumber || (51 + idx),
@@ -164,6 +200,7 @@ export function TopicalLabRunner({
           category: q.category || 'Structured Essay',
           shortSummary: q.shortSummary || ''
         })),
+      tasks: currentPool,
       questions: currentPool.map((q: any) => ({
         ...q,
         id: q.id,
@@ -172,8 +209,8 @@ export function TopicalLabRunner({
         correctAnswer: q.correctAnswer,
         hint: q.hint,
         workedSolution: q.workedSolution,
-        points: q.points ? (q.points <= 1 ? 10 : q.points) : 10,
-        totalMarks: q.totalMarks || q.points || (q.format === 'structured_essay' ? 30 : 10),
+        points: q.points ?? (q.section === 'objective' || (q.options && q.options.length > 0) ? 1 : 10),
+        totalMarks: q.totalMarks || q.points || (q.format === 'structured_essay' || q.section === 'theory' ? 30 : 1),
         diagramSvg: q.diagramSvg,
         format: q.format || (q.options && q.options.length > 0 ? 'multiple_choice' : 'structured_essay'),
         section: q.section || (q.options && q.options.length > 0 ? 'objective' : 'theory'),

@@ -147,7 +147,7 @@ export async function fetchTopicQuestionSetsFromFirestore(
                 ) || [];
                 for (const item of sampleItems) {
                   if (item?.questionSet && item.questionSet.title) {
-                    const fallbackId = item.questionSet.id || item.id || (item.questionSet.setNumber ? `paper_set_${item.questionSet.setNumber}` : undefined);
+                    const fallbackId = item.questionSet.id || (item as any).id || ((item.questionSet as any).setNumber ? `paper_set_${(item.questionSet as any).setNumber}` : undefined);
                     if (fallbackId && !item.questionSet.id) {
                       item.questionSet.id = fallbackId;
                     }

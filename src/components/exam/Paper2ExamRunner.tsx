@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  Compass,
   ChevronLeft,
   ArrowRight,
   Sparkles,
@@ -87,6 +88,7 @@ export function Paper2ExamRunner({
   const [showPartHints, setShowPartHints] = useState<Record<string, boolean>>({});
   const [showModelAnswer, setShowModelAnswer] = useState<Record<string, boolean>>({});
   const [examFinished, setExamFinished] = useState(false);
+  const [selectedObjectiveOptions, setSelectedObjectiveOptions] = useState<Record<string, string>>({});
 
   // --- REAL-TIME LIVE COUNTDOWN TIMER (Paper 2: 75 - 105 mins standard) ---
   const examDurationMinutes = Number(activeExam?.paper2?.durationMinutes || activeExam?.durationMinutes || 75);
@@ -111,29 +113,63 @@ export function Paper2ExamRunner({
     return () => clearInterval(timer);
   }, [examFinished]);
 
-  // 1. Defensively normalize top-level questions list
+  // 1. Defensively normalize top-level questions list (checking BOTH tasks and questions)
   const rawQuestions = 
-    activeExam?.paper2?.questions ?? 
+    activeExam?.tasks ??
     activeExam?.questions ?? 
-    activeExam?.paper2?.sections?.sectionA_essay?.questions;
+    activeExam?.paper2?.tasks ??
+    activeExam?.paper2?.questions ?? 
+    activeExam?.paper2?.sections?.sectionA_essay?.questions ??
+    activeExam?.practicePool?.low;
   
   let questionsList = toSafeArray(rawQuestions);
+
+  // If questionsList is empty, also check nested levels (e.g. B7 foundation practicePool or tasks)
+  if (questionsList.length === 0 && (activeExam as any)?.levels?.b7) {
+    const b7 = (activeExam as any).levels.b7;
+    questionsList = toSafeArray(b7.practicePool?.low || b7.tasks || b7.questions);
+  }
 
   // Fallback: If questions are in nested sections (e.g. sectionA_essay, sectionB_comprehension, sectionC_literature)
   if (questionsList.length === 0 && activeExam?.paper2?.sections) {
     const s = activeExam.paper2.sections;
-    const secA = toSafeArray(s.sectionA_essay?.questions || s.sectionA?.questions);
-    const secB = toSafeArray(s.sectionB_comprehension?.questions || s.sectionB?.questions);
-    const secC = toSafeArray(s.sectionC_literature?.questions || s.sectionC?.questions);
+    const secA = toSafeArray(s.sectionA_essay?.questions || s.sectionA_essay?.tasks || s.sectionA?.questions || s.sectionA?.tasks);
+    const secB = toSafeArray(s.sectionB_comprehension?.questions || s.sectionB_comprehension?.tasks || s.sectionB?.questions || s.sectionB?.tasks);
+    const secC = toSafeArray(s.sectionC_literature?.questions || s.sectionC_literature?.tasks || s.sectionC?.questions || s.sectionC?.tasks);
     questionsList = [...secA, ...secB, ...secC];
   }
 
   const currentQuestion = questionsList[currentIndex] || questionsList[0] || {};
   const currentQuestionId = String(currentQuestion?.id || currentQuestion?.questionNumber || currentIndex + 1);
 
+  // Active question item inspection: distinguish Objective vs Theory
+  const isObjective =
+    currentQuestion?.section === "objective" ||
+    currentQuestion?.type === "multiple_choice" ||
+    currentQuestion?.format === "multiple_choice" ||
+    (Array.isArray(currentQuestion?.options) && currentQuestion.options.length > 0);
+
   // 2. Defensively normalize subQuestions / parts for active question
   const rawSubQuestions = currentQuestion?.subQuestions ?? currentQuestion?.parts;
   const subQuestionsList = toSafeArray(rawSubQuestions);
+
+  // Auto-derive flippable theory topics (Questions 51 to 60)
+  const flippableTopics = React.useMemo(() => {
+    if (flippableTopics.length > 0) {
+      return (activeExam as any).theoryTopicList;
+    }
+    return questionsList
+      .map((q: any, idx: number) => ({ q, qIdx: idx }))
+      .filter(({ q }: any) => q.section === 'theory' || q.format === 'structured_essay' || (!q.options && q.section !== 'objective'))
+      .map(({ q, qIdx }: any, tIdx: number) => ({
+        id: q.id || `theory_${qIdx + 1}`,
+        questionNumber: q.questionNumber || (qIdx + 1),
+        theoryIndex: q.theoryIndex || (tIdx + 1),
+        title: q.title || `Topic ${tIdx + 1}`,
+        category: q.category || 'Structured Essay',
+        shortSummary: q.shortSummary || ''
+      }));
+  }, [activeExam, questionsList]);
   const hasSubParts = subQuestionsList.length > 0;
 
   const totalQuestions = questionsList.length || 1;
@@ -383,8 +419,8 @@ export function Paper2ExamRunner({
   }
 
   // Active question details
-  const questionMarks = Number(currentQuestion?.marks || currentQuestion?.totalMarks || currentQuestion?.points) || (hasSubParts ? 15 : 30);
-  const questionCategory = currentQuestion?.category || currentQuestion?.partLabel || (hasSubParts ? 'Structured Theory' : 'Essay Composition');
+  const questionMarks = Number(currentQuestion?.marks || currentQuestion?.totalMarks || currentQuestion?.points) || (isObjective ? 1 : (hasSubParts ? 15 : 30));
+  const questionCategory = currentQuestion?.category || currentQuestion?.partLabel || (isObjective ? 'Objective Multiple Choice' : (hasSubParts ? 'Structured Theory' : 'Essay Composition'));
   const questionPrompt = currentQuestion?.prompt || currentQuestion?.title || '';
   const questionModelAnswer = currentQuestion?.modelAnswer || currentQuestion?.workedSolution || '';
 
@@ -430,10 +466,17 @@ export function Paper2ExamRunner({
         <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-6 sm:p-8 border-b border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2">
-              <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold px-3 py-1 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5" />
-                <span>Paper 2 Written Question {currentIndex + 1} of {totalQuestions}</span>
-              </Badge>
+              {isObjective ? (
+                <Badge className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold px-3 py-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Paper 1 Objective Question {currentIndex + 1} of {totalQuestions}</span>
+                </Badge>
+              ) : (
+                <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold px-3 py-1 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Paper 2 Written Question {currentIndex + 1} of {totalQuestions}</span>
+                </Badge>
+              )}
               <Badge className="bg-slate-800/80 text-slate-300 border border-slate-700/60 text-xs">
                 {questionCategory}
               </Badge>
@@ -458,7 +501,12 @@ export function Paper2ExamRunner({
 
               {/* Submission Status Indicator */}
               <div>
-                {isSubmitted ? (
+                {isObjective ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-500/40 px-3 py-1 rounded-full shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Objective Mode • Instant Selection</span>
+                  </span>
+                ) : isSubmitted ? (
                   <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>AI Graded & Solutions Unlocked</span>
@@ -492,10 +540,167 @@ export function Paper2ExamRunner({
           )}
 
           {/* ========================================================================= */}
-          {/* CASE A: STANDALONE ESSAY / COMPOSITION WRITING WORKSPACE                 */}
+          {/* CASE 0: OBJECTIVE MULTIPLE-CHOICE QUESTION (QUESTIONS 1 TO 50)           */}
           {/* ========================================================================= */}
-          {!hasSubParts ? (
+          {isObjective ? (
             <div className="space-y-6">
+              {/* Context / Reading Passage */}
+              {passageText && (
+                <div className="p-5 sm:p-6 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3 shadow-inner">
+                  <div className="flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                    <BookOpen className="w-4 h-4" />
+                    <span>Reading Passage / Context:</span>
+                  </div>
+                  <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-line border-l-2 border-cyan-500/30 pl-3">
+                    <MathRenderer content={passageText} />
+                  </div>
+                </div>
+              )}
+
+              {/* Question Prompt Card */}
+              <div className="p-5 sm:p-6 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block">
+                  Question {currentIndex + 1}
+                </span>
+                <div className="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">
+                  <MathRenderer content={subPromptText || currentQuestion?.prompt} />
+                </div>
+              </div>
+
+              {/* Multiple Choice Options List */}
+              <div className="grid grid-cols-1 gap-3">
+                {toSafeArray(currentQuestion?.options).map((opt: string, optIdx: number) => {
+                  const optLetter = String.fromCharCode(65 + optIdx);
+                  const selectedOpt = partAnswers[mainKey] || selectedObjectiveOptions[currentQuestionId];
+                  const isSelected = selectedOpt === opt;
+                  const isVerified = !!submittedQuestions[currentQuestionId];
+                  const isCorrectAnswer = opt === currentQuestion?.correctAnswer;
+
+                  return (
+                    <button
+                      key={optIdx}
+                      type="button"
+                      onClick={() => {
+                        if (isVerified) return;
+                        setSelectedObjectiveOptions(prev => ({ ...prev, [currentQuestionId]: opt }));
+                        setPartAnswers(prev => ({ ...prev, [mainKey]: opt, [currentQuestionId]: opt }));
+                      }}
+                      className={cn(
+                        "w-full p-4 sm:p-5 rounded-2xl text-left transition-all flex items-start gap-3.5 border cursor-pointer",
+                        isSelected
+                          ? isVerified
+                            ? isCorrectAnswer
+                              ? "bg-emerald-950/70 border-emerald-500 text-white shadow-lg shadow-emerald-950/40"
+                              : "bg-rose-950/70 border-rose-500 text-white shadow-lg shadow-rose-950/40"
+                            : "bg-cyan-950/60 border-cyan-500/60 text-white shadow-lg shadow-cyan-950/40"
+                          : isVerified && isCorrectAnswer
+                          ? "bg-emerald-950/40 border-emerald-500/60 text-emerald-200"
+                          : "bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900"
+                      )}
+                    >
+                      <span className={cn(
+                        "w-7 h-7 rounded-xl font-mono text-xs font-bold flex items-center justify-center shrink-0 border mt-0.5",
+                        isSelected
+                          ? "bg-cyan-500 text-slate-950 border-cyan-400"
+                          : "bg-slate-900 text-slate-400 border-slate-700"
+                      )}>
+                        {optLetter}
+                      </span>
+                      <span className="text-sm font-medium leading-relaxed flex-1">
+                        <MathRenderer content={opt} />
+                      </span>
+                      {isSelected && (
+                        <Check className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Hint Box */}
+              {currentQuestion?.hint && (
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleHint(currentQuestionId)}
+                    className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Lightbulb className="w-3.5 h-3.5" />
+                    <span>{showPartHints[currentQuestionId] ? 'Hide Pedagogical Hint' : 'Need a hint for this drill?'}</span>
+                  </button>
+                  {showPartHints[currentQuestionId] && (
+                    <div className="mt-2 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                      💡 <strong>Hint:</strong> <MathRenderer content={currentQuestion.hint} />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Solution Box */}
+              {currentQuestion?.workedSolution && (submittedQuestions[currentQuestionId] || showModelAnswer[currentQuestionId]) && (
+                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                      ✓ Correct Answer: {currentQuestion.correctAnswer}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-300 leading-relaxed">
+                    <MathRenderer content={currentQuestion.workedSolution} />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : !hasSubParts ? (
+            <div className="space-y-6">
+              {/* Top Carousel Navigation Bar: Flip Directly to Any Theory Topic */}
+              {flippableTopics.length > 0 && (
+                <div className="bg-slate-950/80 border border-amber-500/20 p-4 rounded-3xl space-y-2 mb-2 shadow-xl backdrop-blur-md">
+                  <div className="flex items-center justify-between text-xs text-slate-300 font-bold px-1">
+                    <span className="flex items-center gap-2 text-amber-400">
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>Section B: Theory Writing Tasks (Flip Directly to Any Topic)</span>
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-800">
+                      {flippableTopics.length} Flippable Topics
+                    </span>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                    {flippableTopics.map((topic: any) => {
+                      const isCurrent = currentIndex === (topic.questionNumber - 1);
+                      return (
+                        <button
+                          key={topic.id}
+                          type="button"
+                          onClick={() => {
+                            setCurrentIndex(topic.questionNumber - 1);
+                          }}
+                          className={cn(
+                            "px-3.5 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 shrink-0 border",
+                            isCurrent
+                              ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white border-amber-400/50 shadow-lg shadow-amber-600/30 scale-[1.02]"
+                              : "bg-slate-900/90 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80"
+                          )}
+                        >
+                          <span className={cn(
+                            "w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center shrink-0",
+                            isCurrent ? "bg-white text-amber-700" : "bg-slate-800 text-slate-400"
+                          )}>
+                            {topic.theoryIndex}
+                          </span>
+                          <div className="text-left">
+                            <div className="leading-tight">{topic.title}</div>
+                            {topic.category && (
+                              <span className={cn("text-[9px] block font-normal opacity-75", isCurrent ? "text-amber-200" : "text-slate-500")}>
+                                {topic.category}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               {/* Reading Passage / Extract Card (if present) */}
               {passageText && (
                 <div className="p-5 sm:p-6 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3 shadow-inner">
@@ -505,6 +710,59 @@ export function Paper2ExamRunner({
                   </div>
                   <div className="text-sm text-slate-300 leading-relaxed max-h-72 overflow-y-auto pr-2 custom-scrollbar whitespace-pre-line border-l-2 border-amber-500/30 pl-3">
                     <MathRenderer content={passageText} />
+                  </div>
+                </div>
+              )}
+
+              
+              {/* Guidance Scaffold (Address Architecture, Salutation, Caption & Sign-off Rules) */}
+              {currentQuestion?.guidanceScaffold && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-amber-500/20 space-y-4">
+                  <div className="flex items-center justify-between text-xs font-bold text-amber-300">
+                    <span className="flex items-center gap-2">
+                      <Compass className="w-4 h-4 text-amber-400" />
+                      <span>Interactive Writing Scaffold & Architectural Guidance</span>
+                    </span>
+                    {currentQuestion.guidanceScaffold.letterType && (
+                      <Badge className="bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[10px]">
+                        {currentQuestion.guidanceScaffold.letterType.toUpperCase().replace('_', ' ')}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    {/* 1. Address Scaffold */}
+                    {currentQuestion.guidanceScaffold.senderAddress && (
+                      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                        <span className="font-bold text-slate-200 block text-[11px] uppercase tracking-wider text-amber-400">
+                          📍 Sender Address Architecture
+                        </span>
+                        <div className="text-[11px] text-slate-300 space-y-0.5 font-mono">
+                          <div>Style: <strong className="text-white capitalize">{currentQuestion.guidanceScaffold.senderAddress.recommendedStyle}</strong> ({currentQuestion.guidanceScaffold.senderAddress.recommendedPunctuation} punctuation)</div>
+                          {currentQuestion.guidanceScaffold.senderAddress.allowedDatingFormats && (
+                            <div>Dating Rule: <span className="text-emerald-400">{currentQuestion.guidanceScaffold.senderAddress.allowedDatingFormats.join(' or ')}</span></div>
+                          )}
+                          {currentQuestion.guidanceScaffold.senderAddress.prohibitedDatingFormats && (
+                            <div className="text-rose-400 text-[10px]">Banned: {currentQuestion.guidanceScaffold.senderAddress.prohibitedDatingFormats.join(', ')}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. Salutation & Subscription Guide */}
+                    {currentQuestion.guidanceScaffold.salutationGuide && (
+                      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                        <span className="font-bold text-slate-200 block text-[11px] uppercase tracking-wider text-amber-400">
+                          🤝 Salutation & Subscription Guide
+                        </span>
+                        <div className="text-[11px] text-slate-300 space-y-0.5 font-mono">
+                          <div>Recommended: <span className="text-emerald-400 font-bold">{currentQuestion.guidanceScaffold.salutationGuide.recommendedSalutation}</span></div>
+                          {currentQuestion.guidanceScaffold.salutationGuide.bannedSalutations && (
+                            <div className="text-rose-400 text-[10px]">Banned: {currentQuestion.guidanceScaffold.salutationGuide.bannedSalutations.join(', ')}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -894,7 +1152,29 @@ export function Paper2ExamRunner({
             </Button>
 
             <div className="flex items-center gap-3">
-              {!isSubmitted ? (
+              {isObjective ? (
+                <>
+                  {!submittedQuestions[currentQuestionId] ? (
+                    <Button
+                      onClick={() => {
+                        setSubmittedQuestions(prev => ({ ...prev, [currentQuestionId]: true }));
+                      }}
+                      disabled={!partAnswers[mainKey] && !selectedObjectiveOptions[currentQuestionId]}
+                      className="h-11 px-6 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-cyan-600/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Check Answer</span>
+                    </Button>
+                  ) : null}
+                  <Button
+                    onClick={handleNext}
+                    className="h-11 px-8 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <span>{isLastQuestion ? 'Complete Lab' : 'Next Question'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </>
+              ) : !isSubmitted ? (
                 <Button
                   onClick={handleSubmitForAIEvaluation}
                   disabled={isSubmitting || (!hasSubParts && !currentEssayText.trim())}

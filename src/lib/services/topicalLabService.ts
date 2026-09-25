@@ -369,6 +369,7 @@ const TOPIC_DOC_ALIASES: Record<string, string> = {
  */
 function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): TopicalLabDocument {
   const mapQ = (q: any): TopicalPracticeQuestion => ({
+    ...q,
     id: q.id || `q_${Math.random().toString(36).substr(2, 6)}`,
     difficulty: ((q.difficulty === 'hard' || q.difficulty === 'high') ? 'hard' : (q.difficulty === 'medium' ? 'medium' : 'low')) as TopicalPracticeDifficulty,
     prompt: q.prompt || '',
@@ -380,7 +381,7 @@ function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): Topical
     learningCompetency: q.learningCompetency
   });
 
-  const rawQuestions: any[] = data.questions || [];
+  const rawQuestions: any[] = data.tasks || data.questions || [];
   const b7Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B7');
   const b8Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B8');
   const b9Questions = rawQuestions.filter(q => (q.level || '').toUpperCase() === 'B9');
@@ -444,6 +445,40 @@ export async function fetchTopicalLabDoc(
     const topicalDocSnap = await getDoc(topicalDocRef);
     if (topicalDocSnap.exists()) {
       const data = topicalDocSnap.data() as any;
+
+      // Check subcollection practice_labs for B7_foundation if available
+      try {
+        const subLabRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId, 'practice_labs', 'B7_foundation');
+        const subLabSnap = await getDoc(subLabRef);
+        if (subLabSnap.exists()) {
+          const subData = subLabSnap.data() as any;
+          const subItems = subData.tasks || subData.questions || [];
+          if (subItems.length > 0) {
+            if (!data.levels) data.levels = {};
+            if (!data.levels.b7) data.levels.b7 = { practicePool: { low: [] } };
+            if (!data.levels.b7.practicePool) data.levels.b7.practicePool = { low: [] };
+            data.levels.b7.practicePool.low = subItems;
+            data.tasks = subItems;
+            data.questions = subItems;
+          }
+        }
+      } catch (subErr) {
+        console.warn('[topicalLabService] Error reading subcollection lab:', subErr);
+      }
+
+      // Defensively align root tasks and questions
+      const rootItems = data.tasks || data.questions || [];
+      if (rootItems.length > 0) {
+        if (!data.levels) data.levels = {};
+        if (!data.levels.b7) data.levels.b7 = { practicePool: { low: [] } };
+        if (!data.levels.b7.practicePool) data.levels.b7.practicePool = { low: [] };
+        if (!data.levels.b7.practicePool.low || data.levels.b7.practicePool.low.length === 0) {
+          data.levels.b7.practicePool.low = rootItems;
+        }
+        data.tasks = data.tasks || rootItems;
+        data.questions = data.questions || rootItems;
+      }
+
       if (data.levels) {
         return { ...data, id: topicalDocSnap.id } as TopicalLabDocument;
       }
@@ -542,15 +577,27 @@ export async function fetchTopicalLabDoc(
 export async function getTopicalLabDoc(
   topicDocId: string,
   levelId: string = 'jhs',
-  subjectId: string = 'math'
+  subjectId: string = 'math',
+  forceRefresh: boolean = false
 ): Promise<TopicalLabDocument | null> {
   const queryKey = topicalLabKeys.topicDoc(levelId, subjectId, topicDocId);
+  if (forceRefresh) {
+    curriculumQueryClient.removeQueries({ queryKey });
+    return fetchTopicalLabDoc(topicDocId, levelId, subjectId);
+  }
   return curriculumQueryClient.ensureQueryData({
     queryKey,
     queryFn: () => fetchTopicalLabDoc(topicDocId, levelId, subjectId),
     staleTime: CACHE_CONFIG.staleTime,
     gcTime: CACHE_CONFIG.gcTime
   });
+}
+
+/**
+ * Clears all topical lab queries from client-side TanStack cache
+ */
+export function clearTopicalLabCache() {
+  curriculumQueryClient.clear();
 }
 
 /**

@@ -7970,7 +7970,8 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                 const isEng = ((mod.subject || '') as string).toLowerCase().includes('english') || subject === 'english' || topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('phonology');
                 const isSci = ((mod.subject || '') as string).toLowerCase().includes('science') || subject === 'science' || topicDocId.startsWith('bs');
                 const labSubject = isSci ? 'science' : (isEng ? 'english' : 'math');
-                const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject);
+                invalidateTopicalLabCache(topicDocId, labSubject);
+                const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject, true);
                 if (labDoc) {
                     setActiveTopicalLab(labDoc);
                     return;
@@ -8061,9 +8062,9 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                         if (ppData) {
                             const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
                             const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
-                            const pQuestions = pData?.questions || pData?.allQuestions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
-                            const fallbackP2Questions = pData?.sections?.sectionA_essay?.questions || pData?.sections?.partA_writing?.questions || [];
-                            const finalQuestions = pQuestions.length > 0 ? pQuestions : (fallbackP2Questions.length > 0 ? fallbackP2Questions : (pData.paper2?.questions || []));
+                            const pQuestions = pData?.tasks || pData?.questions || pData?.allQuestions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
+                            const fallbackP2Questions = pData?.sections?.sectionA_essay?.tasks || pData?.sections?.sectionA_essay?.questions || pData?.sections?.partA_writing?.tasks || pData?.sections?.partA_writing?.questions || [];
+                            const finalQuestions = pQuestions.length > 0 ? pQuestions : (fallbackP2Questions.length > 0 ? fallbackP2Questions : (pData.paper2?.tasks || pData.paper2?.questions || []));
                             if (pData && (finalQuestions.length > 0 || pData.paper2?.questions)) {
                                 targetSet = {
                                     id: mod.setId,
@@ -8093,7 +8094,9 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                 const pData = isP2 ? ((targetSet as any).paper2 || targetSet) : ((targetSet as any).paper1 || targetSet);
                 const extractedQuestions = (targetSet.questions && targetSet.questions.length > 0)
                     ? targetSet.questions
-                    : (pData?.questions || (targetSet as any).questions || []);
+                    : ((targetSet as any).tasks && (targetSet as any).tasks.length > 0
+                        ? (targetSet as any).tasks
+                        : (pData?.tasks || pData?.questions || (targetSet as any).questions || []));
 
                 targetSet = {
                     ...targetSet,
@@ -8105,6 +8108,7 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                     format: isP2 ? 'structured_essay' : (targetSet.format || 'objective'),
                     paperType: isP2 ? 2 : 1,
                     totalQuestions: pData?.totalQuestions || extractedQuestions.length || (isP2 ? 4 : 40),
+                    tasks: extractedQuestions,
                     questions: extractedQuestions,
                     sectionA_comprehension: pData?.sectionA_comprehension || (targetSet as any)?.sectionA_comprehension
                 } as CurriculumQuestionSet;

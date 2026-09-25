@@ -190,20 +190,28 @@ export function QuestionRunner({
     );
   }
 
+  // Defensively resolve question pool checking both tasks and questions
+  const allQuestionItems: CurriculumQuestion[] = (Array.isArray(questionSet.questions) && questionSet.questions.length > 0)
+    ? questionSet.questions
+    : (Array.isArray((questionSet as any).tasks) && (questionSet as any).tasks.length > 0
+      ? (questionSet as any).tasks
+      : []);
+
+  // Check if question set has objective multiple choice drills
+  const hasObjectiveQuestions = allQuestionItems.some((q: any) =>
+    q.section === 'objective' ||
+    q.type === 'multiple_choice' ||
+    q.format === 'multiple_choice' ||
+    (Array.isArray(q.options) && q.options.length > 0)
+  );
+
   // Delegate Paper 2 Structured Theory sessions to dedicated Paper2ExamRunner
-  const isPaper2Exam =
+  // ONLY if all questions are structured essays OR paperType === 2, but NOT if there are objective questions!
+  const isPaper2Exam = !hasObjectiveQuestions && (
     questionSet.format === 'structured_essay' ||
     (questionSet as any).paperType === 2 ||
-    (questionSet.id && (questionSet.id.includes('_p2') || questionSet.id.includes('paper2') || questionSet.id.includes('theory'))) ||
-    (Array.isArray(questionSet.questions) &&
-      questionSet.questions.some(
-        (q: any) =>
-          q.format === 'structured_essay' ||
-          (Array.isArray(q.parts) && q.parts.length > 0) ||
-          (Array.isArray(q.subQuestions) && q.subQuestions.length > 0) ||
-          q.isPracticalSectionA ||
-          (!q.options || q.options.length === 0)
-      ));
+    (questionSet.id && (questionSet.id.includes('_p2') || questionSet.id.includes('paper2')))
+  );
 
   if (isPaper2Exam) {
     return (
@@ -217,7 +225,7 @@ export function QuestionRunner({
     );
   }
 
-  const questions: CurriculumQuestion[] = questionSet.questions;
+  const questions: CurriculumQuestion[] = allQuestionItems;
   const currentQuestion = questions[currentIndex];
   const currentQuestionId = String(
     currentQuestion?.id ||
@@ -227,11 +235,21 @@ export function QuestionRunner({
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
+  // Detect whether this question is an objective multiple-choice question
+  const isObjective =
+    currentQuestion?.section === "objective" ||
+    currentQuestion?.type === "multiple_choice" ||
+    currentQuestion?.format === "multiple_choice" ||
+    (Array.isArray(currentQuestion?.options) && currentQuestion.options.length > 0);
+
   // Detect whether this question is a Structured Essay with sub-parts or standalone written essay
-  const isStructuredEssay =
-    currentQuestion.format === 'structured_essay' ||
-    (Array.isArray(currentQuestion.parts) && currentQuestion.parts.length > 0) ||
-    (!currentQuestion.options || currentQuestion.options.length === 0);
+  const isStructuredEssay = !isObjective && (
+    currentQuestion?.section === "theory" ||
+    currentQuestion?.format === "structured_essay" ||
+    currentQuestion?.type === "structured_essay" ||
+    (Array.isArray(currentQuestion?.parts) && currentQuestion.parts.length > 0) ||
+    (!currentQuestion?.options || currentQuestion.options.length === 0)
+  );
 
   const parts: StructuredQuestionPart[] = currentQuestion.parts || [];
 
