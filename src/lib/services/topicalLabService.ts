@@ -38,7 +38,7 @@ export const topicalLabKeys = {
 export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
   subject: 'English Language',
   tier: 'Junior Secondary (JHS)',
-  totalTopics: 8,
+  totalTopics: 9,
   topics: [
     {
       id: 'oral_phonology_sounds',
@@ -68,6 +68,20 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
       description: 'Master active listening skills, conversational turn-taking, polite requests, telephone etiquette, debate delivery, and oral presentation protocols.'
     },
     {
+      id: 'beacon_of_light_anthology_literary_devices',
+      title: 'The Beacon of Light Anthology & Literary Devices',
+      strandCode: 'S1',
+      strandName: 'STRAND 1: ORAL LANGUAGE',
+      strand: 'STRAND 1: ORAL LANGUAGE',
+      subStrand: 'The Beacon of Light Anthology & Literary Devices',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 495,
+      totalQuestions: 495,
+      description: 'Master The Beacon of Light Anthology & Literary Devices with tiered concept notes, worked examples, and graded practice pools.'
+    },
+    {
       id: 'reading_comprehension_summary',
       title: 'Textual Analysis & Summary Skills',
       strandCode: 'S2',
@@ -81,18 +95,17 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
       description: 'Master skim-and-scan techniques, locating explicit information, making deductive inferences, decoding contextual vocabulary, and writing summaries under strict word limits.'
     },
     {
-      id: 'beacon_of_light_anthology_literary_devices',
-      title: 'The Beacon of Light Anthology & Literary Devices',
-      strandCode: 'S1',
-      strandName: 'STRAND 1: ORAL LANGUAGE',
-      strand: 'STRAND 1: ORAL LANGUAGE',
-      subStrand: 'The Beacon of Light Anthology & Literary Devices',
+      id: 'literature_cockcrow_canon',
+      title: 'Prose, Drama & Poetry Analysis',
+      strandCode: 'S2',
+      strandName: 'STRAND 2: READING & LITERATURE',
+      strand: 'STRAND 2: READING & LITERATURE',
+      subStrand: 'Prose, Drama & Poetry Analysis',
       levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
       hasNotes: true,
-      questionCount: 495,
-      totalQuestions: 495,
-      description: 'Master The Beacon of Light Anthology & Literary Devices with tiered concept notes, worked examples, and graded practice pools.'
+      questionCount: 3,
+      description: 'Master textual analysis across prose, drama stagecraft, and poetry appreciation with thematic analysis and literary devices.'
     },
     {
       id: 'grammar_parts_of_speech_lexis',
@@ -143,7 +156,7 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
       levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
       hasNotes: true,
-      questionCount: 3,
+      questionCount: 180,
       description: 'Master composition writing: narrative moral stories illustrating proverbs, descriptive travelogues, articles for national daily publication, and competitive debate speeches.'
     }
   ]
