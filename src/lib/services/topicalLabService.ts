@@ -81,17 +81,18 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
       description: 'Master skim-and-scan techniques, locating explicit information, making deductive inferences, decoding contextual vocabulary, and writing summaries under strict word limits.'
     },
     {
-      id: 'literature_cockcrow_canon',
-      title: 'Prose, Drama & Poetry Analysis',
-      strandCode: 'S2',
-      strandName: 'STRAND 2: READING & LITERATURE',
-      strand: 'STRAND 2: READING & LITERATURE',
-      subStrand: 'The Cockcrow Anthology & Literary Devices',
+      id: 'beacon_of_light_anthology_literary_devices',
+      title: 'The Beacon of Light Anthology & Literary Devices',
+      strandCode: 'S1',
+      strandName: 'STRAND 1: ORAL LANGUAGE',
+      strand: 'STRAND 1: ORAL LANGUAGE',
+      subStrand: 'The Beacon of Light Anthology & Literary Devices',
       levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
       hasNotes: true,
-      questionCount: 3,
-      description: 'Master the prescribed WAEC Cockcrow texts: Dickens Oliver Twist, Aidoo The Dilemma of a Ghost, short stories, prescribed poetry, and literary devices.'
+      questionCount: 495,
+      totalQuestions: 495,
+      description: 'Master The Beacon of Light Anthology & Literary Devices with tiered concept notes, worked examples, and graded practice pools.'
     },
     {
       id: 'grammar_parts_of_speech_lexis',
@@ -346,6 +347,10 @@ export async function getSubjectTopicsManifest(
 }
 
 const TOPIC_DOC_ALIASES: Record<string, string> = {
+  cockcrow_literary_devices: 'beacon_of_light_anthology_literary_devices',
+  literature_cockcrow_canon: 'beacon_of_light_anthology_literary_devices',
+  the_cockcrow_anthology_literary_devices: 'beacon_of_light_anthology_literary_devices',
+  beacon_of_light_anthology_literary_devices: 'beacon_of_light_anthology_literary_devices',
   topic_ratio_proportion_financial: 'topic_ratios_and_proportion',
   topic_ratios_and_proportion: 'topic_ratio_proportion_financial',
   topic_ratio_proportion_and_rates: 'topic_ratio_proportion_financial',
