@@ -302,6 +302,34 @@ export function TopicalLabRunner({
   const [difficulty, setDifficulty] = useState<TopicalPracticeDifficulty>('low');
   const [prereqTierTab, setPrereqTierTab] = useState<'foundation' | 'intermediate' | 'advanced'>('foundation');
 
+  // State for collapsible worked examples in Tab 1
+  const [expandedExampleIds, setExpandedExampleIds] = useState<Record<string, boolean>>({
+    'we_0': true
+  });
+
+  // Current level data
+  const currentLevelData = useMemo(() => {
+    const levelKeyMap: Record<string, string[]> = {
+      b7: ['b7', 'jhs1', 'basic7'],
+      b8: ['b8', 'jhs2', 'basic8'],
+      b9: ['b9', 'jhs3', 'basic9'],
+      jhs1: ['b7', 'jhs1', 'basic7'],
+      jhs2: ['b8', 'jhs2', 'basic8'],
+      jhs3: ['b9', 'jhs3', 'basic9']
+    };
+    const possibleKeys = levelKeyMap[activeLevel] || [activeLevel];
+    for (const key of possibleKeys) {
+      if ((topicDoc.levels as any)?.[key]) return (topicDoc.levels as any)[key];
+    }
+    return {
+      levelTitle: `${(LEVEL_META[activeLevel]?.label || activeLevel).toUpperCase()} Practice`,
+      summary: '',
+      notes: 'No concept notes available for this level yet.',
+      workedExamples: [],
+      practicePool: { low: [], medium: [], hard: [] }
+    };
+  }, [topicDoc, activeLevel]);
+
   // Resolve current active grade key
   const activeGradeKey: 'b7' | 'b8' | 'b9' = useMemo(() => {
     if (activeLevel === 'b7' || activeLevel === 'jhs1') return 'b7';
@@ -337,34 +365,6 @@ export function TopicalLabRunner({
     }
     return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey];
   }, [currentLevelData, topicDoc, activeGradeKey, difficulty]);
-
-  // State for collapsible worked examples in Tab 1
-  const [expandedExampleIds, setExpandedExampleIds] = useState<Record<string, boolean>>({
-    'we_0': true
-  });
-
-  // Current level data
-  const currentLevelData = useMemo(() => {
-    const levelKeyMap: Record<string, string[]> = {
-      b7: ['b7', 'jhs1', 'basic7'],
-      b8: ['b8', 'jhs2', 'basic8'],
-      b9: ['b9', 'jhs3', 'basic9'],
-      jhs1: ['b7', 'jhs1', 'basic7'],
-      jhs2: ['b8', 'jhs2', 'basic8'],
-      jhs3: ['b9', 'jhs3', 'basic9']
-    };
-    const possibleKeys = levelKeyMap[activeLevel] || [activeLevel];
-    for (const key of possibleKeys) {
-      if ((topicDoc.levels as any)?.[key]) return (topicDoc.levels as any)[key];
-    }
-    return {
-      levelTitle: `${(LEVEL_META[activeLevel]?.label || activeLevel).toUpperCase()} Practice`,
-      summary: '',
-      notes: 'No concept notes available for this level yet.',
-      workedExamples: [],
-      practicePool: { low: [], medium: [], hard: [] }
-    };
-  }, [topicDoc, activeLevel]);
 
   // Current pool of practice questions (checks practicePool, tasks, and questions across levels and root)
   const currentPool: TopicalPracticeQuestion[] = useMemo(() => {
