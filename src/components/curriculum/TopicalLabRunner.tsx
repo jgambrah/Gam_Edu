@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronDown,
   ChevronUp,
+  BookCheck,
   BookOpen,
   Lightbulb,
   Award,
@@ -37,6 +38,206 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { useFirestore } from '@/firebase';
+
+
+export interface PrereqGuideTier {
+  title: string;
+  target_level: string;
+  tier: string;
+  prescribed_texts_to_finish: string[];
+  required_material_details: string[];
+  student_instruction: string;
+}
+
+export const MASTER_PREREQUISITE_MAP: Record<'b7' | 'b8' | 'b9', Record<'foundation' | 'intermediate' | 'advanced', PrereqGuideTier>> = {
+  b7: {
+    foundation: {
+      title: "Basic 7 Literature Diagnostic Lab - Foundation Tier",
+      target_level: "BS 7 (JHS 1)",
+      tier: "Foundation",
+      prescribed_texts_to_finish: [
+        "Kissiwaa – The Heroine",
+        "A Medal from Grandpa",
+        "Fly Like an Eagle",
+        "The Family That Cared"
+      ],
+      required_material_details: [
+        "Literal narrative plots",
+        "Primary character roles",
+        "Core settings",
+        "Explicit morals",
+        "Fundamental figures of speech (similes, metaphors, personification)"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    intermediate: {
+      title: "Basic 7 Literature Diagnostic Lab - Intermediate Tier",
+      target_level: "BS 7 (JHS 1)",
+      tier: "Intermediate",
+      prescribed_texts_to_finish: [
+        "Kissiwaa – The Heroine",
+        "A Medal from Grandpa",
+        "Fly Like an Eagle",
+        "The Family That Cared"
+      ],
+      required_material_details: [
+        "Character foils and motivations",
+        "Thematic interconnections",
+        "Contextual vocabulary and diction",
+        "Basic dramatic techniques",
+        "Narrative conflict progression"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    advanced: {
+      title: "Basic 7 Literature Diagnostic Lab - Advanced Tier",
+      target_level: "BS 7 (JHS 1)",
+      tier: "Advanced",
+      prescribed_texts_to_finish: [
+        "Kissiwaa – The Heroine",
+        "A Medal from Grandpa",
+        "Fly Like an Eagle",
+        "The Family That Cared"
+      ],
+      required_material_details: [
+        "Authorial intent and purpose",
+        "Cultural and social critique",
+        "Structural analysis across genres",
+        "Introductory Point-Evidence-Explanation (P-E-E) essay formulation"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    }
+  },
+  b8: {
+    foundation: {
+      title: "Basic 8 Literature Diagnostic Lab - Foundation Tier",
+      target_level: "BS 8 (JHS 2)",
+      tier: "Foundation",
+      prescribed_texts_to_finish: [
+        "The Monday Breeze",
+        "Dawuni’s Dream",
+        "A Calabash of Saha",
+        "Forest Gold"
+      ],
+      required_material_details: [
+        "Stanza forms and two-line couplet structures",
+        "Northern pre-colonial heroic drama basics",
+        "Karaga STEM innovation and water purification plotlines",
+        "Daakye Asem gold rush and river pollution narrative events"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    intermediate: {
+      title: "Basic 8 Literature Diagnostic Lab - Intermediate Tier",
+      target_level: "BS 8 (JHS 2)",
+      tier: "Intermediate",
+      prescribed_texts_to_finish: [
+        "The Monday Breeze",
+        "Dawuni’s Dream",
+        "A Calabash of Saha",
+        "Forest Gold"
+      ],
+      required_material_details: [
+        "Situational irony of titles",
+        "Enjambment and staccato acoustic rhythm",
+        "Symbolic regalia (the sacred staff, throne, rain dance)",
+        "Sensory and kinetic imagery",
+        "Static vs. dynamic character arcs"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    advanced: {
+      title: "Basic 8 Literature Diagnostic Lab - Advanced Tier",
+      target_level: "BS 8 (JHS 2)",
+      tier: "Advanced",
+      prescribed_texts_to_finish: [
+        "The Monday Breeze",
+        "Dawuni’s Dream",
+        "A Calabash of Saha",
+        "Forest Gold"
+      ],
+      required_material_details: [
+        "Sociological and feminist critiques of domestic labor",
+        "African cosmological balance and restorative justice",
+        "Ecocritical theory and galamsey resource exploitation",
+        "Cross-textual thematic synthesis",
+        "Formal P-E-E essay structures"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    }
+  },
+  b9: {
+    foundation: {
+      title: "Basic 9 Literature Diagnostic Lab - Foundation Tier",
+      target_level: "BS 9 (JHS 3)",
+      tier: "Foundation",
+      prescribed_texts_to_finish: [
+        "A Beacon of Light",
+        "Spreading Light",
+        "The Golden Stool / Okomfo Anokye",
+        "The Unseen Painter",
+        "Beyond Light and Shadow",
+        "Real Illusioned Beckley",
+        "Oliver Asks for More",
+        "Mark Antony Mourns Caesar"
+      ],
+      required_material_details: [
+        "Core narrative arcs",
+        "Character profiles (Osmond, Asantewaa, Okomfo Anokye, Mrs. Acquah, Dr. Beckley, Oliver, Antony)",
+        "Basic figurative devices (synecdoche, free verse, biblical allusion, rhetorical question)",
+        "Literal conflict resolution"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    intermediate: {
+      title: "Basic 9 Literature Diagnostic Lab - Intermediate Tier",
+      target_level: "BS 9 (JHS 3)",
+      tier: "Intermediate",
+      prescribed_texts_to_finish: [
+        "A Beacon of Light",
+        "Spreading Light",
+        "The Golden Stool / Okomfo Anokye",
+        "The Unseen Painter",
+        "Beyond Light and Shadow",
+        "Real Illusioned Beckley",
+        "Oliver Asks for More",
+        "Mark Antony Mourns Caesar"
+      ],
+      required_material_details: [
+        "Irony of fate and parental enabling",
+        "Free verse mechanics and active voice",
+        "Dual character roles and covert student cabals",
+        "Urban legend dynamics and collective anxiety",
+        "Victorian workhouse satire and Dickensian irony",
+        "Mob psychology and emotional rhetoric"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    },
+    advanced: {
+      title: "Basic 9 Literature Diagnostic Lab - Advanced Tier",
+      target_level: "BS 9 (JHS 3)",
+      tier: "Advanced",
+      prescribed_texts_to_finish: [
+        "A Beacon of Light",
+        "Spreading Light",
+        "The Golden Stool / Okomfo Anokye",
+        "The Unseen Painter",
+        "Beyond Light and Shadow",
+        "Real Illusioned Beckley",
+        "Oliver Asks for More",
+        "Mark Antony Mourns Caesar"
+      ],
+      required_material_details: [
+        "Performative speech acts (logos vs. pathos)",
+        "Malthusian political economy and Poor Law deconstruction",
+        "Akan cosmological semiotics and nation-building",
+        "Comparative leadership studies (classical Roman governance vs. African statesmen)",
+        "Advanced BECE Paper 2 comparative essay synthesis"
+      ],
+      student_instruction: "Ensure all prescribed selections, thematic analyses, and literary apparatus listed above are thoroughly studied before starting this assessment."
+    }
+  }
+};
 
 interface TopicalLabRunnerProps {
   topicDoc: TopicalLabDocument;
@@ -99,6 +300,43 @@ export function TopicalLabRunner({
 
   // 3. Practice Labs Difficulty Filter: 'low' | 'medium' | 'hard'
   const [difficulty, setDifficulty] = useState<TopicalPracticeDifficulty>('low');
+  const [prereqTierTab, setPrereqTierTab] = useState<'foundation' | 'intermediate' | 'advanced'>('foundation');
+
+  // Resolve current active grade key
+  const activeGradeKey: 'b7' | 'b8' | 'b9' = useMemo(() => {
+    if (activeLevel === 'b7' || activeLevel === 'jhs1') return 'b7';
+    if (activeLevel === 'b8' || activeLevel === 'jhs2') return 'b8';
+    return 'b9';
+  }, [activeLevel]);
+
+  // Resolve active prerequisite guide for Tab 1
+  const activePrereqGuide = useMemo(() => {
+    const customGuides = (currentLevelData as any)?.prerequisite_reading_guides;
+    if (customGuides && customGuides[prereqTierTab]) {
+      return customGuides[prereqTierTab];
+    }
+    const masterGuide = (topicDoc as any)?.master_prerequisite_reading_guide;
+    const masterKey = `${activeGradeKey.toUpperCase()}_${prereqTierTab}`;
+    if (masterGuide && masterGuide[masterKey]) {
+      return masterGuide[masterKey];
+    }
+    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[prereqTierTab];
+  }, [currentLevelData, topicDoc, activeGradeKey, prereqTierTab]);
+
+  // Resolve active prerequisite guide for Tab 2 (tied to difficulty)
+  const activeDrillPrereq = useMemo(() => {
+    const tierKey = difficulty === 'low' ? 'foundation' : difficulty === 'medium' ? 'intermediate' : 'advanced';
+    const customGuides = (currentLevelData as any)?.prerequisite_reading_guides;
+    if (customGuides && customGuides[tierKey]) {
+      return customGuides[tierKey];
+    }
+    const masterGuide = (topicDoc as any)?.master_prerequisite_reading_guide;
+    const masterKey = `${activeGradeKey.toUpperCase()}_${tierKey}`;
+    if (masterGuide && masterGuide[masterKey]) {
+      return masterGuide[masterKey];
+    }
+    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey];
+  }, [currentLevelData, topicDoc, activeGradeKey, difficulty]);
 
   // State for collapsible worked examples in Tab 1
   const [expandedExampleIds, setExpandedExampleIds] = useState<Record<string, boolean>>({
@@ -385,6 +623,115 @@ export function TopicalLabRunner({
             </div>
           )}
 
+          
+          {/* Master Pre-requisite Study Guide (Tiers 1 to 9) */}
+          {activePrereqGuide && (
+            <Card className="bg-gradient-to-br from-slate-900 via-slate-900/90 to-indigo-950/40 border border-indigo-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-500/20 pb-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400">
+                      <BookCheck className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                        <span>Master Pre-requisite Study Guide</span>
+                        <Badge className="bg-indigo-600 text-white text-[10px] uppercase font-bold tracking-wider">
+                          {LEVEL_META[activeLevel].shortLabel}
+                        </Badge>
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        Prescribed texts, thematic units, and analytical apparatus required before tackling assessments.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tier Selector Pills */}
+                <div className="inline-flex p-1 bg-slate-950/90 rounded-2xl border border-slate-800 gap-1 self-start md:self-auto">
+                  {(['foundation', 'intermediate', 'advanced'] as const).map((tier) => {
+                    const isSelected = prereqTierTab === tier;
+                    const tierLabel = tier === 'foundation' ? '🟢 Foundation' : tier === 'intermediate' ? '🟡 Intermediate' : '🔴 Advanced';
+                    return (
+                      <button
+                        key={tier}
+                        type="button"
+                        onClick={() => setPrereqTierTab(tier)}
+                        className={cn(
+                          'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
+                          isSelected
+                            ? 'bg-indigo-600 text-white shadow-md'
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                        )}
+                      >
+                        <span>{tierLabel}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Grid: Prescribed Texts + Required Material Details */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-1">
+                {/* Column 1: Prescribed Texts */}
+                <div className="space-y-3 bg-slate-950/50 p-4 sm:p-5 rounded-2xl border border-slate-800/80">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+                      Prescribed Texts to Master
+                    </span>
+                    <Badge variant="outline" className="text-[10px] text-slate-400 border-slate-700">
+                      {activePrereqGuide.prescribed_texts_to_finish?.length || 0} Texts Prescribed
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {activePrereqGuide.prescribed_texts_to_finish?.map((text: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="px-3 py-1.5 rounded-xl bg-indigo-950/60 border border-indigo-500/30 text-indigo-200 text-xs font-semibold flex items-center gap-2 shadow-sm"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                        <span>{text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Column 2: Required Material Details & Analytical Concepts */}
+                <div className="space-y-3 bg-slate-950/50 p-4 sm:p-5 rounded-2xl border border-slate-800/80">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                      Required Details & Analytical Concepts
+                    </span>
+                    <Badge variant="outline" className="text-[10px] text-amber-400/80 border-amber-500/30">
+                      Tier Mastery
+                    </Badge>
+                  </div>
+                  <ul className="space-y-2 pt-1">
+                    {activePrereqGuide.required_material_details?.map((detail: string, idx: number) => (
+                      <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Student Instruction Banner */}
+              {activePrereqGuide.student_instruction && (
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/20 text-indigo-300 text-xs flex items-center gap-2.5">
+                  <GraduationCap className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <span className="leading-relaxed font-medium">
+                    <strong className="text-white font-semibold">Student Instruction: </strong>
+                    {activePrereqGuide.student_instruction}
+                  </span>
+                </div>
+              )}
+            </Card>
+          )}
+
           {/* Section A: Concept Notes */}
           <Card className="bg-slate-900/70 border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -567,6 +914,31 @@ export function TopicalLabRunner({
               Active Tier: <strong className="text-white">{LEVEL_META[activeLevel].label}</strong> • {currentPool.length} Questions Ready
             </div>
           </div>
+
+          
+          {/* Active Drill Prerequisite Alert */}
+          {activeDrillPrereq && (
+            <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/25 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <BookCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <span className="font-bold text-white">
+                    Assessed Texts for {activeDrillPrereq.tier} Tier:
+                  </span>
+                  <span className="text-indigo-200">
+                    {activeDrillPrereq.prescribed_texts_to_finish?.join(' • ')}
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-400 pl-6">
+                  <strong className="text-slate-300">Core Apparatus: </strong>
+                  {activeDrillPrereq.required_material_details?.join('; ')}
+                </div>
+              </div>
+              <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 text-[10px] self-start md:self-auto shrink-0">
+                NaCCA BECE Alignment
+              </Badge>
+            </div>
+          )}
 
           {/* Interactive QuestionRunner Workstation */}
           {currentPool.length === 0 ? (
