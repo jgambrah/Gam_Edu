@@ -509,6 +509,41 @@ export async function fetchTopicalLabDoc(
       }
 
       if (data.levels) {
+        const notesObj = data.conceptNotes || {};
+        const b7Notes = notesObj.b7_overview || data.summary || '';
+        const b8Notes = notesObj.b8_progression || data.summary || '';
+        const b9Notes = notesObj.b9_mastery || data.summary || '';
+
+        const levelDefaults: Record<string, { title: string; sub: string; summary: string; notes: string }> = {
+          b7: {
+            title: `Basic 7 (JHS 1) • ${data.subStrandTitle || data.topicTitle || 'Prescribed Literature & Core Devices'}`,
+            sub: 'Prescribed Prose & Devices',
+            summary: data.conceptNotes?.b7_summary || 'Master the prescribed NaCCA Common Core Programme literature curriculum based on The Beacon of Light anthology: Diabo’s Kissiwaa – The Heroine, Ankrah’s A Medal from Grandpa, Fly Like an Eagle, Zanyoh’s The Family That Cared, foundational poetic/prose devices, and the official WAEC BECE 4-step context question methodology.',
+            notes: b7Notes
+          },
+          b8: {
+            title: `Basic 8 (JHS 2) • ${data.subStrandTitle || data.topicTitle || 'Forest Gold & Realistic Poetry'}`,
+            sub: 'Forest Gold & Realistic Poetry',
+            summary: data.conceptNotes?.b8_summary || 'Environmental defense against illegal mining (galamsey), community mobilization, and realistic modern poetry in The Beacon of Light: Ofosu-Appiah’s Forest Gold, The Monday Breeze, Dawuni’s Dream, and structural poetic mechanics (couplets, enjambment, irony).',
+            notes: b8Notes
+          },
+          b9: {
+            title: `Basic 9 (JHS 3) • ${data.subStrandTitle || data.topicTitle || 'Extended Novella & Moral Rubrics'}`,
+            sub: 'Titular Novella & Moral Rubrics',
+            summary: data.conceptNotes?.b9_summary || 'Appreciation of extended narratives, cross-cultural conflicts, and national destiny in The Beacon of Light: the titular coming-of-age novella A Beacon of Light (Osmond’s journey from Obane to Accra), Beyond Light and Shadow, A Calabash of Saha, and full WAEC BECE Paper 2 essay rubrics (P-E-E formula).',
+            notes: b9Notes
+          }
+        };
+
+        for (const lvl of ['b7', 'b8', 'b9'] as const) {
+          if (!data.levels[lvl]) data.levels[lvl] = { practicePool: { low: [], medium: [], hard: [] } };
+          data.levels[lvl].levelTitle = data.levels[lvl].levelTitle || levelDefaults[lvl].title;
+          data.levels[lvl].sub = data.levels[lvl].sub || levelDefaults[lvl].sub;
+          data.levels[lvl].summary = data.levels[lvl].summary || levelDefaults[lvl].summary;
+          data.levels[lvl].notes = data.levels[lvl].notes || levelDefaults[lvl].notes;
+          data.levels[lvl].workedExamples = data.levels[lvl].workedExamples || [];
+        }
+
         return { ...data, id: topicalDocSnap.id } as TopicalLabDocument;
       }
       return adaptEnglishOrGenericDocToTopicalLab(topicalDocSnap.id, data);

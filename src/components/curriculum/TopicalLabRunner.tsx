@@ -56,12 +56,12 @@ const LEVEL_META: Record<string, { label: string; shortLabel: string; sub: strin
   b8: {
     label: 'Basic 8 (JHS 2)',
     shortLabel: 'B8 (JHS 2)',
-    sub: 'Applications & Direct Proportions'
+    sub: 'Applications & Progression'
   },
   b9: {
     label: 'Basic 9 (JHS 3)',
     shortLabel: 'B9 (JHS 3)',
-    sub: 'Inverse Proportions & Advanced Rates'
+    sub: 'Advanced Analysis & BECE Mastery'
   },
   jhs1: {
     label: 'Basic 7 (JHS 1)',
@@ -71,12 +71,12 @@ const LEVEL_META: Record<string, { label: string; shortLabel: string; sub: strin
   jhs2: {
     label: 'Basic 8 (JHS 2)',
     shortLabel: 'B8 (JHS 2)',
-    sub: 'Applications & Direct Proportions'
+    sub: 'Applications & Progression'
   },
   jhs3: {
     label: 'Basic 9 (JHS 3)',
     shortLabel: 'B9 (JHS 3)',
-    sub: 'Inverse Proportions & Advanced Rates'
+    sub: 'Advanced Analysis & BECE Mastery'
   }
 };
 
@@ -322,7 +322,7 @@ export function TopicalLabRunner({
                 >
                   <span className="text-xs sm:text-sm font-black">{meta.label}</span>
                   <span className="text-[10px] opacity-75 font-normal hidden md:inline">
-                    {meta.sub}
+                    {((topicDoc.levels as any)?.[lvl]?.sub || (topicDoc.levels as any)?.[lvl]?.subtitle) || meta.sub}
                   </span>
                 </button>
               );
