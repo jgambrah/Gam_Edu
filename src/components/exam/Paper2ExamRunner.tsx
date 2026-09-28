@@ -718,10 +718,10 @@ export function Paper2ExamRunner({
     return (
       <div className={cn(
         "rounded-3xl bg-slate-950/95 border border-amber-500/30 p-5 sm:p-6 shadow-2xl backdrop-blur-md space-y-4 transition-all",
-        !isFullWidth ? "flex flex-col h-full min-h-0 overflow-hidden" : "w-full"
+        !isFullWidth ? "flex flex-col h-full min-h-0 min-w-0 w-full overflow-hidden" : "w-full min-w-0"
       )}>
         {/* Row 1: Title, Icon & Reading Stats (Allow title wrapping, prevent awkward text wrapping on Official Reference Material) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80 shrink-0 min-w-0 w-full">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center shrink-0 shadow-sm">
               <BookOpen className="w-4 h-4 text-amber-400" />
@@ -744,7 +744,7 @@ export function Paper2ExamRunner({
         </div>
 
         {/* Row 2: Control Toolbar (Text Sizing, Split Mode, Popout) - Generously spaced & unclipped */}
-        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-900/90 rounded-2xl border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-900/90 rounded-2xl border border-slate-800 shrink-0 min-w-0 w-full">
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-[10px] uppercase font-bold text-slate-400 px-1 hidden sm:inline">Text Size:</span>
             <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-0.5">
@@ -809,23 +809,23 @@ export function Paper2ExamRunner({
 
         {/* Paragraph-Indexed Passage Text with High Contrast & Independent Scroll */}
         <div className={cn(
-          "text-slate-100 leading-relaxed custom-scrollbar overflow-y-auto select-text space-y-4 pr-1",
+          "text-slate-100 leading-relaxed custom-scrollbar overflow-y-auto overflow-x-hidden select-text space-y-4 pr-2 w-full min-w-0",
           !isFullWidth ? "flex-1 min-h-0" : (isExamFocusMode ? "max-h-[calc(100vh-18rem)]" : "max-h-[32rem]"),
           passageFontSize === 'sm' ? "text-xs sm:text-sm leading-relaxed" : (passageFontSize === 'lg' ? "text-base sm:text-lg leading-loose" : "text-sm sm:text-base leading-relaxed")
         )}>
           {paragraphs.length > 1 ? (
             paragraphs.map((para: string, pIdx: number) => (
-              <div key={pIdx} className="flex gap-3 group items-start">
+              <div key={pIdx} className="flex gap-3 group items-start w-full min-w-0">
                 <span className="text-[11px] font-mono font-bold text-amber-400/80 select-none pt-0.5 shrink-0 group-hover:text-amber-300 transition-colors">
                   ¶ {pIdx + 1}
                 </span>
-                <div className="text-slate-100 leading-relaxed text-left flex-1 font-sans">
+                <div className="text-slate-100 leading-relaxed text-left flex-1 min-w-0 font-sans break-words">
                   <MathRenderer content={para} />
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-slate-100 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/40 pl-4 py-1">
+            <div className="text-slate-100 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/40 pl-4 py-1 w-full min-w-0 break-words">
               <MathRenderer content={passageText} />
             </div>
           )}
@@ -908,7 +908,7 @@ export function Paper2ExamRunner({
       <div
         key={sub?.subId || subIdx}
         className={cn(
-          'p-5 sm:p-6 rounded-3xl border transition-all space-y-5',
+          'p-5 sm:p-6 rounded-3xl border transition-all space-y-5 w-full min-w-0',
           isSubmitted
             ? 'bg-slate-900/60 border-slate-800'
             : 'bg-slate-950/90 border-slate-800/90 shadow-xl'
@@ -1237,7 +1237,7 @@ export function Paper2ExamRunner({
       </div>
 
       {/* Main Examination Workstation */}
-      <Card className={cn("rounded-[32px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden text-white transition-all", isExamFocusMode && "flex-1 flex flex-col overflow-hidden min-h-0")}>
+      <Card className={cn("rounded-[32px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden text-white transition-all w-full min-w-0", isExamFocusMode && "flex-1 flex flex-col overflow-hidden min-h-0")}>
         {/* Workstation Header */}
         <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-6 sm:p-8 border-b border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -1336,7 +1336,7 @@ export function Paper2ExamRunner({
         </div>
 
         {/* Question Body */}
-        <CardContent className={cn("p-6 sm:p-8 space-y-8", isExamFocusMode && "flex-1 overflow-hidden min-h-0 flex flex-col p-4 sm:p-6 space-y-4", passageText && isSplitView && !isExamFocusMode && "p-4 sm:p-6 space-y-4 overflow-hidden")}>
+        <CardContent className={cn("p-6 sm:p-8 space-y-8 w-full min-w-0", isExamFocusMode && "flex-1 overflow-hidden min-h-0 flex flex-col p-4 sm:p-6 space-y-4", passageText && isSplitView && !isExamFocusMode && "p-4 sm:p-6 space-y-4 overflow-hidden")}>
           {/* Error Banner */}
           {gradingError && (
             <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-3 animate-in shake">
@@ -1761,20 +1761,20 @@ export function Paper2ExamRunner({
             /* ========================================================================= */
             passageText && isSplitView ? (
               <div className={cn(
-                "grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch",
+                "grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch w-full min-w-0",
                 isExamFocusMode
                   ? "h-full min-h-0 overflow-hidden"
                   : "lg:h-[calc(100vh-14rem)] lg:max-h-[calc(100vh-14rem)] overflow-hidden"
               )}>
-                {/* Left Column: Reading Passage Panel (5 cols) */}
-                <div className="hidden lg:flex lg:col-span-5 flex-col h-full min-h-0 overflow-hidden pr-1">
+                {/* Left Column: Reading Passage Panel (6 cols / 50% split on desktop, min-w-[420px], independent scroll) */}
+                <div className="hidden lg:flex lg:col-span-6 flex-col h-full min-h-0 min-w-0 lg:min-w-[420px] w-full overflow-hidden pr-1">
                   {renderPassageCard(false)}
                 </div>
 
-                {/* Right Column: Structured Sub-Questions (7 cols) */}
-                <div className="lg:col-span-7 h-full min-h-0 overflow-y-auto custom-scrollbar pr-2 space-y-6">
+                {/* Right Column: Structured Sub-Questions (6 cols / 50% split on desktop, independent scroll) */}
+                <div className="lg:col-span-6 h-full min-h-0 min-w-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar pr-2 space-y-6">
                   {/* On Mobile / Tablet, show passage at top of questions */}
-                  <div className="lg:hidden">
+                  <div className="lg:hidden mb-6">
                     {renderPassageCard(true)}
                   </div>
                   {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
