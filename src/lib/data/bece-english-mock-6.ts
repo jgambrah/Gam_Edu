@@ -754,51 +754,51 @@ export const SET_BECE_MOCK_6_ENGLISH_P2 = {
     },
     {
       "number": 4,
+      "questionNumber": "4",
       "part": "Part B",
+      "section": "Part B: Reading Comprehension",
       "title": "Question 4: Reading Comprehension",
-      "prompt": "In contemporary pedagogical discourse, the fundamental objective of school education is undergoing a radical re-evaluation. For decades, traditional educational systems measured scholastic achievement almost exclusively through cognitive rote-memorization and written examination test scores. A student who could recite complex historical dates, memorized mathematical theorems, and produced immaculate grammatical definitions was deemed an academic genius, irrespective of whether that learner possessed practical vocational problem-solving skills or moral character.\n\nHowever, modern educational psychologists and industrial employers argue passionately that this rigid, paper-based assessment model is deeply flawed. Memorizing textbooks without developing practical, creative application produces graduates who are completely divorced from economic realities. In a dynamic global economy shaped by technological automation and entrepreneurship, book knowledge that cannot be translated into functional innovation is rendered virtually obsolete.\n\nFirst and foremost, holistic education must prioritize the mastery of critical thinking and creative problem-solving skills. Students must be challenged not merely to absorb answers passively from chalkboards, but to interrogate complex real-world challenges. When basic school pupils are taught how to design low-cost solar water pumps, cultivate organic school vegetable gardens, and code computer software, their minds develop cognitive agility. Such learners transition into self-reliant, resourceful citizens capable of creating private enterprises rather than perpetually roaming urban avenues in desperate search of scarce civil service appointments.\n\nSecondly, genuine education is incomplete without the deliberate cultivation of emotional intelligence and sound ethical values. An academically brilliant individual who lacks personal integrity, empathy, and accountability is an existential hazard to society. Corporate boardrooms and public offices across the continent are crippled not by an absence of certified accountants or lawyers, but by an acute deficit of moral character. Embezzlement, bribery, and nepotism are committed not by uneducated illiterates, but by intellectually sophisticated professionals who lack ethical anchors.\n\nEducational reformists conclude that national basic curricula must strike a harmonious balance between intellectual rigor, practical technical craftsmanship, and ethical character training. A nation that educates the intellect without cultivating the conscience prepares a harvest of intellectual predators.",
-      "passage": "In contemporary pedagogical discourse, the fundamental objective of school education is undergoing a radical re-evaluation. For decades, traditional educational systems measured scholastic achievement almost exclusively through cognitive rote-memorization and written examination test scores. A student who could recite complex historical dates, memorized mathematical theorems, and produced immaculate grammatical definitions was deemed an academic genius, irrespective of whether that learner possessed practical vocational problem-solving skills or moral character.\n\nHowever, modern educational psychologists and industrial employers argue passionately that this rigid, paper-based assessment model is deeply flawed. Memorizing textbooks without developing practical, creative application produces graduates who are completely divorced from economic realities. In a dynamic global economy shaped by technological automation and entrepreneurship, book knowledge that cannot be translated into functional innovation is rendered virtually obsolete.\n\nFirst and foremost, holistic education must prioritize the mastery of critical thinking and creative problem-solving skills. Students must be challenged not merely to absorb answers passively from chalkboards, but to interrogate complex real-world challenges. When basic school pupils are taught how to design low-cost solar water pumps, cultivate organic school vegetable gardens, and code computer software, their minds develop cognitive agility. Such learners transition into self-reliant, resourceful citizens capable of creating private enterprises rather than perpetually roaming urban avenues in desperate search of scarce civil service appointments.\n\nSecondly, genuine education is incomplete without the deliberate cultivation of emotional intelligence and sound ethical values. An academically brilliant individual who lacks personal integrity, empathy, and accountability is an existential hazard to society. Corporate boardrooms and public offices across the continent are crippled not by an absence of certified accountants or lawyers, but by an acute deficit of moral character. Embezzlement, bribery, and nepotism are committed not by uneducated illiterates, but by intellectually sophisticated professionals who lack ethical anchors.\n\nEducational reformists conclude that national basic curricula must strike a harmonious balance between intellectual rigor, practical technical craftsmanship, and ethical character training. A nation that educates the intellect without cultivating the conscience prepares a harvest of intellectual predators.",
+      "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+      "passageText": "The regional auditorium in Sunyani was packed to capacity for the grand finale of the Junior High Schools Debate Competition. Fourteen-year-old Serwaa sat behind the speakers' podium for Berekum Presby JHS, her palms damp with nervous sweat. Across the aisle sat the defending champions, Saint Joseph's JHS, looking poised, experienced, and confident. \n\nThe motion before the house was: \"Practical Vocational Training is More Beneficial to Ghanaian Youth than Purely Academic Grammar Education.\" Berekum Presby had been drawn to argue for the motion.\n\nWhen the chief judge rang the first bell, Serwaa's knees trembled as she stepped to the microphone. At first, her voice shook slightly, and she stumbled over her opening greetings. Laughter rippled across the back rows of the audience, threatening to shatter her composure.\n\nHowever, Serwaa caught the encouraging eye of her English tutor, Mr. Addo, seated in the second row. He gave her a calm, firm nod that steadied her racing heart. Taking a deep breath, Serwaa pushed aside her fear and began her substantive presentation.\n\nShe spoke clearly and passionately about the economic realities of modern Ghana. Drawing examples from her own community, she contrasted unemployed university graduates with skilled electricians, modern carpenters, and solar technicians who earned decent incomes while providing essential community services. Her arguments were well-structured, supported with practical facts, and delivered with conviction.\n\nWhen the final bell chimed, the entire hall rose in thunderous applause. The judges scored the contest with great care. When the chief adjudicator announced Berekum Presby JHS as the new regional champions, tears of joy streamed down Serwaa’s cheeks. She had proven that determination can turn fear into triumphant success.",
       "subQuestions": [
-        {
-          "label": "(a)",
-          "question": "State two criteria by which traditional education measured scholastic achievement according to the opening paragraph.",
-          "answer": "1. Cognitive rote-memorization.\n2. Written examination test scores (or ability to recite historical dates and memorize theorems)."
-        },
-        {
-          "label": "(b)",
-          "question": "Why do modern employers criticize graduates produced solely by rote-memorization?",
-          "answer": "Because they lack practical, creative problem-solving skills and cannot apply their knowledge to solve real-world economic challenges."
-        },
-        {
-          "label": "(c)",
-          "question": "Mention two practical activities mentioned in the third paragraph that can develop students' creative problem-solving skills.",
-          "answer": "1. Designing low-cost solar water pumps.\n2. Cultivating organic vegetable gardens (or coding computer software)."
-        },
-        {
-          "label": "(d)",
-          "question": "According to the fourth paragraph, what constitutes the primary cause of corruption and institutional collapse in society?",
-          "answer": "An acute deficit of moral character and ethical values among educated professionals (not a lack of academic qualifications)."
-        },
-        {
-          "label": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... divorced from economic realities;\nII. ... cognitive agility;\nIII. ... intellectual predators.",
-          "answer": "I. 'divorced from economic realities' means completely separated, detached, or out of touch with real-world financial and employment conditions.\nII. 'cognitive agility' means mental flexibility, sharpness, and quickness in thinking and learning.\nIII. 'intellectual predators' means highly educated and clever individuals who use their intellect dishonestly to exploit, harm, or rob society."
-        },
-        {
-          "label": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. immaculate;\nII. obsolete;\nIII. prioritize;\nIV. harmonious.",
-          "answer": "I. immaculate: flawless, perfect, spotless, faultless.\nII. obsolete: outdated, archaic, useless, superseded.\nIII. prioritize: emphasize, give precedence to, highlight, value.\nIV. harmonious: balanced, unified, integrated, agreeable."
-        },
-        {
-          "label": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two essential components of holistic education advocated by the author.",
-          "answer": "1. Schools must teach creative problem-solving skills.\n2. Education must cultivate sound moral character."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What debate motion was debated during the regional competition finale?",
+                  "answer": "Practical Vocational Training is More Beneficial to Ghanaian Youth than Purely Academic Grammar Education."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "Why did laughter ripple across the audience when Serwaa began her presentation?",
+                  "answer": "Because her voice was trembling and she stumbled over her opening greetings due to nervousness."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "How did Mr. Addo help Serwaa regain her confidence on stage?",
+                  "answer": "He caught her eye and gave her a calm, firm nod of encouragement from the second row."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "Mention two practical examples Serwaa gave to support vocational education.",
+                  "answer": "She contrasted unemployed university graduates with skilled electricians, modern carpenters, or solar technicians who earned steady incomes."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... packed to capacity;\nII. ... caught the encouraging eye;\nIII. ... rose in thunderous applause.",
+                  "answer": "I. 'packed to capacity' means completely filled with people; crowded to the maximum limit.\nII. 'caught the encouraging eye' means noticed a supportive and reassuring look from someone.\nIII. 'rose in thunderous applause' means stood up and clapped loudly and enthusiastically."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. poised;\nII. stumbled;\nIII. composure;\nIV. conviction.",
+                  "answer": "I. poised: calm, composed, self-assured, confident.\nII. stumbled: hesitated, faltered, tripped over words.\nIII. composure: calmness, self-control, poise.\nIV. conviction: confidence, firmness, certainty."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the outcome of the competition.",
+                  "answer": "1. Serwaa delivered a powerful presentation.\n2. Berekum Presby won the championship trophy."
+            }
       ],
-      "markingScheme": "(a) State two criteria by which traditional education measured scholastic achievement according to the opening paragraph.\nAnswer: 1. Cognitive rote-memorization.\n2. Written examination test scores (or ability to recite historical dates and memorize theorems).\n\n(b) Why do modern employers criticize graduates produced solely by rote-memorization?\nAnswer: Because they lack practical, creative problem-solving skills and cannot apply their knowledge to solve real-world economic challenges.\n\n(c) Mention two practical activities mentioned in the third paragraph that can develop students' creative problem-solving skills.\nAnswer: 1. Designing low-cost solar water pumps.\n2. Cultivating organic vegetable gardens (or coding computer software).\n\n(d) According to the fourth paragraph, what constitutes the primary cause of corruption and institutional collapse in society?\nAnswer: An acute deficit of moral character and ethical values among educated professionals (not a lack of academic qualifications).\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... divorced from economic realities;\nII. ... cognitive agility;\nIII. ... intellectual predators.\nAnswer: I. 'divorced from economic realities' means completely separated, detached, or out of touch with real-world financial and employment conditions.\nII. 'cognitive agility' means mental flexibility, sharpness, and quickness in thinking and learning.\nIII. 'intellectual predators' means highly educated and clever individuals who use their intellect dishonestly to exploit, harm, or rob society.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. immaculate;\nII. obsolete;\nIII. prioritize;\nIV. harmonious.\nAnswer: I. immaculate: flawless, perfect, spotless, faultless.\nII. obsolete: outdated, archaic, useless, superseded.\nIII. prioritize: emphasize, give precedence to, highlight, value.\nIV. harmonious: balanced, unified, integrated, agreeable.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two essential components of holistic education advocated by the author.\nAnswer: 1. Schools must teach creative problem-solving skills.\n2. Education must cultivate sound moral character.",
-      "workedSolution": "(a) State two criteria by which traditional education measured scholastic achievement according to the opening paragraph.\nAnswer: 1. Cognitive rote-memorization.\n2. Written examination test scores (or ability to recite historical dates and memorize theorems).\n\n(b) Why do modern employers criticize graduates produced solely by rote-memorization?\nAnswer: Because they lack practical, creative problem-solving skills and cannot apply their knowledge to solve real-world economic challenges.\n\n(c) Mention two practical activities mentioned in the third paragraph that can develop students' creative problem-solving skills.\nAnswer: 1. Designing low-cost solar water pumps.\n2. Cultivating organic vegetable gardens (or coding computer software).\n\n(d) According to the fourth paragraph, what constitutes the primary cause of corruption and institutional collapse in society?\nAnswer: An acute deficit of moral character and ethical values among educated professionals (not a lack of academic qualifications).\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... divorced from economic realities;\nII. ... cognitive agility;\nIII. ... intellectual predators.\nAnswer: I. 'divorced from economic realities' means completely separated, detached, or out of touch with real-world financial and employment conditions.\nII. 'cognitive agility' means mental flexibility, sharpness, and quickness in thinking and learning.\nIII. 'intellectual predators' means highly educated and clever individuals who use their intellect dishonestly to exploit, harm, or rob society.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. immaculate;\nII. obsolete;\nIII. prioritize;\nIV. harmonious.\nAnswer: I. immaculate: flawless, perfect, spotless, faultless.\nII. obsolete: outdated, archaic, useless, superseded.\nIII. prioritize: emphasize, give precedence to, highlight, value.\nIV. harmonious: balanced, unified, integrated, agreeable.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two essential components of holistic education advocated by the author.\nAnswer: 1. Schools must teach creative problem-solving skills.\n2. Education must cultivate sound moral character.",
       "points": 30
-    },
+},
     {
       "number": 5,
       "part": "Part C",

@@ -20,7 +20,10 @@ import {
   Check,
   Eye,
   EyeOff,
-  AlignLeft
+  AlignLeft,
+  Columns,
+  Maximize2,
+  X
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
@@ -89,6 +92,9 @@ export function Paper2ExamRunner({
   const [showModelAnswer, setShowModelAnswer] = useState<Record<string, boolean>>({});
   const [examFinished, setExamFinished] = useState(false);
   const [selectedObjectiveOptions, setSelectedObjectiveOptions] = useState<Record<string, string>>({});
+  const [isSplitView, setIsSplitView] = useState(true);
+  const [isPassageModalOpen, setIsPassageModalOpen] = useState(false);
+  const [passageFontSize, setPassageFontSize] = useState<'sm' | 'base' | 'lg'>('base');
 
   // --- REAL-TIME LIVE COUNTDOWN TIMER (Paper 2: 75 - 105 mins standard) ---
   const examDurationMinutes = Number(activeExam?.paper2?.durationMinutes || activeExam?.durationMinutes || 75);
@@ -511,13 +517,22 @@ export function Paper2ExamRunner({
   const questionModelAnswer = currentQuestion?.modelAnswer || currentQuestion?.workedSolution || '';
 
   // Defensive extraction of reading passage / context extract (e.g. for Comprehension, Literature, or Essays)
+  const isComprehensionQuestion = 
+    currentQuestion?.number === 4 ||
+    currentQuestion?.questionNumber === "4" ||
+    (currentQuestion?.section && currentQuestion.section.toLowerCase().includes('comprehension')) ||
+    (currentQuestion?.title && currentQuestion.title.toLowerCase().includes('comprehension'));
+
   const passageText =
     currentQuestion?.passageText ||
     currentQuestion?.passage ||
     currentQuestion?.contextExtract ||
     currentQuestion?.extract ||
-    currentQuestion?.sectionA_comprehension?.passageText ||
-    (activeExam as any)?.sections?.partB_comprehension?.passageText ||
+    (isComprehensionQuestion ? (
+      (activeExam as any)?.paper2?.sections?.partB_comprehension?.passageText ||
+      (activeExam as any)?.sections?.partB_comprehension?.passageText ||
+      (activeExam as any)?.partB_comprehension?.passageText
+    ) : '') ||
     (typeof questionPrompt === 'string' && questionPrompt.includes('**Question:**')
       ? questionPrompt.split('**Question:**')[0].trim()
       : '') ||
@@ -530,10 +545,105 @@ export function Paper2ExamRunner({
     currentQuestion?.passageTitle ||
     currentQuestion?.textTitle ||
     currentQuestion?.sectionTitle ||
-    (activeExam as any)?.sections?.partB_comprehension?.title ||
-    (currentQuestion?.section?.toLowerCase().includes('literature')
-      ? 'Literature Context Extract'
-      : 'Reading Comprehension Passage');
+    (isComprehensionQuestion
+      ? ((activeExam as any)?.paper2?.sections?.partB_comprehension?.title ||
+         (activeExam as any)?.sections?.partB_comprehension?.title ||
+         'Reading Comprehension Passage')
+      : (currentQuestion?.section?.toLowerCase().includes('literature')
+          ? 'Literature Context Extract'
+          : 'Reading Passage / Reference Material'));
+
+  // Reading passage renderer component for comprehension & theory reference
+  const renderPassageCard = (isFullWidth = false) => {
+    if (!passageText) return null;
+    return (
+      <div className={cn(
+        "rounded-3xl bg-slate-950/90 border border-amber-500/30 p-5 sm:p-6 shadow-2xl backdrop-blur-md space-y-4 transition-all",
+        isFullWidth ? "w-full" : "w-full"
+      )}>
+        {/* Passage Header */}
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+                {passageTitle}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                Official Reference Passage
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {/* Font Size Selector */}
+            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-0.5 text-[11px]">
+              <button
+                type="button"
+                onClick={() => setPassageFontSize('sm')}
+                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'sm' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                title="Small text size"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                onClick={() => setPassageFontSize('base')}
+                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'base' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                title="Normal text size"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                onClick={() => setPassageFontSize('lg')}
+                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'lg' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                title="Large text size"
+              >
+                A+
+              </button>
+            </div>
+            {/* Split View Toggle (Desktop Only) */}
+            <button
+              type="button"
+              onClick={() => setIsSplitView(prev => !prev)}
+              className="hidden lg:flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all cursor-pointer"
+              title={isSplitView ? "Switch to Stacked View" : "Switch to Side-by-Side Split View"}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>{isSplitView ? "Split" : "Stack"}</span>
+            </button>
+            {/* Modal Popout */}
+            <button
+              type="button"
+              onClick={() => setIsPassageModalOpen(true)}
+              className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 hover:border-amber-500/30 transition-all cursor-pointer"
+              title="Pop out in full overlay"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Instructions banner */}
+        {questionInstructions && (
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed font-medium">
+            📋 <strong>Instructions:</strong> {questionInstructions}
+          </div>
+        )}
+
+        {/* Passage Text */}
+        <div className={cn(
+          "text-slate-200 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/40 pl-4 py-1 custom-scrollbar overflow-y-auto select-text",
+          isSplitView ? "max-h-[calc(100vh-16rem)]" : "max-h-96",
+          passageFontSize === 'sm' ? "text-xs sm:text-sm" : (passageFontSize === 'lg' ? "text-base sm:text-lg" : "text-sm sm:text-base")
+        )}>
+          <MathRenderer content={passageText} />
+        </div>
+      </div>
+    );
+  };
 
   const questionInstructions =
     currentQuestion?.instructions ||
@@ -1062,8 +1172,19 @@ export function Paper2ExamRunner({
             /* ========================================================================= */
             /* CASE B: QUESTIONS WITH STRUCTURED SUB-PARTS (a, b, c, d...)               */
             /* ========================================================================= */
-            <div className="space-y-8">
-              {subQuestionsList.map((sub: any, subIdx: number) => {
+            passageText && isSplitView ? (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                {/* Left Column: Sticky Reading Passage Panel (5 cols) */}
+                <div className="hidden lg:block lg:col-span-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+                  {renderPassageCard(false)}
+                </div>
+                {/* Right Column: Structured Sub-Questions (7 cols) */}
+                <div className="lg:col-span-7 space-y-8">
+                  {/* On Mobile / Tablet, show passage at top of questions */}
+                  <div className="lg:hidden">
+                    {renderPassageCard(true)}
+                  </div>
+                  {subQuestionsList.map((sub: any, subIdx: number) => {
                 const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
                 const partKey = `${currentQuestionId}_p${subIdx}`;
                 const isHintShown = !!showPartHints[partKey];
@@ -1092,9 +1213,22 @@ export function Paper2ExamRunner({
                             : `Sub-Question Part ${sub.partLabel || subId}`}
                         </span>
                       </div>
-                      <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
-                        [{subMarks} Marks]
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {passageText && (
+                          <button
+                            type="button"
+                            onClick={() => setIsPassageModalOpen(true)}
+                            className="text-[11px] font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                            title="Open reading passage overlay"
+                          >
+                            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Refer to Passage</span>
+                          </button>
+                        )}
+                        <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
+                          [{subMarks} Marks]
+                        </span>
+                      </div>
                     </div>
 
                     {/* Part Prompt */}
@@ -1234,7 +1368,197 @@ export function Paper2ExamRunner({
                   </div>
                 );
               })}
-            </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {passageText && renderPassageCard(true)}
+                {subQuestionsList.map((sub: any, subIdx: number) => {
+                  const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
+                  const partKey = `${currentQuestionId}_p${subIdx}`;
+                  const isHintShown = !!showPartHints[partKey];
+                  const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
+                  const subMarks = Number(sub?.maxMarks || sub?.marks) || 5;
+
+                  return (
+                    <div
+                      key={sub?.subId || subIdx}
+                      className={cn(
+                        'p-5 sm:p-6 rounded-2xl border transition-all space-y-4',
+                        isSubmitted
+                          ? 'bg-slate-900/60 border-slate-800'
+                          : 'bg-slate-950/80 border-slate-800/80 shadow-md'
+                      )}
+                    >
+                      {/* Part Header */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
+                            {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
+                          </span>
+                          <span className="text-sm font-bold text-white">
+                            {currentQuestion?.questionNumber 
+                              ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
+                              : `Sub-Question Part ${sub.partLabel || subId}`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {passageText && (
+                            <button
+                              type="button"
+                              onClick={() => setIsPassageModalOpen(true)}
+                              className="text-[11px] font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                              title="Open reading passage overlay"
+                            >
+                              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                              <span>Refer to Passage</span>
+                            </button>
+                          )}
+                          <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
+                            [{subMarks} Marks]
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Part Prompt */}
+                      <div className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed pl-1 whitespace-pre-line bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                        <MathRenderer content={(sub.prompt || sub.question || sub.title || '').replace(/\\n/g, '\n')} />
+                      </div>
+
+                      {/* Sub-part diagram (if any) */}
+                      {sub.diagramSvg && (
+                        <div
+                          className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
+                          dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
+                        />
+                      )}
+
+                      {/* Student Answer Textarea */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] text-slate-400">
+                          <span>Your Working Steps, Formula or Explanation:</span>
+                          {isSubmitted && (
+                            <span className="text-emerald-400 font-bold flex items-center gap-1">
+                              <Lock className="w-3 h-3" /> Locked Post-Submission
+                            </span>
+                          )}
+                        </div>
+                        <Textarea
+                          disabled={isSubmitted || isSubmitting}
+                          value={currentVal}
+                          onChange={e => setPartAnswers(prev => ({ ...prev, [partKey]: e.target.value }))}
+                          placeholder="Write out your answer, steps, formula, or derivation here..."
+                          className={cn(
+                            'rounded-2xl min-h-[95px] text-xs font-sans transition-all',
+                            isSubmitted
+                              ? 'bg-slate-950/90 border-slate-800 text-slate-300 opacity-90 cursor-not-allowed'
+                              : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-amber-500 placeholder:text-slate-600'
+                          )}
+                        />
+                      </div>
+
+                      {/* Hint Toggle */}
+                      {sub.hint && !isSubmitted && (
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleHint(partKey)}
+                            className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Lightbulb className="w-3.5 h-3.5" />
+                            <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
+                          </button>
+                          {isHintShown && (
+                            <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                              💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Sub-question AI Feedback and Model Solution */}
+                      <div className="mt-4 border-t border-slate-800/80 pt-4">
+                        {!isSubmitted ? (
+                          <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-400">
+                            <Lock className="w-4 h-4 text-amber-400 shrink-0"/>
+                            <span>Official Solution and Scoring Rubric are unlocked once your answers are submitted for AI evaluation.</span>
+                          </div>
+                        ) : (
+                          <div className="space-y-4 animate-in fade-in duration-300">
+                            {/* AI Evaluation Score & Step Breakdown */}
+                            {(() => {
+                              const evalItem = toSafeArray(gradingResults).find(
+                                (r: any) =>
+                                  (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
+                                  (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
+                              );
+
+                              if (!evalItem) return null;
+
+                              return (
+                                <div className="p-4 rounded-xl bg-slate-900/90 border border-sky-500/30 space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-sky-400 text-sm flex items-center gap-1.5">
+                                      <Sparkles className="w-4 h-4 text-sky-400" />
+                                      <span>AI Score Breakdown</span>
+                                    </span>
+                                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                                      Score: {evalItem.evaluation?.awardedMarks ?? 0} / {evalItem.evaluation?.maxMarks ?? subMarks} Marks
+                                    </span>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    {toSafeArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
+                                      <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
+                                        <div>
+                                          <span className="text-slate-200 font-medium">{step.step}</span>
+                                          {step.feedback && <p className="text-amber-400/90 mt-0.5 text-[11px]">{step.feedback}</p>}
+                                        </div>
+                                        <span className="text-slate-300 whitespace-nowrap font-mono font-semibold">
+                                          {step.awarded} / {step.max}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {evalItem.evaluation?.constructiveFeedback && (
+                                    <div className="text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-800/40 leading-relaxed">
+                                      <strong className="text-sky-400 block mb-0.5">Examiner Note:</strong>
+                                      {evalItem.evaluation.constructiveFeedback}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()}
+
+                            {/* Unlocked Model Solution */}
+                            <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
+                              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+                                <CheckCircle2 className="w-4 h-4 shrink-0"/>
+                                <span>Official Model Solution & Marking Rubric</span>
+                              </div>
+
+                              {sub.modelAnswer && (
+                                <div className="p-2.5 rounded-lg bg-slate-950/70 border border-emerald-500/20 text-xs">
+                                  <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">Model Answer / Benchmark:</span>
+                                  <div className="text-slate-100 font-bold">
+                                    <MathRenderer content={sub.modelAnswer} />
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="text-xs text-slate-300 leading-relaxed pt-1">
+                                <MathRenderer content={sub.workedSolution || sub.modelAnswer || 'Follow official derivation steps.'} />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           )}
 
           {/* AI Grading Loading Skeleton */}
@@ -1317,6 +1641,97 @@ export function Paper2ExamRunner({
               )}
             </div>
           </div>
+        
+          {/* Floating Sticky Quick-Reference Passage Pill */}
+          {passageText && hasSubParts && (
+            <button
+              type="button"
+              onClick={() => setIsPassageModalOpen(true)}
+              className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-bold rounded-full px-5 py-3 shadow-2xl flex items-center gap-2.5 border border-amber-300/40 hover:scale-105 active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+              title="Click to view reference passage overlay"
+            >
+              <BookOpen className="w-4 h-4 text-white" />
+              <span className="text-xs tracking-wider uppercase font-black">Refer to Passage</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </button>
+          )}
+
+          {/* Quick-Reference Passage Modal / Drawer Overlay */}
+          {isPassageModalOpen && passageText && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+              <div className="bg-slate-900 border border-amber-500/40 rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
+                {/* Modal Header */}
+                <div className="p-5 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/90">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                        {passageTitle}
+                      </h4>
+                      <p className="text-[11px] text-amber-400 font-mono">
+                        Quick Reference Overlay • Scrollable
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* Font size toggle */}
+                    <div className="flex items-center bg-slate-800/80 border border-slate-700 rounded-xl p-1 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setPassageFontSize('sm')}
+                        className={cn("px-2 py-0.5 text-xs font-bold rounded-lg transition-colors", passageFontSize === 'sm' ? "bg-amber-500 text-slate-950" : "text-slate-400 hover:text-white")}
+                      >A-</button>
+                      <button
+                        type="button"
+                        onClick={() => setPassageFontSize('base')}
+                        className={cn("px-2 py-0.5 text-xs font-bold rounded-lg transition-colors", passageFontSize === 'base' ? "bg-amber-500 text-slate-950" : "text-slate-400 hover:text-white")}
+                      >A</button>
+                      <button
+                        type="button"
+                        onClick={() => setPassageFontSize('lg')}
+                        className={cn("px-2 py-0.5 text-xs font-bold rounded-lg transition-colors", passageFontSize === 'lg' ? "bg-amber-500 text-slate-950" : "text-slate-400 hover:text-white")}
+                      >A+</button>
+                    </div>
+                    {/* Close button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsPassageModalOpen(false)}
+                      className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-slate-700"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                {/* Modal Content */}
+                <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                  {questionInstructions && (
+                    <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed font-medium">
+                      📋 <strong>Instructions:</strong> {questionInstructions}
+                    </div>
+                  )}
+                  <div className={cn(
+                    "text-slate-200 leading-relaxed whitespace-pre-line select-text",
+                    passageFontSize === 'sm' ? "text-xs sm:text-sm" : (passageFontSize === 'lg' ? "text-base sm:text-lg" : "text-sm sm:text-base")
+                  )}>
+                    <MathRenderer content={passageText} />
+                  </div>
+                </div>
+                {/* Modal Footer */}
+                <div className="p-4 sm:p-5 border-t border-slate-800 bg-slate-950/80 flex justify-end">
+                  <Button
+                    type="button"
+                    onClick={() => setIsPassageModalOpen(false)}
+                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-lg shadow-amber-500/20"
+                  >
+                    Close & Back to Question Answers
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </CardContent>
       </Card>
     </div>

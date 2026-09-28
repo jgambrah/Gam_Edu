@@ -754,51 +754,51 @@ export const SET_BECE_MOCK_11_ENGLISH_P2 = {
     },
     {
       "number": 4,
+      "questionNumber": "4",
       "part": "Part B",
+      "section": "Part B: Reading Comprehension",
       "title": "Question 4: Reading Comprehension",
-      "prompt": "In the contemporary era of rapid industrialization and urban expansion, noise pollution has emerged as one of the most pervasive yet chronically overlooked environmental hazards affecting public health. Across thriving urban commercial centers and peri-urban settlements in West Africa, city residents are perpetually inundated by an acoustic barrage of blaring automobile horns, unregulated open-air religious loudspeakers, commercial advertising sound systems, and roaring diesel generators.\n\nTraditional perceptions have long trivialized noise as merely a minor, temporary inconvenience of city life. However, modern physiological and epidemiological research demonstrates that chronic exposure to excessive acoustic levels represents a lethal public health threat. The human auditory system is biologically evolved to perceive sounds at moderate intensities; continuous exposure to sound levels exceeding eighty-five decibels causes irreversible damage to the delicate sensory hair cells in the cochlea, resulting in permanent sensorineural hearing loss and chronic tinnitus.\n\nBeyond auditory impairment, excessive environmental noise inflicts devastating systemic physiological damage on the human body. When subjected to unpredictable, loud noise, the human brain automatically interprets the acoustic shock as an existential threat, triggering the nervous system to release high surges of stress hormones, notably adrenaline and cortisol. This chronic physiological arousal leads to arterial constriction, elevated heart rates, and chronic hypertension. Cardiologists have established a direct, alarming correlation between long-term residential noise exposure and the rising incidence of fatal myocardial infarctions and cerebrovascular strokes among urban populations.\n\nFurthermore, noise pollution wreaks havoc on cognitive cognitive performance and psychological well-being. School children whose classrooms are situated near busy commercial transit corridors or loud industrial workshops suffer significant impairments in reading comprehension, memory retention, and speech perception. Chronically deprived of tranquil nocturnal rest by blaring religious all-night vigils, students experience daytime drowsiness, behavioral irritability, and severe academic underperformance.\n\nEnvironmental epidemiologists conclude that curbing this insidious menace requires aggressive statutory regulation. Municipal authorities must enforce strict acoustic zoning bylaws, ban high-decibel commercial advertising speakers in residential corridors, and establish quiet zones around educational institutions and hospitals.",
-      "passage": "In the contemporary era of rapid industrialization and urban expansion, noise pollution has emerged as one of the most pervasive yet chronically overlooked environmental hazards affecting public health. Across thriving urban commercial centers and peri-urban settlements in West Africa, city residents are perpetually inundated by an acoustic barrage of blaring automobile horns, unregulated open-air religious loudspeakers, commercial advertising sound systems, and roaring diesel generators.\n\nTraditional perceptions have long trivialized noise as merely a minor, temporary inconvenience of city life. However, modern physiological and epidemiological research demonstrates that chronic exposure to excessive acoustic levels represents a lethal public health threat. The human auditory system is biologically evolved to perceive sounds at moderate intensities; continuous exposure to sound levels exceeding eighty-five decibels causes irreversible damage to the delicate sensory hair cells in the cochlea, resulting in permanent sensorineural hearing loss and chronic tinnitus.\n\nBeyond auditory impairment, excessive environmental noise inflicts devastating systemic physiological damage on the human body. When subjected to unpredictable, loud noise, the human brain automatically interprets the acoustic shock as an existential threat, triggering the nervous system to release high surges of stress hormones, notably adrenaline and cortisol. This chronic physiological arousal leads to arterial constriction, elevated heart rates, and chronic hypertension. Cardiologists have established a direct, alarming correlation between long-term residential noise exposure and the rising incidence of fatal myocardial infarctions and cerebrovascular strokes among urban populations.\n\nFurthermore, noise pollution wreaks havoc on cognitive cognitive performance and psychological well-being. School children whose classrooms are situated near busy commercial transit corridors or loud industrial workshops suffer significant impairments in reading comprehension, memory retention, and speech perception. Chronically deprived of tranquil nocturnal rest by blaring religious all-night vigils, students experience daytime drowsiness, behavioral irritability, and severe academic underperformance.\n\nEnvironmental epidemiologists conclude that curbing this insidious menace requires aggressive statutory regulation. Municipal authorities must enforce strict acoustic zoning bylaws, ban high-decibel commercial advertising speakers in residential corridors, and establish quiet zones around educational institutions and hospitals.",
+      "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+      "passageText": "In the farming community of Akropong, the basic school faced a persistent academic challenge: poor reading proficiency among junior high school students. The school had no dedicated reading room, and the few old textbooks available were kept locked in a wooden cupboard in the headmaster's office. Consequently, candidates preparing for national examinations struggled with basic English comprehension and composition writing.\n\nDetermined to change this narrative, the school's newly formed Youth Literacy Club, led by fourteen-year-old Abigail, launched an initiative called \"A Book for Akropong.\" \n\nFirst, the students secured permission from the town chief to renovate an abandoned community post office that had fallen into disuse. On Saturdays, club members gathered to scrub the stained walls, repair broken louver blades, and paint the interior with bright cream emulsion. The village carpenter volunteered his labor to construct sturdy wooden bookshelves and reading tables using spare timber planks.\n\nNext, Abigail wrote a formal letter of appeal to secondary school alumni and charity organizations in Accra. The response was encouraging. Within two months, several boxes of storybooks, junior encyclopedias, dictionaries, and past examination papers were delivered to the school.\n\nWhen the library was officially commissioned by the district director of education, children from all classes flooded into the hall to borrow books. Every afternoon, the quiet room filled with eager students reading under the supervision of volunteer teachers. \n\nWithin one academic year, students' reading speeds improved remarkably, and English test scores rose across the district. Abigail showed that when young people take action, they can ignite an intellectual revolution in their community.",
       "subQuestions": [
-        {
-          "label": "(a)",
-          "question": "State two common sources of excessive noise in urban centers mentioned in the first paragraph.",
-          "answer": "Blaring automobile horns, unregulated open-air religious loudspeakers, commercial advertising sound systems, and roaring diesel generators."
-        },
-        {
-          "label": "(b)",
-          "question": "How does chronic exposure to excessive noise cause permanent damage to human hearing?",
-          "answer": "Continuous exposure to sound levels exceeding eighty-five decibels irreversibly damages the delicate sensory hair cells in the cochlea."
-        },
-        {
-          "label": "(c)",
-          "question": "Mention two cardiovascular or heart-related diseases linked to long-term noise pollution in the third paragraph.",
-          "answer": "Chronic hypertension, fatal myocardial infarctions (heart attacks), and cerebrovascular strokes."
-        },
-        {
-          "label": "(d)",
-          "question": "In what two ways does noise pollution impair the academic performance of school children?",
-          "answer": "1. It impairs reading comprehension, memory retention, and speech perception.\n2. It deprives children of restful sleep, causing daytime drowsiness and behavioral irritability."
-        },
-        {
-          "label": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... acoustic barrage;\nII. ... existential threat;\nIII. ... quiet zones.",
-          "answer": "I. 'acoustic barrage' means a continuous, overwhelming, and heavy onslaught of loud sounds.\nII. 'existential threat' means a grave danger that threatens human survival or life itself.\nIII. 'quiet zones' means designated geographical areas where noise levels are strictly regulated and kept low by law."
-        },
-        {
-          "label": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. pervasive;\nII. trivialized;\nIII. constriction;\nIV. statutory.",
-          "answer": "I. pervasive: widespread, ubiquitous, prevalent, rampant.\nII. trivialized: dismissed, minimized, downplayed, disregarded.\nIII. constriction: narrowing, tightening, squeezing, contracting.\nIV. statutory: legal, lawful, mandatory, regulatory."
-        },
-        {
-          "label": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major statutory measures needed to curb noise pollution.",
-          "answer": "1. Assemblies must enforce strict acoustic bylaws.\n2. Authorities must establish quiet educational zones."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What main academic challenge did students at Akropong Basic School face?",
+                  "answer": "Poor reading proficiency and lack of access to library books."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "What abandoned building did the students renovate into a library?",
+                  "answer": "An old community post office that had fallen into disuse."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "How did the local carpenter contribute to the library project?",
+                  "answer": "He volunteered his labor to build sturdy wooden bookshelves and reading tables."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "Mention two types of reading materials donated to the new library.",
+                  "answer": "Storybooks, junior encyclopedias, dictionaries, or past examination papers."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... change this narrative;\nII. ... flooded into the hall;\nIII. ... ignite an intellectual revolution.",
+                  "answer": "I. 'change this narrative' means alter or improve an unsatisfactory situation; reverse a negative trend.\nII. 'flooded into the hall' means entered the room in large, excited numbers.\nIII. 'ignite an intellectual revolution' means inspire a widespread passion for learning and academic excellence."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. persistent;\nII. initiative;\nIII. sturdy;\nIV. commissioned.",
+                  "answer": "I. persistent: ongoing, continuous, enduring, lasting.\nII. initiative: project, venture, effort, plan.\nIII. sturdy: strong, durable, solid, firm.\nIV. commissioned: opened, inaugurated, launched."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the positive results of the library project.",
+                  "answer": "1. Students' reading skills improved significantly.\n2. District examination scores rose remarkably."
+            }
       ],
-      "markingScheme": "(a) State two common sources of excessive noise in urban centers mentioned in the first paragraph.\nAnswer: Blaring automobile horns, unregulated open-air religious loudspeakers, commercial advertising sound systems, and roaring diesel generators.\n\n(b) How does chronic exposure to excessive noise cause permanent damage to human hearing?\nAnswer: Continuous exposure to sound levels exceeding eighty-five decibels irreversibly damages the delicate sensory hair cells in the cochlea.\n\n(c) Mention two cardiovascular or heart-related diseases linked to long-term noise pollution in the third paragraph.\nAnswer: Chronic hypertension, fatal myocardial infarctions (heart attacks), and cerebrovascular strokes.\n\n(d) In what two ways does noise pollution impair the academic performance of school children?\nAnswer: 1. It impairs reading comprehension, memory retention, and speech perception.\n2. It deprives children of restful sleep, causing daytime drowsiness and behavioral irritability.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... acoustic barrage;\nII. ... existential threat;\nIII. ... quiet zones.\nAnswer: I. 'acoustic barrage' means a continuous, overwhelming, and heavy onslaught of loud sounds.\nII. 'existential threat' means a grave danger that threatens human survival or life itself.\nIII. 'quiet zones' means designated geographical areas where noise levels are strictly regulated and kept low by law.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. pervasive;\nII. trivialized;\nIII. constriction;\nIV. statutory.\nAnswer: I. pervasive: widespread, ubiquitous, prevalent, rampant.\nII. trivialized: dismissed, minimized, downplayed, disregarded.\nIII. constriction: narrowing, tightening, squeezing, contracting.\nIV. statutory: legal, lawful, mandatory, regulatory.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major statutory measures needed to curb noise pollution.\nAnswer: 1. Assemblies must enforce strict acoustic bylaws.\n2. Authorities must establish quiet educational zones.",
-      "workedSolution": "(a) State two common sources of excessive noise in urban centers mentioned in the first paragraph.\nAnswer: Blaring automobile horns, unregulated open-air religious loudspeakers, commercial advertising sound systems, and roaring diesel generators.\n\n(b) How does chronic exposure to excessive noise cause permanent damage to human hearing?\nAnswer: Continuous exposure to sound levels exceeding eighty-five decibels irreversibly damages the delicate sensory hair cells in the cochlea.\n\n(c) Mention two cardiovascular or heart-related diseases linked to long-term noise pollution in the third paragraph.\nAnswer: Chronic hypertension, fatal myocardial infarctions (heart attacks), and cerebrovascular strokes.\n\n(d) In what two ways does noise pollution impair the academic performance of school children?\nAnswer: 1. It impairs reading comprehension, memory retention, and speech perception.\n2. It deprives children of restful sleep, causing daytime drowsiness and behavioral irritability.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... acoustic barrage;\nII. ... existential threat;\nIII. ... quiet zones.\nAnswer: I. 'acoustic barrage' means a continuous, overwhelming, and heavy onslaught of loud sounds.\nII. 'existential threat' means a grave danger that threatens human survival or life itself.\nIII. 'quiet zones' means designated geographical areas where noise levels are strictly regulated and kept low by law.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. pervasive;\nII. trivialized;\nIII. constriction;\nIV. statutory.\nAnswer: I. pervasive: widespread, ubiquitous, prevalent, rampant.\nII. trivialized: dismissed, minimized, downplayed, disregarded.\nIII. constriction: narrowing, tightening, squeezing, contracting.\nIV. statutory: legal, lawful, mandatory, regulatory.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major statutory measures needed to curb noise pollution.\nAnswer: 1. Assemblies must enforce strict acoustic bylaws.\n2. Authorities must establish quiet educational zones.",
       "points": 30
-    },
+},
     {
       "number": 5,
       "part": "Part C",

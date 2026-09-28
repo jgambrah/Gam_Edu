@@ -754,51 +754,51 @@ export const SET_BECE_MOCK_8_ENGLISH_P2 = {
     },
     {
       "number": 4,
+      "questionNumber": "4",
       "part": "Part B",
+      "section": "Part B: Reading Comprehension",
       "title": "Question 4: Reading Comprehension",
-      "prompt": "In the modern technological landscape, electronic waste, popularly termed e-waste, has emerged as one of the fastest-growing and most hazardous environmental crises globally. Driven by the rapid obsolescence of digital devices and consumer demand for the latest smartphones, computers, and televisions, humanity generates over fifty million metric tons of discarded electronics annually. Rather than being safely recycled within developed nations of origin, vast shipments of obsolete equipment are exported to developing countries under the dubious pretext of \"reusable second-hand donations.\"\n\nThe epicenter of this global electronic dumping ground is found in commercial scrap hubs across West Africa, most notoriously in urban enclaves like Agbogbloshie in Accra. Here, thousands of impoverished youth and adolescent migrants from rural areas labor under perilous conditions to recover precious metals—such as copper, gold, and aluminum—from discarded computer motherboards and electrical cables.\n\nBecause these informal scrap workers lack modern dismantling technology and protective gear, they resort to rudimentary, lethal techniques. Workers burn bundles of insulated electrical cables over open fires stoked with discarded automobile tires to melt away the plastic coating and retrieve the bare copper wires inside. This uncontrolled open-air combustion discharges thick plumes of black, acrid smoke laden with lethal toxins, including heavy metals like lead, cadmium, and mercury, as well as highly carcinogenic dioxins.\n\nThe public health consequences are horrific. Inhaling these toxic fumes causes chronic respiratory disorders, severe skin lesions, neurological damage, and premature death among young workers. Furthermore, heavy rainstorms wash the toxic residue into adjacent river catchments, contaminating municipal lagoons and exterminating aquatic fauna. Toxic lead and mercury seep into the groundwater table, entering the food chain through vegetables cultivated along urban fringes.\n\nEnvironmental epidemiologists emphasize that solving the e-waste crisis requires global legislative accountability. Developed nations must enforce strict bans against exporting hazardous electronic scrap, while host governments must establish mechanized, state-of-the-art recycling facilities that protect workers' health and extract precious metals safely.",
-      "passage": "In the modern technological landscape, electronic waste, popularly termed e-waste, has emerged as one of the fastest-growing and most hazardous environmental crises globally. Driven by the rapid obsolescence of digital devices and consumer demand for the latest smartphones, computers, and televisions, humanity generates over fifty million metric tons of discarded electronics annually. Rather than being safely recycled within developed nations of origin, vast shipments of obsolete equipment are exported to developing countries under the dubious pretext of \"reusable second-hand donations.\"\n\nThe epicenter of this global electronic dumping ground is found in commercial scrap hubs across West Africa, most notoriously in urban enclaves like Agbogbloshie in Accra. Here, thousands of impoverished youth and adolescent migrants from rural areas labor under perilous conditions to recover precious metals—such as copper, gold, and aluminum—from discarded computer motherboards and electrical cables.\n\nBecause these informal scrap workers lack modern dismantling technology and protective gear, they resort to rudimentary, lethal techniques. Workers burn bundles of insulated electrical cables over open fires stoked with discarded automobile tires to melt away the plastic coating and retrieve the bare copper wires inside. This uncontrolled open-air combustion discharges thick plumes of black, acrid smoke laden with lethal toxins, including heavy metals like lead, cadmium, and mercury, as well as highly carcinogenic dioxins.\n\nThe public health consequences are horrific. Inhaling these toxic fumes causes chronic respiratory disorders, severe skin lesions, neurological damage, and premature death among young workers. Furthermore, heavy rainstorms wash the toxic residue into adjacent river catchments, contaminating municipal lagoons and exterminating aquatic fauna. Toxic lead and mercury seep into the groundwater table, entering the food chain through vegetables cultivated along urban fringes.\n\nEnvironmental epidemiologists emphasize that solving the e-waste crisis requires global legislative accountability. Developed nations must enforce strict bans against exporting hazardous electronic scrap, while host governments must establish mechanized, state-of-the-art recycling facilities that protect workers' health and extract precious metals safely.",
+      "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+      "passageText": "In the farming village of Sefwi-Wiawso, the arrival of October brought an air of joyful expectation. The cocoa pods hanging from the mature trees had ripened into golden-yellow and bright orange fruits. Thirteen-year-old Yaw spent his mid-term break helping his grandfather, Opanyin Kwame, on his twenty-acre cocoa plantation.\n\nHarvesting cocoa was a communal affair built on the traditional practice of 'nnoboa', where neighboring families took turns assisting one another on their farms without paying cash wages. Early on Monday morning, five neighbors arrived with curved harvesting sickles attached to long bamboo poles. Working together, they cut the ripe pods from the branches without injuring the delicate bark where next season's flowers would bloom.\n\nBy midday, enormous mounds of yellow pods were piled under the shade of giant plantain trees. Armed with short wooden clubs, Yaw, his cousins, and the women cracked the pods open and scooped the wet, sweet white beans into woven palm-frond baskets. \n\n\"Look closely, Yaw,\" his grandfather said, laying fresh green plantain leaves on the forest floor. \"Cocoa must be fermented properly to develop its rich chocolate aroma. We heap the wet beans here and cover them tightly with leaves for six days. The heat inside works a quiet miracle.\"\n\nAfter fermentation, the beans were hauled to the village drying mats. For two weeks, Yaw helped turn the beans under the hot sun until they crackled like dry leaves and turned a deep, glossy brown. When the licensed buying clerk weighed the forty bags and handed Opanyin Kwame his payment voucher, his grandfather smiled with satisfaction. He set aside money for Yaw’s school fees and bought him a new pair of boots, teaching him that honest farm labor brings enduring blessings.",
       "subQuestions": [
-        {
-          "label": "(a)",
-          "question": "State two underlying factors driving the rapid increase in electronic waste globally according to the first paragraph.",
-          "answer": "1. The rapid obsolescence of digital devices.\n2. Consumer demand for the latest electronics (or shipments of obsolete equipment exported under the pretext of second-hand donations)."
-        },
-        {
-          "label": "(b)",
-          "question": "Why do informal scrap workers burn electrical cables over open fires?",
-          "answer": "To melt away the protective plastic coating in order to retrieve the valuable bare copper wires inside."
-        },
-        {
-          "label": "(c)",
-          "question": "Mention two lethal toxic substances released into the atmosphere during the open combustion of e-waste.",
-          "answer": "Lead, cadmium, mercury, or carcinogenic dioxins."
-        },
-        {
-          "label": "(d)",
-          "question": "How do toxic heavy metals from e-waste enter the human food chain according to the fourth paragraph?",
-          "answer": "Rainstorms wash toxic residue into groundwater and lagoons, which seeps into water sources and contaminates fish and vegetables cultivated along urban fringes that humans consume."
-        },
-        {
-          "label": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... dubious pretext;\nII. ... perilous conditions;\nIII. ... premature death.",
-          "answer": "I. 'dubious pretext' means a dishonest, false, or questionable excuse used to conceal the true motive.\nII. 'perilous conditions' means highly dangerous, hazardous, and life-threatening working environments.\nIII. 'premature death' means dying too soon or before reaching the expected normal life span."
-        },
-        {
-          "label": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. hazardous;\nII. obsolete;\nIII. rudimentary;\nIV. residue.",
-          "answer": "I. hazardous: dangerous, perilous, risky, harmful.\nII. obsolete: outdated, disused, superseded, archaic.\nIII. rudimentary: primitive, basic, crude, unsophisticated.\nIV. residue: remains, waste, sediment, remnants."
-        },
-        {
-          "label": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve the e-waste menace.",
-          "answer": "1. Developed countries must ban exporting electronic scrap.\n2. Governments must build mechanized recycling facilities."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "How did cocoa farmers know that the cocoa pods were ready for harvest?",
+                  "answer": "The pods had changed color and ripened into golden-yellow and bright orange fruits."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "Explain the traditional concept of 'nnoboa' as practiced by the farmers.",
+                  "answer": "It is a communal labor practice where neighboring families take turns helping one another on farms without paying cash wages."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "Why did the harvesters take care not to injure the bark of the cocoa trees?",
+                  "answer": "Because injuring the bark would damage the cushion where next season's flowers and pods would grow."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "According to Opanyin Kwame, why was fermenting cocoa under plantain leaves necessary?",
+                  "answer": "To develop the rich chocolate aroma and flavor of the cocoa beans through natural heat."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... an air of joyful expectation;\nII. ... works a quiet miracle;\nIII. ... set aside money.",
+                  "answer": "I. 'an air of joyful expectation' means a pleasant feeling of looking forward to a rewarding time.\nII. 'works a quiet miracle' means produces a wonderful natural transformation without noise or fuss.\nIII. 'set aside money' means saved or reserved funds for a specific important purpose."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. communal;\nII. delicate;\nIII. scooped;\nIV. satisfaction.",
+                  "answer": "I. communal: shared, collective, joint.\nII. delicate: fragile, tender, soft.\nIII. scooped: spooned out, scraped, gathered.\nIV. satisfaction: contentment, joy, pleasure, pride."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize how Opanyin Kwame used his harvest earnings.",
+                  "answer": "1. He paid Yaw's school fees promptly.\n2. Grandfather bought Yaw new school boots."
+            }
       ],
-      "markingScheme": "(a) State two underlying factors driving the rapid increase in electronic waste globally according to the first paragraph.\nAnswer: 1. The rapid obsolescence of digital devices.\n2. Consumer demand for the latest electronics (or shipments of obsolete equipment exported under the pretext of second-hand donations).\n\n(b) Why do informal scrap workers burn electrical cables over open fires?\nAnswer: To melt away the protective plastic coating in order to retrieve the valuable bare copper wires inside.\n\n(c) Mention two lethal toxic substances released into the atmosphere during the open combustion of e-waste.\nAnswer: Lead, cadmium, mercury, or carcinogenic dioxins.\n\n(d) How do toxic heavy metals from e-waste enter the human food chain according to the fourth paragraph?\nAnswer: Rainstorms wash toxic residue into groundwater and lagoons, which seeps into water sources and contaminates fish and vegetables cultivated along urban fringes that humans consume.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... dubious pretext;\nII. ... perilous conditions;\nIII. ... premature death.\nAnswer: I. 'dubious pretext' means a dishonest, false, or questionable excuse used to conceal the true motive.\nII. 'perilous conditions' means highly dangerous, hazardous, and life-threatening working environments.\nIII. 'premature death' means dying too soon or before reaching the expected normal life span.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. hazardous;\nII. obsolete;\nIII. rudimentary;\nIV. residue.\nAnswer: I. hazardous: dangerous, perilous, risky, harmful.\nII. obsolete: outdated, disused, superseded, archaic.\nIII. rudimentary: primitive, basic, crude, unsophisticated.\nIV. residue: remains, waste, sediment, remnants.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve the e-waste menace.\nAnswer: 1. Developed countries must ban exporting electronic scrap.\n2. Governments must build mechanized recycling facilities.",
-      "workedSolution": "(a) State two underlying factors driving the rapid increase in electronic waste globally according to the first paragraph.\nAnswer: 1. The rapid obsolescence of digital devices.\n2. Consumer demand for the latest electronics (or shipments of obsolete equipment exported under the pretext of second-hand donations).\n\n(b) Why do informal scrap workers burn electrical cables over open fires?\nAnswer: To melt away the protective plastic coating in order to retrieve the valuable bare copper wires inside.\n\n(c) Mention two lethal toxic substances released into the atmosphere during the open combustion of e-waste.\nAnswer: Lead, cadmium, mercury, or carcinogenic dioxins.\n\n(d) How do toxic heavy metals from e-waste enter the human food chain according to the fourth paragraph?\nAnswer: Rainstorms wash toxic residue into groundwater and lagoons, which seeps into water sources and contaminates fish and vegetables cultivated along urban fringes that humans consume.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... dubious pretext;\nII. ... perilous conditions;\nIII. ... premature death.\nAnswer: I. 'dubious pretext' means a dishonest, false, or questionable excuse used to conceal the true motive.\nII. 'perilous conditions' means highly dangerous, hazardous, and life-threatening working environments.\nIII. 'premature death' means dying too soon or before reaching the expected normal life span.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. hazardous;\nII. obsolete;\nIII. rudimentary;\nIV. residue.\nAnswer: I. hazardous: dangerous, perilous, risky, harmful.\nII. obsolete: outdated, disused, superseded, archaic.\nIII. rudimentary: primitive, basic, crude, unsophisticated.\nIV. residue: remains, waste, sediment, remnants.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve the e-waste menace.\nAnswer: 1. Developed countries must ban exporting electronic scrap.\n2. Governments must build mechanized recycling facilities.",
       "points": 30
-    },
+},
     {
       "number": 5,
       "part": "Part C",

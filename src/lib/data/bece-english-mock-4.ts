@@ -754,51 +754,51 @@ export const SET_BECE_MOCK_4_ENGLISH_P2 = {
     },
     {
       "number": 4,
+      "questionNumber": "4",
       "part": "Part B",
+      "section": "Part B: Reading Comprehension",
       "title": "Question 4: Reading Comprehension",
-      "prompt": "In the contemporary era of global commerce and technological convenience, plastics have become an ubiquitous fixture of human existence. From grocery sachets and drinking bottles to industrial packaging and domestic containers, this versatile synthetic material offers lightweight, waterproof, and inexpensive solutions for packaging commodities. However, this modern convenience has extracted a devastating environmental price, transforming plastic pollution into one of the most perilous ecological crises of the twenty-first century.\n\nThe primary root of this crisis lies in the chemical composition of plastics. Because standard plastics are manufactured from synthetic petroleum polymers, they are non-biodegradable. Unlike organic waste such as plantain peels or paper that decompose naturally within weeks, a single plastic bottle requires over four hundred years to break down. Consequently, virtually every piece of plastic ever produced still persists somewhere on our planet.\n\nIn developing urban settlements across West Africa, the consequences of improper plastic disposal are catastrophic. Municipal gutters, storm culverts, and natural waterways are severely choked with millions of single-use black polythene bags and water sachets. Whenever torrential downpours strike, stormwater cannot drain through these plastic-clogged arteries. The resulting flash floods submerge residential roads, destroy commercial infrastructure, and cause tragic loss of human lives. Furthermore, stagnant water trapped in discarded plastic containers creates prolific breeding nurseries for mosquitoes, triggering acute outbreaks of malaria and cholera.\n\nThe crisis is equally devastating in marine and aquatic ecosystems. Thousands of metric tons of plastic waste are washed into ocean lagoons annually. Marine animals—such as sea turtles, dolphins, and coastal seabirds—frequently mistake translucent polythene bags for jellyfish, ingesting them with fatal consequences. Over time, physical ocean waves break large plastic debris down into microscopic particles known as microplastics. These toxic particles are swallowed by fish, entering the human food chain and posing grave hazards of cellular toxicity and malignant cancers to consumers.\n\nEnvironmental scientists emphasize that relying solely on volunteer beach clean-ups is merely scratching the surface. To avert catastrophe, governments must enact strict legislation banning single-use non-essential plastics, mandate corporate producers to take back plastic packaging, and subsidize eco-friendly, biodegradable alternatives derived from cassava starch and plant fibers.",
-      "passage": "In the contemporary era of global commerce and technological convenience, plastics have become an ubiquitous fixture of human existence. From grocery sachets and drinking bottles to industrial packaging and domestic containers, this versatile synthetic material offers lightweight, waterproof, and inexpensive solutions for packaging commodities. However, this modern convenience has extracted a devastating environmental price, transforming plastic pollution into one of the most perilous ecological crises of the twenty-first century.\n\nThe primary root of this crisis lies in the chemical composition of plastics. Because standard plastics are manufactured from synthetic petroleum polymers, they are non-biodegradable. Unlike organic waste such as plantain peels or paper that decompose naturally within weeks, a single plastic bottle requires over four hundred years to break down. Consequently, virtually every piece of plastic ever produced still persists somewhere on our planet.\n\nIn developing urban settlements across West Africa, the consequences of improper plastic disposal are catastrophic. Municipal gutters, storm culverts, and natural waterways are severely choked with millions of single-use black polythene bags and water sachets. Whenever torrential downpours strike, stormwater cannot drain through these plastic-clogged arteries. The resulting flash floods submerge residential roads, destroy commercial infrastructure, and cause tragic loss of human lives. Furthermore, stagnant water trapped in discarded plastic containers creates prolific breeding nurseries for mosquitoes, triggering acute outbreaks of malaria and cholera.\n\nThe crisis is equally devastating in marine and aquatic ecosystems. Thousands of metric tons of plastic waste are washed into ocean lagoons annually. Marine animals—such as sea turtles, dolphins, and coastal seabirds—frequently mistake translucent polythene bags for jellyfish, ingesting them with fatal consequences. Over time, physical ocean waves break large plastic debris down into microscopic particles known as microplastics. These toxic particles are swallowed by fish, entering the human food chain and posing grave hazards of cellular toxicity and malignant cancers to consumers.\n\nEnvironmental scientists emphasize that relying solely on volunteer beach clean-ups is merely scratching the surface. To avert catastrophe, governments must enact strict legislation banning single-use non-essential plastics, mandate corporate producers to take back plastic packaging, and subsidize eco-friendly, biodegradable alternatives derived from cassava starch and plant fibers.",
+      "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+      "passageText": "In the small coastal settlement of Senya Beraku, fourteen-year-old Kwesi loved listening to the sound of the ocean waves crashing against the cliffs. His father and uncles were all fishermen who went out to sea before sunrise in wooden canoes powered by small outboard motors. \n\nOne Saturday afternoon, while walking along the beach with his younger brother Yaw, Kwesi noticed two small boys playing with an inflated rubber tube near the water's edge. The tide was coming in fast, and the afternoon wind was picking up strength. Suddenly, a large wave lifted the rubber tube and swept the two children past the protective surf zone into deep water. \n\nThe boys screamed for help, their small arms splashing wildly as the strong rip current dragged them farther away from the shore. The few market women sitting under coconut sheds cried out in terror, but none of them could swim.\n\nKwesi did not waste time shouting. Remembering the swimming techniques his father had taught him during calm afternoons, he kicked off his slippers, snatched a coiled nylon mooring rope from an anchored fishing canoe, and plunged into the rolling surf.\n\nFighting against the heavy pull of the undertow, Kwesi swam with steady, powerful strokes. When he reached the exhausted boys, he instructed the older child to hold onto his shoulders while he tucked the smaller boy under his left arm. Tying one end of the nylon rope securely around his waist, he raised his right hand and waved to the crowd on the beach.\n\nRealizing his plan, several young men on the shore grabbed the free end of the rope and pulled with all their might. Within minutes, Kwesi and the two coughing boys were hauled safely onto the dry sand.\n\nThe local chief and village elders praised Kwesi for his presence of mind and bravery. At the next community gathering, Kwesi was presented with a new bicycle and a scholarship citation for saving two lives.",
       "subQuestions": [
-        {
-          "label": "(a)",
-          "question": "State two distinct properties of plastics that make them popular in global commerce according to the passage.",
-          "answer": "Plastics are lightweight, waterproof, inexpensive, and versatile."
-        },
-        {
-          "label": "(b)",
-          "question": "Why does plastic waste remain in the natural environment for centuries without disappearing?",
-          "answer": "Because plastics are manufactured from synthetic petroleum polymers that are non-biodegradable and cannot decompose naturally."
-        },
-        {
-          "label": "(c)",
-          "question": "Mention two major urban hazards caused by plastic-clogged gutters during heavy rainfall.",
-          "answer": "1. Destructive flash floods that submerge roads and destroy infrastructure.\n2. Creation of stagnant water breeding grounds for disease-carrying mosquitoes."
-        },
-        {
-          "label": "(d)",
-          "question": "How do plastic pollutants enter the human food chain according to the fourth paragraph?",
-          "answer": "Plastic debris breaks down into microplastics in the ocean, which are ingested by fish that humans subsequently catch and consume."
-        },
-        {
-          "label": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... ubiquitous fixture;\nII. ... scratching the surface;\nIII. ... avert catastrophe.",
-          "answer": "I. 'ubiquitous fixture' means present everywhere; extremely common and widespread.\nII. 'scratching the surface' means dealing only with a tiny, superficial part of a deep, complicated problem.\nIII. 'avert catastrophe' means to prevent, avoid, or turn away a disastrous outcome."
-        },
-        {
-          "label": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. versatile;\nII. perilous;\nIII. arteries;\nIV. legislation.",
-          "answer": "I. versatile: adaptable, multi-purpose, flexible, all-round.\nII. perilous: dangerous, hazardous, risky, treacherous.\nIII. arteries: channels, conduits, waterways, passages.\nIV. legislation: laws, statutes, acts, regulations."
-        },
-        {
-          "label": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve plastic pollution.",
-          "answer": "1. Governments must ban single-use plastics strictly.\n2. Industries must adopt biodegradable plant alternatives."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What danger pulled the two boys into the deep sea?",
+                  "answer": "A strong incoming tide (or high wave and rip current) carried their inflated rubber tube past the safe shore zone."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "Why were the market women on the beach unable to rescue the drowning children?",
+                  "answer": "None of the market women knew how to swim."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "What equipment did Kwesi take before diving into the water?",
+                  "answer": "He took a coiled nylon mooring rope from an anchored canoe."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "How did the crowd on the beach assist Kwesi to bring the boys back to land?",
+                  "answer": "They pulled the free end of the nylon rope that Kwesi had tied around his waist."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... picking up strength;\nII. ... did not waste time;\nIII. ... presence of mind.",
+                  "answer": "I. 'picking up strength' means becoming faster, stronger, and more forceful.\nII. 'did not waste time' means acted immediately without delay.\nIII. 'presence of mind' means the ability to stay calm, think clearly, and act sensibly in an emergency."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. swift;\nII. plunged;\nIII. exhausted;\nIV. praised.",
+                  "answer": "I. swift: fast, quick, rapid.\nII. plunged: dived, jumped, leaped.\nIII. exhausted: tired, worn-out, fatigued.\nIV. praised: commended, lauded, congratulated."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the gifts Kwesi received for his courage.",
+                  "answer": "1. The chief gave him a new bicycle.\n2. He received a school scholarship citation."
+            }
       ],
-      "markingScheme": "(a) State two distinct properties of plastics that make them popular in global commerce according to the passage.\nAnswer: Plastics are lightweight, waterproof, inexpensive, and versatile.\n\n(b) Why does plastic waste remain in the natural environment for centuries without disappearing?\nAnswer: Because plastics are manufactured from synthetic petroleum polymers that are non-biodegradable and cannot decompose naturally.\n\n(c) Mention two major urban hazards caused by plastic-clogged gutters during heavy rainfall.\nAnswer: 1. Destructive flash floods that submerge roads and destroy infrastructure.\n2. Creation of stagnant water breeding grounds for disease-carrying mosquitoes.\n\n(d) How do plastic pollutants enter the human food chain according to the fourth paragraph?\nAnswer: Plastic debris breaks down into microplastics in the ocean, which are ingested by fish that humans subsequently catch and consume.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... ubiquitous fixture;\nII. ... scratching the surface;\nIII. ... avert catastrophe.\nAnswer: I. 'ubiquitous fixture' means present everywhere; extremely common and widespread.\nII. 'scratching the surface' means dealing only with a tiny, superficial part of a deep, complicated problem.\nIII. 'avert catastrophe' means to prevent, avoid, or turn away a disastrous outcome.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. versatile;\nII. perilous;\nIII. arteries;\nIV. legislation.\nAnswer: I. versatile: adaptable, multi-purpose, flexible, all-round.\nII. perilous: dangerous, hazardous, risky, treacherous.\nIII. arteries: channels, conduits, waterways, passages.\nIV. legislation: laws, statutes, acts, regulations.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve plastic pollution.\nAnswer: 1. Governments must ban single-use plastics strictly.\n2. Industries must adopt biodegradable plant alternatives.",
-      "workedSolution": "(a) State two distinct properties of plastics that make them popular in global commerce according to the passage.\nAnswer: Plastics are lightweight, waterproof, inexpensive, and versatile.\n\n(b) Why does plastic waste remain in the natural environment for centuries without disappearing?\nAnswer: Because plastics are manufactured from synthetic petroleum polymers that are non-biodegradable and cannot decompose naturally.\n\n(c) Mention two major urban hazards caused by plastic-clogged gutters during heavy rainfall.\nAnswer: 1. Destructive flash floods that submerge roads and destroy infrastructure.\n2. Creation of stagnant water breeding grounds for disease-carrying mosquitoes.\n\n(d) How do plastic pollutants enter the human food chain according to the fourth paragraph?\nAnswer: Plastic debris breaks down into microplastics in the ocean, which are ingested by fish that humans subsequently catch and consume.\n\n(e) Explain the meaning of the following expressions as used in the passage:\nI. ... ubiquitous fixture;\nII. ... scratching the surface;\nIII. ... avert catastrophe.\nAnswer: I. 'ubiquitous fixture' means present everywhere; extremely common and widespread.\nII. 'scratching the surface' means dealing only with a tiny, superficial part of a deep, complicated problem.\nIII. 'avert catastrophe' means to prevent, avoid, or turn away a disastrous outcome.\n\n(f) For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. versatile;\nII. perilous;\nIII. arteries;\nIV. legislation.\nAnswer: I. versatile: adaptable, multi-purpose, flexible, all-round.\nII. perilous: dangerous, hazardous, risky, treacherous.\nIII. arteries: channels, conduits, waterways, passages.\nIV. legislation: laws, statutes, acts, regulations.\n\n(g) In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to solve plastic pollution.\nAnswer: 1. Governments must ban single-use plastics strictly.\n2. Industries must adopt biodegradable plant alternatives.",
       "points": 30
-    },
+},
     {
       "number": 5,
       "part": "Part C",

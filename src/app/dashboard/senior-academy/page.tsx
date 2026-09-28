@@ -8076,8 +8076,10 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                                     paperType: isP2 ? 2 : 1,
                                     totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 3 : 40),
                                     questions: finalQuestions,
-                                    sectionA_comprehension: pData.sectionA_comprehension || ppData.paper1?.sectionA_comprehension
-                                } as CurriculumQuestionSet;
+                                    sectionA_comprehension: pData.sectionA_comprehension || ppData.paper1?.sectionA_comprehension,
+                                    sections: pData?.sections || (ppData as any)?.paper2?.sections || (ppData as any)?.sections,
+                                    paper2: pData?.paper2 || ppData?.paper2 || (isP2 ? pData : undefined)
+                                } as unknown as CurriculumQuestionSet;
                             }
                         }
                     } catch (ppErr) {
@@ -8110,8 +8112,10 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                     totalQuestions: pData?.totalQuestions || extractedQuestions.length || (isP2 ? 4 : 40),
                     tasks: extractedQuestions,
                     questions: extractedQuestions,
-                    sectionA_comprehension: pData?.sectionA_comprehension || (targetSet as any)?.sectionA_comprehension
-                } as CurriculumQuestionSet;
+                    sectionA_comprehension: pData?.sectionA_comprehension || (targetSet as any)?.sectionA_comprehension,
+                    sections: pData?.sections || (targetSet as any)?.sections || (targetSet as any)?.paper2?.sections,
+                    paper2: pData?.paper2 || (targetSet as any)?.paper2 || (isP2 ? pData : undefined)
+                } as unknown as CurriculumQuestionSet;
 
                 console.log("[senior-academy] Activated target set:", targetSet.id, targetSet.title, `(${targetSet.questions?.length} questions)`);
                 setActiveQuestionSet(targetSet);
