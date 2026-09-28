@@ -1,16 +1,29 @@
 import * as admin from 'firebase-admin';
+import { createRequire } from 'module';
 
-// Initialize Cloud Firestore Client with cached credentials
-async function getDb(): Promise<any> {
-  const req = typeof require !== 'undefined' ? require : (await import('module')).createRequire(import.meta.url);
-  const { OAuth2Client } = req('google-auth-library');
-  const { Firestore } = req('@google-cloud/firestore');
-  const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+const require = createRequire(import.meta.url);
+
+async function getFirestoreDb(): Promise<admin.firestore.Firestore> {
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    const adminInst = (admin as any)?.apps ? admin : ((admin as any)?.default || require('firebase-admin'));
+    if (!adminInst?.apps?.length) {
+      adminInst.initializeApp({
+        credential: adminInst.credential.applicationDefault(),
+        projectId: 'gamedu-69888475-f5783'
+      });
+    }
+    return adminInst.firestore();
+  }
+
+  // Use Firebase CLI OAuth credentials when running locally
+  const { OAuth2Client } = require('google-auth-library');
+  const { Firestore } = require('@google-cloud/firestore');
+  const auth = require('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
   const account = auth.getGlobalDefaultAccount();
   const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
   const oauthClient = new OAuth2Client();
   oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-  return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
+  return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient }) as any;
 }
 
 interface QuestionItem {
@@ -618,86 +631,86 @@ The Town Development Committee convened an emergency durbar. The elderly queenmo
     ]
   },
   partC_literature: {
-    title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
+    title: "Part C: Literature in English (The Beacon of Light Anthology)",
+    instructions: "Answer all questions in this part based on the prescribed selections from the NaCCA Common Core Programme anthology: The Beacon of Light.",
     questions: [
       {
-        sectionTitle: "CHARLES DICKENS: Oliver Twist",
-        contextExtract: "\"The old gentleman took out his handkerchief from his pocket and laid it on the table. He then walked about the room, pretending to be searching for something, while the two boys slipped their hands into his pockets.\"",
+        sectionTitle: "CHARLES DICKENS: Oliver Twist (Chapter 2: Oliver Asks for More)",
+        contextExtract: "\"The board were sitting in solemn conclave, when Mr. Bumble rushed into the room in great excitement, and addressing the gentleman in the high chair, said,\n'Mr. Limbkins, I beg your pardon, sir! Oliver Twist has asked for more!'\n'That boy will be hung,' said the gentleman in the white waistcoat.\"",
         subItems: [
           {
             subQuestion: "5(a)",
-            question: "Who is the 'old gentleman' training the young boys in this pocket-picking game?",
-            answer: "Fagin (the old Jewish fence / criminal gang leader)."
+            question: "Why was the gentleman in the white waistcoat convinced that Oliver would 'be hung'?",
+            answer: "Because the workhouse authorities viewed an orphan child's plea for basic food as an act of dangerous rebellion, moral depravity, and inherent criminality."
           },
           {
             subQuestion: "5(b)",
-            question: "Who were the two boys practicing the art of pocket-picking in the extract?",
-            answer: "The Artful Dodger (Jack Dawkins) and Charley Bates."
+            question: "Identify the figure of speech in describing the parish board meeting as a 'solemn conclave' and explain its effect.",
+            answer: "Satire (Irony / Sarcasm). Dickens mockingly compares a committee gathered to starve vulnerable pauper orphans to a holy gathering of high ecclesiastical cardinals."
           }
         ]
       },
       {
-        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        contextExtract: "ESI KOM: \"Come, my child. Come, Eulalie, let us go into the room. It is cold out here... My young woman, come.\"",
+        sectionTitle: "WILLIAM SHAKESPEARE: Julius Caesar (Act 3, Scene 2: Mark Antony Mourns Caesar)",
+        contextExtract: "\"ANTONY: You all did see that on the Lupercal\nI thrice presented him a kingly crown,\nWhich he did thrice refuse: was this ambition?\nYet Brutus says he was ambitious;\nAnd, sure, he is an honourable man.\"",
         subItems: [
           {
             subQuestion: "5(c)",
-            question: "What dramatic shift in relationship does Esi Kom's gesture towards Eulalie represent at this climax of the play?",
-            answer: "Reconciliation, acceptance, maternal love, and healing of the cultural conflict between the African family and the African-American wife."
+            question: "How does Antony use the event at the Lupercal festival to refute Brutus's defense?",
+            answer: "Antony provides historical evidence that Caesar turned down the royal crown three times in public, directly contradicting Brutus's claim that Caesar was driven by kingly ambition."
           },
           {
             subQuestion: "5(d)",
-            question: "Where was Ato Yawson standing while his mother led his wife inside the room?",
-            answer: "He was left standing alone in the courtyard, confused, paralyzed, and bewildered between the two cultures (acting as the metaphorical ghost)."
+            question: "Identify the literary device used in repeatedly calling Brutus an 'honourable man' and explain its rhetorical purpose.",
+            answer: "Verbal Irony. By juxtaposing this statement with Caesar's generosity and humility, Antony leads the Roman plebeians to conclude that Brutus is treacherous and dishonorable."
           }
         ]
       },
       {
-        sectionTitle: "KAAKYIRE AKOSOMO NYANTAKYI: Tell My Son to Hold On to His Gun",
-        contextExtract: "\"The thick coils of the giant beast tightened. My hands trembled on the trigger. In my ears, my dying father's voice echoed: 'Kwame, be courageous!'\"",
+        sectionTitle: "CONTEMPORARY POETRY: Real Illusioned Beckley",
+        contextExtract: "\"Behind the high walls, where the tall grasses grew,\nDr. Beckley’s quiet house kept secrets few men knew.\nWe ran past the gates with our hearts in our chest,\nFor rumors of horror gave children no rest.\"",
         subItems: [
           {
             subQuestion: "5(e)",
-            question: "What dangerous forest creature was Kwame confronting in the extract?",
-            answer: "A ferocious giant python (or wild python/beast)."
+            question: "What physical barrier separated Dr. Beckley's residence from the surrounding industrial community?",
+            answer: "High perimeter walls and dense, overgrown tall grasses."
           },
           {
             subQuestion: "5(f)",
-            question: "What moral character trait did Kwame demonstrate by pulling the trigger successfully?",
-            answer: "Filial courage, heroic bravery, and steadfastness in honoring his father's dying charge."
+            question: "What does the 'quiet house' symbolize in relation to the psychological state of the community?",
+            answer: "It symbolizes secrecy, hidden terror, institutional isolation, and the unknown dangers that fueled mass panic and childhood trauma."
           }
         ]
       },
       {
-        sectionTitle: "ERNEST HEMINGWAY: A Day's Wait",
-        contextExtract: "\"How long will it be before I die?\" the boy asked, looking away at the bare foot of the bed.",
+        sectionTitle: "ENVIRONMENTAL PROSE: Forest Gold",
+        contextExtract: "\"The Daakye River, once a shimmering ribbon of crystal clarity, had darkened to a murky brown, like over-steeped tea. Chief Daakye Asem stood silent, his chest heavy with regret. His initial discovery had unleashed a tidal wave, and now his people drank from poisoned shallows.\"",
         subItems: [
           {
             subQuestion: "5(g)",
-            question: "What misunderstanding made young Schatz believe he was going to die from his fever?",
-            answer: "He confused the Fahrenheit temperature scale (used in America, where 102° is moderate) with the Celsius scale (taught in France, where 44° is fatal)."
+            question: "Identify the simile used to describe the polluted Daakye River and state the cause of its contamination.",
+            answer: "Simile: 'like over-steeped tea'. The contamination was caused by unregulated surface gold mining (galamsey) and toxic chemical runoff into the river."
           },
           {
             subQuestion: "5(h)",
-            question: "What does Schatz's behavior throughout the day reveal about his emotional character?",
-            answer: "He displayed remarkable stoicism, quiet courage, and self-restraint, suffering in silence so as not to burden his father."
+            question: "Why did Chief Daakye Asem feel deep remorse in this scene?",
+            answer: "He realized that his welcoming of gold prospectors for immediate wealth had devastated his people's sacred water source and brought waterborne illnesses to the village children."
           }
         ]
       },
       {
-        sectionTitle: "THERESA ENNIN: Makola",
-        contextExtract: "\"Head bent, rags all around the upside down pan\nPicking her nose, shuffling her feet, oblivious to the bustle\"",
+        sectionTitle: "HEROIC DRAMA: Dawuni’s Dream",
+        contextExtract: "\"ALHERI: The drought in our soil is nothing compared to the drought in your heart, Dawuni. Put down the calabash of wine. The ancestors did not preserve this royal bloodline for you to drown it in stupor.\"",
         subItems: [
           {
             subQuestion: "5(i)",
-            question: "What economic social group of laborers in Accra's Makola market is described in this excerpt?",
-            answer: "The kayayei (female head-load porters / head-porters)."
+            question: "Explain the metaphor 'the drought in your heart' as used by Alheri.",
+            answer: "It compares Prince Dawuni's lack of moral direction, self-discipline, and purpose to the parched, rainless physical earth of the kingdom."
           },
           {
             subQuestion: "5(j)",
-            question: "What does the word 'oblivious' suggest about the young porter's mental state amid the market chaos?",
-            answer: "She is utterly exhausted, detached, resigned, and emotionally numb to the chaotic noise around her."
+            question: "What transformative action did Prince Dawuni take after listening to Alheri's counsel?",
+            answer: "He cast away his alcohol, submitted to the moral guidance of the elders, and led the sacred rites that restored rain and justice to the kingdom."
           }
         ]
       }
@@ -705,39 +718,8 @@ The Town Development Committee convened an emergency durbar. The elderly queenmo
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.partA_composition.questions.map((q, idx) => ({
-    number: idx + 1,
-    questionNumber: q.questionNumber,
-    section: "Part A: Writing (Composition)",
-    category: q.category,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    points: 30
-  })),
-  {
-    number: 4,
-    questionNumber: "4",
-    section: "Part B: Reading Comprehension",
-    instructions: paper2Calibrated.partB_comprehension.instructions,
-    passageText: paper2Calibrated.partB_comprehension.passageText,
-    subQuestions: paper2Calibrated.partB_comprehension.questions,
-    points: 30
-  },
-  ...paper2Calibrated.partC_literature.questions.map((q, idx) => ({
-    number: 5 + idx,
-    questionNumber: `5${String.fromCharCode(97 + idx)}`,
-    section: "Part C: Literature in English (The Cockcrow)",
-    textTitle: q.sectionTitle,
-    contextExtract: q.contextExtract,
-    subQuestions: q.subItems,
-    points: 2
-  }))
-];
-
 async function seedBeceEnglishMock2() {
-  console.log("Seeding Isolated BECE English Mock 2 into Firestore...");
-  const db = await getDb();
+  console.log("Seeding Isolated BECE English Mock 2 into Firestore with Beacon of Light curriculum...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -750,7 +732,11 @@ async function seedBeceEnglishMock2() {
   });
   console.log("Verified Key Balance across 40 Objective Items (Exactly 10 each):", keyDist);
 
-  const payload = {
+  const db = await getFirestoreDb();
+
+  // Strictly partitioned path: subjects/english/mocks/mock_2
+  const docRef = db.doc("global_curriculum/jhs/subjects/english/mocks/mock_2");
+  await docRef.set({
     mockId: "mock_2",
     mockNumber: 2,
     title: "BECE English Language National Mock Examination 2",
@@ -765,12 +751,11 @@ async function seedBeceEnglishMock2() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      hasCockcrowLiterature: true,
+      hasBeaconOfLightLiterature: true,
       hasOralLanguageComponent: true,
       strictSubjectIsolation: "english_only",
       updatedAt: new Date()
     },
-    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test (Lexis, Structure, Cloze, and Oral Language)",
       durationMinutes: 45,
@@ -807,26 +792,16 @@ async function seedBeceEnglishMock2() {
           questions: balancedPaper1.slice(35, 40)
         }
       },
-      questions: balancedPaper1,
       allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 90,
-      sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      sections: paper2Calibrated
     }
-  };
+  }, { merge: true });
 
-  // Strictly partitioned path: subjects/english/mocks/mock_2
-  const docRef = db.doc("global_curriculum/jhs/subjects/english/mocks/mock_2");
-  await docRef.set(payload, { merge: true });
-
-  // Also mirror to mock_exams/mock_2
-  const mirrorRef = db.doc("global_curriculum/jhs/subjects/english/mock_exams/mock_2");
-  await mirrorRef.set(payload, { merge: true });
-
-  console.log("✅ BECE English Mock 2 successfully seeded at subjects/english/mocks/mock_2 and mock_exams/mock_2!");
+  console.log("✅ BECE English Mock 2 successfully updated with Beacon of Light at subjects/english/mocks/mock_2!");
 }
 
 seedBeceEnglishMock2()
