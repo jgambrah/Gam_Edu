@@ -1,16 +1,29 @@
 import * as admin from 'firebase-admin';
+import { createRequire } from 'module';
 
-// Initialize Cloud Firestore Client with cached credentials
-async function getDb(): Promise<any> {
-  const req = typeof require !== 'undefined' ? require : (await import('module')).createRequire(import.meta.url);
-  const { OAuth2Client } = req('google-auth-library');
-  const { Firestore } = req('@google-cloud/firestore');
-  const auth = req('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
+const require = createRequire(import.meta.url);
+
+async function getFirestoreDb(): Promise<admin.firestore.Firestore> {
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    const adminInst = (admin as any)?.apps ? admin : ((admin as any)?.default || require('firebase-admin'));
+    if (!adminInst?.apps?.length) {
+      adminInst.initializeApp({
+        credential: adminInst.credential.applicationDefault(),
+        projectId: 'gamedu-69888475-f5783'
+      });
+    }
+    return adminInst.firestore();
+  }
+
+  // Use Firebase CLI OAuth credentials when running locally
+  const { OAuth2Client } = require('google-auth-library');
+  const { Firestore } = require('@google-cloud/firestore');
+  const auth = require('C:\\Users\\DELL\\AppData\\Local\\npm-cache\\_npx\\7750544ccf494d8b\\node_modules\\firebase-tools\\lib\\auth');
   const account = auth.getGlobalDefaultAccount();
   const tokenObj = await auth.getAccessToken(account.tokens.refresh_token, []);
   const oauthClient = new OAuth2Client();
   oauthClient.setCredentials({ access_token: tokenObj.access_token, refresh_token: account.tokens.refresh_token });
-  return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient, ignoreUndefinedProperties: true });
+  return new Firestore({ projectId: 'gamedu-69888475-f5783', authClient: oauthClient }) as any;
 }
 
 interface QuestionItem {
@@ -632,86 +645,86 @@ The District Disaster Management Organisation (NADMO) arrived with relief tents,
     ]
   },
   partC_literature: {
-    title: "Part C: Literature in English (The Cockcrow Anthology)",
-    instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
+    title: "Part C: Literature in English (The Beacon of Light Anthology)",
+    instructions: "Answer all questions in this part based on the prescribed selections from the NaCCA Common Core Programme anthology: The Beacon of Light.",
     questions: [
       {
-        sectionTitle: "CHARLES DICKENS: Oliver Twist",
+        sectionTitle: "CHARLES DICKENS: Oliver Twist (Chapter 2: Oliver Asks for More)",
         contextExtract: "\"Please, sir, I want some more.\"\nThe master was a fat, healthy man; but he turned very pale. He gazed in stupefied astonishment on the small rebel for some seconds, and then clung for support to the copper.",
         subItems: [
           {
             subQuestion: "5(a)",
             question: "What specific item was Oliver asking for 'more' of?",
-            answer: "He was asking for more food/gruel (thin porridge)."
+            answer: "He was asking for an additional serving of thin workhouse gruel (porridge)."
           },
           {
             subQuestion: "5(b)",
             question: "How did the workhouse board punish Oliver for making this request?",
-            answer: "He was confined in a dark solitary room, beaten by Mr. Bumble, and offered as an apprentice with a five-pound reward to get rid of him."
+            answer: "Oliver was instantly confined in a dark solitary cellar, beaten by the master with a ladle, and advertised on the gate as an apprentice with a five-pound bounty to dispose of him."
           }
         ]
       },
       {
-        sectionTitle: "AMA ATA AIDOO: The Girl Who Can",
-        contextExtract: "\"Nana was saying: 'Ah, ah, you school people. You know everything. But tell me, what can a girl do with legs that are as thin as reeds?'\"",
+        sectionTitle: "CONTEMPORARY DRAMA: Spreading Light",
+        contextExtract: "\"KWANSAH: (Watching bitterly from the doorway, muttering) Why should she always succeed? She is only a girl from the lower village.\nSIR NII: You children are like lights as well! If you study and innovate, you illuminate your community.\"",
         subItems: [
           {
             subQuestion: "5(c)",
-            question: "Who is the narrator possessing the 'legs as thin as reeds'?",
-            answer: "Adjoa (the seven-year-old disabled girl)."
+            question: "Who is the female classmate whose success Kwansah deeply envies in this drama?",
+            answer: "Asantewaa (the determined female student who designs and constructs the solar lighting system)."
           },
           {
             subQuestion: "5(d)",
-            question: "How did the narrator eventually prove Nana's skepticism wrong?",
-            answer: "She was selected to run for her school and won the cup in the district sports competition, proving her thin legs were useful for running."
+            question: "Identify the figure of speech used by Sir Nii in 'You children are like lights as well!' and explain its meaning.",
+            answer: "Simile. It explicitly compares the children's intellect and innovative capability to electric lights, emphasizing that their education brings progress and enlightenment to the dark village."
           }
         ]
       },
       {
-        sectionTitle: "AMA ATA AIDOO: The Dilemma of a Ghost",
-        contextExtract: "1st WOMAN: If her son gets a goodly bag by the month,\nWhy has Esi Kom still not...\n2nd WOMAN: They never ask 'Why'.\nIs it not the young man's wife?\nShe swallows money as a hen does corn.",
+        sectionTitle: "PROSE NARRATIVE: Beyond Light and Shadow",
+        contextExtract: "\"Benson’s eyes, once bright with hope, dimmed with the realization that his secrets had destroyed the bond they shared. He felt the cold grip of Ashes Flame pulling at his sleeve, yet looking into Tina's calm eyes, the dark oath felt like a noose tightening around his neck.\"",
         subItems: [
           {
             subQuestion: "5(e)",
-            question: "Who is referred to as 'the young man's wife'?",
-            answer: "Eulalie Rush (Ato Yawson's African-American wife)."
+            question: "What secret double role did Benson hold at Cedar of Lebanon School?",
+            answer: "He was simultaneously the official Head Prefect of the school and a secret operative/leader within the clandestine student cabal, Ashes Flame."
           },
           {
             subQuestion: "5(f)",
-            question: "Identify the literary device in: 'She swallows money as a hen does corn.'",
-            answer: "Simile."
+            question: "What does the 'dark oath' symbolize in the context of Benson's inner conflict?",
+            answer: "It symbolizes moral entrapment, criminal complicity, and the suffocating guilt that bound him to Nkrabea's syndicate against his conscience."
           }
         ]
       },
       {
-        sectionTitle: "LADE WOSORNU: Desert Rivers",
-        contextExtract: "\"These run their unwitnessed course\nTo their unwitnessed end.\nWithout a sound\nThey gush into bowels of seas\nFar, far away from unaided human eyes.\"",
+        sectionTitle: "HISTORICAL POETRY: The Golden Stool / Okomfo Anokye",
+        contextExtract: "\"With whispered incantations, he calls\nA treasure from the celestial halls;\nThe Golden Stool descends through twilight's hush,\nA sacred bond no earthly sword can crush.\"",
         subItems: [
           {
             subQuestion: "5(g)",
-            question: "What do the hidden 'Desert Rivers' symbolize in the poem?",
-            answer: "Unrecognized human potential, hidden talents, inner resilience, and suppressed suffering."
+            question: "What does the 'Golden Stool' (Sika Dwa Kofi) represent in the poem?",
+            answer: "It symbolizes the collective soul (Sunsum), cultural sovereignty, spiritual authority, and enduring unity of the Ashanti nation."
           },
           {
             subQuestion: "5(h)",
-            question: "What central theme is highlighted by the line: 'Far, far away from unaided human eyes'?",
-            answer: "The theme of unnoticed greatness, quiet endurance, and hidden life struggles."
+            question: "Identify the poetic device in lines 1-2 ('With whispered incantations, he calls / A treasure from the celestial halls') and explain its effect.",
+            answer: "Enjambment (run-on line). It creates an uninterrupted syntactic flow that formally mirrors the mystic's seamless spiritual connection with the divine celestial realm."
           }
         ]
       },
       {
-        sectionTitle: "LAWRENCE DARMANI: Scribbler's Dream",
-        contextExtract: "\"Scribbler,\nThe dream in your mind fills the shelf.\nWhen upon the shelf you gaze,\nA vacuum stares at you.\"",
+        sectionTitle: "PHILOSOPHICAL POETRY: The Unseen Painter",
+        contextExtract: "\"God must be a painter,\nMixing every shade of skin\nTo show that in His gallery,\nAll hues belong within.\"",
         subItems: [
           {
             subQuestion: "5(i)",
-            question: "What does the word 'vacuum' symbolize in the extract?",
-            answer: "Emptiness, unwritten books, wasted potential, and lack of literary productivity."
+            question: "Identify the central metaphor in this extract.",
+            answer: "Metaphor. God is directly identified as a master painter who creates the universe and human beings as an interconnected artistic masterpiece."
           },
           {
             subQuestion: "5(j)",
-            question: "Identify the literary device used in 'A vacuum stares at you'.",
-            answer: "Personification."
+            question: "What social message regarding human racial diversity does the poet communicate through the phrase 'All hues belong within'?",
+            answer: "The poet communicates the universal equality and shared dignity of all human races, emphasizing that diverse skin colors are deliberate, harmonious elements of divine creation rather than grounds for prejudice."
           }
         ]
       }
@@ -719,39 +732,8 @@ The District Disaster Management Organisation (NADMO) arrived with relief tents,
   }
 };
 
-const flattenedPaper2Questions = [
-  ...paper2Calibrated.partA_composition.questions.map((q, idx) => ({
-    number: idx + 1,
-    questionNumber: q.questionNumber,
-    section: "Part A: Writing (Composition)",
-    category: q.category,
-    prompt: q.prompt,
-    modelAnswer: q.modelAnswer,
-    points: 30
-  })),
-  {
-    number: 4,
-    questionNumber: "4",
-    section: "Part B: Reading Comprehension",
-    instructions: paper2Calibrated.partB_comprehension.instructions,
-    passageText: paper2Calibrated.partB_comprehension.passageText,
-    subQuestions: paper2Calibrated.partB_comprehension.questions,
-    points: 30
-  },
-  ...paper2Calibrated.partC_literature.questions.map((q, idx) => ({
-    number: 5 + idx,
-    questionNumber: `5${String.fromCharCode(97 + idx)}`,
-    section: "Part C: Literature in English (The Cockcrow)",
-    textTitle: q.sectionTitle,
-    contextExtract: q.contextExtract,
-    subQuestions: q.subItems,
-    points: 2
-  }))
-];
-
 async function seedBeceEnglishMock1() {
-  console.log("Seeding Isolated BECE English Mock 1 into Firestore...");
-  const db = await getDb();
+  console.log("Seeding Isolated BECE English Mock 1 into Firestore with Beacon of Light curriculum...");
 
   // Key Balance Audit
   const keyDist = { A: 0, B: 0, C: 0, D: 0 };
@@ -763,6 +745,8 @@ async function seedBeceEnglishMock1() {
     if (idx === 3) keyDist.D++;
   });
   console.log("Verified Key Balance across 40 Objective Items (Exactly 10 each):", keyDist);
+
+  const db = await getFirestoreDb();
 
   // Strictly partitioned path: subjects/english/mocks/mock_1
   const docRef = db.doc("global_curriculum/jhs/subjects/english/mocks/mock_1");
@@ -781,12 +765,11 @@ async function seedBeceEnglishMock1() {
       paper1Count: balancedPaper1.length,
       optionsBalanced: true,
       unplagiarizedPedagogicalAdaptation: true,
-      hasCockcrowLiterature: true,
+      hasBeaconOfLightLiterature: true,
       hasOralLanguageComponent: true,
       strictSubjectIsolation: "english_only",
       updatedAt: new Date()
     },
-    questions: balancedPaper1,
     paper1: {
       title: "Paper 1: Objective Test (Lexis, Structure, Cloze, and Oral Language)",
       durationMinutes: 45,
@@ -823,18 +806,16 @@ async function seedBeceEnglishMock1() {
           questions: balancedPaper1.slice(35, 40)
         }
       },
-      questions: balancedPaper1,
       allQuestions: balancedPaper1
     },
     paper2: {
       title: "Paper 2: Written Essay, Reading Comprehension, and Literature",
       durationMinutes: 90,
-      sections: paper2Calibrated,
-      questions: flattenedPaper2Questions
+      sections: paper2Calibrated
     }
   }, { merge: true });
 
-  console.log("✅ BECE English Mock 1 successfully seeded at subjects/english/mocks/mock_1!");
+  console.log("✅ BECE English Mock 1 successfully updated with Beacon of Light at subjects/english/mocks/mock_1!");
 }
 
 seedBeceEnglishMock1()
