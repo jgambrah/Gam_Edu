@@ -130,55 +130,12 @@ export function Paper2ExamRunner({
     questionsList = toSafeArray(b7.practicePool?.low || b7.tasks || b7.questions);
   }
 
-  // Fallback: If questions are in nested sections (e.g. partA_composition, partB_comprehension, partC_literature)
-  if (questionsList.length === 0 && (activeExam?.paper2?.sections || (activeExam as any)?.sections)) {
-    const s = activeExam?.paper2?.sections || (activeExam as any)?.sections;
-    const secA = toSafeArray(
-      s.sectionA_essay?.questions ||
-      s.sectionA_essay?.tasks ||
-      s.partA_composition?.questions ||
-      s.partA_writing?.questions ||
-      s.sectionA?.questions ||
-      s.sectionA?.tasks
-    );
-
-    let secB: any[] = [];
-    if (Array.isArray(s.sectionB_comprehension?.questions)) {
-      secB = s.sectionB_comprehension.questions;
-    } else if (Array.isArray(s.partB_comprehension?.questions)) {
-      secB = [{
-        number: 4,
-        questionNumber: "4",
-        section: s.partB_comprehension.title || "Part B: Reading Comprehension",
-        title: s.partB_comprehension.title || "Question 4: Reading Comprehension",
-        instructions: s.partB_comprehension.instructions,
-        passageText: s.partB_comprehension.passageText,
-        subQuestions: s.partB_comprehension.questions,
-        points: 30
-      }];
-    } else if (s.partB_comprehension?.passageText) {
-      secB = [s.partB_comprehension];
-    } else {
-      secB = toSafeArray(s.sectionB?.questions || s.sectionB?.tasks);
-    }
-
-    let secC: any[] = [];
-    if (Array.isArray(s.partC_literature?.questions)) {
-      secC = s.partC_literature.questions.map((q: any, idx: number) => ({
-        number: 5 + idx,
-        questionNumber: q.questionNumber || `5${String.fromCharCode(97 + idx)}`,
-        section: s.partC_literature.title || "Part C: Literature in English",
-        title: q.sectionTitle || q.title || `Question 5${String.fromCharCode(97 + idx)}: Literature in English`,
-        textTitle: q.sectionTitle || q.title,
-        contextExtract: q.contextExtract || q.passageText,
-        passageText: q.contextExtract || q.passageText,
-        subQuestions: q.subItems || q.subQuestions || q.questions,
-        points: q.points || 2
-      }));
-    } else {
-      secC = toSafeArray(s.sectionC_literature?.questions || s.sectionC_literature?.tasks || s.sectionC?.questions || s.sectionC?.tasks);
-    }
-
+  // Fallback: If questions are in nested sections (e.g. sectionA_essay, sectionB_comprehension, sectionC_literature)
+  if (questionsList.length === 0 && activeExam?.paper2?.sections) {
+    const s = activeExam.paper2.sections;
+    const secA = toSafeArray(s.sectionA_essay?.questions || s.sectionA_essay?.tasks || s.sectionA?.questions || s.sectionA?.tasks);
+    const secB = toSafeArray(s.sectionB_comprehension?.questions || s.sectionB_comprehension?.tasks || s.sectionB?.questions || s.sectionB?.tasks);
+    const secC = toSafeArray(s.sectionC_literature?.questions || s.sectionC_literature?.tasks || s.sectionC?.questions || s.sectionC?.tasks);
     questionsList = [...secA, ...secB, ...secC];
   }
 
@@ -193,51 +150,8 @@ export function Paper2ExamRunner({
     (Array.isArray(currentQuestion?.options) && currentQuestion.options.length > 0);
 
   // 2. Defensively normalize subQuestions / parts for active question
-  const rawSubQuestions =
-    currentQuestion?.subQuestions ??
-    currentQuestion?.parts ??
-    currentQuestion?.subItems ??
-    currentQuestion?.items ??
-    currentQuestion?.tasks;
-
-  const subQuestionsList = toSafeArray(rawSubQuestions).map((sub: any, subIdx: number) => {
-    const rawLabel =
-      sub?.subQuestion ||
-      sub?.partLabel ||
-      sub?.label ||
-      sub?.partId ||
-      sub?.subId ||
-      `(${String.fromCharCode(97 + subIdx)})`;
-
-    const cleanLabel = String(rawLabel).trim();
-    const prompt =
-      sub?.prompt ||
-      sub?.question ||
-      sub?.task ||
-      sub?.text ||
-      sub?.title ||
-      '';
-
-    const workedSolution =
-      sub?.workedSolution ||
-      sub?.modelAnswer ||
-      sub?.answer ||
-      sub?.solution ||
-      '';
-
-    const maxMarks = Number(sub?.maxMarks || sub?.marks || sub?.points) || 5;
-
-    return {
-      ...sub,
-      subId: String(sub?.subId || sub?.id || cleanLabel || `part_${subIdx + 1}`),
-      partLabel: cleanLabel,
-      prompt,
-      workedSolution,
-      modelAnswer: workedSolution,
-      maxMarks,
-      marks: maxMarks
-    };
-  });
+  const rawSubQuestions = currentQuestion?.subQuestions ?? currentQuestion?.parts;
+  const subQuestionsList = toSafeArray(rawSubQuestions);
 
   // Auto-derive flippable theory topics (Questions 51 to 60)
   const flippableTopics = React.useMemo(() => {
@@ -326,7 +240,7 @@ export function Paper2ExamRunner({
               subId,
               partLabel: String(sub?.partLabel || subId),
               partKey,
-              prompt: String(sub?.prompt || sub?.question || ''),
+              prompt: String(sub?.prompt || ''),
               studentText: text,
               maxMarks: Number(sub?.maxMarks || sub?.marks) || 5,
               workedSolution: String(sub?.workedSolution || sub?.modelAnswer || ''),
@@ -510,40 +424,14 @@ export function Paper2ExamRunner({
   const questionPrompt = currentQuestion?.prompt || currentQuestion?.title || '';
   const questionModelAnswer = currentQuestion?.modelAnswer || currentQuestion?.workedSolution || '';
 
-  // Defensive extraction of reading passage / context extract (e.g. for Comprehension, Literature, or Essays)
-  const passageText =
-    currentQuestion?.passageText ||
-    currentQuestion?.passage ||
-    currentQuestion?.contextExtract ||
-    currentQuestion?.extract ||
-    currentQuestion?.sectionA_comprehension?.passageText ||
-    (activeExam as any)?.sections?.partB_comprehension?.passageText ||
-    (typeof questionPrompt === 'string' && questionPrompt.includes('**Question:**')
-      ? questionPrompt.split('**Question:**')[0].trim()
-      : '') ||
-    (typeof questionPrompt === 'string' && questionPrompt.includes('Extract:')
-      ? questionPrompt.split('Extract:')[1]?.split('**Question:**')[0]?.trim() || ''
-      : '') ||
-    '';
-
-  const passageTitle =
-    currentQuestion?.passageTitle ||
-    currentQuestion?.textTitle ||
-    currentQuestion?.sectionTitle ||
-    (activeExam as any)?.sections?.partB_comprehension?.title ||
-    (currentQuestion?.section?.toLowerCase().includes('literature')
-      ? 'Literature Context Extract'
-      : 'Reading Comprehension Passage');
-
-  const questionInstructions =
-    currentQuestion?.instructions ||
-    currentQuestion?.guidance ||
-    (activeExam as any)?.sections?.partB_comprehension?.instructions ||
-    '';
-
+  // Check if prompt contains a reading passage / extract (e.g. for Comprehension)
+  const isComprehensionOrLiterature = questionPrompt.includes('**Question:**') || questionPrompt.includes('Extract:');
+  let passageText = '';
   let subPromptText = questionPrompt;
-  if (typeof questionPrompt === 'string' && questionPrompt.includes('**Question:**')) {
-    subPromptText = questionPrompt.split('**Question:**')[1].trim();
+  if (isComprehensionOrLiterature && questionPrompt.includes('**Question:**')) {
+    const parts = questionPrompt.split('**Question:**');
+    passageText = parts[0].trim();
+    subPromptText = parts[1].trim();
   }
 
   // Get AI evaluation for standalone essay if submitted
@@ -1082,24 +970,22 @@ export function Paper2ExamRunner({
                   >
                     {/* Part Header */}
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
-                          {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 font-black text-xs flex items-center justify-center border border-amber-500/30">
+                          {sub.partLabel || subId}
                         </span>
                         <span className="text-sm font-bold text-white">
-                          {currentQuestion?.questionNumber 
-                            ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
-                            : `Sub-Question Part ${sub.partLabel || subId}`}
+                          Sub-Question Part {sub.partLabel || subId}
                         </span>
                       </div>
-                      <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
+                      <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full">
                         [{subMarks} Marks]
                       </span>
                     </div>
 
                     {/* Part Prompt */}
-                    <div className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed pl-1 whitespace-pre-line bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <MathRenderer content={(sub.prompt || sub.question || sub.title || '').replace(/\\n/g, '\n')} />
+                    <div className="text-sm text-slate-200 leading-relaxed pl-1 whitespace-pre-line">
+                      <MathRenderer content={(sub.prompt || '').replace(/\\n/g, '\n')} />
                     </div>
 
                     {/* Sub-part diagram (if any) */}
