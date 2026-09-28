@@ -213,14 +213,14 @@ export function Paper2ExamRunner({
     if (Array.isArray(s.partC_literature?.questions)) {
       secC = s.partC_literature.questions.map((q: any, idx: number) => ({
         number: 5 + idx,
-        questionNumber: q.questionNumber || `5${String.fromCharCode(97 + idx)}`,
+        questionNumber: q.questionNumber || '5',
         section: s.partC_literature.title || "Part C: Literature in English",
-        title: q.sectionTitle || q.title || `Question 5${String.fromCharCode(97 + idx)}: Literature in English`,
+        title: q.sectionTitle || q.title || "Question 5: Literature in English",
         textTitle: q.sectionTitle || q.title,
         contextExtract: q.contextExtract || q.passageText,
         passageText: q.contextExtract || q.passageText,
         subQuestions: q.subItems || q.subQuestions || q.questions,
-        points: q.points || 2
+        points: q.points || (Array.isArray(q.subItems) ? q.subItems.length * 5 : 10)
       }));
     } else {
       secC = toSafeArray(s.sectionC_literature?.questions || s.sectionC_literature?.tasks || s.sectionC?.questions || s.sectionC?.tasks);
@@ -638,7 +638,17 @@ export function Paper2ExamRunner({
   }
 
   // Active question details
-  const questionMarks = Number(currentQuestion?.marks || currentQuestion?.totalMarks || currentQuestion?.points) || (isObjective ? 1 : (hasSubParts ? 15 : 30));
+  // Dynamic summation of sub-question marks to eliminate badge mark discrepancies
+  const subQuestionsTotalMarks = React.useMemo(() => {
+    if (!subQuestionsList || subQuestionsList.length === 0) return 0;
+    return subQuestionsList.reduce((sum: number, sub: any, idx: number) => {
+      return sum + calculateSubMarks(sub, idx);
+    }, 0);
+  }, [subQuestionsList, isComprehensionQuestion]);
+
+  const questionMarks = hasSubParts && subQuestionsTotalMarks > 0
+    ? subQuestionsTotalMarks
+    : (Number(currentQuestion?.marks || currentQuestion?.totalMarks || currentQuestion?.points) || (isObjective ? 1 : (hasSubParts ? 15 : 30)));
   const questionCategory = currentQuestion?.category || currentQuestion?.partLabel || (isObjective ? 'Objective Multiple Choice' : (hasSubParts ? 'Structured Theory' : 'Essay Composition'));
   const questionPrompt = currentQuestion?.prompt || currentQuestion?.title || '';
   const questionModelAnswer = currentQuestion?.modelAnswer || currentQuestion?.workedSolution || '';
@@ -680,6 +690,20 @@ export function Paper2ExamRunner({
     (activeExam as any)?.paper2?.sections?.partB_comprehension?.instructions ||
     '';
 
+  // Eliminate outer page scroll trapping: lock outer window/body scroll so only split panes scroll within viewport
+  useEffect(() => {
+    if (passageText && isSplitView) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+      };
+    }
+  }, [passageText, isSplitView]);
+
   // Enhanced reading passage renderer with unclipped controls, paragraph indicators & high contrast
   const renderPassageCard = (isFullWidth = false) => {
     if (!passageText) return null;
@@ -694,26 +718,26 @@ export function Paper2ExamRunner({
     return (
       <div className={cn(
         "rounded-3xl bg-slate-950/95 border border-amber-500/30 p-5 sm:p-6 shadow-2xl backdrop-blur-md space-y-4 transition-all",
-        isFullWidth ? "w-full" : "w-full"
+        !isFullWidth ? "flex flex-col h-full min-h-0 overflow-hidden" : "w-full"
       )}>
-        {/* Row 1: Title, Icon & Reading Stats */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-          <div className="flex items-center gap-2.5 min-w-0">
+        {/* Row 1: Title, Icon & Reading Stats (Allow title wrapping, prevent awkward text wrapping on Official Reference Material) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80 shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center shrink-0 shadow-sm">
               <BookOpen className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="min-w-0">
-              <span className="text-xs sm:text-sm font-bold text-amber-300 tracking-tight block truncate">
+            <div className="min-w-0 flex-1">
+              <h4 className="text-xs sm:text-sm font-bold text-amber-300 tracking-tight leading-snug break-words">
                 {passageTitle}
-              </span>
-              <span className="text-[11px] text-slate-400 font-mono">
+              </h4>
+              <p className="text-[11px] text-slate-400 font-mono whitespace-nowrap mt-0.5">
                 Official Reference Material
-              </span>
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <Badge className="bg-slate-900 border border-slate-800 text-[11px] text-slate-300 font-mono px-2.5 py-1">
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+            <Badge className="bg-slate-900 border border-slate-800 text-[11px] text-slate-300 font-mono px-2.5 py-1 whitespace-nowrap">
               📖 ~{wordCount} Words • ~{estMinutes} Min Read
             </Badge>
           </div>
@@ -786,7 +810,7 @@ export function Paper2ExamRunner({
         {/* Paragraph-Indexed Passage Text with High Contrast & Independent Scroll */}
         <div className={cn(
           "text-slate-100 leading-relaxed custom-scrollbar overflow-y-auto select-text space-y-4 pr-1",
-          isExamFocusMode ? "max-h-[calc(100vh-18rem)]" : isSplitView ? "max-h-[calc(100vh-14rem)]" : "max-h-[32rem]",
+          !isFullWidth ? "flex-1 min-h-0" : (isExamFocusMode ? "max-h-[calc(100vh-18rem)]" : "max-h-[32rem]"),
           passageFontSize === 'sm' ? "text-xs sm:text-sm leading-relaxed" : (passageFontSize === 'lg' ? "text-base sm:text-lg leading-loose" : "text-sm sm:text-base leading-relaxed")
         )}>
           {paragraphs.length > 1 ? (
@@ -811,7 +835,54 @@ export function Paper2ExamRunner({
   };
 
   // Specialized rendering for each sub-question item with constraints detection
+  // Helper to format sub-question badges and titles cleanly without typo or repetitive tagging
+  const formatSubQuestionHeader = (subItem: any, idx: number, parentQNum?: string) => {
+    const raw = String(subItem?.subQuestion || subItem?.partLabel || '').trim();
+    
+    // 1. Cockcrow format like "5(a)", "5(b)", "5a", "(5(a))"
+    const mCockcrow = raw.match(/(?:Question\s*)?5\s*\(([a-z0-9]+)\)/i) || raw.match(/5([a-z])/i);
+    if (mCockcrow) {
+      const letter = mCockcrow[1].toLowerCase();
+      return {
+        badge: `(${letter})`,
+        title: `Question 5(${letter})`
+      };
+    }
+
+    // 2. Generic with question number like "4(a)", "1(b)"
+    const mGenericWithNum = raw.match(/(?:Question\s*)?(\d+)\s*\(([a-z0-9]+)\)/i);
+    if (mGenericWithNum) {
+      const qNum = mGenericWithNum[1];
+      const letter = mGenericWithNum[2].toLowerCase();
+      return {
+        badge: `(${letter})`,
+        title: `Question ${qNum}(${letter})`
+      };
+    }
+
+    // 3. Isolated letter like "(a)", "a", "(b)", "b"
+    const mLetter = raw.match(/^\(?([a-z0-9]+)\)?$/i);
+    if (mLetter) {
+      const letter = mLetter[1].toLowerCase();
+      const cleanParentNum = parentQNum ? String(parentQNum).replace(/[^0-9]/g, '') : '';
+      const qNum = cleanParentNum || String(currentIndex + 1);
+      return {
+        badge: `(${letter})`,
+        title: `Question ${qNum}(${letter})`
+      };
+    }
+
+    // 4. Fallback based on index
+    const fallbackLetter = String.fromCharCode(97 + idx);
+    const cleanParentNum = parentQNum ? String(parentQNum).replace(/[^0-9]/g, '') : String(currentIndex + 1);
+    return {
+      badge: `(${fallbackLetter})`,
+      title: `Question ${cleanParentNum || '5'}(${fallbackLetter})`
+    };
+  };
+
   const renderSubQuestionItem = (sub: any, subIdx: number) => {
+    const formattedSub = formatSubQuestionHeader(sub, subIdx, currentQuestion?.questionNumber);
     const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
     const partKey = `${currentQuestionId}_p${subIdx}`;
     const isHintShown = !!showPartHints[partKey];
@@ -847,12 +918,10 @@ export function Paper2ExamRunner({
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
-              {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
+              {formattedSub.badge}
             </span>
-            <span className="text-sm font-bold text-white">
-              {currentQuestion?.questionNumber 
-                ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
-                : `Sub-Question Part ${sub.partLabel || subId}`}
+            <span className="text-sm font-bold text-white tracking-tight">
+              {formattedSub.title}
             </span>
           </div>
 
@@ -1035,7 +1104,7 @@ export function Paper2ExamRunner({
             </button>
             {isHintShown && (
               <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
+                💡 <strong>Hint {formattedSub.badge}:</strong> <MathRenderer content={sub.hint} />
               </div>
             )}
           </div>
@@ -1267,7 +1336,7 @@ export function Paper2ExamRunner({
         </div>
 
         {/* Question Body */}
-        <CardContent className={cn("p-6 sm:p-8 space-y-8", isExamFocusMode && "flex-1 overflow-hidden min-h-0 flex flex-col p-4 sm:p-6 space-y-4")}>
+        <CardContent className={cn("p-6 sm:p-8 space-y-8", isExamFocusMode && "flex-1 overflow-hidden min-h-0 flex flex-col p-4 sm:p-6 space-y-4", passageText && isSplitView && !isExamFocusMode && "p-4 sm:p-6 space-y-4 overflow-hidden")}>
           {/* Error Banner */}
           {gradingError && (
             <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-3 animate-in shake">
@@ -1692,24 +1761,18 @@ export function Paper2ExamRunner({
             /* ========================================================================= */
             passageText && isSplitView ? (
               <div className={cn(
-                "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start",
-                isExamFocusMode && "h-full min-h-0 overflow-hidden"
+                "grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch",
+                isExamFocusMode
+                  ? "h-full min-h-0 overflow-hidden"
+                  : "lg:h-[calc(100vh-14rem)] lg:max-h-[calc(100vh-14rem)] overflow-hidden"
               )}>
-                {/* Left Column: Sticky Reading Passage Panel (5 cols) */}
-                <div className={cn(
-                  "hidden lg:block lg:col-span-5 space-y-4 pr-1 custom-scrollbar",
-                  isExamFocusMode
-                    ? "h-full overflow-y-auto"
-                    : "lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto"
-                )}>
+                {/* Left Column: Reading Passage Panel (5 cols) */}
+                <div className="hidden lg:flex lg:col-span-5 flex-col h-full min-h-0 overflow-hidden pr-1">
                   {renderPassageCard(false)}
                 </div>
 
                 {/* Right Column: Structured Sub-Questions (7 cols) */}
-                <div className={cn(
-                  "lg:col-span-7 space-y-6",
-                  isExamFocusMode && "h-full overflow-y-auto custom-scrollbar pr-2"
-                )}>
+                <div className="lg:col-span-7 h-full min-h-0 overflow-y-auto custom-scrollbar pr-2 space-y-6">
                   {/* On Mobile / Tablet, show passage at top of questions */}
                   <div className="lg:hidden">
                     {renderPassageCard(true)}

@@ -14,6 +14,7 @@ import { curriculumQueryClient, CACHE_CONFIG } from './curriculumService';
 import {
   TopicalLabDocument,
   SubjectTopicsManifest,
+  TopicManifestItem,
   TopicalPracticeQuestion,
   TopicalPracticeDifficulty
 } from '@/lib/topical-lab-types';
@@ -70,9 +71,9 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
     {
       id: 'beacon_of_light_anthology_literary_devices',
       title: 'The Beacon of Light Anthology & Literary Devices',
-      strandCode: 'S1',
-      strandName: 'STRAND 1: ORAL LANGUAGE',
-      strand: 'STRAND 1: ORAL LANGUAGE',
+      strandCode: 'S2',
+      strandName: 'STRAND 2: READING & LITERATURE',
+      strand: 'STRAND 2: READING & LITERATURE',
       subStrand: 'The Beacon of Light Anthology & Literary Devices',
       levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
@@ -299,6 +300,22 @@ export const DEFAULT_JHS_MATH_MANIFEST: SubjectTopicsManifest = {
  * Fallback: global_curriculum/{levelId}/subjects/{subjectId}
  * Costs exactly 1 Firestore document read.
  */
+
+function normalizeTopicStrands(topics: TopicManifestItem[]): TopicManifestItem[] {
+  if (!topics || !Array.isArray(topics)) return [];
+  return topics.map(t => {
+    if (t.id === 'beacon_of_light_anthology_literary_devices' || (t.title && t.title.includes('Beacon of Light'))) {
+      return {
+        ...t,
+        strandCode: 'S2',
+        strandName: 'STRAND 2: READING & LITERATURE',
+        strand: 'STRAND 2: READING & LITERATURE'
+      };
+    }
+    return t;
+  });
+}
+
 export async function fetchSubjectTopicsManifest(
   levelId: string = 'jhs',
   subjectId: string = 'math'
@@ -320,7 +337,7 @@ export async function fetchSubjectTopicsManifest(
       return {
         ...defaultManifest,
         ...data,
-        topics: data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics
+        topics: normalizeTopicStrands(data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics)
       };
     }
 
@@ -333,7 +350,7 @@ export async function fetchSubjectTopicsManifest(
       return {
         ...defaultManifest,
         ...data,
-        topics: data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics
+        topics: normalizeTopicStrands(data.topics && data.topics.length > 0 ? data.topics : defaultManifest.topics)
       };
     }
   } catch (err) {
