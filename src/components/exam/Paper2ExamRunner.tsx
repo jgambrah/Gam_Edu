@@ -23,6 +23,7 @@ import {
   AlignLeft,
   Columns,
   Maximize2,
+  Minimize2,
   X
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -30,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -95,6 +97,45 @@ export function Paper2ExamRunner({
   const [isSplitView, setIsSplitView] = useState(true);
   const [isPassageModalOpen, setIsPassageModalOpen] = useState(false);
   const [passageFontSize, setPassageFontSize] = useState<'sm' | 'base' | 'lg'>('base');
+  const [isExamFocusMode, setIsExamFocusMode] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
+
+  // Distraction-free Focus Mode keyboard shortcut (ESC to exit)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isExamFocusMode) {
+        setIsExamFocusMode(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isExamFocusMode]);
+
+  // Draft autosave and local persistence
+  const examDraftKey = `gam_exam_draft_${activeExam?.id || 'paper2'}_${currentIndex}`;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(examDraftKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          setPartAnswers(prev => ({ ...parsed, ...prev }));
+        }
+      }
+    } catch (e) {}
+  }, [currentIndex, examDraftKey]);
+
+  useEffect(() => {
+    if (Object.keys(partAnswers).length === 0) return;
+    setSaveStatus('saving');
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(examDraftKey, JSON.stringify(partAnswers));
+        setSaveStatus('saved');
+      } catch (e) {}
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [partAnswers, examDraftKey]);
 
   // --- REAL-TIME LIVE COUNTDOWN TIMER (Paper 2: 75 - 105 mins standard) ---
   const examDurationMinutes = Number(activeExam?.paper2?.durationMinutes || activeExam?.durationMinutes || 75);
@@ -285,6 +326,92 @@ export function Paper2ExamRunner({
   const essayChars = currentEssayText.length;
   const essayParagraphs = currentEssayText.trim() ? currentEssayText.trim().split(/\n+/).filter(p => p.trim().length > 0).length : 0;
 
+  // Defensive extraction of whether current question is comprehension or language
+  const isComprehensionQuestion = 
+    currentQuestion?.number === 4 ||
+    currentQuestion?.questionNumber === "4" ||
+    (currentQuestion?.section && currentQuestion.section.toLowerCase().includes('comprehension')) ||
+    (currentQuestion?.title && currentQuestion.title.toLowerCase().includes('comprehension'));
+
+  // Context-aware language subject detection
+  const isLanguageSubject = Boolean(
+    isComprehensionQuestion ||
+    (currentQuestion?.section && (
+      currentQuestion.section.toLowerCase().includes('comprehension') ||
+      currentQuestion.section.toLowerCase().includes('composition') ||
+      currentQuestion.section.toLowerCase().includes('english') ||
+      currentQuestion.section.toLowerCase().includes('literature')
+    )) ||
+    (activeExam?.subject && (
+      activeExam.subject.toLowerCase().includes('english') ||
+      activeExam.subject.toLowerCase().includes('language')
+    )) ||
+    (activeExam?.title && activeExam.title.toLowerCase().includes('english'))
+  );
+
+  // Calibrated mark distribution summing to exactly 30 marks for Comprehension (3+3+4+4+4+4+8 = 30)
+  const defaultComprehensionMarks = [3, 3, 4, 4, 4, 4, 8];
+  const calculateSubMarks = (sub: any, subIdx: number): number => {
+    if (isComprehensionQuestion && subQuestionsList.length === 7) {
+      return defaultComprehensionMarks[subIdx];
+    }
+    return Number(sub?.maxMarks || sub?.marks) || (isComprehensionQuestion ? Math.round(30 / subQuestionsList.length) : 5);
+  };
+
+  // Helper to extract Roman-numeral items (I., II., III., IV.) for questions (e) and (f)
+  const extractNumberedItems = (prompt: string): { num: string; label: string }[] => {
+    const regex = /(?:^|\n)\s*(I{1,3}|IV|V)\.\s*([^;\n]+)/g;
+    const matches: { num: string; label: string }[] = [];
+    let m;
+    while ((m = regex.exec(prompt)) !== null) {
+      matches.push({ num: m[1], label: m[2].replace(/[;\.]/g, '').trim() });
+    }
+    return matches;
+  };
+
+  // Helper to parse partitioned answers (I., II., etc.) from partAnswers string
+  const parsePartitionedAnswers = (val: string, items: { num: string; label: string }[]): Record<string, string> => {
+    const result: Record<string, string> = {};
+    items.forEach(it => { result[it.num] = ''; });
+    if (!val) return result;
+    
+    items.forEach(it => {
+      const r = new RegExp(`(?:^|\\n)\\s*${it.num}\\.\\s*(?:[A-Za-z0-9_\\.\\s]+[:\\s]*)?([^\\n]+)`, 'i');
+      const match = val.match(r);
+      if (match) {
+        result[it.num] = match[1].trim();
+      }
+    });
+
+    const hasAny = Object.values(result).some(v => v.length > 0);
+    if (!hasAny && val.trim()) {
+      const lines = val.split('\n').filter(Boolean);
+      items.forEach((it, idx) => {
+        if (lines[idx]) {
+          result[it.num] = lines[idx].replace(/^[IivV\.\d\)]+\s*/, '').trim();
+        }
+      });
+    }
+    return result;
+  };
+
+  // Helper to parse summary sentences 1 & 2 for question (g)
+  const parseSummarySentences = (val: string): { s1: string; s2: string } => {
+    if (!val) return { s1: '', s2: '' };
+    const lines = val.split('\n').map(l => l.trim()).filter(Boolean);
+    let s1 = '';
+    let s2 = '';
+    if (lines.length >= 2) {
+      s1 = lines[0].replace(/^[1-2IivVabcde\.\)\s]+/, '').trim();
+      s2 = lines[1].replace(/^[1-2IivVabcde\.\)\s]+/, '').trim();
+    } else if (lines.length === 1) {
+      s1 = lines[0].replace(/^[1-2IivVabcde\.\)\s]+/, '').trim();
+    }
+    return { s1, s2 };
+  };
+
+  const countWords = (text: string): number => text.trim().split(/\s+/).filter(Boolean).length;
+
   // Toggle pedagogical hint
   const toggleHint = (partKey: string) => {
     setShowPartHints(prev => ({ ...prev, [partKey]: !prev[partKey] }));
@@ -334,7 +461,7 @@ export function Paper2ExamRunner({
               partKey,
               prompt: String(sub?.prompt || sub?.question || ''),
               studentText: text,
-              maxMarks: Number(sub?.maxMarks || sub?.marks) || 5,
+              maxMarks: calculateSubMarks(sub, subIdx),
               workedSolution: String(sub?.workedSolution || sub?.modelAnswer || ''),
               modelAnswer: String(sub?.modelAnswer || sub?.workedSolution || '')
             });
@@ -516,13 +643,6 @@ export function Paper2ExamRunner({
   const questionPrompt = currentQuestion?.prompt || currentQuestion?.title || '';
   const questionModelAnswer = currentQuestion?.modelAnswer || currentQuestion?.workedSolution || '';
 
-  // Defensive extraction of reading passage / context extract (e.g. for Comprehension, Literature, or Essays)
-  const isComprehensionQuestion = 
-    currentQuestion?.number === 4 ||
-    currentQuestion?.questionNumber === "4" ||
-    (currentQuestion?.section && currentQuestion.section.toLowerCase().includes('comprehension')) ||
-    (currentQuestion?.title && currentQuestion.title.toLowerCase().includes('comprehension'));
-
   const passageText =
     currentQuestion?.passageText ||
     currentQuestion?.passage ||
@@ -553,36 +673,61 @@ export function Paper2ExamRunner({
           ? 'Literature Context Extract'
           : 'Reading Passage / Reference Material'));
 
-  // Reading passage renderer component for comprehension & theory reference
+  const questionInstructions =
+    currentQuestion?.instructions ||
+    currentQuestion?.guidance ||
+    (activeExam as any)?.sections?.partB_comprehension?.instructions ||
+    (activeExam as any)?.paper2?.sections?.partB_comprehension?.instructions ||
+    '';
+
+  // Enhanced reading passage renderer with unclipped controls, paragraph indicators & high contrast
   const renderPassageCard = (isFullWidth = false) => {
     if (!passageText) return null;
+
+    const wordCount = passageText.trim().split(/\s+/).filter(Boolean).length;
+    const estMinutes = Math.max(1, Math.ceil(wordCount / 130));
+    const paragraphs = passageText
+      .split(/\n\s*\n/)
+      .map((p: string) => p.trim())
+      .filter(Boolean);
+
     return (
       <div className={cn(
-        "rounded-3xl bg-slate-950/90 border border-amber-500/30 p-5 sm:p-6 shadow-2xl backdrop-blur-md space-y-4 transition-all",
+        "rounded-3xl bg-slate-950/95 border border-amber-500/30 p-5 sm:p-6 shadow-2xl backdrop-blur-md space-y-4 transition-all",
         isFullWidth ? "w-full" : "w-full"
       )}>
-        {/* Passage Header */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
-              <BookOpen className="w-4 h-4" />
+        {/* Row 1: Title, Icon & Reading Stats */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center shrink-0 shadow-sm">
+              <BookOpen className="w-4 h-4 text-amber-400" />
             </div>
-            <div>
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-bold text-amber-300 tracking-tight block truncate">
                 {passageTitle}
               </span>
-              <span className="text-[11px] text-slate-400">
-                Official Reference Passage
+              <span className="text-[11px] text-slate-400 font-mono">
+                Official Reference Material
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            {/* Font Size Selector */}
-            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-0.5 text-[11px]">
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge className="bg-slate-900 border border-slate-800 text-[11px] text-slate-300 font-mono px-2.5 py-1">
+              📖 ~{wordCount} Words • ~{estMinutes} Min Read
+            </Badge>
+          </div>
+        </div>
+
+        {/* Row 2: Control Toolbar (Text Sizing, Split Mode, Popout) - Generously spaced & unclipped */}
+        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-900/90 rounded-2xl border border-slate-800">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] uppercase font-bold text-slate-400 px-1 hidden sm:inline">Text Size:</span>
+            <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-0.5">
               <button
                 type="button"
                 onClick={() => setPassageFontSize('sm')}
-                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'sm' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                className={cn("px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer", passageFontSize === 'sm' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
                 title="Small text size"
               >
                 A-
@@ -590,7 +735,7 @@ export function Paper2ExamRunner({
               <button
                 type="button"
                 onClick={() => setPassageFontSize('base')}
-                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'base' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                className={cn("px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer", passageFontSize === 'base' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
                 title="Normal text size"
               >
                 A
@@ -598,59 +743,377 @@ export function Paper2ExamRunner({
               <button
                 type="button"
                 onClick={() => setPassageFontSize('lg')}
-                className={cn("px-2 py-0.5 rounded-lg font-bold transition-all", passageFontSize === 'lg' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
+                className={cn("px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer", passageFontSize === 'lg' ? "bg-amber-500 text-slate-950 shadow" : "text-slate-400 hover:text-slate-200")}
                 title="Large text size"
               >
                 A+
               </button>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
             {/* Split View Toggle (Desktop Only) */}
             <button
               type="button"
               onClick={() => setIsSplitView(prev => !prev)}
-              className="hidden lg:flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all cursor-pointer"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-950 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all cursor-pointer shadow-sm"
               title={isSplitView ? "Switch to Stacked View" : "Switch to Side-by-Side Split View"}
             >
               <Columns className="w-3.5 h-3.5" />
-              <span>{isSplitView ? "Split" : "Stack"}</span>
+              <span>{isSplitView ? "Stacked" : "Side-by-Side"}</span>
             </button>
             {/* Modal Popout */}
             <button
               type="button"
               onClick={() => setIsPassageModalOpen(true)}
-              className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 hover:border-amber-500/30 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all cursor-pointer shadow-sm text-xs font-semibold"
               title="Pop out in full overlay"
             >
               <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Overlay</span>
             </button>
           </div>
         </div>
 
-        {/* Instructions banner */}
+        {/* High-Contrast Instructions Card */}
         {questionInstructions && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed font-medium">
-            📋 <strong>Instructions:</strong> {questionInstructions}
+          <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-700/80 text-xs sm:text-sm text-slate-100 leading-relaxed font-normal shadow-md">
+            <strong className="text-amber-300 font-bold block mb-1">📋 WAEC Instructions:</strong>
+            <span className="text-slate-200">{questionInstructions}</span>
           </div>
         )}
 
-        {/* Passage Text */}
+        {/* Paragraph-Indexed Passage Text with High Contrast & Independent Scroll */}
         <div className={cn(
-          "text-slate-200 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/40 pl-4 py-1 custom-scrollbar overflow-y-auto select-text",
-          isSplitView ? "max-h-[calc(100vh-16rem)]" : "max-h-96",
-          passageFontSize === 'sm' ? "text-xs sm:text-sm" : (passageFontSize === 'lg' ? "text-base sm:text-lg" : "text-sm sm:text-base")
+          "text-slate-100 leading-relaxed custom-scrollbar overflow-y-auto select-text space-y-4 pr-1",
+          isExamFocusMode ? "max-h-[calc(100vh-18rem)]" : isSplitView ? "max-h-[calc(100vh-14rem)]" : "max-h-[32rem]",
+          passageFontSize === 'sm' ? "text-xs sm:text-sm leading-relaxed" : (passageFontSize === 'lg' ? "text-base sm:text-lg leading-loose" : "text-sm sm:text-base leading-relaxed")
         )}>
-          <MathRenderer content={passageText} />
+          {paragraphs.length > 1 ? (
+            paragraphs.map((para: string, pIdx: number) => (
+              <div key={pIdx} className="flex gap-3 group items-start">
+                <span className="text-[11px] font-mono font-bold text-amber-400/80 select-none pt-0.5 shrink-0 group-hover:text-amber-300 transition-colors">
+                  ¶ {pIdx + 1}
+                </span>
+                <div className="text-slate-100 leading-relaxed text-left flex-1 font-sans">
+                  <MathRenderer content={para} />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-slate-100 leading-relaxed whitespace-pre-line border-l-2 border-amber-500/40 pl-4 py-1">
+              <MathRenderer content={passageText} />
+            </div>
+          )}
         </div>
       </div>
     );
   };
 
-  const questionInstructions =
-    currentQuestion?.instructions ||
-    currentQuestion?.guidance ||
-    (activeExam as any)?.sections?.partB_comprehension?.instructions ||
-    '';
+  // Specialized rendering for each sub-question item with constraints detection
+  const renderSubQuestionItem = (sub: any, subIdx: number) => {
+    const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
+    const partKey = `${currentQuestionId}_p${subIdx}`;
+    const isHintShown = !!showPartHints[partKey];
+    const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
+    const subMarks = calculateSubMarks(sub, subIdx);
+    const promptText = String(sub.prompt || sub.question || sub.title || '');
 
+    // Specialized constraints detection
+    const isSummary = (sub.partLabel && sub.partLabel.includes('g')) || promptText.toLowerCase().includes('eight words') || promptText.toLowerCase().includes('two concise sentences');
+    const numberedItems = extractNumberedItems(promptText);
+    const isMultiPart = !isSummary && numberedItems.length >= 2;
+    const isVocabulary = isMultiPart && (promptText.toLowerCase().includes('words') || promptText.toLowerCase().includes('means the same') || (sub.partLabel && sub.partLabel.includes('f')));
+
+    // Summary state values
+    const { s1: summaryS1, s2: summaryS2 } = parseSummarySentences(currentVal);
+    const s1Count = countWords(summaryS1);
+    const s2Count = countWords(summaryS2);
+
+    // Partitioned state values
+    const partitionedVals = isMultiPart ? parsePartitionedAnswers(currentVal, numberedItems) : {};
+
+    return (
+      <div
+        key={sub?.subId || subIdx}
+        className={cn(
+          'p-5 sm:p-6 rounded-3xl border transition-all space-y-5',
+          isSubmitted
+            ? 'bg-slate-900/60 border-slate-800'
+            : 'bg-slate-950/90 border-slate-800/90 shadow-xl'
+        )}
+      >
+        {/* Part Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
+              {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
+            </span>
+            <span className="text-sm font-bold text-white">
+              {currentQuestion?.questionNumber 
+                ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
+                : `Sub-Question Part ${sub.partLabel || subId}`}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {passageText && !isSplitView && (
+              <button
+                type="button"
+                onClick={() => setIsPassageModalOpen(true)}
+                className="text-[11px] font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+                title="Open reading passage overlay"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Refer to Passage</span>
+              </button>
+            )}
+            <span className="text-xs font-bold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full font-mono">
+              [{subMarks} Marks]
+            </span>
+          </div>
+        </div>
+
+        {/* Part Prompt with High Contrast */}
+        <div className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed pl-1 whitespace-pre-line bg-slate-900/70 p-4 rounded-2xl border border-slate-800">
+          <MathRenderer content={promptText.replace(/\\n/g, '\n')} />
+        </div>
+
+        {/* Sub-part diagram (if any) */}
+        {sub.diagramSvg && (
+          <div
+            className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
+            dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
+          />
+        )}
+
+        {/* Specialized Input: Summary Question (Sentence 1 & Sentence 2 with Live Word Counters) */}
+        {isSummary ? (
+          <div className="space-y-4">
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between">
+              <span className="font-semibold flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>WAEC Constraint: Exactly two sentences, NOT MORE THAN EIGHT WORDS EACH.</span>
+              </span>
+            </div>
+
+            {/* Sentence 1 */}
+            <div className="space-y-1.5 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-200">First Sentence (Point 1):</span>
+                <span className={cn(
+                  "px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold transition-all border",
+                  s1Count === 0
+                    ? "bg-slate-800 text-slate-400 border-slate-700"
+                    : s1Count <= 8
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                    : "bg-rose-500/25 text-rose-300 border-rose-500/50 animate-pulse font-black"
+                )}>
+                  {s1Count === 0 ? "0 / 8 words" : s1Count <= 8 ? `✓ ${s1Count} / 8 words` : `⚠️ ${s1Count} / 8 words (+${s1Count - 8} over limit!)`}
+                </span>
+              </div>
+              <Input
+                disabled={isSubmitted || isSubmitting}
+                value={summaryS1}
+                onChange={e => {
+                  const s1 = e.target.value;
+                  const combined = (s1.trim() || summaryS2.trim()) ? `1. ${s1.trim()}\n2. ${summaryS2.trim()}` : '';
+                  setPartAnswers(prev => ({ ...prev, [partKey]: combined }));
+                }}
+                placeholder="First summary sentence (max 8 words)..."
+                className="bg-slate-950 border-slate-800 text-slate-100 rounded-xl text-xs sm:text-sm h-11"
+              />
+            </div>
+
+            {/* Sentence 2 */}
+            <div className="space-y-1.5 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-200">Second Sentence (Point 2):</span>
+                <span className={cn(
+                  "px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold transition-all border",
+                  s2Count === 0
+                    ? "bg-slate-800 text-slate-400 border-slate-700"
+                    : s2Count <= 8
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                    : "bg-rose-500/25 text-rose-300 border-rose-500/50 animate-pulse font-black"
+                )}>
+                  {s2Count === 0 ? "0 / 8 words" : s2Count <= 8 ? `✓ ${s2Count} / 8 words` : `⚠️ ${s2Count} / 8 words (+${s2Count - 8} over limit!)`}
+                </span>
+              </div>
+              <Input
+                disabled={isSubmitted || isSubmitting}
+                value={summaryS2}
+                onChange={e => {
+                  const s2 = e.target.value;
+                  const combined = (summaryS1.trim() || s2.trim()) ? `1. ${summaryS1.trim()}\n2. ${s2.trim()}` : '';
+                  setPartAnswers(prev => ({ ...prev, [partKey]: combined }));
+                }}
+                placeholder="Second summary sentence (max 8 words)..."
+                className="bg-slate-950 border-slate-800 text-slate-100 rounded-xl text-xs sm:text-sm h-11"
+              />
+            </div>
+          </div>
+        ) : isMultiPart ? (
+          /* Specialized Input: Partitioned Sub-Inputs (I, II, III, IV) */
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs text-slate-400 pb-1">
+              <span>{isVocabulary ? "Provide a replacement synonym or equivalent phrase for each word:" : "Explain the meaning of each expression as used in the passage:"}</span>
+              <span className="text-[11px] text-amber-400 font-mono font-semibold">{numberedItems.length} Parts</span>
+            </div>
+
+            <div className={cn(
+              "gap-3",
+              isVocabulary ? "grid grid-cols-1 sm:grid-cols-2" : "space-y-3"
+            )}>
+              {numberedItems.map((item: { num: string; label: string }) => {
+                const val = partitionedVals[item.num] || '';
+                return (
+                  <div key={item.num} className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 font-mono font-bold text-xs px-2.5 py-0.5">
+                        {item.num}
+                      </Badge>
+                      <span className="text-slate-100 font-semibold text-xs sm:text-sm">
+                        {item.label}
+                      </span>
+                    </div>
+                    <Input
+                      disabled={isSubmitted || isSubmitting}
+                      value={val}
+                      onChange={e => {
+                        const updatedVals = { ...partitionedVals, [item.num]: e.target.value };
+                        const combined = numberedItems
+                          .filter(it => updatedVals[it.num]?.trim())
+                          .map(it => `${it.num}. ${it.label}: ${updatedVals[it.num]?.trim()}`)
+                          .join('\n');
+                        setPartAnswers(prev => ({ ...prev, [partKey]: combined }));
+                      }}
+                      placeholder={isVocabulary ? `Synonym for "${item.label}"...` : `Meaning of "${item.label}"...`}
+                      className="bg-slate-950 border-slate-800 text-slate-100 rounded-xl text-xs sm:text-sm h-11"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          /* Standard Language / STEM Textarea */
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-slate-400">
+              <span>{isLanguageSubject ? "Provide your answer in full sentences:" : "Your Working Steps, Formula or Explanation:"}</span>
+              {isSubmitted && (
+                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> Locked Post-Submission
+                </span>
+              )}
+            </div>
+            <Textarea
+              disabled={isSubmitted || isSubmitting}
+              value={currentVal}
+              onChange={e => setPartAnswers(prev => ({ ...prev, [partKey]: e.target.value }))}
+              placeholder={isLanguageSubject ? "Type your answer here in clear, grammatical sentences..." : "Write out your answer, steps, formula, or derivation here..."}
+              className={cn(
+                'rounded-2xl min-h-[95px] text-xs sm:text-sm font-sans transition-all',
+                isSubmitted
+                  ? 'bg-slate-950/90 border-slate-800 text-slate-300 opacity-90 cursor-not-allowed'
+                  : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-amber-500 placeholder:text-slate-600'
+              )}
+            />
+          </div>
+        )}
+
+        {/* Hint Toggle */}
+        {sub.hint && !isSubmitted && (
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => toggleHint(partKey)}
+              className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
+            </button>
+            {isHintShown && (
+              <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sub-question AI Feedback and Model Solution (Post-submission only) */}
+        {isSubmitted && (
+          <div className="mt-4 border-t border-slate-800/80 pt-4 space-y-4 animate-in fade-in duration-300">
+            {(() => {
+              const evalItem = toSafeArray(gradingResults).find(
+                (r: any) =>
+                  (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
+                  (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
+              );
+
+              if (!evalItem) return null;
+
+              return (
+                <div className="p-4 rounded-xl bg-slate-900/90 border border-sky-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sky-400 text-sm flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-sky-400" />
+                      <span>AI Score Breakdown</span>
+                    </span>
+                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                      Score: {evalItem.evaluation?.awardedMarks ?? 0} / {evalItem.evaluation?.maxMarks ?? subMarks} Marks
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {toSafeArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
+                      <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
+                        <div>
+                          <span className="text-slate-200 font-medium">{step.step}</span>
+                          {step.feedback && <p className="text-amber-400/90 mt-0.5 text-[11px]">{step.feedback}</p>}
+                        </div>
+                        <span className="text-slate-300 whitespace-nowrap font-mono font-semibold">
+                          {step.awarded} / {step.max}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {evalItem.evaluation?.constructiveFeedback && (
+                    <div className="text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-800/40 leading-relaxed">
+                      <strong className="text-sky-400 block mb-0.5">Examiner Note:</strong>
+                      {evalItem.evaluation.constructiveFeedback}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Unlocked Model Solution */}
+            <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
+              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+                <CheckCircle2 className="w-4 h-4 shrink-0"/>
+                <span>Official Model Solution & Marking Rubric</span>
+              </div>
+
+              {sub.modelAnswer && (
+                <div className="p-2.5 rounded-lg bg-slate-950/70 border border-emerald-500/20 text-xs">
+                  <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">Model Answer / Benchmark:</span>
+                  <div className="text-slate-100 font-bold">
+                    <MathRenderer content={sub.modelAnswer} />
+                  </div>
+                </div>
+              )}
+
+              <div className="text-xs text-slate-300 leading-relaxed pt-1">
+                <MathRenderer content={sub.workedSolution || sub.modelAnswer || (isLanguageSubject ? 'Refer to official marking scheme.' : 'Follow official derivation steps.')} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
   let subPromptText = questionPrompt;
   if (typeof questionPrompt === 'string' && questionPrompt.includes('**Question:**')) {
     subPromptText = questionPrompt.split('**Question:**')[1].trim();
@@ -664,26 +1127,48 @@ export function Paper2ExamRunner({
   );
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
+    <div className={cn(
+      "space-y-4 animate-in fade-in duration-300",
+      isExamFocusMode && "fixed inset-0 z-50 w-screen h-screen overflow-hidden bg-slate-950 p-4 sm:p-6 flex flex-col space-y-3"
+    )}>
       <ActiveExamHeaderDisclaimer year={examYear} />
 
-      {/* Top Breadcrumb & Stepper Info */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
-        </Button>
-        <span className="text-xs text-slate-400">
-          Module: <strong className="text-amber-300">{activeExam.title || 'Paper 2 Written Examination'}</strong>
-        </span>
+      {/* Top Breadcrumb & Stepper Info / Focus Mode Header */}
+      <div className="flex items-center justify-between shrink-0">
+        {isExamFocusMode ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsExamFocusMode(false)}
+            className="text-xs bg-slate-900 border-slate-700 text-slate-200 hover:text-white flex items-center gap-1.5 cursor-pointer rounded-xl px-3 py-1.5 shadow-sm"
+          >
+            <Minimize2 className="w-3.5 h-3.5 text-amber-400" />
+            <span>Exit Focus Mode (Esc)</span>
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
+          </Button>
+        )}
+        <div className="flex items-center gap-3">
+          {isExamFocusMode && (
+            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[11px] font-mono px-2.5 py-0.5 hidden sm:inline-flex">
+              🎯 Distraction-Free CBE Mode
+            </Badge>
+          )}
+          <span className="text-xs text-slate-400">
+            Module: <strong className="text-amber-300">{activeExam.title || 'Paper 2 Written Examination'}</strong>
+          </span>
+        </div>
       </div>
 
       {/* Main Examination Workstation */}
-      <Card className="rounded-[32px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden text-white">
+      <Card className={cn("rounded-[32px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden text-white transition-all", isExamFocusMode && "flex-1 flex flex-col overflow-hidden min-h-0")}>
         {/* Workstation Header */}
         <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-6 sm:p-8 border-b border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -707,7 +1192,22 @@ export function Paper2ExamRunner({
               </Badge>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              {/* Autosave Draft Indicator */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px] font-mono text-slate-300 shadow-inner">
+                {saveStatus === 'saving' ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                    <span className="text-slate-400">Saving draft...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-400 font-semibold">Draft saved</span>
+                  </>
+                )}
+              </div>
+
               {/* Countdown Timer Badge */}
               <div className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-mono font-black transition-all shadow-inner",
@@ -720,6 +1220,24 @@ export function Paper2ExamRunner({
                 <Clock className={cn("w-3.5 h-3.5", timeLeft <= 300 ? "text-red-400 animate-spin" : "text-cyan-400")} />
                 <span>{timeLeft <= 0 ? 'Time Expired' : formatCountdown(timeLeft)}</span>
               </div>
+
+              {/* Focus / Exam Mode Toggle Button */}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsExamFocusMode(prev => !prev)}
+                className={cn(
+                  "text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer shadow-sm px-3 py-1.5",
+                  isExamFocusMode
+                    ? "bg-amber-500 text-slate-950 border-amber-400 shadow-amber-500/20"
+                    : "bg-slate-950/90 text-slate-200 border-slate-700 hover:border-amber-400/60 hover:text-amber-300"
+                )}
+                title={isExamFocusMode ? "Exit Fullscreen Focus Mode (Esc)" : "Expand to Distraction-Free CBE Exam Mode"}
+              >
+                {isExamFocusMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">{isExamFocusMode ? "Exit Focus" : "Focus Mode"}</span>
+              </Button>
 
               {/* Submission Status Indicator */}
               <div>
@@ -749,7 +1267,7 @@ export function Paper2ExamRunner({
         </div>
 
         {/* Question Body */}
-        <CardContent className="p-6 sm:p-8 space-y-8">
+        <CardContent className={cn("p-6 sm:p-8 space-y-8", isExamFocusMode && "flex-1 overflow-hidden min-h-0 flex flex-col p-4 sm:p-6 space-y-4")}>
           {/* Error Banner */}
           {gradingError && (
             <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-3 animate-in shake">
@@ -1173,390 +1691,66 @@ export function Paper2ExamRunner({
             /* CASE B: QUESTIONS WITH STRUCTURED SUB-PARTS (a, b, c, d...)               */
             /* ========================================================================= */
             passageText && isSplitView ? (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className={cn(
+                "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start",
+                isExamFocusMode && "h-full min-h-0 overflow-hidden"
+              )}>
                 {/* Left Column: Sticky Reading Passage Panel (5 cols) */}
-                <div className="hidden lg:block lg:col-span-5 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+                <div className={cn(
+                  "hidden lg:block lg:col-span-5 space-y-4 pr-1 custom-scrollbar",
+                  isExamFocusMode
+                    ? "h-full overflow-y-auto"
+                    : "lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto"
+                )}>
                   {renderPassageCard(false)}
                 </div>
+
                 {/* Right Column: Structured Sub-Questions (7 cols) */}
-                <div className="lg:col-span-7 space-y-8">
+                <div className={cn(
+                  "lg:col-span-7 space-y-6",
+                  isExamFocusMode && "h-full overflow-y-auto custom-scrollbar pr-2"
+                )}>
                   {/* On Mobile / Tablet, show passage at top of questions */}
                   <div className="lg:hidden">
                     {renderPassageCard(true)}
                   </div>
-                  {subQuestionsList.map((sub: any, subIdx: number) => {
-                const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
-                const partKey = `${currentQuestionId}_p${subIdx}`;
-                const isHintShown = !!showPartHints[partKey];
-                const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
-                const subMarks = Number(sub?.maxMarks || sub?.marks) || 5;
+                  {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
 
-                return (
-                  <div
-                    key={sub?.subId || subIdx}
-                    className={cn(
-                      'p-5 sm:p-6 rounded-2xl border transition-all space-y-4',
-                      isSubmitted
-                        ? 'bg-slate-900/60 border-slate-800'
-                        : 'bg-slate-950/80 border-slate-800/80 shadow-md'
-                    )}
-                  >
-                    {/* Part Header */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
-                          {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
-                        </span>
-                        <span className="text-sm font-bold text-white">
-                          {currentQuestion?.questionNumber 
-                            ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
-                            : `Sub-Question Part ${sub.partLabel || subId}`}
-                        </span>
+                  {/* Consolidated Protocol Notice */}
+                  {!isSubmitted && (
+                    <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/80 border border-amber-500/20 flex items-center gap-3.5 text-xs text-slate-300 shadow-lg">
+                      <div className="w-9 h-9 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <Lock className="w-4 h-4 text-amber-400" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        {passageText && (
-                          <button
-                            type="button"
-                            onClick={() => setIsPassageModalOpen(true)}
-                            className="text-[11px] font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
-                            title="Open reading passage overlay"
-                          >
-                            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                            <span>Refer to Passage</span>
-                          </button>
-                        )}
-                        <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
-                          [{subMarks} Marks]
+                      <div className="space-y-0.5">
+                        <span className="font-bold text-amber-300 text-xs sm:text-sm block">WAEC Chief Examiner Protocol:</span>
+                        <span className="text-slate-400 text-xs leading-relaxed">
+                          Official model answers, scoring rubrics, and step-by-step AI evaluations are locked until you submit your complete answers.
                         </span>
                       </div>
                     </div>
-
-                    {/* Part Prompt */}
-                    <div className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed pl-1 whitespace-pre-line bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <MathRenderer content={(sub.prompt || sub.question || sub.title || '').replace(/\\n/g, '\n')} />
-                    </div>
-
-                    {/* Sub-part diagram (if any) */}
-                    {sub.diagramSvg && (
-                      <div
-                        className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
-                        dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
-                      />
-                    )}
-
-                    {/* Student Answer Textarea */}
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-[11px] text-slate-400">
-                        <span>Your Working Steps, Formula or Explanation:</span>
-                        {isSubmitted && (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1">
-                            <Lock className="w-3 h-3" /> Locked Post-Submission
-                          </span>
-                        )}
-                      </div>
-                      <Textarea
-                        disabled={isSubmitted || isSubmitting}
-                        value={currentVal}
-                        onChange={e => setPartAnswers(prev => ({ ...prev, [partKey]: e.target.value }))}
-                        placeholder="Write out your answer, steps, formula, or derivation here..."
-                        className={cn(
-                          'rounded-2xl min-h-[95px] text-xs font-sans transition-all',
-                          isSubmitted
-                            ? 'bg-slate-950/90 border-slate-800 text-slate-300 opacity-90 cursor-not-allowed'
-                            : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-amber-500 placeholder:text-slate-600'
-                        )}
-                      />
-                    </div>
-
-                    {/* Hint Toggle */}
-                    {sub.hint && !isSubmitted && (
-                      <div className="pt-1">
-                        <button
-                          type="button"
-                          onClick={() => toggleHint(partKey)}
-                          className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                          <Lightbulb className="w-3.5 h-3.5" />
-                          <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
-                        </button>
-                        {isHintShown && (
-                          <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                            💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Sub-question AI Feedback and Model Solution */}
-                    <div className="mt-4 border-t border-slate-800/80 pt-4">
-                      {!isSubmitted ? (
-                        <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-400">
-                          <Lock className="w-4 h-4 text-amber-400 shrink-0"/>
-                          <span>Official Solution and Scoring Rubric are unlocked once your answers are submitted for AI evaluation.</span>
-                        </div>
-                      ) : (
-                        <div className="space-y-4 animate-in fade-in duration-300">
-                          {/* AI Evaluation Score & Step Breakdown */}
-                          {(() => {
-                            const evalItem = toSafeArray(gradingResults).find(
-                              (r: any) =>
-                                (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
-                                (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
-                            );
-
-                            if (!evalItem) return null;
-
-                            return (
-                              <div className="p-4 rounded-xl bg-slate-900/90 border border-sky-500/30 space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <span className="font-semibold text-sky-400 text-sm flex items-center gap-1.5">
-                                    <Sparkles className="w-4 h-4 text-sky-400" />
-                                    <span>AI Score Breakdown</span>
-                                  </span>
-                                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
-                                    Score: {evalItem.evaluation?.awardedMarks ?? 0} / {evalItem.evaluation?.maxMarks ?? subMarks} Marks
-                                  </span>
-                                </div>
-
-                                <div className="space-y-2">
-                                  {toSafeArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
-                                    <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
-                                      <div>
-                                        <span className="text-slate-200 font-medium">{step.step}</span>
-                                        {step.feedback && <p className="text-amber-400/90 mt-0.5 text-[11px]">{step.feedback}</p>}
-                                      </div>
-                                      <span className="text-slate-300 whitespace-nowrap font-mono font-semibold">
-                                        {step.awarded} / {step.max}
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                {evalItem.evaluation?.constructiveFeedback && (
-                                  <div className="text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-800/40 leading-relaxed">
-                                    <strong className="text-sky-400 block mb-0.5">Examiner Note:</strong>
-                                    {evalItem.evaluation.constructiveFeedback}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })()}
-
-                          {/* Unlocked Model Solution */}
-                          <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
-                            <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-                              <CheckCircle2 className="w-4 h-4 shrink-0"/>
-                              <span>Official Model Solution & Marking Rubric</span>
-                            </div>
-
-                            {sub.modelAnswer && (
-                              <div className="p-2.5 rounded-lg bg-slate-950/70 border border-emerald-500/20 text-xs">
-                                <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">Model Answer / Benchmark:</span>
-                                <div className="text-slate-100 font-bold">
-                                  <MathRenderer content={sub.modelAnswer} />
-                                </div>
-                              </div>
-                            )}
-
-                            <div className="text-xs text-slate-300 leading-relaxed pt-1">
-                              <MathRenderer content={sub.workedSolution || sub.modelAnswer || 'Follow official derivation steps.'} />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  )}
                 </div>
               </div>
             ) : (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {passageText && renderPassageCard(true)}
-                {subQuestionsList.map((sub: any, subIdx: number) => {
-                  const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
-                  const partKey = `${currentQuestionId}_p${subIdx}`;
-                  const isHintShown = !!showPartHints[partKey];
-                  const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
-                  const subMarks = Number(sub?.maxMarks || sub?.marks) || 5;
+                {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
 
-                  return (
-                    <div
-                      key={sub?.subId || subIdx}
-                      className={cn(
-                        'p-5 sm:p-6 rounded-2xl border transition-all space-y-4',
-                        isSubmitted
-                          ? 'bg-slate-900/60 border-slate-800'
-                          : 'bg-slate-950/80 border-slate-800/80 shadow-md'
-                      )}
-                    >
-                      {/* Part Header */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 font-mono font-black text-xs flex items-center justify-center border border-amber-500/30">
-                            {sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : subId}
-                          </span>
-                          <span className="text-sm font-bold text-white">
-                            {currentQuestion?.questionNumber 
-                              ? `Question ${currentQuestion.questionNumber} ${sub.partLabel ? (sub.partLabel.startsWith('(') ? sub.partLabel : `(${sub.partLabel})`) : ''}`
-                              : `Sub-Question Part ${sub.partLabel || subId}`}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {passageText && (
-                            <button
-                              type="button"
-                              onClick={() => setIsPassageModalOpen(true)}
-                              className="text-[11px] font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
-                              title="Open reading passage overlay"
-                            >
-                              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                              <span>Refer to Passage</span>
-                            </button>
-                          )}
-                          <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-mono">
-                            [{subMarks} Marks]
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Part Prompt */}
-                      <div className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed pl-1 whitespace-pre-line bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                        <MathRenderer content={(sub.prompt || sub.question || sub.title || '').replace(/\\n/g, '\n')} />
-                      </div>
-
-                      {/* Sub-part diagram (if any) */}
-                      {sub.diagramSvg && (
-                        <div
-                          className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
-                          dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
-                        />
-                      )}
-
-                      {/* Student Answer Textarea */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] text-slate-400">
-                          <span>Your Working Steps, Formula or Explanation:</span>
-                          {isSubmitted && (
-                            <span className="text-emerald-400 font-bold flex items-center gap-1">
-                              <Lock className="w-3 h-3" /> Locked Post-Submission
-                            </span>
-                          )}
-                        </div>
-                        <Textarea
-                          disabled={isSubmitted || isSubmitting}
-                          value={currentVal}
-                          onChange={e => setPartAnswers(prev => ({ ...prev, [partKey]: e.target.value }))}
-                          placeholder="Write out your answer, steps, formula, or derivation here..."
-                          className={cn(
-                            'rounded-2xl min-h-[95px] text-xs font-sans transition-all',
-                            isSubmitted
-                              ? 'bg-slate-950/90 border-slate-800 text-slate-300 opacity-90 cursor-not-allowed'
-                              : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-amber-500 placeholder:text-slate-600'
-                          )}
-                        />
-                      </div>
-
-                      {/* Hint Toggle */}
-                      {sub.hint && !isSubmitted && (
-                        <div className="pt-1">
-                          <button
-                            type="button"
-                            onClick={() => toggleHint(partKey)}
-                            className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-                          >
-                            <Lightbulb className="w-3.5 h-3.5" />
-                            <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
-                          </button>
-                          {isHintShown && (
-                            <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                              💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Sub-question AI Feedback and Model Solution */}
-                      <div className="mt-4 border-t border-slate-800/80 pt-4">
-                        {!isSubmitted ? (
-                          <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-400">
-                            <Lock className="w-4 h-4 text-amber-400 shrink-0"/>
-                            <span>Official Solution and Scoring Rubric are unlocked once your answers are submitted for AI evaluation.</span>
-                          </div>
-                        ) : (
-                          <div className="space-y-4 animate-in fade-in duration-300">
-                            {/* AI Evaluation Score & Step Breakdown */}
-                            {(() => {
-                              const evalItem = toSafeArray(gradingResults).find(
-                                (r: any) =>
-                                  (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
-                                  (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
-                              );
-
-                              if (!evalItem) return null;
-
-                              return (
-                                <div className="p-4 rounded-xl bg-slate-900/90 border border-sky-500/30 space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <span className="font-semibold text-sky-400 text-sm flex items-center gap-1.5">
-                                      <Sparkles className="w-4 h-4 text-sky-400" />
-                                      <span>AI Score Breakdown</span>
-                                    </span>
-                                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
-                                      Score: {evalItem.evaluation?.awardedMarks ?? 0} / {evalItem.evaluation?.maxMarks ?? subMarks} Marks
-                                    </span>
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    {toSafeArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
-                                      <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
-                                        <div>
-                                          <span className="text-slate-200 font-medium">{step.step}</span>
-                                          {step.feedback && <p className="text-amber-400/90 mt-0.5 text-[11px]">{step.feedback}</p>}
-                                        </div>
-                                        <span className="text-slate-300 whitespace-nowrap font-mono font-semibold">
-                                          {step.awarded} / {step.max}
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                  {evalItem.evaluation?.constructiveFeedback && (
-                                    <div className="text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-800/40 leading-relaxed">
-                                      <strong className="text-sky-400 block mb-0.5">Examiner Note:</strong>
-                                      {evalItem.evaluation.constructiveFeedback}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })()}
-
-                            {/* Unlocked Model Solution */}
-                            <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
-                              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-                                <CheckCircle2 className="w-4 h-4 shrink-0"/>
-                                <span>Official Model Solution & Marking Rubric</span>
-                              </div>
-
-                              {sub.modelAnswer && (
-                                <div className="p-2.5 rounded-lg bg-slate-950/70 border border-emerald-500/20 text-xs">
-                                  <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">Model Answer / Benchmark:</span>
-                                  <div className="text-slate-100 font-bold">
-                                    <MathRenderer content={sub.modelAnswer} />
-                                  </div>
-                                </div>
-                              )}
-
-                              <div className="text-xs text-slate-300 leading-relaxed pt-1">
-                                <MathRenderer content={sub.workedSolution || sub.modelAnswer || 'Follow official derivation steps.'} />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                {/* Consolidated Protocol Notice */}
+                {!isSubmitted && (
+                  <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/80 border border-amber-500/20 flex items-center gap-3.5 text-xs text-slate-300 shadow-lg">
+                    <div className="w-9 h-9 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4 text-amber-400" />
                     </div>
-                  );
-                })}
+                    <div className="space-y-0.5">
+                      <span className="font-bold text-amber-300 text-xs sm:text-sm block">WAEC Chief Examiner Protocol:</span>
+                      <span className="text-slate-400 text-xs leading-relaxed">
+                        Official model answers, scoring rubrics, and step-by-step AI evaluations are locked until you submit your complete answers.
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}
@@ -1642,18 +1836,20 @@ export function Paper2ExamRunner({
             </div>
           </div>
         
-          {/* Floating Sticky Quick-Reference Passage Pill */}
-          {passageText && hasSubParts && (
-            <button
-              type="button"
-              onClick={() => setIsPassageModalOpen(true)}
-              className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-bold rounded-full px-5 py-3 shadow-2xl flex items-center gap-2.5 border border-amber-300/40 hover:scale-105 active:scale-95 transition-all cursor-pointer backdrop-blur-md"
-              title="Click to view reference passage overlay"
-            >
-              <BookOpen className="w-4 h-4 text-white" />
-              <span className="text-xs tracking-wider uppercase font-black">Refer to Passage</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </button>
+          {/* Floating Sticky Quick-Reference Passage Pill (Only shown on mobile or when not in side-by-side view) */}
+          {passageText && hasSubParts && (!isSplitView) && (
+            <div className="lg:hidden">
+              <button
+                type="button"
+                onClick={() => setIsPassageModalOpen(true)}
+                className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-bold rounded-full px-5 py-3 shadow-2xl flex items-center gap-2.5 border border-amber-300/40 hover:scale-105 active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+                title="Click to view reference passage overlay"
+              >
+                <BookOpen className="w-4 h-4 text-white" />
+                <span className="text-xs tracking-wider uppercase font-black">Refer to Passage</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </button>
+            </div>
           )}
 
           {/* Quick-Reference Passage Modal / Drawer Overlay */}
