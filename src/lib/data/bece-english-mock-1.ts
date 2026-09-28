@@ -567,55 +567,47 @@ Two months later, our BECE results were officially released. I passed with disti
     ]
   },
   partB_comprehension: {
-    title: "Part B: Reading Comprehension",
-    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-    passageText: `For nearly three decades, the serene fishing settlement of Keta-Nkwanta thrived in harmony with the sea. Its inhabitants were industrious fishermen and clam-harvesters who built beautiful coconut-thatched homes along the sand spit. The Atlantic Ocean was not only their geographical neighbor; it was the sacred lifeblood that sustained their families and schooled their children.
-
-However, over the past five years, the relationship between the villagers and the ocean turned into a nightmare. Driven by rising global sea levels and destructive storm surges, the Atlantic began aggressively swallowing the shoreline. At first, high tidal waves washed over the beach only during the equinox. But soon, the sea breached the protective sand dunes during ordinary high tides.
-
-One terrifying Friday midnight, a ferocious tidal surge struck while the community was asleep. Enormous waves, towering three meters high, smashed through coastal coconut groves, demolishing thirty houses within an hour. Fishing canoes were shattered against palm trunks, while outboard motors and expensive nylon fishing nets were dragged into the ocean abyss. Families scrambled onto higher ground in total darkness, clutching shivering children and weeping over the sudden loss of their life savings.
-
-At daybreak, the once-bustling beach presented a desolate picture of ruin. Salty brown water submerged the main street, while household belongings—mattresses, cooking pots, and school uniforms—floated like flotsam. The community primary school and the sole borehole supplying potable water had both been inundated with brine.
-
-The District Disaster Management Organisation (NADMO) arrived with relief tents, sacks of rice, and blankets. However, the assemblyman for the area pointed out during a town durbar that temporary relief was merely a cosmetic bandage on a gaping wound. He argued passionately that unless the central government constructed a permanent coastal sea-defense wall of heavy granite boulders, Keta-Nkwanta would be wiped off the map of Ghana within two years.`,
-    questions: [
-      {
-        subQuestion: "(a)",
-        question: "State the primary occupation of the inhabitants of Keta-Nkwanta before the coastal crisis began.",
-        answer: "The inhabitants were fishermen and clam-harvesters (engaged in marine and estuarine fishing)."
-      },
-      {
-        subQuestion: "(b)",
-        question: "In what specific way did the behavior of the Atlantic Ocean change over the past five years?",
-        answer: "The ocean became violent and destructive, aggressively eroding the shoreline and washing over the sand dunes during ordinary high tides rather than only during the equinox."
-      },
-      {
-        subQuestion: "(c)",
-        question: "Mention two specific items of fishing equipment that were destroyed or swept away by the midnight tidal surge.",
-        answer: "Wooden fishing canoes, outboard motors, and nylon fishing nets."
-      },
-      {
-        subQuestion: "(d)",
-        question: "Why did the assemblyman describe the relief items brought by NADMO as 'a cosmetic bandage on a gaping wound'?",
-        answer: "The assemblyman meant that the blankets and food supplies provided by NADMO were only temporary, superficial relief measures that could not solve the underlying existential danger of ocean erosion."
-      },
-      {
-        subQuestion: "(e)",
-        question: "Explain the meaning of the following expressions as used in the passage:\nI. ... swallowing the shoreline;\nII. ... total darkness;\nIII. ... wiped off the map.",
-        answer: "I. 'swallowing the shoreline' means rapidly eroding, submerging, and washing away the coastal land.\nII. 'total darkness' means complete absence of light or illumination; pitch-black conditions.\nIII. 'wiped off the map' means completely demolished, obliterated, submerged, and erased from existence."
-      },
-      {
-        subQuestion: "(f)",
-        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. serene;\nII. aggressively;\nIII. desolate;\nIV. inundated.",
-        answer: "I. serene: tranquil, calm, peaceful, quiet.\nII. aggressively: fiercely, violently, forcefully, relentlessly.\nIII. desolate: ruined, bleak, devastated, deserted.\nIV. inundated: flooded, submerged, soaked, overwhelmed with water."
-      },
-      {
-        subQuestion: "(g)",
-        question: "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize two major losses suffered by the villagers.",
-        answer: "1. Thirty coastal homes were completely demolished.\n2. Expensive fishing equipment was entirely destroyed."
-      }
-    ]
-  },
+  "title": "Part B: Reading Comprehension",
+  "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+  "passageText": "Every Saturday morning, Kejetia Market in Kumasi wakes up to a loud hum of human activity. Hawkers call out their wares, commercial buses blare their horns, and porters carrying heavy wooden trays navigate through the crowded aisles. On one such morning, fourteen-year-old Ama followed her grandmother to sell fresh vegetables near the central lorry station.\n\nWhile arranging green bell peppers on her wooden table, Ama noticed a well-dressed woman hurrying toward a departing minibus. In her haste to board the bus before it pulled away, a thick leather purse slipped from the woman's shoulder bag and fell quietly onto a sack of onions. The crowd moved on, unaware of what had happened.\n\nAma ran forward and picked up the heavy purse. When she opened the outer zipper, her heart skipped a beat. Inside were clean bundles of fifty-cedi notes, an official hospital identity card bearing the name Dr. Grace Mensah, and a silver wedding ring. \n\nA young truck pusher standing nearby nudged Ama with his elbow. \"Keep quiet and hide it, little girl,\" he whispered hurriedly. \"No one saw you. This money can buy you fine clothes for the Christmas holidays.\"\n\nAma hesitated for only a second. The gentle voice of her school headmaster echoed in her mind: \"A good name is far better than stolen silver and gold.\" Without listening to the porter, she sprinted after the bus, which was already revving its engine to leave the station.\n\nWaving the purse high in the air, Ama shouted Dr. Mensah's name. A passenger seated near the window tapped the driver on the shoulder, and the bus screeched to an abrupt halt. When Dr. Mensah received her lost purse intact, tears filled her eyes. The purse contained the emergency surgical fee for a critically ill patient awaiting surgery at Komfo Anokye Teaching Hospital.\n\nDr. Mensah praised Ama's honesty before the entire market crowd. Beside a generous cash gift to support her basic education, the doctor promised to sponsor Ama through secondary school. Standing proudly beside her grandmother, Ama learned that integrity brings lasting honor.",
+  "questions": [
+    {
+      "subQuestion": "(a)",
+      "question": "What business brought Ama and her grandmother to Kejetia Market?",
+      "answer": "They went to the market to sell fresh vegetables (or fresh bell peppers)."
+    },
+    {
+      "subQuestion": "(b)",
+      "question": "How did Dr. Mensah lose her leather purse?",
+      "answer": "She was rushing to catch a departing minibus when the purse slipped from her shoulder bag."
+    },
+    {
+      "subQuestion": "(c)",
+      "question": "What bad advice did the young truck pusher give to Ama?",
+      "answer": "He urged her to keep quiet, hide the purse, and use the money to purchase fine Christmas clothes."
+    },
+    {
+      "subQuestion": "(d)",
+      "question": "Why was the recovery of the purse especially urgent for Dr. Mensah?",
+      "answer": "The purse contained emergency money needed for a surgery on a critically ill patient at the hospital."
+    },
+    {
+      "subQuestion": "(e)",
+      "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... her heart skipped a beat;\nII. ... screeched to an abrupt halt;\nIII. ... brings lasting honor.",
+      "answer": "I. 'her heart skipped a beat' means she felt a sudden shock of surprise, excitement, or nervousness.\nII. 'screeched to an abrupt halt' means stopped suddenly with a loud, sharp braking sound.\nIII. 'brings lasting honor' means earns enduring respect, praise, and a good reputation."
+    },
+    {
+      "subQuestion": "(f)",
+      "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. haste;\nII. hesitated;\nIII. sprinted;\nIV. praised.",
+      "answer": "I. haste: hurry, rush, speed.\nII. hesitated: paused, delayed, wavered.\nIII. sprinted: ran, dashed, rushed.\nIV. praised: commended, lauded, congratulated."
+    },
+    {
+      "subQuestion": "(g)",
+      "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize how Ama was rewarded for her honesty.",
+      "answer": "1. She received an educational cash gift.\n2. Dr. Mensah sponsored her secondary education."
+    }
+  ]
+},
   partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
     instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

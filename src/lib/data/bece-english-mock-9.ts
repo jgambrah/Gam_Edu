@@ -595,45 +595,45 @@ export const SET_BECE_MOCK_9_ENGLISH_P2 = {
     "partB_comprehension": {
       "title": "Part B: Reading Comprehension",
       "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-      "passageText": "In the global economic landscape of the twenty-first century, renewable energy is universally heralded as the clean, inexhaustible salvation that will rescue human civilization from the catastrophic clutches of fossil fuel-driven climate change. Governments across the globe invest billions of dollars constructing massive solar photovoltaic arrays, offshore wind turbine farms, and geothermal power stations, aiming to drastically cut carbon dioxide emissions and decarbonize national industrial grids.\n\nHowever, an objective technological and ecological appraisal reveals that the global transition to green energy harbors its own profound environmental paradox. While renewable energy sources emit virtually zero greenhouse gases during electrical power generation, the manufacturing of clean energy technology requires astronomical quantities of critical minerals and rare earth metals—most notably lithium, cobalt, nickel, and copper.\n\nThe ecological epicenter of this clean energy paradox is found in the mineral-rich tropical regions of the developing world, particularly in countries like the Democratic Republic of Congo, which produces over seventy percent of the world's commercial cobalt used in rechargeable electric vehicle batteries. Here, the insatiable global demand for battery minerals has unleashed severe environmental degradation and human suffering. Vast tracts of ancient tropical rainforests are cleared to excavate open-cast cobalt and copper mines. Acidic mine runoff and heavy metals contaminate major river basins, exterminating aquatic fauna and poisoning municipal drinking water used by rural agricultural communities.\n\nFurthermore, the mining sector in these enclaves is heavily tainted by acute social injustice and human rights violations. Tens of thousands of artisanal miners, including impoverished adolescent boys, labor under hazardous conditions in unventilated underground tunnels without safety helmets or protective gear. Hand-digging toxic cobalt ore for meager wages, these young workers suffer frequent tunnel cave-ins, chronic respiratory diseases, and permanent physical disabilities, while foreign multinational conglomerates reap astronomical commercial profits.\n\nEnvironmental ethicists conclude that a truly green energy revolution cannot be built upon the ecological destruction and human exploitation of the developing world. To achieve authentic sustainability, international manufacturers must develop closed-loop battery recycling technologies and enforce strict ethical supply-chain certifications that guarantee fair wages, safety standards, and environmental restoration at mine sites.",
+      "passageText": "For generations, the River Birim was the pride of Kyebi and its surrounding villages. Its clean, crystal-clear waters flowed gracefully over smooth pebbles, providing the community with cool drinking water, freshwater fish, and a refreshing place where school children swam on hot afternoons.\n\nHowever, over the past three years, the tranquil river valley turned into a scene of ruin. Lured by the promise of instant wealth, groups of illegal gold miners, locally called galamsey operators, invaded the river basin. Armed with heavy earth-moving excavators and mechanical washing plants, they tore down ancient trees and gouged deep trenches along the riverbanks.\n\nThe most heartbreaking transformation was the destruction of the water itself. The miners directed muddy slurries back into the river, washing gold with dangerous chemicals like mercury. Within a year, the clean, sparkling stream was converted into a thick, yellowish-brown sludge. River fish and crabs died off completely, and community taps running from the municipal water plant shut down because treatment filters could no longer handle the heavy mud.\n\nTo make matters worse, deep mining pits were left uncovered across farmland trails. During heavy rains, these trenches filled with water, becoming hidden death traps. Two young schoolboys grazing cattle barely escaped drowning when the edge of an abandoned pit collapsed beneath their feet.\n\nRealizing that silence was no longer an option, the local youth association and village elders held an emergency town gathering. Led by the chief, the community passed a firm resolution banning all illegal mining machinery from their lands. Together with police protection, they impounded the excavators and began planting indigenous bamboo along the riverbanks to halt erosion and restore their water. They proved that gold can never replace clean water for human survival.",
       "questions": [
-        {
-          "subQuestion": "(a)",
-          "question": "State two renewable energy sources mentioned in the opening paragraph of the passage.",
-          "answer": "Solar photovoltaic energy, offshore wind energy, and geothermal energy."
-        },
-        {
-          "subQuestion": "(b)",
-          "question": "What constitutes the central environmental paradox of green energy technology according to the second paragraph?",
-          "answer": "While renewable energy generates zero greenhouse gases during operation, manufacturing its equipment requires huge quantities of critical minerals whose extraction causes severe environmental destruction."
-        },
-        {
-          "subQuestion": "(c)",
-          "question": "Mention two specific hazards endured by young artisanal miners laboring in cobalt mines.",
-          "answer": "1. Fatal underground tunnel cave-ins.\n2. Chronic respiratory illnesses (or permanent physical disabilities from working without protective equipment)."
-        },
-        {
-          "subQuestion": "(d)",
-          "question": "According to the final paragraph, how can international manufacturers achieve authentic sustainability in battery production?",
-          "answer": "By developing closed-loop battery recycling technologies and enforcing strict ethical supply-chain certifications that ensure fair wages, safety, and environmental restoration."
-        },
-        {
-          "subQuestion": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... inexhaustible salvation;\nII. ... environmental paradox;\nIII. ... closed-loop battery recycling.",
-          "answer": "I. 'inexhaustible salvation' means a boundless, permanent solution or rescue that will never run out or be depleted.\nII. 'environmental paradox' means a contradictory situation where an initiative designed to protect the environment simultaneously causes environmental harm.\nIII. 'closed-loop battery recycling' means an industrial system where all spent battery materials are recovered and completely reused to manufacture new batteries without creating waste."
-        },
-        {
-          "subQuestion": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. heralded;\nII. insatiable;\nIII. tracts;\nIV. tainted.",
-          "answer": "I. heralded: proclaimed, announced, celebrated, acclaimed.\nII. insatiable: unquenchable, voracious, impossible to satisfy, boundless.\nIII. tracts: expanses, areas, regions, stretches.\nIV. tainted: stained, polluted, corrupted, marred."
-        },
-        {
-          "subQuestion": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major negative consequences of battery mineral mining discussed in the passage.",
-          "answer": "1. Mineral mining destroys rainforests and water sources.\n2. Artisanal miners endure hazardous, exploitative working conditions."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "Mention two benefits the River Birim provided to the community before illegal mining began.",
+                  "answer": "It provided clean drinking water, freshwater fish, and a safe place for children to swim."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "How did illegal gold miners destroy the natural riverbanks?",
+                  "answer": "They used heavy excavators to tear down trees and dig deep trenches along the riverbanks."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "Why did the municipal water treatment plant shut down its taps?",
+                  "answer": "The river had turned into thick yellow mud and chemicals, which clogged and overwhelmed the treatment filters."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "What danger did abandoned mining pits pose to children walking along farmland paths?",
+                  "answer": "The water-filled pits had crumbling edges, creating hidden death traps where children could fall in and drown."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... clean, crystal-clear waters;\nII. ... silence was no longer an option;\nIII. ... gold can never replace clean water.",
+                  "answer": "I. 'clean, crystal-clear waters' means pure, unpolluted, and completely transparent stream water.\nII. 'silence was no longer an option' means people could not continue to ignore the danger; action had to be taken.\nIII. 'gold can never replace clean water' means material wealth is useless if the essential water needed for life is destroyed."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. invaded;\nII. converted;\nIII. impounded;\nIV. restore.",
+                  "answer": "I. invaded: overran, entered forcefully, occupied.\nII. converted: changed, transformed, turned into.\nIII. impounded: seized, confiscated, held by authority.\nIV. restore: recover, revive, bring back, repair."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the actions taken by the community to save the river.",
+                  "answer": "1. The community seized the illegal excavators.\n2. Residents planted bamboo to stop erosion."
+            }
       ]
-    },
+},
     "partC_literature": {
       "title": "Part C: Literature in English (The Cockcrow Anthology)",
       "instructions": "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

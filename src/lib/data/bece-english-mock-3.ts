@@ -595,45 +595,45 @@ export const SET_BECE_MOCK_3_ENGLISH_P2 = {
     "partB_comprehension": {
       "title": "Part B: Reading Comprehension",
       "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-      "passageText": "In traditional African societies, wildlife conservation was not an abstract academic theory; it was a deeply sacred cultural covenant woven into customary ethics and daily existence. Indigenous communities recognized that human survival was inextricably linked to the vitality of the natural ecosystem. Consequently, traditional authorities instituted sacred groves, totemic prohibitions, and seasonal hunting bans to preserve biodiversity and protect vital river catchments from ecological devastation.\n\nCentral to this indigenous conservation philosophy was the institution of the sacred grove. These were pristine virgin forests surrounding shrines, ancestral burial mounds, and the headwaters of vital rivers. Customary bylaws strictly prohibited farming, tree felling, and hunting within these sanctuaries. Violators faced severe customary fines, public humiliation, and spiritual cleansing rituals. Biologically, these sacred groves functioned as indispensable botanical refuges where endangered timber species, medicinal herbs, and rare fauna multiplied undisturbed, replenishing adjacent degraded zones.\n\nFurthermore, traditional ethnic clans adopted specific animal species as their sacred emblems or totems. For example, clans affiliated with the leopard, the hornbill, or the python held these creatures in profound spiritual veneration. Harming, killing, or consuming one's totemic animal was regarded as an abominable sacrilege capable of bringing ancestral curses upon the offender's lineage. This totemic taboo fostered widespread psychological reverence for wildlife, creating an invisible, highly effective barrier against the indiscriminate extermination of fauna.\n\nRegrettably, modern rapid urbanization, economic materialism, and religious skepticism have severely eroded these traditional ecological values. Commercial timber loggers and unauthorized sand-winners invade sacred groves with impunity, felling majestic centuries-old mahogany trees and polluting pristine headwaters with petrochemical waste. Indigenous totems are mercilessly butchered for commercial bushmeat in roadside chop-bars.\n\nThe catastrophic consequences of this cultural collapse are now glaringly evident: once-mighty rivers have dried up into rocky ditches, rare medicinal flora have vanished, and perennial droughts devastate agricultural livelihoods. Cultural conservationists argue passionately that unless contemporary society integrates these ancestral taboos into statutory environmental protection policies, our precious biological heritage will be lost forever.",
+      "passageText": "In the historic town of Bonwire in the Ashanti Region, the rhythmic clatter of wooden looms fills the air from dawn to dusk. Bonwire is celebrated worldwide as the home of authentic Ghanaian Kente cloth. Here, the art of weaving is not merely a job; it is a sacred cultural heritage passed down from generation to generation.\n\nThirteen-year-old Kofi spent his school holidays sitting on a low wooden bench beside his uncle, Master Agyeman. Master Agyeman was renowned throughout the district for weaving complex royal patterns. In front of him stood a traditional loom built from smooth forest timber, fitted with pedals, shuttles, and spools of bright yellow, green, red, and blue silk threads.\n\n\"Weaving Kente requires patience, Kofi,\" his uncle explained, sliding a polished wooden shuttle back and forth through the warp. \"Each color carries a voice. Gold represents royalty and wealth; green symbolizes growth and harvest; while blue stands for peace and pure skies.\"\n\nAt first, Kofi found the rhythm difficult to follow. His hands tangled the threads, and his feet pressed the wooden pedals out of turn. Twice, he snapped the warp strings and wanted to quit out of frustration. But his uncle encouraged him gently: \"The best cloth is woven with a calm mind. Rest your hands and try again.\"\n\nBy his third week of practice, Kofi's fingers grew nimble. He learned to weave the narrow four-inch strips that are sewn together to make royal cloths. He even mastered a simple pattern called 'Adwinasa', which means 'all design ideas are exhausted'. \n\nOn the town's annual Kente Festival, tourists from across Africa and overseas gathered to admire the weavers. When Master Agyeman displayed a beautiful sash woven entirely by young Kofi, the crowd cheered in admiration. An elderly visitor purchased the sash as a gift for her grandson in Canada. Holding his first earned income, Kofi felt a deep pride in his heritage.",
       "questions": [
-        {
-          "subQuestion": "(a)",
-          "question": "State two customary practices mentioned in the passage that traditional societies used to preserve biodiversity.",
-          "answer": "1. Instituting sacred groves.\n2. Establishing totemic prohibitions / taboos (or enforcing seasonal hunting bans)."
-        },
-        {
-          "subQuestion": "(b)",
-          "question": "Mention two vital environmental functions performed by sacred groves in traditional communities.",
-          "answer": "1. Protecting the headwaters of vital rivers and streams.\n2. Functioning as botanical refuges for endangered timber species, medicinal herbs, and rare animals."
-        },
-        {
-          "subQuestion": "(c)",
-          "question": "What happened to a clan member who harmed or killed his or her totemic animal?",
-          "answer": "The offender was viewed as committing an abominable sacrilege and faced ancestral curses upon his or her lineage."
-        },
-        {
-          "subQuestion": "(d)",
-          "question": "State two modern factors that have contributed to the destruction of traditional ecological values.",
-          "answer": "Rapid urbanization, economic materialism, and religious skepticism (or commercial timber logging and illegal sand-winning)."
-        },
-        {
-          "subQuestion": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... sacred cultural covenant;\nII. ... with impunity;\nIII. ... lost forever.",
-          "answer": "I. 'sacred cultural covenant' means a holy, solemn, and binding traditional agreement or commitment.\nII. 'with impunity' means without fear of punishment, penalty, or retribution.\nIII. 'lost forever' means permanently extinguished, destroyed, and vanished beyond recovery."
-        },
-        {
-          "subQuestion": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. inextricably;\nII. sanctuaries;\nIII. veneration;\nIV. pristine.",
-          "answer": "I. inextricably: inseparably, completely, closely, permanently.\nII. sanctuaries: refuges, havens, reserves, shelters.\nIII. veneration: reverence, deep respect, honor, awe.\nIV. pristine: pure, untouched, clean, unpolluted, immaculate."
-        },
-        {
-          "subQuestion": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the environmental consequences of the collapse of traditional conservation values.",
-          "answer": "1. Perennial rivers have dried into rocky ditches.\n2. Rare medicinal plants and animals have vanished."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What makes the town of Bonwire famous worldwide?",
+                  "answer": "It is famous for being the traditional home of authentic handwoven Ghanaian Kente cloth."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "According to Master Agyeman, what do the colors gold and green represent in Kente cloth?",
+                  "answer": "Gold represents royalty and wealth, while green symbolizes growth and harvest."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "Mention two difficulties young Kofi encountered when he first started learning to weave.",
+                  "answer": "His hands tangled the threads, he pressed the foot pedals at the wrong time, or he broke the warp strings."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "What does the name of the traditional Kente design 'Adwinasa' literally mean?",
+                  "answer": "It means 'all design ideas are exhausted' (or design ideas have reached their limit)."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... passed down from generation to generation;\nII. ... grew nimble;\nIII. ... cheered in admiration.",
+                  "answer": "I. 'passed down from generation to generation' means taught and handed on from parents or ancestors to children over many years.\nII. 'grew nimble' means became quick, skillful, and flexible in movement.\nIII. 'cheered in admiration' means shouted praises in appreciation and delight."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. renowned;\nII. tangled;\nIII. frustration;\nIV. purchased.",
+                  "answer": "I. renowned: famous, well-known, celebrated.\nII. tangled: knotted, twisted, jumbled.\nIII. frustration: annoyance, disappointment, impatience.\nIV. purchased: bought, acquired."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the advice and result of Kofi's training.",
+                  "answer": "1. Weaving requires patience and a calm mind.\n2. Kofi wove a sash bought by tourists."
+            }
       ]
-    },
+},
     "partC_literature": {
       "title": "Part C: Literature in English (The Cockcrow Anthology)",
       "instructions": "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

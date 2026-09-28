@@ -595,45 +595,45 @@ export const SET_BECE_MOCK_10_ENGLISH_P2 = {
     "partB_comprehension": {
       "title": "Part B: Reading Comprehension",
       "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-      "passageText": "In the global economy of the twenty-first century, cocoa represents far more than an ordinary agricultural commodity; it is the economic backbone and sacred lifeblood of Ghana. Cultivated across the lush forest belts of Ashanti, Western, and Eastern regions, this golden bean has sustained millions of rural households, funded basic infrastructural developments, and earned vital foreign exchange for the republic for over a century.\n\nHowever, an existential environmental crisis is threatening to extinguish this historic agricultural legacy: the rampant proliferation of illegal alluvial gold mining, popularly termed galamsey. Driven by the lure of immediate wealth and backed by heavily armed criminal syndicates, illegal miners have invaded pristine cocoa plantations, deploying mechanized excavators to fell hundreds of thousands of productive, mature cocoa trees. Fertile agricultural topsoil, developed over decades of organic cultivation, is ruthlessly stripped away to unearth alluvial gold deposits, leaving behind cratered, barren wastelands where crops can never grow again.\n\nEven more catastrophic is the widespread chemical contamination of water bodies and soils within cocoa-growing belts. To extract fine gold particles from dredged river slurries, miners utilize lethal quantities of liquid mercury and sodium cyanide. These non-biodegradable heavy metals seep into the water table and are absorbed through the root systems of surviving cocoa trees. International food safety regulators have begun warning that detectable trace levels of toxic heavy metals in exported cocoa beans could lead to international import bans, which would spell total economic collapse for Ghana's export revenues.\n\nFurthermore, illegal mining has triggered an acute rural labor crisis. Cocoa farming is traditionally labor-intensive, requiring manual weeding, pruning, and harvesting. Today, young rural men and adolescents have abandoned farm labor to work in lucrative, dangerous mining pits. Aging cocoa farmers, unable to afford manual laborers, are frequently intimidated or coerced by local chiefs and syndicates into selling their family farmlands to miners for meager sums.\n\nAgronomic scientists conclude that saving Ghana's cocoa sector requires decisive national action. The central government must enforce a total military ban on surface mining in all agricultural cocoa basins, reclaim poisoned lands, and provide guaranteed pension funds and subsidized fertilizers to motivate young farmers to preserve cocoa production.",
+      "passageText": "In the northern savannah plains of Walewale, thirteen-year-old Alhassan looked forward to Saturday afternoons. His primary responsibility was grazing his father's herd of thirty cattle across the open pastures along the edge of the Gambaga escarpment.\n\nOn one overcast afternoon, while the herd grazed peacefully, dark bruised clouds gathered rapidly on the northern horizon. The dry savannah wind turned cool and gusty, signaling an approaching storm. Alhassan quickly gathered his herd and began driving them toward the safety of the village pen.\n\nAs the first heavy raindrops struck the dry earth, Alhassan conducted a quick count of his animals. To his horror, he noticed that a four-month-old brown calf, named Baako, was missing. Baako’s mother stood by the trail, lowing plaintively into the whistling wind.\n\nLeaving the main herd in the care of his younger brother, who was already near the village gate, Alhassan turned back into the gathering gloom. Thunder rolled across the sky, and lightning flashed through the acacia trees. He called Baako’s name over and over, his voice swallowed by the storm.\n\nAfter searching the scrubland for twenty minutes, Alhassan heard a faint, frightened bleat from a nearby rocky hollow. Hurrying down the slippery slope, he found the young calf trapped in a thorny tangle of acacia bushes, its hind leg caught between two rocks.\n\nSpeaking soothingly to calm the shivering animal, Alhassan worked carefully to free its leg from the thorns. Though the sharp thorns scratched his arms, he did not give up. Hoisting the wet, heavy calf onto his shoulders, Alhassan trudged through the driving rain until he reached his father's courtyard. \n\nHis father embraced him with relief and pride. Alhassan proved that responsibility and compassion toward animals are the true hallmarks of character.",
       "questions": [
-        {
-          "subQuestion": "(a)",
-          "question": "State two economic contributions of cocoa to Ghana mentioned in the opening paragraph of the passage.",
-          "answer": "1. Sustaining millions of rural households.\n2. Funding infrastructural developments (or earning foreign exchange for the nation)."
-        },
-        {
-          "subQuestion": "(b)",
-          "question": "Mention two destructive physical activities carried out by illegal gold miners on cocoa farmlands.",
-          "answer": "1. Cutting down (felling) hundreds of thousands of productive cocoa trees.\n2. Stripping away fertile agricultural topsoil with excavators, leaving behind barren craters."
-        },
-        {
-          "subQuestion": "(c)",
-          "question": "State two toxic chemicals used by miners that threaten Ghana's cocoa export market.",
-          "answer": "Mercury and sodium cyanide."
-        },
-        {
-          "subQuestion": "(d)",
-          "question": "Why are aging cocoa farmers unable to maintain their farms according to the fourth paragraph?",
-          "answer": "Because young rural laborers have abandoned farming to work in mining pits, leaving farmers with an acute labor shortage and unable to afford manual workers."
-        },
-        {
-          "subQuestion": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... sacred lifeblood;\nII. ... unearth alluvial gold deposits;\nIII. ... acute rural labor crisis.",
-          "answer": "I. 'sacred lifeblood' means the indispensable, vital foundation that provides life, sustenance, and survival.\nII. 'unearth alluvial gold deposits' means excavate, dig up, or uncover gold minerals from riverbanks and earth.\nIII. 'acute rural labor crisis' means an extreme, severe shortage of available workers in farming communities."
-        },
-        {
-          "subQuestion": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. proliferation;\nII. ruthlessly;\nIII. coerced;\nIV. decisive.",
-          "answer": "I. proliferation: spread, rapid increase, expansion, growth.\nII. ruthlessly: mercilessly, cruelly, harshly, brutally.\nIII. coerced: forced, compelled, pressured, intimidated.\nIV. decisive: firm, resolute, bold, conclusive."
-        },
-        {
-          "subQuestion": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major interventions needed to save the cocoa sector.",
-          "answer": "1. Government must ban mining in cocoa basins.\n2. Farmers must receive subsidized fertilizers and pensions."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What duty was assigned to Alhassan on Saturday afternoons?",
+                  "answer": "Grazing his father's herd of thirty cattle across the savannah pastures."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "What two signs indicated that a heavy storm was approaching?",
+                  "answer": "Dark bruised clouds gathered rapidly, and the wind turned cool and gusty."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "Where did Alhassan discover the missing young calf?",
+                  "answer": "In a rocky hollow, trapped in thorny acacia bushes with its leg wedged between two rocks."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "How did Alhassan bring the rescued calf back home through the rain?",
+                  "answer": "He hoisted the heavy calf onto his shoulders and carried it all the way home."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... conducting a quick count;\nII. ... swallowed by the storm;\nIII. ... hallmarks of character.",
+                  "answer": "I. 'conducting a quick count' means rapidly tallying or numbering the animals to ensure none were lost.\nII. 'swallowed by the storm' means drowned out or completely muffled by the loud roar of wind and thunder.\nIII. 'hallmarks of character' means distinct, noble qualities that show good personal upbringing and maturity."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. overcast;\nII. plaintively;\nIII. gloom;\nIV. trudged.",
+                  "answer": "I. overcast: cloudy, gray, dull, gloomy.\nII. plaintively: mournfully, sorrowfully, sadly.\nIII. gloom: darkness, dimness, shadow.\nIV. trudged: walked heavily, struggled forward, marched wearily."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize Alhassan's heroic rescue.",
+                  "answer": "1. Alhassan searched the stormy forest bravely.\n2. He carried the injured calf home."
+            }
       ]
-    },
+},
     "partC_literature": {
       "title": "Part C: Literature in English (The Cockcrow Anthology)",
       "instructions": "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

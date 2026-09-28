@@ -553,55 +553,47 @@ When the headmaster investigated, it was verified that Emmanuel's father had bee
     ]
   },
   partB_comprehension: {
-    title: "Part B: Reading Comprehension",
-    instructions: "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-    passageText: `For generations, the agrarian settlement of Beposo was celebrated as the breadbasket of the district. Nestling against the foot of the green Kwahu escarpment, the village enjoyed reliable rainfall and rich loamy soils that yielded bountiful harvests of plantain, cocoa, and white yams. The community lived in tranquil harmony, with families pooling labor during planting seasons and celebrating festivals with traditional fontomfrom pageantry.
-
-However, the discovery of alluvial gold deposits beneath the fertile riverbeds three years ago unleashed an environmental catastrophe. Lured by the prospect of instant riches, foreign prospecting syndicates and adventurous local youths invaded the agricultural belt, introducing mechanized bulldozers and toxic chemical washing plants. Almost overnight, thousands of fertile cocoa trees were ruthlessly felled to make way for deep mining trenches.
-
-The most catastrophic impact was suffered by the sacred Bepo River, which had supplied the settlement with pristine drinking water since time immemorial. The miners diverted the natural watercourse into muddy settling ponds, washing gold slurries with lethal doses of mercury and cyanide. Within months, the crystal-clear stream was converted into a foul, brownish sludge of toxic sediment. The freshwater fish and river clams died en masse, floating belly-up on the surface.
-
-To compound the crisis, dangerous, uncovered mining craters were left abandoned across the countryside. When torrential rains fell, these deep pits filled with stagnant water, becoming perilous death traps for domestic livestock and young school children. Two months ago, tragedy struck when two primary school pupils slipped into an abandoned pit on their way from school and drowned before help could arrive.
-
-The Town Development Committee convened an emergency durbar. The elderly queenmother weeping openly, appealed passionately to the government to declare a total moratorium on surface mining in the district. She argued that gold could never be eaten, warning that if the rampant destruction of farmlands and river bodies was not arrested immediately, Beposo would face permanent famine and extinction.`,
-    questions: [
-      {
-        subQuestion: "(a)",
-        question: "State the primary economic activity of the inhabitants of Beposo before gold mining commenced.",
-        answer: "Farming (agriculture / cultivating plantain, cocoa, and white yams)."
-      },
-      {
-        subQuestion: "(b)",
-        question: "Mention two specific ways in which the environment was destroyed by mining activities.",
-        answer: "1. Thousands of fertile cocoa trees were cut down (farmlands were destroyed).\n2. The sacred Bepo River was heavily polluted with mud and toxic chemicals (or dangerous uncovered mining craters were left abandoned)."
-      },
-      {
-        subQuestion: "(c)",
-        question: "State two lethal chemicals utilized by the gold searchers to wash their mineral extractions.",
-        answer: "Mercury and cyanide."
-      },
-      {
-        subQuestion: "(d)",
-        question: "What tragic human incident occurred as a direct result of the uncovered mining pits?",
-        answer: "Two primary school children slipped into an abandoned, water-filled mining pit and drowned."
-      },
-      {
-        subQuestion: "(e)",
-        question: "Explain the meaning of the following expressions as used in the passage:\nI. ... since time immemorial;\nII. ... died en masse;\nIII. ... face permanent famine.",
-        answer: "I. 'since time immemorial' means for an extremely long period extending beyond memory or historical record.\nII. 'died en masse' means perished all together in large numbers or as a whole group.\nIII. 'face permanent famine' means suffer from chronic, enduring, and severe starvation or food scarcity."
-      },
-      {
-        subQuestion: "(f)",
-        question: "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. bountiful;\nII. ruthlessly;\nIII. pristine;\nIV. perilous.",
-        answer: "I. bountiful: abundant, plentiful, copious, generous.\nII. ruthlessly: mercilessly, cruelly, harshly, brutally.\nIII. pristine: pure, clean, clear, unpolluted, immaculate.\nIV. perilous: dangerous, hazardous, risky, treacherous."
-      },
-      {
-        subQuestion: "(g)",
-        question: "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major dangers posed by the mining pits.",
-        answer: "1. Abandoned pits become deadly drowning traps.\n2. Stagnant pits breed dangerous disease-carrying mosquitoes."
-      }
-    ]
-  },
+  "title": "Part B: Reading Comprehension",
+  "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
+  "passageText": "The annual Inter-Schools Athletics Championship at Bekwai Sports Arena had reached its most tense moment: the senior boys' 4x100-meter relay final. The stands were packed with cheering students waving colorful flags. For three years in a row, the defending champions, Methodist JHS, had held the gold trophy. However, this afternoon, their arch-rivals, Saint Peter's JHS, looked fast, confident, and determined to unseat them.\n\nIn lane four, Kwame was running the third leg for Methodist JHS. He was agile and swift, but he had a habit of starting his sprint too early during practice sessions. His sports master, Coach Owusu, had drilled the squad all week: \"Speed alone does not win a relay race; smooth baton exchange and timing are what make champions.\"\n\nThe starter pistol fired with a sharp crack. The lead runners tore out of the blocks. By the time the second runners completed their turn, Saint Peter's held a slight lead of three meters. \n\nAs the second runner from Methodist JHS approached the changeover box, Kwame braced himself. The roar of the stadium was deafening. Kwame felt the urge to dash forward early, but remembering Coach Owusu’s warning, he held his ground until his teammate crossed the yellow checkmark. With perfect timing, Kwame extended his left hand backward. The wooden baton slapped firmly into his palm.\n\nGripping the baton securely, Kwame accelerated around the bend. His strides were smooth and powerful. Within forty meters, he closed the gap on the Saint Peter's runner, handing the baton cleanly to his anchor-leg teammate, Mensah. \n\nThe stadium erupted as Mensah crossed the finish line a fraction of a second ahead of his rival. Beside the victory podium, Coach Owusu embraced the four boys warmly. The boys realized that winning required trusting each other and following disciplined instructions under pressure.",
+  "questions": [
+    {
+      "subQuestion": "(a)",
+      "question": "Which school had won the senior boys' relay trophy for the past three years?",
+      "answer": "Methodist Junior High School."
+    },
+    {
+      "subQuestion": "(b)",
+      "question": "What bad habit did Kwame display during training sessions?",
+      "answer": "He had a habit of starting to run too early before taking the baton."
+    },
+    {
+      "subQuestion": "(c)",
+      "question": "According to Coach Owusu, what two factors are essential for winning a relay race?",
+      "answer": "Smooth baton exchange and proper timing (not speed alone)."
+    },
+    {
+      "subQuestion": "(d)",
+      "question": "How did Kwame help his team regain the lead during his leg of the race?",
+      "answer": "He ran a powerful curve, closed the gap on the Saint Peter's runner, and made a clean baton pass to the anchor runner."
+    },
+    {
+      "subQuestion": "(e)",
+      "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... held his ground;\nII. ... closed the gap;\nIII. ... erupted as Mensah crossed.",
+      "answer": "I. 'held his ground' means waited patiently without rushing forward prematurely.\nII. 'closed the gap' means reduced the distance separating him from the runner ahead.\nIII. 'erupted as Mensah crossed' means burst into loud, joyful cheering and celebration."
+    },
+    {
+      "subQuestion": "(f)",
+      "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. packed;\nII. drilled;\nIII. firm;\nIV. embraced.",
+      "answer": "I. packed: crowded, filled, jammed.\nII. drilled: trained, instructed, coached.\nIII. firm: securely, tightly, solidly.\nIV. embraced: hugged, held warmly."
+    },
+    {
+      "subQuestion": "(g)",
+      "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two lessons learned by the victorious athletes.",
+      "answer": "1. Teamwork requires trusting one's teammates.\n2. Athletes must follow discipline under pressure."
+    }
+  ]
+},
   partC_literature: {
     title: "Part C: Literature in English (The Cockcrow Anthology)",
     instructions: "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

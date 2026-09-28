@@ -595,45 +595,45 @@ export const SET_BECE_MOCK_7_ENGLISH_P2 = {
     "partB_comprehension": {
       "title": "Part B: Reading Comprehension",
       "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-      "passageText": "In contemporary public discourse on economic modernization, tourism is universally celebrated as a non-polluting \"smokeless industry\" capable of generating foreign exchange, stimulating infrastructural development, and creating millions of service jobs. Developing nations across tropical regions aggressively market their pristine sandy beaches, historical castles, and exotic game reserves to affluent foreign travelers, viewing tourism as a golden shortcut to national prosperity.\n\nHowever, an objective socio-economic and ecological appraisal reveals that mass tourism represents a precarious double-edged sword. When left unregulated by rigorous statutory guidelines, the rapid expansion of commercial tourism can extract a devastating toll on indigenous cultures and fragile ecological habitats.\n\nThe most insidious consequence of uncontrolled tourism is the commodification and degradation of indigenous cultural heritage. Traditional sacred festivals, ritual dances, and spiritual ceremonies—which originally possessed deep religious and cosmological significance for local communities—are frequently degraded into cheap, superficial entertainment spectacles packaged for vacationing tourists. Sacred shrines are commercialized, and pristine cultural taboos are violated by visitors who display open disrespect for local customs. Furthermore, the massive influx of affluent tourists often sparks acute cultural contamination among local youth, encouraging substance abuse, juvenile prostitution, and the erosion of indigenous linguistic identity.\n\nEcologically, the footprint of mass tourism is often disastrous. The construction of sprawling luxury beach resorts, golf courses, and access highways frequently leads to the ruthless destruction of vital coastal mangrove wetlands and tropical forests. Luxury hotels consume astronomical volumes of fresh water and generate mountains of non-biodegradable plastic waste, while municipal lagoons and coral reefs are poisoned by raw sewage discharges. Furthermore, in many developing enclaves, the promised economic benefits fail to materialize for the local populace; luxury hotels are owned by foreign multinational conglomerates, meaning that over seventy percent of tourism revenues are repatriated overseas, leaving host communities to bear the social and ecological costs.\n\nEnvironmental economists conclude that the salvation of the industry lies in ecotourism—a sustainable model that prioritizes environmental conservation, respects local cultural autonomy, and ensures that financial revenues remain directly within community-owned enterprises.",
+      "passageText": "In the bustling market town of Aboabo, Friday afternoons were always noisy and crowded. Shoppers bargained for food items while commercial tricycles weaved through pedestrian lanes. However, beneath this lively commercial activity lay an unsightly environmental eyesore: open storm gutters choked to the brim with garbage.\n\nInstead of disposing of rubbish responsibly, many traders and commuters treated the drainage channels as dumping pits. Discarded single-use black polythene bags, empty water sachets, plastic bottles, and rotting vegetable peels formed thick, smelly dams along the concrete drains. The stagnant black water emitted a foul stench and served as an active breeding nursery for swarms of mosquitoes and houseflies.\n\nDisaster struck on a Tuesday evening when an unexpected two-hour downpour pounded the town. The heavy volume of rainwater could not flow through the blocked culverts. Within thirty minutes, contaminated black runoff breached the gutters, flooding the main market street. The swirling floodwaters submerged thirty market stalls, washing bags of rice, dried fish, and cartons of soap into the mud.\n\nWorse still, several residential compounds nearby were inundated with dirty sewage. Families scrambled onto tabletops to keep their infant children safe. In the weeks that followed, clinics in Aboabo recorded alarming outbreaks of cholera and severe malaria cases.\n\nTroubled by this recurring disaster, fourteen-year-old Kweku and his classmates in the school's Environmental Club took the initiative. Armed with rakes, shovels, and protective gloves, they partnered with local market women for a weekend desilting exercise. They cleared three truckloads of plastic waste from the drains and placed labelled refuse bins along the street. Kweku demonstrated that keeping gutters clear is not just a government duty, but a civic responsibility that saves lives and property.",
       "questions": [
-        {
-          "subQuestion": "(a)",
-          "question": "State two economic benefits of tourism mentioned in the opening paragraph of the passage.",
-          "answer": "1. Generating foreign exchange.\n2. Stimulating infrastructural development (or creating service jobs)."
-        },
-        {
-          "subQuestion": "(b)",
-          "question": "How does uncontrolled tourism lead to the degradation of indigenous cultural heritage?",
-          "answer": "Traditional sacred festivals, ritual dances, and spiritual ceremonies are turned into cheap, commercialized entertainment spectacles for tourists, and local customs are disrespected."
-        },
-        {
-          "subQuestion": "(c)",
-          "question": "Mention two specific ecological problems caused by luxury hotel resorts in coastal areas.",
-          "answer": "1. Destruction of vital coastal mangrove wetlands and forests.\n2. Poisoning of lagoons and coral reefs with raw sewage (or consumption of huge amounts of water and generation of plastic waste)."
-        },
-        {
-          "subQuestion": "(d)",
-          "question": "Why do local communities in many developing regions fail to benefit financially from mass tourism?",
-          "answer": "Because luxury hotels are owned by foreign multinational conglomerates that send over seventy percent of the tourism revenues overseas."
-        },
-        {
-          "subQuestion": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... smokeless industry;\nII. ... double-edged sword;\nIII. ... repatriated overseas.",
-          "answer": "I. 'smokeless industry' means an economic enterprise or trade that generates wealth without the industrial factory smoke and physical air pollution associated with manufacturing.\nII. 'double-edged sword' means a situation, choice, or development that has both favorable advantages and dangerous, unfavorable consequences simultaneously.\nIII. 'repatriated overseas' means sent back, transferred, or returned to one's own foreign country."
-        },
-        {
-          "subQuestion": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. appraisal;\nII. commodification;\nIII. influx;\nIV. autonomy.",
-          "answer": "I. appraisal: evaluation, assessment, analysis, review.\nII. commodification: commercialization, turning into merchandise, marketing.\nIII. influx: arrival, inflow, rush, stream, surge.\nIV. autonomy: self-determination, independence, sovereignty, freedom."
-        },
-        {
-          "subQuestion": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major negative impacts of uncontrolled tourism discussed in the passage.",
-          "answer": "1. Tourism degrades sacred local cultural traditions.\n2. Resort construction destroys fragile coastal environments."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "What unsightly environmental problem plagued the town of Aboabo?",
+                  "answer": "Open storm gutters were choked and filled with plastic waste and garbage."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "Mention three specific items of refuse that blocked the drainage culverts.",
+                  "answer": "Black polythene bags, empty water sachets, plastic bottles, or rotting vegetable peels."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "What happened when a two-hour downpour struck the town?",
+                  "answer": "Rainwater could not flow through the choked drains, causing flash floods that submerged market stalls and residential homes."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "State two waterborne or vector-borne illnesses that broke out after the flood.",
+                  "answer": "Cholera and malaria."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... choked to the brim;\nII. ... environmental eyesore;\nIII. ... took the initiative.",
+                  "answer": "I. 'choked to the brim' means completely filled to the top with debris; tightly blocked.\nII. 'environmental eyesore' means an unpleasant, ugly, and offensive feature in the surroundings.\nIII. 'took the initiative' means took bold first action to solve a problem without waiting for orders."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. bustling;\nII. stagnant;\nIII. breached;\nIV. desilting.",
+                  "answer": "I. bustling: busy, lively, active, crowded.\nII. stagnant: still, motionless, foul, unmoving.\nIII. breached: overflowed, broke through, burst over.\nIV. desilting: cleaning, dredging, clearing silt/rubbish."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the action taken by Kweku and his club.",
+                  "answer": "1. The club desilted the choked market drains.\n2. Students placed refuse bins along the street."
+            }
       ]
-    },
+},
     "partC_literature": {
       "title": "Part C: Literature in English (The Cockcrow Anthology)",
       "instructions": "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",

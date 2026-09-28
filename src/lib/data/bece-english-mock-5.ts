@@ -595,45 +595,45 @@ export const SET_BECE_MOCK_5_ENGLISH_P2 = {
     "partB_comprehension": {
       "title": "Part B: Reading Comprehension",
       "instructions": "Read the following passage carefully and answer all the questions that follow in your own words as far as possible.",
-      "passageText": "In the agrarian economy of West Africa, cassava represents far more than an ordinary agricultural crop; it is the ultimate food security anchor that shields rural households from catastrophic starvation. Cultivated widely across tropical rainforest and guinea savannah belts, this hardy woody shrub possesses an extraordinary physiological capacity to thrive in impoverished soils and withstand extreme drought conditions that wither delicate cereals such as maize and rice.\n\nThe true agricultural supremacy of cassava lies in its remarkable agronomic resilience. Unlike grains that demand expensive chemical fertilizers, predictable rainfall, and meticulous pest management, cassava requires minimal capital investment. Farmers propagate the crop easily by inserting woody stem cuttings into mounds of red loam soil. Once established, its deep fibrous root system penetrates underground moisture reserves, allowing the plant to survive prolonged dry spells. Furthermore, mature cassava tubers can remain safely stored beneath the soil for up to twenty-four months without decaying, functioning as a living, underground biological storage bank that rural families harvest gradually during seasonal famines.\n\nBeyond household sustenance, cassava serves as a dynamic catalyst for rural industrialization and commercial agro-processing. Through labor-intensive traditional techniques, rural women transform raw tubers into diverse culinary staples, such as fermented gari, kokonte flour, and fufu dough. In contemporary industrial manufacture, refined cassava starch is extracted for commercial applications in textile sizing, pharmaceutical tablet binding, paper manufacturing, and the brewing of alcoholic beverages.\n\nHowever, the cassava value chain faces significant biological and logistical vulnerabilities. The foremost menace is the rampant spread of Cassava Mosaic Disease (CMD) and Cassava Brown Streak Disease (CBSD), viral epidemics transmitted by whiteflies that stunt plant growth and rot tubers before harvest. Furthermore, because harvested tubers contain eighty percent moisture, they suffer rapid post-harvest physiological deterioration, spoiling completely within forty-eight hours of excavation unless processed immediately.\n\nAgricultural research institutes emphasize that transforming cassava from a subsistence security crop into a commercial agro-industrial powerhouse requires modern interventions. Governments must distribute disease-resistant hybrid stem cuttings to farmers, establish rural solar-powered processing hubs near farm gates, and rehabilitate eroded feeder roads to ensure swift transportation to urban factory depots.",
+      "passageText": "In the farming village of Obuasi-Nkwanta, nightfall usually brought complete darkness. The community was not connected to the national electrical grid, so families depended on small kerosene tin lamps to cook and study. These lamps flickered weakly in the breeze and produced thick black soot that irritated the eyes and made school children cough.\n\nFourteen-year-old Kofi was determined to find a solution. He was fascinated by simple electrical circuits and spent his afternoons reading science magazines borrowed from his headmaster. \n\nUsing pocket money saved from selling wild berries, Kofi bought two discarded solar cells from an electronics repairer in the neighboring town. He also collected an old rechargeable torch battery, a small switch, and copper wiring from a broken transistor radio. With guidance from his Integrated Science teacher, Mr. Mensah, Kofi mounted the solar cells on a square piece of timber and connected them to the battery.\n\nHe placed the device on the thatched roof of his parents' kitchen during the daytime to absorb sunlight. By nightfall, the battery was fully charged. When Kofi flipped the switch, bright white light from three small LED bulbs lit up his family's living room.\n\nFor the first time, Kofi and his younger sisters could read their school books without smoke stinging their eyes. Word spread quickly through the village. Neighbors came to view the \"miracle box that traps the sun.\"\n\nThe village headman was so impressed by Kofi's invention that he convened an elders' meeting. The community decided to purchase materials for Kofi and his teacher to assemble twenty more solar lanterns for all the elderly widows and primary school pupils in the village. Kofi proved that curiosity and practical science can solve real community problems.",
       "questions": [
-        {
-          "subQuestion": "(a)",
-          "question": "State two specific environmental or soil conditions under which cassava can survive successfully according to the passage.",
-          "answer": "Cassava can thrive in impoverished (poor) soils and withstand extreme drought conditions (prolonged dry spells)."
-        },
-        {
-          "subQuestion": "(b)",
-          "question": "Why do agriculturalists describe mature cassava tubers as 'a living, underground biological storage bank'?",
-          "answer": "Because mature tubers can remain stored safely beneath the soil for up to twenty-four months without rotting, allowing families to harvest them gradually when food is scarce."
-        },
-        {
-          "subQuestion": "(c)",
-          "question": "Mention two industrial or commercial manufacturing uses of refined cassava starch.",
-          "answer": "1. Sizing in textile manufacturing.\n2. Binding agent in pharmaceutical tablets (or paper manufacturing / brewing alcoholic beverages)."
-        },
-        {
-          "subQuestion": "(d)",
-          "question": "What primary factor causes harvested cassava tubers to spoil within forty-eight hours of excavation?",
-          "answer": "Harvested tubers contain a high moisture content of eighty percent, which triggers rapid post-harvest physiological deterioration."
-        },
-        {
-          "subQuestion": "(e)",
-          "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... food security anchor;\nII. ... with impunity;\nIII. ... living up to expectations.",
-          "answer": "I. 'food security anchor' means a dependable, vital agricultural safeguard that protects people from hunger and famine.\nII. 'minimal capital investment' means very little money, expenditure, or financial resources required.\nIII. 'swift transportation' means fast, prompt, and rapid conveyance of goods."
-        },
-        {
-          "subQuestion": "(f)",
-          "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. resilience;\nII. propagate;\nIII. sustenance;\nIV. vulnerabilities.",
-          "answer": "I. resilience: toughness, endurance, hardiness, adaptability.\nII. propagate: cultivate, reproduce, breed, grow.\nIII. sustenance: food, nourishment, survival, livelihood.\nIV. vulnerabilities: weaknesses, hazards, risks, frailties."
-        },
-        {
-          "subQuestion": "(g)",
-          "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the two major challenges confronting cassava production.",
-          "answer": "1. Destructive viral diseases stunt crop growth.\n2. Harvested tubers rot rapidly within two days."
-        }
+            {
+                  "subQuestion": "(a)",
+                  "question": "Why did families in Obuasi-Nkwanta rely on kerosene lamps at night?",
+                  "answer": "The village was not connected to the national electricity grid."
+            },
+            {
+                  "subQuestion": "(b)",
+                  "question": "Mention two health problems caused by the smoke from the kerosene tin lamps.",
+                  "answer": "It irritated/stung the eyes and made children cough."
+            },
+            {
+                  "subQuestion": "(c)",
+                  "question": "Name three items Kofi used to build his solar lighting system.",
+                  "answer": "Discarded solar cells, an old rechargeable battery, copper wiring, a switch, or LED bulbs."
+            },
+            {
+                  "subQuestion": "(d)",
+                  "question": "What decision was taken by the village elders after seeing Kofi's invention?",
+                  "answer": "They decided to buy materials for Kofi and his teacher to build twenty more solar lanterns for widows and school children."
+            },
+            {
+                  "subQuestion": "(e)",
+                  "question": "Explain the meaning of the following expressions as used in the passage:\nI. ... flickered weakly;\nII. ... word spread quickly;\nIII. ... miracle box that traps the sun.",
+                  "answer": "I. 'flickered weakly' means burned unevenly with a dim, unsteady light.\nII. 'word spread quickly' means news was shared and passed rapidly from person to person.\nIII. 'miracle box that traps the sun' means an amazing device that captures solar energy to produce light."
+            },
+            {
+                  "subQuestion": "(f)",
+                  "question": "For each of the following words, give another word or phrase that means the same and can fit into the passage:\nI. depended;\nII. discarded;\nIII. guided;\nIV. assemble.",
+                  "answer": "I. depended: relied, counted, leaned.\nII. discarded: thrown-away, rejected, unused.\nIII. guided: advised, directed, assisted.\nIV. assemble: construct, build, put together."
+            },
+            {
+                  "subQuestion": "(g)",
+                  "question": "In two concise sentences of NOT MORE THAN EIGHT WORDS EACH, summarize the benefits of Kofi's invention.",
+                  "answer": "1. It allowed children to study safely.\n2. The village adopted solar lanterns widely."
+            }
       ]
-    },
+},
     "partC_literature": {
       "title": "Part C: Literature in English (The Cockcrow Anthology)",
       "instructions": "Answer all questions in this part based on the prescribed texts from Sackey J.A. and Darmani L. (comp.): The Cockcrow.",
