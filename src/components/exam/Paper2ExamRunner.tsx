@@ -155,7 +155,7 @@ export function Paper2ExamRunner({
 
   // Auto-derive flippable theory topics (Questions 51 to 60)
   const flippableTopics = React.useMemo(() => {
-    if (flippableTopics.length > 0) {
+    if (Array.isArray((activeExam as any)?.theoryTopicList) && (activeExam as any).theoryTopicList.length > 0) {
       return (activeExam as any).theoryTopicList;
     }
     return questionsList
