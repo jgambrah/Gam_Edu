@@ -2775,3 +2775,5 @@ export * from './bece-math-2015';
 export * from './bece-math-2016';
 export * from './bece-math-2017';
 export * from './bece-math-2018';
+
+export * from './bece-math-mock-1';

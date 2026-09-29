@@ -54,6 +54,7 @@ import { SET_BECE_2015_MATH_P1, SET_BECE_2015_MATH_P2 } from '@/lib/data/bece-ma
 import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from '@/lib/data/bece-math-2016';
 import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from '@/lib/data/bece-math-2017';
 import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from '@/lib/data/bece-math-2018';
+import { SET_BECE_MOCK_1_MATH_P1, SET_BECE_MOCK_1_MATH_P2 } from '@/lib/data/bece-math-mock-1';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -7344,6 +7345,98 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
     }
 ];
 
+
+const MATH_MOCK_SUITES: MockSuiteItem[] = [
+    {
+        mockNum: 1,
+        setNum: 101,
+        title: "BECE Mathematics National Mock Examination 1",
+        description: "Comprehensive national mock simulation covering prime factorization & sets, linear equations & inequalities on number lines, commercial percentage profit, ratio perimeter mensuration, cylinder volume, and 2D vector translations.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 2,
+        setNum: 102,
+        title: "BECE Mathematics National Mock Examination 2",
+        description: "Advanced curriculum synthesis: standard form scientific notation, change of subject, compound right-angled triangles with altitude & Pythagoras theorem, hire purchase arithmetic, and stem-and-leaf statistics.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 3,
+        setNum: 103,
+        title: "BECE Mathematics National Mock Examination 3",
+        description: "Rigorous examination targeting simultaneous linear equations, quadratic factorization, geometric compass construction of triangles & bisectors, speed-time distance travel, and probability distributions.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 4,
+        setNum: 104,
+        title: "BECE Mathematics National Mock Examination 4",
+        description: "Curriculum synthesis targeting polygon interior angles, circle sector & segment mensuration, Cartesian coordinate graphing of linear relations, rate & proportions, and wholesale commercial profit.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 5,
+        setNum: 105,
+        title: "BECE Mathematics National Mock Examination 5",
+        description: "Standardized national simulation: Modular clock arithmetic, indices & exponential equations, Pythagoras ladder elevation, simple interest & banking, and discrete frequency mean calculations.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 6,
+        setNum: 106,
+        title: "BECE Mathematics National Mock Examination 6",
+        description: "Advanced examination testing coordinate geometry line gradients, parallel line alternate angles, algebraic fractions, triangular garden ratios, and Venn diagram 2-set distributions.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 7,
+        setNum: 107,
+        title: "BECE Mathematics National Mock Examination 7",
+        description: "National standards benchmark: Right-angled trigonometry (sine, cosine, tangent), bearings & cardinal direction distances, area of trapeziums & composite shapes, and inverse proportions.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 8,
+        setNum: 108,
+        title: "BECE Mathematics National Mock Examination 8",
+        description: "Comprehensive synthesis: Surd radicals, Venn diagram 3-subset modeling, currency exchange rates, cone & pyramid volume mensuration, and pie chart central angle analysis.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 9,
+        setNum: 109,
+        title: "BECE Mathematics National Mock Examination 9",
+        description: "Rigorous examination testing vector magnitude & direction, geometric locus constructions, direct and inverse variation formulas, and cumulative frequency median evaluation.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 10,
+        setNum: 110,
+        title: "BECE Mathematics National Mock Examination 10 (Capstone Examination)",
+        description: "Grand capstone national mock simulation synthesizing all four NaCCA JHS mathematics strands: Number & Numeration, Algebra & Functions, Geometry & Measurement, and Data Handling & Probability.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    },
+    {
+        mockNum: 11,
+        setNum: 111,
+        title: "BECE Mathematics National Mock Examination 11 (Final Mastery Suite)",
+        description: "Final championship benchmark: Multi-step real-world modeling, quadratic graph parabolas, complex compass constructions, compound interest, and advanced probability.",
+        paper1Details: "40 Multiple Choice CBT • 60 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D).",
+        paper2Details: "6 Questions (Choose 4) • 60 Mins • Step-by-Step WAEC Rubrics & Full Diagrams."
+    }
+];
+
 const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
     {
         mockNum: 1,
@@ -7437,6 +7530,109 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
 
     const handleLaunchMockPaper = async (mockNum: number, paperNum: 1 | 2) => {
         console.log(`[senior-academy] handleLaunchMockPaper called for ${subject} Mock ${mockNum}, Paper ${paperNum}`);
+        if (subject === 'math') {
+            const mathMockMeta: Record<number, { title: string; focus: string; p1Focus: string; p2Focus: string }> = {
+                1: {
+                    title: "BECE Mathematics National Mock 1",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Number & Numeration, Basic Algebra, Plane Geometry & Mensuration, Probability",
+                    p2Focus: "Venn Diagrams & Sets, Business Profit & Mensuration, Angles & Polygons, Statistics Frequency Tables, Linear Vectors & Transformations, Factorization & Simultaneous Equations"
+                },
+                2: {
+                    title: "BECE Mathematics National Mock 2",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Fractions & Decimals, Indices, Algebraic Expressions, Polygons, Transformational Geometry",
+                    p2Focus: "Set Theory, Commercial Arithmetic, Geometric Proofs, Coordinate Geometry, Algebraic Word Problems"
+                },
+                3: {
+                    title: "BECE Mathematics National Mock 3",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Ratio & Proportions, Simple Interest, Linear Equations, Circles & Cylinders, Probability",
+                    p2Focus: "Venn Diagrams, Linear Inequalities & Graphing, Trigonometry & Bearings, Data Presentation, Mensuration"
+                },
+                4: {
+                    title: "BECE Mathematics National Mock 4",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Percentages, Standard Form, Quadratic Expansions, Transformations, Statistics",
+                    p2Focus: "Set Problem Solving, Circle Theorems, Vector Transformations, Financial Mathematics, Probability"
+                },
+                5: {
+                    title: "BECE Mathematics National Mock 5",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Modular Arithmetic, Binary Operations, Algebraic Fractions, Solid Mensuration",
+                    p2Focus: "Venn Diagrams, Coordinate Geometry, Quadratic Equations, Polygon Angles, Cumulative Frequency"
+                },
+                6: {
+                    title: "BECE Mathematics National Mock 6",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Surds Basics, Rates & Taxes, Simultaneous Equations, Geometric Constructions, Data Handling",
+                    p2Focus: "Practical Sets, Depreciation & Hire Purchase, Plane Geometry, Vector Translation, Algebraic Relations"
+                },
+                7: {
+                    title: "BECE Mathematics National Mock 7",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Approximation & Significant Figures, Change of Subject, Angle Properties, Bar Charts & Pie Charts",
+                    p2Focus: "Set Cardinality, Commercial Arithmetic & VAT, Surface Area & Volume, Coordinate Geometry, Statistics"
+                },
+                8: {
+                    title: "BECE Mathematics National Mock 8",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Prime Factorization, HCF & LCM, Linear Inequalities, Circle Mensuration, Probability",
+                    p2Focus: "Venn Diagrams, Quadratic Graphs, Transformational Vectors, Perimeter & Area Ratios, Algebraic Proofs"
+                },
+                9: {
+                    title: "BECE Mathematics National Mock 9",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Set Operations, Direct & Inverse Variation, Coordinate Geometry, Trigonometric Ratios",
+                    p2Focus: "Survey Problem Solving, Banking & Simple Interest, Solid Geometry, Linear Inequality Shading, Mean & Median"
+                },
+                10: {
+                    title: "BECE Mathematics National Mock 10",
+                    focus: "Standardized JHS 1-3 National Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Number Bases, Algebraic Substitution, Polygon Exterior Angles, Relative Frequency",
+                    p2Focus: "Venn Diagrams & Logic, Coordinate Geometry & Vectors, Mensuration of Prisms, Algebraic Equations, Data Interpretation"
+                },
+                11: {
+                    title: "BECE Mathematics National Mock 11",
+                    focus: "Comprehensive Final Predictive JHS Mock Examination (Paper 1 CBT + Paper 2 Theory)",
+                    p1Focus: "Full BECE Curriculum Synthesis (40 Questions with 10 A, 10 B, 10 C, 10 D distribution)",
+                    p2Focus: "Comprehensive 6-Question Multi-topic Written Theory Examination with detailed step-by-step rubrics"
+                }
+            };
+            const meta = mathMockMeta[mockNum] || mathMockMeta[1];
+
+            await handleLaunchModule({
+                title: paperNum === 1
+                    ? `${meta.title} (Paper 1 Objective CBT)`
+                    : `${meta.title} (Paper 2 Theory / Essay)`,
+                domain: paperNum === 1 ? "NUMBER, ALGEBRA, GEOMETRY & STATISTICS" : "MATHEMATICAL INQUIRY, PROBLEM SOLVING & PROOFS",
+                strandName: "MATHEMATICS CURRICULUM",
+                strandCode: "MATH-MOCK",
+                subStrand: paperNum === 1
+                    ? `National Mock ${mockNum} Objective Examination (40 Questions)`
+                    : `National Mock ${mockNum} Theory / Essay (6 Questions, 15 Marks each)`,
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 60 mins • 40 Marks" : "Paper 2 (6 Questions) • 60 mins • 60 Marks",
+                description: paperNum === 1
+                    ? `Standardized 40-question objective CBT examination covering ${meta.p1Focus} with strictly balanced key distribution (10 A, 10 B, 10 C, 10 D).`
+                    : `Paper 2 Written Theory examination comprising 6 multi-part questions covering ${meta.p2Focus} with official WAEC scoring rubrics and step-by-step solutions.`,
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? `math_mock_${mockNum}` : `math_mock_${mockNum}_p2`,
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: mockNum,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 6,
+                examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Theory & Written Steps • 60 Marks",
+                subject: "Mathematics",
+                status: "ready"
+            });
+            return;
+        }
         if (subject === 'english') {
             if (mockNum === 1) {
                 await handleLaunchModule({
@@ -8268,15 +8464,26 @@ if (
 
         // 0. Direct Dedicated Mock Exam Loader with zero friction
         if (mod.isMock || mod.setId?.includes('mock') || mod.topicId === 'mock_exams' || (mod.title && mod.title.toLowerCase().includes('mock'))) {
-            const isEnglishMock = mod.subject === 'English Language' || subject === 'english' || (mod.title && mod.title.toLowerCase().includes('english'));
-            setActiveTopicMeta({ title: mod.title || (isEnglishMock ? 'BECE English Language Mock 1' : 'BECE Integrated Science Mock 1'), topicId: 'mock_exams' });
+            const isMathMock = mod.subject === 'Mathematics' || subject === 'math' || (mod.title && mod.title.toLowerCase().includes('math'));
+            const isEnglishMock = !isMathMock && (mod.subject === 'English Language' || subject === 'english' || (mod.title && mod.title.toLowerCase().includes('english')));
+            setActiveTopicMeta({ title: mod.title || (isMathMock ? 'BECE Mathematics Mock 1' : isEnglishMock ? 'BECE English Language Mock 1' : 'BECE Integrated Science Mock 1'), topicId: 'mock_exams' });
             setIsLoadingSet(true);
             try {
                 let pData: any = null;
                 const cleanMockId = (mod.setId || 'mock_1').replace(/_p\d+$/, '').replace(/^paper_/, '');
                 if (firestore) {
                     try {
-                        if (isEnglishMock) {
+                        if (isMathMock) {
+                            let mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/mathematics/mocks/${cleanMockId}`));
+                            if (!mockSnap.exists()) {
+                                mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/mathematics/mock_exams/${cleanMockId}`));
+                            }
+                            if (mockSnap.exists()) {
+                                const mData = mockSnap.data();
+                                const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                                pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
+                            }
+                        } else if (isEnglishMock) {
                             let mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/english/mocks/${cleanMockId}`));
                             if (!mockSnap.exists()) {
                                 mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/english/mock_exams/${cleanMockId}`));
@@ -8302,7 +8509,9 @@ if (
                 // Robust fallback to bundled data
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                    if (isEnglishMock) {
+                    if (isMathMock) {
+                        pData = isP2 ? SET_BECE_MOCK_1_MATH_P2 : SET_BECE_MOCK_1_MATH_P1;
+                    } else if (isEnglishMock) {
                         const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
                         const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
                         const isMock9 = mod.setId?.includes('mock_9') || mod.title?.toLowerCase().includes('mock 9');
@@ -8957,12 +9166,14 @@ if (
                                         viewMode === 'predictive_mocks'
                                             ? (subject === 'english'
                                                 ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30"
+                                                : subject === 'math'
+                                                ? "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 text-white shadow-md shadow-amber-600/30 border border-amber-400/30"
                                                 : "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-600/30 border border-emerald-400/30")
                                             : "text-slate-400 hover:text-slate-200 hover:bg-slate-850/60"
                                     )}
                                 >
-                                    <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
-                                    <span>{subject === 'english' ? 'English Mock Suite (Mock 1–11)' : 'Mock Examination Suite (Mock 1–11)'}</span>
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                                    <span>{subject === 'english' ? 'English Mock Suite (Mock 1–11)' : subject === 'math' ? 'Mathematics Mock Suite (Mock 1–11)' : 'Science Mock Suite (Mock 1–11)'}</span>
                                 </button>
                             </div>
 
@@ -8981,7 +9192,7 @@ if (
                                         <span>{isRefreshing ? "Refreshing..." : "Refresh Resources"}</span>
                                     </Button>
                                     <span className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
-                                        {subject === 'english' ? `${ENGLISH_MOCK_SUITES.length} Mock Suites` : '11 Mock Suites'}
+                                        {subject === 'english' ? `${ENGLISH_MOCK_SUITES.length} Mock Suites` : subject === 'math' ? `${MATH_MOCK_SUITES.length} Mock Suites` : `${SCIENCE_MOCK_SUITES.length} Mock Suites`}
                                     </span>
                                 </div>
                             )}
@@ -9141,6 +9352,43 @@ if (
                                         </div>
                                     </div>
                                 </div>
+                            ) : subject === 'math' ? (
+                                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-950/50 via-slate-900 to-yellow-950/30 border border-amber-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                                    <div className="absolute -right-12 -top-12 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                                    <div className="relative z-10 max-w-4xl space-y-3.5">
+                                        {/* Metadata Tag Row */}
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold tracking-wide">
+                                                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                                <span>NaCCA / WAEC Standards</span>
+                                            </span>
+                                            <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium">
+                                                JHS 1–3 (Grade 7–9)
+                                            </span>
+                                            <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium">
+                                                11 Calibrated Mocks
+                                            </span>
+                                            <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 text-xs font-medium">
+                                                Paper 1 (CBT: 60m • 40 MCQs) + Paper 2 (Theory: 60m • 6 Questions)
+                                            </span>
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                                Isomorphic 2026 Calibration
+                                            </span>
+                                        </div>
+
+                                        {/* Cohesive Hero Title & Summary */}
+                                        <div>
+                                            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                                                <span className="text-2xl sm:text-3xl">📐</span>
+                                                <span>BECE Mathematics Mock Suite</span>
+                                            </h2>
+                                            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mt-2.5 max-w-3xl">
+                                                Standardized Mathematics mock examination suites strictly calibrated to WAEC BECE standards. Each mock packages a 60-minute timed CBT Objective paper (Paper 1: 40 questions covering Number &amp; Numeration, Algebra, Geometry &amp; Measurement, and Statistics &amp; Probability with balanced 10 A, 10 B, 10 C, 10 D key distribution) and a 60-minute structured theory examination (Paper 2: 6 multi-part questions with step-by-step rubrics and high-precision vector SVG diagrams).
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/50 via-slate-900 to-indigo-950/30 border border-emerald-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
                                     <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -9181,21 +9429,34 @@ if (
 
                             {/* Mocks Grid - Strict 2-Column Responsive Layout */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                                {(subject === 'english' ? ENGLISH_MOCK_SUITES : SCIENCE_MOCK_SUITES).map((mock) => {
+                                {(subject === 'english' ? ENGLISH_MOCK_SUITES : subject === 'math' ? MATH_MOCK_SUITES : SCIENCE_MOCK_SUITES).map((mock) => {
                                     const isEnglish = subject === 'english';
-                                    const cardTitle = isEnglish ? `Mock ${mock.mockNum}: National Standard Exam` : `Mock ${mock.mockNum}: Standard Mock Suite`;
+                                    const isMath = subject === 'math';
+                                    const cardTitle = isEnglish 
+                                        ? `Mock ${mock.mockNum}: National Standard Exam` 
+                                        : isMath 
+                                        ? `Mock ${mock.mockNum}: BECE Standard Mock Suite` 
+                                        : `Mock ${mock.mockNum}: Standard Mock Suite`;
 
                                     return (
                                         <div
                                             key={mock.mockNum}
                                             className={cn(
                                                 "col-span-1 h-full flex flex-col justify-between rounded-3xl border border-slate-800/90 bg-gradient-to-b from-slate-900/95 via-slate-900/85 to-slate-950 p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group",
-                                                isEnglish ? "hover:border-indigo-500/40" : "hover:border-emerald-500/40"
+                                                isEnglish 
+                                                    ? "hover:border-indigo-500/40" 
+                                                    : isMath 
+                                                    ? "hover:border-amber-500/40" 
+                                                    : "hover:border-emerald-500/40"
                                             )}
                                         >
                                             <div className={cn(
                                                 "absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors",
-                                                isEnglish ? "bg-indigo-500/5 group-hover:bg-indigo-500/10" : "bg-emerald-500/5 group-hover:bg-emerald-500/10"
+                                                isEnglish 
+                                                    ? "bg-indigo-500/5 group-hover:bg-indigo-500/10" 
+                                                    : isMath 
+                                                    ? "bg-amber-500/5 group-hover:bg-amber-500/10" 
+                                                    : "bg-emerald-500/5 group-hover:bg-emerald-500/10"
                                             )} />
 
                                             {/* Top Content Area */}
@@ -9207,19 +9468,23 @@ if (
                                                             "text-xs font-black px-3 py-1 rounded-lg border tracking-wide uppercase shadow-sm",
                                                             isEnglish 
                                                                 ? "bg-indigo-600/20 text-indigo-300 border-indigo-500/30" 
+                                                                : isMath 
+                                                                ? "bg-amber-600/20 text-amber-300 border-amber-500/30" 
                                                                 : "bg-emerald-600/20 text-emerald-300 border-emerald-500/30"
                                                         )}>
-                                                            {isEnglish ? `Mock ${mock.mockNum}` : `Mock ${mock.mockNum} • Set ${mock.setNum}`}
+                                                            {isEnglish ? `Mock ${mock.mockNum}` : isMath ? `Mock ${mock.mockNum} • National Mock` : `Mock ${mock.mockNum} • Set ${mock.setNum}`}
                                                         </span>
                                                         <span className={cn(
                                                             "inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border shrink-0",
                                                             isEnglish 
                                                                 ? "text-indigo-400 bg-indigo-500/10 border-indigo-500/30" 
+                                                                : isMath 
+                                                                ? "text-amber-400 bg-amber-500/10 border-amber-500/30" 
                                                                 : "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
                                                         )}>
                                                             <span className={cn(
                                                                 "w-2 h-2 rounded-full animate-ping",
-                                                                isEnglish ? "bg-indigo-400" : "bg-emerald-400"
+                                                                isEnglish ? "bg-indigo-400" : isMath ? "bg-amber-400" : "bg-emerald-400"
                                                             )} />
                                                             Live &amp; Calibrated
                                                         </span>
@@ -9229,7 +9494,7 @@ if (
                                                     <div>
                                                         <h3 className={cn(
                                                             "text-base sm:text-lg font-black text-white transition-colors leading-snug line-clamp-2",
-                                                            isEnglish ? "group-hover:text-indigo-300" : "group-hover:text-emerald-300"
+                                                            isEnglish ? "group-hover:text-indigo-300" : isMath ? "group-hover:text-amber-300" : "group-hover:text-emerald-300"
                                                         )}>
                                                             {cardTitle}
                                                         </h3>
@@ -9238,16 +9503,16 @@ if (
                                                         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-400 mt-1.5">
                                                             <span className="flex items-center gap-1 text-slate-300">
                                                                 <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                                                {isEnglish ? "135 Mins Total" : "150 Mins Total"}
+                                                                {isEnglish ? "135 Mins Total" : isMath ? "120 Mins Total" : "150 Mins Total"}
                                                             </span>
                                                             <span className="text-slate-600">•</span>
                                                             <span className="flex items-center gap-1 text-slate-300">
                                                                 <Award className="w-3.5 h-3.5 text-amber-400" />
-                                                                {isEnglish ? "100 Marks" : "140 Marks"}
+                                                                {isEnglish ? "100 Marks" : isMath ? "100 Marks" : "140 Marks"}
                                                             </span>
                                                             <span className="text-slate-600">•</span>
                                                             <span className="text-slate-400 font-medium">
-                                                                {isEnglish ? "Full Unified Simulation" : "Practical & Theory"}
+                                                                {isEnglish ? "Full Unified Simulation" : isMath ? "CBT (40M) + Theory (60M)" : "Practical & Theory"}
                                                             </span>
                                                         </div>
 
@@ -9264,6 +9529,13 @@ if (
                                                                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/60">Cloze &amp; Phonology</span>
                                                                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/60">Comprehension</span>
                                                                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">The Cockcrow</span>
+                                                                </>
+                                                            ) : isMath ? (
+                                                                <>
+                                                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/60">40 CBT MCQs</span>
+                                                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/60">Geometry &amp; Algebra</span>
+                                                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/60">Vector SVGs</span>
+                                                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20">6 Theory Questions</span>
                                                                 </>
                                                             ) : (
                                                                 <>
@@ -9283,14 +9555,14 @@ if (
                                                         <div className="flex items-center justify-between gap-1">
                                                             <span className="text-xs font-black text-sky-400 flex items-center gap-1.5 whitespace-nowrap">
                                                                 <ListChecks className="w-3.5 h-3.5 shrink-0 text-sky-400" />
-                                                                <span>Paper 1 (CBT): 45m</span>
+                                                                <span>{isMath ? "Paper 1 (CBT): 60m" : "Paper 1 (CBT): 45m"}</span>
                                                             </span>
                                                             <span className="text-[10px] font-bold text-sky-300/90 bg-sky-500/10 border border-sky-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
                                                                 40 MCQs
                                                             </span>
                                                         </div>
                                                         <p className="text-[11px] text-slate-400 leading-snug line-clamp-2">
-                                                            {isEnglish ? "Lexis, Grammar, Idioms, Cloze & Phonology" : mock.paper1Details}
+                                                            {isEnglish ? "Lexis, Grammar, Idioms, Cloze & Phonology" : isMath ? "Number, Algebra, Geometry, Statistics & Probability" : mock.paper1Details}
                                                         </p>
                                                     </div>
 
@@ -9299,14 +9571,14 @@ if (
                                                         <div className="flex items-center justify-between gap-1">
                                                             <span className="text-xs font-black text-amber-400 flex items-center gap-1.5 whitespace-nowrap">
                                                                 <FileText className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                                                                <span>{isEnglish ? "Paper 2 (Theory): 90m" : "Paper 2 (Theory): 105m"}</span>
+                                                                <span>{isEnglish ? "Paper 2 (Theory): 90m" : isMath ? "Paper 2 (Theory): 60m" : "Paper 2 (Theory): 105m"}</span>
                                                             </span>
                                                             <span className="text-[10px] font-bold text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
-                                                                {isEnglish ? "3 Sections" : "5 Questions"}
+                                                                {isEnglish ? "3 Sections" : isMath ? "6 Questions" : "5 Questions"}
                                                             </span>
                                                         </div>
                                                         <p className="text-[11px] text-slate-400 leading-snug line-clamp-2">
-                                                            {isEnglish ? "Part A Composition, Part B Passage, Part C Cockcrow" : mock.paper2Details}
+                                                            {isEnglish ? "Part A Composition, Part B Passage, Part C Cockcrow" : isMath ? "Sets, Mensuration, Coordinate Geometry, Vectors & Statistics" : mock.paper2Details}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -9321,6 +9593,8 @@ if (
                                                         "w-full text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]",
                                                         isEnglish 
                                                             ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 shadow-indigo-600/25" 
+                                                            : isMath 
+                                                            ? "bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 hover:from-amber-500 hover:to-orange-500 shadow-amber-600/25" 
                                                             : "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/25"
                                                     )}
                                                 >
@@ -9345,7 +9619,7 @@ if (
                                                         className="py-2 px-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-850/60 hover:bg-slate-800 border border-slate-700/60 hover:border-amber-500/40 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                                                     >
                                                         <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                                                        <span className="truncate">{isEnglish ? "Paper 2 (Theory)" : "Paper 2 (Essay)"}</span>
+                                                        <span className="truncate">{isEnglish ? "Paper 2 (Theory)" : isMath ? "Paper 2 (Theory)" : "Paper 2 (Essay)"}</span>
                                                     </button>
                                                 </div>
                                             </div>
