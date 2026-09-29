@@ -241,17 +241,22 @@ export function Paper2ExamRunner({
 
   // 2. Defensively normalize subQuestions / parts for active question
   const rawSubQuestions =
-    currentQuestion?.subQuestions ??
-    currentQuestion?.parts ??
-    currentQuestion?.subItems ??
-    currentQuestion?.items ??
-    currentQuestion?.tasks;
+    (Array.isArray(currentQuestion?.subQuestions) && currentQuestion.subQuestions.length > 0)
+      ? currentQuestion.subQuestions
+      : (Array.isArray(currentQuestion?.parts) && currentQuestion.parts.length > 0)
+      ? currentQuestion.parts
+      : (Array.isArray(currentQuestion?.subItems) && currentQuestion.subItems.length > 0)
+      ? currentQuestion.subItems
+      : (Array.isArray(currentQuestion?.items) && currentQuestion.items.length > 0)
+      ? currentQuestion.items
+      : currentQuestion?.tasks;
 
   const subQuestionsList = toSafeArray(rawSubQuestions).map((sub: any, subIdx: number) => {
     const rawLabel =
       sub?.subQuestion ||
       sub?.partLabel ||
       sub?.label ||
+      (sub?.part ? `(${sub.part})` : null) ||
       sub?.partId ||
       sub?.subId ||
       `(${String.fromCharCode(97 + subIdx)})`;
@@ -259,6 +264,7 @@ export function Paper2ExamRunner({
     const cleanLabel = String(rawLabel).trim();
     const prompt =
       sub?.prompt ||
+      sub?.questionText ||
       sub?.question ||
       sub?.task ||
       sub?.text ||
@@ -272,13 +278,21 @@ export function Paper2ExamRunner({
       sub?.solution ||
       '';
 
+    const diagramSvg =
+      sub?.diagramSvg ||
+      sub?.svgDiagram ||
+      undefined;
+
     const maxMarks = Number(sub?.maxMarks || sub?.marks || sub?.points) || 5;
 
     return {
       ...sub,
-      subId: String(sub?.subId || sub?.id || cleanLabel || `part_${subIdx + 1}`),
+      subId: String(sub?.subId || sub?.partId || sub?.id || cleanLabel || `part_${subIdx + 1}`),
       partLabel: cleanLabel,
       prompt,
+      questionText: prompt,
+      diagramSvg,
+      svgDiagram: diagramSvg,
       workedSolution,
       modelAnswer: workedSolution,
       maxMarks,
@@ -459,7 +473,7 @@ export function Paper2ExamRunner({
               subId,
               partLabel: String(sub?.partLabel || subId),
               partKey,
-              prompt: String(sub?.prompt || sub?.question || ''),
+              prompt: String(sub?.prompt || sub?.questionText || sub?.question || ''),
               studentText: text,
               maxMarks: calculateSubMarks(sub, subIdx),
               workedSolution: String(sub?.workedSolution || sub?.modelAnswer || ''),
@@ -837,7 +851,7 @@ export function Paper2ExamRunner({
   // Specialized rendering for each sub-question item with constraints detection
   // Helper to format sub-question badges and titles cleanly without typo or repetitive tagging
   const formatSubQuestionHeader = (subItem: any, idx: number, parentQNum?: string) => {
-    const raw = String(subItem?.subQuestion || subItem?.partLabel || '').trim();
+    const raw = String(subItem?.subQuestion || subItem?.partLabel || (subItem?.part ? `(${subItem.part})` : '') || '').trim();
     
     // 1. Cockcrow format like "5(a)", "5(b)", "5a", "(5(a))"
     const mCockcrow = raw.match(/(?:Question\s*)?5\s*\(([a-z0-9]+)\)/i) || raw.match(/5([a-z])/i);
@@ -888,7 +902,7 @@ export function Paper2ExamRunner({
     const isHintShown = !!showPartHints[partKey];
     const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
     const subMarks = calculateSubMarks(sub, subIdx);
-    const promptText = String(sub.prompt || sub.question || sub.title || '');
+    const promptText = String(sub.prompt || sub.questionText || sub.question || sub.title || '');
 
     // Specialized constraints detection
     const isSummary = (sub.partLabel && sub.partLabel.includes('g')) || promptText.toLowerCase().includes('eight words') || promptText.toLowerCase().includes('two concise sentences');
@@ -949,10 +963,10 @@ export function Paper2ExamRunner({
         </div>
 
         {/* Sub-part diagram (if any) */}
-        {sub.diagramSvg && (
+        {(sub.diagramSvg || sub.svgDiagram) && (
           <div
             className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
-            dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
+            dangerouslySetInnerHTML={{ __html: sub.diagramSvg || sub.svgDiagram }}
           />
         )}
 
@@ -1777,7 +1791,13 @@ export function Paper2ExamRunner({
                   <div className="lg:hidden mb-6">
                     {renderPassageCard(true)}
                   </div>
-                  {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
+                  {(currentQuestion?.diagramSvg || currentQuestion?.svgDiagram) && !subQuestionsList.some((s: any) => s.diagramSvg || s.svgDiagram) && (
+                  <div
+                    className="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex justify-center overflow-x-auto shadow-inner mb-4"
+                    dangerouslySetInnerHTML={{ __html: currentQuestion.diagramSvg || currentQuestion.svgDiagram }}
+                  />
+                )}
+                {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
 
                   {/* Consolidated Protocol Notice */}
                   {!isSubmitted && (
@@ -1798,6 +1818,12 @@ export function Paper2ExamRunner({
             ) : (
               <div className="space-y-6">
                 {passageText && renderPassageCard(true)}
+                {(currentQuestion?.diagramSvg || currentQuestion?.svgDiagram) && !subQuestionsList.some((s: any) => s.diagramSvg || s.svgDiagram) && (
+                  <div
+                    className="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex justify-center overflow-x-auto shadow-inner mb-4"
+                    dangerouslySetInnerHTML={{ __html: currentQuestion.diagramSvg || currentQuestion.svgDiagram }}
+                  />
+                )}
                 {subQuestionsList.map((sub: any, subIdx: number) => renderSubQuestionItem(sub, subIdx))}
 
                 {/* Consolidated Protocol Notice */}
