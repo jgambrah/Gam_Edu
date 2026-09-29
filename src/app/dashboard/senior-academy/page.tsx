@@ -55,6 +55,16 @@ import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from '@/lib/data/bece-ma
 import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from '@/lib/data/bece-math-2017';
 import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from '@/lib/data/bece-math-2018';
 import { SET_BECE_MOCK_1_MATH_P1, SET_BECE_MOCK_1_MATH_P2 } from '@/lib/data/bece-math-mock-1';
+import { SET_BECE_MOCK_2_MATH_P1, SET_BECE_MOCK_2_MATH_P2 } from '@/lib/data/bece-math-mock-2';
+import { SET_BECE_MOCK_3_MATH_P1, SET_BECE_MOCK_3_MATH_P2, SET_BECE_MOCK_3_MATH_COMPLETE } from '@/lib/data/bece-math-mock-3';
+import { SET_BECE_MOCK_4_MATH_P1, SET_BECE_MOCK_4_MATH_P2, SET_BECE_MOCK_4_MATH_COMPLETE } from '@/lib/data/bece-math-mock-4';
+import { SET_BECE_MOCK_5_MATH_P1, SET_BECE_MOCK_5_MATH_P2, SET_BECE_MOCK_5_MATH_COMPLETE } from '@/lib/data/bece-math-mock-5';
+import { SET_BECE_MOCK_6_MATH_P1, SET_BECE_MOCK_6_MATH_P2, SET_BECE_MOCK_6_MATH_COMPLETE } from '@/lib/data/bece-math-mock-6';
+import { SET_BECE_MOCK_7_MATH_P1, SET_BECE_MOCK_7_MATH_P2 } from '@/lib/data/bece-math-mock-7';
+import { SET_BECE_MOCK_8_MATH_P1, SET_BECE_MOCK_8_MATH_P2 } from '@/lib/data/bece-math-mock-8';
+import { SET_BECE_MOCK_9_MATH_P1, SET_BECE_MOCK_9_MATH_P2 } from '@/lib/data/bece-math-mock-9';
+import { SET_BECE_MOCK_10_MATH_P1, SET_BECE_MOCK_10_MATH_P2 } from '@/lib/data/bece-math-mock-10';
+import { SET_BECE_MOCK_11_MATH_P1, SET_BECE_MOCK_11_MATH_P2 } from '@/lib/data/bece-math-mock-11';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -8510,7 +8520,36 @@ if (
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                     if (isMathMock) {
-                        pData = isP2 ? SET_BECE_MOCK_1_MATH_P2 : SET_BECE_MOCK_1_MATH_P1;
+                        const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
+                        const isMock9 = mod.setId?.includes('mock_9') || mod.title?.toLowerCase().includes('mock 9');
+                        const isMock8 = mod.setId?.includes('mock_8') || mod.title?.toLowerCase().includes('mock 8');
+                        const isMock7 = mod.setId?.includes('mock_7') || mod.title?.toLowerCase().includes('mock 7');
+                        const isMock6 = mod.setId?.includes('mock_6') || mod.title?.toLowerCase().includes('mock 6');
+                        const isMock5 = mod.setId?.includes('mock_5') || mod.title?.toLowerCase().includes('mock 5');
+                        const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
+                        const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
+                        const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
+                        if (isMock10) {
+                            pData = isP2 ? SET_BECE_MOCK_10_MATH_P2 : SET_BECE_MOCK_10_MATH_P1;
+                        } else if (isMock9) {
+                            pData = isP2 ? SET_BECE_MOCK_9_MATH_P2 : SET_BECE_MOCK_9_MATH_P1;
+                        } else if (isMock8) {
+                            pData = isP2 ? SET_BECE_MOCK_8_MATH_P2 : SET_BECE_MOCK_8_MATH_P1;
+                        } else if (isMock7) {
+                            pData = isP2 ? SET_BECE_MOCK_7_MATH_P2 : SET_BECE_MOCK_7_MATH_P1;
+                        } else if (isMock6) {
+                            pData = isP2 ? SET_BECE_MOCK_6_MATH_P2 : SET_BECE_MOCK_6_MATH_P1;
+                        } else if (isMock5) {
+                            pData = isP2 ? SET_BECE_MOCK_5_MATH_P2 : SET_BECE_MOCK_5_MATH_P1;
+                        } else if (isMock4) {
+                            pData = isP2 ? SET_BECE_MOCK_4_MATH_P2 : SET_BECE_MOCK_4_MATH_P1;
+                        } else if (isMock3) {
+                            pData = isP2 ? SET_BECE_MOCK_3_MATH_P2 : SET_BECE_MOCK_3_MATH_P1;
+                        } else if (isMock2) {
+                            pData = isP2 ? SET_BECE_MOCK_2_MATH_P2 : SET_BECE_MOCK_2_MATH_P1;
+                        } else {
+                            pData = isP2 ? SET_BECE_MOCK_1_MATH_P2 : SET_BECE_MOCK_1_MATH_P1;
+                        }
                     } else if (isEnglishMock) {
                         const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
                         const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
@@ -8575,6 +8614,45 @@ if (
             } catch (mockErr) {
                 console.error('[senior-academy] Error activating mock exam:', mockErr);
                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                if (isMathMock) {
+                    const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');
+                    const isMock9 = mod.setId?.includes('mock_9') || mod.title?.toLowerCase().includes('mock 9');
+                    const isMock8 = mod.setId?.includes('mock_8') || mod.title?.toLowerCase().includes('mock 8');
+                    const isMock7 = mod.setId?.includes('mock_7') || mod.title?.toLowerCase().includes('mock 7');
+                    const isMock6 = mod.setId?.includes('mock_6') || mod.title?.toLowerCase().includes('mock 6');
+                    const isMock5 = mod.setId?.includes('mock_5') || mod.title?.toLowerCase().includes('mock 5');
+                    const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
+                    const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
+                    const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
+                    const fallbackData = isMock10
+                        ? (isP2 ? SET_BECE_MOCK_10_MATH_P2 : SET_BECE_MOCK_10_MATH_P1)
+                        : (isMock9
+                        ? (isP2 ? SET_BECE_MOCK_9_MATH_P2 : SET_BECE_MOCK_9_MATH_P1)
+                        : (isMock8
+                        ? (isP2 ? SET_BECE_MOCK_8_MATH_P2 : SET_BECE_MOCK_8_MATH_P1)
+                        : (isMock7
+                        ? (isP2 ? SET_BECE_MOCK_7_MATH_P2 : SET_BECE_MOCK_7_MATH_P1)
+                        : (isMock6
+                            ? (isP2 ? SET_BECE_MOCK_6_MATH_P2 : SET_BECE_MOCK_6_MATH_P1)
+                            : (isMock5
+                                ? (isP2 ? SET_BECE_MOCK_5_MATH_P2 : SET_BECE_MOCK_5_MATH_P1)
+                                : (isMock4
+                                    ? (isP2 ? SET_BECE_MOCK_4_MATH_P2 : SET_BECE_MOCK_4_MATH_P1)
+                                    : (isMock3
+                                    ? (isP2 ? SET_BECE_MOCK_3_MATH_P2 : SET_BECE_MOCK_3_MATH_P1)
+                                    : (isMock2
+                                        ? (isP2 ? SET_BECE_MOCK_2_MATH_P2 : SET_BECE_MOCK_2_MATH_P1)
+                                        : (isP2 ? SET_BECE_MOCK_1_MATH_P2 : SET_BECE_MOCK_1_MATH_P1)))))))));
+                    setActiveQuestionSet({
+                        ...fallbackData,
+                        id: mod.setId || (isP2 ? (isMock10 ? 'mock_10_p2' : (isMock9 ? 'mock_09_p2' : (isMock8 ? 'mock_08_p2' : (isMock7 ? 'mock_07_p2' : (isMock6 ? 'mock_06_p2' : (isMock5 ? 'mock_05_p2' : (isMock4 ? 'mock_04_p2' : (isMock3 ? 'mock_03_p2' : (isMock2 ? 'mock_02_p2' : 'mock_01_p2'))))))))) : (isMock10 ? 'mock_10_p1' : (isMock9 ? 'mock_09_p1' : (isMock8 ? 'mock_08_p1' : (isMock7 ? 'mock_07_p1' : (isMock6 ? 'mock_06_p1' : (isMock5 ? 'mock_05_p1' : (isMock4 ? 'mock_04_p1' : (isMock3 ? 'mock_03_p1' : (isMock2 ? 'mock_02_p1' : 'mock_01_p1')))))))))),
+                        tier: 'Junior Secondary (JHS)',
+                        subject: 'Mathematics',
+                        paperType: isP2 ? 2 : 1,
+                        durationMinutes: (fallbackData as any).durationMinutes || (isP2 ? 60 : 60)
+                    } as any);
+                    return;
+                }
                 if (isEnglishMock) {
                     const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
                     const isMock10 = mod.setId?.includes('mock_10') || mod.title?.toLowerCase().includes('mock 10');

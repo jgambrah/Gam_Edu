@@ -2777,3 +2777,78 @@ export * from './bece-math-2017';
 export * from './bece-math-2018';
 
 export * from './bece-math-mock-1';
+
+export {
+  allRawMathMock2Questions,
+  SET_BECE_MOCK_2_MATH_P1,
+  SET_BECE_MOCK_2_MATH_P2,
+  SET_BECE_MOCK_2_MATH_COMPLETE
+} from './bece-math-mock-2';
+
+export {
+  allRawMathMock3Questions,
+  SET_BECE_MOCK_3_MATH_P1,
+  SET_BECE_MOCK_3_MATH_P2,
+  SET_BECE_MOCK_3_MATH_COMPLETE
+} from './bece-math-mock-3';
+
+export {
+  allRawMathMock4Questions,
+  SET_BECE_MOCK_4_MATH_P1,
+  SET_BECE_MOCK_4_MATH_P2,
+  SET_BECE_MOCK_4_MATH_COMPLETE
+} from './bece-math-mock-4';
+
+export {
+  allRawMathMock5Questions,
+  allRawMathMock5TheoryQuestions,
+  SET_BECE_MOCK_5_MATH_P1,
+  SET_BECE_MOCK_5_MATH_P2,
+  SET_BECE_MOCK_5_MATH_COMPLETE
+} from './bece-math-mock-5';
+
+export {
+  allRawMathMock6Questions,
+  allRawMathMock6TheoryQuestions,
+  SET_BECE_MOCK_6_MATH_P1,
+  SET_BECE_MOCK_6_MATH_P2,
+  SET_BECE_MOCK_6_MATH_COMPLETE
+} from './bece-math-mock-6';
+
+export {
+  allRawMathMock7Questions,
+  allRawMathMock7TheoryQuestions,
+  SET_BECE_MOCK_7_MATH_P1,
+  SET_BECE_MOCK_7_MATH_P2,
+  SET_BECE_MOCK_7_MATH_COMPLETE
+} from './bece-math-mock-7';
+
+export {
+  allRawMathMock8Questions,
+  allRawMathMock8TheoryQuestions,
+  SET_BECE_MOCK_8_MATH_P1,
+  SET_BECE_MOCK_8_MATH_P2,
+  SET_BECE_MOCK_8_MATH_COMPLETE
+} from './bece-math-mock-8';
+
+export {
+  allRawMathMock9Questions,
+  allRawMathMock9TheoryQuestions,
+  SET_BECE_MOCK_9_MATH_P1,
+  SET_BECE_MOCK_9_MATH_P2,
+  SET_BECE_MOCK_9_MATH_COMPLETE
+} from './bece-math-mock-9';
+
+export {
+  allRawMathMock10Questions,
+  allRawMathMock10TheoryQuestions,
+  SET_BECE_MOCK_10_MATH_P1,
+  SET_BECE_MOCK_10_MATH_P2,
+  SET_BECE_MOCK_10_MATH_COMPLETE
+} from './bece-math-mock-10';
+
+export {
+  SET_BECE_MOCK_11_MATH_P1,
+  SET_BECE_MOCK_11_MATH_P2,
+  SET_BECE_MOCK_11_MATH_COMPLETE
+} from './bece-math-mock-11';

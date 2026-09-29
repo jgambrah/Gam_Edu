@@ -107,6 +107,16 @@ import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from './data/bece-math-2
 import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from './data/bece-math-2017';
 import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from './data/bece-math-2018';
 import { SET_BECE_MOCK_1_MATH_P1, SET_BECE_MOCK_1_MATH_P2 } from './data/bece-math-mock-1';
+import { SET_BECE_MOCK_2_MATH_P1, SET_BECE_MOCK_2_MATH_P2 } from './data/bece-math-mock-2';
+import { SET_BECE_MOCK_3_MATH_P1, SET_BECE_MOCK_3_MATH_P2 } from './data/bece-math-mock-3';
+import { SET_BECE_MOCK_4_MATH_P1, SET_BECE_MOCK_4_MATH_P2 } from './data/bece-math-mock-4';
+import { SET_BECE_MOCK_5_MATH_P1, SET_BECE_MOCK_5_MATH_P2 } from './data/bece-math-mock-5';
+import { SET_BECE_MOCK_6_MATH_P1, SET_BECE_MOCK_6_MATH_P2 } from './data/bece-math-mock-6';
+import { SET_BECE_MOCK_7_MATH_P1, SET_BECE_MOCK_7_MATH_P2 } from './data/bece-math-mock-7';
+import { SET_BECE_MOCK_8_MATH_P1, SET_BECE_MOCK_8_MATH_P2 } from './data/bece-math-mock-8';
+import { SET_BECE_MOCK_9_MATH_P1, SET_BECE_MOCK_9_MATH_P2 } from './data/bece-math-mock-9';
+import { SET_BECE_MOCK_10_MATH_P1, SET_BECE_MOCK_10_MATH_P2 } from './data/bece-math-mock-10';
+import { SET_BECE_MOCK_11_MATH_P1, SET_BECE_MOCK_11_MATH_P2 } from './data/bece-math-mock-11';
 import {
   SET_JHS_MASTERY_SERIES_01,
   SET_JHS_MASTERY_SERIES_02,
@@ -4066,6 +4076,186 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'mock_exams',
       questionSet: SET_BECE_MOCK_1_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_2_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_2_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_3_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_3_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_3_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_3_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_4_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_4_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_4_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_4_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_5_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_5_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_5_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_5_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_6_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_6_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_6_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_6_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_7_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_7_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_7_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_7_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_8_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_8_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_8_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_8_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_9_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_9_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_9_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_9_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_10_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_10_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_10_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_10_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_2_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_2_MATH_P2
     },
     {
       subjectId: 'math',
