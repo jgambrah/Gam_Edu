@@ -101,6 +101,11 @@ import {
   SET_JHS_MASTERY_SERIES_67
 } from './data/jhs-curriculum-set-67';
 import { SET_BECE_2013_MATH_P1, SET_BECE_2013_MATH_P2 } from './data/bece-math-2013';
+import { SET_BECE_2014_MATH_P1, SET_BECE_2014_MATH_P2 } from './data/bece-math-2014';
+import { SET_BECE_2015_MATH_P1, SET_BECE_2015_MATH_P2 } from './data/bece-math-2015';
+import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from './data/bece-math-2016';
+import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from './data/bece-math-2017';
+import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from './data/bece-math-2018';
 import {
   SET_JHS_MASTERY_SERIES_01,
   SET_JHS_MASTERY_SERIES_02,
@@ -4050,6 +4055,56 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'core_curriculum_mastery',
       questionSet: SET_JHS_MASTERY_SERIES_08
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2015_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2015_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_MATH_P1
     },
     {
       subjectId: 'math',

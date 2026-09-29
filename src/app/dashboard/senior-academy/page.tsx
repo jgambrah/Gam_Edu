@@ -49,6 +49,11 @@ import { SET_BECE_MOCK_10_ENGLISH_P1, SET_BECE_MOCK_10_ENGLISH_P2 } from '@/lib/
 import { SET_BECE_MOCK_11_ENGLISH_P1, SET_BECE_MOCK_11_ENGLISH_P2 } from '@/lib/data/bece-english-mock-11';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { SET_BECE_2013_MATH_P1, SET_BECE_2013_MATH_P2 } from '@/lib/data/bece-math-2013';
+import { SET_BECE_2014_MATH_P1, SET_BECE_2014_MATH_P2 } from '@/lib/data/bece-math-2014';
+import { SET_BECE_2015_MATH_P1, SET_BECE_2015_MATH_P2 } from '@/lib/data/bece-math-2015';
+import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from '@/lib/data/bece-math-2016';
+import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from '@/lib/data/bece-math-2017';
+import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from '@/lib/data/bece-math-2018';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -287,6 +292,266 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
     },
 
     // Junior Secondary (JHS) Exam Series (Standardized Past Papers & Mastery Sets)
+    {
+        title: "BECE Mathematics Past Paper 2 (2018 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2)",
+        strandCode: "B7-B9",
+        subStrand: "2018 BECE Standardized Theory Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 6-question theory examination covering linear inequalities on number lines with SVG diagrams, 2D column vector scalar arithmetic, perimeter ratios of triangular gardens, textbook royalties and commercial percentage earnings, order of operations on fractional expressions, compound right-angled triangles with altitude and Pythagoras theorem, scientific notation standard form conversions, change of subject algebraic relations, mass kilogram conversions, interior angles of regular polygons, compass construction of triangles and perpendicular altitudes with area evaluation, inheritance ratio sharing, ordered stem-and-leaf plots with statistical frequencies and probabilities, flight arrival time arithmetic across midnight, and Cartesian coordinate quadrilateral graphing with vertical line intersections, alternate interior angles, and parallel lines.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2018-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2018,
+        setNumber: 85,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "Solve the inequality 4x - 2 ≥ (13x - 9)/2 and represent the solution on a number line:",
+        sampleFormula: "8x - 4 \\ge 13x - 9 \\implies -5x \\ge -5 \\implies x \\le 1",
+        sampleAnswer: "{x : x ≤ 1}",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 1 (2018 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2018 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering ascending integers, set-builder notation, HCF and LCM, fractions, simple interest, inverse proportion, parallel line transversal geometry with SVG diagrams, cylinder volume and Pythagoras theorem, index laws, vector transformations, polygon symmetry, and perpendicular compass constructions with step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2018-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2018,
+        setNumber: 84,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following sets of integers is arranged in ascending order of magnitude?",
+        sampleFormula: "-45 < -18 < 6 < 21",
+        sampleAnswer: "-45, -18, 6, 21",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 2 (2017 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2)",
+        strandCode: "B7-B9",
+        subStrand: "2017 BECE Standardized Theory Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 6-question theory examination covering sets and Venn diagrams, circular segment mensuration with SVG diagrams, consecutive integers, rate and machine packaging proportions, arithmetic progression sum formulas, geometric compass construction of triangles and angle/perpendicular bisectors, age frequency distributions and wholesale unit profit, linear coordinate graphs and acute angle intersection, and column vectors with parallel line angle geometry.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2017-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2017,
+        setNumber: 81,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "In a class of 36 girls, 20 play football, 15 play hockey, and 5 play both games:",
+        sampleFormula: "n(F \cup H)' = 36 - 30 = 6",
+        sampleAnswer: "6 girls",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 1 (2017 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2017 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering sets and subsets, ratios and index equations, algebraic multiplication, interior angles of regular polygons, simple interest, alternate and isosceles triangle angles with SVG diagrams, vector addition, coordinate reflections and rotations, and prime factorization with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2017-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2017,
+        setNumber: 80,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "If A = {1, 3, 5, 7, 9, 11, 13} and B = {2, 3, 5, 7, 11, 13, 17}, find A ∪ B:",
+        sampleFormula: "A \cup B = \{1, 2, 3, 5, 7, 9, 11, 13, 17\}",
+        sampleAnswer: "{1, 2, 3, 5, 7, 9, 11, 13, 17}",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 2 (2016 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2)",
+        strandCode: "B7-B9",
+        subStrand: "2016 BECE Standardized Theory Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 6-question theory examination covering sets and Venn diagrams, vector equality, linear cost relations, baggage excess percentages, work-rate days, pie chart textbook distributions, 2D grid enlargement and reflection, kinematic formula substitution, trade discounts, probability, and compass construction of triangle circumcentre with detailed worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2016-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2016,
+        setNumber: 79,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "In an examination, 60 candidates sat for Mathematics or English Language (70% passed Maths, 45% English):",
+        sampleFormula: "n(M \cup E) = 42 + 27 - x = 60 \implies x = 9",
+        sampleAnswer: "9 candidates",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 1 (2016 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2016 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering sets and subsets, decimals and approximations, LCM in prime factor form, simple interest and cash discounts, modal score distributions, probability, algebraic relations, lines of symmetry and angles in equilateral triangles, bearings, and vectors with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2016-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2016,
+        setNumber: 78,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following describes a finite set?",
+        sampleFormula: "\{4, 8, 12, 16, 20\}",
+        sampleAnswer: "{4, 8, 12, 16, 20}",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 2 (2015 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2)",
+        strandCode: "B7-B9",
+        subStrand: "2015 BECE Standardized Theory Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 6-question theory examination covering sets and Venn diagrams, fraction remainder problems, linear inequalities, sector angles and pie charts, travel speed and field perimeters, geometric compass construction and circle chords, commercial unit loss, closed-end cylinder mensuration, and linear mapping graphs with step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2015-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2015,
+        setNumber: 77,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "In a school of 80 students, 48 belong to Red Cross, 32 belong to Girls' Guide, and 15 belong to both:",
+        sampleFormula: "n(R \cup G)' = 80 - 65 = 15",
+        sampleAnswer: "15 students",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 1 (2015 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2015 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering sets and prime factors, decimal place values, HCF, number bases, fractions and inverse proportion, commercial profit and simple interest, coordinate rotation, 3D tetrahedron geometry with SVG diagrams, magic squares, and Pythagorean theorem with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2015-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2015,
+        setNumber: 76,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "List the elements of the set P = {prime factors of 42}:",
+        sampleFormula: "P = \\{2, 3, 7\\}",
+        sampleAnswer: "{2, 3, 7}",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 1 (2014 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2014 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering sets and Venn diagrams, operations on integers, prime factorization, number bases, commercial profit, algebraic division, bearings with SVG diagrams, geometry with parallel transversals, coordinate geometry, and arithmetic sequences with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2014-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2014,
+        setNumber: 74,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "If set P is a proper subset of set Q (P ⊂ Q), which of the following statements is true?",
+        sampleFormula: "P \\subset Q \\implies \\forall x \\in P, x \\in Q",
+        sampleAnswer: "All members of set P are members of set Q.",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 2 (2014 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2 THEORY)",
+        strandCode: "B7-B9",
+        subStrand: "2014 BECE Standardized Written / Essay Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Answer 4 • Official WAEC Standards",
+        description: "Official 6-question theory examination covering sets, simple interest, standard form, statistical averages and medians, parallel line geometry, stem-and-leaf plots, cuboid mensuration, coordinate transformations, geometric construction with circumscribed circles, and Pythagorean ladder problems with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2014-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2014,
+        setNumber: 75,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "Given that P = {factors of 42} and Q = {multiples of 6 less than 50}, find P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{6, 42\\}",
+        sampleAnswer: "{6, 42}",
+        status: "ready"
+    },
     {
         title: "BECE Mathematics Past Paper 1 (2013 Official Examination)",
         domain: "ARITHMETIC & NUMERACY",
@@ -7867,6 +8132,116 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
         setActiveQuestionSet(null);
 
         // Instant Zero-Latency Loader for 2013 Mathematics Paper 1
+                                                                if (
+            mod.setId === 'jhs-math-2018-paper2' ||
+            mod.setId === 'bece_2018_math_p2' ||
+            (mod.setId === 'bece_2018_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2018 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2018_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2018-paper1' ||
+            mod.setId === 'bece_2018_math_p1' ||
+            (mod.setId === 'bece_2018_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2018 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2018_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2017-paper2' ||
+            mod.setId === 'bece_2017_math_p2' ||
+            (mod.setId === 'bece_2017_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2017 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2017_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2017-paper1' ||
+            mod.setId === 'bece_2017_math_p1' ||
+            (mod.setId === 'bece_2017_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2017 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2017_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2016-paper2' ||
+            mod.setId === 'bece_2016_math_p2' ||
+            (mod.setId === 'bece_2016_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2016 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2016_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2016-paper1' ||
+            mod.setId === 'bece_2016_math_p1' ||
+            (mod.setId === 'bece_2016_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2016 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2016_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2015-paper2' ||
+            mod.setId === 'bece_2015_math_p2' ||
+            (mod.setId === 'bece_2015_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2015 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2015_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+if (
+            mod.setId === 'jhs-math-2015-paper1' ||
+            mod.setId === 'bece_2015_math_p1' ||
+            (mod.setId === 'bece_2015_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2015 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2015_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
+
+        if (
+            mod.setId === 'jhs-math-2014-paper2' ||
+            mod.setId === 'bece_2014_math_p2' ||
+            (mod.setId === 'bece_2014_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2014 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2014_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+        if (
+            mod.setId === 'jhs-math-2014-paper1' ||
+            mod.setId === 'bece_2014_math_p1' ||
+            (mod.setId === 'bece_2014_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2014 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2014_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
+
         if (
             mod.setId === 'jhs-math-2013-paper2' ||
             mod.setId === 'bece_2013_math_p2' ||
@@ -8266,6 +8641,15 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                         studentId={studentId}
                         assignmentId={assignmentId}
                         onProceedToPaper2={() => {
+                            if (activeQuestionSet?.id === 'jhs-math-2014-paper1' || activeQuestionSet?.id === 'bece_2014_math_p1') {
+                                handleLaunchModule({
+                                    setId: 'jhs-math-2014-paper2',
+                                    title: 'BECE Mathematics Past Paper 2 (2014 Official Examination)',
+                                    paperType: 2,
+                                    subject: 'Mathematics'
+                                });
+                                return;
+                            }
                             if (activeQuestionSet?.id === 'jhs-math-2013-paper1' || activeQuestionSet?.id === 'bece_2013_math_p1') {
                                 handleLaunchModule({
                                     setId: 'jhs-math-2013-paper2',
