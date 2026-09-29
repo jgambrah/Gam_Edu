@@ -253,20 +253,142 @@ export function QuestionRunner({
 
   const parts: StructuredQuestionPart[] = currentQuestion.parts || [];
 
-  const isAnswerMatching = (selected: string | null | undefined, question: any) => {
-    if (!selected || !question) return false;
-    if (selected === question.correctAnswer) return true;
-    if (question.correctOption && /^[A-D]$/i.test(question.correctOption)) {
-      const idx = question.correctOption.toUpperCase().charCodeAt(0) - 65;
-      if (Array.isArray(question.options) && question.options[idx] === selected) return true;
+  const isAnswerMatching = (selected: any, question: any): boolean => {
+    if (selected === null || selected === undefined || !question) return false;
+
+    // Extract raw correct answer from any possible property
+    const rawCorrect = question.correctAnswer ?? question.correctOption ?? question.correctOptionLetter ?? question.answer ?? question.correct ?? question.expectedAnswer;
+    if (rawCorrect === null || rawCorrect === undefined) return false;
+
+    // 1. Direct trimmed case-insensitive comparison
+    const strSelected = typeof selected === 'object' && selected !== null
+      ? String(selected.id || selected.key || selected.value || selected.letter || selected.text || '').trim()
+      : String(selected).trim();
+    const strCorrect = typeof rawCorrect === 'object' && rawCorrect !== null
+      ? String(rawCorrect.id || rawCorrect.key || rawCorrect.value || rawCorrect.letter || rawCorrect.text || '').trim()
+      : String(rawCorrect).trim();
+
+    if (strSelected.toUpperCase() === strCorrect.toUpperCase()) return true;
+
+    // 2. Options array context
+    const options: any[] = Array.isArray(question.options) ? question.options : [];
+
+    const getOptText = (opt: any): string => {
+      if (opt === null || opt === undefined) return '';
+      if (typeof opt === 'object') return String(opt.text || opt.label || opt.value || opt.id || '').trim();
+      return String(opt).trim();
+    };
+
+    // Find index of selected option if it's in question.options
+    let selectedIdx = -1;
+    if (options.length > 0) {
+      selectedIdx = options.findIndex((opt) => {
+        if (opt === selected) return true;
+        if (getOptText(opt) === strSelected) return true;
+        if (getOptText(opt).toUpperCase() === strSelected.toUpperCase()) return true;
+        return false;
+      });
     }
-    if (question.correctOptionLetter && /^[A-D]$/i.test(question.correctOptionLetter)) {
-      const idx = question.correctOptionLetter.toUpperCase().charCodeAt(0) - 65;
-      if (Array.isArray(question.options) && question.options[idx] === selected) return true;
+
+    // Determine selectedLetter
+    let selectedLetter = '';
+    if (/^[A-Z]$/i.test(strSelected)) {
+      selectedLetter = strSelected.toUpperCase();
+      if (selectedIdx === -1) {
+        selectedIdx = selectedLetter.charCodeAt(0) - 65;
+      }
+    } else if (/^\d+$/.test(strSelected)) {
+      const num = parseInt(strSelected, 10);
+      if (num >= 0 && num < options.length) {
+        if (selectedIdx === -1) selectedIdx = num;
+        if (!selectedLetter && num < 26) selectedLetter = String.fromCharCode(65 + num);
+      } else if (num >= 1 && num <= options.length) {
+        if (selectedIdx === -1) selectedIdx = num - 1;
+        if (!selectedLetter && num - 1 < 26) selectedLetter = String.fromCharCode(65 + num - 1);
+      }
+    } else {
+      const match = strSelected.match(/^[A-Z](?=[.)\s:]|$)/i);
+      if (match) {
+        selectedLetter = match[0].toUpperCase();
+        if (selectedIdx === -1) {
+          selectedIdx = selectedLetter.charCodeAt(0) - 65;
+        }
+      }
     }
-    const cleanSelected = String(selected).replace(/^[A-D][.)]\s*/, '').trim();
-    const cleanCorrect = String(question.correctAnswer || '').replace(/^[A-D][.)]\s*/, '').trim();
-    return cleanSelected === cleanCorrect;
+
+    // Determine correctLetter and correctIdx
+    let correctLetter = '';
+    let correctIdx = -1;
+
+    if (/^[A-Z]$/i.test(strCorrect)) {
+      correctLetter = strCorrect.toUpperCase();
+      correctIdx = correctLetter.charCodeAt(0) - 65;
+    } else if (/^\d+$/.test(strCorrect)) {
+      const num = parseInt(strCorrect, 10);
+      if (num >= 0 && num < options.length) {
+        correctIdx = num;
+        if (num < 26) correctLetter = String.fromCharCode(65 + num);
+      } else if (num >= 1 && num <= options.length) {
+        correctIdx = num - 1;
+        if (num - 1 < 26) correctLetter = String.fromCharCode(65 + num - 1);
+      }
+    } else {
+      const match = strCorrect.match(/^[A-Z](?=[.)\s:]|$)/i);
+      if (match) {
+        correctLetter = match[0].toUpperCase();
+        correctIdx = correctLetter.charCodeAt(0) - 65;
+      }
+      if (options.length > 0 && correctIdx === -1) {
+        correctIdx = options.findIndex((opt) => {
+          if (opt === rawCorrect) return true;
+          if (getOptText(opt) === strCorrect) return true;
+          if (getOptText(opt).toUpperCase() === strCorrect.toUpperCase()) return true;
+          return false;
+        });
+        if (correctIdx !== -1 && correctIdx < 26) {
+          correctLetter = String.fromCharCode(65 + correctIdx);
+        }
+      }
+    }
+
+    // Compare letters if both resolved
+    if (selectedLetter && correctLetter && selectedLetter === correctLetter) {
+      return true;
+    }
+
+    // Compare indices if both resolved
+    if (selectedIdx !== -1 && correctIdx !== -1 && selectedIdx === correctIdx) {
+      return true;
+    }
+
+    // Cleaned option content comparison (e.g. without "A. ")
+    const cleanSelected = strSelected.replace(/^[A-Z][.)\s:]*\s*/i, '').trim();
+    const cleanCorrect = strCorrect.replace(/^[A-Z][.)\s:]*\s*/i, '').trim();
+    if (cleanSelected && cleanCorrect && cleanSelected.toUpperCase() === cleanCorrect.toUpperCase()) {
+      return true;
+    }
+
+    // Compare selected against options[correctIdx]
+    if (options.length > 0 && correctIdx >= 0 && correctIdx < options.length) {
+      const correctOpt = options[correctIdx];
+      if (selected === correctOpt) return true;
+      const cleanCorrectOpt = getOptText(correctOpt).replace(/^[A-Z][.)\s:]*\s*/i, '').trim();
+      if (cleanSelected && cleanCorrectOpt && cleanSelected.toUpperCase() === cleanCorrectOpt.toUpperCase()) {
+        return true;
+      }
+    }
+
+    // Compare correct against options[selectedIdx]
+    if (options.length > 0 && selectedIdx >= 0 && selectedIdx < options.length) {
+      const selOpt = options[selectedIdx];
+      if (rawCorrect === selOpt) return true;
+      const cleanSelOpt = getOptText(selOpt).replace(/^[A-Z][.)\s:]*\s*/i, '').trim();
+      if (cleanCorrect && cleanSelOpt && cleanCorrect.toUpperCase() === cleanSelOpt.toUpperCase()) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   const isCurrentCorrect = isAnswerMatching(selectedOption, currentQuestion);
@@ -1203,21 +1325,34 @@ export function QuestionRunner({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {currentQuestion.options &&
                   currentQuestion.options.map((option, idx) => {
-                    const isSelected = selectedOption === option;
-                    const isCorrectOption = isAnswerMatching(option, currentQuestion) || (currentQuestion.correctOption && String.fromCharCode(65 + idx) === currentQuestion.correctOption.toUpperCase()) || (currentQuestion.correctOptionLetter && String.fromCharCode(65 + idx) === currentQuestion.correctOptionLetter.toUpperCase());
+                    const optionLetter = String.fromCharCode(65 + idx);
+                    const isSelected = selectedOption === option ||
+                      (typeof selectedOption === 'string' && selectedOption.trim().toUpperCase() === optionLetter) ||
+                      (typeof selectedOption === 'number' && selectedOption === idx);
+                    
+                    const isCorrectOption = isAnswerMatching(option, currentQuestion) ||
+                      isAnswerMatching(optionLetter, currentQuestion) ||
+                      isAnswerMatching(idx, currentQuestion);
 
                     let cardStyle =
                       'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-850';
+
+                    let letterBadgeStyle = isSelected
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-slate-800 text-slate-400';
 
                     if (isSelected && !isVerified) {
                       cardStyle = 'bg-indigo-950/60 border-indigo-500 text-white shadow-lg shadow-indigo-500/10';
                     } else if (isVerified) {
                       if (isCorrectOption) {
                         cardStyle = 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold shadow-md shadow-emerald-500/20';
+                        letterBadgeStyle = 'bg-emerald-600 text-white';
                       } else if (isSelected && !isCorrectOption) {
                         cardStyle = 'bg-rose-950/70 border-rose-500 text-rose-300 shadow-md shadow-rose-500/20';
+                        letterBadgeStyle = 'bg-rose-600 text-white';
                       } else {
                         cardStyle = 'bg-slate-950/40 border-slate-800/60 text-slate-500 opacity-60';
+                        letterBadgeStyle = 'bg-slate-800/60 text-slate-500';
                       }
                     }
 
@@ -1236,12 +1371,10 @@ export function QuestionRunner({
                           <span
                             className={cn(
                               'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold font-mono transition-colors',
-                              isSelected
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-slate-800 text-slate-400'
+                              letterBadgeStyle
                             )}
                           >
-                            {String.fromCharCode(65 + idx)}
+                            {optionLetter}
                           </span>
                           <div className="text-sm font-medium">
                             <MathRenderer content={option} />
@@ -1296,7 +1429,7 @@ export function QuestionRunner({
                     )}
                     <div className="space-y-1">
                       <h4 className="font-bold text-sm">
-                        {isCurrentCorrect ? 'Correct Derivation!' : 'Correction Required'}
+                        {isCurrentCorrect ? 'Correct!' : 'Correction Required'}
                       </h4>
                       <div className="text-xs leading-relaxed opacity-90">
                         {isCurrentCorrect
