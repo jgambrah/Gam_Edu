@@ -312,30 +312,30 @@ export const SET_BECE_MOCK_10_ENGLISH_P1 = [
   },
   {
     "number": 23,
-    "prompt": "After fighting against bankruptcy for two years, the commercial farmer threw in the towel. This means the farmer ............",
+    "prompt": "The young software entrepreneur decided to put all his eggs in one basket. This means he ............",
     "options": [
-      "bought new towels for his laborers",
-      "surrendered and admitted defeat",
-      "relocated his poultry pens",
-      "appealed to the commercial bank for loans"
+      "collected poultry products for sale",
+      "risked all his capital and resources on a single venture",
+      "stored his computer hardware safely",
+      "expanded his operations into multiple sectors"
     ],
-    "correctAnswer": "surrendered and admitted defeat",
-    "hint": "To admit defeat or quit trying in the face of insurmountable difficulties.",
-    "workedSolution": "The idiom 'to throw in the towel' derives from boxing and means to give up, surrender, or admit defeat.",
+    "correctAnswer": "risked all his capital and resources on a single venture",
+    "hint": "'To put all one's eggs in one basket' means to stake everything on a single venture, risking catastrophic loss if it fails.",
+    "workedSolution": "The idiom 'put all one's eggs in one basket' signifies making one's entire success or failure dependent on a single plan or enterprise.",
     "points": 1
   },
   {
     "number": 24,
-    "prompt": "After being cautioned by the magistrate, the young truant resolved to turn over a new leaf. This means he decided to ............",
+    "prompt": "When interrogated closely by the committee, the nervous clerk spilled the beans. This means the clerk ............",
     "options": [
-      "relocate to another town",
-      "read new textbooks",
-      "abandon his old ways and reform his conduct",
-      "take up forestry work"
+      "scattered agricultural seeds across the room",
+      "prepared breakfast for the investigators",
+      "divulged confidential information and revealed the secret truth",
+      "locked the storehouse cupboards securely"
     ],
-    "correctAnswer": "abandon his old ways and reform his conduct",
-    "hint": "To start behaving in a better, more responsible manner; reform oneself.",
-    "workedSolution": "The idiom 'to turn over a new leaf' means to reform one's moral behavior and start anew responsibly.",
+    "correctAnswer": "divulged confidential information and revealed the secret truth",
+    "hint": "'To spill the beans' means to disclose confidential information or let out a secret, often prematurely or indiscreetly.",
+    "workedSolution": "The idiom 'spill the beans' means to confess or reveal private, confidential information.",
     "points": 1
   },
   {
@@ -368,16 +368,16 @@ export const SET_BECE_MOCK_10_ENGLISH_P1 = [
   },
   {
     "number": 27,
-    "prompt": "The defense lawyer's account was fictitious, whereas the forensic report was entirely ...... .\nChoose the word most nearly opposite in meaning to 'fictitious'.",
+    "prompt": "While the intern's contract was temporary, the head of engineering received a ...... appointment.\nChoose the word most nearly opposite in meaning to 'temporary'.",
     "options": [
-      "factual",
-      "complex",
-      "lengthy",
-      "interesting"
+      "permanent",
+      "probationary",
+      "provisional",
+      "brief"
     ],
-    "correctAnswer": "factual",
-    "hint": "'Fictitious' means fabricated, invented, or false. What word denotes based on or containing facts; real?",
-    "workedSolution": "'Fictitious' means invented or untrue. Its direct antonym is 'factual' (authentic or based on real facts).",
+    "correctAnswer": "permanent",
+    "hint": "'Temporary' means lasting for only a limited period. What word denotes lasting or intended to last indefinitely?",
+    "workedSolution": "'Temporary' means of short duration or interim. Its direct administrative antonym is 'permanent' (lasting indefinitely).",
     "points": 1
   },
   {
@@ -396,30 +396,30 @@ export const SET_BECE_MOCK_10_ENGLISH_P1 = [
   },
   {
     "number": 29,
-    "prompt": "The instructor's preliminary explanation was obscure, but his summary was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'obscure'.",
+    "prompt": "The candidate was initially reluctant to accept the debate challenge, but his running mate was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'reluctant'.",
     "options": [
-      "brief",
-      "loud",
-      "lucid",
-      "useful"
+      "hesitant",
+      "doubtful",
+      "eager",
+      "tardy"
     ],
-    "correctAnswer": "lucid",
-    "hint": "'Obscure' means unclear, dim, and difficult to comprehend. What word denotes clear, transparent, and easily understood?",
-    "workedSolution": "'Obscure' means vague, unclear, or difficult to understand. Its direct intellectual antonym is 'lucid' (clear and transparent).",
+    "correctAnswer": "eager",
+    "hint": "'Reluctant' means unwilling, hesitant, and disinclined. What word denotes enthusiastic, keen, and prompt?",
+    "workedSolution": "'Reluctant' signifies being unwilling or hesitant. Its direct motivational opposite is 'eager' (enthusiastic, keen, and prompt).",
     "points": 1
   },
   {
     "number": 30,
-    "prompt": "The novice driver was condemned for being reckless, but his mentor was praised for being ...... .\nChoose the word most nearly opposite in meaning to 'reckless'.",
+    "prompt": "While the highland slope was rocky and barren, the alluvial basin was exceptionally ...... .\nChoose the word most nearly opposite in meaning to 'barren'.",
     "options": [
-      "slow",
-      "fearful",
-      "cautious",
-      "obedient"
+      "arid",
+      "stony",
+      "fertile",
+      "shallow"
     ],
-    "correctAnswer": "cautious",
-    "hint": "'Reckless' means heedless of danger or rash. What word denotes careful to avoid potential hazards?",
-    "workedSolution": "'Reckless' means heedless of danger or careless. Its direct behavioral antonym is 'cautious' (prudent and careful).",
+    "correctAnswer": "fertile",
+    "hint": "'Barren' describes land unable to produce crops or vegetation. What word denotes rich in nutrients and highly productive?",
+    "workedSolution": "'Barren' means infertile or producing little to no vegetation. Its direct agrarian antonym is 'fertile' (rich, productive, and fruitful).",
     "points": 1
   },
   {
@@ -494,16 +494,16 @@ export const SET_BECE_MOCK_10_ENGLISH_P1 = [
   },
   {
     "number": 36,
-    "prompt": "Choose the word that contains the identical voiced post-alveolar fricative consonant sound as the underlined sound in:\n\"The artist had an extraordinary **vi<u>si</u>on**.\"",
+    "prompt": "Choose the word that contains the identical voiceless post-alveolar fricative consonant sound as the underlined digraph in:\n\"The **<u>ch</u>ef** prepared a sumptuous feast for the guests.\"",
     "options": [
-      "measure",
-      "pressure",
-      "action",
-      "nation"
+      "machine",
+      "choir",
+      "church",
+      "chemist"
     ],
-    "correctAnswer": "measure",
-    "hint": "The sound in 'vision' is the voiced post-alveolar fricative /ʒ/. 'Measure' (/ˈmeʒ.ər/) contains the exact identical /ʒ/ sound.",
-    "workedSolution": "The word 'vision' contains the voiced fricative /ʒ/ (/ˈvɪʒ.ən/). 'Measure' (/ˈmeʒ.ər/) contains the identical /ʒ/ sound, whereas 'pressure', 'action', and 'nation' contain voiceless /ʃ/.",
+    "correctAnswer": "machine",
+    "hint": "The digraph 'ch' in 'chef' represents the voiceless post-alveolar fricative /ʃ/. Which option contains the identical /ʃ/ sound?",
+    "workedSolution": "In 'chef' (/ʃef/), the digraph 'ch' represents the voiceless fricative /ʃ/. Among the options, 'machine' (/məˈʃiːn/) contains the identical /ʃ/ sound, whereas 'church' has the affricate /tʃ/, and 'choir' and 'chemist' have /k/.",
     "points": 1
   },
   {
@@ -522,21 +522,21 @@ export const SET_BECE_MOCK_10_ENGLISH_P1 = [
   },
   {
     "number": 38,
-    "prompt": "Choose the word that shares the identical final consonant cluster sound as:\n\"The literature master scrutinized the prescribed **te<u>xts</u>**.\"",
+    "prompt": "Choose the word that shares the identical initial three-consonant cluster sound as:\n\"The children were eager to **<u>spl</u>ash** in the freshwater pool.\"",
     "options": [
-      "tests",
-      "desks",
-      "masks",
-      "next"
+      "spark",
+      "splendid",
+      "stride",
+      "scratch"
     ],
-    "correctAnswer": "desks",
-    "hint": "'Texts' terminates in the complex voiceless cluster /ksts/. 'Desks' (/desks/) shares the voiceless plosive-fricative cluster ending.",
-    "workedSolution": "'Texts' terminates in the cluster /ksts/. 'Desks' (/desks/) shares the plosive-fricative cluster ending.",
+    "correctAnswer": "splendid",
+    "hint": "'Splash' commences with the voiceless three-consonant cluster /spl-/. Which option starts with the identical /spl-/ cluster?",
+    "workedSolution": "The word 'splash' begins with the initial triple cluster /spl-/. 'Splendid' (/ˈsplen.dɪd/) shares the identical /spl-/ onset, whereas 'spark' has /sp-/, 'stride' has /str-/, and 'scratch' has /skr-/.",
     "points": 1
   },
   {
     "number": 39,
-    "prompt": "Which of the following words contains a SILENT consonant letter that is not voiced in standard pronunciation?",
+    "prompt": "Which of the words below includes a silent initial or medial consonant?",
     "options": [
       "kick",
       "king",
@@ -703,18 +703,18 @@ export const SET_BECE_MOCK_10_ENGLISH_P2 = {
           ]
         },
         {
-          "sectionTitle": "EVELYN TOOLEY HUNT: Mama Is a Sunrise",
-          "contextExtract": "\"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"",
+          "sectionTitle": "OSWALD MTSHALI: The Shepherd Boy's Dilemma",
+          "contextExtract": "\"The cattle graze on the green hillside,\nwhile I sit in the heat and muse,\nwondering if the world beyond the ridge\nhas wider horizons to choose.\"",
           "subItems": [
             {
               "subQuestion": "5(i)",
-              "question": "Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.",
-              "answer": "Simile."
+              "question": "What internal conflict is the shepherd boy experiencing in the excerpt?",
+              "answer": "He is torn between his daily obligation to herd livestock in the rural pasture and his yearning to acquire formal schooling and explore the broader modern world."
             },
             {
               "subQuestion": "5(j)",
-              "question": "What central thematic quality does the poem attribute to Mama?",
-              "answer": "Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness."
+              "question": "What does the expression 'wider horizons' symbolize in the context of the poem?",
+              "answer": "It symbolizes educational enlightenment, intellectual growth, career opportunities, and personal advancement beyond traditional rural life."
             }
           ]
         }
@@ -888,27 +888,13 @@ export const SET_BECE_MOCK_10_ENGLISH_P2 = {
       "points": 10
     },
     {
-      "number": 9,
-      "part": "Part C",
-      "title": "Question 5(e): EVELYN TOOLEY HUNT: Mama Is a Sunrise",
-      "prompt": "Text: EVELYN TOOLEY HUNT: Mama Is a Sunrise\nExtract: \"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"\n\n5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\n5(j) What central thematic quality does the poem attribute to Mama?",
-      "contextExtract": "\"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"",
-      "subQuestions": [
-        {
-          "label": "5(i)",
-          "question": "Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.",
-          "answer": "Simile."
-        },
-        {
-          "label": "5(j)",
-          "question": "What central thematic quality does the poem attribute to Mama?",
-          "answer": "Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness."
-        }
-      ],
-      "markingScheme": "5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\nAnswer: Simile.\n\n5(j) What central thematic quality does the poem attribute to Mama?\nAnswer: Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness.",
-      "workedSolution": "5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\nAnswer: Simile.\n\n5(j) What central thematic quality does the poem attribute to Mama?\nAnswer: Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness.",
-      "points": 10
-    }
+        "number": 9,
+        "title": "Question 5(e): OSWALD MTSHALI: The Shepherd Boy's Dilemma",
+        "prompt": "Text: OSWALD MTSHALI: The Shepherd Boy's Dilemma\nExtract: \"The cattle graze on the green hillside,\nwhile I sit in the heat and muse,\nwondering if the world beyond the ridge\nhas wider horizons to choose.\"\n\n5(i) What internal conflict is the shepherd boy experiencing in the excerpt?\n5(j) What does the expression 'wider horizons' symbolize in the context of the poem?",
+        "category": "The Cockcrow Literature",
+        "guidelines": "State the internal conflict between pastoral duties and educational yearning, and explain the symbolic meaning of wider horizons as broader educational and life opportunities.",
+        "scoreBreakdown": "5(i) Internal conflict: 5 marks; 5(j) Symbolic meaning: 5 marks. Total = 10 marks."
+      }
   ]
 };
 
@@ -2798,21 +2784,21 @@ export const SET_BECE_MOCK_10_ENGLISH_COMPLETE = {
             ]
           },
           {
-            "sectionTitle": "EVELYN TOOLEY HUNT: Mama Is a Sunrise",
-            "contextExtract": "\"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"",
-            "subItems": [
-              {
-                "subQuestion": "5(i)",
-                "question": "Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.",
-                "answer": "Simile."
-              },
-              {
-                "subQuestion": "5(j)",
-                "question": "What central thematic quality does the poem attribute to Mama?",
-                "answer": "Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness."
-              }
-            ]
-          }
+          "sectionTitle": "OSWALD MTSHALI: The Shepherd Boy's Dilemma",
+          "contextExtract": "\"The cattle graze on the green hillside,\nwhile I sit in the heat and muse,\nwondering if the world beyond the ridge\nhas wider horizons to choose.\"",
+          "subItems": [
+            {
+              "subQuestion": "5(i)",
+              "question": "What internal conflict is the shepherd boy experiencing in the excerpt?",
+              "answer": "He is conflicted between his traditional childhood duty of herding livestock and his yearning to acquire formal education in the wider world."
+            },
+            {
+              "subQuestion": "5(j)",
+              "question": "What does the expression 'wider horizons' symbolize in the context of the poem?",
+              "answer": "It symbolizes educational enlightenment, intellectual growth, career opportunities, and personal advancement beyond cattle herding."
+            }
+          ]
+        }
         ]
       }
     },
@@ -2984,25 +2970,11 @@ export const SET_BECE_MOCK_10_ENGLISH_COMPLETE = {
       },
       {
         "number": 9,
-        "part": "Part C",
-        "title": "Question 5(e): EVELYN TOOLEY HUNT: Mama Is a Sunrise",
-        "prompt": "Text: EVELYN TOOLEY HUNT: Mama Is a Sunrise\nExtract: \"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"\n\n5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\n5(j) What central thematic quality does the poem attribute to Mama?",
-        "contextExtract": "\"When she comes slip-footing through the door,\nshe kindles us\nlike lump coal lighted\nand we wake up glowing.\"",
-        "subQuestions": [
-          {
-            "label": "5(i)",
-            "question": "Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.",
-            "answer": "Simile."
-          },
-          {
-            "label": "5(j)",
-            "question": "What central thematic quality does the poem attribute to Mama?",
-            "answer": "Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness."
-          }
-        ],
-        "markingScheme": "5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\nAnswer: Simile.\n\n5(j) What central thematic quality does the poem attribute to Mama?\nAnswer: Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness.",
-        "workedSolution": "5(i) Identify the dominant figure of speech in the line: '... she kindles us like lump coal lighted'.\nAnswer: Simile.\n\n5(j) What central thematic quality does the poem attribute to Mama?\nAnswer: Maternal warmth, life-giving affection, inspiration, and the power to dispel emotional darkness.",
-        "points": 10
+        "title": "Question 5(e): OSWALD MTSHALI: The Shepherd Boy's Dilemma",
+        "prompt": "Text: OSWALD MTSHALI: The Shepherd Boy's Dilemma\nExtract: \"The cattle graze on the green hillside,\nwhile I sit in the heat and muse,\nwondering if the world beyond the ridge\nhas wider horizons to choose.\"\n\n5(i) What internal conflict is the shepherd boy experiencing in the excerpt?\n5(j) What does the expression 'wider horizons' symbolize in the context of the poem?",
+        "category": "The Cockcrow Literature",
+        "guidelines": "State the internal conflict between pastoral duties and educational yearning, and explain the symbolic meaning of wider horizons as broader educational and life opportunities.",
+        "scoreBreakdown": "5(i) Internal conflict: 5 marks; 5(j) Symbolic meaning: 5 marks. Total = 10 marks."
       }
     ]
   }

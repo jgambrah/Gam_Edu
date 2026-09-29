@@ -426,7 +426,7 @@ export const allRawEnglishMock1Questions: QuestionItem[] = [
   },
   {
     number: 39,
-    prompt: "Which of the following words contains a SILENT consonant letter that is not voiced?",
+    prompt: "Identify the word below that contains a silent consonant letter:",
     options: ["plumber", "timber", "member", "slumber"],
     correctAnswer: "plumber",
     hint: "In this word for a pipe-fitting tradesperson, the letter 'b' following 'm' is completely silent.",

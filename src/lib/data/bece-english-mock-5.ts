@@ -536,7 +536,7 @@ export const SET_BECE_MOCK_5_ENGLISH_P1 = [
   },
   {
     "number": 39,
-    "prompt": "Which of the following words contains a SILENT consonant letter that is not voiced in standard pronunciation?",
+    "prompt": "From the given options, identify the word that contains a silent consonant:",
     "options": [
       "reptile",
       "rapid",

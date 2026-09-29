@@ -326,30 +326,30 @@ export const SET_BECE_MOCK_9_ENGLISH_P1 = [
   },
   {
     "number": 24,
-    "prompt": "After being cautioned by the magistrate, the young truant resolved to turn over a new leaf. This means he decided to ............",
+    "prompt": "Despite fierce opposition from the board, the chief editor stuck to his guns. This means the chief editor ............",
     "options": [
-      "relocate to another town",
-      "read new textbooks",
-      "take up forestry work",
-      "abandon his old habits and reform his conduct"
+      "resigned immediately from his post",
+      "fired several junior staff writers",
+      "consulted law enforcement officials",
+      "refused to compromise or abandon his principled stance"
     ],
-    "correctAnswer": "abandon his old habits and reform his conduct",
-    "hint": "To start behaving in a better, more responsible manner; reform oneself.",
-    "workedSolution": "The idiom 'to turn over a new leaf' means to reform one's behavior and start afresh responsibly.",
+    "correctAnswer": "refused to compromise or abandon his principled stance",
+    "hint": "'To stick to one's guns' means to hold firmly to one's opinion, convictions, or course of action despite criticism.",
+    "workedSolution": "The idiom 'stick to one's guns' signifies standing firm and refusing to compromise one's principles when challenged.",
     "points": 1
   },
   {
     "number": 25,
-    "prompt": "By challenging the corrupt town council alone, the young clerk was skating on thin ice. This means the clerk was ............",
+    "prompt": "When the financial auditor noticed discrepancies in the procurement ledger, he smelled a rat. This means the auditor ............",
     "options": [
-      "traveling across frozen lakes",
-      "acting with extreme cowardice",
-      "wasting municipal time",
-      "taking dangerous risks in a precarious position"
+      "fumigated the entire archive office",
+      "caught a rodent in the trap",
+      "complained about poor office ventilation",
+      "suspected that something dishonest or fraudulent was occurring"
     ],
-    "correctAnswer": "taking dangerous risks in a precarious position",
-    "hint": "To be in a risky, precarious, or dangerous situation.",
-    "workedSolution": "The idiom 'skating on thin ice' means putting oneself in a precarious situation or taking dangerous risks.",
+    "correctAnswer": "suspected that something dishonest or fraudulent was occurring",
+    "hint": "'To smell a rat' means to intuitively sense or suspect that deceit, trickery, or fraud is taking place.",
+    "workedSolution": "The idiom 'smell a rat' means to become suspicious that something deceitful, unlawful, or dishonest is going on.",
     "points": 1
   },
   {
@@ -368,16 +368,16 @@ export const SET_BECE_MOCK_9_ENGLISH_P1 = [
   },
   {
     "number": 27,
-    "prompt": "The defense lawyer's account was fictitious, whereas the forensic report was entirely ...... .\nChoose the word most nearly opposite in meaning to 'fictitious'.",
+    "prompt": "The community elders were naturally hospitable to visiting strangers, whereas the highway bandits were notoriously ...... .\nChoose the word most nearly opposite in meaning to 'hospitable'.",
     "options": [
-      "complex",
-      "factual",
-      "lengthy",
-      "interesting"
+      "indifferent",
+      "hostile",
+      "generous",
+      "talkative"
     ],
-    "correctAnswer": "factual",
-    "hint": "'Fictitious' means fabricated, invented, or false. What word denotes based on or containing facts; real?",
-    "workedSolution": "'Fictitious' means invented or untrue. Its direct antonym is 'factual' (authentic or based on real facts).",
+    "correctAnswer": "hostile",
+    "hint": "'Hospitable' denotes showing friendly warmth and welcoming generosity to visitors. What word denotes unwelcoming, antagonistic, or aggressive?",
+    "workedSolution": "'Hospitable' means welcoming and generous to guests. Its direct opposite in interpersonal conduct is 'hostile' (antagonistic, unfriendly, or aggressive).",
     "points": 1
   },
   {
@@ -396,30 +396,30 @@ export const SET_BECE_MOCK_9_ENGLISH_P1 = [
   },
   {
     "number": 29,
-    "prompt": "The instructor's preliminary explanation was obscure, but his summary was remarkably ...... .\nChoose the word most nearly opposite in meaning to 'obscure'.",
+    "prompt": "The bursar was exceptionally frugal with school maintenance funds, whereas his predecessor had been notoriously ...... .\nChoose the word most nearly opposite in meaning to 'frugal'.",
     "options": [
-      "brief",
-      "loud",
-      "transparent",
-      "useful"
+      "careful",
+      "modest",
+      "extravagant",
+      "popular"
     ],
-    "correctAnswer": "transparent",
-    "hint": "'Obscure' means unclear, dim, and difficult to comprehend. What word denotes clear, lucid, and easily understood?",
-    "workedSolution": "'Obscure' means vague or difficult to understand. Its direct intellectual antonym is 'transparent' (or lucid/clear).",
+    "correctAnswer": "extravagant",
+    "hint": "'Frugal' means economical, prudent, and sparing in expenditure. What word denotes wasteful, lavish, or excessively spending?",
+    "workedSolution": "'Frugal' describes someone prudent and sparing with money. Its direct economic antonym is 'extravagant' (recklessly wasteful or excessively lavish).",
     "points": 1
   },
   {
     "number": 30,
-    "prompt": "The novice driver was condemned for being reckless, but his mentor was praised for being ...... .\nChoose the word most nearly opposite in meaning to 'reckless'.",
+    "prompt": "While attendance at the weekend literary seminar was voluntary, participation in the mock examination was ...... .\nChoose the word most nearly opposite in meaning to 'voluntary'.",
     "options": [
-      "slow",
-      "fearful",
-      "prudent",
-      "obedient"
+      "optional",
+      "gratuitous",
+      "compulsory",
+      "informal"
     ],
-    "correctAnswer": "prudent",
-    "hint": "'Reckless' means heedless of danger or rash. What word denotes acting with care and thought for the future?",
-    "workedSolution": "'Reckless' means careless and rash. Its direct behavioral antonym is 'prudent' (cautious, sensible, and careful).",
+    "correctAnswer": "compulsory",
+    "hint": "'Voluntary' means performed of one's own free will. What word denotes required by regulation or mandatory?",
+    "workedSolution": "'Voluntary' means done willingly without obligation. Its direct antonym is 'compulsory' (mandatory, obligatory, or required by rule).",
     "points": 1
   },
   {
@@ -536,7 +536,7 @@ export const SET_BECE_MOCK_9_ENGLISH_P1 = [
   },
   {
     "number": 39,
-    "prompt": "Which of the following words contains a SILENT consonant letter that is not voiced in standard pronunciation?",
+    "prompt": "Identify the word containing a silent consonant in standard pronunciation:",
     "options": [
       "indict",
       "predict",

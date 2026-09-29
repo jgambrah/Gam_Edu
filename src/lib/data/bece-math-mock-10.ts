@@ -689,18 +689,18 @@ export const allRawMathMock10Questions: MathMockObjectiveQuestion[] = [
   {
     "number": 39,
     "id": "MOCK10_P1_Q39",
-    "prompt": "How many lines of symmetry has an equilateral triangle?",
+    "prompt": "How many lines of symmetry has a regular octagon (an 8-sided regular polygon)?",
     "hasDiagram": false,
     "svgDiagram": null,
     "options": [
-      "A. $1$",
-      "B. $2$",
-      "C. $3$",
-      "D. $6$"
+      "A. $4$",
+      "B. $6$",
+      "C. $8$",
+      "D. $16$"
     ],
     "correctAnswer": "C",
-    "hint": "Review Symmetry in Polygons principles under the NaCCA syllabus to solve this systematically.",
-    "workedSolution": "An equilateral triangle has $3$ lines of symmetry, each passing from a vertex to the midpoint of the opposite side.\n\nTherefore, option C is correct.",
+    "hint": "Recall that any regular polygon with n sides has exactly n lines of symmetry.",
+    "workedSolution": "Every regular polygon with $n$ sides possesses exactly $n$ axes of symmetry. A regular octagon has $8$ sides, and therefore has exactly $8$ lines of symmetry ($4$ connecting opposite vertices and $4$ connecting the midpoints of opposite sides).\n\nTherefore, option C is correct.",
     "points": 1,
     "topic": "Symmetry in Polygons"
   },

@@ -55,6 +55,16 @@ import { SET_BECE_1997_SCIENCE_P1, SET_BECE_1997_SCIENCE_P2 } from './data/jhs-c
 import { SET_BECE_1998_SCIENCE_P1, SET_BECE_1998_SCIENCE_P2 } from './data/jhs-curriculum-set-130';
 import { SET_BECE_1999_SCIENCE_P1, SET_BECE_1999_SCIENCE_P2 } from './data/jhs-curriculum-set-131';
 import { SET_BECE_MOCK_1_SCIENCE_P1, SET_BECE_MOCK_1_SCIENCE_P2 } from './data/jhs-curriculum-set-132';
+import { SET_BECE_MOCK_2_SCIENCE_P1, SET_BECE_MOCK_2_SCIENCE_P2 } from './data/jhs-curriculum-set-133';
+import { SET_BECE_MOCK_3_SCIENCE_P1, SET_BECE_MOCK_3_SCIENCE_P2 } from './data/jhs-curriculum-set-134';
+import { SET_BECE_MOCK_4_SCIENCE_P1, SET_BECE_MOCK_4_SCIENCE_P2 } from './data/jhs-curriculum-set-135';
+import { SET_BECE_MOCK_5_SCIENCE_P1, SET_BECE_MOCK_5_SCIENCE_P2 } from './data/jhs-curriculum-set-136';
+import { SET_BECE_MOCK_6_SCIENCE_P1, SET_BECE_MOCK_6_SCIENCE_P2 } from './data/jhs-curriculum-set-137';
+import { SET_BECE_MOCK_7_SCIENCE_P1, SET_BECE_MOCK_7_SCIENCE_P2 } from './data/jhs-curriculum-set-138';
+import { SET_BECE_MOCK_8_SCIENCE_P1, SET_BECE_MOCK_8_SCIENCE_P2 } from './data/jhs-curriculum-set-139';
+import { SET_BECE_MOCK_9_SCIENCE_P1, SET_BECE_MOCK_9_SCIENCE_P2 } from './data/jhs-curriculum-set-140';
+import { SET_BECE_MOCK_10_SCIENCE_P1, SET_BECE_MOCK_10_SCIENCE_P2 } from './data/jhs-curriculum-set-141';
+import { SET_BECE_MOCK_11_SCIENCE_P1, SET_BECE_MOCK_11_SCIENCE_P2 } from './data/jhs-curriculum-set-142';
 import { SET_BECE_2019_SCIENCE_P1 } from './data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from './data/jhs-curriculum-set-83';
 /**
@@ -1750,8 +1760,6 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
     },
     { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
     { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
     {
       subjectId: 'science',
       topicId: 'bece_mock_1_p2',
@@ -1774,8 +1782,456 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
     },
     { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
     { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
+    // BECE Integrated Science Mock 2 (Set 133)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_2_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_2_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_2_p2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_2_p2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_2_p2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_2_p2',
+      questionSet: SET_BECE_MOCK_2_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_2_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_2_SCIENCE_P2 },
+    // BECE Integrated Science Mock 3 (Set 134)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_3',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_3',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_3',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_3',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_3_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_3_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_3_p2',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_3_p2',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_3_p2',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_3_p2',
+      questionSet: SET_BECE_MOCK_3_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_3_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_3_SCIENCE_P2 },
+    // BECE Integrated Science Mock 4 (Set 135)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_4',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_4',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_4',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_4',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_4_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_4_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_4_p2',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_4_p2',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_4_p2',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_4_p2',
+      questionSet: SET_BECE_MOCK_4_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_4_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_4_SCIENCE_P2 },
+    // BECE Integrated Science Mock 5 (Set 136)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_5',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_5',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_5',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_5',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_5_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_5_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_5_p2',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_5_p2',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_5_p2',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_5_p2',
+      questionSet: SET_BECE_MOCK_5_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_5_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_5_SCIENCE_P2 },
+    // BECE Integrated Science Mock 6 (Set 137)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_6',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_6',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_6',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_6',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_6_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_6_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_6_p2',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_6_p2',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_6_p2',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_6_p2',
+      questionSet: SET_BECE_MOCK_6_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_6_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_6_SCIENCE_P2 },
+    // BECE Integrated Science Mock 7 (Set 138)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_7',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_7',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_7',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_7',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_7_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_7_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_7_p2',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_7_p2',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_7_p2',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_7_p2',
+      questionSet: SET_BECE_MOCK_7_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_7_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_7_SCIENCE_P2 },
+    // BECE Integrated Science Mock 8 (Set 139)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_8',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_8',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_8',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_8',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_8_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_8_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_8_p2',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_8_p2',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_8_p2',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_8_p2',
+      questionSet: SET_BECE_MOCK_8_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_8_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_8_SCIENCE_P2 },
+    // BECE Integrated Science Mock 9 (Set 140)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_9',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_9',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_9',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_9',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_9_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_9_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_9_p2',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_9_p2',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_9_p2',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_9_p2',
+      questionSet: SET_BECE_MOCK_9_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_9_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_9_SCIENCE_P2 },
+    // BECE Integrated Science Mock 10 (Set 141)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_10',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_10',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_10',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_10',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_10_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_10_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_10_p2',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_10_p2',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_10_p2',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_10_p2',
+      questionSet: SET_BECE_MOCK_10_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_10_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_10_SCIENCE_P2 },
+    // BECE Integrated Science Mock 11 (Set 142)
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_11',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_11',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_11',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_11',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P1
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_11_SCIENCE_P1 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_11_SCIENCE_P1 },
+    {
+      subjectId: 'science',
+      topicId: 'bece_mock_11_p2',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_mock_11_p2',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_mock_11_p2',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_mock_11_p2',
+      questionSet: SET_BECE_MOCK_11_SCIENCE_P2
+    },
+    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_11_SCIENCE_P2 },
+    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_11_SCIENCE_P2 },
     {
       subjectId: 'science',
       topicId: 'bece_2012_variant',
@@ -3852,55 +4308,6 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       topicId: 'past_papers',
       questionSet: SET_BECE_1999_SCIENCE_P2
     },
-    // BECE Integrated Science Mock 1 (Set 132)
-    {
-      subjectId: 'science',
-      topicId: 'bece_mock_1',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P1
-    },
-    {
-      subjectId: 'integrated_science',
-      topicId: 'bece_mock_1',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P1
-    },
-    {
-      subjectId: 'science',
-      topicId: 'paper_mock_1',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P1
-    },
-    {
-      subjectId: 'integrated_science',
-      topicId: 'paper_mock_1',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P1
-    },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P1 },
-    {
-      subjectId: 'science',
-      topicId: 'bece_mock_1_p2',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P2
-    },
-    {
-      subjectId: 'integrated_science',
-      topicId: 'bece_mock_1_p2',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P2
-    },
-    {
-      subjectId: 'science',
-      topicId: 'paper_mock_1_p2',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P2
-    },
-    {
-      subjectId: 'integrated_science',
-      topicId: 'paper_mock_1_p2',
-      questionSet: SET_BECE_MOCK_1_SCIENCE_P2
-    },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
-    { subjectId: 'science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
-    { subjectId: 'integrated_science', topicId: 'mock_exams', questionSet: SET_BECE_MOCK_1_SCIENCE_P2 },
     {
       subjectId: 'science',
       topicId: 'past_papers',
@@ -4246,6 +4653,26 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'mock_exams',
       questionSet: SET_BECE_MOCK_10_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_11_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_11_MATH_P1
+    },
+    {
+      subjectId: 'math',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_11_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'mock_exams',
+      questionSet: SET_BECE_MOCK_11_MATH_P2
     },
     {
       subjectId: 'math',

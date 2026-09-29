@@ -411,7 +411,7 @@ export const allRawEnglishMock2Questions: QuestionItem[] = [
   },
   {
     number: 39,
-    prompt: "Which of the following words contains a SILENT consonant letter that is not voiced?",
+    prompt: "Select the word from the options that features an unvoiced silent consonant:",
     options: ["kitten", "knight", "kindle", "kernel"],
     correctAnswer: "knight",
     hint: "In this word for a medieval warrior, the initial letter 'k' before 'n' is completely silent.",

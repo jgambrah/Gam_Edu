@@ -536,7 +536,7 @@ export const SET_BECE_MOCK_11_ENGLISH_P1 = [
   },
   {
     "number": 39,
-    "prompt": "Which of the following words contains a SILENT consonant letter that is not voiced in standard pronunciation?",
+    "prompt": "Select the word that features a silent consonant letter in its pronunciation:",
     "options": [
       "table",
       "bubble",
@@ -703,18 +703,18 @@ export const SET_BECE_MOCK_11_ENGLISH_P2 = {
           ]
         },
         {
-          "sectionTitle": "ROBERT FROST: A Minor Bird",
-          "contextExtract": "\"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"",
+          "sectionTitle": "V. B. AAKYE: The Colour of God",
+          "contextExtract": "\"If God were green,\nHe'd be the grass, the leaves, the forest shade;\nIf He were blue,\nHe'd be the boundless sky and ocean spray.\"",
           "subItems": [
             {
               "subQuestion": "5(i)",
-              "question": "What does the speaker's irritation with the singing bird reveal about his personal mood initially?",
-              "answer": "He was troubled, impatient, restless, intolerant, and harboring inner discontentment."
+              "question": "What is the poet's primary philosophical argument regarding the true color and nature of God?",
+              "answer": "The poet argues that God cannot be confined to any single racial or physical color because He is manifested in all elements of creation, embracing universal humanity."
             },
             {
               "subQuestion": "5(j)",
-              "question": "What moral self-realization does the speaker arrive at by the end of the poem?",
-              "answer": "He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong."
+              "question": "Identify the dominant conditional structure and poetic device employed across the lines.",
+              "answer": "Anaphora (repetition of 'If...') coupled with vivid natural visual imagery."
             }
           ]
         }
@@ -888,27 +888,13 @@ export const SET_BECE_MOCK_11_ENGLISH_P2 = {
       "points": 10
     },
     {
-      "number": 9,
-      "part": "Part C",
-      "title": "Question 5(e): ROBERT FROST: A Minor Bird",
-      "prompt": "Text: ROBERT FROST: A Minor Bird\nExtract: \"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"\n\n5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?",
-      "contextExtract": "\"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"",
-      "subQuestions": [
-        {
-          "label": "5(i)",
-          "question": "What does the speaker's irritation with the singing bird reveal about his personal mood initially?",
-          "answer": "He was troubled, impatient, restless, intolerant, and harboring inner discontentment."
-        },
-        {
-          "label": "5(j)",
-          "question": "What moral self-realization does the speaker arrive at by the end of the poem?",
-          "answer": "He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong."
-        }
-      ],
-      "markingScheme": "5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\nAnswer: He was troubled, impatient, restless, intolerant, and harboring inner discontentment.\n\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?\nAnswer: He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong.",
-      "workedSolution": "5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\nAnswer: He was troubled, impatient, restless, intolerant, and harboring inner discontentment.\n\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?\nAnswer: He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong.",
-      "points": 10
-    }
+        "number": 9,
+        "title": "Question 5(e): V. B. AAKYE: The Colour of God",
+        "prompt": "Text: V. B. AAKYE: The Colour of God\nExtract: \"If God were green,\nHe'd be the grass, the leaves, the forest shade;\nIf He were blue,\nHe'd be the boundless sky and ocean spray.\"\n\n5(i) What is the poet's primary philosophical argument regarding the true color and nature of God?\n5(j) Identify the dominant conditional structure and poetic device employed across the lines.",
+        "category": "The Cockcrow Literature",
+        "guidelines": "Explain the poet's universalist argument that God cannot be confined to any single racial or physical color, and identify the anaphoric conditional device.",
+        "scoreBreakdown": "5(i) Philosophical argument: 5 marks; 5(j) Poetic device: 5 marks. Total = 10 marks."
+      }
   ]
 };
 
@@ -2798,21 +2784,21 @@ export const SET_BECE_MOCK_11_ENGLISH_COMPLETE = {
             ]
           },
           {
-            "sectionTitle": "ROBERT FROST: A Minor Bird",
-            "contextExtract": "\"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"",
-            "subItems": [
-              {
-                "subQuestion": "5(i)",
-                "question": "What does the speaker's irritation with the singing bird reveal about his personal mood initially?",
-                "answer": "He was troubled, impatient, restless, intolerant, and harboring inner discontentment."
-              },
-              {
-                "subQuestion": "5(j)",
-                "question": "What moral self-realization does the speaker arrive at by the end of the poem?",
-                "answer": "He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong."
-              }
-            ]
-          }
+          "sectionTitle": "V. B. AAKYE: The Colour of God",
+          "contextExtract": "\"If God were green,\nHe'd be the grass, the leaves, the forest shade;\nIf He were blue,\nHe'd be the boundless sky and ocean spray.\"",
+          "subItems": [
+            {
+              "subQuestion": "5(i)",
+              "question": "What is the poet's primary philosophical argument regarding the true color and nature of God?",
+              "answer": "The poet argues that God cannot be confined to any single racial or physical color because He is manifested in all elements of creation, embracing universal humanity."
+            },
+            {
+              "subQuestion": "5(j)",
+              "question": "Identify the dominant conditional structure and poetic device employed across the lines.",
+              "answer": "Anaphora (repetition of 'If...') coupled with vivid natural visual imagery."
+            }
+          ]
+        }
         ]
       }
     },
@@ -2984,25 +2970,11 @@ export const SET_BECE_MOCK_11_ENGLISH_COMPLETE = {
       },
       {
         "number": 9,
-        "part": "Part C",
-        "title": "Question 5(e): ROBERT FROST: A Minor Bird",
-        "prompt": "Text: ROBERT FROST: A Minor Bird\nExtract: \"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"\n\n5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?",
-        "contextExtract": "\"I have wished a bird would fly away,\nAnd not sing by my house all day;\nHave clapped my hands at him from the door\nWhen it seemed as if I could bear no more.\"",
-        "subQuestions": [
-          {
-            "label": "5(i)",
-            "question": "What does the speaker's irritation with the singing bird reveal about his personal mood initially?",
-            "answer": "He was troubled, impatient, restless, intolerant, and harboring inner discontentment."
-          },
-          {
-            "label": "5(j)",
-            "question": "What moral self-realization does the speaker arrive at by the end of the poem?",
-            "answer": "He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong."
-          }
-        ],
-        "markingScheme": "5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\nAnswer: He was troubled, impatient, restless, intolerant, and harboring inner discontentment.\n\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?\nAnswer: He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong.",
-        "workedSolution": "5(i) What does the speaker's irritation with the singing bird reveal about his personal mood initially?\nAnswer: He was troubled, impatient, restless, intolerant, and harboring inner discontentment.\n\n5(j) What moral self-realization does the speaker arrive at by the end of the poem?\nAnswer: He realizes that the fault was entirely within himself for wanting to silence an innocent, natural birdsong.",
-        "points": 10
+        "title": "Question 5(e): V. B. AAKYE: The Colour of God",
+        "prompt": "Text: V. B. AAKYE: The Colour of God\nExtract: \"If God were green,\nHe'd be the grass, the leaves, the forest shade;\nIf He were blue,\nHe'd be the boundless sky and ocean spray.\"\n\n5(i) What is the poet's primary philosophical argument regarding the true color and nature of God?\n5(j) Identify the dominant conditional structure and poetic device employed across the lines.",
+        "category": "The Cockcrow Literature",
+        "guidelines": "Explain the poet's universalist argument that God cannot be confined to any single racial or physical color, and identify the anaphoric conditional device.",
+        "scoreBreakdown": "5(i) Philosophical argument: 5 marks; 5(j) Poetic device: 5 marks. Total = 10 marks."
       }
     ]
   }
