@@ -48,6 +48,7 @@ import { SET_BECE_MOCK_9_ENGLISH_P1, SET_BECE_MOCK_9_ENGLISH_P2 } from '@/lib/da
 import { SET_BECE_MOCK_10_ENGLISH_P1, SET_BECE_MOCK_10_ENGLISH_P2 } from '@/lib/data/bece-english-mock-10';
 import { SET_BECE_MOCK_11_ENGLISH_P1, SET_BECE_MOCK_11_ENGLISH_P2 } from '@/lib/data/bece-english-mock-11';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
+import { SET_BECE_2013_MATH_P1, SET_BECE_2013_MATH_P2 } from '@/lib/data/bece-math-2013';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -286,6 +287,58 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
     },
 
     // Junior Secondary (JHS) Exam Series (Standardized Past Papers & Mastery Sets)
+    {
+        title: "BECE Mathematics Past Paper 1 (2013 Official Examination)",
+        domain: "ARITHMETIC & NUMERACY",
+        strandName: "CORE MATHEMATICS (PAPER 1)",
+        strandCode: "B7-B9",
+        subStrand: "2013 BECE Standardized Objective Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Official WAEC Standards",
+        description: "Official 40-question objective examination covering sets, number bases, HCF, plane geometry with SVG diagrams, inequalities, vectors, trigonometry, and probability with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2013-paper1",
+        kind: "exam_series",
+        format: "objective",
+        paperType: 1,
+        year: 2013,
+        setNumber: 90,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Full SVG Diagrams & Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "If A = {5, 10, 15, 20, 25, 125} and B = {5, 10, 15, 20, 25, 625}, list the elements of A ∪ B:",
+        sampleFormula: "A \\cup B = \\{5, 10, 15, 20, 25, 125, 625\\}",
+        sampleAnswer: "{5, 10, 15, 20, 25, 125, 625}",
+        status: "ready"
+    },
+    {
+        title: "BECE Mathematics Past Paper 2 (2013 Official Examination)",
+        domain: "ALGEBRA & GEOMETRY",
+        strandName: "CORE MATHEMATICS (PAPER 2 THEORY)",
+        strandCode: "B7-B9",
+        subStrand: "2013 BECE Standardized Written / Essay Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Answer 4 • Official WAEC Standards",
+        description: "Official 6-question theory examination covering sets, probability, factorization, vector translation, business partnership sharing, compound L-shaped floor geometry with SVG diagrams, right-angled trigonometry with elevation diagrams, radical simplification, inequalities, and frequency distribution statistics with detailed step-by-step worked solutions.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2013-paper2",
+        kind: "exam_series",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2013,
+        setNumber: 91,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "6 Theory Questions • Full SVG Diagrams & Step Solutions",
+        subject: "Mathematics",
+        sampleInstruction: "Given that K = {1, 2, 3, ..., 15}, find the probability that a number selected at random is not a prime number:",
+        sampleFormula: "P(\\text{not prime}) = \\frac{9}{15} = \\frac{3}{5}",
+        sampleAnswer: "3/5",
+        status: "ready"
+    },
     {
         title: "BECE-Aligned Mathematics Paper 1 (2012 Model)",
         domain: "ARITHMETIC & NUMERACY",
@@ -7812,6 +7865,29 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
         setActiveQuestionSet(null);
+
+        // Instant Zero-Latency Loader for 2013 Mathematics Paper 1
+        if (
+            mod.setId === 'jhs-math-2013-paper2' ||
+            mod.setId === 'bece_2013_math_p2' ||
+            (mod.setId === 'bece_2013_p2' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2013 Mathematics Paper 2', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2013_MATH_P2);
+            setIsLoadingSet(false);
+            return;
+        }
+
+        if (
+            mod.setId === 'jhs-math-2013-paper1' ||
+            mod.setId === 'bece_2013_math_p1' ||
+            (mod.setId === 'bece_2013_p1' && (mod.subject === 'Mathematics' || subject === 'math'))
+        ) {
+            setActiveTopicMeta({ title: mod.title || 'BECE 2013 Mathematics Paper 1', topicId: 'bece_past_papers' });
+            setActiveQuestionSet(SET_BECE_2013_MATH_P1);
+            setIsLoadingSet(false);
+            return;
+        }
         setActiveTopicMeta(null);
         setActiveTopicalLab(null);
 
@@ -8190,6 +8266,15 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
                         studentId={studentId}
                         assignmentId={assignmentId}
                         onProceedToPaper2={() => {
+                            if (activeQuestionSet?.id === 'jhs-math-2013-paper1' || activeQuestionSet?.id === 'bece_2013_math_p1') {
+                                handleLaunchModule({
+                                    setId: 'jhs-math-2013-paper2',
+                                    title: 'BECE Mathematics Past Paper 2 (2013 Official Examination)',
+                                    paperType: 2,
+                                    subject: 'Mathematics'
+                                });
+                                return;
+                            }
                             const beceMatch = activeQuestionSet?.id?.match(/bece_(\d{4})(?:_p1)?$/);
                             if (beceMatch) {
                                 const yr = beceMatch[1];

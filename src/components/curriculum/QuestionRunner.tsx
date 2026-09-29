@@ -253,14 +253,30 @@ export function QuestionRunner({
 
   const parts: StructuredQuestionPart[] = currentQuestion.parts || [];
 
-  const isCurrentCorrect = selectedOption === currentQuestion.correctAnswer;
+  const isAnswerMatching = (selected: string | null | undefined, question: any) => {
+    if (!selected || !question) return false;
+    if (selected === question.correctAnswer) return true;
+    if (question.correctOption && /^[A-D]$/i.test(question.correctOption)) {
+      const idx = question.correctOption.toUpperCase().charCodeAt(0) - 65;
+      if (Array.isArray(question.options) && question.options[idx] === selected) return true;
+    }
+    if (question.correctOptionLetter && /^[A-D]$/i.test(question.correctOptionLetter)) {
+      const idx = question.correctOptionLetter.toUpperCase().charCodeAt(0) - 65;
+      if (Array.isArray(question.options) && question.options[idx] === selected) return true;
+    }
+    const cleanSelected = String(selected).replace(/^[A-D][.)]\s*/, '').trim();
+    const cleanCorrect = String(question.correctAnswer || '').replace(/^[A-D][.)]\s*/, '').trim();
+    return cleanSelected === cleanCorrect;
+  };
+
+  const isCurrentCorrect = isAnswerMatching(selectedOption, currentQuestion);
 
   // Handler for MCQ Verification
   const handleVerify = () => {
     if (!selectedOption) return;
     setIsVerified(true);
 
-    const isCorrect = selectedOption === currentQuestion.correctAnswer;
+    const isCorrect = isAnswerMatching(selectedOption, currentQuestion);
     if (isCorrect) {
       confetti({
         particleCount: 40,
@@ -653,11 +669,11 @@ export function QuestionRunner({
             )}
 
             {/* SVG Diagram Rendering (Geometry, Venn Diagrams, Coordinate Planes) */}
-            {currentQuestion.diagramSvg && (
+            {(currentQuestion.diagramSvg || currentQuestion.svgDiagram) && (
               <div className="my-5 p-5 sm:p-7 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-xl flex flex-col items-center justify-center overflow-x-auto">
                 <div
                   className="w-full max-w-lg flex justify-center [&>svg]:max-w-full [&>svg]:h-auto [&>svg]:rounded-xl [&>svg]:drop-shadow-md"
-                  dangerouslySetInnerHTML={{ __html: currentQuestion.diagramSvg }}
+                  dangerouslySetInnerHTML={{ __html: currentQuestion.diagramSvg || currentQuestion.svgDiagram }}
                 />
                 <span className="text-[11px] text-slate-500 font-mono mt-3 tracking-wider uppercase font-semibold">
                   Figure Illustration • {currentQuestion.title || `Question ${currentIndex + 1}`}
@@ -693,7 +709,7 @@ export function QuestionRunner({
                           onClick={() => {
                             setCurrentIndex(topic.questionNumber - 1);
                             setSelectedOption(null);
-                            setIsSubmitted(false);
+                            setIsVerified(false);
                           }}
                           className={cn(
                             "px-3.5 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 shrink-0 border",
@@ -755,11 +771,11 @@ export function QuestionRunner({
                       </div>
 
                       {/* Sub-part Specific Diagram (if any) */}
-                      {part.diagramSvg && (
+                      {(part.diagramSvg || (part as any).svgDiagram) && (
                         <div className="my-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex justify-center overflow-x-auto">
                           <div
                             className="max-w-md [&>svg]:max-w-full [&>svg]:h-auto"
-                            dangerouslySetInnerHTML={{ __html: part.diagramSvg }}
+                            dangerouslySetInnerHTML={{ __html: part.diagramSvg || (part as any).svgDiagram }}
                           />
                         </div>
                       )}
@@ -1188,7 +1204,7 @@ export function QuestionRunner({
                 {currentQuestion.options &&
                   currentQuestion.options.map((option, idx) => {
                     const isSelected = selectedOption === option;
-                    const isCorrectOption = option === currentQuestion.correctAnswer;
+                    const isCorrectOption = isAnswerMatching(option, currentQuestion) || (currentQuestion.correctOption && String.fromCharCode(65 + idx) === currentQuestion.correctOption.toUpperCase()) || (currentQuestion.correctOptionLetter && String.fromCharCode(65 + idx) === currentQuestion.correctOptionLetter.toUpperCase());
 
                     let cardStyle =
                       'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-850';

@@ -100,6 +100,7 @@ import {
 import {
   SET_JHS_MASTERY_SERIES_67
 } from './data/jhs-curriculum-set-67';
+import { SET_BECE_2013_MATH_P1, SET_BECE_2013_MATH_P2 } from './data/bece-math-2013';
 import {
   SET_JHS_MASTERY_SERIES_01,
   SET_JHS_MASTERY_SERIES_02,
@@ -4049,6 +4050,26 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'core_curriculum_mastery',
       questionSet: SET_JHS_MASTERY_SERIES_08
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2013_MATH_P2
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2013_MATH_P2
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2013_MATH_P1
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2013_MATH_P1
     },
     {
       subjectId: 'math',
