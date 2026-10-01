@@ -469,21 +469,112 @@ function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): Topical
   };
 }
 
+
+/**
+ * Adapts an official NaCCA CCP Science Topical Unit into a TopicalLabDocument.
+ * Completely pure Science content with zero leakage of English or Mathematics data.
+ */
+export function adaptScienceUnitToTopicalLab(unit: any): TopicalLabDocument {
+  const lvlKey = (unit.gradeLevel?.toLowerCase() || 'b7').replace('bs', 'b');
+  const mapDrill = (q: any): TopicalPracticeQuestion => ({
+    id: q.id || `drill_${Math.random().toString(36).substr(2, 6)}`,
+    difficulty: ((q.difficulty === 'high' || q.difficulty === 'hard') ? 'hard' : (q.difficulty === 'medium' ? 'medium' : 'low')) as TopicalPracticeDifficulty,
+    prompt: q.prompt || '',
+    options: q.options || [],
+    correctAnswer: q.correctAnswer || '',
+    hint: q.hint || '',
+    workedSolution: q.workedSolution || '',
+    points: q.points || 1,
+    diagramSvg: q.diagramSvg
+  });
+
+  const workedExamples = (unit.sampleWorkedProblems || []).map((p: any) => ({
+    id: p.id || `ex_${Math.random().toString(36).substr(2, 6)}`,
+    title: `Worked Example: ${(p.questionPrompt || '').slice(0, 50)}...`,
+    problem: p.questionPrompt || '',
+    steps: [p.stepByStepSolution || ''],
+    finalAnswer: p.examinerTip ? `Examiner Tip: ${p.examinerTip}` : '',
+    diagramSvg: unit.notes?.diagramSvg
+  }));
+
+  let notesMarkdown = unit.notes?.summaryMarkdown || '';
+  if (unit.notes?.keyTerms && unit.notes.keyTerms.length > 0) {
+    notesMarkdown += '\n\n#### Key Terminology\n' + unit.notes.keyTerms.map((kt: any) => `* **${kt.term}:** ${kt.definition}`).join('\n');
+  }
+
+  const b7Placeholder = 'Detailed concept notes and curriculum drills for Basic 7 are in preparation for this strand.';
+  const b8Placeholder = 'Detailed concept notes and curriculum drills for Basic 8 are in preparation for this strand.';
+  const b9Placeholder = 'Detailed concept notes and curriculum drills for Basic 9 are in preparation for this strand.';
+
+  return ({
+    id: unit.id,
+    topicId: unit.id,
+    title: `${unit.strandTitle}: ${unit.subStrandTitle}`,
+    strand: unit.strandTitle,
+    strandCode: `S${unit.strandNumber || 1}`,
+    subStrand: unit.subStrandTitle,
+    subject: 'Integrated Science',
+    tier: 'Junior Secondary (JHS)',
+    badge: unit.strandTitle || 'NaCCA Integrated Science',
+    description: `NaCCA CCP ${unit.gradeLevel} unit on ${unit.subStrandTitle} with interactive labs, worked examples, and graded practice pools.`,
+    totalPracticeQuestions: (unit.drillQuestions || []).length,
+    version: 1,
+    levels: {
+      b7: {
+        levelTitle: `Basic 7 (JHS 1) • ${unit.subStrandTitle}`,
+                summary: `${unit.strandTitle} — ${unit.subStrandTitle}`,
+        notes: lvlKey === 'b7' ? notesMarkdown : b7Placeholder,
+                workedExamples: lvlKey === 'b7' ? workedExamples : [],
+        practicePool: lvlKey === 'b7' ? {
+          low: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+          medium: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+          hard: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+        } : { low: [], medium: [], hard: [] }
+      },
+      b8: {
+        levelTitle: `Basic 8 (JHS 2) • ${unit.subStrandTitle}`,
+                summary: `${unit.strandTitle} — ${unit.subStrandTitle}`,
+        notes: lvlKey === 'b8' ? notesMarkdown : b8Placeholder,
+                workedExamples: lvlKey === 'b8' ? workedExamples : [],
+        practicePool: lvlKey === 'b8' ? {
+          low: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+          medium: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+          hard: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+        } : { low: [], medium: [], hard: [] }
+      },
+      b9: {
+        levelTitle: `Basic 9 (JHS 3) • ${unit.subStrandTitle}`,
+                summary: `${unit.strandTitle} — ${unit.subStrandTitle}`,
+        notes: lvlKey === 'b9' ? notesMarkdown : b9Placeholder,
+                workedExamples: lvlKey === 'b9' ? workedExamples : [],
+        practicePool: lvlKey === 'b9' ? {
+          low: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+          medium: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+          hard: (unit.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+        } : { low: [], medium: [], hard: [] }
+      }
+    }
+  } as any) as TopicalLabDocument;
+}
+
 export async function fetchTopicalLabDoc(
   topicDocId: string,
   levelId: string = 'jhs',
   subjectId: string = 'math'
 ): Promise<TopicalLabDocument | null> {
+  const isScienceDocId = topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
+  const isEnglishDocId = topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('beacon') || topicDocId.includes('cockcrow');
+  const effectiveSubjectId = isScienceDocId ? 'science' : (isEnglishDocId ? 'english' : subjectId);
   try {
     // 0. Primary check in dedicated 'topical' subcollection (e.g. global_curriculum/jhs/subjects/english/topical/[topicDocId])
-    const topicalDocRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId);
+    const topicalDocRef = doc(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical', topicDocId);
     const topicalDocSnap = await getDoc(topicalDocRef);
     if (topicalDocSnap.exists()) {
       const data = topicalDocSnap.data() as any;
 
       // Check subcollection practice_labs for all tiers (e.g. B7_foundation, B8_foundation)
       try {
-        const labsCollRef = collection(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical', topicDocId, 'practice_labs');
+        const labsCollRef = collection(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical', topicDocId, 'practice_labs');
         const labsSnap = await getDocs(labsCollRef);
         if (!labsSnap.empty) {
           if (!data.levels) data.levels = {};
@@ -609,99 +700,23 @@ export async function fetchTopicalLabDoc(
       return adaptEnglishOrGenericDocToTopicalLab(topicalDocSnap.id, data);
     }
 
-    // 1. Primary check in topical_units (e.g. Science units: bs7_strand1_living_cells)
-    const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical_units', topicDocId);
+    // 1. Primary check in topical_units (e.g. Science units: b7_strand1_materials)
+    const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical_units', topicDocId);
     const unitSnap = await getDoc(unitRef);
     if (unitSnap.exists()) {
       const data = unitSnap.data() as any;
       if (data.notes && data.drillQuestions) {
-        const lvlKey = (data.gradeLevel?.toLowerCase() || 'b7').replace('bs', 'b');
-        const mapDrill = (q: any) => ({
-          id: q.id,
-          difficulty: q.difficulty === 'high' ? 'hard' : q.difficulty,
-          prompt: q.prompt,
-          options: q.options || [],
-          correctAnswer: q.correctAnswer,
-          hint: q.hint,
-          workedSolution: q.workedSolution,
-          points: q.points || 1,
-          diagramSvg: q.diagramSvg
-        });
-
-        const workedExamples = (data.sampleWorkedProblems || []).map((p: any) => ({
-          id: p.id,
-          title: `Worked Example: ${p.questionPrompt.slice(0, 50)}...`,
-          problem: p.questionPrompt,
-          steps: [p.stepByStepSolution],
-          finalAnswer: p.examinerTip ? `Examiner Tip: ${p.examinerTip}` : '',
-          diagramSvg: data.notes?.diagramSvg
-        }));
-
-        let notesMarkdown = data.notes.summaryMarkdown || '';
-        if (data.notes.keyTerms && data.notes.keyTerms.length > 0) {
-          notesMarkdown += '\n\n#### Key Terminology\n' + data.notes.keyTerms.map((kt: any) => `* **${kt.term}:** ${kt.definition}`).join('\n');
-        }
-
-        const b7Placeholder = 'Detailed concept notes and curriculum drills for Basic 7 are in preparation for this strand.';
-        const b8Placeholder = 'Detailed concept notes and curriculum drills for Basic 8 are in preparation for this strand.';
-        const b9Placeholder = 'Detailed concept notes and curriculum drills for Basic 9 are in preparation for this strand.';
-
-        return {
-          id: unitSnap.id,
-          topicId: unitSnap.id,
-          title: `${data.strandTitle}: ${data.subStrandTitle}`,
-          strand: data.strandTitle,
-          strandCode: `S${data.strandNumber}`,
-          subStrand: data.subStrandTitle,
-          subject: 'Integrated Science',
-          tier: 'Junior Secondary (JHS)',
-          badge: data.strandTitle || 'NaCCA Integrated Science',
-          description: `NaCCA CCP ${data.gradeLevel} unit on ${data.subStrandTitle} with interactive labs, worked examples, and graded practice pools.`,
-          totalPracticeQuestions: (data.drillQuestions || []).length,
-          levels: {
-            b7: {
-              levelTitle: `Basic 7 (JHS 1) • ${data.subStrandTitle}`,
-              sub: data.subStrandTitle,
-              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
-              notes: lvlKey === 'b7' ? notesMarkdown : b7Placeholder,
-              diagramSvg: lvlKey === 'b7' ? data.notes?.diagramSvg : undefined,
-              workedExamples: lvlKey === 'b7' ? workedExamples : [],
-              practicePool: lvlKey === 'b7' ? {
-                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
-                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
-                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
-              } : { low: [], medium: [], hard: [] }
-            },
-            b8: {
-              levelTitle: `Basic 8 (JHS 2) • ${data.subStrandTitle}`,
-              sub: data.subStrandTitle,
-              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
-              notes: lvlKey === 'b8' ? notesMarkdown : b8Placeholder,
-              diagramSvg: lvlKey === 'b8' ? data.notes?.diagramSvg : undefined,
-              workedExamples: lvlKey === 'b8' ? workedExamples : [],
-              practicePool: lvlKey === 'b8' ? {
-                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
-                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
-                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
-              } : { low: [], medium: [], hard: [] }
-            },
-            b9: {
-              levelTitle: `Basic 9 (JHS 3) • ${data.subStrandTitle}`,
-              sub: data.subStrandTitle,
-              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
-              notes: lvlKey === 'b9' ? notesMarkdown : b9Placeholder,
-              diagramSvg: lvlKey === 'b9' ? data.notes?.diagramSvg : undefined,
-              workedExamples: lvlKey === 'b9' ? workedExamples : [],
-              practicePool: lvlKey === 'b9' ? {
-                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
-                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
-                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
-              } : { low: [], medium: [], hard: [] }
-            }
-          }
-        } as unknown as TopicalLabDocument;
+        return adaptScienceUnitToTopicalLab({ ...data, id: unitSnap.id });
       }
       return { ...(data as TopicalLabDocument), id: unitSnap.id };
+    }
+
+    // 1b. Fallback for Science: Direct lookup in embedded NaCCA master curriculum
+    if (isScienceDocId) {
+      const fallbackUnit = NACCA_JHS_SCIENCE_TOPICAL_UNITS.find(u => u.id === topicDocId);
+      if (fallbackUnit) {
+        return adaptScienceUnitToTopicalLab(fallbackUnit);
+      }
     }
 
     // 2. Primary topics path: global_curriculum/{levelId}/subjects/{subjectId}/topics/{topicDocId}

@@ -355,29 +355,42 @@ export function TopicalLabRunner({
     return 'b9';
   }, [activeLevel]);
 
-  // Subject detector: strictly isolate English Literature guides from Science and Math
-  const isEnglishSubject = useMemo(() => {
-    const sub = (topicDoc.subject || '').toLowerCase();
-    const id = (topicDoc.id || '').toLowerCase();
-    const topicId = (topicDoc.topicId || '').toLowerCase();
-    const strand = (topicDoc.strand || '').toLowerCase();
-    // Exclude science explicitly
-    if (
+  // Robust subject detection: strictly isolate Science from English Literature
+  const isScience = useMemo(() => {
+    const sub = ((topicDoc.subject || '') as string).toLowerCase();
+    const id = ((topicDoc.id || topicDoc.topicId || '') as string).toLowerCase();
+    const title = ((topicDoc.title || '') as string).toLowerCase();
+    const strand = (((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge || '') as string).toLowerCase();
+    const subStrand = (((topicDoc as any).subStrandTitle || (topicDoc as any).subStrand || '') as string).toLowerCase();
+
+    return (
       sub.includes('science') ||
       id.startsWith('b7_strand') || id.startsWith('b8_strand') || id.startsWith('b9_strand') || id.startsWith('bs') ||
-      strand.includes('diversity') || strand.includes('cycles') || strand.includes('systems') || strand.includes('forces') || strand.includes('environment')
-    ) {
-      return false;
-    }
-    // Exclude math explicitly
-    if (sub.includes('math') || id.startsWith('topic_') || strand.includes('number') || strand.includes('algebra') || strand.includes('geometry') || strand.includes('data')) {
-      return false;
-    }
-    return sub.includes('english') || id.startsWith('oral_') || id.startsWith('grammar_') || id.startsWith('reading_') || id.startsWith('writing_') || id.startsWith('literature_') || id.includes('beacon') || id.includes('cockcrow') || topicId.startsWith('oral_') || topicId.startsWith('grammar_') || topicId.startsWith('reading_') || topicId.startsWith('writing_') || topicId.startsWith('literature_');
+      strand.includes('diversity') || strand.includes('cycles') || strand.includes('systems') || strand.includes('forces') || strand.includes('environment') || strand.includes('matter') ||
+      title.includes('diversity') || title.includes('matter') || title.includes('particulate') || title.includes('living cell') || title.includes('atomic structure') || title.includes('acids') || title.includes('biogeochemical') || title.includes('life cycle') || title.includes('dentition') || title.includes('solar system') || title.includes('electricity') || title.includes('force, motion') || title.includes('climate change') || title.includes('soil formation') ||
+      subStrand.includes('materials') || subStrand.includes('living cells') || subStrand.includes('atomic') || subStrand.includes('acids') || subStrand.includes('biogeochemical') || subStrand.includes('metamorphosis') || subStrand.includes('dentition') || subStrand.includes('planetary') || subStrand.includes('semiconductors') || subStrand.includes('pressure') || subStrand.includes('green economy') || subStrand.includes('weathering')
+    );
   }, [topicDoc]);
 
-  // Resolve active prerequisite guide for Tab 1
+  const isEnglishLiterature = useMemo(() => {
+    if (isScience) return false;
+    const sub = ((topicDoc.subject || '') as string).toLowerCase();
+    const id = ((topicDoc.id || topicDoc.topicId || '') as string).toLowerCase();
+    const strand = (((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge || '') as string).toLowerCase();
+    const title = ((topicDoc.title || '') as string).toLowerCase();
+
+    return (
+      (sub.includes('english') && (strand.includes('literature') || strand.includes('reading') || title.includes('literature') || title.includes('beacon'))) ||
+      id.startsWith('literature_') || id.includes('beacon') || id.includes('cockcrow') || id.startsWith('reading_')
+    );
+  }, [topicDoc, isScience]);
+
+  // Resolve active prerequisite guide for Tab 1 (strictly for English Literature)
   const activePrereqGuide = useMemo(() => {
+    // Under no circumstances show literature guides on Science or Mathematics topics
+    if (isScience || !isEnglishLiterature) {
+      return null;
+    }
     const customGuides = (currentLevelData as any)?.prerequisite_reading_guides;
     if (customGuides && customGuides[prereqTierTab]) {
       return customGuides[prereqTierTab];
@@ -387,15 +400,15 @@ export function TopicalLabRunner({
     if (masterGuide && masterGuide[masterKey]) {
       return masterGuide[masterKey];
     }
-    // Strict isolation: Never show English literature texts on Science or Mathematics topics
-    if (isEnglishSubject) {
-      return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[prereqTierTab];
-    }
-    return null;
-  }, [currentLevelData, topicDoc, activeGradeKey, prereqTierTab, isEnglishSubject]);
+    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[prereqTierTab] || null;
+  }, [currentLevelData, topicDoc, activeGradeKey, prereqTierTab, isScience, isEnglishLiterature]);
 
-  // Resolve active prerequisite guide for Tab 2 (tied to difficulty)
+  // Resolve active prerequisite guide for Tab 2 (tied to difficulty, strictly for English Literature)
   const activeDrillPrereq = useMemo(() => {
+    // Under no circumstances show literature guides on Science or Mathematics topics
+    if (isScience || !isEnglishLiterature) {
+      return null;
+    }
     const tierKey = difficulty === 'low' ? 'foundation' : difficulty === 'medium' ? 'intermediate' : 'advanced';
     const customGuides = (currentLevelData as any)?.prerequisite_reading_guides;
     if (customGuides && customGuides[tierKey]) {
@@ -406,12 +419,8 @@ export function TopicalLabRunner({
     if (masterGuide && masterGuide[masterKey]) {
       return masterGuide[masterKey];
     }
-    // Strict isolation: Never show English literature texts on Science or Mathematics topics
-    if (isEnglishSubject) {
-      return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey];
-    }
-    return null;
-  }, [currentLevelData, topicDoc, activeGradeKey, difficulty, isEnglishSubject]);
+    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey] || null;
+  }, [currentLevelData, topicDoc, activeGradeKey, difficulty, isScience, isEnglishLiterature]);
 
   // Current pool of practice questions (checks practicePool, tasks, and questions across levels and root)
   const currentPool: TopicalPracticeQuestion[] = useMemo(() => {
@@ -546,7 +555,7 @@ export function TopicalLabRunner({
               </Button>
 
               <Badge variant="outline" className="text-[11px] font-bold border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
-                {topicDoc.badge || (topicDoc.strand ? `${topicDoc.strandCode ? topicDoc.strandCode + ': ' : ''}${topicDoc.strand}` : `${topicDoc.subject || 'Curriculum'} Lab`)}
+                {topicDoc.badge || topicDoc.title}
               </Badge>
 
               <Badge variant="outline" className="text-[11px] font-semibold border-slate-700 bg-slate-800/80 text-slate-300">
@@ -672,7 +681,7 @@ export function TopicalLabRunner({
 
           
           {/* Master Pre-requisite Study Guide (Tiers 1 to 9) */}
-          {activePrereqGuide && (
+          {!isScience && isEnglishLiterature && activePrereqGuide && (
             <Card className="bg-gradient-to-br from-slate-900 via-slate-900/90 to-indigo-950/40 border border-indigo-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-500/20 pb-4">
                 <div className="space-y-1">
@@ -964,7 +973,7 @@ export function TopicalLabRunner({
 
           
           {/* Active Drill Prerequisite Alert */}
-          {activeDrillPrereq && (
+          {!isScience && isEnglishLiterature && activeDrillPrereq && (
             <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/25 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -1004,7 +1013,7 @@ export function TopicalLabRunner({
                 subjectId={
                 (topicDoc.subject?.toLowerCase().includes('science') || (topicDoc.id || '').startsWith('b7_strand') || (topicDoc.id || '').startsWith('b8_strand') || (topicDoc.id || '').startsWith('b9_strand') || (topicDoc.id || '').startsWith('bs'))
                   ? 'science'
-                  : (topicDoc.subject?.toLowerCase().includes('english') || isEnglishSubject)
+                  : (topicDoc.subject?.toLowerCase().includes('english') || isEnglishLiterature)
                   ? 'english'
                   : 'mathematics'
               }
