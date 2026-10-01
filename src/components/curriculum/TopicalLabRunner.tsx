@@ -293,7 +293,25 @@ export function TopicalLabRunner({
   const firestore = useFirestore();
 
   // 1. Level Selector State (Basic 7, Basic 8, Basic 9)
-  const [activeLevel, setActiveLevel] = useState<TopicalLabLevelKey>(initialLevel);
+  const initialResolvedLevel = useMemo<TopicalLabLevelKey>(() => {
+    const initData = (topicDoc.levels as any)?.[initialLevel];
+    if (initData && (initData.notes && !initData.notes.includes('in preparation') || (initData.practicePool?.low?.length ?? 0) > 0)) {
+      return initialLevel;
+    }
+    for (const lvl of ['b7', 'b8', 'b9'] as const) {
+      const lvlData = (topicDoc.levels as any)?.[lvl];
+      if (lvlData && (lvlData.notes && !lvlData.notes.includes('in preparation') || (lvlData.practicePool?.low?.length ?? 0) > 0 || (lvlData.practicePool?.medium?.length ?? 0) > 0 || (lvlData.practicePool?.hard?.length ?? 0) > 0)) {
+        return lvl;
+      }
+    }
+    return initialLevel;
+  }, [topicDoc, initialLevel]);
+
+  const [activeLevel, setActiveLevel] = useState<TopicalLabLevelKey>(initialResolvedLevel);
+
+  React.useEffect(() => {
+    setActiveLevel(initialResolvedLevel);
+  }, [initialResolvedLevel]);
 
   // 2. Core Section Tabs State: 'notes_examples' | 'practice_labs' | 'past_exams'
   const [activeTab, setActiveTab] = useState<'notes_examples' | 'practice_labs' | 'past_exams'>('notes_examples');
@@ -337,6 +355,27 @@ export function TopicalLabRunner({
     return 'b9';
   }, [activeLevel]);
 
+  // Subject detector: strictly isolate English Literature guides from Science and Math
+  const isEnglishSubject = useMemo(() => {
+    const sub = (topicDoc.subject || '').toLowerCase();
+    const id = (topicDoc.id || '').toLowerCase();
+    const topicId = (topicDoc.topicId || '').toLowerCase();
+    const strand = (topicDoc.strand || '').toLowerCase();
+    // Exclude science explicitly
+    if (
+      sub.includes('science') ||
+      id.startsWith('b7_strand') || id.startsWith('b8_strand') || id.startsWith('b9_strand') || id.startsWith('bs') ||
+      strand.includes('diversity') || strand.includes('cycles') || strand.includes('systems') || strand.includes('forces') || strand.includes('environment')
+    ) {
+      return false;
+    }
+    // Exclude math explicitly
+    if (sub.includes('math') || id.startsWith('topic_') || strand.includes('number') || strand.includes('algebra') || strand.includes('geometry') || strand.includes('data')) {
+      return false;
+    }
+    return sub.includes('english') || id.startsWith('oral_') || id.startsWith('grammar_') || id.startsWith('reading_') || id.startsWith('writing_') || id.startsWith('literature_') || id.includes('beacon') || id.includes('cockcrow') || topicId.startsWith('oral_') || topicId.startsWith('grammar_') || topicId.startsWith('reading_') || topicId.startsWith('writing_') || topicId.startsWith('literature_');
+  }, [topicDoc]);
+
   // Resolve active prerequisite guide for Tab 1
   const activePrereqGuide = useMemo(() => {
     const customGuides = (currentLevelData as any)?.prerequisite_reading_guides;
@@ -348,8 +387,12 @@ export function TopicalLabRunner({
     if (masterGuide && masterGuide[masterKey]) {
       return masterGuide[masterKey];
     }
-    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[prereqTierTab];
-  }, [currentLevelData, topicDoc, activeGradeKey, prereqTierTab]);
+    // Strict isolation: Never show English literature texts on Science or Mathematics topics
+    if (isEnglishSubject) {
+      return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[prereqTierTab];
+    }
+    return null;
+  }, [currentLevelData, topicDoc, activeGradeKey, prereqTierTab, isEnglishSubject]);
 
   // Resolve active prerequisite guide for Tab 2 (tied to difficulty)
   const activeDrillPrereq = useMemo(() => {
@@ -363,8 +406,12 @@ export function TopicalLabRunner({
     if (masterGuide && masterGuide[masterKey]) {
       return masterGuide[masterKey];
     }
-    return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey];
-  }, [currentLevelData, topicDoc, activeGradeKey, difficulty]);
+    // Strict isolation: Never show English literature texts on Science or Mathematics topics
+    if (isEnglishSubject) {
+      return MASTER_PREREQUISITE_MAP[activeGradeKey]?.[tierKey];
+    }
+    return null;
+  }, [currentLevelData, topicDoc, activeGradeKey, difficulty, isEnglishSubject]);
 
   // Current pool of practice questions (checks practicePool, tasks, and questions across levels and root)
   const currentPool: TopicalPracticeQuestion[] = useMemo(() => {
@@ -499,11 +546,11 @@ export function TopicalLabRunner({
               </Button>
 
               <Badge variant="outline" className="text-[11px] font-bold border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
-                {topicDoc.badge || 'Strand 1: Number & Numeration'}
+                {topicDoc.badge || (topicDoc.strand ? `${topicDoc.strandCode ? topicDoc.strandCode + ': ' : ''}${topicDoc.strand}` : `${topicDoc.subject || 'Curriculum'} Lab`)}
               </Badge>
 
               <Badge variant="outline" className="text-[11px] font-semibold border-slate-700 bg-slate-800/80 text-slate-300">
-                {topicDoc.subject} • {topicDoc.tier}
+                {topicDoc.subject || 'Integrated Science'} • {topicDoc.tier || 'Junior Secondary (JHS)'}
               </Badge>
             </div>
 
@@ -954,7 +1001,13 @@ export function TopicalLabRunner({
                 topicTitle={`${topicDoc.title} • ${LEVEL_META[activeLevel].label}`}
                 gradeTier={topicDoc.tier}
                 levelId="jhs"
-                subjectId={topicDoc.subject?.toLowerCase().includes('english') ? 'english' : topicDoc.subject?.toLowerCase().includes('science') ? 'science' : 'mathematics'}
+                subjectId={
+                (topicDoc.subject?.toLowerCase().includes('science') || (topicDoc.id || '').startsWith('b7_strand') || (topicDoc.id || '').startsWith('b8_strand') || (topicDoc.id || '').startsWith('b9_strand') || (topicDoc.id || '').startsWith('bs'))
+                  ? 'science'
+                  : (topicDoc.subject?.toLowerCase().includes('english') || isEnglishSubject)
+                  ? 'english'
+                  : 'mathematics'
+              }
                 topicId={topicDoc.topicId}
                 tenantId={tenantId}
                 studentId={studentId}

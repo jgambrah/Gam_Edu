@@ -531,7 +531,12 @@ export async function fetchTopicalLabDoc(
         const b8Notes = notesObj.b8_progression || data.summary || '';
         const b9Notes = notesObj.b9_mastery || data.summary || '';
 
-        const levelDefaults: Record<string, { title: string; sub: string; summary: string; notes: string }> = {
+        const normSub = (subjectId || '').toLowerCase();
+        const docSub = (data.subject || data.subjectId || '').toLowerCase();
+        const isEnglish = normSub.includes('english') || docSub.includes('english');
+        const isScience = normSub.includes('science') || docSub.includes('science') || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
+
+        const levelDefaults: Record<string, { title: string; sub: string; summary: string; notes: string }> = isEnglish ? {
           b7: {
             title: `Basic 7 (JHS 1) • ${data.subStrandTitle || data.topicTitle || 'Prescribed Literature & Core Devices'}`,
             sub: 'Prescribed Prose & Devices',
@@ -548,6 +553,44 @@ export async function fetchTopicalLabDoc(
             title: `Basic 9 (JHS 3) • ${data.subStrandTitle || data.topicTitle || 'Extended Novella & Moral Rubrics'}`,
             sub: 'Titular Novella & Moral Rubrics',
             summary: data.conceptNotes?.b9_summary || 'Appreciation of extended narratives, cross-cultural conflicts, and national destiny in The Beacon of Light: the titular coming-of-age novella A Beacon of Light (Osmond’s journey from Obane to Accra), Beyond Light and Shadow, A Calabash of Saha, and full WAEC BECE Paper 2 essay rubrics (P-E-E formula).',
+            notes: b9Notes
+          }
+        } : isScience ? {
+          b7: {
+            title: `Basic 7 (JHS 1) • ${data.subStrandTitle || data.topicTitle || 'Core Science Foundations'}`,
+            sub: data.subStrandTitle || 'Core Foundations',
+            summary: data.conceptNotes?.b7_summary || data.summary || `${data.strandTitle || 'Integrated Science'} — ${data.subStrandTitle || 'Core Foundations'}`,
+            notes: b7Notes
+          },
+          b8: {
+            title: `Basic 8 (JHS 2) • ${data.subStrandTitle || data.topicTitle || 'Progression & Applied Concepts'}`,
+            sub: data.subStrandTitle || 'Applied Concepts',
+            summary: data.conceptNotes?.b8_summary || data.summary || `${data.strandTitle || 'Integrated Science'} — ${data.subStrandTitle || 'Progression & Applications'}`,
+            notes: b8Notes
+          },
+          b9: {
+            title: `Basic 9 (JHS 3) • ${data.subStrandTitle || data.topicTitle || 'Advanced Science & BECE Mastery'}`,
+            sub: data.subStrandTitle || 'BECE Mastery',
+            summary: data.conceptNotes?.b9_summary || data.summary || `${data.strandTitle || 'Integrated Science'} — ${data.subStrandTitle || 'Advanced Analysis & BECE Mastery'}`,
+            notes: b9Notes
+          }
+        } : {
+          b7: {
+            title: `Basic 7 (JHS 1) • ${data.subStrandTitle || data.topicTitle || 'Core Foundations'}`,
+            sub: data.subStrandTitle || 'Core Foundations',
+            summary: data.conceptNotes?.b7_summary || data.summary || `${data.strandTitle || 'Curriculum'} — ${data.subStrandTitle || 'Core Foundations'}`,
+            notes: b7Notes
+          },
+          b8: {
+            title: `Basic 8 (JHS 2) • ${data.subStrandTitle || data.topicTitle || 'Applications & Progression'}`,
+            sub: data.subStrandTitle || 'Applications',
+            summary: data.conceptNotes?.b8_summary || data.summary || `${data.strandTitle || 'Curriculum'} — ${data.subStrandTitle || 'Applications & Progression'}`,
+            notes: b8Notes
+          },
+          b9: {
+            title: `Basic 9 (JHS 3) • ${data.subStrandTitle || data.topicTitle || 'Advanced Mastery'}`,
+            sub: data.subStrandTitle || 'Mastery',
+            summary: data.conceptNotes?.b9_summary || data.summary || `${data.strandTitle || 'Curriculum'} — ${data.subStrandTitle || 'Advanced Analysis & Mastery'}`,
             notes: b9Notes
           }
         };
@@ -599,24 +642,61 @@ export async function fetchTopicalLabDoc(
           notesMarkdown += '\n\n#### Key Terminology\n' + data.notes.keyTerms.map((kt: any) => `* **${kt.term}:** ${kt.definition}`).join('\n');
         }
 
+        const b7Placeholder = 'Detailed concept notes and curriculum drills for Basic 7 are in preparation for this strand.';
+        const b8Placeholder = 'Detailed concept notes and curriculum drills for Basic 8 are in preparation for this strand.';
+        const b9Placeholder = 'Detailed concept notes and curriculum drills for Basic 9 are in preparation for this strand.';
+
         return {
           id: unitSnap.id,
+          topicId: unitSnap.id,
           title: `${data.strandTitle}: ${data.subStrandTitle}`,
           strand: data.strandTitle,
           strandCode: `S${data.strandNumber}`,
           subStrand: data.subStrandTitle,
+          subject: 'Integrated Science',
+          tier: 'Junior Secondary (JHS)',
+          badge: data.strandTitle || 'NaCCA Integrated Science',
+          description: `NaCCA CCP ${data.gradeLevel} unit on ${data.subStrandTitle} with interactive labs, worked examples, and graded practice pools.`,
+          totalPracticeQuestions: (data.drillQuestions || []).length,
           levels: {
-            [lvlKey]: {
-              levelTitle: `${data.gradeLevel} • ${data.subStrandTitle}`,
+            b7: {
+              levelTitle: `Basic 7 (JHS 1) • ${data.subStrandTitle}`,
+              sub: data.subStrandTitle,
               summary: `${data.strandTitle} — ${data.subStrandTitle}`,
-              notes: notesMarkdown,
-              diagramSvg: data.notes?.diagramSvg,
-              workedExamples,
-              practicePool: {
+              notes: lvlKey === 'b7' ? notesMarkdown : b7Placeholder,
+              diagramSvg: lvlKey === 'b7' ? data.notes?.diagramSvg : undefined,
+              workedExamples: lvlKey === 'b7' ? workedExamples : [],
+              practicePool: lvlKey === 'b7' ? {
                 low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
                 medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
                 hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
-              }
+              } : { low: [], medium: [], hard: [] }
+            },
+            b8: {
+              levelTitle: `Basic 8 (JHS 2) • ${data.subStrandTitle}`,
+              sub: data.subStrandTitle,
+              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
+              notes: lvlKey === 'b8' ? notesMarkdown : b8Placeholder,
+              diagramSvg: lvlKey === 'b8' ? data.notes?.diagramSvg : undefined,
+              workedExamples: lvlKey === 'b8' ? workedExamples : [],
+              practicePool: lvlKey === 'b8' ? {
+                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+              } : { low: [], medium: [], hard: [] }
+            },
+            b9: {
+              levelTitle: `Basic 9 (JHS 3) • ${data.subStrandTitle}`,
+              sub: data.subStrandTitle,
+              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
+              notes: lvlKey === 'b9' ? notesMarkdown : b9Placeholder,
+              diagramSvg: lvlKey === 'b9' ? data.notes?.diagramSvg : undefined,
+              workedExamples: lvlKey === 'b9' ? workedExamples : [],
+              practicePool: lvlKey === 'b9' ? {
+                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+              } : { low: [], medium: [], hard: [] }
             }
           }
         } as unknown as TopicalLabDocument;
