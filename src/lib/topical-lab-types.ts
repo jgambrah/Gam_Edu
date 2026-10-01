@@ -75,6 +75,9 @@ export interface TopicalLabDocument {
   topicId: string;
   title: string;
   subject: string;
+  strand?: string;
+  strandCode?: string;
+  subStrand?: string;
   tier: string;
   badge: string;
   description: string;
@@ -82,8 +85,10 @@ export interface TopicalLabDocument {
   version: number;
   levels: Record<string, TopicalLabLevel>;
   linkedExamQuestions?: LinkedExamQuestion[];
+  aliases?: string[];
   seededAt?: string;
   updatedAt: string;
+  [key: string]: any;
 }
 
 export interface TopicManifestItem {

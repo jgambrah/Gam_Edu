@@ -1,12 +1,14 @@
 /**
  * NaCCA Common Core Programme (CCP) Integrated Science (Discovery)
- * Master Curriculum Repository & Topical Units Foundation
+ * Unified 19-Hub Modular Curriculum Architecture
  *
- * Covers All 5 Strands across B7 (JHS 1), B8 (JHS 2), and B9 (JHS 3)
- * Full parity with JHS Mathematics Curriculum Architecture
+ * Covers All 5 Strands spiraling across B7 (JHS 1), B8 (JHS 2), and B9 (JHS 3)
+ * Full parity with JHS Mathematics and English Curriculum Architecture
  *
  * All intellectual property rights reserved to GAM IT Solutions (GAM EDU).
  */
+
+import { TopicalLabDocument } from '@/lib/topical-lab-types';
 
 export interface ScienceTopicalUnit {
   id: string;
@@ -41,900 +43,6822 @@ export interface ScienceTopicalUnit {
   metadata?: any;
 }
 
+export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
+  {
+    "id": "sci_strand1_materials",
+    "topicId": "sci_strand1_materials",
+    "title": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "strand": "STRAND 1: DIVERSITY OF MATTER",
+    "strandCode": "S1",
+    "subStrand": "Materials (Particulate Nature, Chemical Bonding & Acid-Base Equilibria)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Explore the macroscopic and subatomic properties of matter through interactive particle simulations and chemical testing labs. Students progress from physical state transitions and separation techniques to atomic electron configurations, covalent/ionic bonding, and aqueous neutralization reactions.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b7_strand1_materials",
+      "b8_strand1_atoms_bonding",
+      "b9_strand1_acids_bases"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Physical Properties, States of Matter & Separation Techniques",
+        "summary": "Master the particulate nature of matter, states of matter, and physical separation techniques for heterogeneous mixtures.",
+        "notes": "### Particulate Nature of Matter & Physical Separation Techniques\n* **NaCCA Curriculum Code:** `B7.1.1.1`\n* **Core Competency:** Demonstrate an understanding of the particulate nature of matter and distinguish among solids, liquids, and gases.\n\n#### 1. The Particulate Theory of Matter\nMatter is defined as anything that possesses mass and occupies space (volume). The particulate theory states:\n1. All matter consists of extremely minute particles (atoms, molecules, or ions).\n2. The particles are in continuous, random thermal motion (Brownian motion).\n3. Attractive intermolecular/interatomic forces exist between particles.\n4. Kinetic energy of the particles increases directly with temperature.\n\n#### 2. Fundamental States of Matter\n* **Solids:** Particles are tightly packed in regular crystal lattices, vibrating about fixed equilibrium points. High cohesive forces; fixed shape and fixed volume. Incompressible.\n* **Liquids:** Particles are closely packed but possess sufficient kinetic energy to slide past one another. Moderate intermolecular forces; definite volume conforming to container shape.\n* **Gases:** Particles are widely separated by large intermolecular distances with negligible attractive forces. Rapid, random linear motion; variable volume and shape. Highly compressible.\n\n#### 3. Separation Techniques for Heterogeneous Mixtures\n* **Filtration:** Separates an insoluble solid from a liquid suspension based on particle diameter using porous filter medium (e.g., separating sand from water).\n* **Decantation:** Pours off a supernatant liquid from a settled, dense solid precipitate.\n* **Simple Distillation:** Recovers pure solvent from a soluble solid-liquid solution via boiling and condensation in a Liebig condenser (e.g., pure water from saltwater).\n* **Fractional Distillation:** Separates miscible liquids with close boiling points (e.g., ethanol $\\approx 78^\\circ\\text{C}$ and water $100^\\circ\\text{C}$).\n* **Separating Funnel:** Separates immiscible liquids exploiting density divergence (e.g., kerosene and water).\n* **Paper Chromatography:** Separates soluble pigments or dyes based on differential solubility in mobile phase vs. stationary cellulose fibers.\n\n#### Key Terminology\n* **Brownian Motion:** The irregular, zig-zag motion of microscopic particles suspended in a fluid caused by collisions with fluid molecules.\n* **Filtrate:** The clear fluid that passes through the filter medium.\n* **Residue:** The insoluble solid retained on the filter paper.\n* **Immiscible Liquids:** Liquids that do not dissolve in each other and form distinct separate phases.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s1_1",
+            "title": "Worked Example: Multi-Stage Separation of Salt, Sand, and Iron Filings",
+            "problem": "A student is provided with a dry mixture containing fine sand, common salt (NaCl), and iron filings. Outline a step-by-step procedure to recover all three components pure and dry.",
+            "steps": [
+              "Step 1: Magnetic Extraction — Pass a powerful bar magnet wrapped in thin paper repeatedly over the mixture. The ferromagnetic iron filings are attracted to the magnet, leaving behind sand and salt.",
+              "Step 2: Dissolution — Transfer the remaining sand and salt mixture into a beaker containing distilled water. Stir vigorously with a glass rod. Sodium chloride dissolves completely to form an aqueous solution, while silica sand remains insoluble.",
+              "Step 3: Filtration — Pour the slurry through a filter funnel lined with Whatman filter paper into a conical flask. The insoluble sand collects as the residue on the filter paper, while saltwater collects as the clear filtrate.",
+              "Step 4: Washing & Drying Sand — Rinse the sand residue with distilled water, then dry in an oven or under direct sunlight.",
+              "Step 5: Evaporation / Crystallization — Heat the saltwater filtrate in an evaporating dish until water evaporates, leaving behind pure white sodium chloride crystals."
+            ],
+            "finalAnswer": "Examiner Tip: Always state the magnetic separation first before adding water; adding water first would wet the iron filings, causing rapid oxidation (rusting) and making magnetic separation ineffective."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s1_1",
+              "difficulty": "low",
+              "prompt": "Which of the following separation methods is most suitable for separating two immiscible liquids such as vegetable oil and water?",
+              "options": [
+                "Simple distillation",
+                "Separating funnel",
+                "Centrifugation",
+                "Fractional distillation"
+              ],
+              "correctAnswer": "Separating funnel",
+              "hint": "Consider that oil and water have different densities and do not mix.",
+              "workedSolution": "A separating funnel is specifically designed to separate immiscible liquids of differing densities. The denser water settles at the bottom and is drained via the stopcock, leaving the lighter oil layer above.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s1_2",
+              "difficulty": "medium",
+              "prompt": "The continuous zig-zag motion of pollen grains or smoke particles suspended in air or water is direct evidence of:",
+              "options": [
+                "Electrostatic repulsion between particles",
+                "Gravitational convection currents",
+                "Continuous random collisions by invisible fluid molecules",
+                "Capillary action within the fluid medium"
+              ],
+              "correctAnswer": "Continuous random collisions by invisible fluid molecules",
+              "hint": "Recall Robert Brown's observations of particulate kinetic theory.",
+              "workedSolution": "Brownian motion demonstrates the particulate nature of matter: suspended microscopic particles move erratically because they are bombarded from all directions by rapidly moving fluid molecules.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Atomic Architecture, Periodic Table & Chemical Bonding",
+        "summary": "Understand atomic structure, electron configurations for the first 20 elements, and the formation of ionic and covalent bonds.",
+        "notes": "### Atomic Architecture, Periodic Trends & Chemical Bonding\n* **NaCCA Curriculum Code:** `B8.1.1.1`\n* **Core Competency:** Model atomic structure, write electron configurations for elements 1 to 20, and explain ionic and covalent bonding.\n\n#### 1. Subatomic Architecture of the Atom\nAn atom is the smallest electrically neutral unit of an element that retains chemical identity.\n* **Protons ($p^+$):** Positive charge (+1), mass $\\approx 1\\text{ amu}$, located in the dense central nucleus.\n* **Neutrons ($n^0$):** Neutral charge (0), mass $\\approx 1\\text{ amu}$, located in the central nucleus.\n* **Electrons ($e^-$):** Negative charge (-1), mass $\\approx \\frac{1}{1840}\\text{ amu}$, orbiting in discrete quantum electron energy shells ($K, L, M, N$).\n\n#### 2. Atomic Number & Mass Number\n* **Atomic Number ($Z$):** Number of protons in the nucleus of an atom. Defines element identity ($Z=p=e$ in neutral atoms).\n* **Mass Number ($A$):** Total number of nucleons: $A = \\text{protons} + \\text{neutrons}$.\n* **Electron Shell Capacity:** Maximum electrons per principal shell is $2n^2$:\n  * $K$-shell ($n=1$): max 2 electrons\n  * $L$-shell ($n=2$): max 8 electrons\n  * $M$-shell ($n=3$): max 8 electrons (for first 20 elements: duplet/octet stability)\n\n#### 3. Chemical Bonding Mechanisms\nAtoms bond to achieve stable noble gas electron configurations (duplet rule for He; octet rule for Ne, Ar):\n* **Ionic (Electrovalent) Bonding:** Involves the complete transfer of one or more valence electrons from an electropositive metal to an electronegative non-metal. Forms oppositely charged ions ($M^{n+}$ and $X^{m-}$) held by strong electrostatic forces (e.g., $\\text{NaCl}, \\text{CaO}, \\text{MgCl}_2$).\n* **Covalent Bonding:** Involves the mutual sharing of valence electron pairs between non-metallic atoms (e.g., $\\text{H}_2, \\text{O}_2, \\text{H}_2\\text{O}, \\text{CH}_4$).\n\n#### Key Terminology\n* **Valency:** The combining capacity of an atom, determined by the number of electrons lost, gained, or shared.\n* **Isotopes:** Atoms of the same chemical element possessing identical atomic numbers ($Z$) but differing mass numbers ($A$) due to different neutron counts.\n* **Cation:** A positively charged ion formed when a metal atom loses electrons ($e^-$).\n* **Anion:** A negatively charged ion formed when a non-metal atom gains electrons ($e^-$).",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s1_1",
+            "title": "Worked Example: Electron Configuration & Ionic Formation of Magnesium Chloride",
+            "problem": "Magnesium has atomic number $Z=12$ and Chlorine has $Z=17$. Write their electron configurations, draw their Lewis structures, and show the formation of magnesium chloride.",
+            "steps": [
+              "Step 1: Write electron configurations: Magnesium (Mg, $Z=12$): 2, 8, 2. Chlorine (Cl, $Z=17$): 2, 8, 7.",
+              "Step 2: Determine ion formation: Magnesium needs to lose 2 valence electrons to achieve stable octet [2, 8]: $\\text{Mg} \\rightarrow \\text{Mg}^{2+} + 2e^-$. Chlorine needs to gain 1 electron to achieve stable octet [2, 8, 8]: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.",
+              "Step 3: Balance stoichiometry: One magnesium atom transfers 1 electron to each of two separate chlorine atoms: $\\text{Mg}^{2+} + 2\\text{Cl}^- \\rightarrow \\text{MgCl}_2$.",
+              "Step 4: Characterize bond: The strong electrostatic attraction between $\\text{Mg}^{2+}$ and two $\\text{Cl}^-$ ions forms the ionic compound Magnesium Chloride ($\\text{MgCl}_2$)."
+            ],
+            "finalAnswer": "Examiner Tip: Clearly indicate charges on the ions inside square brackets: [Mg]2+ and 2[Cl]-. Ionic compounds do not form shared electron loops."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s1_1",
+              "difficulty": "low",
+              "prompt": "What is the electron configuration of an atom of Phosphorus with atomic number Z = 15?",
+              "options": [
+                "2, 8, 5",
+                "2, 8, 3",
+                "2, 5, 8",
+                "2, 8, 7"
+              ],
+              "correctAnswer": "2, 8, 5",
+              "hint": "The K-shell takes 2, L-shell takes 8, and the remainder goes to the M-shell.",
+              "workedSolution": "For atomic number 15: K-shell = 2, L-shell = 8, M-shell = 15 - 10 = 5. Hence, electron configuration is 2, 8, 5.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s1_2",
+              "difficulty": "medium",
+              "prompt": "Which pair of elements will combine predominantly by covalent bonding?",
+              "options": [
+                "Sodium and Chlorine",
+                "Carbon and Oxygen",
+                "Magnesium and Oxygen",
+                "Calcium and Fluorine"
+              ],
+              "correctAnswer": "Carbon and Oxygen",
+              "hint": "Covalent bonds occur between non-metals sharing electron pairs.",
+              "workedSolution": "Carbon and Oxygen are both non-metals. Neither loses electrons readily; instead, they share electron pairs to form covalent carbon dioxide (CO2). Metal + non-metal pairs form ionic bonds.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Acids, Bases, Salts & Neutralization Chemistry",
+        "summary": "Classify acids, bases, and salts, measure pH levels, write balanced neutralization equations, and explain practical applications.",
+        "notes": "### Acids, Bases, Salts & Neutralization Reactions\n* **NaCCA Curriculum Code:** `B9.1.1.1`\n* **Core Competency:** Characterize aqueous acids and bases, measure pH, write balanced neutralization equations, and describe salt preparation.\n\n#### 1. Chemistry of Acids\n* **Definition:** An acid is a proton ($H^+$) donor that produces hydronium ions ($H_3O^+$) in aqueous solution.\n* **Organic Acids:** Weak acids of biological origin (e.g., ethanoic acid in vinegar, citric acid in citrus fruits, lactic acid in sour milk).\n* **Mineral / Inorganic Acids:** Strong acids (e.g., hydrochloric acid $\\text{HCl}$, sulfuric acid $\\text{H}_2\\text{SO}_4$, nitric acid $\\text{HNO}_3$).\n* **Properties:** Sour taste, corrosive, turns blue litmus paper red, electrical conductors in solution.\n* **Key Reaction:** $\\text{Acid} + \\text{Reactive Metal} \\rightarrow \\text{Salt} + \\text{Hydrogen gas } (H_2 \\uparrow)$\n\n#### 2. Chemistry of Bases & Alkalis\n* **Base:** A substance that neutralizes an acid to produce salt and water only (metal oxides and metal hydroxides).\n* **Alkalis:** Soluble bases that produce hydroxide ions ($OH^-$) in aqueous solution (e.g., $\\text{NaOH}, \\text{KOH}, \\text{Ca(OH)}_2$).\n* **Properties:** Bitter taste, soapy/slippery feel, turns red litmus blue, corrosive in concentrated form.\n\n#### 3. The pH Scale & Indicators\n* $\\text{pH} < 7$: Acidic solution (high $[H^+]$)\n* $\\text{pH} = 7$: Neutral (pure water at $25^\\circ\\text{C}$)\n* $\\text{pH} > 7$: Basic / Alkaline solution (high $[OH^-]$)\n\n#### 4. Neutralization Reactions & Salts\n$\\text{Acid} + \\text{Base} \\rightarrow \\text{Salt} + \\text{Water}$\n* Example: $\\text{HCl}_{(aq)} + \\text{NaOH}_{(aq)} \\rightarrow \\text{NaCl}_{(aq)} + \\text{H}_2\\text{O}_{(l)}$\n* Net Ionic Equation: $H^+_{(aq)} + OH^-_{(aq)} \\rightarrow \\text{H}_2\\text{O}_{(l)}$\n* **Practical Applications:**\n  * Agricultural liming: applying calcium hydroxide $\\text{Ca(OH)}_2$ to acidic soils.\n  * Antacids: neutralizing excess gastric acid in stomach (e.g., magnesium hydroxide $\\text{Mg(OH)}_2$).\n  * Insect stings: treating wasp stings (alkaline) with vinegar (weak acid); bee stings (acidic) with baking soda (weak base).",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s1_1",
+            "title": "Worked Example: Writing Balanced Neutralization Reactions",
+            "problem": "Write the balanced molecular and net ionic equations for the reaction between dilute sulfuric acid (H2SO4) and aqueous sodium hydroxide (NaOH).",
+            "steps": [
+              "Step 1: Identify reactants and products: Reactants: H2SO4(aq) + NaOH(aq). Products: Sodium sulfate (Na2SO4) + Water (H2O).",
+              "Step 2: Balance the molecular equation: Sulfuric acid is diprotic (2 H+ ions), requiring 2 moles of NaOH: H2SO4(aq) + 2NaOH(aq) -> Na2SO4(aq) + 2H2O(l).",
+              "Step 3: Write complete ionic equation: 2H+(aq) + SO4^2-(aq) + 2Na+(aq) + 2OH-(aq) -> 2Na+(aq) + SO4^2-(aq) + 2H2O(l).",
+              "Step 4: Cancel spectator ions (Na+ and SO4^2-): 2H+(aq) + 2OH-(aq) -> 2H2O(l) => H+(aq) + OH-(aq) -> H2O(l)."
+            ],
+            "finalAnswer": "Examiner Tip: Note that sodium sulfate is Na2SO4 because the sulfate radical has a valency of 2 (SO4^2-) while sodium has a valency of 1 (Na+)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s1_1",
+              "difficulty": "low",
+              "prompt": "A liquid tested with universal indicator turns deep blue/purple with a pH of 13. This solution is:",
+              "options": [
+                "A strong acid",
+                "A weak acid",
+                "A strong alkali",
+                "Neutral"
+              ],
+              "correctAnswer": "A strong alkali",
+              "hint": "The pH scale ranges from 0 to 14. High values correspond to strong bases.",
+              "workedSolution": "A pH value of 13-14 indicates a very high concentration of hydroxide ions (OH-), characteristic of strong alkalis such as concentrated sodium hydroxide (NaOH).",
+              "points": 1,
+              "learningCompetency": "B9.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s1_2",
+              "difficulty": "medium",
+              "prompt": "Which gas is evolved when dilute hydrochloric acid reacts with calcium carbonate (marble chips)?",
+              "options": [
+                "Hydrogen gas",
+                "Oxygen gas",
+                "Carbon dioxide gas",
+                "Chlorine gas"
+              ],
+              "correctAnswer": "Carbon dioxide gas",
+              "hint": "Acid + Carbonate -> Salt + Water + Gas (turns lime water milky).",
+              "workedSolution": "The reaction is: 2HCl(aq) + CaCO3(s) -> CaCl2(aq) + H2O(l) + CO2(g). Carbon dioxide gas effervesces and turns clear calcium hydroxide (limewater) milky.",
+              "points": 1,
+              "learningCompetency": "B9.1.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.026Z"
+  },
+  {
+    "id": "sci_strand1_cells",
+    "topicId": "sci_strand1_cells",
+    "title": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
+    "strand": "STRAND 1: DIVERSITY OF MATTER",
+    "strandCode": "S1",
+    "subStrand": "Living Cells (Ultrastructure, Organelle Specialization & Tissues)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. The track traces life from fundamental cell theory and organelle functions to multicellular differentiation and organ-system hierarchies.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b7_strand1_cells"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Cell Theory, Microscopy & Plant vs. Animal Ultrastructure",
+        "summary": "Understand the cell as the structural unit of life, master light microscope handling, and contrast plant and animal cell organelles.",
+        "notes": "### The Cell as the Fundamental Unit of Life & Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate an understanding of the structure of plant and animal cells, observe wet mounts under the microscope, and identify organelles.\n\n#### 1. The Classical Cell Theory\nDeveloped by Schleiden, Schwann, and Virchow:\n1. All living organisms are composed of one or more cells.\n2. The cell is the basic structural and functional unit of life.\n3. All cells arise from pre-existing cells through biological division.\n\n#### 2. Optical Light Microscope Components\n* **Eyepiece (Ocular Lens):** Magnifies image (typically $10\\times$).\n* **Objective Lenses:** Provide low ($4\\times$), medium ($10\\times$), and high ($40\\times$) magnification.\n* **Coarse & Fine Adjustment Knobs:** Bring specimen into initial rapid focus and fine, sharp resolution.\n* **Stage & Clips:** Support slide with central aperture for light transmission.\n* **Diaphragm & Condenser:** Regulate intensity and cone angle of illumination.\n* $\\text{Total Magnification} = \\text{Eyepiece Power} \\times \\text{Objective Lens Power}$.\n\n#### 3. Ultrastructural Comparison: Plant vs. Animal Cells\n| Structural Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Wall** | Present (rigid cellulose framework) | Absent (flexible outer boundary) |\n| **Plasma Membrane** | Present (interior to cell wall) | Present (outermost living boundary) |\n| **Chloroplasts** | Present (contain chlorophyll for photosynthesis) | Absent |\n| **Vacuole** | Large, permanent, central sap vacuole | Small, temporary, non-central vacuoles |\n| **Shape & Rigidity** | Regular, definite angular geometry | Irregular, fluid, polymorphic geometry |\n| **Storage Form** | Starch grains | Glycogen granules |",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s2_1",
+            "title": "Worked Example: Calculating Total Microscopic Magnification",
+            "problem": "A student observes an epidermal onion cell under a light microscope using a 15x ocular eyepiece lens and a 40x high-power objective lens. Calculate total magnification and explain why iodine solution is added.",
+            "steps": [
+              "Step 1: Apply formula: Total Magnification = Magnification of Eyepiece x Magnification of Objective.",
+              "Step 2: Substitute values: Total Magnification = 15 x 40 = 600x.",
+              "Step 3: Staining rationale: Iodine solution stains cellular starch and selectively binds to nucleic acids, creating optical contrast so that the nucleus, cell wall, and cytoplasm become distinctly visible under brightfield illumination."
+            ],
+            "finalAnswer": "Examiner Tip: Always state the multiplication unit 'x' in your magnification answer (e.g. 600x)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s2_1",
+              "difficulty": "low",
+              "prompt": "Which organelle is present in a green plant cell but completely absent in an animal cell?",
+              "options": [
+                "Mitochondrion",
+                "Cell membrane",
+                "Chloroplast",
+                "Nucleus"
+              ],
+              "correctAnswer": "Chloroplast",
+              "hint": "Think about the green pigment required for photosynthesis.",
+              "workedSolution": "Chloroplasts contain chlorophyll pigments and thylakoid membranes necessary for photosynthesis. Animal cells do not photosynthesize and lack chloroplasts.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s2_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary physiological function of the cell membrane?",
+              "options": [
+                "Provide absolute rigid mechanical support to the plant stem",
+                "Selectively regulate the entry and exit of substances",
+                "Synthesize glucose using radiant solar energy",
+                "Store genetic chromosomes inside chromatin threads"
+              ],
+              "correctAnswer": "Selectively regulate the entry and exit of substances",
+              "hint": "The membrane is semi-permeable / selectively permeable.",
+              "workedSolution": "The plasma membrane is a phospholipid bilayer that acts as a selectively permeable barrier, controlling the transport of ions and organic molecules into and out of the cell.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Cellular Specialization & Structure-Function Adaptation",
+        "summary": "Analyze specialized plant and animal cells and correlate unique morphological adaptations with physiological functions.",
+        "notes": "### Cellular Specialization & Structure-Function Adaptations\n* **NaCCA Curriculum Code:** `B8.1.2.1`\n* **Core Competency:** Explain how cells differentiate and modify their structures to execute specialized physiological functions.\n\n#### 1. Cellular Differentiation & Specialization\nIn single-celled organisms (*Amoeba*, *Paramecium*), one cell carries out all metabolic activities. In multicellular organisms, cells differentiate through selective gene expression to perform specific functions with greater efficiency.\n\n#### 2. Specialized Plant Cells\n* **Root Hair Cells:** Long, thin tubular cytoplasmic extension greatly increases surface area-to-volume ratio for rapid absorption of water (osmosis) and dissolved mineral ions (active transport). Thin cell wall; no chloroplasts.\n* **Xylem Vessels:** Dead, hollow elongated tubes with cell walls reinforced by lignin. Form continuous capillaries for long-distance transport of water and mineral salts from roots to leaves; provides mechanical support.\n* **Phloem Sieve Tube Elements:** Living elongated cells with perforated sieve plates; translocate manufactured sucrose and amino acids from photosynthetic source to metabolic sinks.\n* **Guard Cells:** Bean-shaped epidermal cells containing chloroplasts. Inner cell wall is thicker and less elastic than outer wall. Changes in turgor pressure regulate stomatal opening and closing for gas exchange and transpiration control.\n\n#### 3. Specialized Animal Cells\n* **Red Blood Cells (Erythrocytes):** Biconcave disc geometry maximizes surface area for rapid oxygen diffusion; absence of nucleus leaves more volume for hemoglobin molecules; flexible to squeeze through microscopic capillaries.\n* **Nerve Cells (Neurons):** Elongated axons transmit electrochemical impulses over long distances; surrounded by insulating myelin sheath; terminal dendrites synapse with adjacent receptors/effectors.\n* **Spermatozoa:** Flagellated tail provides swimming motility toward ovum; head possesses an acrosome cap filled with hydrolytic enzymes to penetrate ovum jelly coat; midpiece packed with mitochondria for ATP energy.\n* **Muscle Cells:** Elongated fibers containing contractile actin and myosin proteins that contract and relax to produce coordinated mechanical movement.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s2_1",
+            "title": "Worked Example: Adaptations of the Red Blood Cell",
+            "problem": "State three distinct structural features of the human red blood cell and explain how each structure adapts the cell to its function.",
+            "steps": [
+              "Feature 1: Biconcave Disc Shape — Adaptation: Increases the surface area to volume ratio, facilitating rapid diffusion of oxygen into and out of the cell.",
+              "Feature 2: Absence of Nucleus (and other organelles) at maturity — Adaptation: Maximizes internal cytoplasmic volume to pack more hemoglobin molecules, increasing oxygen-carrying capacity.",
+              "Feature 3: Flexible Plasma Membrane — Adaptation: Allows the erythrocyte to bend and squeeze through narrow capillaries without rupturing."
+            ],
+            "finalAnswer": "Examiner Tip: Always connect the physical structure directly to the biological function in adaptation questions."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s2_1",
+              "difficulty": "low",
+              "prompt": "Which specialized cell contains a high density of mitochondria in its midpiece to power rapid motility?",
+              "options": [
+                "White blood cell",
+                "Sperm cell (spermatozoon)",
+                "Xylem vessel",
+                "Guard cell"
+              ],
+              "correctAnswer": "Sperm cell (spermatozoon)",
+              "hint": "Mitochondria produce ATP needed for flagellar propulsion.",
+              "workedSolution": "The spermatozoon has a specialized midpiece packed with spiraled mitochondria that generate ATP energy to whip its flagellum and swim toward the ovum.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s2_2",
+              "difficulty": "medium",
+              "prompt": "The stomata of plant leaves open during daylight hours primarily because guard cells:",
+              "options": [
+                "Lose water by osmosis and become flaccid",
+                "Absorb water, become turgid, and curve outward due to unequal wall thickness",
+                "Lose their chloroplasts and shrink",
+                "Decompose their cellulose cell walls"
+              ],
+              "correctAnswer": "Absorb water, become turgid, and curve outward due to unequal wall thickness",
+              "hint": "Remember that the inner wall of the guard cell is thicker than the outer wall.",
+              "workedSolution": "During photosynthesis, guard cells accumulate solutes, causing water influx by osmosis. As they swell with turgor, their thinner outer walls expand more than the thick inner walls, bowing apart and opening the stomatal pore.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Multicellular Organization, Tissues & Somatic Cell Division",
+        "summary": "Synthesize hierarchical biological organization from cells to systems, and evaluate tissue maintenance and somatic mitotic cell division.",
+        "notes": "### Multicellular Organization & Somatic Cell Division\n* **NaCCA Curriculum Code:** `B9.1.2.1`\n* **Core Competency:** Explain the levels of organization in multicellular organisms and describe somatic mitotic cell division for growth and repair.\n\n#### 1. Levels of Biological Organization\n* **1. Cell:** The basic structural and functional unit (e.g., muscle cell, palisade mesophyll cell).\n* **2. Tissue:** A group of specialized cells with similar structure working together to perform a specific function.\n  * *Plant Tissues:* Epidermal, vascular (xylem and phloem), photosynthetic mesophyll tissue.\n  * *Animal Tissues:* Epithelial, connective (blood, bone, cartilage), muscular, nervous tissue.\n* **3. Organ:** A collection of distinct tissues cooperating to carry out complex physiological tasks (e.g., Heart, Stomach, Leaf, Root).\n* **4. Organ System:** A group of interconnected organs coordinating major physiological processes (e.g., Digestive, Circulatory, Nervous systems).\n* **5. Organism:** A complete living entity composed of integrated organ systems functioning harmoniously.\n\n#### 2. Somatic Cell Division (Mitosis)\nMitosis is equational cell division in which a diploid parent cell ($2n$) divides to produce two genetically identical diploid daughter cells ($2n$).\n* **Biological Significance:**\n  * **Growth:** Increases cell number in developing multicellular organisms.\n  * **Tissue Repair & Regeneration:** Replaces damaged, worn-out cells (e.g., healing wounds, skin sloughing).\n  * **Asexual Reproduction:** Enables vegetative propagation in plants (e.g., cassava cuttings, potato tubers) and binary fission in unicellular organisms.\n* **Phases of Mitosis:**\n  * **Prophase:** Chromosomes condense; nuclear membrane breaks down; spindle fibers form.\n  * **Metaphase:** Chromosomes line up along the equatorial plate of the cell.\n  * **Anaphase:** Sister chromatids separate and are pulled to opposite spindle poles.\n  * **Telophase & Cytokinesis:** Nuclear membranes reform around daughter nuclei; cytoplasm divides.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s2_1",
+            "title": "Worked Example: Hierarchy of Biological Organization in Humans",
+            "problem": "Arrange the following biological components in order of increasing complexity: Heart, Blood, Erythrocyte, Circulatory System, Human Being. Justify each classification.",
+            "steps": [
+              "Step 1: Erythrocyte (Cell) — Single specialized cell carrying oxygen.",
+              "Step 2: Blood (Tissue) — Fluid connective tissue comprising erythrocytes, leukocytes, platelets, and plasma.",
+              "Step 3: Heart (Organ) — Muscular pumping organ formed from cardiac muscle tissue, connective tissue, and nervous tissue.",
+              "Step 4: Circulatory System (Organ System) — Network of coordinated organs including heart, blood vessels (arteries, veins, capillaries), and blood.",
+              "Step 5: Human Being (Organism) — Multicellular organism functioning through the integrated actions of all body systems."
+            ],
+            "finalAnswer": "Examiner Tip: Correct sequence is Cell -> Tissue -> Organ -> System -> Organism. Always state the connective tissue identity of blood."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s2_1",
+              "difficulty": "low",
+              "prompt": "Blood in mammals is classified biologically as a:",
+              "options": [
+                "Single specialized cell",
+                "Connective tissue",
+                "Pumping organ",
+                "Organ system"
+              ],
+              "correctAnswer": "Connective tissue",
+              "hint": "It contains diverse cell types suspended in an extracellular fluid matrix (plasma).",
+              "workedSolution": "Blood is an animal connective tissue composed of diverse cellular components (erythrocytes, leukocytes, thrombocytes) suspended in an extracellular liquid matrix called plasma.",
+              "points": 1,
+              "learningCompetency": "B9.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s2_2",
+              "difficulty": "medium",
+              "prompt": "Which biological process relies exclusively on mitotic cell division?",
+              "options": [
+                "Production of haploid gametes (sperm and egg cells)",
+                "Healing of a skin laceration by epithelial tissue repair",
+                "Reduction of chromosome count from diploid to haploid",
+                "Genetic variation through crossing over"
+              ],
+              "correctAnswer": "Healing of a skin laceration by epithelial tissue repair",
+              "hint": "Mitosis produces identical somatic cells for growth and tissue repair.",
+              "workedSolution": "Tissue repair and wound healing occur via mitosis, where diploid epidermal cells divide to produce genetically identical replacement cells. Gamete production is meiosis.",
+              "points": 1,
+              "learningCompetency": "B9.1.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand2_earth_cycles",
+    "topicId": "sci_strand2_earth_cycles",
+    "title": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "strand": "STRAND 2: CYCLES",
+    "strandCode": "S2",
+    "subStrand": "Earth Science (Atmospheric Cycles, Hydrology & Biogeochemical Loops)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Investigate the closed thermodynamic cycles that regulate planetary climate, atmospheric composition, and soil biochemical fertility. Interactive modules simulate precipitation mechanisms, carbon sequestration sinks, and biological nitrogen fixation pathways.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b7_strand2_earth_cycles"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • The Hydrological Cycle & Potable Water Resources",
+        "summary": "Model the water cycle phases, precipitation mechanisms, and human impacts on freshwater drainage basins.",
+        "notes": "### The Hydrological (Water) Cycle & Freshwater Conservation\n* **NaCCA Curriculum Code:** `B7.2.1.1`\n* **Core Competency:** Explain the stages of the water cycle and evaluate human activities on municipal watersheds.\n\n#### 1. Stages of the Hydrological Cycle\nThe water cycle is a continuous, solar-driven thermodynamic loop:\n* **Evaporation:** Solar radiative heating converts liquid water from oceans, rivers, and soil into water vapor.\n* **Transpiration:** Water loss as vapor from microscopic leaf stomata into the atmosphere.\n* **Condensation:** Rising warm, moist air expands and cools adiabatically; water vapor condenses around microscopic aerosol condensation nuclei to form clouds.\n* **Precipitation:** Condensed cloud droplets coalesce until gravitational pull overcomes air resistance, falling as rain, drizzle, or hail.\n* **Percolation & Infiltration:** Water seeps downward through soil pore spaces to recharge groundwater aquifers and water tables.\n* **Surface Runoff:** Excess precipitation flows overland into streams, rivers, and oceans.\n\n#### 2. Human Disturbances to Watersheds\n* Deforestation reduces vegetative interception and transpiration, accelerating soil erosion and flash flooding.\n* Unregulated alluvial gold mining (galamsey) pollutes water basins with toxic heavy metals (mercury, lead) and suspended silt.\n* Industrial effluent discharge causes severe eutrophication and biochemical oxygen demand (BOD) spikes.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s3_1",
+            "title": "Worked Example: The Dual Role of Solar Energy in the Water Cycle",
+            "problem": "Explain two distinct roles that solar radiation plays in driving the hydrological cycle.",
+            "steps": [
+              "Role 1: Providing Latent Heat of Vaporization — Solar radiation heats oceanic, river, and terrestrial surfaces, providing the thermodynamic thermal energy required to break hydrogen bonds in liquid water, transforming it into atmospheric vapor.",
+              "Role 2: Generating Atmospheric Convection Currents — Unequal solar heating of the Earth's surface creates pressure differentials and convective thermal updrafts that carry humid air to higher, cooler altitudes where condensation and cloud formation occur."
+            ],
+            "finalAnswer": "Examiner Tip: Solar energy is the primary engine of the hydrological cycle; without solar thermal radiation, evaporation and cloud convection would cease."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s3_1",
+              "difficulty": "low",
+              "prompt": "The process by which green plants release water vapor through the stomata of their leaves into the atmosphere is termed:",
+              "options": [
+                "Precipitation",
+                "Transpiration",
+                "Respiration",
+                "Percolation"
+              ],
+              "correctAnswer": "Transpiration",
+              "hint": "It occurs specifically through leaf stomata pores.",
+              "workedSolution": "Transpiration is the evaporation of water from plant leaves through open stomata into the surrounding atmospheric boundary layer.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s3_2",
+              "difficulty": "medium",
+              "prompt": "How does large-scale forest clear-cutting (deforestation) affect local hydrological cycles?",
+              "options": [
+                "It increases cloud condensation and triples rainfall",
+                "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
+                "It permanently lowers atmospheric temperature",
+                "It stops evaporation from oceans"
+              ],
+              "correctAnswer": "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
+              "hint": "Fewer trees mean less water vapor released into the air.",
+              "workedSolution": "Deforestation drastically reduces plant transpiration, leading to lower atmospheric humidity and diminished localized rainfall, while barren soil suffers severe erosion and loss of water retention.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • The Carbon Cycle & Atmospheric Balance",
+        "summary": "Trace carbon biogeochemical pathways between photosynthetic sinks, aerobic respiration, fossil combustion, and oceanic sequestration.",
+        "notes": "### The Global Carbon Cycle & Atmospheric Equilibrium\n* **NaCCA Curriculum Code:** `B8.2.1.1`\n* **Core Competency:** Trace carbon movement through the biosphere, atmosphere, hydrosphere, and geosphere.\n\n#### 1. Carbon Sequestration & Release Pathways\nCarbon is the fundamental structural backbone of organic macromolecules.\n* **Carbon Removal Pathways (Carbon Sinks):**\n  * **Photosynthesis:** Terrestrial vegetation and marine phytoplankton absorb atmospheric $\\text{CO}_2$:\n    $$6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Light, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$$\n  * **Oceanic Dissolution:** $\\text{CO}_2$ dissolves into surface waters forming carbonic acid ($\\text{H}_2\\text{CO}_3$) and marine carbonate sediments (mollusk shells, corals).\n* **Carbon Release Pathways (Carbon Sources):**\n  * **Cellular Respiration:** Aerobic respiration by plants, animals, and microbes:\n    $$\\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2 \\rightarrow 6\\text{CO}_2 + 6\\text{H}_2\\text{O} + \\text{ATP}$$\n  * **Decomposition:** Saprophytic bacteria and fungi break down dead biomass, releasing $\\text{CO}_2$ and $\\text{CH}_4$.\n  * **Fossil Fuel Combustion:** Burning coal, crude oil, and natural gas oxidized stored subterranean carbon deposits.\n  * **Volcanic Outgassing:** Thermal degassing of subducted carbonate rocks.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s3_1",
+            "title": "Worked Example: The Carbon Interplay Between Respiration and Photosynthesis",
+            "problem": "Demonstrate chemically how photosynthesis and aerobic cellular respiration form a complementary closed loop in the carbon cycle.",
+            "steps": [
+              "Step 1: Write photosynthesis equation: 6CO2 + 6H2O + Light Energy -> C6H12O6 (glucose) + 6O2. Carbon dioxide is absorbed from the atmosphere and fixed into organic carbohydrate biomass.",
+              "Step 2: Write respiration equation: C6H12O6 + 6O2 -> 6CO2 + 6H2O + Energy (ATP). Heterotrophs and autotrophs oxidize glucose to yield metabolic energy, returning CO2 to the atmosphere.",
+              "Step 3: Conclude complementarity: The products of photosynthesis (glucose and oxygen) serve directly as the reactants for cellular respiration, while the waste products of respiration (carbon dioxide and water) serve as the essential raw materials for photosynthesis."
+            ],
+            "finalAnswer": "Examiner Tip: Notice that the two equations are the exact mathematical and chemical reverse of each other."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s3_1",
+              "difficulty": "low",
+              "prompt": "Which biological process directly removes carbon dioxide gas from the atmosphere?",
+              "options": [
+                "Cellular respiration",
+                "Photosynthesis",
+                "Fermentation",
+                "Decomposition"
+              ],
+              "correctAnswer": "Photosynthesis",
+              "hint": "Green plants require this gas to synthesize carbohydrates.",
+              "workedSolution": "Photosynthesis is the primary biological carbon sequestration mechanism, where autotrophic organisms fix gaseous CO2 into organic carbon compounds using light energy.",
+              "points": 1,
+              "learningCompetency": "B8.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s3_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary consequence of burning large reserves of fossil fuels on the global carbon cycle?",
+              "options": [
+                "Carbon dioxide is permanently removed from the atmosphere",
+                "Excess CO2 accumulates in the atmosphere, driving global warming",
+                "Oxygen levels drop to zero",
+                "Nitrogen gas in the air is destroyed"
+              ],
+              "correctAnswer": "Excess CO2 accumulates in the atmosphere, driving global warming",
+              "hint": "Fossil fuels release sequestered subterranean carbon back into the air.",
+              "workedSolution": "Combustion releases carbon sequestered over hundreds of millions of years in geological strata, overwhelming natural photosynthetic sinks and increasing atmospheric greenhouse gas concentrations.",
+              "points": 1,
+              "learningCompetency": "B8.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • The Nitrogen Cycle & Soil Biochemical Fertility",
+        "summary": "Analyze the nitrogen cycle, biological nitrogen fixation by Rhizobium, and chemical nitrification/denitrification steps.",
+        "notes": "### The Nitrogen Cycle & Biological Nitrogen Fixation\n* **NaCCA Curriculum Code:** `B9.2.1.1`\n* **Core Competency:** Explain the chemical stages of the nitrogen cycle and identify the bacteria involved in soil fertility maintenance.\n\n#### 1. The Inert Atmospheric Nitrogen Paradox\nAlthough elemental nitrogen ($\\text{N}_2$) comprises $\\approx 78\\%$ of Earth's atmosphere, plants and animals cannot absorb gaseous $\\text{N}_2$ directly because of its extremely strong, unreactive covalent triple bond ($N \\equiv N$). It must first be fixed into soluble bioavailable ions: ammonium ($\\text{NH}_4^+$) and nitrates ($\\text{NO}_3^-$).\n\n#### 2. Key Chemical Stages of the Nitrogen Cycle\n* **1. Nitrogen Fixation:**\n  * **Biological:** Symbiotic bacteria (*Rhizobium*) residing in root nodules of leguminous plants (cowpea, groundnut, soybean) convert atmospheric $\\text{N}_2$ into organic amino compounds. Free-living soil bacteria (*Azotobacter*, *Clostridium*) also fix nitrogen.\n  * **Physical (Atmospheric):** High-voltage electrical lightning discharges break the $N \\equiv N$ triple bond, reacting with oxygen to form nitrogen oxides ($\\text{NO}, \\text{NO}_2$), which dissolve in rainfall as dilute nitric acid ($\\text{HNO}_3$).\n  * **Industrial:** The Haber-Bosch process manufactures synthetic ammonia fertilizer: $\\text{N}_2 + 3\\text{H}_2 \\rightleftharpoons 2\\text{NH}_3$.\n* **2. Ammonification:** Saprophytic putrefying bacteria and fungi break down dead proteinaceous tissue and urea wastes into ammonium compounds ($\\text{NH}_4^+$).\n* **3. Nitrification (Two-Step Aerobic Process):**\n  * Step A: *Nitrosomonas* bacteria oxidize ammonia into nitrites:\n    $$2\\text{NH}_3 + 3\\text{O}_2 \\rightarrow 2\\text{NO}_2^- + 2\\text{H}^+ + 2\\text{H}_2\\text{O}$$\n  * Step B: *Nitrobacter* bacteria oxidize nitrites into absorbable nitrates:\n    $$2\\text{NO}_2^- + \\text{O}_2 \\rightarrow 2\\text{NO}_3^-$$\n* **4. Assimilation:** Plant roots absorb nitrates via active transport, incorporating nitrogen into amino acids, proteins, and chlorophyll.\n* **5. Denitrification:** In waterlogged, anaerobic soils, *Pseudomonas denitrificans* bacteria convert soil nitrates back into gaseous molecular nitrogen ($\\text{N}_2 \\uparrow$), returning it to the atmosphere and depleting agricultural soil fertility.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s3_1",
+            "title": "Worked Example: The Agronomic Value of Legumes in Crop Rotation",
+            "problem": "Explain why agricultural science teachers recommend planting leguminous crops such as cowpea or groundnut in crop rotation schemes before planting heavy nitrogen feeders like maize.",
+            "steps": [
+              "Step 1: Identify symbiotic relationship: Leguminous plants possess specialized root nodules housing colonies of symbiotic Rhizobium bacteria.",
+              "Step 2: Mechanism of action: Rhizobium bacteria possess the nitrogenase enzyme complex capable of breaking the atmospheric N2 triple bond, converting inert gas into bioavailable ammonium compounds for the plant.",
+              "Step 3: Residual soil enrichment: When the leguminous crop is harvested and its root residues decompose, large quantities of organic nitrogen compounds are converted by nitrifying bacteria into soluble nitrates (NO3-), naturally replenishing soil fertility for the subsequent maize crop without requiring synthetic nitrogen fertilizers."
+            ],
+            "finalAnswer": "Examiner Tip: State the name of the bacterium (Rhizobium) and the plant structure (root nodules) explicitly for full marks."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s3_1",
+              "difficulty": "low",
+              "prompt": "Which bacterium lives symbiotically inside the root nodules of leguminous plants to fix atmospheric nitrogen?",
+              "options": [
+                "Nitrosomonas",
+                "Rhizobium",
+                "Nitrobacter",
+                "Pseudomonas"
+              ],
+              "correctAnswer": "Rhizobium",
+              "hint": "It forms distinct pinkish nodules on roots of cowpeas and groundnuts.",
+              "workedSolution": "Rhizobium is the symbiotic nitrogen-fixing bacterium that inhabits the root nodules of legumes, converting gaseous N2 into bioavailable nitrogenous compounds.",
+              "points": 1,
+              "learningCompetency": "B9.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s3_2",
+              "difficulty": "medium",
+              "prompt": "The two-step biological oxidation of ammonia into nitrites and subsequently into nitrates is known as:",
+              "options": [
+                "Ammonification",
+                "Denitrification",
+                "Nitrification",
+                "Assimilation"
+              ],
+              "correctAnswer": "Nitrification",
+              "hint": "Nitrosomonas and Nitrobacter bacteria execute these oxidation steps.",
+              "workedSolution": "Nitrification is the aerobic conversion of ammonia to nitrite (by Nitrosomonas) and subsequently from nitrite to nitrate (by Nitrobacter), making nitrogen absorbable by plant root systems.",
+              "points": 1,
+              "learningCompetency": "B9.2.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand2_life_cycles",
+    "topicId": "sci_strand2_life_cycles",
+    "title": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "strand": "STRAND 2: CYCLES",
+    "strandCode": "S2",
+    "subStrand": "Life Cycles of Organisms (Metamorphic Stages, Vectors & Pest Control)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Dissect the developmental biology of insects and economic vectors with virtual rearing chambers. Students map instars, identify disease transmission mechanisms, and develop biological and integrated pest management (IPM) interventions.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b8_strand2_life_cycles"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Metamorphic Developmental Pathways in Organisms",
+        "summary": "Contrast complete and incomplete metamorphosis; examine the life cycle and nymph instars of the cockroach.",
+        "notes": "### Insect Metamorphosis: Complete vs. Incomplete Developmental Pathways\n* **NaCCA Curriculum Code:** `B7.2.2.1`\n* **Core Competency:** Distinguish between complete and incomplete metamorphosis and map the life stages of the cockroach and grasshopper.\n\n#### 1. Concept of Metamorphosis\nMetamorphosis is the biological developmental progression through distinct structural and physiological stages from egg to adult form.\n\n#### 2. Incomplete (Hemimetabolous) Metamorphosis\n* **Three Stages:** $\\text{Egg} \\rightarrow \\text{Nymph} \\rightarrow \\text{Adult (Imago)}$\n* The newly hatched **nymph** resembles a miniature, sexually immature, wingless version of the adult.\n* The nymph undergoes successive molting stages called **instars** (shedding its chitinous exoskeleton via ecdysis).\n* **Examples:** Cockroach (*Periplaneta americana*), grasshopper, dragonfly, praying mantis.\n* **Cockroach Biology:** Female deposits eggs encased in a protective purse-like capsule called an **ootheca**. Nymphs molt 6-13 times over several months before developing functional wings and reproductive maturity.\n\n#### 3. Complete (Holometabolous) Metamorphosis\n* **Four Stages:** $\\text{Egg} \\rightarrow \\text{Larva} \\rightarrow \\text{Pupa} \\rightarrow \\text{Adult}$\n* The larva differs completely from the adult in morphology, anatomy, diet, and habitat (e.g., caterpillar vs. butterfly).\n* The **pupa** is a non-feeding, quiescent developmental stage during which complete histolysis and organ rebuilding take place inside a cocoon or puparium.\n* **Examples:** Housefly, mosquito, butterfly, honeybee, beetle.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s4_1",
+            "title": "Worked Example: Contrasting Cockroach and Butterfly Development",
+            "problem": "Tabulate three differences between the developmental stages of the cockroach and the butterfly.",
+            "steps": [
+              "Difference 1: Type of metamorphosis — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Butterfly undergoes complete (holometabolous) metamorphosis.",
+              "Difference 2: Number of developmental stages — Cockroach has 3 stages (Egg -> Nymph -> Adult); Butterfly has 4 stages (Egg -> Larva -> Pupa -> Adult).",
+              "Difference 3: Resemblance of juvenile to adult — Cockroach nymph closely resembles the adult minus wings and reproductive organs; Butterfly larva (caterpillar) bears no morphological resemblance to the winged adult."
+            ],
+            "finalAnswer": "Examiner Tip: Always present comparative questions in a clearly aligned table with matching rows."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s4_1",
+              "difficulty": "low",
+              "prompt": "The protective egg case in which a female cockroach deposits its eggs is called an:",
+              "options": [
+                "Ootheca",
+                "Pupa",
+                "Instar",
+                "Cocoon"
+              ],
+              "correctAnswer": "Ootheca",
+              "hint": "It is a hardened, purse-like proteinaceous casing.",
+              "workedSolution": "Female cockroaches enclose their fertilized eggs in a leathery, chitinous egg case called an ootheca, which shields developing embryos from desiccation and predators.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s4_2",
+              "difficulty": "medium",
+              "prompt": "Which insect exhibits incomplete metamorphosis during its life cycle?",
+              "options": [
+                "Housefly",
+                "Mosquito",
+                "Grasshopper",
+                "Butterfly"
+              ],
+              "correctAnswer": "Grasshopper",
+              "hint": "The young nymph resembles the adult without passing through a pupal stage.",
+              "workedSolution": "Grasshoppers undergo incomplete metamorphosis with three stages: Egg -> Nymph -> Adult. The other options undergo complete 4-stage metamorphosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Vectors of Disease: Mosquito & Housefly Lifecycles",
+        "summary": "Trace the life cycles of Anopheles mosquitoes and houseflies, and evaluate vector disruption strategies.",
+        "notes": "### Pathogenic Vectors: The Mosquito and Housefly Lifecycles\n* **NaCCA Curriculum Code:** `B8.2.2.1`\n* **Core Competency:** Trace life cycles of the mosquito and housefly, analyze disease transmission, and evaluate vector control.\n\n#### 1. Life Cycle of the Mosquito (*Anopheles*, *Aedes*, *Culex*)\nUndergoes complete metamorphosis in aquatic and terrestrial habitats:\n* **Egg:** Female *Anopheles* lays single boat-shaped eggs with lateral air floats on clean stagnant water. *Culex* lays eggs stuck together in rafts on polluted water.\n* **Larva (Wriggler):** Aquatic, active feeder. Breathes atmospheric air at the water surface:\n  * *Anopheles:* Lacks respiratory siphon; rests parallel to water surface.\n  * *Culex:* Possesses long breathing siphon; hangs at an angle from water surface.\n* **Pupa (Tumbler):** Comma-shaped, active non-feeding stage. Breathes through a pair of thoracic respiratory trumpets.\n* **Adult (Imago):** Emerges at water surface.\n  * Only female mosquitoes feed on vertebrate blood (requiring iron and proteins for egg maturation); males feed exclusively on plant nectar.\n  * *Anopheles* transmits *Plasmodium* (Malaria); *Aedes* transmits Yellow Fever & Dengue; *Culex* transmits *Wuchereria bancrofti* (Elephantiasis/Filariasis).\n\n#### 2. Life Cycle of the Housefly (*Musca domestica*)\n* **Egg:** Laid in batches on warm, decaying organic matter, feces, and garbage.\n* **Larva (Maggot):** Legless, conical white larva that feeds on decaying organic material.\n* **Pupa:** Barrel-shaped, dark brown puparium in dry soil.\n* **Adult:** Mechanical vector of pathogens (cholera, typhoid, dysentery). Houseflies vomit digestive enzymes onto solid food, sponge up the liquefied solution, and contaminate food surfaces with hairy appendages and fecal drops.\n\n#### 3. Vector Control & Ecological Disruption\n* **Larval Control:** Pouring oil/kerosene films on stagnant water surfaces to block respiratory siphons (suffocation); biological control using *Gambusia* (mosquito fish) or *Bacillus thuringiensis israelensis* (Bti).\n* **Adult Control:** Insecticide-Treated Nets (ITNs), indoor residual spraying, outdoor fogging.\n* **Environmental Sanitation:** Eliminating stagnant pools, clearing empty tins and tires, covering trash bins.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s4_1",
+            "title": "Worked Example: Mechanism of Action of Oil Films on Mosquito Larvae",
+            "problem": "Explain scientifically how pouring a thin film of kerosene or waste oil over stagnant pools of water eliminates mosquito larvae and pupae.",
+            "steps": [
+              "Step 1: Identify respiratory adaptation: Mosquito larvae (wrigglers) and pupae (tumblers) are aquatic but must breathe atmospheric oxygen at the water surface via respiratory siphons (larvae) or respiratory trumpets (pupae).",
+              "Step 2: Surface tension and barrier effect: The thin oil film drastically reduces the surface tension of the water and forms an impermeable physical hydrocarbon barrier between the air and water.",
+              "Step 3: Asphyxiation: When the larvae pierce the surface film to breathe, oil enters and blocks their microscopic spiracles and respiratory siphons, leading to rapid asphyxiation (suffocation) and death within hours."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize that oil acts by mechanical suffocation, not by chemical poisoning of the water."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s4_1",
+              "difficulty": "low",
+              "prompt": "The active, aquatic, non-feeding stage in the mosquito life cycle is called the:",
+              "options": [
+                "Maggot",
+                "Pupa (tumbler)",
+                "Larva (wriggler)",
+                "Nymph"
+              ],
+              "correctAnswer": "Pupa (tumbler)",
+              "hint": "It is comma-shaped and breathes through thoracic trumpets.",
+              "workedSolution": "The mosquito pupa (tumbler) is comma-shaped, highly mobile, and does not feed while transforming into the adult imago.",
+              "points": 1,
+              "learningCompetency": "B8.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s4_2",
+              "difficulty": "medium",
+              "prompt": "How does the housefly transmit pathogens such as Vibrio cholerae to human food?",
+              "options": [
+                "By injecting saliva into human blood through piercing mouthparts",
+                "Through mechanical transfer on its hairy legs and regurgitating digestive fluid on food",
+                "By laying eggs inside the human intestine",
+                "By drinking all water from the food"
+              ],
+              "correctAnswer": "Through mechanical transfer on its hairy legs and regurgitating digestive fluid on food",
+              "hint": "Houseflies have sponging mouthparts, not piercing-sucking mouthparts.",
+              "workedSolution": "Houseflies act as mechanical vectors. Pathogens adhere to their hairy legs, body, and sticky footpads. When feeding, they regurgitate digestive saliva and defecate on food, contaminating it.",
+              "points": 1,
+              "learningCompetency": "B8.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Agricultural & Storage Pest Management",
+        "summary": "Classify crop and storage pests (weevils, armyworms, stem borers) and establish Integrated Pest Management (IPM) protocols.",
+        "notes": "### Agricultural Crop Pests & Integrated Pest Management (IPM)\n* **NaCCA Curriculum Code:** `B9.2.2.1`\n* **Core Competency:** Classify agricultural pests by feeding habits, analyze crop damage, and implement Integrated Pest Management (IPM).\n\n#### 1. Classification of Crop Pests by Feeding Mechanism\n* **Biting and Chewing Pests:** Possess strong, serrated mandibles and maxillae to masticate vegetative tissue (e.g., grasshoppers, locusts, armyworms, beetles, caterpillars). Cause extensive defoliation, reducing photosynthetic capacity.\n* **Piercing and Sucking Pests:** Possess needle-like tubular stylets to pierce plant tissues and suck cell sap (e.g., aphids, cotton stainers, mealybugs, whiteflies, cocoa mirids/capsids). Cause leaf curling, chlorosis, and transmit viral plant diseases (e.g., Cocoa Swollen Shoot Virus).\n* **Boring Pests:** Larvae bore into plant stems, pods, or grains (e.g., maize stem borer *Busseola fusca*, coffee berry borer). Weaken structural lodging resistance and kill growing shoots.\n\n#### 2. Major Storage Pests\n* **Maize Weevil (*Sitophilus zeamais*):** Female bores holes into mature maize kernels to deposit eggs; larvae feed internally on the endosperm and embryo, leaving hollow grains riddled with characteristic exit holes.\n* **Cowpea Weevil (*Callosobruchus maculatus*):** Infests dried cowpea beans, reducing seeds to empty shells and dust.\n\n#### 3. Integrated Pest Management (IPM) Paradigm\nIPM combines ecological, cultural, biological, and chemical methods to minimize pest damage while safeguarding environmental health:\n1. **Cultural Controls:** Crop rotation, early planting, field sanitation, intercropping with repellent plants.\n2. **Biological Controls:** Introducing natural parasites, parasitoids (e.g., *Trichogramma* wasps), and predators (ladybird beetles).\n3. **Physical / Mechanical Controls:** Hand-picking caterpillars, light traps, hermetic Purdue Improved Crop Storage (PICS) bags for grains.\n4. **Chemical Controls:**Judicious, targeted application of selective, biodegradable pesticides as a last resort.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s4_1",
+            "title": "Worked Example: Mechanism of Hermetic Storage in Grain Weevil Control",
+            "problem": "Explain how Purdue Improved Crop Storage (PICS) hermetic storage bags protect grain from the maize weevil without chemical insecticides.",
+            "steps": [
+              "Step 1: Bag construction — PICS technology uses two inner high-density polyethylene liners encased inside a protective outer woven polypropylene sack.",
+              "Step 2: Mechanism of action — Once grains are sealed tightly inside, the respiration of live grains and infesting weevils continues, consuming the limited trapped oxygen and producing carbon dioxide.",
+              "Step 3: Hypoxia and death — Within 24-48 hours, oxygen concentration inside the sealed bag drops from 21% to below 5%, while CO2 levels rise. This hypoxic atmosphere halts insect feeding, arrests egg development, and suffocates all life stages (larvae, pupae, adults) without chemical residues."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize that PICS bags function by oxygen deprivation (suffocation) through natural metabolic depletion."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s4_1",
+              "difficulty": "low",
+              "prompt": "The maize weevil (Sitophilus zeamais) damages stored grains by:",
+              "options": [
+                "Sucking water from the cob leaves",
+                "Larvae feeding internally on the endosperm and embryo",
+                "Injecting toxic venom into the roots",
+                "Covering grains with spider silk"
+              ],
+              "correctAnswer": "Larvae feeding internally on the endosperm and embryo",
+              "hint": "The larva develops inside the grain kernel.",
+              "workedSolution": "Female maize weevils bore into kernels to deposit eggs. Developing larvae consume the internal starch endosperm and embryo, leaving hollow, nutritionally depleted grains.",
+              "points": 1,
+              "learningCompetency": "B9.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s4_2",
+              "difficulty": "medium",
+              "prompt": "Aphids damage crops primarily through their mouthparts, which are adapted for:",
+              "options": [
+                "Biting and chewing leaves",
+                "Piercing epidermal tissues and sucking phloem sap",
+                "Chewing deep into woody roots",
+                "Scraping surface algae off tree trunks"
+              ],
+              "correctAnswer": "Piercing epidermal tissues and sucking phloem sap",
+              "hint": "Aphids have needle-like stylets.",
+              "workedSolution": "Aphids are piercing and sucking insects with needle-like stylets that penetrate plant vascular bundles to extract nutrient-rich phloem sap, transmitting plant viruses.",
+              "points": 1,
+              "learningCompetency": "B9.2.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand2_crop_production",
+    "topicId": "sci_strand2_crop_production",
+    "title": "Agricultural Crop Production Systems (Plant Nutrients, Seedbeds, Harvesting & Storage)",
+    "strand": "STRAND 2: CYCLES",
+    "strandCode": "S2",
+    "subStrand": "Crop Production (Agronomy, Nutrient Chemistry & Post-Harvest Technology)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Master the science of plant growth, nursery husbandry, and harvest storage through simulated agricultural trials. Focuses on essential macronutrients and micronutrients, seed viability testing, nursing techniques, and loss mitigation in grain and tuber silos.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Crop Classification, Seedbed Preparation & Viability Testing",
+        "summary": "Classify crops by life cycle and economic use; prepare seed nursery beds and perform seed germination viability tests.",
+        "notes": "### Crop Agronomy: Classification, Nursery Management & Germination Testing\n* **NaCCA Curriculum Code:** `B7.2.3.1`\n* **Core Competency:** Classify agricultural crops, demonstrate seedbed preparation, and conduct seed germination viability percentage trials.\n\n#### 1. Classification of Crops\n* **By Life Cycle:**\n  * **Annuals:** Complete life cycle in one growing season (e.g., maize, rice, cowpea, tomato).\n  * **Biennials:** Require two growing seasons: vegetative growth in year 1; flowering and seed set in year 2 (e.g., carrot, cabbage, onion).\n  * **Perennials:** Live for more than two years, bearing repeated harvests (e.g., cocoa, oil palm, mango, citrus, rubber).\n* **By Economic Agronomic Use:**\n  * Cereals / Grains (maize, sorghum, millet, rice).\n  * Legumes / Pulses (cowpea, groundnut, soybean, bambara groundnut).\n  * Root & Tuber crops (cassava, yam, cocoyam, sweet potato).\n  * Vegetables (tomato, pepper, garden egg, okra).\n  * Tree / Cash crops (cocoa, coffee, cashew, oil palm).\n\n#### 2. Seed Nursery Bed Preparation\n* Nursery beds provide a controlled, protected micro-environment for tiny, delicate seeds (e.g., tomato, pepper, cabbage) before field transplanting.\n* **Soil Requirements:** Friable, well-drained topsoil mixed with well-rotted organic compost ($2:1$ ratio).\n* **Shading & Sterilization:** Shading protects tender seedlings from solar scorching and beating raindrops; soil heating/sterilization destroys weed seeds and soil-borne fungal pathogens (*damping-off*).\n\n#### 3. Seed Germination Viability Test\n$$\\text{Germination Percentage} (\\%) = \\frac{\\text{Number of Seeds Germinated}}{\\text{Total Number of Seeds Planted}} \\times 100$$\nA viability test above $85\\%$ indicates premium seed quality suitable for direct field sowing.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s5_1",
+            "title": "Worked Example: Calculating Seed Germination Viability Percentage",
+            "problem": "An agricultural officer samples 200 seeds from a bag of certified hybrid seed maize and places them on moist filter paper in Petri dishes. After 6 days, 174 seeds have successfully germinated. Calculate the germination percentage and determine if the seed batch is viable for commercial planting (minimum threshold = 80%).",
+            "steps": [
+              "Step 1: Write the formula: Germination Percentage = (Number of Germinated Seeds / Total Seeds Planted) x 100%.",
+              "Step 2: Substitute values: Germination Percentage = (174 / 200) x 100% = 0.87 x 100% = 87%.",
+              "Step 3: Evaluate against threshold: Since 87% is greater than the standard 80% threshold, the seed lot is viable, healthy, and recommended for commercial planting."
+            ],
+            "finalAnswer": "Examiner Tip: Always state the formula before substituting numbers. Show the calculation steps clearly."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s5_1",
+              "difficulty": "low",
+              "prompt": "A crop that completes its vegetative, flowering, and seed maturation cycle within a single growing season is classified as an:",
+              "options": [
+                "Perennial crop",
+                "Biennial crop",
+                "Annual crop",
+                "Evergreen crop"
+              ],
+              "correctAnswer": "Annual crop",
+              "hint": "Maize, cowpea, and rice are common examples.",
+              "workedSolution": "Annual crops (such as maize and cowpea) complete their entire life cycle from germination to harvest within one year or one growing season.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s5_2",
+              "difficulty": "medium",
+              "prompt": "If 45 out of 50 sampled tomato seeds germinate successfully on moist blotting paper, what is the germination viability percentage?",
+              "options": [
+                "80%",
+                "85%",
+                "90%",
+                "95%"
+              ],
+              "correctAnswer": "90%",
+              "hint": "Divide 45 by 50 and multiply by 100.",
+              "workedSolution": "Germination % = (45 / 50) x 100 = 0.90 x 100 = 90%.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Plant Nutrition, Soil Chemistry & Fertilizers",
+        "summary": "Evaluate essential macronutrients and micronutrients, diagnose visual deficiency symptoms, and formulate compost and mineral fertilizers.",
+        "notes": "### Plant Nutrition, Deficiency Symptoms & Fertilizer Management\n* **NaCCA Curriculum Code:** `B8.2.3.1`\n* **Core Competency:** Differentiate macronutrients and micronutrients, identify deficiency symptoms, and prepare organic compost.\n\n#### 1. Essential Plant Nutrients\nPlants require 17 essential chemical elements for normal growth and reproduction:\n* **Non-Mineral Nutrients (from air & water):** Carbon (C), Hydrogen (H), Oxygen (O).\n* **Primary Macronutrients (required in large amounts):**\n  * **Nitrogen (N):** Promotes vigorous vegetative leafy growth, synthesis of chlorophyll and enzymes.\n  * **Phosphorus (P):** Stimulates rapid root development, energy transfer (ATP), and early flowering/fruiting.\n  * **Potassium (K):** Activates over 60 enzymes, regulates stomatal opening/closing, enhances disease resistance and tuber filling.\n* **Secondary Macronutrients:** Calcium (Ca), Magnesium (Mg — central atom of chlorophyll), Sulfur (S).\n* **Micronutrients (Trace elements, required in minute quantities):** Iron (Fe), Zinc (Zn), Boron (B), Manganese (Mn), Copper (Cu), Molybdenum (Mo), Chlorine (Cl).\n\n#### 2. Visual Deficiency Symptoms\n* **Nitrogen (N) Deficiency:** General chlorosis (yellowing) starting on older, lower leaves; stunted, spindly stalks.\n* **Phosphorus (P) Deficiency:** Purple or bronze tinting along leaf margins and veins; severely underdeveloped root systems; delayed crop maturity.\n* **Potassium (K) Deficiency:** Marginal chlorosis followed by necrosis (scorched/burnt edges) of older leaves; weak lodging stems.\n* **Magnesium (Mg) Deficiency:** Interveinal chlorosis (veins remain green while leaf lamina turns yellow) on older leaves.\n\n#### 3. Organic vs. Inorganic Fertilizers\n* **Inorganic / Mineral Fertilizers:** High nutrient concentration, rapid solubility and uptake (e.g., NPK 15-15-15, Urea $46\\%\\text{ N}$, Single Superphosphate). Risk of soil acidification and leaching eutrophication if over-applied.\n* **Organic Fertilizers (Compost, Farmyard Manure):** Low nutrient concentration but improves soil crumb structure, cation exchange capacity (CEC), and water retention without chemical burns.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s5_1",
+            "title": "Worked Example: Diagnosing Crop Nutrient Deficiencies",
+            "problem": "A farmer notices that older leaves of maize plants are exhibiting prominent V-shaped yellowing starting from the leaf tips down the midrib, and plants are stunted. Identify the deficient nutrient and recommend an immediate corrective remedy.",
+            "steps": [
+              "Step 1: Analyze visual symptoms: V-shaped chlorosis beginning at the tips of mature lower leaves and progressing inward along the central midrib is the classic diagnostic signature of Nitrogen (N) deficiency.",
+              "Step 2: Biological rationale: Nitrogen is a mobile element in plant tissue; when deficient, the plant mobilizes existing nitrogen from older leaves to sustain new growing shoots, causing older leaves to yellow first.",
+              "Step 3: Corrective recommendation: Apply a fast-acting nitrogenous fertilizer such as Urea (46% N) or Calcium Ammonium Nitrate (CAN) as a top-dressing, or incorporate well-cured farmyard manure into the root zone."
+            ],
+            "finalAnswer": "Examiner Tip: Note the distinction between mobile nutrients (deficiency appears on older leaves first: N, P, K, Mg) and immobile nutrients (deficiency appears on young leaves first: Ca, Fe)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s5_1",
+              "difficulty": "low",
+              "prompt": "Which essential plant nutrient is the central metallic ion in the chlorophyll molecule responsible for photosynthesis?",
+              "options": [
+                "Iron",
+                "Magnesium",
+                "Calcium",
+                "Zinc"
+              ],
+              "correctAnswer": "Magnesium",
+              "hint": "Its deficiency causes interveinal chlorosis.",
+              "workedSolution": "Magnesium (Mg2+) is the central coordination atom in the porphyrin ring of the chlorophyll molecule. Deficiency causes loss of green color between leaf veins.",
+              "points": 1,
+              "learningCompetency": "B8.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s5_2",
+              "difficulty": "medium",
+              "prompt": "A bag of commercial compound fertilizer labeled 'NPK 15-15-15' indicates that it contains:",
+              "options": [
+                "15% Nitrogen, 15% Phosphorus, and 15% Potassium",
+                "15 grams of pure rock in every kilogram",
+                "15 total chemical elements mixed together",
+                "Equal parts sand, loam, and clay"
+              ],
+              "correctAnswer": "15% Nitrogen, 15% Phosphorus, and 15% Potassium",
+              "hint": "N = Nitrogen, P = Phosphorus (as P2O5), K = Potassium (as K2O).",
+              "workedSolution": "The grade 15-15-15 denotes that the fertilizer contains 15% available Nitrogen (N), 15% available Phosphorus (P2O5), and 15% soluble Potassium (K2O) by weight.",
+              "points": 1,
+              "learningCompetency": "B8.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Agronomic Cultural Practices & Post-Harvest Technology",
+        "summary": "Apply field management practices (pricking out, staking, mulching) and post-harvest preservation technologies to prevent crop loss.",
+        "notes": "### Cultural Agronomic Operations & Post-Harvest Technologies\n* **NaCCA Curriculum Code:** `B9.2.3.1`\n* **Core Competency:** Demonstrate post-nursery cultural practices and deploy advanced post-harvest grain/tuber storage methods.\n\n#### 1. Field Cultural Agronomic Practices\n* **Pricking Out:** Transferring crowded seedlings from dense germination seed trays into individual nursery beds or polythene pots to encourage root expansion.\n* **Hardening Off:** Gradually reducing water supply and shade exposure 7-10 days before field transplanting to condition seedlings to withstand harsh outdoor conditions.\n* **Transplanting:** Moving hardened seedlings to the permanent field; best performed late in the afternoon or on overcast, humid days to minimize transpiration shock.\n* **Thinning:** Removing weak, diseased, or excess seedlings to maintain optimal crop plant spacing.\n* **Supplying (Filling In):** Replacing seedlings that died after transplanting to ensure full field plant density.\n* **Staking:** Supporting weak-stemmed plants (e.g., tomatoes, yams) with vertical poles to keep leaves and fruit off the damp ground, preventing fungal rot and improving solar exposure.\n* **Mulching:** Covering the soil surface around plants with dry vegetative matter (grass, straw). Conserves soil moisture, suppresses weed growth, moderates soil temperature, and adds organic humus upon decomposition.\n\n#### 2. Post-Harvest Grain & Tuber Preservation\nPost-harvest losses in West Africa routinely claim $30-40\\%$ of harvested food before reaching market:\n* **Solar Dehydration / Oven Drying:** Reducing grain moisture content to below $12-14\\%$ to inhibit fungal mold (*Aspergillus flavus* producing aflatoxins) and insect proliferation.\n* **Hermetic Storage (PICS Technology):** Air-tight multi-layer bags that suffocate weevils without hazardous synthetic chemical dusts.\n* **Traditional Cribs:** Raised slatted timber structures that allow free natural cross-ventilation for drying unhusked maize cobs.\n* **Yam Barns:** Vertical wooden trellis systems under shade trees that provide ventilation to prevent tuber bruising, sprouting, and fungal rotting.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s5_1",
+            "title": "Worked Example: The Scientific Basis of Hardening-Off Seedlings",
+            "problem": "Describe the horticultural procedure of 'hardening-off' vegetable seedlings prior to transplanting and explain the physiological benefits to the seedling.",
+            "steps": [
+              "Step 1: Procedure — Beginning 7 to 10 days before field transplanting, the farmer gradually removes the nursery shade cloth to expose seedlings to full direct sunlight and concurrently reduces irrigation frequency.",
+              "Step 2: Physiological adjustments — The seedling responds by accumulating carbohydrates in stem tissues, developing a thicker waxy leaf cuticle, and strengthening cellular cell walls.",
+              "Step 3: Agronomic outcome — Hardened seedlings experience significantly less transplanting shock, resist wilting from midday heat, and exhibit higher survival rates in the open field."
+            ],
+            "finalAnswer": "Examiner Tip: Always state both components of hardening off: reducing water AND increasing sunlight exposure."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s5_1",
+              "difficulty": "low",
+              "prompt": "The cultural practice of replacing dead or missing seedlings in the field a few days after transplanting is called:",
+              "options": [
+                "Thinning",
+                "Pricking out",
+                "Supplying (filling in)",
+                "Staking"
+              ],
+              "correctAnswer": "Supplying (filling in)",
+              "hint": "It ensures full plant population per hectare.",
+              "workedSolution": "Supplying (also called filling-in or beat-up) is the replacement of seedlings that failed to establish after initial transplanting, maintaining the required field plant population density.",
+              "points": 1,
+              "learningCompetency": "B9.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s5_2",
+              "difficulty": "medium",
+              "prompt": "Why must cereal grains be dried to a moisture content of 12% to 14% before long-term storage in silos?",
+              "options": [
+                "To make the grains heavy for market scales",
+                "To prevent growth of aflatoxin-producing molds and suppress insect embryo emergence",
+                "To allow grains to absorb cooking oil faster",
+                "To turn the grain kernels brown"
+              ],
+              "correctAnswer": "To prevent growth of aflatoxin-producing molds and suppress insect embryo emergence",
+              "hint": "Fungi and bacteria require moisture above 14% to multiply.",
+              "workedSolution": "Moisture levels above 14% promote fungal spoilage (such as Aspergillus flavus which produces carcinogenic aflatoxins) and stimulate grain weevil activity. Drying below 13% preserves seed viability and food safety.",
+              "points": 1,
+              "learningCompetency": "B9.2.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand2_animal_production",
+    "topicId": "sci_strand2_animal_production",
+    "title": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
+    "strand": "STRAND 2: CYCLES",
+    "strandCode": "S2",
+    "subStrand": "Animal Production (Livestock Anatomy, Nutrition & Veterinary Management)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Apply zoological principles to domestic livestock management through interactive feed formulation and housing simulation modules. Explores monogastric versus ruminant physiology, nutritional balancing, modern pen construction, and herd prophylactic biosecurity.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Domestic Farm Animals & Economic Importance",
+        "summary": "Classify domestic farm animals into ruminants, non-ruminants, and poultry; identify economic roles in rural and national development.",
+        "notes": "### Domestic Farm Animals: Classification & Economic Significance\n* **NaCCA Curriculum Code:** `B7.2.4.1`\n* **Core Competency:** Classify domestic livestock and evaluate their economic and nutritional contributions.\n\n#### 1. Classification of Domestic Farm Animals\n* **Ruminants (Polygastric animals):** Herbivorous mammals possessing a complex four-chambered stomach (Rumen, Reticulum, Omasum, Abomasum) capable of digesting cellulose via microbial fermentation.\n  * *Large Ruminants:* Cattle (West African Shorthorn, N'Dama, Zebu).\n  * *Small Ruminants:* Sheep (Djallonké), Goats (West African Dwarf).\n* **Non-Ruminants (Monogastric animals):** Animals possessing a single simple stomach chamber:\n  * Pigs (Swine), Rabbits, Horses, Donkeys.\n* **Poultry:** Domesticated avian species raised for meat and eggs:\n  * Chickens (layers, broilers), Ducks, Turkeys, Guinea fowls, Quails.\n\n#### 2. Economic & Nutritional Significance of Livestock\n* **Nutritional Security:** High-biological-value animal protein containing all essential amino acids, iron, zinc, and vitamin B12 (meat, milk, eggs).\n* **Industrial Raw Materials:** Hides and skins for leather footwear and garments; wool and down feathers; bone meal and blood meal for feeds.\n* **Draft Power & Transport:** Bullocks and donkeys providing traction power for plowing and cart transportation in the northern savannah.\n* **Organic Manure:** Dung and poultry droppings serve as high-nitrogen organic fertilizers for arable crop production.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s6_1",
+            "title": "Worked Example: Classification of Farm Animals by Digestive Anatomy",
+            "problem": "Classify the following domestic animals into Ruminants or Non-Ruminants, and justify each classification: Sheep, Pig, Rabbit, Cattle, Horse.",
+            "steps": [
+              "Sheep: Ruminant — Possesses a complex 4-chambered stomach; chews the cud (regurgitates partially digested boluses).",
+              "Pig: Non-Ruminant (Monogastric) — Possesses a single, simple acid-secreting stomach chamber.",
+              "Rabbit: Non-Ruminant (Hindgut Fermenter) — Possesses a single simple stomach, relying on an enlarged caecum for cellulose breakdown.",
+              "Cattle: Ruminant — True polygastric herbivore possessing rumen, reticulum, omasum, and abomasum chambers.",
+              "Horse: Non-Ruminant (Hindgut Fermenter) — Single stomach; digests cellulose in the caecum and colon."
+            ],
+            "finalAnswer": "Examiner Tip: Note that while rabbits and horses eat grass, they are NOT ruminants because they do not have a four-chambered stomach and do not chew the cud."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s6_1",
+              "difficulty": "low",
+              "prompt": "Which of the following farm animals is a small ruminant native to West Africa?",
+              "options": [
+                "West African Dwarf goat",
+                "Commercial broiler chicken",
+                "Large White pig",
+                "New Zealand White rabbit"
+              ],
+              "correctAnswer": "West African Dwarf goat",
+              "hint": "It is a small polygastric animal known for high trypanosomiasis resistance.",
+              "workedSolution": "The West African Dwarf goat and Djallonké sheep are indigenous small ruminants possessing four-chambered stomachs and adapted to humid West African ecologies.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s6_2",
+              "difficulty": "medium",
+              "prompt": "Why are domestic cattle classified as polygastric animals while domestic pigs are monogastric?",
+              "options": [
+                "Cattle eat meat while pigs eat grass",
+                "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
+                "Pigs can fly while cattle cannot",
+                "Cattle have four hearts while pigs have one"
+              ],
+              "correctAnswer": "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
+              "hint": "Poly = many; Mono = single; Gastric = stomach.",
+              "workedSolution": "Cattle have a complex four-chambered digestive tract (rumen, reticulum, omasum, abomasum) for microbial cellulose fermentation, whereas pigs have a single simple glandular stomach.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Livestock Nutrition & Digestive Physiology",
+        "summary": "Compare ruminant vs. monogastric digestion and formulate balanced rations (roughages, concentrates, supplements).",
+        "notes": "### Livestock Nutrition & Digestive Physiology\n* **NaCCA Curriculum Code:** `B8.2.4.1`\n* **Core Competency:** Contrast the digestive anatomy of ruminants and monogastrics and formulate balanced rations.\n\n#### 1. Ruminant Digestive Physiology\nThe four stomach compartments of a ruminant:\n* **1. Rumen (Paunch):** The largest fermentation chamber (up to $80\\%$ of stomach volume). Houses trillions of symbiotic anaerobic bacteria, protozoa, and fungi that secrete cellulase enzymes to break down cellulose and hemicellulose into volatile fatty acids (VFAs: acetate, propionate, butyrate).\n* **2. Reticulum (Honeycomb):** Traps foreign heavy objects (hardware chamber); coordinates regurgitation of feed boluses back to the mouth for rumination (chewing the cud).\n* **3. Omasum (Manyplies / Bible):** Highly folded laminar leaves that absorb excess water, bicarbonate, and residual VFAs from the digesta.\n* **4. Abomasum (True Stomach):** The glandular compartment analogous to the monogastric stomach; secretes hydrochloric acid ($\\text{HCl}$) and pepsin for enzymatic protein digestion.\n\n#### 2. Classification of Livestock Feeds\n* **Roughages:** High in crude fiber ($>18\\%$) and low in Total Digestible Nutrients (TDN $<60\\%$). Essential for maintaining rumen motility and microbial fermentation (e.g., pasture grasses, silage, hay, legume haulms).\n* **Concentrates:** Low in crude fiber ($<18\\%$) and high in TDN ($>60\\%$):\n  * *Energy Concentrates:* Grains (maize, sorghum, rice bran, wheat offal).\n  * *Protein Concentrates:* Soybean meal, fish meal, cotton seed cake, groundnut cake.\n* **Supplements & Additives:** Bone meal and oyster shells (Ca & P for bone and eggshell formation), mineral salt licks, vitamin premixes, probiotics.\n\n#### 3. Maintenance vs. Production Rations\n* **Maintenance Ration:** The minimum balanced feed required to keep an animal alive and healthy at constant body weight without productive output.\n* **Production Ration:** The additional quantity of feed supplied above maintenance requirements to support growth, milk synthesis, egg laying, or draft work.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s6_1",
+            "title": "Worked Example: The Cellulose Digestion Advantage of Ruminants",
+            "problem": "Explain why a sheep can digest dry grass and fibrous straw efficiently while a pig fed the exact same diet will starve from malnutrition.",
+            "steps": [
+              "Step 1: Enzyme limitation — Neither vertebrate sheep nor pigs can produce the enzyme cellulase endogenously in their digestive tracts.",
+              "Step 2: Rumen microbial fermentation — Sheep possess a specialized rumen hosting dense populations of symbiotic anaerobic microbes (bacteria and protozoa) that ferment cellulose into digestible volatile fatty acids (VFAs), which are absorbed as energy.",
+              "Step 3: Monogastric limitation — Pigs possess a single simple glandular stomach lacking a pre-gastric fermentation chamber. Without cellulase-producing microbes, the fibrous cellulose passes through the pig's gut undigested and excreted as waste."
+            ],
+            "finalAnswer": "Examiner Tip: Always identify volatile fatty acids (VFAs) as the primary energy currency absorbed by ruminants from cellulose fermentation."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s6_1",
+              "difficulty": "low",
+              "prompt": "Which compartment of the ruminant stomach is considered the 'true stomach' because it secretes gastric enzymes and hydrochloric acid?",
+              "options": [
+                "Rumen",
+                "Reticulum",
+                "Omasum",
+                "Abomasum"
+              ],
+              "correctAnswer": "Abomasum",
+              "hint": "It functions identically to the human stomach.",
+              "workedSolution": "The abomasum is the fourth glandular compartment of the ruminant stomach that secretes digestive enzymes (pepsin) and HCl for true chemical digestion.",
+              "points": 1,
+              "learningCompetency": "B8.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s6_2",
+              "difficulty": "medium",
+              "prompt": "Oyster shell meal and steamed bone meal are incorporated into poultry layers' feed primarily to provide:",
+              "options": [
+                "Vitamin C for feather shine",
+                "Calcium and phosphorus for strong eggshell formation and skeletal strength",
+                "Excess dietary fat for fast body weight",
+                "Cellulose for stomach digestion"
+              ],
+              "correctAnswer": "Calcium and phosphorus for strong eggshell formation and skeletal strength",
+              "hint": "Eggshells are made of calcium carbonate.",
+              "workedSolution": "Commercial laying hens require large amounts of bioavailable calcium (Ca) and phosphorus (P) to construct rigid calcium carbonate eggshells and prevent cage layer fatigue (osteoporosis).",
+              "points": 1,
+              "learningCompetency": "B8.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Livestock Housing Design, Biosecurity & Veterinary Health",
+        "summary": "Design sanitary housing systems, implement biosecurity protocols, and construct vaccination schedules against endemic livestock diseases.",
+        "notes": "### Livestock Housing, Biosecurity & Veterinary Disease Management\n* **NaCCA Curriculum Code:** `B9.2.4.1`\n* **Core Competency:** Evaluate livestock housing systems, implement biosecurity protocols, and establish disease control regimes.\n\n#### 1. Livestock Housing Systems\n* **Poultry Housing Systems:**\n  * **Free-Range (Extensive):** Birds scavenge freely; low capital cost, but high mortality from predators, theft, and uncontrolled pathogen exposure.\n  * **Deep Litter System (Semi-Intensive):** Birds housed on concrete floors covered with 5-10 cm absorbent litter (wood shavings, chopped straw); protects from elements; requires frequent litter turning to prevent ammonia toxicity.\n  * **Battery Cage System (Intensive):** Layers housed in tiered wire cages with automatic egg rollout; high stocking density, clean eggs, and zero coccidiosis from litter pecking; requires high initial capital.\n* **Piggery (Pig Sties):** Concrete floors sloped toward drainage channels for daily washing; separate farrowing pens fitted with guard rails to prevent the sow from accidentally crushing piglets.\n* **Cattle Kraals / Sheds:** Fenced paddocks with shaded resting areas and feed/water troughs.\n\n#### 2. Biosecurity Protocols on the Farm\n* Installation of disinfectant footbaths (containing Virkon-S or formalin) at all farm entry gates.\n* Strict quarantine of newly purchased livestock for 14-21 days before introduction to the main herd.\n* Routine disposal of livestock mortalities via deep burial with quicklime or complete incineration.\n* Restricted visitor access and vehicle tire disinfection.\n\n#### 3. Major Livestock Diseases & Prevention\n* **Newcastle Disease (Viral - Poultry):** Respiratory distress, green diarrhea, twisted neck (torticollis). Prevented by Newcastle vaccination (I-2 or Lasota vaccine in drinking water).\n* **African Swine Fever (ASF - Viral - Pigs):** High fever, internal hemorrhages, high mortality. No effective vaccine; controlled strictly by biosecurity and culling.\n* **Anthrax (Bacterial - *Bacillus anthracis* - Ruminants):** Sudden death, uncoagulated tarry blood exuding from natural orifices. Carcasses must not be opened (spores form in air); vaccinated annually with Anthrax Spore Vaccine.\n* **Coccidiosis (Protozoan - *Eimeria* - Poultry & Rabbits):** Bloody diarrhea, ruffled feathers from damp litter. Controlled with coccidiostats in feed and dry litter management.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s6_1",
+            "title": "Worked Example: Investigating an Outbreak of Coccidiosis in Broilers",
+            "problem": "A commercial broiler farmer reports that 4-week-old birds are huddling with ruffled feathers, refusing feed, and passing bloody droppings. The deep litter inside the poultry house is wet and emits a foul odor. Diagnose the condition and outline immediate and long-term control measures.",
+            "steps": [
+              "Step 1: Clinical diagnosis — Bloody diarrhea, anorexia, and ruffled feathers in 4-week-old broilers raised on wet litter are pathognomonic symptoms of Coccidiosis caused by the protozoan parasite Eimeria.",
+              "Step 2: Immediate treatment — Administer an approved anticoccidial medication (e.g. Amprolium or Toltrazuril) through the flock's drinking water for 3 to 5 consecutive days.",
+              "Step 3: Long-term environmental control — Immediately remove and replace the damp, caked litter with dry wood shavings. Fix leaking water drinkers, improve ventilation to lower humidity, and maintain dry litter to prevent the sporulation of infectious coccidial oocysts."
+            ],
+            "finalAnswer": "Examiner Tip: Note that coccidiosis oocysts require warmth and moisture to become infective; dry litter prevents the disease cycle."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s6_1",
+              "difficulty": "low",
+              "prompt": "Which livestock disease causes chickens to display green diarrhea, gasping, and a twisted neck (torticollis)?",
+              "options": [
+                "Newcastle disease",
+                "Anthrax",
+                "Foot and mouth disease",
+                "Rickets"
+              ],
+              "correctAnswer": "Newcastle disease",
+              "hint": "It is a deadly viral avian disease controlled by the Lasota vaccine.",
+              "workedSolution": "Newcastle disease is a highly contagious paramyxovirus infection of poultry that attacks respiratory, gastrointestinal, and nervous systems, leading to characteristic neck twisting and death.",
+              "points": 1,
+              "learningCompetency": "B9.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s6_2",
+              "difficulty": "medium",
+              "prompt": "Why must a farm animal suspected of having died from Anthrax NEVER be cut open for an autopsy?",
+              "options": [
+                "The animal's meat will spoil too fast",
+                "Exposure of Bacillus anthracis bacteria to atmospheric air induces formation of highly resilient, deadly spores",
+                "The skin is too thick to cut with knives",
+                "Anthrax bacteria turn into water when exposed to sunlight"
+              ],
+              "correctAnswer": "Exposure of Bacillus anthracis bacteria to atmospheric air induces formation of highly resilient, deadly spores",
+              "hint": "Anthrax bacteria form spores upon contact with air.",
+              "workedSolution": "Bacillus anthracis is a spore-forming bacterium. If an infected carcass is opened, exposure to atmospheric oxygen triggers sporulation, creating indestructible spores that contaminate the soil for decades and infect humans.",
+              "points": 1,
+              "learningCompetency": "B9.2.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand3_human_body",
+    "topicId": "sci_strand3_human_body",
+    "title": "The Human Body Systems (Digestion, Dentition, Respiration & Circulation)",
+    "strand": "STRAND 3: SYSTEMS",
+    "strandCode": "S3",
+    "subStrand": "The Human Body Systems (Organ Physiology, Nutrient Absorption & Hemodynamics)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Explore human anatomy and internal physiology through virtual human dissection and diagnostic monitors. Tracks systemic interdependence across mastication, enzymatic gastrointestinal digestion, alveoli gas exchange, and pulmonary-systemic blood circulation.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b8_strand3_dentition"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Human Dentition, Tooth Anatomy & Oral Hygiene",
+        "summary": "Analyze the human dental formula, microscopic tooth anatomy, dental caries pathology, and oral hygiene preservation.",
+        "notes": "### Human Dentition: Tooth Structure, Dental Formulas & Oral Health\n* **NaCCA Curriculum Code:** `B7.3.1.1`\n* **Core Competency:** Identify human tooth types, relate anatomy to function, analyze tooth decay, and demonstrate oral hygiene.\n\n#### 1. Human Dental Architecture\nHumans are heterodonts (possessing different types of teeth) and diphyodonts (developing two sets of teeth in a lifetime):\n* **Deciduous (Milk) Teeth:** 20 teeth in children; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, m\\frac{2}{2} = 10 \\times 2 = 20$.\n* **Permanent Teeth:** 32 teeth in adults; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, pm\\frac{2}{2}, m\\frac{3}{3} = 16 \\times 2 = 32$.\n\n#### 2. Tooth Types & Functions\n* **Incisors (8):** Chisel-shaped with sharp cutting edges; biting and cutting food chunks.\n* **Canines (4):** Conical, pointed, dagger-like crowns; piercing, gripping, and tearing fibrous meat.\n* **Premolars (8):** Broad crowns with two pointed projections (cusps); crushing and grinding food.\n* **Molars (12):** Broad, flat occlusal surface with 4-5 cusps; heavy mastication and pulverizing.\n\n#### 3. Microscopic Anatomy of a Tooth\n* **Crown:** Visible portion projecting above the gum.\n  * *Enamel:* The hardest biological substance in the human body ($96\\%$ calcium hydroxyapatite crystals); shields against mechanical wear and acid erosion.\n  * *Dentine:* Hard bone-like living tissue beneath enamel containing microscopic fluid-filled tubules.\n  * *Pulp Cavity:* Living central core containing blood capillaries (nourishment) and sensory nerve fibers (pain reception).\n* **Neck:** Constricted boundary region surrounded by the gum (gingiva).\n* **Root:** Anchored in the alveolar bone socket of the jaw by the periodontal ligament and coated with cementum.\n\n#### 4. Pathology of Dental Caries (Tooth Decay)\n1. Food residues rich in refined sucrose adhere to tooth surfaces.\n2. Oral bacteria (*Streptococcus mutans*) ferment sugars within the sticky biofilm (plaque), producing lactic acid.\n3. When plaque pH drops below 5.5, organic acids demineralize calcium phosphate in the enamel.\n4. Erosion penetrates dentine into the pulp cavity, exposing sensory nerves and causing excruciating toothache and abscesses.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s7_1",
+            "title": "Worked Example: Decoding the Adult Human Dental Formula",
+            "problem": "The adult human dental formula is written as i: 2/2, c: 1/1, pm: 2/2, m: 3/3. Calculate the total number of teeth in the adult human mouth and determine the total number of grinding teeth.",
+            "steps": [
+              "Step 1: Understand formula structure — The dental formula represents the count of teeth in one quadrant of the upper jaw over one quadrant of the lower jaw (half of the mouth).",
+              "Step 2: Sum upper and lower jaw counts in one half: Upper half = 2 + 1 + 2 + 3 = 8 teeth. Lower half = 2 + 1 + 2 + 3 = 8 teeth. Total for one side = 16 teeth.",
+              "Step 3: Multiply by 2 for bilateral symmetry: Total teeth in adult mouth = 16 x 2 = 32 teeth.",
+              "Step 4: Calculate total grinding teeth (premolars + molars): Premolars = (2 + 2) x 2 = 8. Molars = (3 + 3) x 2 = 12. Total grinding teeth = 8 + 12 = 20 teeth."
+            ],
+            "finalAnswer": "Examiner Tip: Always remember to multiply the total dental formula count by 2 to account for both left and right sides of the jaw."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s7_1",
+              "difficulty": "low",
+              "prompt": "The hardest biological substance in the human body, covering the crown of the tooth, is the:",
+              "options": [
+                "Dentine",
+                "Enamel",
+                "Cementum",
+                "Alveolar bone"
+              ],
+              "correctAnswer": "Enamel",
+              "hint": "It is the non-living outer calcified layer.",
+              "workedSolution": "Enamel is the highly mineralized, hardest substance in the human body, protecting the underlying dentine and pulp from physical mastication wear and chemical attack.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s7_2",
+              "difficulty": "medium",
+              "prompt": "Dental caries (tooth decay) is initiated chemically when mouth bacteria:",
+              "options": [
+                "Release basic ammonia that burns the gums",
+                "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
+                "Drink all water from the salivary glands",
+                "Inject poisonous enzymes into the dentine"
+              ],
+              "correctAnswer": "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
+              "hint": "Plaque bacteria produce acid from sugary foods.",
+              "workedSolution": "Oral plaque bacteria metabolize residual sucrose sugars to synthesize lactic acid, which drops oral pH below the critical threshold (5.5), dissolving hydroxyapatite mineral crystals in the tooth enamel.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • The Alimentary Canal, Digestive Enzymes & Absorption",
+        "summary": "Trace food through the human gastrointestinal tract, analyze enzyme catalysts, and evaluate small intestine absorption.",
+        "notes": "### The Human Digestive System: Alimentary Anatomy & Enzymatic Catabolism\n* **NaCCA Curriculum Code:** `B8.3.1.1`\n* **Core Competency:** Trace the organs of the alimentary canal, describe digestive enzyme action, and explain nutrient absorption in the ileum.\n\n#### 1. The Alimentary Canal Journey\n* **Mouth (Buccal Cavity):** Teeth masticate food into a bolus; salivary amylase (ptyalin) hydrolyzes cooked starch into maltose; tongue rolls bolus into pharynx.\n* **Esophagus:** Wave-like rhythmic muscular contractions (**peristalsis**) propel bolus through the cardiac sphincter into the stomach.\n* **Stomach:** Muscular sac churning food with gastric juice into acidic **chyme**:\n  * *Hydrochloric Acid (HCl):* Provides low pH (1.5-2.0) to destroy ingested pathogens and activate pepsinogen into active pepsin.\n  * *Pepsin:* Protease enzyme that cleaves complex proteins into smaller polypeptide fragments.\n  * *Mucus:* Coats and protects the gastric epithelium from self-digestion (ulcers).\n* **Duodenum (First section of small intestine):** Receives bile from liver/gallbladder and pancreatic juice from the pancreas:\n  * *Bile (no enzymes):* Alkaline fluid containing bile salts that **emulsifies** large lipid globules into microscopic droplets, vastly increasing surface area for lipase action; neutralizes acidic chyme.\n  * *Pancreatic Amylase:* Converts remaining starch into maltose.\n  * *Trypsin:* Converts polypeptides into dipeptides.\n  * *Pancreatic Lipase:* Hydrolyzes emulsified lipids into glycerol and three fatty acid chains.\n* **Ileum (Small intestine):** Terminal chemical digestion by intestinal enzymes (maltase, sucrase, lactase, peptidases).\n* **Villi & Microvilli Absorption:** Folded finger-like projections maximizing absorption surface area:\n  * Glucose, amino acids, vitamins, and minerals are absorbed into central blood capillaries.\n  * Fatty acids and glycerol reassemble into triglycerides and enter the central **lacteal** (lymphatic vessel).\n* **Colon (Large Intestine):** Reabsorbs water and mineral salts, compacting indigestible dietary fiber (roughage) into feces.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s7_1",
+            "title": "Worked Example: The Dual Function of Bile in Digestion",
+            "problem": "Bile contains no digestive enzymes whatsoever. Explain two critical physiological reasons why digestion of fats cannot proceed effectively without bile.",
+            "steps": [
+              "Reason 1: Emulsification of Lipids — Fats are hydrophobic and coalesce into large insoluble globules. Bile salts act as biological detergents that break large fat globules into microscopic emulsion droplets, dramatically increasing the surface area for pancreatic lipase to access and hydrolyze ester bonds.",
+              "Reason 2: Neutralization of Acidic Chyme — Chyme leaving the stomach is highly acidic (pH 1.5-2.0 due to HCl). Bile is strongly alkaline (rich in sodium bicarbonate), neutralizing the acid and establishing the optimal slightly alkaline pH (7.5-8.0) required for pancreatic and intestinal enzymes to function without denaturation."
+            ],
+            "finalAnswer": "Examiner Tip: Never state that bile 'digests' fats. Bile 'emulsifies' fats physically, which allows lipase to digest them chemically."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s7_1",
+              "difficulty": "low",
+              "prompt": "The wave-like muscular contraction of the muscular walls of the esophagus that moves food toward the stomach is called:",
+              "options": [
+                "Peristalsis",
+                "Mastication",
+                "Emulsification",
+                "Assimilation"
+              ],
+              "correctAnswer": "Peristalsis",
+              "hint": "It is involuntary contraction and relaxation of smooth muscles.",
+              "workedSolution": "Peristalsis is the rhythmic, coordinated contraction and relaxation of circular and longitudinal smooth muscles in the alimentary tract that propels the food bolus forward.",
+              "points": 1,
+              "learningCompetency": "B8.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s7_2",
+              "difficulty": "medium",
+              "prompt": "Which digestive enzyme is secreted into the stomach to initiate the chemical breakdown of proteins?",
+              "options": [
+                "Salivary amylase",
+                "Pepsin",
+                "Lipase",
+                "Maltase"
+              ],
+              "correctAnswer": "Pepsin",
+              "hint": "It requires an acidic pH provided by hydrochloric acid.",
+              "workedSolution": "Pepsin is secreted by gastric chief cells as inactive pepsinogen, which is activated by stomach HCl to cleave peptide bonds in dietary proteins, producing polypeptides.",
+              "points": 1,
+              "learningCompetency": "B8.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Respiratory Gas Exchange & Cardiovascular Circulation",
+        "summary": "Model pulmonary gas exchange at the alveoli and evaluate the double circulatory system of the human cardiovascular loop.",
+        "notes": "### Respiratory Gas Exchange & Cardiovascular Hemodynamics\n* **NaCCA Curriculum Code:** `B9.3.1.1`\n* **Core Competency:** Model the mechanics of breathing and alveoli gas diffusion, and trace double blood circulation through the human heart.\n\n#### 1. Mechanics of Breathing (Ventilation)\n* **Inhalation (Inspiration):**\n  * External intercostal muscles contract; rib cage swings upward and outward.\n  * Diaphragm contracts and flattens downward.\n  * Thoracic cavity volume increases; intrathoracic pulmonary pressure drops below atmospheric pressure.\n  * Atmospheric air rushes down the pressure gradient into the lungs.\n* **Exhalation (Expiration):**\n  * External intercostal muscles relax; rib cage moves downward and inward.\n  * Diaphragm relaxes, returning to its domed upward position.\n  * Thoracic volume decreases; internal pulmonary pressure rises above atmospheric pressure.\n  * Air is forced passively out of the lungs.\n\n#### 2. Pulmonary Alveoli Gas Exchange\nAlveoli are microscopic air sacs adapted for gas diffusion:\n* Millions of alveoli provide a massive surface area ($\\approx 70\\text{ m}^2$).\n* Wall is a single layer of squamous epithelial cells (ultra-thin diffusion distance).\n* Moist inner surface dissolves oxygen gas before diffusion.\n* Surrounded by dense networks of pulmonary capillaries maintaining a steep concentration gradient:\n  * Oxygen diffuses from high concentration in alveolar air into deoxygenated blood, binding to hemoglobin to form **oxyhemoglobin**.\n  * Carbon dioxide diffuses from high concentration in venous blood across the alveolar wall into alveolar air for exhalation.\n\n#### 3. Cardiovascular Circulation: Double Circulatory Loop\nHumans possess a **closed, double circulatory system** (blood passes twice through the four-chambered heart during one complete circuit):\n* **Pulmonary Circulation:** Right ventricle $\\rightarrow$ Pulmonary Artery $\\rightarrow$ Lungs (oxygenation) $\\rightarrow$ Pulmonary Veins $\\rightarrow$ Left Atrium.\n* **Systemic Circulation:** Left Ventricle (thickest myocardium) $\\rightarrow$ Aorta $\\rightarrow$ Body Organs and Tissues $\\rightarrow$ Vena Cava $\\rightarrow$ Right Atrium.\n* **Blood Vessels:**\n  * *Arteries:* Carry high-pressure blood away from heart; thick muscular and elastic walls; no valves (except aortic and pulmonary semilunar valves).\n  * *Veins:* Return low-pressure blood toward heart; thin muscular walls; contain semilunar valves to prevent backflow.\n  * *Capillaries:* Microscopic vessels one cell thick for metabolic diffusion.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s7_1",
+            "title": "Worked Example: Why the Left Ventricle Has the Thickest Muscular Wall",
+            "problem": "The myocardium of the human left ventricle is nearly three times thicker than that of the right ventricle. Explain the physiological necessity of this structural difference.",
+            "steps": [
+              "Step 1: Identify destination of pumped blood — The right ventricle pumps deoxygenated blood a very short distance to the nearby lungs via the pulmonary artery against low vascular resistance.",
+              "Step 2: Contrast left ventricle workload — The left ventricle must contract with sufficient hydrostatic force to pump oxygenated blood through the systemic circulation via the aorta to all organs, extremities (head, toes), and capillary beds of the entire body against high peripheral resistance.",
+              "Step 3: Functional adaptation — A much thicker layer of cardiac muscle tissue generates the powerful systolic contractile pressure required to circulate blood throughout the entire systemic vascular tree."
+            ],
+            "finalAnswer": "Examiner Tip: Always mention systemic circulation vs. pulmonary circulation when comparing ventricular wall thicknesses."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s7_1",
+              "difficulty": "low",
+              "prompt": "Which blood vessel carries oxygenated blood from the lungs directly into the left atrium of the heart?",
+              "options": [
+                "Pulmonary artery",
+                "Pulmonary vein",
+                "Aorta",
+                "Vena cava"
+              ],
+              "correctAnswer": "Pulmonary vein",
+              "hint": "It is the only vein in the human body carrying oxygen-rich blood.",
+              "workedSolution": "The pulmonary vein is an anatomical exception; it returns newly oxygenated blood from the lungs to the left atrium of the heart.",
+              "points": 1,
+              "learningCompetency": "B9.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s7_2",
+              "difficulty": "medium",
+              "prompt": "During human inhalation (inspiration), what happens to the diaphragm and the volume of the thoracic cavity?",
+              "options": [
+                "Diaphragm arches upward into a dome; thoracic volume decreases",
+                "Diaphragm contracts and flattens downward; thoracic volume increases",
+                "Diaphragm turns into liquid; volume stays unchanged",
+                "Diaphragm stops working completely"
+              ],
+              "correctAnswer": "Diaphragm contracts and flattens downward; thoracic volume increases",
+              "hint": "Expanding the chest creates a partial vacuum that draws air in.",
+              "workedSolution": "During inhalation, the diaphragm contracts and flattens downward while external intercostal muscles elevate the ribs, expanding thoracic volume and lowering internal lung pressure below atmospheric pressure.",
+              "points": 1,
+              "learningCompetency": "B9.3.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand3_solar_system",
+    "topicId": "sci_strand3_solar_system",
+    "title": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
+    "strand": "STRAND 3: SYSTEMS",
+    "strandCode": "S3",
+    "subStrand": "The Solar System (Celestial Mechanics, Orbital Gravitation & Space Technology)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Navigate interplanetary space and gravitational mechanics with orbital trajectory simulators. Compares terrestrial and gas-giant planetary systems, investigates solar/lunar eclipse geometries, and evaluates aerospace satellite deployment for communications and climate monitoring.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b8_strand3_solar_system"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Architecture of the Solar System & Planetary Classes",
+        "summary": "Chart the Solar System, contrast terrestrial vs. Jovian gas giants, and examine scale orbits around the Sun.",
+        "notes": "### The Solar System: Planetary Architecture & Orbital Scales\n* **NaCCA Curriculum Code:** `B7.3.2.1`\n* **Core Competency:** Classify the planets of the solar system into terrestrial and Jovian planets and describe their relative orbital characteristics.\n\n#### 1. Structure of the Solar System\nThe Solar System comprises the Sun (a G-type main-sequence star containing $99.86\\%$ of the system's mass), eight planets, dwarf planets (Pluto, Ceres), over 200 planetary moons, and billions of asteroids and comets held in orbital equilibrium by gravity.\n* **Order of Planets from the Sun:** Mercury $\\rightarrow$ Venus $\\rightarrow$ Earth $\\rightarrow$ Mars $\\rightarrow$ Jupiter $\\rightarrow$ Saturn $\\rightarrow$ Uranus $\\rightarrow$ Neptune.\n* Mnemonic: *My Very Educated Mother Just Served Us Noodles*.\n\n#### 2. Terrestrial (Inner) vs. Jovian (Outer) Planets\n* **Inner Terrestrial Planets (Mercury, Venus, Earth, Mars):**\n  * Located between the Sun and the Main Asteroid Belt.\n  * Composed predominantly of dense silicate rock and metallic iron-nickel cores.\n  * High densities ($>3.9\\text{ g/cm}^3$), solid impact-cratered surfaces, shallow atmospheres, few or no natural satellites, and zero planetary rings.\n* **Outer Jovian Planets (Jupiter, Saturn, Uranus, Neptune):**\n  * Located beyond the Asteroid Belt.\n  * Massive gas and ice giants composed of hydrogen, helium, methane, and ammonia.\n  * Low average densities (Saturn's density $\\approx 0.69\\text{ g/cm}^3$ is less than liquid water), deep turbulent atmospheres, extensive ring systems, and dozens of natural moons.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s8_1",
+            "title": "Worked Example: Contrasting Inner and Outer Planets",
+            "problem": "Give three key physical differences between the inner terrestrial planets and the outer Jovian planets of our Solar System.",
+            "steps": [
+              "Difference 1: Composition — Inner planets are rocky bodies with solid silicate crusts and metallic cores; outer planets are gaseous and icy bodies composed mainly of hydrogen, helium, and methane.",
+              "Difference 2: Size and Mass — Inner planets are comparatively small in diameter and low in mass; outer planets are massive giants (Jupiter alone has over 300 times Earth's mass).",
+              "Difference 3: Rings and Moons — Inner planets have zero rings and few moons (Earth has 1, Mars has 2); outer planets all possess complex ring systems and dozens of orbiting moons."
+            ],
+            "finalAnswer": "Examiner Tip: Note that all four outer planets (Jupiter, Saturn, Uranus, Neptune) have ring systems, though Saturn's rings are the most prominent and visible."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s8_1",
+              "difficulty": "low",
+              "prompt": "Which planet is the closest planet to the Sun in our Solar System?",
+              "options": [
+                "Venus",
+                "Mercury",
+                "Mars",
+                "Earth"
+              ],
+              "correctAnswer": "Mercury",
+              "hint": "It has the shortest orbital period of 88 Earth days.",
+              "workedSolution": "Mercury is the innermost planet orbiting closest to the Sun at an average distance of approximately 57.9 million kilometers.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s8_2",
+              "difficulty": "medium",
+              "prompt": "Why is Venus significantly hotter on its surface than Mercury, even though Mercury is much closer to the Sun?",
+              "options": [
+                "Venus contains radioactive lava oceans",
+                "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
+                "Venus generates nuclear fusion in its core",
+                "Mercury is covered in ice that reflects all sunlight"
+              ],
+              "correctAnswer": "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
+              "hint": "Venus has an extremely dense CO2 atmosphere.",
+              "workedSolution": "Although Mercury is closer to the Sun, it has virtually no atmosphere to trap heat. Venus has an ultra-dense atmosphere of 96% CO2 with surface pressures 92 times Earth's, driving a catastrophic runaway greenhouse effect that elevates surface temperatures to 465°C.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Diurnal Cycles, Seasons & Eclipse Optics",
+        "summary": "Explain day/night rotation, seasonal revolutions, and the rectilinear optics of solar and lunar eclipses.",
+        "notes": "### Celestial Mechanics: Rotation, Revolution & Eclipse Optics\n* **NaCCA Curriculum Code:** `B8.3.2.1`\n* **Core Competency:** Explain the causes of day and night, seasonal variations, and the optical geometry of solar and lunar eclipses.\n\n#### 1. Planetary Motions: Rotation vs. Revolution\n* **Rotation (Diurnal Cycle):** Earth spins on its internal polar axis from West to East once every 24 hours. The half facing the Sun experiences daylight; the half facing away experiences nighttime.\n* **Revolution (Annual Seasonal Cycle):** Earth orbits around the Sun in an elliptical path once every $365\\frac{1}{4}$ days. Earth's rotational axis is tilted at an angle of $23.5^\\circ$ relative to its orbital plane (ecliptic). This axial tilt alters the angle of incidence and duration of sunlight received by the Northern and Southern Hemispheres, creating seasons (solstices and equinoxes).\n\n#### 2. The Optical Geometry of Eclipses\nEclipses occur because light travels in straight lines (**rectilinear propagation**), casting shadows:\n* **Umbra:** The central, completely dark shadow zone where all light is blocked.\n* **Penumbra:** The outer, partially illuminated shadow zone where only a portion of the light source is obscured.\n\n#### 3. Solar Eclipse (Eclipse of the Sun)\n* **Alignment:** $\\text{Sun} \\rightarrow \\text{Moon} \\rightarrow \\text{Earth}$ (Occurs only during New Moon phase).\n* The Moon passes directly between the Sun and Earth, casting its shadow onto Earth's surface. Observers in the umbra experience a **Total Solar Eclipse**; observers in the penumbra see a **Partial Solar Eclipse**.\n\n#### 4. Lunar Eclipse (Eclipse of the Moon)\n* **Alignment:** $\\text{Sun} \\rightarrow \\text{Earth} \\rightarrow \\text{Moon}$ (Occurs only during Full Moon phase).\n* Earth passes directly between the Sun and Moon, casting its large shadow across the lunar surface. Because Earth is larger than the Moon, lunar eclipses can be observed simultaneously from the entire nighttime hemisphere.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s8_1",
+            "title": "Worked Example: Geometric Alignment of Solar and Lunar Eclipses",
+            "problem": "Draw diagrams or state the exact celestial alignments during: (a) a Total Solar Eclipse, and (b) a Total Lunar Eclipse. Explain why a solar eclipse lasts only a few minutes at any one location on Earth.",
+            "steps": [
+              "Part (a) Solar Eclipse Alignment: Sun -> Moon -> Earth. The Moon is in the middle, casting its small conical shadow (umbra) onto a narrow strip of Earth's surface.",
+              "Part (b) Lunar Eclipse Alignment: Sun -> Earth -> Moon. The Earth is in the middle, casting its large shadow across the surface of the Moon.",
+              "Explanation of Duration: The Moon is much smaller than the Earth, so its dark umbral shadow is tiny (rarely exceeding 270 km in diameter on Earth). Because Earth is rotating rapidly on its axis while the Moon moves in orbit, the small umbral shadow sweeps swiftly across the Earth's surface, so totality at any single location lasts only 2 to 7.5 minutes maximum."
+            ],
+            "finalAnswer": "Examiner Tip: Remember: In a Solar eclipse, the Moon is in the middle. In a Lunar eclipse, the Earth is in the middle."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s8_1",
+              "difficulty": "low",
+              "prompt": "The regular alternation of day and night on Earth is caused by the:",
+              "options": [
+                "Revolution of Earth around the Sun",
+                "Rotation of Earth on its tilted axis every 24 hours",
+                "Movement of the Sun around the Earth",
+                "Changing phases of the Moon"
+              ],
+              "correctAnswer": "Rotation of Earth on its tilted axis every 24 hours",
+              "hint": "The Earth spins like a top on its own axis.",
+              "workedSolution": "Earth's rotation on its axis once every 24 hours causes different longitudes to alternate between facing the Sun (daylight) and facing away into deep space (night).",
+              "points": 1,
+              "learningCompetency": "B8.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s8_2",
+              "difficulty": "medium",
+              "prompt": "During a solar eclipse, what is the correct spatial arrangement of the celestial bodies?",
+              "options": [
+                "Earth is between Sun and Moon",
+                "Moon is between Sun and Earth",
+                "Sun is between Earth and Moon",
+                "Mars is between Sun and Moon"
+              ],
+              "correctAnswer": "Moon is between Sun and Earth",
+              "hint": "The Moon blocks our view of the Sun.",
+              "workedSolution": "A solar eclipse occurs when the Moon passes directly between the Sun and Earth, casting its shadow (umbra and penumbra) onto the Earth's surface.",
+              "points": 1,
+              "learningCompetency": "B8.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Universal Gravitation & Artificial Satellite Technologies",
+        "summary": "Explore universal gravitation, orbital insertion velocities, and the application of artificial satellites in telecommunication and meteorology.",
+        "notes": "### Universal Gravitation & Artificial Satellite Technology\n* **NaCCA Curriculum Code:** `B9.3.2.1`\n* **Core Competency:** Apply the law of gravitation to orbital mechanics and examine satellite applications in communication, meteorology, and resource exploration.\n\n#### 1. Newton's Law of Universal Gravitation\nEvery mass in the universe attracts every other mass with a force directly proportional to the product of their masses and inversely proportional to the square of the distance between their centers:\n$$F_g = G \\frac{m_1 m_2}{r^2}$$\n* $F_g$: Gravitational force of attraction (N)\n* $G$: Universal gravitational constant ($6.674 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$)\n* $m_1, m_2$: Masses of the interacting bodies (kg)\n* $r$: Center-to-center distance (m)\n* **Orbital Balance:** A satellite remains in stable orbit when the inward gravitational pull provides the exact centripetal force required for circular motion:\n  $$\\frac{G M m}{r^2} = \\frac{m v^2}{r} \\implies v = \\sqrt{\\frac{GM}{r}}$$\n\n#### 2. Types of Artificial Satellites & Orbital Classes\n* **Low Earth Orbit (LEO, altitude 160 – 2,000 km):**\n  * Orbital period: $\\approx 90-120\\text{ minutes}$.\n  * High spatial resolution; used for Earth observation, spy surveillance, remote sensing, and the International Space Station (ISS).\n* **Medium Earth Orbit (MEO, altitude 2,000 – 35,786 km):**\n  * Orbital period: $\\approx 12\\text{ hours}$.\n  * Houses Global Positioning System (GPS) constellations.\n* **Geostationary Orbit (GEO, fixed altitude $35,786\\text{ km}$ above the Equator):**\n  * Orbital period matches Earth's rotation exactly ($24\\text{ hours}$).\n  * Appears permanently stationary over one longitude; ideal for continental weather tracking and direct-to-home telecommunications (satellite television, telecommunication relays).\n\n#### 3. Socio-Economic Value of Space Technology for Ghana\n* **Telecommunications:** Global internet connectivity, rural cellular backhaul, and educational broadcasting.\n* **Meteorology & Early Warning:** Tracking Atlantic tropical storm cyclogenesis, predicting monsoonal rainfall onset for farmers.\n* **Resource Mapping:** Satellite multispectral imaging monitors illegal gold mining (galamsey) destruction of river basins, deforestation rates, and urban land encroachment.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s8_1",
+            "title": "Worked Example: The Physics of Geostationary Satellites",
+            "problem": "Explain why communication satellites such as those providing satellite television and internet to Ghana are placed in Geostationary Orbit (GEO) at 35,786 km rather than in Low Earth Orbit (LEO).",
+            "steps": [
+              "Step 1: Define GEO orbital period — At an altitude of exactly 35,786 km directly above the Earth's equator, a satellite's orbital period matches the Earth's 24-hour rotational period precisely.",
+              "Step 2: Ground perspective — Because the satellite orbits at the exact same rotational velocity as the Earth below, it remains permanently stationary relative to an observer on the ground.",
+              "Step 3: Engineering advantage — Ground-based receiving dishes (such as residential satellite TV dishes) can be fixed permanently in one direction pointing at the satellite in the sky without requiring expensive motorized tracking systems needed for fast-moving LEO satellites."
+            ],
+            "finalAnswer": "Examiner Tip: State clearly that the orbital period in GEO equals Earth's rotational period (24 hours), keeping the satellite fixed over one geographic point."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s8_1",
+              "difficulty": "low",
+              "prompt": "An artificial satellite positioned in Geostationary Orbit (GEO) completes one full revolution around the Earth in approximately:",
+              "options": [
+                "90 minutes",
+                "12 hours",
+                "24 hours",
+                "30 days"
+              ],
+              "correctAnswer": "24 hours",
+              "hint": "Its period matches the Earth's rotational period.",
+              "workedSolution": "A geostationary satellite has an orbital period of exactly 24 hours, synchronizing with Earth's rotation to remain stationary over a fixed equatorial coordinate.",
+              "points": 1,
+              "learningCompetency": "B9.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s8_2",
+              "difficulty": "medium",
+              "prompt": "According to Newton's Law of Universal Gravitation, if the distance between two orbiting celestial bodies is doubled, the gravitational attraction between them becomes:",
+              "options": [
+                "Doubled",
+                "Halved",
+                "One-quarter of the original force",
+                "Four times greater"
+              ],
+              "correctAnswer": "One-quarter of the original force",
+              "hint": "The force follows an inverse-square law with distance: F proportional to 1/r^2.",
+              "workedSolution": "Gravitational force follows the inverse-square law: F proportional to 1/r^2. Doubling the distance (2r) reduces the force to 1/(2^2) = 1/4 of its initial magnitude.",
+              "points": 1,
+              "learningCompetency": "B9.3.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand3_ecosystems",
+    "topicId": "sci_strand3_ecosystems",
+    "title": "Ecosystems & Environmental Interdependence (Habitats, Trophic Levels, Food Webs & Pyramids)",
+    "strand": "STRAND 3: SYSTEMS",
+    "strandCode": "S3",
+    "subStrand": "Ecosystems (Trophic Energy Transfer, Symbiosis & Ecological Balance)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Measure ecological energy flow and biotic/abiotic interactions through ecosystem population dynamics models. Students construct food chains and trophic webs, calculate energy dissipation across pyramids of biomass, and simulate ecological community resilience.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Ecosystem Components, Habitats & Organism Adaptations",
+        "summary": "Differentiate terrestrial and aquatic ecosystems, analyze biotic/abiotic factors, and explore specialized adaptations.",
+        "notes": "### Ecosystems, Ecological Niches & Environmental Adaptations\n* **NaCCA Curriculum Code:** `B7.3.3.1`\n* **Core Competency:** Differentiate biotic and abiotic components of ecosystems and identify physical adaptations of organisms to their habitats.\n\n#### 1. The Structure of an Ecosystem\nAn ecosystem is a self-sustaining ecological community comprising living (**biotic**) organisms interacting with their non-living physical (**abiotic**) environment:\n* **Biotic Components:**\n  * *Producers (Autotrophs):* Green plants and algae that synthesize organic food via photosynthesis.\n  * *Consumers (Heterotrophs):* Primary consumers (herbivores), secondary/tertiary consumers (carnivores, omnivores).\n  * *Decomposers (Saprotrophs):* Bacteria and fungi that recycle nutrients from dead organic matter.\n* **Abiotic Factors:** Sunlight, temperature, rainfall, humidity, soil pH, salinity, dissolved oxygen.\n\n#### 2. Major Habitat Types & Adaptations\n* **Terrestrial Habitats:**\n  * *Tropical Rainforest:* High canopy trees with buttress roots for structural stability; climbing epiphytes and lianas; arboreal animals with prehensile tails.\n  * *Savanna Grassland:* Drought-tolerant deciduous trees with thick fire-resistant bark; deep taproots; animals adapted for rapid running (herbivores and carnivores).\n* **Aquatic Habitats:**\n  * *Freshwater (Ponds, Rivers):* Submerged plants (*Ceratophyllum*) with flexible stems and dissected leaves; floating plants (*Pistia*) with spongy, aerenchymous air-filled tissues.\n  * *Marine / Estuarine (Mangroves):* Halophytic mangrove trees possessing specialized aerial breathing roots (**pneumatophores**) to access oxygen in waterlogged anaerobic mud, and salt-excreting leaf glands.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s9_1",
+            "title": "Worked Example: Adaptations of Mangrove Trees to Coastal Swamps",
+            "problem": "Mangrove swamps are characterized by high salinity and oxygen-depleted, waterlogged mud. Explain two specific structural adaptations that allow red and black mangrove trees to thrive in this habitat.",
+            "steps": [
+              "Adaptation 1: Pneumatophores (Breathing Roots) — Waterlogged coastal mud contains virtually zero dissolved oxygen. Black mangroves develop specialized pencil-like roots called pneumatophores that grow vertically upward above the high tide water surface, possessing porous lenticels for atmospheric gas exchange.",
+              "Adaptation 2: Stilt Roots (Prop Roots) — Red mangroves develop branching stilt roots that arch outward from the main trunk into the soft, shifting tidal mud, anchoring the tree securely against wave action and tidal currents while filtering out excess toxic salts."
+            ],
+            "finalAnswer": "Examiner Tip: State the environmental challenge (lack of oxygen in mud, soft shifting soil) and pair it with the corresponding anatomical adaptation."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s9_1",
+              "difficulty": "low",
+              "prompt": "The non-living physical and chemical factors in an ecosystem (such as sunlight, rainfall, and soil pH) are termed:",
+              "options": [
+                "Biotic factors",
+                "Abiotic factors",
+                "Symbiotic factors",
+                "Trophic factors"
+              ],
+              "correctAnswer": "Abiotic factors",
+              "hint": "The prefix 'a-' means without or non-living.",
+              "workedSolution": "Abiotic factors are the non-living chemical and physical variables (temperature, light, moisture, minerals) that shape the ecological environment.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s9_2",
+              "difficulty": "medium",
+              "prompt": "Which structural feature enables floating water lettuce (Pistia) to remain buoyant on the surface of freshwater ponds?",
+              "options": [
+                "Thick heavy wooden stems",
+                "Aerenchyma tissues filled with air spaces",
+                "Large taproots anchored in deep rocks",
+                "Spines that inject venom into fish"
+              ],
+              "correctAnswer": "Aerenchyma tissues filled with air spaces",
+              "hint": "Internal air pockets provide biological buoyancy.",
+              "workedSolution": "Floating aquatic macrophytes contain spongy aerenchyma tissue containing large intercellular air pockets that provide buoyancy, keeping leaves at the water surface for photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Trophic Dynamics, Food Webs & Ecological Pyramids",
+        "summary": "Construct food chains and complex food webs; calculate energy dissipation across pyramids of biomass and the 10% thermodynamic rule.",
+        "notes": "### Trophic Dynamics: Food Chains, Complex Webs & Energy Pyramids\n* **NaCCA Curriculum Code:** `B8.3.3.1`\n* **Core Competency:** Construct food chains and webs, and explain energy dissipation across ecological trophic pyramids.\n\n#### 1. Food Chains & Trophic Levels\nA food chain is a linear feeding sequence showing the flow of organic energy from producers to consumers:\n* **Trophic Level 1:** Primary Producers (Green plants, phytoplankton) — Fix solar energy.\n* **Trophic Level 2:** Primary Consumers (Herbivores: caterpillars, grasshoppers, zooplankton).\n* **Trophic Level 3:** Secondary Consumers (Carnivores: lizards, frogs, small fish).\n* **Trophic Level 4:** Tertiary Consumers (Apex predators: hawks, eagles, lions, sharks).\n* *Convention:* The arrow ($\\rightarrow$) indicates **flow of energy** (\"is eaten by\"):\n  $$\\text{Grass} \\rightarrow \\text{Grasshopper} \\rightarrow \\text{Toad} \\rightarrow \\text{Snake} \\rightarrow \\text{Hawk}$$\n\n#### 2. The 10% Trophic Energy Transfer Rule\nAccording to Lindeman's Efficiency Law:\n* Only approximately **10% of the chemical energy** stored in the biomass of one trophic level is transferred to and incorporated into the next higher trophic level.\n* **Where does the 90% go?**\n  * Metabolic cellular respiration generating thermal heat lost to the environment ($E = mc\\Delta T$).\n  * Excretion, unconsumed biomass, and undigested waste (feces, bones, cellulose).\n* **Ecological Consequence:** Because energy dissipates rapidly, food chains rarely exceed 4 to 5 trophic links before available energy is insufficient to sustain another predator population.\n\n#### 3. Ecological Pyramids\n* **Pyramid of Numbers:** Shows the total count of individual organisms at each trophic level. Can be inverted (e.g., one large oak tree supporting thousands of aphids).\n* **Pyramid of Biomass:** Shows the total dry weight of living organic matter at each level. Usually upright in terrestrial biomes.\n* **Pyramid of Energy:** Always upright; energy availability decreases progressively at each ascending trophic level due to the Second Law of Thermodynamics.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s9_1",
+            "title": "Worked Example: Calculating Trophic Energy Flow",
+            "problem": "In a grassland ecosystem, green maize plants fix 50,000 kJ of solar energy into chemical carbohydrate biomass. Calculate the energy available to: (a) grasshoppers (primary consumers), (b) toads (secondary consumers), and (c) hawks (tertiary consumers), assuming a standard 10% trophic transfer efficiency.",
+            "steps": [
+              "Step 1: Producer energy = 50,000 kJ.",
+              "Step 2: Energy to Primary Consumers (Grasshoppers) = 10% of 50,000 kJ = 0.10 x 50,000 = 5,000 kJ.",
+              "Step 3: Energy to Secondary Consumers (Toads) = 10% of 5,000 kJ = 0.10 x 5,000 = 500 kJ.",
+              "Step 4: Energy to Tertiary Consumers (Hawks) = 10% of 500 kJ = 0.10 x 500 = 50 kJ."
+            ],
+            "finalAnswer": "Examiner Tip: Notice that from 50,000 kJ at the producer level, only 50 kJ reaches the apex hawk. 49,950 kJ was dissipated as metabolic heat and waste along the chain."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s9_1",
+              "difficulty": "low",
+              "prompt": "In a terrestrial food chain, the direction of the arrow between two organisms represents the:",
+              "options": [
+                "Physical movement of the animal",
+                "Flow of energy from prey to predator",
+                "Direction of wind in the habitat",
+                "Age difference between the animals"
+              ],
+              "correctAnswer": "Flow of energy from prey to predator",
+              "hint": "The arrow points toward the consumer eating the food.",
+              "workedSolution": "In ecological diagrams, the arrow always points from the organism being consumed to the consumer, tracing the transfer of chemical energy through the ecosystem.",
+              "points": 1,
+              "learningCompetency": "B8.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s9_2",
+              "difficulty": "medium",
+              "prompt": "Why can a pyramid of energy NEVER be inverted in any natural, balanced ecosystem?",
+              "options": [
+                "Energy is created out of nothing by carnivores",
+                "Energy is progressively lost as metabolic heat at every trophic step according to thermodynamic laws",
+                "Plants eat animals at night",
+                "Decomposers destroy all energy"
+              ],
+              "correctAnswer": "Energy is progressively lost as metabolic heat at every trophic step according to thermodynamic laws",
+              "hint": "The Second Law of Thermodynamics dictates continuous energy dissipation.",
+              "workedSolution": "Because energy is continuously lost as metabolic heat during respiration at each trophic transition, each successive level receives less energy than the one below it. Thus, energy pyramids are strictly upright.",
+              "points": 1,
+              "learningCompetency": "B8.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Symbiotic Relationships & Biological Magnification",
+        "summary": "Evaluate symbiotic relationships (mutualism, parasitism, commensalism) and model the bioaccumulation and biomagnification of toxins.",
+        "notes": "### Symbiotic Interactions, Ecological Balance & Biomagnification\n* **NaCCA Curriculum Code:** `B9.3.3.1`\n* **Core Competency:** Evaluate mutualism, commensalism, and parasitism, and trace the biomagnification of persistent non-biodegradable toxins.\n\n#### 1. Symbiotic Interdependence in Communities\n* **Mutualism ($+/+$):** An obligatory or beneficial relationship in which both species benefit:\n  * *Rhizobium* bacteria in legume root nodules: bacterium gains carbohydrates; legume receives fixed nitrogen.\n  * Pollinators (bees, sunbirds) and flowering plants: pollinator receives nectar; plant achieves cross-pollination.\n  * Lichens: Mutualistic association between an alga/cyanobacterium (provides photosynthetic sugars) and a fungus (provides water, minerals, and mechanical anchorage).\n* **Commensalism ($+/0$):** One organism benefits while the other is neither helped nor harmed:\n  * Epiphytic orchids growing on tall forest tree trunks to access sunlight without taking nutrients from the host.\n  * Cattle egrets feeding on insects disturbed by grazing livestock.\n* **Parasitism ($+/-$):** One organism (parasite) benefits at the direct expense of the host:\n  * Ectoparasites: Ticks and lice feeding on livestock blood.\n  * Endoparasites: *Plasmodium* in human erythrocytes; tapeworms (*Taenia*) in mammalian intestines.\n\n#### 2. Bioaccumulation vs. Biomagnification\n* **Bioaccumulation:** The gradual buildup of a non-biodegradable chemical substance (e.g., DDT, methylmercury, microplastics) inside the tissues of an individual organism over its lifespan.\n* **Biomagnification:** The progressive increase in concentration of persistent, fat-soluble, non-biodegradable toxins at **successively higher trophic levels** of a food chain.\n  * Phytoplankton absorbs trace pesticide from water ($0.00005\\text{ ppm}$).\n  * Zooplankton eats thousands of phytoplankton ($0.04\\text{ ppm}$).\n  * Small fish eat zooplankton ($0.5\\text{ ppm}$).\n  * Large predatory fish eat small fish ($2.0\\text{ ppm}$).\n  * Apex predator (Fish eagle, human) accumulates lethal concentrations ($25.0\\text{ ppm}$), leading to reproductive failure, eggshell thinning, organ damage, and mortality.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s9_1",
+            "title": "Worked Example: The Biomagnification of Mercury in an Aquatic Ecosystem",
+            "problem": "Gold miners discharge mercury into a river basin at a low concentration of 0.001 ppm. Explain why apex predatory fish (such as tigerfish) in the same river contain mercury concentrations exceeding 20 ppm.",
+            "steps": [
+              "Step 1: Chemical nature of mercury — Mercury (specifically organic methylmercury) is persistent, non-biodegradable, and lipophilic (fat-soluble), meaning organisms cannot easily excrete or metabolize it.",
+              "Step 2: Trophic amplification — Primary producers (algae) absorb trace mercury. Herbivorous small fish consume millions of algae over time, bioaccumulating mercury in their fatty tissues.",
+              "Step 3: Apex accumulation — Apex predatory tigerfish consume thousands of small fish throughout their lifetime. Because the toxin is retained while biomass is burned for energy, the concentration of mercury multiplies at each ascending trophic level (biomagnification), reaching lethal concentrations 20,000 times higher than ambient water levels."
+            ],
+            "finalAnswer": "Examiner Tip: Clearly distinguish between bioaccumulation (within one organism over time) and biomagnification (amplifying across trophic levels)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s9_1",
+              "difficulty": "low",
+              "prompt": "The symbiotic association between honeybees and flowering plants, where both species benefit, is classified as:",
+              "options": [
+                "Parasitism",
+                "Mutualism",
+                "Commensalism",
+                "Predation"
+              ],
+              "correctAnswer": "Mutualism",
+              "hint": "Both partners gain a distinct biological advantage (+/+).",
+              "workedSolution": "Mutualism is an interspecific interaction in which both species benefit (+/+): the bee obtains nectar and pollen for food, while the plant achieves successful cross-pollination.",
+              "points": 1,
+              "learningCompetency": "B9.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s9_2",
+              "difficulty": "medium",
+              "prompt": "What happens to the concentration of persistent, non-biodegradable pesticides (such as DDT) as they pass up a food chain?",
+              "options": [
+                "The concentration decreases to zero at the top",
+                "The concentration increases progressively at each higher trophic level",
+                "The pesticide turns into sugar in carnivores",
+                "The concentration remains completely unchanged"
+              ],
+              "correctAnswer": "The concentration increases progressively at each higher trophic level",
+              "hint": "This phenomenon is called biological magnification.",
+              "workedSolution": "Because persistent fat-soluble toxins cannot be broken down or excreted, they accumulate in fatty tissues. Predators consume large numbers of contaminated prey, causing toxin concentration to multiply at each ascending trophic level.",
+              "points": 1,
+              "learningCompetency": "B9.3.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand3_farming_systems",
+    "topicId": "sci_strand3_farming_systems",
+    "title": "Farming Systems & Agro-Ecology (Crop Rotation, Mixed Farming & Organic Agriculture)",
+    "strand": "STRAND 3: SYSTEMS",
+    "strandCode": "S3",
+    "subStrand": "Farming Systems (Agro-Ecological Models, Sustainability & Soil Regeneration)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Optimize agricultural output and ecological preservation through interactive whole-farm management software. Compares monoculture, mixed cropping, livestock-crop integration, and multi-year crop rotation schedules designed to interrupt pest cycles and maintain soil nitrogen pools.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Traditional & Contemporary Farming Archetypes",
+        "summary": "Analyze land tenure and traditional farming systems (shifting cultivation, land rotation, mixed cropping) and ecological sustainability.",
+        "notes": "### Farming Systems: Traditional Practices & Agro-Ecological Sustainability\n* **NaCCA Curriculum Code:** `B7.3.4.1`\n* **Core Competency:** Identify farming systems in Ghana, assess ecological sustainability, and evaluate land rotation.\n\n#### 1. Traditional Farming Archetypes\n* **Shifting Cultivation:** The farmer clears a patch of virgin forest by slash-and-burn, cultivates crops for 2-3 years until soil fertility declines, then abandons the land and relocates the entire homestead to clear a new forest area. Only feasible where human population density is very low and land is abundant.\n* **Land Rotation (Bush Fallowing):** The farmer clears a plot, crops it for a few seasons, and then leaves the land fallow for several years to regenerate natural vegetation and soil organic matter, while the farmer moves to another plot **without moving the settlement**.\n* **Mixed Cropping (Intercropping):** Cultivating two or more different crop species simultaneously on the same piece of land (e.g., maize intercropped with cowpea or cassava).\n  * *Advantages:* Insurance against total crop failure, diverse food supply, soil cover suppressing weeds, legumes fixing nitrogen for cereal companions.\n* **Monoculture (Continuous Cropping):** Growing a single crop species exclusively on the same plot season after season (e.g., commercial rice or sugarcane plantations).\n  * *Disadvantages:* Rapid depletion of specific soil nutrients, buildup of host-specific insect pests and soil diseases, high reliance on synthetic fertilizers and pesticides.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s10_1",
+            "title": "Worked Example: Why Shifting Cultivation Is Unsustainable Today",
+            "problem": "Shifting cultivation was widely practiced by traditional Ghanaian farmers centuries ago. Explain two reasons why shifting cultivation is no longer sustainable or practical in modern Ghana.",
+            "steps": [
+              "Reason 1: Rapid Population Growth and Land Pressure — Rapid population growth has increased the demand for arable land, residential housing, and commercial infrastructure. Farmers no longer have access to vast tracts of uncultivated forest land to abandon and relocate settlements.",
+              "Reason 2: Severe Deforestation and Climate Change — Repeatedly burning virgin forest accelerates environmental degradation, destroys biodiversity, causes widespread loss of carbon sinks, and exacerbates seasonal drought.",
+              "Conclusion: Farmers must transition to permanent, intensive soil management systems such as crop rotation, agroforestry, and organic farming."
+            ],
+            "finalAnswer": "Examiner Tip: State the primary driver: high population density leading to land scarcity."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s10_1",
+              "difficulty": "low",
+              "prompt": "The farming practice of planting two or more different crops simultaneously on the same plot of land is termed:",
+              "options": [
+                "Monoculture",
+                "Mixed cropping (intercropping)",
+                "Pastoral nomadism",
+                "Continuous cropping"
+              ],
+              "correctAnswer": "Mixed cropping (intercropping)",
+              "hint": "Farmers often mix maize with beans.",
+              "workedSolution": "Mixed cropping (or intercropping) is the cultivation of two or more crop varieties simultaneously on the same field to maximize land use and reduce risk of total crop loss.",
+              "points": 1,
+              "learningCompetency": "B7.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s10_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary difference between shifting cultivation and bush fallowing (land rotation)?",
+              "options": [
+                "In shifting cultivation, the farmer never plants crops",
+                "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
+                "Bush fallowing uses tractors while shifting cultivation uses airplanes",
+                "Shifting cultivation is only done in the desert"
+              ],
+              "correctAnswer": "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
+              "hint": "Consider whether the home/village relocates.",
+              "workedSolution": "Under shifting cultivation, the farmer relocates the entire household/homestead to a distant new site. In bush fallowing, the settlement is permanent, and the farmer rotates between surrounding plots.",
+              "points": 1,
+              "learningCompetency": "B7.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Scientific Principles & Design of Crop Rotation Schemes",
+        "summary": "Design 3-year and 4-year crop rotation schedules utilizing legumes, deep rooters, shallow feeders, and heavy extractors.",
+        "notes": "### Crop Rotation: Agronomic Principles & Multi-Year Design\n* **NaCCA Curriculum Code:** `B8.3.4.1`\n* **Core Competency:** Formulate crop rotation programs following scientific agronomic principles to sustain soil productivity.\n\n#### 1. The Concept of Crop Rotation\nCrop rotation is the practice of growing a planned sequence of different crop species on the same piece of land over recurrent seasons:\n* Plot is partitioned into equal sections corresponding to the number of years in the rotation cycle (e.g., 4 plots for a 4-year rotation).\n\n#### 2. Fundamental Scientific Principles of Crop Rotation\n1. **Alternate Shallow and Deep Rooters:** Deep-rooted crops (e.g., yam, cassava, pigeon pea) absorb nutrients and moisture from subsoil horizons and open up soil channels; shallow-rooted crops (e.g., maize, onion) feed from the topsoil.\n2. **Include Nitrogen-Fixing Legumes:** Leguminous crops (cowpea, groundnut, soybean) possess root nodules with *Rhizobium* that fix atmospheric nitrogen, replenishing soil nitrogen reserves for the subsequent crop.\n3. **Alternate Heavy Feeders with Light Feeders:** Heavy nutrient extractors (e.g., maize, yam) should be followed by restorative crops (legumes) or light feeders (leafy vegetables).\n4. **Disrupt Pest and Pathogen Cycles:** Crops belonging to the same botanical family (e.g., Solanaceae: tomato, pepper, eggplant, potato) share the same insect pests and diseases (bacterial wilt, nematodes) and must **never** follow one another sequentially.\n5. **Alternate Weed-Suppressing Cover Crops:** Dense canopy crops (cowpea, sweet potato) suppress weeds, reducing weed seed banks for subsequent crops.\n\n#### 3. Standard 4-Year Crop Rotation Model\n| Year | Plot 1 | Plot 2 | Plot 3 | Plot 4 |\n| :---: | :---: | :---: | :---: | :---: |\n| **Year 1** | Yam (Deep feeder) | Cowpea (Legume) | Maize (Shallow feeder) | Tomato (Vegetable) |\n| **Year 2** | Cowpea (Legume) | Maize (Shallow feeder) | Tomato (Vegetable) | Yam (Deep feeder) |\n| **Year 3** | Maize (Shallow feeder) | Tomato (Vegetable) | Yam (Deep feeder) | Cowpea (Legume) |\n| **Year 4** | Tomato (Vegetable) | Yam (Deep feeder) | Cowpea (Legume) | Maize (Shallow feeder) |",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s10_1",
+            "title": "Worked Example: Designing a 3-Year Crop Rotation Schedule",
+            "problem": "A farmer in the Eastern Region has three adjacent plots and wishes to cultivate Maize (cereal), Cowpea (legume), and Cassava (deep rooter). Design a 3-year crop rotation schedule and explain why cowpea must precede maize.",
+            "steps": [
+              "Step 1: Assign crops to plots in Year 1: Plot 1: Cassava (Deep rooter); Plot 2: Cowpea (Legume); Plot 3: Maize (Cereal).",
+              "Step 2: Rotate sequence for Year 2: Plot 1: Cowpea; Plot 2: Maize; Plot 3: Cassava.",
+              "Step 3: Rotate sequence for Year 3: Plot 1: Maize; Plot 2: Cassava; Plot 3: Cowpea.",
+              "Step 4: Rationale for Cowpea preceding Maize: Maize is a heavy nitrogen extractor requiring large nitrogen inputs for leafy vegetative growth. Cowpea fixes atmospheric nitrogen via symbiotic Rhizobium root nodules; when harvested, decomposing root residues enrich the topsoil with bioavailable nitrates, directly feeding the subsequent maize crop."
+            ],
+            "finalAnswer": "Examiner Tip: In rotation tables, verify that each crop moves through every plot over the cycle and no crop repeats on the same plot in consecutive years."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s10_1",
+              "difficulty": "low",
+              "prompt": "In a properly planned crop rotation program, why must leguminous crops (such as cowpea or groundnut) be included?",
+              "options": [
+                "To attract caterpillars to the field",
+                "To fix atmospheric nitrogen and enrich soil fertility naturally",
+                "To remove all water from the subsoil",
+                "To make the soil permanently acidic"
+              ],
+              "correctAnswer": "To fix atmospheric nitrogen and enrich soil fertility naturally",
+              "hint": "Legumes have symbiotic nitrogen-fixing root nodules.",
+              "workedSolution": "Leguminous crops host Rhizobium bacteria in their root nodules that convert atmospheric N2 into soluble soil nitrogen, restoring soil fertility for subsequent heavy feeders.",
+              "points": 1,
+              "learningCompetency": "B8.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s10_2",
+              "difficulty": "medium",
+              "prompt": "Why should tomato, pepper, and garden egg NOT follow each other in consecutive seasons on the same plot?",
+              "options": [
+                "They are all bitter crops",
+                "They belong to the same botanical family (Solanaceae) and share common pests and diseases",
+                "They cross-pollinate to produce poison",
+                "They refuse to grow in sunlight"
+              ],
+              "correctAnswer": "They belong to the same botanical family (Solanaceae) and share common pests and diseases",
+              "hint": "Solanaceous crops share common pathogens like bacterial wilt and root-knot nematodes.",
+              "workedSolution": "Crops from the same botanical family share susceptibility to the same pests (e.g. fruit borers) and diseases (bacterial wilt, viral mosaics). Planting them consecutively allows pest populations to multiply uncontrollably.",
+              "points": 1,
+              "learningCompetency": "B8.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Integrated Mixed Farming, Agroforestry & Organic Farming",
+        "summary": "Analyze mixed farming (crop-livestock integration), agroforestry alley cropping, and certified organic farming standards.",
+        "notes": "### Integrated Farming Systems, Agroforestry & Organic Agriculture\n* **NaCCA Curriculum Code:** `B9.3.4.1`\n* **Core Competency:** Evaluate mixed farming, agroforestry, and organic agriculture for economic resilience and environmental sustainability.\n\n#### 1. Integrated Mixed Farming (Crop-Livestock Symbiosis)\nA system in which crop production and animal husbandry are integrated on the same farm enterprise to create closed resource-recovery loops:\n* **Crops $\\rightarrow$ Animals:** Crop residues (maize stover, cowpea haulms, cassava peels) provide feed and bedding for cattle, sheep, and pigs.\n* **Animals $\\rightarrow$ Crops:** Animal manure (rich in N, P, K and organic matter) fertilizes crop fields; draft animals (bullocks) provide traction for plowing and transport.\n* **Economic Resilience:** Diversified income streams protect the farmer against commodity price volatility and localized drought.\n\n#### 2. Agroforestry & Alley Cropping\nThe deliberate integration of woody perennials (trees, shrubs) with arable crops and/or livestock on the same land management unit:\n* **Alley Cropping:** Arable crops are grown in alleyways between hedgerows of nitrogen-fixing leguminous trees (e.g., *Leucaena leucocephala*, *Gliricidia sepium*).\n  * Hedgerows are pruned periodically, and the green foliage is incorporated into the soil as **green manure**.\n  * Deep tree roots recycle leached nutrients and prevent wind and water soil erosion.\n\n#### 3. Certified Organic Agriculture\nA holistic production management system that avoids the use of synthetic chemical inputs (mineral fertilizers, chemical pesticides, hormones, antibiotics):\n* Relies on ecological processes: crop rotation, green manures, compost, biological pest control, and mechanical weeding.\n* **Environmental Benefits:** Eliminates groundwater pesticide contamination, preserves pollinator populations (bees), protects soil microbial biodiversity, and produces residue-free food.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s10_1",
+            "title": "Worked Example: The Closed Ecological Loop of Integrated Mixed Farming",
+            "problem": "Diagram and describe the closed-loop ecological relationship between dairy cattle and maize crop production on an integrated mixed farm.",
+            "steps": [
+              "Step 1: Input to Animals (Crop to Livestock) — Maize crop residues (stalks, leaves, cobs) remaining after grain harvest are harvested and chopped into nutritious silage and fodder to feed dairy cattle.",
+              "Step 2: Input to Crops (Livestock to Crop) — Cattle consume the fodder and produce large quantities of manure. The farmer composts cattle dung and slurry, returning rich organic nutrients (N, P, K) to the maize fields to rebuild soil humus.",
+              "Step 3: Economic and Ecological Outcome — The farmer eliminates the cost of purchasing synthetic chemical fertilizers and commercial livestock feeds, while closing the nutrient cycle and preventing agricultural waste pollution."
+            ],
+            "finalAnswer": "Examiner Tip: Use the term 'closed-loop nutrient cycling' to summarize how waste from one enterprise serves as the raw material for the other."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s10_1",
+              "difficulty": "low",
+              "prompt": "A farming system where arable crop production and domestic animal husbandry are integrated on the same farm is called:",
+              "options": [
+                "Mixed farming",
+                "Monoculture",
+                "Pastoralism",
+                "Shifting cultivation"
+              ],
+              "correctAnswer": "Mixed farming",
+              "hint": "The farmer raises both crops and animals.",
+              "workedSolution": "Mixed farming is the integrated practice of cultivating arable crops and raising livestock on the same enterprise, creating mutual resource interdependence.",
+              "points": 1,
+              "learningCompetency": "B9.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s10_2",
+              "difficulty": "medium",
+              "prompt": "In agroforestry alley cropping, why are hedgerows of leguminous trees (such as Gliricidia) planted between food crops?",
+              "options": [
+                "To block all sunlight from the food crops",
+                "Their prunings provide nitrogen-rich green manure and their deep roots recycle leached nutrients",
+                "To attract elephants to the farm",
+                "To poison the weeds with synthetic chemicals"
+              ],
+              "correctAnswer": "Their prunings provide nitrogen-rich green manure and their deep roots recycle leached nutrients",
+              "hint": "Gliricidia foliage fixes nitrogen and is incorporated as green mulch.",
+              "workedSolution": "Leguminous hedgerows fix nitrogen, capture leached nutrients from deep soil horizons, and when pruned, provide nutrient-rich organic green manure and protective mulch for alley food crops.",
+              "points": 1,
+              "learningCompetency": "B9.3.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand4_energy_waves",
+    "topicId": "sci_strand4_energy_waves",
+    "title": "Energy, Heat Transfer & Light Waves (Forms, Heat Conduction/Radiation, Rectilinear Propagation)",
+    "strand": "STRAND 4: FORCES AND ENERGY",
+    "strandCode": "S4",
+    "subStrand": "Energy & Wave Mechanics (Thermal Dynamics, Optical Physics & Wave Propagation)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Experiment with thermodynamics, energy conversions, and optical ray-tracing in simulated physics environments. Students evaluate potential/kinetic mechanical transformations, test thermal conduction/convection/radiation rates, and verify the rectilinear propagation and reflection laws of light.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Energy Forms, Conservation & Mechanical Transformations",
+        "summary": "Classify mechanical, chemical, and solar energy; calculate potential ($E_p=mgh$) and kinetic ($E_k=\\frac{1}{2}mv^2$) transformations.",
+        "notes": "### Energy Forms, Conservation of Energy & Mechanical Energy Transformations\n* **NaCCA Curriculum Code:** `B7.4.1.1`\n* **Core Competency:** Classify forms of energy, apply the Law of Conservation of Energy, and calculate mechanical kinetic and potential energy.\n\n#### 1. The Nature of Energy & The Conservation Law\nEnergy is defined as the capacity or ability to do work (measured in Joules, $\\text{J}$).\n* **The Law of Conservation of Energy:** Energy can neither be created nor destroyed; it can only be transformed from one form into another. The total energy of an isolated system remains constant.\n\n#### 2. Forms of Energy\n* **Kinetic Energy ($E_k$):** Energy possessed by an object due to its motion:\n  $$E_k = \\frac{1}{2}mv^2$$\n  ($m$: mass in kg; $v$: velocity in m/s).\n* **Gravitational Potential Energy ($E_p$):** Energy stored in an object due to its position in a gravitational field:\n  $$E_p = mgh$$\n  ($m$: mass in kg; $g$: acceleration due to gravity $\\approx 9.8$ or $10\\text{ m/s}^2$; $h$: vertical height in meters).\n* **Mechanical Energy ($E_m$):** Total sum of kinetic and potential energy in a mechanical system:\n  $$E_m = E_k + E_p = \\text{constant (in the absence of friction)}$$\n* Other forms: Chemical (stored in food, fuels, batteries), Thermal (internal kinetic energy of vibrating atoms), Electrical, Radiant / Solar, Sound, Nuclear.\n\n#### 3. Energy Transformations in Everyday Devices\n* Hydroelectric Dam: Gravitational potential energy of reservoir water $\\rightarrow$ Kinetic energy of falling water $\\rightarrow$ Mechanical rotational kinetic energy of turbine $\\rightarrow$ Electrical energy from generator.\n* Flashlight: Chemical energy of dry cell $\\rightarrow$ Electrical energy through wires $\\rightarrow$ Radiant light + Thermal heat from bulb filament.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s11_1",
+            "title": "Worked Example: Calculating Potential and Kinetic Energy of a Falling Mass",
+            "problem": "A coconut of mass 2.0 kg hangs from a palm tree at a height of 15.0 meters above the ground. (Take g = 10 m/s²). Calculate: (a) Its gravitational potential energy while hanging, (b) Its kinetic energy just before striking the ground, assuming negligible air resistance, (c) Its velocity upon impact.",
+            "steps": [
+              "Part (a): Calculate Potential Energy: Ep = mgh = 2.0 kg x 10 m/s² x 15.0 m = 300 Joules (J).",
+              "Part (b): Apply Conservation of Energy: At maximum height, Ek = 0 and Ep = 300 J. Just before impact (h = 0), all potential energy is converted entirely into kinetic energy. Therefore, Ek = 300 J.",
+              "Part (c): Calculate impact velocity: Ek = 1/2 m v² => 300 = 1/2 x (2.0) x v² => 300 = 1.0 x v² => v = sqrt(300) ≈ 17.32 m/s."
+            ],
+            "finalAnswer": "Examiner Tip: Always state the principle of conservation of mechanical energy when equating potential energy at top to kinetic energy at bottom."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s11_1",
+              "difficulty": "low",
+              "prompt": "The SI unit for measuring work and energy is the:",
+              "options": [
+                "Watt (W)",
+                "Joule (J)",
+                "Newton (N)",
+                "Pascal (Pa)"
+              ],
+              "correctAnswer": "Joule (J)",
+              "hint": "Named after James Prescott Joule.",
+              "workedSolution": "The Joule (J) is the standard International System of Units (SI) measurement for energy and mechanical work done.",
+              "points": 1,
+              "learningCompetency": "B7.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s11_2",
+              "difficulty": "medium",
+              "prompt": "A 50 kg runner sprints at a velocity of 6 m/s. What is the runner's kinetic energy?",
+              "options": [
+                "150 J",
+                "300 J",
+                "900 J",
+                "1800 J"
+              ],
+              "correctAnswer": "900 J",
+              "hint": "Use Ek = 1/2 * m * v^2.",
+              "workedSolution": "Ek = 0.5 * m * v^2 = 0.5 * 50 kg * (6 m/s)^2 = 25 * 36 = 900 Joules.",
+              "points": 1,
+              "learningCompetency": "B7.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Thermodynamics, Heat Transfer & The Vacuum Flask",
+        "summary": "Analyze thermal conduction, convection currents, radiation rates, and the engineering design of a vacuum flask.",
+        "notes": "### Thermodynamics: Conduction, Convection, Radiation & Thermal Insulation\n* **NaCCA Curriculum Code:** `B8.4.1.1`\n* **Core Competency:** Compare thermal conduction, convection, and radiation, and evaluate the engineering design of the vacuum flask (Dewar flask).\n\n#### 1. Modes of Thermal Energy Transfer\nHeat is thermal energy in transit from a region of higher temperature to lower temperature:\n* **Conduction (in solids):** Direct transfer of kinetic vibrational energy from atom to atom through collisions, and through the drift of free delocalized valence electrons in metals (which explains why metals are superior thermal conductors compared to non-metals and insulators).\n* **Convection (in fluids: liquids & gases):** Heat transfer through the physical bulk movement of the fluid itself. Fluid near the heat source warms up, expands, becomes less dense, and ascends; cooler, denser fluid descends to replace it, establishing a continuous **convection current** (e.g., land and sea breezes, boiling water in a kettle, domestic room ventilation).\n* **Radiation (through vacuums & transparent media):** Heat transfer by electromagnetic infrared waves without requiring any material medium. Can travel across the vacuum of outer space (e.g., solar radiation warming Earth).\n  * Dark, dull, matte black surfaces are **best absorbers and best emitters** of thermal radiation.\n  * Light, shiny, polished silver surfaces are **poor absorbers and best reflectors** of thermal radiation.\n\n#### 2. The Vacuum Flask (Dewar Flask) Engineering\nDesigned to keep hot liquids hot or cold liquids cold by minimizing all three modes of heat transfer:\n1. **Double-walled glass vessel with a vacuum gap:** The complete vacuum between the walls eliminates heat transfer by **conduction and convection** (since both require a physical material medium).\n2. **Silvered inner glass walls:** Highly polished silver surfaces **reflect infrared thermal radiation** back into the hot liquid (or reflect external radiant heat away from cold liquid).\n3. **Insulating cork or plastic stopper:** Low-conductivity plastic/cork minimizes heat loss by **conduction**, while tightly sealing the flask to stop heat loss via **convection and evaporation** of vapor.\n4. **Protective outer casing & shock-absorbing rubber pads:** Shield the fragile inner glass vacuum bottle from physical mechanical impact.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s11_1",
+            "title": "Worked Example: The Physics of Sea Breezes in Coastal Ghana",
+            "problem": "Explain how convection currents produce a cool sea breeze blowing from the Gulf of Guinea onto the coastal land during daytime in Accra.",
+            "steps": [
+              "Step 1: Specific heat capacity divergence — During daytime, the sun radiates equal heat to both the land and sea. Soil and rock have a much lower specific heat capacity than water, so the coastal land heats up significantly faster than the sea.",
+              "Step 2: Air density and thermal updraft — The air layer directly above the hot land warms, expands, decreases in density, and rises vertically, creating a localized low-pressure zone over the land.",
+              "Step 3: Convective displacement — The cooler, denser, high-pressure air resting over the ocean flows inland down the pressure gradient to replace the rising warm air. This daytime onshore wind is felt as the refreshing 'sea breeze'."
+            ],
+            "finalAnswer": "Examiner Tip: Always mention the lower heat capacity of land compared to water as the root cause of the differential heating."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s11_1",
+              "difficulty": "low",
+              "prompt": "Which mode of thermal energy transfer does NOT require any physical medium and can travel across the vacuum of space?",
+              "options": [
+                "Conduction",
+                "Convection",
+                "Radiation (Infrared)",
+                "Evaporation"
+              ],
+              "correctAnswer": "Radiation (Infrared)",
+              "hint": "This is how solar heat reaches Earth from the Sun.",
+              "workedSolution": "Radiation transfers heat via electromagnetic infrared waves, which propagate at the speed of light through empty space without requiring atomic matter.",
+              "points": 1,
+              "learningCompetency": "B8.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s11_2",
+              "difficulty": "medium",
+              "prompt": "The double silvered walls inside a vacuum flask are specifically designed to minimize heat transfer by:",
+              "options": [
+                "Conduction",
+                "Convection",
+                "Radiation",
+                "Peristalsis"
+              ],
+              "correctAnswer": "Radiation",
+              "hint": "Shiny mirror-like surfaces reflect electromagnetic waves.",
+              "workedSolution": "Polished silver surfaces are poor radiant emitters and excellent infrared reflectors, bouncing radiant heat back into the flask to prevent radiation loss.",
+              "points": 1,
+              "learningCompetency": "B8.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Geometrical Optics: Rectilinear Propagation & Reflection",
+        "summary": "Demonstrate rectilinear propagation of light using pinhole cameras; verify plane mirror reflection laws and shadow optics.",
+        "notes": "### Geometrical Optics: Rectilinear Propagation, Pinhole Cameras & Reflection\n* **NaCCA Curriculum Code:** `B9.4.1.1`\n* **Core Competency:** Demonstrate that light travels in straight lines, explain shadow/pinhole optics, and apply laws of plane mirror reflection.\n\n#### 1. Rectilinear Propagation of Light\nLight travels in straight lines through any homogeneous, transparent optical medium:\n* **Evidence:** Formation of sharp-edged shadows, eclipses, laser beam tracks, and the operation of the pinhole camera.\n* **Ray & Beam:** A ray is the path along which light energy travels (represented by a straight line with an arrow); a beam is a collection of parallel, divergent, or convergent rays.\n\n#### 2. The Pinhole Camera\nA light-proof box with a tiny pinhole aperture on one face and a translucent screen (tracing paper) on the opposite face:\n* **Image Characteristics:**\n  * **Inverted (upside down):** Light rays from the top of the object travel in straight lines through the tiny pinhole and strike the bottom of the screen; rays from the bottom strike the top.\n  * **Real:** Can be projected and focused onto a physical screen.\n  * **Diminished or Magnified:** Depends on the ratio of object distance to image distance.\n* **Magnification Formula:**\n  $$\\text{Magnification } (m) = \\frac{\\text{Height of Image } (h_i)}{\\text{Height of Object } (h_o)} = \\frac{\\text{Image Distance } (v)}{\\text{Object Distance } (u)}$$\n\n#### 3. Laws of Reflection of Light\nWhen a light ray strikes a polished, smooth reflective boundary (plane mirror):\n1. **First Law:** The incident ray, the reflected ray, and the normal to the surface at the point of incidence all lie in the same geometric plane.\n2. **Second Law:** The angle of incidence ($\\theta_i$) is exactly equal to the angle of reflection ($\\theta_r$):\n   $$\\angle i = \\angle r$$\n* **Characteristics of Images in a Plane Mirror:**\n  * Virtual (cannot be formed on a screen; formed behind the mirror where rays appear to diverge).\n  * Upright (erect).\n  * Same size as the object (magnification $m = 1$).\n  * Laterally inverted (left appears as right, right appears as left).\n  * Object distance from mirror equals virtual image distance behind mirror ($u = v$).",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s11_1",
+            "title": "Worked Example: Calculating Image Height in a Pinhole Camera",
+            "problem": "A tree of height 12.0 meters stands at a distance of 30.0 meters from a pinhole camera. The camera has a length (distance from pinhole to translucent screen) of 20.0 cm. Calculate the height of the inverted image formed on the screen.",
+            "steps": [
+              "Step 1: Convert all units to consistent SI units (meters): Object height (ho) = 12.0 m; Object distance (u) = 30.0 m; Image distance (v) = 20.0 cm = 0.20 m.",
+              "Step 2: Write magnification equality: m = hi / ho = v / u.",
+              "Step 3: Solve for image height (hi): hi = (v x ho) / u = (0.20 m x 12.0 m) / 30.0 m.",
+              "Step 4: Compute: hi = 2.4 / 30.0 = 0.08 meters = 8.0 cm."
+            ],
+            "finalAnswer": "Examiner Tip: Remember that the camera length represents the image distance (v). Always ensure units are converted before computing."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s11_1",
+              "difficulty": "low",
+              "prompt": "The image formed on the translucent viewing screen of a pinhole camera is always:",
+              "options": [
+                "Virtual and upright",
+                "Real and inverted",
+                "Virtual and enlarged",
+                "Real and laterally inverted only"
+              ],
+              "correctAnswer": "Real and inverted",
+              "hint": "Light rays cross at the pinhole.",
+              "workedSolution": "Because light travels in straight lines, rays crossing through the tiny pinhole project an inverted (upside down) image that is real because it is formed on a physical screen.",
+              "points": 1,
+              "learningCompetency": "B9.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s11_2",
+              "difficulty": "medium",
+              "prompt": "If a ray of light strikes a smooth plane mirror at an angle of 35° to the normal line, what is the angle between the incident ray and the reflected ray?",
+              "options": [
+                "35°",
+                "55°",
+                "70°",
+                "90°"
+              ],
+              "correctAnswer": "70°",
+              "hint": "Angle of incidence = Angle of reflection. Total angle = i + r.",
+              "workedSolution": "By the second law of reflection, angle of incidence i = angle of reflection r = 35°. The total angular separation between the incident ray and the reflected ray is i + r = 35° + 35° = 70°.",
+              "points": 1,
+              "learningCompetency": "B9.4.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand4_electricity",
+    "topicId": "sci_strand4_electricity",
+    "title": "Electricity, Electronics & Semiconductors (Generation, Circuits, PN Diodes & Transmission)",
+    "strand": "STRAND 4: FORCES AND ENERGY",
+    "strandCode": "S4",
+    "subStrand": "Electricity & Electronics (Circuit Analysis, Solid-State Physics & Power Grids)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Construct and troubleshoot direct current (DC) and alternating current (AC) electronic breadboards. Progression covers electrochemical cells, series/parallel circuit Ohm's Law computations (V=IR), and solid-state semiconductor components including p-n junction diodes, LEDs, and transistors.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b8_strand4_electricity"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Conductors, Insulators & Fundamental Electric Circuits",
+        "summary": "Distinguish conductors from insulators; assemble primary/secondary electrochemical cells and construct closed circuits.",
+        "notes": "### Fundamental Electricity: Conductors, Insulators & Simple Circuits\n* **NaCCA Curriculum Code:** `B7.4.2.1`\n* **Core Competency:** Differentiate conductors and insulators, assemble electrochemical cells, and construct functional electrical circuits.\n\n#### 1. Electric Charge & Current\n* **Electric Current ($I$):** The rate of flow of electric charge (electrons) through an electrical conductor:\n  $$I = \\frac{Q}{t}$$\n  (Current $I$ in Amperes $\\text{A}$; Charge $Q$ in Coulombs $\\text{C}$; Time $t$ in seconds).\n* **Conductors:** Materials containing abundant free, delocalized valence electrons that drift easily under electric potential differences (e.g., copper, aluminum, silver, graphite, salt solutions).\n* **Insulators:** Materials whose valence electrons are tightly bound in covalent/ionic bonds, preventing current flow (e.g., rubber, dry wood, polythene, glass, porcelain).\n\n#### 2. Sources of Electrical Energy: Electrochemical Cells\n* **Primary Cells:** Chemical reactions are irreversible; cannot be recharged once reactants are exhausted (e.g., Leclanché dry cell, zinc-carbon battery).\n* **Secondary (Storage) Cells:** Chemical reactions are reversible; can be recharged repeatedly by passing electric current in reverse (e.g., Lead-acid automobile accumulator, Lithium-ion smartphone battery).\n\n#### 3. Components of a Basic Electric Circuit\n* **Energy Source:** Battery / cell providing electromotive force (EMF).\n* **Conductors:** Insulated copper connecting wires.\n* **Control Device:** Switch (key) to open (interrupt) or close (complete) the electrical path.\n* **Load:** Component converting electrical energy into useful work (e.g., light bulb, resistor, buzzer).\n* **Short Circuit Hazard:** Occurs when current bypasses the load through an accidental zero-resistance path, causing intense current surge ($I = V/R$), extreme Joule heating, and electrical fires.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s12_1",
+            "title": "Worked Example: Calculating Electric Charge and Electron Flow",
+            "problem": "An electric torch bulb draws a steady current of 0.50 Amperes from a dry cell for 10 minutes. Calculate: (a) The total electrical charge that flows through the filament, (b) Explain why graphite conducts electricity while diamond (both made of carbon) is an electrical insulator.",
+            "steps": [
+              "Part (a): Convert time to SI seconds: t = 10 minutes = 10 x 60 = 600 seconds.",
+              "Apply charge formula: Q = I x t = 0.50 A x 600 s = 300 Coulombs (C).",
+              "Part (b) Graphite vs. Diamond: Carbon has 4 valence electrons. In diamond, each carbon atom forms 4 rigid covalent bonds with adjacent carbons, leaving zero free electrons. In graphite, each carbon bonds to only 3 neighbors in hexagonal sheets, leaving one free delocalized valence electron per carbon atom to drift and conduct electricity."
+            ],
+            "finalAnswer": "Examiner Tip: Always convert minutes to seconds in electrical formulas (t in seconds)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s12_1",
+              "difficulty": "low",
+              "prompt": "Which of the following non-metallic solid materials is an exceptional electrical conductor?",
+              "options": [
+                "Sulfur crystal",
+                "Graphite (carbon)",
+                "Phosphorus block",
+                "Plastic rod"
+              ],
+              "correctAnswer": "Graphite (carbon)",
+              "hint": "It contains delocalized electrons between hexagonal carbon layers.",
+              "workedSolution": "Graphite is an allotrope of carbon in which each atom is bonded to three others, leaving one delocalized valence electron free to migrate across layers and conduct electricity.",
+              "points": 1,
+              "learningCompetency": "B7.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s12_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary operational difference between a primary cell and a secondary accumulator cell?",
+              "options": [
+                "Primary cells produce AC, secondary cells produce DC",
+                "Secondary cells can be recharged with reverse current, whereas primary cells are non-rechargeable",
+                "Primary cells are only used in electric cars",
+                "Secondary cells do not use chemicals"
+              ],
+              "correctAnswer": "Secondary cells can be recharged with reverse current, whereas primary cells are non-rechargeable",
+              "hint": "Think about single-use dry batteries vs. car batteries.",
+              "workedSolution": "Primary cells involve irreversible chemical reactions and must be discarded when exhausted. Secondary cells (accumulators) have reversible chemical reactions and can be recharged.",
+              "points": 1,
+              "learningCompetency": "B7.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Circuit Analysis, Ohm's Law & Series-Parallel Networks",
+        "summary": "Measure electrical voltage, current, and resistance; apply Ohm's Law ($V=IR$) across series and parallel circuit networks.",
+        "notes": "### Circuit Analysis: Ohm's Law & Series-Parallel Topologies\n* **NaCCA Curriculum Code:** `B8.4.2.1`\n* **Core Competency:** State and verify Ohm’s Law, measure electrical parameters with multimeters, and calculate equivalent resistances.\n\n#### 1. Ohm's Law\nAt constant physical temperature, the electric current ($I$) flowing through a metallic conductor is directly proportional to the potential difference ($V$) applied across its ends:\n$$V = I \\times R$$\n* $V$: Potential difference / Voltage (Volts, $\\text{V}$)\n* $I$: Current (Amperes, $\\text{A}$)\n* $R$: Electrical Resistance (Ohms, $\\Omega$)\n* **Meters:**\n  * **Ammeter:** Measures current; has negligible internal resistance; must be connected in **series**.\n  * **Voltmeter:** Measures potential difference; has extremely high internal resistance; must be connected in **parallel** across the component.\n\n#### 2. Series Circuit Characteristics\n* Components connected end-to-end in a single continuous loop.\n* **Current:** Same current flows through every component ($I_{\\text{total}} = I_1 = I_2 = I_3$).\n* **Voltage:** Total potential difference divides across components ($V_{\\text{total}} = V_1 + V_2 + V_3$).\n* **Equivalent Resistance:**\n  $$R_{\\text{eq}} = R_1 + R_2 + R_3$$\n* *Disadvantage:* If one lamp blows or is disconnected, the entire circuit is broken and all lamps extinguish.\n\n#### 3. Parallel Circuit Characteristics\n* Components connected across common junction nodes (branches).\n* **Voltage:** Same voltage across every branch ($V_{\\text{total}} = V_1 = V_2 = V_3$).\n* **Current:** Total current divides among branches ($I_{\\text{total}} = I_1 + I_2 + I_3$).\n* **Equivalent Resistance:**\n  $$\\frac{1}{R_{\\text{eq}}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}$$\n* *Advantage:* Domestic residential wiring is connected in parallel: each appliance operates independently at full mains voltage ($230\\text{ V}$).",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s12_1",
+            "title": "Worked Example: Analyzing a Parallel Resistor Network",
+            "problem": "Two resistors of resistance 6.0 Ω and 12.0 Ω are connected in parallel across a 12.0 V direct current battery. Calculate: (a) The equivalent resistance of the parallel combination, (b) The total current drawn from the battery, (c) The current flowing through the 6.0 Ω resistor.",
+            "steps": [
+              "Part (a): Calculate Equivalent Resistance: 1/Req = 1/R1 + 1/R2 = 1/6.0 + 1/12.0 = 2/12.0 + 1/12.0 = 3/12.0 = 1/4.0. Inverting yields Req = 4.0 Ω.",
+              "Part (b): Calculate Total Current using Ohm's Law: Itotal = V / Req = 12.0 V / 4.0 Ω = 3.0 Amperes (A).",
+              "Part (c): Calculate Current in 6.0 Ω branch: In parallel, voltage across each branch equals source voltage (12.0 V). I_6 = V / R1 = 12.0 V / 6.0 Ω = 2.0 Amperes (A)."
+            ],
+            "finalAnswer": "Examiner Tip: Notice that the equivalent resistance of a parallel circuit (4.0 Ω) is always less than the smallest individual resistor (6.0 Ω)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s12_1",
+              "difficulty": "low",
+              "prompt": "In a circuit diagram, how must an ammeter and a voltmeter be connected relative to the electrical load?",
+              "options": [
+                "Ammeter in series; Voltmeter in parallel",
+                "Ammeter in parallel; Voltmeter in series",
+                "Both must be connected in series",
+                "Both must be connected in parallel"
+              ],
+              "correctAnswer": "Ammeter in series; Voltmeter in parallel",
+              "hint": "Ammeters measure current flowing through; voltmeters measure potential difference across.",
+              "workedSolution": "An ammeter has low resistance and must be wired in series so that all current passes through it. A voltmeter has high resistance and must be connected in parallel across the load.",
+              "points": 1,
+              "learningCompetency": "B8.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s12_2",
+              "difficulty": "medium",
+              "prompt": "Three identical 9 Ω resistors are connected in parallel across a power supply. What is the equivalent resistance of the network?",
+              "options": [
+                "27 Ω",
+                "9 Ω",
+                "3 Ω",
+                "1 Ω"
+              ],
+              "correctAnswer": "3 Ω",
+              "hint": "1/Req = 1/9 + 1/9 + 1/9 = 3/9.",
+              "workedSolution": "1/Req = 1/9 + 1/9 + 1/9 = 3/9 = 1/3. Therefore, Req = 3 Ω.",
+              "points": 1,
+              "learningCompetency": "B8.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Solid-State Semiconductors, PN Diodes & Rectification",
+        "summary": "Explore semiconductors (p-type, n-type), p-n junction diode forward/reverse bias, LEDs, and AC-to-DC rectification.",
+        "notes": "### Solid-State Physics: Semiconductors, Diodes, LEDs & Rectification\n* **NaCCA Curriculum Code:** `B9.4.2.1`\n* **Core Competency:** Explain semiconductor doping, describe p-n junction diode operation, and model alternating current rectification.\n\n#### 1. Semiconductor Band Theory & Doping\nSemiconductors (e.g., Silicon, Germanium) have electrical conductivity intermediate between conductors and insulators:\n* **Intrinsic Semiconductors:** Pure silicon crystals ($Z=14$, 4 valence electrons forming covalent tetrahedrons). Poor conductors at room temperature.\n* **Doping:** The deliberate addition of minute trace impurities to dramatically alter conductivity:\n  * **N-type Semiconductor:** Doped with **pentavalent** impurity atoms (5 valence electrons: Phosphorus, Arsenic). Four electrons bond; the fifth is donated as a **free conduction electron** (majority charge carriers: negative electrons).\n  * **P-type Semiconductor:** Doped with **trivalent** impurity atoms (3 valence electrons: Boron, Gallium). Creates electron vacancies called **holes** that act as mobile positive charges (majority charge carriers: positive holes).\n\n#### 2. The P-N Junction Diode\nFormed by joining p-type and n-type semiconductor crystal regions:\n* **Forward Bias:** Connect positive battery terminal to p-side; negative terminal to n-side. Repels majority carriers across the junction, collapsing the internal depletion layer. The diode conducts large electric current.\n* **Reverse Bias:** Connect positive terminal to n-side; negative to p-side. Widens the non-conductive depletion layer. Current is blocked (virtually zero, except for minute microampere leakage).\n* **Unidirectional Characteristic:** A p-n junction diode permits electric current to flow in **only one direction** (anode $\\rightarrow$ cathode).\n\n#### 3. Light-Emitting Diodes (LEDs) & Rectification\n* **LED:** A specialized p-n junction diode (using Gallium Arsenide phosphide) that emits photons of radiant light when forward-biased, as electrons recombine with holes at the junction. Highly energy-efficient compared to incandescent filament bulbs.\n* **Rectification:** The conversion of Alternating Current (AC) into Direct Current (DC):\n  * **Half-Wave Rectifier:** Single diode suppresses negative AC half-cycles, allowing only positive current pulses through the load.\n  * **Full-Wave Bridge Rectifier:** Four diodes configured in a bridge loop convert both positive and negative AC half-cycles into continuous unidirectional DC output.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s12_1",
+            "title": "Worked Example: Half-Wave Rectification with a P-N Diode",
+            "problem": "A 50 Hz sinusoidal alternating current (AC) signal is connected to a circuit containing a single p-n junction diode and a resistive load. Explain the operation of the diode during the positive and negative half-cycles of the AC waveform.",
+            "steps": [
+              "Step 1: Positive Half-Cycle — The alternating voltage makes the anode (p-side) positive relative to the cathode (n-side). The diode is in Forward Bias. The depletion barrier is overcome, allowing current to pass through the load.",
+              "Step 2: Negative Half-Cycle — The alternating input polarity reverses, making the anode negative relative to the cathode. The diode is in Reverse Bias. The depletion layer widens, blocking current flow entirely through the load.",
+              "Step 3: Output Characteristic — The resulting current output consists of intermittent positive pulses flowing strictly in one direction (pulsating DC). This process is Half-Wave Rectification."
+            ],
+            "finalAnswer": "Examiner Tip: Always state that the diode conducts during forward bias and blocks current during reverse bias to achieve rectification."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s12_1",
+              "difficulty": "low",
+              "prompt": "What are the majority electric charge carriers in an n-type semiconductor?",
+              "options": [
+                "Free electrons",
+                "Positive holes",
+                "Protons",
+                "Neutrons"
+              ],
+              "correctAnswer": "Free electrons",
+              "hint": "N-type stands for negative charge carriers.",
+              "workedSolution": "In n-type semiconductors, doping with pentavalent donor atoms (like phosphorus) creates an excess of free delocalized conduction electrons as the majority charge carriers.",
+              "points": 1,
+              "learningCompetency": "B9.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s12_2",
+              "difficulty": "medium",
+              "prompt": "A semiconductor diode allows significant electric current to flow when it is connected in:",
+              "options": [
+                "Reverse bias",
+                "Forward bias",
+                "Open circuit",
+                "Ground state"
+              ],
+              "correctAnswer": "Forward bias",
+              "hint": "Positive battery terminal connected to the p-type anode.",
+              "workedSolution": "In forward bias (positive to p-type, negative to n-type), the applied voltage overcomes the internal junction barrier, allowing majority carriers to cross and conduct current.",
+              "points": 1,
+              "learningCompetency": "B9.4.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand4_forces_mechanics",
+    "topicId": "sci_strand4_forces_mechanics",
+    "title": "Forces, Motion, Magnetism & Mechanics (Newton's Laws, Simple/Complex Machines, Fluid Pressure)",
+    "strand": "STRAND 4: FORCES AND ENERGY",
+    "strandCode": "S4",
+    "subStrand": "Forces & Mechanics (Classical Statics, Dynamics, Machines & Fluid Statics)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Engage with classical mechanics and fluid dynamics in interactive vector laboratory environments. Calculates net vectors, tests Newton's Three Laws of Motion, investigates magnetic field lines, and derives mechanical advantage, velocity ratio, and efficiency for simple and compound machines.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b9_strand4_force_motion"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Force Classification, Friction & Magnetic Field Flux",
+        "summary": "Classify contact and non-contact forces, investigate friction mechanics, and map magnetic field lines.",
+        "notes": "### Types of Forces, Frictional Dynamics & Magnetic Fields\n* **NaCCA Curriculum Code:** `B7.4.3.1`\n* **Core Competency:** Classify contact and non-contact forces, analyze the nature of friction, and map magnetic field flux around permanent magnets.\n\n#### 1. Fundamental Concept of Force\nA force is a push or pull exerted on an object resulting from its interaction with another object (vector quantity measured in Newtons, $\\text{N}$).\n* **Effects of Force:** Can change an object's speed, direction of motion, shape/dimensions (deformation), or initiate/halt motion.\n\n#### 2. Contact vs. Non-Contact (Action-at-a-Distance) Forces\n* **Contact Forces (require physical macroscopic contact):**\n  * *Frictional Force:* Opposes relative motion between two touching surfaces.\n  * *Tension Force:* Transmitted through a stretched string, cable, or spring.\n  * *Normal Reaction Force:* Perpendicular contact force exerted by a supportive surface.\n  * *Air Resistance / Viscous Drag:* Fluid frictional drag opposing motion through air/water.\n* **Non-Contact Forces (act across empty space via physical fields):**\n  * *Gravitational Force:* Inward attractive force between masses ($W = mg$).\n  * *Electrostatic Force:* Attraction or repulsion between stationary electric charges.\n  * *Magnetic Force:* Attraction or repulsion exerted by magnetic fields.\n\n#### 3. Magnetic Fields & Magnetic Flux\n* A **magnetic field** is the region surrounding a magnet within which magnetic forces can be detected.\n* **Magnetic Poles:** Every magnet has two poles: North ($N$) and South ($S$).\n  * *Law of Magnetism:* Like magnetic poles repel; unlike magnetic poles attract.\n* **Magnetic Field Lines (Flux):**\n  * Continuous smooth imaginary lines that emerge from the North pole and enter the South pole externally.\n  * Field lines never intersect.\n  * Density of field lines indicates magnetic field strength (strongest near poles).",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s13_1",
+            "title": "Worked Example: Calculating Weight and Resultant Normal Force",
+            "problem": "A wooden crate of mass 25.0 kg rests stationary on a flat horizontal concrete warehouse floor. (Take g = 10 m/s²). Calculate: (a) The downward gravitational force (weight) acting on the crate, (b) The magnitude and direction of the normal reaction force exerted by the floor.",
+            "steps": [
+              "Part (a): Weight formula: W = m x g = 25.0 kg x 10 m/s² = 250 Newtons (N) directed vertically downward toward Earth's center.",
+              "Part (b): Normal Reaction Force: Because the crate is in static equilibrium with zero vertical acceleration (a = 0), net vertical force equals zero (Sigma F_y = 0).",
+              "Therefore: Normal Reaction (R) - Weight (W) = 0 => R = W = 250 Newtons (N) directed vertically upward perpendicular to the floor."
+            ],
+            "finalAnswer": "Examiner Tip: Always state both magnitude (250 N) and direction (vertically upward) for vector quantities like normal reaction force."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s13_1",
+              "difficulty": "low",
+              "prompt": "Which of the following forces is classified as a non-contact (action-at-a-distance) force?",
+              "options": [
+                "Friction force",
+                "Gravitational force",
+                "Tension in a rope",
+                "Air resistance drag"
+              ],
+              "correctAnswer": "Gravitational force",
+              "hint": "It pulls objects without needing physical contact.",
+              "workedSolution": "Gravitational, electrostatic, and magnetic forces act across empty space via physical force fields without physical contact.",
+              "points": 1,
+              "learningCompetency": "B7.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s13_2",
+              "difficulty": "medium",
+              "prompt": "The magnetic field lines outside a bar magnet always emerge from the:",
+              "options": [
+                "South pole and enter the North pole",
+                "North pole and enter the South pole",
+                "Center of the magnet and radiate outward in circles",
+                "East pole and travel West"
+              ],
+              "correctAnswer": "North pole and enter the South pole",
+              "hint": "Follow the direction indicated by a magnetic compass needle.",
+              "workedSolution": "By convention, magnetic field lines emerge from the magnetic North pole and loop continuously to enter the magnetic South pole.",
+              "points": 1,
+              "learningCompetency": "B7.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency",
+        "summary": "Derive Mechanical Advantage (MA), Velocity Ratio (VR), and Efficiency for levers, inclined planes, and pulley systems.",
+        "notes": "### Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency\n* **NaCCA Curriculum Code:** `B8.4.3.1`\n* **Core Competency:** Explain the operation of simple machines, derive Mechanical Advantage, Velocity Ratio, and calculate mechanical Efficiency.\n\n#### 1. Fundamental Principles of Simple Machines\nA machine is a mechanical device that enables work to be done more easily, rapidly, or safely by applying an Effort ($E$) to overcome a Load ($L$).\n* **Mechanical Advantage (MA):** Force multiplication factor:\n  $$\\text{MA} = \\frac{\\text{Load } (L)}{\\text{Effort } (E)}$$\n  ($\\text{MA} > 1$: force multiplier; $\\text{MA} < 1$: speed multiplier).\n* **Velocity Ratio (VR):** Distance movement ratio (independent of friction):\n  $$\\text{VR} = \\frac{\\text{Distance moved by Effort } (d_E)}{\\text{Distance moved by Load } (d_L)}$$\n* **Efficiency ($\\eta$):** Percentage of input work converted into useful output work:\n  $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{\\text{MA}}{\\text{VR}} \\times 100\\%$$\n* *Real Machine Limitation:* In real machines, efficiency is **always less than 100%** because part of the work input is dissipated overcoming friction between moving parts and lifting the machine's own weight.\n\n#### 2. Classes of Simple Machines\n* **Levers:** Rigid bar pivoting on a fixed fulcrum (pivot):\n  * **Class 1 (Fulcrum in middle):** Crowbar, scissors, claw hammer, see-saw ($L - F - E$).\n  * **Class 2 (Load in middle):** Wheelbarrow, nutcracker, bottle opener ($F - L - E$). $\\text{MA} > 1$ always.\n  * **Class 3 (Effort in middle):** Sugar tongs, human forearm, tweezers ($F - E - L$). $\\text{MA} < 1$ (speed/distance multiplier).\n* **Inclined Plane (Ramp):**\n  $$\\text{VR} = \\frac{\\text{Length of Slope } (l)}{\\text{Vertical Height } (h)} = \\frac{1}{\\sin \\theta}$$\n* **Pulley Systems:**\n  * Single Fixed Pulley: $\\text{VR} = 1$ (changes direction of effort only).\n  * Block and Tackle System: $\\text{VR} = \\text{total number of rope segments supporting the movable block}$.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s13_1",
+            "title": "Worked Example: Calculating Efficiency of a Block and Tackle Pulley System",
+            "problem": "A block and tackle pulley system consisting of 4 pulleys is used to raise a load of 800 N through a vertical height of 2.5 m. An effort of 250 N is applied. Calculate: (a) Mechanical Advantage (MA), (b) Velocity Ratio (VR), (c) Efficiency of the pulley system.",
+            "steps": [
+              "Part (a): Calculate MA: MA = Load / Effort = 800 N / 250 N = 3.2.",
+              "Part (b): Determine VR: For a standard block and tackle system, Velocity Ratio equals the total number of pulleys in the system: VR = 4.",
+              "Part (c): Calculate Efficiency: Efficiency (eta) = (MA / VR) x 100% = (3.2 / 4.0) x 100% = 0.80 x 100% = 80%."
+            ],
+            "finalAnswer": "Examiner Tip: Note that MA and VR are ratios with no units. Efficiency is expressed as a percentage (80%)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s13_1",
+              "difficulty": "low",
+              "prompt": "A wheelbarrow belongs to which class of levers, and which element is positioned in the middle?",
+              "options": [
+                "First class; Fulcrum in middle",
+                "Second class; Load in middle",
+                "Third class; Effort in middle",
+                "Fourth class; Wheel in middle"
+              ],
+              "correctAnswer": "Second class; Load in middle",
+              "hint": "The wheel is the pivot, the cargo is in the center, and the handles are the effort.",
+              "workedSolution": "In a second-class lever (like a wheelbarrow), the load is positioned between the fulcrum (wheel axle) and the effort (handles). Mechanical advantage is always greater than 1.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s13_2",
+              "difficulty": "medium",
+              "prompt": "Why is the mechanical efficiency of any practical machine always strictly less than 100%?",
+              "options": [
+                "Energy is destroyed inside the machine",
+                "Part of the input work is wasted overcoming friction and moving machine parts as heat",
+                "Gravity pulls machines down",
+                "Electric current always stops machines"
+              ],
+              "correctAnswer": "Part of the input work is wasted overcoming friction and moving machine parts as heat",
+              "hint": "Friction between moving surfaces converts useful work into waste heat.",
+              "workedSolution": "Frictional resistance between moving parts and the gravitational weight of the machine itself consume part of the input work, converting it into wasted thermal energy. Thus, MA is always less than VR.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Newton's Laws of Motion, Momentum & Fluid Pressure",
+        "summary": "Apply Newton's Three Laws of Motion ($F=ma$), calculate solid pressure ($P=F/A$) and fluid hydrostatic pressure ($P=\\rho gh$).",
+        "notes": "### Classical Mechanics: Newton's Laws of Motion, Momentum & Fluid Statics\n* **NaCCA Curriculum Code:** `B9.4.3.1`\n* **Core Competency:** Apply Newton’s Three Laws of Motion, calculate linear momentum, and solve solid and hydrostatic fluid pressure problems.\n\n#### 1. Newton's Three Laws of Motion\n* **Newton's First Law (Law of Inertia):** An object remains at rest or continues moving at constant velocity in a straight line unless acted upon by a net external resultant force.\n  * *Inertia:* The reluctance of a body to alter its state of rest or uniform motion (proportional to mass).\n* **Newton's Second Law:** The rate of change of momentum of an object is directly proportional to the applied resultant force and occurs in the direction of the force:\n  $$F = ma$$\n  ($F$: force in N; $m$: mass in kg; $a$: acceleration in $\\text{m/s}^2$).\n  * *Linear Momentum ($p$):* $p = mv$ (kg·m/s).\n* **Newton's Third Law (Action & Reaction):** Whenever one object exerts a force on a second object, the second object exerts an equal and opposite force on the first ($F_{\\text{action}} = -F_{\\text{reaction}}$).\n  * Examples: Rocket propulsion, recoil of a fired gun, swimming stroke mechanics.\n\n#### 2. Solid Pressure Mechanics\nPressure is the perpendicular compressive force applied per unit surface area:\n$$P = \\frac{F}{A}$$\n* $P$: Pressure (Pascals, $\\text{Pa}$ or $\\text{N/m}^2$)\n* $F$: Perpendicular force (N)\n* $A$: Surface contact area ($\\text{m}^2$)\n* **Inverse Area Principle:**\n  * Small contact area $\\rightarrow$ Massive pressure (e.g., sharp injection needle, sharp knife blade).\n  * Large contact area $\\rightarrow$ Low pressure to prevent sinking (e.g., wide caterpillar tracks on excavators, broad elephant feet, snowshoes).\n\n#### 3. Fluid Hydrostatic Pressure\nPressure in a stationary liquid acts equally in all directions and increases directly with depth and liquid density:\n$$P = \\rho g h$$\n* $\\rho$: Fluid density ($\\text{kg/m}^3$)\n* $g$: Gravitational acceleration ($10\\text{ m/s}^2$)\n* $h$: Depth below liquid surface (m)\n* **Pascal's Principle:** Pressure applied to an enclosed incompressible fluid is transmitted undiminished throughout the fluid and to the walls of the container:\n  $$\\frac{F_1}{A_1} = \\frac{F_2}{A_2}$$\n  (Basis of hydraulic car jacks, hydraulic braking systems, and heavy industrial excavators).",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s13_1",
+            "title": "Worked Example: Hydraulic Car Jack Principle",
+            "problem": "A hydraulic garage car lift has a small input piston of cross-sectional area 0.02 m² and a large output slave piston of area 1.20 m². An effort force of 300 N is applied downward on the small piston. Calculate: (a) The fluid pressure transmitted through the hydraulic oil, (b) The maximum load force (weight of car) that can be lifted by the large piston.",
+            "steps": [
+              "Part (a): Calculate fluid pressure generated: P = F1 / A1 = 300 N / 0.02 m² = 15,000 Pascals (Pa) or N/m².",
+              "Part (b): Apply Pascal's Principle: Pressure is transmitted undiminished through the hydraulic oil: P1 = P2 = 15,000 Pa.",
+              "Rearrange for output force: F2 = P x A2 = 15,000 N/m² x 1.20 m² = 18,000 Newtons (N).",
+              "Conclusion: An input effort of only 300 N generates an output lifting force of 18,000 N (enough to lift an 1,800 kg automobile) — a force multiplication factor of 60!"
+            ],
+            "finalAnswer": "Examiner Tip: Note that the hydraulic press is a force multiplier: F2/F1 = A2/A1."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s13_1",
+              "difficulty": "low",
+              "prompt": "According to Newton's Second Law of Motion, what resultant force is required to accelerate a 4.0 kg cart at 3.5 m/s²?",
+              "options": [
+                "7.5 N",
+                "12.0 N",
+                "14.0 N",
+                "28.0 N"
+              ],
+              "correctAnswer": "14.0 N",
+              "hint": "Use F = m * a.",
+              "workedSolution": "F = m * a = 4.0 kg * 3.5 m/s² = 14.0 Newtons.",
+              "points": 1,
+              "learningCompetency": "B9.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s13_2",
+              "difficulty": "medium",
+              "prompt": "Why do massive construction excavators operate on wide caterpillar steel tracks rather than standard narrow rubber wheels?",
+              "options": [
+                "Tracks look more impressive",
+                "The large contact area reduces ground pressure (P = F/A), preventing the heavy excavator from sinking into soft mud",
+                "Steel tracks increase speed to 100 km/h",
+                "Tracks do not require engines"
+              ],
+              "correctAnswer": "The large contact area reduces ground pressure (P = F/A), preventing the heavy excavator from sinking into soft mud",
+              "hint": "Pressure is inversely proportional to surface contact area.",
+              "workedSolution": "Because Pressure = Force / Area, spreading the massive machine weight over wide caterpillar tracks dramatically lowers pressure per square meter, preventing the machine from sinking into soft soil.",
+              "points": 1,
+              "learningCompetency": "B9.4.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand4_agricultural_tools",
+    "topicId": "sci_strand4_agricultural_tools",
+    "title": "Agricultural Tools & Farm Implements (Safety, Maintenance & Mechanization)",
+    "strand": "STRAND 4: FORCES AND ENERGY",
+    "strandCode": "S4",
+    "subStrand": "Agricultural Tools (Tool Ergonomics, Metallurgy, Maintenance & Mechanization)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Examine farm engineering and tool technology through safety inspection and maintenance labs. Covers mechanical advantage, rust prevention chemistry, precision tool sharpening, and the operational economics of tractor-drawn implements versus hand tools.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Farm Hand Tools: Classification, Metallurgy & Safe Handling",
+        "summary": "Identify and classify agricultural hand tools by function (cutting, digging, gathering); practice workshop safety protocols.",
+        "notes": "### Agricultural Hand Tools: Classification, Functions & Workshop Safety\n* **NaCCA Curriculum Code:** `B7.4.4.1`\n* **Core Competency:** Classify farm tools by functional use, describe ergonomic features, and demonstrate safety protocols.\n\n#### 1. Functional Classification of Agricultural Hand Tools\n* **Cutting & Clearing Tools:**\n  * *Cutlass (Machete):* Heavy steel blade with curved or straight cutting edge; land clearing, bush slashing, harvesting, weeding.\n  * *Sickle:* Curved serrated steel blade; harvesting cereal grains (rice, wheat) and cutting livestock pasture grass.\n  * *Pruning Shears (Secateurs):* Scissor-like spring-loaded bypass blades; precision trimming of tree shoots, buds, and diseased branches.\n* **Digging & Tillage Tools:**\n  * *West African Hoe (Earth Hoe):* Wide curved steel blade fitted to a short curved wooden handle; breaking clods, making ridges and mounds, weeding.\n  * *Spade & Shovel:* Flat blade for digging straight trench walls (spade); dished scooping blade for shoveling and lifting loose soil, sand, and fertilizer.\n  * *Pickaxe (Mattock):* Pointed steel pick at one end, wide chisel at the other; breaking compacted stony subsoil and excavating stubborn tree roots.\n* **Gathering & Levelling Tools:**\n  * *Rake:* Transverse bar with steel teeth; gathering vegetative debris, leveling seedbed surfaces, breaking fine soil surface crusts.\n* **Carrying & Transport Tools:**\n  * *Wheelbarrow:* Second-class lever transport machine ($F - L - E$); hauling soil, manure, harvested tubers, and inputs across the farm.\n\n#### 2. Workshop & Field Safety Principles\n* Always inspect wooden handles for splits and loose rivets before swinging.\n* Maintain a minimum safe clearance distance ($>3\\text{ meters}$) from coworkers when slashing with cutlasses.\n* Carry sharp tools pointing downward toward the ground, never over the shoulder.\n* Never leave sharp cutting edges exposed on the ground pointing upward.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s14_1",
+            "title": "Worked Example: Tool Selection for Land Clearing and Seedbed Preparation",
+            "problem": "A junior high school agricultural club is allocated an overgrown, stony fallow plot to establish a school vegetable garden. List four distinct hand tools required and state the specific operational role of each tool in proper chronological order.",
+            "steps": [
+              "Step 1: Cutlass (Machete) — Slashing dense weeds, tall brush, and small shrubs to clear the surface vegetation.",
+              "Step 2: Pickaxe (Mattock) — Breaking up the hard, compacted, stony ground and digging out stubborn tree roots and stumps.",
+              "Step 3: Spade / Earth Hoe — Digging the loosened soil, turning over topsoil clods, and shaping raised vegetable nursery beds and ridges.",
+              "Step 4: Garden Rake — Gathering stones and cleared weed roots, and finely pulverizing and leveling the seedbed topsoil for seed sowing."
+            ],
+            "finalAnswer": "Examiner Tip: Always present multi-step tool questions in logical agronomic sequence from clearing to final seedbed leveling."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s14_1",
+              "difficulty": "low",
+              "prompt": "Which agricultural hand tool is specifically designed for harvesting cereal crops like rice and cutting pasture grass?",
+              "options": [
+                "Pruning saw",
+                "Sickle",
+                "Pickaxe",
+                "Rake"
+              ],
+              "correctAnswer": "Sickle",
+              "hint": "It has a sharp, curved crescent-shaped blade.",
+              "workedSolution": "A sickle has a curved crescent steel blade engineered to gather and slice cereal stems and forage grasses with a single sweep.",
+              "points": 1,
+              "learningCompetency": "B7.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s14_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary agricultural function of a garden rake during seedbed preparation?",
+              "options": [
+                "Felling large forest trees",
+                "Breaking compacted subsoil rocks",
+                "Gathering cleared weed debris and leveling the topsoil surface",
+                "Digging deep drainage trenches"
+              ],
+              "correctAnswer": "Gathering cleared weed debris and leveling the topsoil surface",
+              "hint": "It has a horizontal metal bar with multiple downward teeth.",
+              "workedSolution": "The steel teeth of a garden rake comb through loosened soil to gather stones and organic debris while leveling the friable seedbed surface.",
+              "points": 1,
+              "learningCompetency": "B7.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Tool Maintenance, Metallurgy & Rust Prevention Chemistry",
+        "summary": "Practice mechanical workshop maintenance: sharpening cutting bevels, handle replacement, greasing pivots, and anti-rust chemistry.",
+        "notes": "### Agricultural Tool Maintenance, Metallurgy & Rust Prevention Chemistry\n* **NaCCA Curriculum Code:** `B8.4.4.1`\n* **Core Competency:** Demonstrate sharpening techniques, handle fitting, and apply electrochemical principles of rust prevention.\n\n#### 1. Daily & Periodic Tool Maintenance\n* **Cleaning:** Wash off adhering soil, plant sap, and organic residues immediately after field use; damp soil contains moisture and microbial acids that accelerate rusting.\n* **Sharpening:** Restore sharp cutting bevels on cutlasses, hoes, and shears using a flat mill bastard file, oilstone, or whetstone held at the correct bevel angle ($20-30^\\circ$).\n* **Wooden Handle Fitting:** Replace split, splintered handles; secure handles into tool eyes using wooden or steel expansion wedges to prevent blades from flying off during swinging.\n\n#### 2. The Chemistry of Rusting (Iron Corrosion)\nRusting is an electrochemical oxidation reaction requiring **both oxygen and moisture** simultaneously:\n$$4\\text{Fe}_{(s)} + 3\\text{O}_{2(g)} + 2x\\text{H}_2\\text{O}_{(l)} \\rightarrow 2\\text{Fe}_2\\text{O}_3 \\cdot x\\text{H}_2\\text{O}_{(s)} \\text{ (Hydrated Iron(III) Oxide)}$$\n* Unlike aluminum oxide (which forms a protective impervious skin), iron rust is porous, flaky, and continuously peels away, exposing fresh sub-surface iron to ongoing destruction.\n\n#### 3. Methods of Rust Prevention on Farm Tools\n* **Oiling & Greasing:** Applying a thin film of clean mineral oil or grease on clean steel blades forms a physical barrier that prevents atmospheric oxygen and moisture from contacting the metal.\n* **Galvanizing:** Coating steel with a sacrificial protective layer of zinc (Zn). Zinc oxidizes preferentially, protecting iron even if scratched.\n* **Painting:** Applying anti-corrosive primer and oil paint to non-cutting metal surfaces (e.g., wheelbarrow trays, tractor frames).\n* **Proper Storage:** Storing tools elevated off damp concrete floors in a dry, well-ventilated tool shed.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s14_1",
+            "title": "Worked Example: The Dual Conditions for Iron Rusting",
+            "problem": "A student sets up three test tubes to investigate the conditions required for iron nails to rust: Tube 1 has nails in tap water exposed to air; Tube 2 has nails in boiled water covered with an oil layer; Tube 3 has nails in dry air with anhydrous calcium chloride. Predict and explain the results after 7 days.",
+            "steps": [
+              "Tube 1 Prediction: Nails rust heavily. Rationale: Both dissolved oxygen and liquid water are present simultaneously, enabling the electrochemical oxidation of iron to hydrated iron(III) oxide.",
+              "Tube 2 Prediction: No rusting occurs. Rationale: Boiling water expelled all dissolved oxygen, and the floating oil barrier prevents atmospheric air from dissolving back into the water. Water is present, but oxygen is absent.",
+              "Tube 3 Prediction: No rusting occurs. Rationale: Anhydrous calcium chloride absorbs all atmospheric water vapor, creating a completely dry environment. Oxygen is present, but moisture is absent.",
+              "Conclusion: Rusting requires BOTH moisture and oxygen simultaneously. Depriving the metal of either factor halts corrosion completely."
+            ],
+            "finalAnswer": "Examiner Tip: This classic BECE experiment proves that both air (oxygen) and water are essential for rusting."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s14_1",
+              "difficulty": "low",
+              "prompt": "What are the two essential environmental factors required simultaneously for iron farm tools to rust?",
+              "options": [
+                "Nitrogen and heat",
+                "Oxygen and moisture (water)",
+                "Carbon dioxide and sunlight",
+                "Hydrogen and wind"
+              ],
+              "correctAnswer": "Oxygen and moisture (water)",
+              "hint": "Rust is hydrated iron(III) oxide.",
+              "workedSolution": "Rusting is an electrochemical oxidation reaction that cannot proceed without both atmospheric oxygen and liquid water/moisture.",
+              "points": 1,
+              "learningCompetency": "B8.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s14_2",
+              "difficulty": "medium",
+              "prompt": "Why should used engine oil or clean grease be wiped over cutlass blades before storing them in a tool shed?",
+              "options": [
+                "To make the cutlass smell nice",
+                "To create a physical barrier preventing atmospheric moisture and oxygen from contacting iron atoms",
+                "To make the blade softer for cutting",
+                "To dissolve the steel"
+              ],
+              "correctAnswer": "To create a physical barrier preventing atmospheric moisture and oxygen from contacting iron atoms",
+              "hint": "Hydrophobic oil barriers block moisture and air.",
+              "workedSolution": "Oil and grease are hydrophobic hydrocarbons that form an impermeable seal over metal surfaces, blocking oxygen and water molecules from contacting iron atoms.",
+              "points": 1,
+              "learningCompetency": "B8.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Agricultural Mechanization & Tractor-Coupled Implements",
+        "summary": "Evaluate intermediate and heavy tractor-drawn implements (mouldboard plows, disc harrows, combine harvesters) and mechanization ergonomics.",
+        "notes": "### Agricultural Mechanization & Tractor-Coupled Farm Implements\n* **NaCCA Curriculum Code:** `B9.4.4.1`\n* **Core Competency:** Classify primary and secondary tillage implements, analyze tractor mechanisms, and evaluate the socio-economic impact of mechanization.\n\n#### 1. Concept of Agricultural Mechanization\nThe application of mechanical engineering technology, tractors, motorized implements, and automation to agricultural production to reduce human drudgery, accelerate operations, and increase yields per hectare.\n\n#### 2. Primary Tillage Implements (Primary Cultivation)\nUsed to break open uncultivated soil, invert topsoil clods, and bury vegetative surface residues:\n* **Mouldboard Plow:** Slices, lifts, inverts, and completely rolls over soil furrows. Best suited for stone-free, moist, cohesive soils.\n* **Disc Plow:** Features concave, revolving steel discs mounted on heavy bearings. Revolves over hidden subterranean tree roots, rocks, and hard obstructions without breaking; the standard primary tillage implement used in stony West African savannah soils.\n* **Chisel Plow (Subsoiler):** Heavy steel shanks that shatter compacted impervious hardpans at depths of 40-70 cm without inverting soil layers.\n\n#### 3. Secondary Tillage Implements (Refining Seedbed)\nFollows primary plowing to pulverize large clods into a fine, friable tilth:\n* **Disc Harrow:** Arrays of rotating scalloped or smooth steel discs that pulverize clods and incorporate fertilizer.\n* **Cultivators & Rotavators:** Rotating blades that prepare refined seedbeds and control inter-row weeds.\n* **Seed Drills / Planters:** Tractor-drawn implements that meter, furrow, deposit seed at uniform depths, and cover seeds in a single pass.\n\n#### 4. Harvesting Machinery\n* **Combine Harvester:** Multi-functional self-propelled machine that executes **reaping, threshing, de-husking, and winnowing** of cereal grains (rice, maize, wheat) simultaneously in the field, reducing harvest labor by $95\\%$.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s14_1",
+            "title": "Worked Example: Selecting Between Disc Plow and Mouldboard Plow",
+            "problem": "A commercial maize farming project in the Afram Plains of Ghana needs to select a primary tillage plow for virgin land containing scattered tree roots and concealed granite rocks. Recommend the most appropriate plow and justify your choice with two mechanical reasons.",
+            "steps": [
+              "Recommendation: The Disc Plow must be selected.",
+              "Reason 1: Rolling Action Over Obstacles — Unlike the rigid share and mouldboard of a mouldboard plow (which would catch on subterranean roots and snap the shear pin or bend the beam), the circular concave discs of a disc plow roll and ride over buried rocks and roots without stopping the tractor.",
+              "Reason 2: Cutting Tough Vegetation — The sharp revolving steel discs act like rotating circular knives, slicing through dense fibrous root clumps and trash without clogging the implement beam.",
+              "Conclusion: The disc plow is mechanically suited to hard, abrasive, root-infested tropical soils."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize that the rotating disc rolls over obstructions, whereas the mouldboard plow is a rigid implement suited to stone-free, pre-cleared land."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s14_1",
+              "difficulty": "low",
+              "prompt": "Which tractor-drawn primary tillage implement is best suited for plowing stony and root-infested soils in West Africa?",
+              "options": [
+                "Mouldboard plow",
+                "Disc plow",
+                "Garden trowel",
+                "Secateurs"
+              ],
+              "correctAnswer": "Disc plow",
+              "hint": "Its revolving discs roll over buried obstructions.",
+              "workedSolution": "The disc plow features revolving circular concave steel discs that roll over buried stones and roots without jamming or shearing the frame, making it ideal for tropical soils.",
+              "points": 1,
+              "learningCompetency": "B9.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s14_2",
+              "difficulty": "medium",
+              "prompt": "A combine harvester is termed a 'combine' machine because it integrates which agricultural operations simultaneously?",
+              "options": [
+                "Plowing, planting, weeding, and watering",
+                "Reaping (cutting), threshing, separating, and cleaning grain in a single pass",
+                "Milking cows and feeding chickens",
+                "Manufacturing fertilizer and packaging bags"
+              ],
+              "correctAnswer": "Reaping (cutting), threshing, separating, and cleaning grain in a single pass",
+              "hint": "It combines multiple harvesting tasks into one operation.",
+              "workedSolution": "A combine harvester combines the traditionally separate operations of reaping (cutting the crop), threshing (separating grains from stems), and winnowing (cleaning chaff from grains) into a continuous mechanical pass.",
+              "points": 1,
+              "learningCompetency": "B9.4.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand5_waste_management",
+    "topicId": "sci_strand5_waste_management",
+    "title": "Waste Management & Environmental Sanitation (Solid/Liquid/Toxic Waste, Composting & Recycling)",
+    "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "strandCode": "S5",
+    "subStrand": "Waste Management (Sanitation Engineering, Segregation & Circular Economy)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Design sustainable waste management infrastructures for residential, agricultural, and industrial scenarios. Simulates solid and hazardous waste sorting, aerobic compost bioreactors, plastic valorization recycling loops, and sanitary landfill operations.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Waste Classification, Sanitation & Source Segregation",
+        "summary": "Classify solid, liquid, and gaseous wastes into biodegradable vs. non-biodegradable; implement source segregation systems.",
+        "notes": "### Waste Classification, Environmental Sanitation & Source Segregation\n* **NaCCA Curriculum Code:** `B7.5.1.1`\n* **Core Competency:** Classify municipal wastes into biodegradable and non-biodegradable, evaluate sanitation hazards, and implement source separation.\n\n#### 1. Fundamental Classification of Waste\nWaste is any material discarded by the holder as no longer useful:\n* **By Physical State:**\n  * *Solid Waste:* Garbage, plastics, paper, scrap metal, agricultural crop residues, electronic waste (e-waste).\n  * *Liquid Waste:* Sewage (blackwater from toilets), sullage (greywater from kitchens and baths), industrial chemical effluents, agricultural slurry runoff.\n  * *Gaseous Waste:* Flue gas, smoke particulates, carbon monoxide ($CO$), sulfur dioxide ($SO_2$).\n* **By Biological Degradability:**\n  * *Biodegradable Waste:* Organic materials derived from living organisms that can be broken down into natural humic substances by microorganisms (bacteria and fungi) (e.g., food leftovers, vegetable peelings, animal dung, paper).\n  * *Non-Biodegradable Waste:* Synthetic materials that cannot be broken down by biological decomposers, persisting in the environment for centuries (e.g., plastics, polythene bags, glass, aluminium cans, Styrofoam).\n\n#### 2. Hazards of Poor Waste Disposal in Ghana\n* Blockage of urban storm drainage channels (e.g., Odaw River in Accra) causing catastrophic seasonal flash floods.\n* Leaching of toxic chemical contaminants (heavy metals, organic toxins) into groundwater tables.\n* Breeding reservoirs for pathogenic disease vectors (mosquitoes transmitting malaria, houseflies transmitting cholera and dysentery).\n* Marine pollution: Non-biodegradable single-use plastics choking coastal fish and sea turtles in the Gulf of Guinea.\n\n#### 3. Source Segregation Systems\nSorting waste at the point of generation into distinct color-coded receptacles:\n* Green: Organic compostable food waste.\n* Blue: Recyclable plastics, glass bottles, and aluminium cans.\n* Black: General non-recyclable residual waste.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s15_1",
+            "title": "Worked Example: The Dual Dangers of Open Dumping and Plastic Burning",
+            "problem": "In many suburban communities in Ghana, residents either dispose of rubbish in unengineered open dumps or burn piles of plastic waste in open fires. Explain two severe public health and environmental hazards associated with this practice.",
+            "steps": [
+              "Hazard 1: Toxic Carcinogenic Air Emissions — Burning plastics (especially polyvinyl chloride - PVC and polythene) releases highly toxic dioxins, furans, and black carbon soot particulates. Inhalation triggers severe acute asthma, chronic obstructive pulmonary disease (COPD), and long-term lung cancer.",
+              "Hazard 2: Toxic Leachate Contamination of Aquifers — In unengineered open dumps, rainwater percolates through decomposing rubbish, dissolving heavy metals (lead, cadmium from discarded batteries) and organic poisons into a toxic dark fluid called leachate. This leachate seeps into underground aquifers, poisoning domestic borehole drinking water."
+            ],
+            "finalAnswer": "Examiner Tip: Note the specific atmospheric toxins (dioxins and furans) produced when plastics undergo low-temperature incomplete combustion."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s15_1",
+              "difficulty": "low",
+              "prompt": "Which of the following household waste items is completely biodegradable?",
+              "options": [
+                "Plastic water sachet (polythene)",
+                "Cassava peelings",
+                "Broken glass bottle",
+                "Aluminum beverage can"
+              ],
+              "correctAnswer": "Cassava peelings",
+              "hint": "It is an organic plant residue that decomposes naturally.",
+              "workedSolution": "Cassava peelings are organic vegetable matter that soil saprophytic bacteria and fungi can enzymatically break down into harmless organic compost.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s15_2",
+              "difficulty": "medium",
+              "prompt": "What is the toxic liquid called that forms when rainwater percolates through unsealed open garbage dumps?",
+              "options": [
+                "Filtrate",
+                "Leachate",
+                "Chyme",
+                "Distillate"
+              ],
+              "correctAnswer": "Leachate",
+              "hint": "It contaminates groundwater aquifers.",
+              "workedSolution": "Leachate is the highly toxic, concentrated liquid that dissolves and leaches heavy metals and pathogens as rainwater drains through decomposing landfill garbage.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Composting Microbiology & Organic Waste Bioreactors",
+        "summary": "Formulate aerobic composting piles; monitor temperature, moisture, and microbial turnover to process biomass into humus.",
+        "notes": "### Composting Technology: Microbiology, C:N Ratios & Organic Recycling\n* **NaCCA Curriculum Code:** `B8.5.1.1`\n* **Core Competency:** Explain the biological process of composting, manage the Carbon-to-Nitrogen ratio, and produce organic fertilizer.\n\n#### 1. The Science of Composting\nComposting is the controlled aerobic biological decomposition of organic solid wastes by a succession of microorganisms (bacteria, actinomycetes, fungi) into dark, crumbly, nutrient-rich **humus**.\n\n#### 2. The Carbon-to-Nitrogen Ratio ($C:N$ Ratio)\nMicroorganisms require carbon for energy ($E$) and nitrogen for protein synthesis. The optimal $C:N$ ratio for active aerobic composting is approximately **$30:1$**:\n* **\"Browns\" (Carbon-Rich Materials):** Provide structural porosity and aerate the pile (e.g., dry leaves, straw, wood shavings, sawdust, cardboard; $C:N > 60:1$).\n* **\"Greens\" (Nitrogen-Rich Materials):** Provide moisture and nitrogen for microbial reproduction (e.g., fresh grass clippings, green vegetable scraps, poultry manure, cow dung; $C:N < 20:1$).\n* *Imbalance:*\n  * Too much Carbon: Decomposition slows down to a crawl.\n  * Too much Nitrogen: Excess nitrogen escapes as foul-smelling ammonia gas ($NH_3$).\n\n#### 3. Stages of Aerobic Composting\n1. **Mesophilic Phase (Day 1-3, $20-45^\\circ\\text{C}$):** Mesophilic bacteria rapidly metabolize soluble sugars and amino acids, generating metabolic heat.\n2. **Thermophilic Phase (Day 4-15, $45-65^\\circ\\text{C}$):** Thermophilic bacteria (*Bacillus*) take over. High core temperature ($>55^\\circ\\text{C}$) is essential because it **pasteurizes the compost**, destroying pathogenic bacteria (*Salmonella*, *E. coli*) and killing weed seeds.\n3. **Cooling & Maturation Phase (Week 3-8, $<40^\\circ\\text{C}$):** Fungi and actinomycetes break down tough cellulose and lignin. The compost stabilizes into sweet-smelling, earthy, dark brown humus.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s15_1",
+            "title": "Worked Example: The Necessity of Turning an Aerobic Compost Pile",
+            "problem": "A student agricultural club builds a compost heap. The teacher instructs them to turn the pile inside-out using a pitchfork once every 7 days. Give two scientific reasons why physical turning is critical to successful aerobic composting.",
+            "steps": [
+              "Reason 1: Aeration and Oxygen Replenishment — The thermophilic microorganisms that break down organic waste are strictly aerobic (require molecular O2). Over time, microbial respiration consumes all trapped oxygen. Turning introduces fresh atmospheric air into the core, preventing anaerobic fermentation that would cause foul odors (hydrogen sulfide) and stall decomposition.",
+              "Reason 2: Temperature and Material Mixing — The outermost layers of the heap remain cool and dry. Turning moves the outer uncomposted vegetative matter into the hot, active interior core while redistributing moisture, ensuring uniform pasteurization and complete decomposition of all weed seeds and pathogens."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize both oxygen replenishment for aerobic microbes and moving cooler outer layers into the hot core."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s15_1",
+              "difficulty": "low",
+              "prompt": "The optimal Carbon-to-Nitrogen (C:N) ratio recommended for active aerobic composting is approximately:",
+              "options": [
+                "1:1",
+                "10:1",
+                "30:1",
+                "100:1"
+              ],
+              "correctAnswer": "30:1",
+              "hint": "Roughly 30 parts carbon to 1 part nitrogen by weight.",
+              "workedSolution": "A 30:1 C:N ratio supplies the ideal balance of carbon for microbial energy and nitrogen for cellular protein synthesis, maximizing decomposition speed without ammonia odor.",
+              "points": 1,
+              "learningCompetency": "B8.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s15_2",
+              "difficulty": "medium",
+              "prompt": "Why must the internal temperature of a compost pile reach 55°C to 65°C during the thermophilic phase?",
+              "options": [
+                "To set the compost pile on fire",
+                "To thermal-pasteurize the compost, destroying pathogenic microorganisms and weed seeds",
+                "To melt plastic scraps in the pile",
+                "To turn the compost into charcoal"
+              ],
+              "correctAnswer": "To thermal-pasteurize the compost, destroying pathogenic microorganisms and weed seeds",
+              "hint": "High heat kills harmful germs and weed seeds.",
+              "workedSolution": "Thermophilic temperatures between 55°C and 65°C pasteurize the biomass, killing human and plant pathogens (E. coli, Salmonella) and deactivating dormant weed seeds.",
+              "points": 1,
+              "learningCompetency": "B8.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • The 5R Resource Paradigm & Engineered Sanitary Landfills",
+        "summary": "Apply the 5R paradigm (Reduce, Reuse, Recycle, Refuse, Rot) and evaluate modern sanitary landfill engineering.",
+        "notes": "### The Circular Economy: The 5R Paradigm & Engineered Sanitary Landfills\n* **NaCCA Curriculum Code:** `B9.5.1.1`\n* **Core Competency:** Deploy the 5R hierarchy and analyze the engineering architecture of modern sanitary landfills.\n\n#### 1. The 5R Waste Management Hierarchy\nA prioritized circular-economy framework designed to decouple economic activity from resource consumption and environmental degradation:\n1. **Refuse:** Decline unnecessary, wasteful, or single-use items (e.g., refusing single-use plastic carrier bags; bringing a reusable cotton tote).\n2. **Reduce:** Minimize the overall volume of waste generated at source by choosing products with minimal packaging or longer lifespans.\n3. **Reuse:** Extend product life by repeatedly using an item for its original or new purpose without industrial reprocessing (e.g., refilling glass bottles, reusing cardboard cartons).\n4. **Recycle:** Industrially processing discarded waste materials into new consumer products (e.g., melting plastic PET bottles into polyester clothing fibers, remelting scrap aluminium into cooking pots).\n5. **Rot (Compost):** Diverting organic biodegradable food and yard wastes into composting systems to regenerate agricultural soils.\n\n#### 2. Engineering Architecture of a Modern Sanitary Landfill\nUnlike primitive open dumps, an engineered sanitary landfill is an isolated biological and chemical containment cell:\n* **Composite Bottom Liner:** Dense compacted clay layer ($>60\\text{ cm}$, hydraulic conductivity $<10^{-7}\\text{ cm/s}$) topped with a high-density polyethylene (HDPE) geomembrane to prevent any toxic fluid seepage into surrounding aquifers.\n* **Leachate Collection System:** Perforated HDPE drainage pipes embedded in gravel beds at the base that pump toxic leachate to an onsite biological wastewater treatment facility.\n* **Biogas Extraction Network:** Vertical perforated gas wells that capture methane gas ($\\text{CH}_4$) produced by anaerobic decomposition, flaring it or burning it to generate clean municipal electricity.\n* **Daily Soil Cover:** 15 cm of compacted soil applied over waste daily to control disease vectors (flies, rats), prevent fires, and suppress odors.\n* **Final Impermeable Cap & Revegetation:** Sealed cap preventing rainwater infiltration once the cell reaches capacity.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s15_1",
+            "title": "Worked Example: Energy Recovery from Landfill Methane Biogas",
+            "problem": "Municipal organic waste in an engineered landfill decomposes anaerobically to produce biogas containing 55% Methane (CH4) and 45% Carbon Dioxide (CO2). Explain why modern landfills capture and combust this methane to generate electricity rather than venting it into the atmosphere.",
+            "steps": [
+              "Reason 1: Potent Greenhouse Gas Mitigation — Methane (CH4) is a super-pollutant with a Global Warming Potential (GWP) 28 to 36 times greater than carbon dioxide over a 100-year timescale. Vented methane severely accelerates global warming. Burning it converts CH4 into CO2 and H2O (CH4 + 2O2 -> CO2 + 2H2O), dramatically lowering net radiative forcing.",
+              "Reason 2: Renewable Energy Recovery — Methane is a high-energy combustible hydrocarbon fuel. Channeling captured biogas into gas turbine generators produces clean, renewable electricity to power the landfill facility and feed the national electricity grid.",
+              "Reason 3: Explosion Hazard Prevention — Methane is explosive when mixed with air at concentrations between 5% and 15%. Venting creates dangerous subterranean explosion risks in nearby settlements."
+            ],
+            "finalAnswer": "Examiner Tip: Always state that methane has a global warming potential over 28 times greater than CO2 to explain the climatic necessity of combustion."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s15_1",
+              "difficulty": "low",
+              "prompt": "In the 5R waste hierarchy, which strategy is considered the most environmentally preferred and effective?",
+              "options": [
+                "Recycle",
+                "Rot",
+                "Refuse",
+                "Incinerate"
+              ],
+              "correctAnswer": "Refuse",
+              "hint": "Preventing waste before it is even created is best.",
+              "workedSolution": "Refusing unnecessary single-use items is at the pinnacle of the waste hierarchy because it eliminates the environmental footprint of production, transport, and disposal completely.",
+              "points": 1,
+              "learningCompetency": "B9.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s15_2",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of the high-density polyethylene (HDPE) geomembrane liner at the bottom of a modern sanitary landfill?",
+              "options": [
+                "To make the landfill waterproof so fish can live in it",
+                "To prevent toxic chemical leachate from seeping downward into groundwater aquifers",
+                "To reflect sunlight into outer space",
+                "To speed up plastic decomposition"
+              ],
+              "correctAnswer": "To prevent toxic chemical leachate from seeping downward into groundwater aquifers",
+              "hint": "It acts as an impermeable barrier against toxic fluids.",
+              "workedSolution": "The thick HDPE geomembrane and compacted clay liner create an impermeable containment barrier that prevents toxic leachate from contaminating municipal groundwater drinking aquifers.",
+              "points": 1,
+              "learningCompetency": "B9.5.1.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand5_human_health",
+    "topicId": "sci_strand5_human_health",
+    "title": "Human Health & Disease Control (Deficiency, Viral, Bacterial, Communicable & Lifestyle Diseases)",
+    "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "strandCode": "S5",
+    "subStrand": "Human Health (Epidemiology, Pathophysiology, Immunity & Preventive Medicine)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Trace the pathology, transmission, and prevention of infectious and non-communicable diseases with virtual clinical diagnostic tools. Integrates nutritional deficiency symptomology, bacterial/viral epidemiology, vaccine mechanisms, and healthy lifestyle choices.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Food Nutrients, Balanced Diets & Nutritional Deficiencies",
+        "summary": "Classify dietary nutrients, calculate Recommended Dietary Allowances, and diagnose malnutrition deficiency disorders.",
+        "notes": "### Human Nutrition: Balanced Diets & Nutritional Deficiency Disorders\n* **NaCCA Curriculum Code:** `B7.5.2.1`\n* **Core Competency:** Classify food nutrients, design balanced adolescent diets, and diagnose common nutritional deficiency diseases.\n\n#### 1. Classes of Food Nutrients\n* **Carbohydrates:** Primary energetic fuel ($17\\text{ kJ/g}$) for cellular metabolism (e.g., starch in yam, cassava, maize, rice; glucose).\n* **Proteins:** Polymers of amino acids required for growth, somatic tissue repair, enzyme and antibody synthesis ($17\\text{ kJ/g}$) (e.g., fish, beans, eggs, meat, milk).\n* **Lipids (Fats & Oils):** Concentrated long-term energy storage ($38\\text{ kJ/g}$), structural cell membranes, thermal insulation, shock absorption for organs.\n* **Vitamins (Organic Micronutrients):** Fat-soluble (A, D, E, K) and Water-soluble (B-complex, C). Essential coenzymes in biochemical reactions.\n* **Minerals (Inorganic Micronutrients):** Calcium, Iron, Iodine, Sodium, Potassium.\n* **Dietary Fiber (Roughage):** Indigestible cellulose providing bulk to stimulate intestinal peristalsis and prevent constipation.\n* **Water:** Universal biological solvent, thermoregulation through sweat evaporation, metabolic reaction medium.\n\n#### 2. Major Nutritional Deficiency Disorders\n* **Kwashiorkor:** Severe protein deficiency with adequate caloric intake. Symptoms: protruding belly (ascites from fluid edema), reddish/brown thinned hair, flaky skin dermatosis, apathy.\n* **Marasmus:** Total caloric and protein starvation. Symptoms: extreme skeletal emaciation (\"skin and bones\"), sunken eyes, loose folded skin, elderly facial appearance.\n* **Scurvy (Vitamin C Deficiency):** Bleeding spongy gums, delayed wound healing, subcutaneous hemorrhages (bruises) due to defective collagen synthesis.\n* **Rickets (Vitamin D / Calcium Deficiency in Children):** Soft, pliable leg bones bowing under body weight (bowlegs, knock-knees), deformed ribcage (pigeon chest).\n* **Nutritional Anemia (Iron Deficiency):** Chronic fatigue, paleness of conjunctiva and fingernail beds, breathlessness due to reduced hemoglobin production.\n* **Goitre (Iodine Deficiency):** Abnormal enlargement of the thyroid gland in the neck due to lack of iodine for thyroxine synthesis.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s16_1",
+            "title": "Worked Example: Clinical Diagnosis of Childhood Malnutrition",
+            "problem": "A community health nurse in a rural clinic examines two malnourished children: Child A is severely emaciated with skin tightly stretched over bones and an old-man face. Child B has swollen legs, an enlarged distended abdomen, pale thinned reddish hair, and skin lesions. Diagnose the specific condition of each child.",
+            "steps": [
+              "Child A Diagnosis: Marasmus — Caused by severe total dietary deficiency of both energy calories (carbohydrates/fats) and proteins. The body breaks down its own muscle and subcutaneous fat, leaving a completely emaciated skeletal appearance.",
+              "Child B Diagnosis: Kwashiorkor — Caused by severe protein deficiency while consuming starchy carbohydrates. Low blood albumin causes fluid leakage into abdominal tissues (edema/ascites), causing the characteristic swollen belly and extremities, alongside depigmented hair and dermatitis."
+            ],
+            "finalAnswer": "Examiner Tip: Remember: Kwashiorkor = protein deficiency with swollen belly (edema); Marasmus = total calorie/protein starvation with skeletal wasting."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s16_1",
+              "difficulty": "low",
+              "prompt": "A child presenting with spongy, bleeding gums and loose teeth is suffering from a deficiency of:",
+              "options": [
+                "Vitamin A",
+                "Vitamin C",
+                "Vitamin D",
+                "Iron"
+              ],
+              "correctAnswer": "Vitamin C",
+              "hint": "Citrus fruits like oranges and limes cure this disease (scurvy).",
+              "workedSolution": "Vitamin C (ascorbic acid) is vital for collagen synthesis. Deficiency causes scurvy, characterized by capillary fragility, bleeding gums, and poor wound healing.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s16_2",
+              "difficulty": "medium",
+              "prompt": "The abnormal enlargement of the thyroid gland in the human neck (goitre) is caused by a dietary deficiency of which mineral element?",
+              "options": [
+                "Calcium",
+                "Iron",
+                "Iodine",
+                "Potassium"
+              ],
+              "correctAnswer": "Iodine",
+              "hint": "Table salt is iodized to prevent this condition.",
+              "workedSolution": "Iodine is an essential micronutrient required by the thyroid gland to synthesize thyroxine hormone. Iodine deficiency triggers thyroid hyperplasia, forming a goitre.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Infectious Communicable Pathogens & Epidemiology",
+        "summary": "Profile viral, bacterial, and protozoan pathogens; trace transmission vectors and prevention for cholera, malaria, and tuberculosis.",
+        "notes": "### Infectious Pathogens: Bacterial, Viral & Protozoan Epidemiology\n* **NaCCA Curriculum Code:** `B8.5.2.1`\n* **Core Competency:** Classify infectious diseases by pathogenic agent, analyze transmission cycles, and establish clinical prevention protocols.\n\n#### 1. Pathogenic Classifications\n* **Bacteria:** Single-celled prokaryotic organisms. Pathogenic bacteria produce toxic exotoxins or endotoxins:\n  * *Cholera (*Vibrio cholerae*):* Water-borne pathogen; secretes cholera toxin causing massive watery diarrhea (\"rice-water stools\"), fatal dehydration, and electrolyte shock within hours.\n  * *Tuberculosis (*Mycobacterium tuberculosis*):* Airborne respiratory droplet infection; persistent cough ($>2\\text{ weeks}$), hemoptysis (coughing blood), night sweats, weight loss.\n  * *Typhoid (*Salmonella typhi*):* Contaminated food and water; prolonged stepwise fever, abdominal pain.\n* **Viruses:** Submicroscopic obligate intracellular parasites containing DNA or RNA in a protein capsid:\n  * *Poliomyelitis:* Enterovirus attacking motor neurons of the spinal cord, causing irreversible acute flaccid paralysis. Prevented by Oral Polio Vaccine (OPV).\n  * *Measles:* Airborne paramyxovirus causing high fever, conjunctivitis, and maculopapular skin rash.\n  * *Viral Hepatitis (Hepatitis B):* Blood and bodily fluid transmission; targets hepatocytes, causing jaundice, liver cirrhosis, and hepatocellular carcinoma.\n* **Protozoa:** Unicellular eukaryotic parasites:\n  * *Malaria (*Plasmodium falciparum*):* Transmitted by the bite of infected female *Anopheles* mosquitoes; high cyclical fevers, chills, hemolytic anemia, splenomegaly.\n\n#### 2. Disease Prevention & Epidemiological Triad\n* **Interrupting Transmission:** Boiling drinking water, chlorination, using Insecticide-Treated Nets (ITNs), proper human waste disposal via Water Closets (WC).\n* **Active Immunization:** The Expanded Programme on Immunization (EPI) vaccines: BCG (Tuberculosis), Pentavalent (DTP-HepB-Hib), OPV (Polio), Measles-Rubella, RTS,S/AS01 (Malaria vaccine).",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s16_1",
+            "title": "Worked Example: Emergency Management of Severe Cholera Dehydration",
+            "problem": "An outbreak of cholera occurs in an informal settlement following seasonal flood contamination of drinking wells. Patients pass profuse watery diarrhea. Explain the immediate life-saving medical intervention and the biochemical rationale of Oral Rehydration Salts (ORS).",
+            "steps": [
+              "Step 1: Immediate clinical priority — Cholera kills not from infection alone, but from catastrophic hypovolemic dehydration (loss of up to 1 liter of fluid per hour) and acute metabolic acidosis from electrolyte loss.",
+              "Step 2: Oral Rehydration Salts (ORS) formulation — A standardized solution containing clean boiled water, sodium chloride (salt), and glucose (sugar) in exact stoichiometric proportions.",
+              "Step 3: Biochemical rationale of the sodium-glucose cotransporter — The cholera toxin permanently activates adenylate cyclase, blocking normal sodium absorption. However, the intestinal sodium-glucose cotransport mechanism (SGLT-1) in the ileum remains functional; glucose facilitates the coupled transport of sodium ions across the intestinal wall into the bloodstream, drawing water back into the body by osmosis."
+            ],
+            "finalAnswer": "Examiner Tip: Note that ORS works because glucose facilitates sodium absorption via the SGLT-1 cotransporter, drawing water back into blood by osmosis."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s16_1",
+              "difficulty": "low",
+              "prompt": "Which pathogenic protozoan parasite is transmitted by the bite of a female Anopheles mosquito to cause malaria?",
+              "options": [
+                "Vibrio cholerae",
+                "Plasmodium falciparum",
+                "Mycobacterium tuberculosis",
+                "Salmonella typhi"
+              ],
+              "correctAnswer": "Plasmodium falciparum",
+              "hint": "It invades human red blood cells.",
+              "workedSolution": "Plasmodium falciparum is the deadly protozoan parasite transmitted by female Anopheles mosquitoes that infects liver hepatocytes and erythrocytes, causing malaria.",
+              "points": 1,
+              "learningCompetency": "B8.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s16_2",
+              "difficulty": "medium",
+              "prompt": "The BCG (Bacillus Calmette-Guérin) vaccine administered to newborn infants protects against which bacterial infection?",
+              "options": [
+                "Cholera",
+                "Tuberculosis",
+                "Measles",
+                "Yellow fever"
+              ],
+              "correctAnswer": "Tuberculosis",
+              "hint": "Tuberculosis is caused by Mycobacterium tuberculosis.",
+              "workedSolution": "The BCG vaccine is an attenuated strain of Mycobacterium bovis that stimulates active adaptive immunity against human pulmonary and extrapulmonary tuberculosis.",
+              "points": 1,
+              "learningCompetency": "B8.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Non-Communicable Lifestyle Diseases & Adaptive Immunity",
+        "summary": "Examine chronic non-communicable diseases (hypertension, diabetes, cancers), STIs/HIV, and the mechanisms of adaptive immunity.",
+        "notes": "### Chronic Non-Communicable Diseases, STIs & Adaptive Immunity\n* **NaCCA Curriculum Code:** `B9.5.2.1`\n* **Core Competency:** Differentiate communicable and chronic non-communicable lifestyle diseases, analyze STIs/HIV transmission, and explain adaptive immunity.\n\n#### 1. Chronic Non-Communicable Lifestyle Diseases (NCDs)\nNCDs are non-infectious, long-duration chronic conditions driven by genetic, physiological, environmental, and behavioral lifestyle factors:\n* **Hypertension (High Blood Pressure):** Persistent resting blood pressure $>140/90\\text{ mmHg}$. Silent killer damaging arterial endothelium, accelerating atheroma plaque formation, leading to myocardial infarction (heart attack) and hemorrhagic cerebrovascular stroke. Driven by high dietary sodium, obesity, chronic stress, and lack of exercise.\n* **Type 2 Diabetes Mellitus:** Metabolic endocrine disorder characterized by chronic hyperglycemia resulting from target cell **insulin resistance** and secondary pancreatic beta-cell dysfunction. Symptoms: polyuria (frequent urination), polydipsia (excessive thirst), polyphagia (hunger), delayed wound healing, diabetic retinopathy, neuropathy.\n* **Coronary Heart Disease (CHD):** Atherosclerotic plaque narrowing coronary arteries, causing angina pectoris and heart failure.\n\n#### 2. Sexually Transmitted Infections (STIs) & HIV/AIDS\n* **HIV / AIDS:** Human Immunodeficiency Virus infects and destroys **CD4+ T-helper lymphocytes**, crippling the host's adaptive immune system. Opportunistic infections (candidiasis, Kaposi sarcoma, pulmonary TB) result in fatal Acquired Immunodeficiency Syndrome.\n* *Transmission:* Unprotected sexual intercourse with an infected partner, blood transfusions with unscreened blood, unsterilized needles, vertical mother-to-child transmission during birth/breastfeeding.\n* **Other STIs:** Syphilis (*Treponema pallidum*), Gonorrhea (*Neisseria gonorrhoeae*), Chlamydia.\n\n#### 3. Fundamentals of the Human Immune System\n* **Innate (Non-Specific) Immunity:** First line of defense: unbroken skin, hydrochloric acid in stomach, mucosal lysozymes, phagocytic white blood cells (neutrophils, macrophages).\n* **Adaptive (Specific) Immunity:**\n  * **B-Lymphocytes:** Produce specific protein **antibodies (immunoglobulins)** that bind to foreign antigens, neutralizing toxins and marking pathogens for destruction (humoral response).\n  * **T-Lymphocytes:** Killer T-cells destroy virus-infected cells; Helper T-cells coordinate the immune response (cellular response).\n  * **Immunological Memory:** Memory B-cells persist for decades, conferring rapid, powerful immunity upon re-exposure to the same antigen (basis of vaccination).",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s16_1",
+            "title": "Worked Example: The Scientific Mechanism of Vaccine-Induced Immunity",
+            "problem": "Explain the physiological mechanism by which an artificial vaccine (such as the measles vaccine) confers long-lasting immunological protection against real-world pathogen infection without causing the disease.",
+            "steps": [
+              "Step 1: Antigen introduction — The vaccine delivers an attenuated (weakened) or inactivated viral pathogen possessing intact surface antigens but incapable of causing full-blown disease.",
+              "Step 2: Primary immune response — Host dendritic cells and macrophages engulf the vaccine antigens and present them to naive B and T lymphocytes. B-cells activate, proliferate, and differentiate into plasma cells that secrete specific neutralizing antibodies.",
+              "Step 3: Creation of Memory Cells — A subset of activated B and T cells differentiate into long-lived Memory Cells that remain dormant in lymphoid tissues for decades.",
+              "Step 4: Secondary immune response — If the individual is exposed to the real, virulent wild-type measles virus in the future, memory cells instantly recognize the antigen and launch a massive, rapid flood of antibodies within hours, destroying the pathogen before it can establish infection or clinical illness."
+            ],
+            "finalAnswer": "Examiner Tip: Always mention 'Memory B and T cells' and 'rapid secondary immune response' when explaining vaccine protection."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s16_1",
+              "difficulty": "low",
+              "prompt": "The Human Immunodeficiency Virus (HIV) cripples the human immune system primarily by destroying which specialized cells?",
+              "options": [
+                "Red blood cells (erythrocytes)",
+                "CD4+ T-helper lymphocytes",
+                "Platelets (thrombocytes)",
+                "Bone osteocytes"
+              ],
+              "correctAnswer": "CD4+ T-helper lymphocytes",
+              "hint": "These white blood cells coordinate adaptive immune defenses.",
+              "workedSolution": "HIV specifically targets and destroys CD4+ T-helper lymphocytes, collapsing the adaptive immune system and leaving the patient vulnerable to fatal opportunistic infections.",
+              "points": 1,
+              "learningCompetency": "B9.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s16_2",
+              "difficulty": "medium",
+              "prompt": "Which chronic non-communicable lifestyle disease is characterized by target tissue resistance to the hormone insulin, resulting in elevated blood glucose levels?",
+              "options": [
+                "Type 2 Diabetes Mellitus",
+                "Kwashiorkor",
+                "Sickle cell anemia",
+                "Tuberculosis"
+              ],
+              "correctAnswer": "Type 2 Diabetes Mellitus",
+              "hint": "It is a metabolic endocrine disorder associated with obesity and high-sugar diets.",
+              "workedSolution": "Type 2 Diabetes is characterized by cellular insulin resistance, preventing glucose uptake from blood into cells and causing chronic hyperglycemia.",
+              "points": 1,
+              "learningCompetency": "B9.5.2.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand5_science_industry",
+    "topicId": "sci_strand5_science_industry",
+    "title": "Science, Industry & Career Pathways (STEM Careers, Ghanaian/Global Scientists, Indigenous Tech)",
+    "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "strandCode": "S5",
+    "subStrand": "Science & Industry (Applied Technology, Ghanaian Scientific Heritage & STEM Vocations)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Connect scientific theory to national industrialization, traditional Ghanaian technologies, and modern global STEM career pathways. Students examine indigenous manufacturing (shea butter processing, pottery, soap making), evaluate contemporary Ghanaian inventors, and map academic pathways in STEM.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Indigenous Ghanaian Technologies & Applied Science",
+        "summary": "Analyze the scientific principles underlying indigenous Ghanaian technologies: traditional soap making, shea butter, and pottery.",
+        "notes": "### Indigenous Ghanaian Technologies & Applied Scientific Principles\n* **NaCCA Curriculum Code:** `B7.5.3.1`\n* **Core Competency:** Explain the scientific principles underlying traditional Ghanaian cottage industries and indigenous manufacturing.\n\n#### 1. Traditional Soap Making (Saponification with Local Alkalis)\n* **Raw Materials:** Ash from dried cocoa pods, plantain peels, or palm bunches; vegetable oils (palm kernel oil, coconut oil).\n* **Chemical Principle:**\n  * The ash contains high concentrations of water-soluble alkaline potassium carbonate ($\\text{K}_2\\text{CO}_3$).\n  * Leaching the ash with water produces a strong alkaline solution of potassium hydroxide:\n    $$\\text{K}_2\\text{CO}_{3(aq)} + \\text{Ca(OH)}_{2(aq)} \\rightarrow 2\\text{KOH}_{(aq)} + \\text{CaCO}_{3(s)}$$\n  * **Saponification Reaction:** Boiling potassium alkali with vegetable triglycerides hydrolyzes ester bonds, yielding glycerol and potassium carboxylate salts (traditional soft black soap / *alata samina*):\n    $$\\text{Fat / Triglyceride} + \\text{Potassium Hydroxide} \\rightarrow \\text{Glycerol} + \\text{Potassium Soap}$$\n\n#### 2. Indigenous Shea Butter Extraction (*Karité*)\n* **Process:** Shea nuts are boiled, sun-dried, de-shelled, roasted, pulverized into a fine paste, and churned vigorously by hand with water.\n* **Scientific Principle:** Churning destabilizes the natural lipid emulsion. Adding cold water causes the lighter hydrophobic shea fat to coalesce and float as a white curd on the surface, separating from the denser water-soluble residues by density divergence.\n\n#### 3. Traditional Earthenware Pottery\n* **Process:** Weathered riverbed clay is kneaded to remove trapped air bubbles, sculpted on a wheel or by hand, sun-dried, and fired in open wood kilns.\n* **Scientific Principle:** Firing at high temperatures ($>800^\\circ\\text{C}$) drives off structural water of crystallization, permanently transforming soft, pliable hydrated aluminum silicates into hard, vitrified, chemically inert ceramic structures (*asanka* / grinding bowls).",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s17_1",
+            "title": "Worked Example: The Chemistry of Traditional Black Soap Making",
+            "problem": "Explain the scientific chemical basis of using cocoa pod husk ash and palm kernel oil in the traditional manufacture of Ghanaian black soap (alata samina).",
+            "steps": [
+              "Step 1: Origin of the alkali — Cocoa pod husks contain significant amounts of potassium salts absorbed from tropical soils. When burned, they leave behind potassium carbonate (K2CO3). Boiling this ash with water leaches out soluble potassium hydroxide (KOH), a strong chemical alkali.",
+              "Step 2: Saponification reaction — When the hot alkaline leachate is boiled with palm kernel oil (which contains triglycerides/esters of fatty acids), alkaline hydrolysis occurs (saponification).",
+              "Step 3: Product formation — The ester bonds of the triglycerides are cleaved, releasing glycerol and potassium salts of fatty acids, which solidify upon cooling into the traditional cleansing soft soap."
+            ],
+            "finalAnswer": "Examiner Tip: Use the term 'saponification' and identify potassium hydroxide as the active alkali extracted from cocoa pod ash."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s17_1",
+              "difficulty": "low",
+              "prompt": "In traditional Ghanaian soap making, cocoa pod husk ash is used because it provides:",
+              "options": [
+                "Synthetic perfume",
+                "Strong potassium alkali solution for saponification",
+                "Acid to neutralize the soap",
+                "Plastic hardening agents"
+              ],
+              "correctAnswer": "Strong potassium alkali solution for saponification",
+              "hint": "Ashes of plants are rich in alkaline potassium carbonate.",
+              "workedSolution": "Burning cocoa pod husks yields ash rich in potassium carbonate, which dissolves in water to form the strong potassium alkali necessary to hydrolyze vegetable oils into soap.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s17_2",
+              "difficulty": "medium",
+              "prompt": "Why must freshly molded clay pottery (such as traditional asanka) be fired at high temperatures in a kiln?",
+              "options": [
+                "To melt the clay into glass",
+                "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
+                "To color the clay bright green",
+                "To make the pot dissolve in water"
+              ],
+              "correctAnswer": "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
+              "hint": "Firing causes irreversible thermal vitrification.",
+              "workedSolution": "High-temperature kiln firing drives off chemically bound water from hydrated aluminum silicates, causing ceramic vitrification and sintering that turns soft clay into a rigid, permanent, water-insoluble pot.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Contributions of Renowned Ghanaian & African Scientists",
+        "summary": "Profile landmark contributions of Ghanaian scientists (Prof. Francis Allotey, Prof. Marian Ewurama Addy) to global science.",
+        "notes": "### Ghanaian Scientific Heritage: Pioneering Minds & Global Breakthroughs\n* **NaCCA Curriculum Code:** `B8.5.3.1`\n* **Core Competency:** Evaluate landmark research contributions of Ghanaian and African scientists to global physics, biochemistry, and medicine.\n\n#### 1. Professor Francis Kofi Ampenyin Allotey (1932 – 2017)\n* **Field:** Mathematical Physics and Quantum Optics.\n* **Major Discovery — The Allotey Formalism:** Formulated the definitive mathematical technique used to explain the soft X-ray spectroscopy emission of metals. Known globally as the **\"Allotey Effect\"**, it proved that electron-hole scattering in matter causes a resonance anomaly in soft X-ray spectra.\n* **National Impact:** Founding Fellow of the African Academy of Sciences; pioneered computer science education in Ghana; established the African Institute for Mathematical Sciences (AIMS Ghana).\n\n#### 2. Professor Marian Ewurama Addy (1942 – 2014)\n* **Field:** Biochemistry and Molecular Herbal Pharmacology.\n* **Scientific Contributions:** Conducted groundbreaking scientific biochemical validation of traditional Ghanaian herbal medicines, specifically identifying the active anti-asthmatic and anti-diabetic phytochemical compounds in indigenous medicinal plants (*Desmodium adscendens*).\n* **Public Engagement:** Pioneer host and quiz mistress of the prestigious **National Science & Maths Quiz (NSMQ)**, inspiring generations of Ghanaian youth into STEM careers.\n\n#### 3. Dr. Thomas Owusu Mensah (1950 – 2024)\n* **Field:** Chemical Engineering and Fiber Optics Technology.\n* **Inventions:** Awarded multiple core international patents for pioneering high-speed optical fiber manufacturing processes, which reduced fiber optic cable costs and enabled global high-speed broadband internet and laser communication networks.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s17_1",
+            "title": "Worked Example: The Scientific Impact of the 'Allotey Effect'",
+            "problem": "Explain the significance of the 'Allotey Effect' discovered by Ghanaian mathematical physicist Prof. Francis Allotey to the global scientific understanding of matter.",
+            "steps": [
+              "Step 1: Theoretical context — In the 1960s, international physicists observed anomalies in the soft X-ray spectra emitted by metals that classical theories could not explain.",
+              "Step 2: Mathematical breakthrough — Prof. Allotey applied advanced quantum mechanics and mathematical physics to demonstrate that when a core electron is ejected from an atom by an X-ray, the resulting positive core hole attracts conduction electrons, creating a localized resonance effect that distorts the emission spectrum.",
+              "Step 3: Global legacy — His groundbreaking formulation (the Allotey Effect) became standard physics worldwide, earning him international acclaim and establishing Africa's capability to contribute to the frontiers of theoretical physics."
+            ],
+            "finalAnswer": "Examiner Tip: Associate Prof. Francis Allotey with soft X-ray spectroscopy, the Allotey Effect, and mathematical physics."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s17_1",
+              "difficulty": "low",
+              "prompt": "Which renowned Ghanaian mathematical physicist discovered the 'Allotey Effect' in soft X-ray spectroscopy of metals?",
+              "options": [
+                "Prof. Marian Ewurama Addy",
+                "Prof. Francis Kofi Allotey",
+                "Dr. Kwame Nkrumah",
+                "Prof. Alexander Animalu"
+              ],
+              "correctAnswer": "Prof. Francis Kofi Allotey",
+              "hint": "He was a pioneer of computer science and theoretical physics in Ghana.",
+              "workedSolution": "Professor Francis Allotey formulated the Allotey Formalism explaining soft X-ray spectroscopy in metals, which earned him global recognition.",
+              "points": 1,
+              "learningCompetency": "B8.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s17_2",
+              "difficulty": "medium",
+              "prompt": "Professor Marian Ewurama Addy is celebrated in Ghanaian scientific history for her dual role as a pioneering biochemist investigating herbal medicines and:",
+              "options": [
+                "The premier quiz mistress of the National Science and Maths Quiz (NSMQ)",
+                "The first female pilot in Ghana",
+                "The inventor of the electric motor",
+                "A commercial cocoa farmer"
+              ],
+              "correctAnswer": "The premier quiz mistress of the National Science and Maths Quiz (NSMQ)",
+              "hint": "She hosted the famous secondary school science competition for years.",
+              "workedSolution": "Prof. Marian Ewurama Addy was a celebrated professor of biochemistry at the University of Ghana and the iconic founding quiz mistress of the National Science & Maths Quiz.",
+              "points": 1,
+              "learningCompetency": "B8.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Modern Industrial Applications of Science & STEM Careers",
+        "summary": "Map contemporary industrial science applications (biotechnology, petrochemicals, pharmaceuticals) and chart STEM career pathways.",
+        "notes": "### Industrial Applications of Science & STEM Career Pathways\n* **NaCCA Curriculum Code:** `B9.5.3.1`\n* **Core Competency:** Connect chemical and biological principles to national industries, and analyze prerequisite academic pathways for STEM careers.\n\n#### 1. Major Science-Driven Industries in Ghana\n* **Petrochemical Industry (Tema Oil Refinery, Jubilee Oilfield):** Fractional distillation of crude oil into liquefied petroleum gas (LPG), petrol, kerosene, diesel, and bitumen; catalytic cracking to produce petrochemical feedstocks for plastics.\n* **Food & Beverage Industrial Biotechnology:** Industrial fermentation utilizing yeast (*Saccharomyces cerevisiae*) to manufacture baked goods and beverages; industrial fruit juice processing; aseptic pasteurization and UHT milk packaging.\n* **Pharmaceutical & Chemical Manufacturing:** Synthesis of essential medicines (antimalarials, analgesics, antibiotics), formulation of disinfectants, detergents, and agrochemicals (fertilizers, pesticides).\n* **Mining & Extractive Metallurgy:** Processing gold ore using cyanidation and carbon-in-pulp (CIP) extraction, and bauxite-alumina processing.\n\n#### 2. Charting Pathways into STEM Vocations\n* **Science, Technology, Engineering, and Mathematics (STEM):**\n  * *Medical & Health Sciences:* Medicine, Surgery, Pharmacy, Biomedical Engineering, Nursing, Public Health Epidemiology.\n  * *Engineering & Built Environment:* Civil Engineering, Electrical/Electronic Engineering, Mechanical & Mechatronics Engineering, Computer Software Engineering.\n  * *Agricultural & Environmental Sciences:* Agronomy, Food Science & Post-Harvest Technology, Veterinary Medicine, Environmental Resource Management, Renewable Energy Technology.\n* **Secondary & Tertiary Academic Pathways:**\n  * JHS Core Science + Mathematics $\\rightarrow$ SHS Elective Science / Applied Technical / General Agriculture $\\rightarrow$ University / Polytechnic degrees in engineering, medicine, and applied computing.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s17_1",
+            "title": "Worked Example: Fractional Distillation of Crude Oil in Industrial Chemistry",
+            "problem": "Petroleum crude oil arriving at the refinery is a dark, viscous mixture of hundreds of hydrocarbons. Describe the industrial physical separation process used to produce domestic LPG, petrol, and diesel.",
+            "steps": [
+              "Step 1: Industrial furnace heating — Crude oil is heated in a high-temperature industrial furnace to approximately 350-400°C until vaporized, and introduced into the base of a tall fractionating column.",
+              "Step 2: Temperature gradient in the tower — The fractionating column is engineered with a temperature gradient: hottest at the bottom (350°C) and progressively cooler towards the top (40°C).",
+              "Step 3: Fractional condensation — As vapors ascend, hydrocarbons with large molecules and high boiling points (e.g. diesel, lubricating oil) condense near the bottom trays. Lighter hydrocarbons with smaller molecules and lower boiling points (petrol/gasoline) rise to higher, cooler trays before condensing. The lightest hydrocarbon gases (propane, butane) do not condense and exit the top as Liquefied Petroleum Gas (LPG)."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize that separation is based on continuous differences in boiling points corresponding to carbon chain length."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s17_1",
+              "difficulty": "low",
+              "prompt": "The industrial process used to separate crude oil into distinct commercial fractions (such as petrol, kerosene, and diesel) is:",
+              "options": [
+                "Paper chromatography",
+                "Fractional distillation",
+                "Filtration",
+                "Simple crystallization"
+              ],
+              "correctAnswer": "Fractional distillation",
+              "hint": "It exploits differences in boiling points inside a tall fractionating column.",
+              "workedSolution": "Fractional distillation separates crude petroleum hydrocarbons based on continuous differences in their boiling points inside a fractionating column.",
+              "points": 1,
+              "learningCompetency": "B9.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s17_2",
+              "difficulty": "medium",
+              "prompt": "A student who aspires to become a Biomedical Engineer designing artificial limbs and hospital diagnostic equipment should pursue which academic elective track at Senior High School?",
+              "options": [
+                "General Arts",
+                "Elective Science (Physics, Chemistry, Elective Maths, Biology)",
+                "Visual Arts",
+                "Home Economics"
+              ],
+              "correctAnswer": "Elective Science (Physics, Chemistry, Elective Maths, Biology)",
+              "hint": "Biomedical engineering combines human biology with advanced physics and mathematics.",
+              "workedSolution": "Biomedical engineering requires foundational competencies in physics (biomechanics, circuits), chemistry (biomaterials), mathematics, and biology, requiring the SHS Elective Science program.",
+              "points": 1,
+              "learningCompetency": "B9.5.3.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand5_climate_change",
+    "topicId": "sci_strand5_climate_change",
+    "title": "Climate Change & The Green Economy (Global Warming, Adaptation, Renewable Energy & Mitigation)",
+    "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "strandCode": "S5",
+    "subStrand": "Climate Change (Atmospheric Physics, Green Economy & Decarbonization)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Simulate Earth's atmospheric energy balance and climate change scenarios using real-world meteorological datasets. Investigates greenhouse radiative forcing, coastal erosion in coastal West Africa, drought mitigation agronomy, and renewable energy transitions.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b9_strand5_climate_change"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • The Greenhouse Effect & Drivers of Global Warming",
+        "summary": "Model natural vs. enhanced greenhouse effect; correlate greenhouse gas emissions with rising global mean surface temperatures.",
+        "notes": "### The Greenhouse Effect & Global Warming Dynamics\n* **NaCCA Curriculum Code:** `B7.5.4.1`\n* **Core Competency:** Explain the natural and enhanced greenhouse effect and identify major anthropogenic greenhouse gas sources.\n\n#### 1. The Natural Greenhouse Effect\n* Solar shortwave electromagnetic radiation (visible light, ultraviolet) penetrates Earth's atmosphere unimpeded and is absorbed by the surface.\n* The warmed Earth re-emits energy as **longer-wavelength infrared radiation** (thermal heat).\n* Naturally occurring atmospheric greenhouse gases absorb and re-radiate this outgoing infrared radiation in all directions, trapping heat in the troposphere.\n* **Without the natural greenhouse effect**, Earth's average surface temperature would plummet to $-18^\\circ\\text{C}$ (instead of the hospitable $+15^\\circ\\text{C}$), freezing the oceans solid.\n\n#### 2. Major Greenhouse Gases & Anthropogenic Sources\n* **Carbon Dioxide ($CO_2$):** Responsible for $\\approx 65\\%$ of enhanced radiative forcing. Emitted from combustion of fossil fuels (coal, oil, gas) for electricity and transport; widespread deforestation (reducing photosynthetic sinks).\n* **Methane ($CH_4$):** 28 times more potent than $CO_2$. Emitted from enteric fermentation in ruminant livestock (cattle belching), anaerobic decomposition in flooded paddy rice fields, and organic landfill off-gassing.\n* **Nitrous Oxide ($N_2O$):** 265 times more potent than $CO_2$. Over-application of synthetic nitrogen fertilizers on agricultural soils; industrial nitric acid production.\n* **Fluorinated Gases (CFCs, HFCs):** Synthetic refrigerants, aerosol propellants, and semiconductor manufacturing solvents.\n\n#### 3. The Enhanced Greenhouse Effect\nExcessive human emissions over the past 150 years have drastically increased greenhouse gas concentrations, thickening the thermal atmospheric blanket, trapping excess infrared energy, and driving unprecedented **anthropogenic global warming**.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s18_1",
+            "title": "Worked Example: The Electromagnetic Wavelength Shift in the Greenhouse Effect",
+            "problem": "Explain why greenhouse gases allow incoming solar radiation to reach Earth's surface but trap outgoing radiation attempting to escape into space.",
+            "steps": [
+              "Step 1: Incident solar radiation — The Sun is extremely hot (~5,500°C surface temperature) and emits shortwave electromagnetic radiation (visible light and UV). Greenhouse gases in Earth's atmosphere are transparent to short wavelengths, allowing solar rays to pass through directly and warm the Earth's surface.",
+              "Step 2: Terrestrial re-emission — The warmed Earth is much cooler (~15°C) and re-radiates thermal energy as longwave infrared radiation.",
+              "Step 3: Molecular absorption — Greenhouse gas molecules (CO2, CH4, H2O vapor) possess molecular bond vibrational frequencies that resonate with and absorb longwave infrared photons, re-radiating heat back down toward Earth and preventing its escape into deep space."
+            ],
+            "finalAnswer": "Examiner Tip: Highlight the physical difference: incoming radiation is shortwave (passes through); outgoing terrestrial radiation is longwave infrared (absorbed)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s18_1",
+              "difficulty": "low",
+              "prompt": "Which atmospheric gas accounts for the largest proportion of human-induced enhanced greenhouse warming?",
+              "options": [
+                "Nitrogen (N2)",
+                "Carbon dioxide (CO2)",
+                "Oxygen (O2)",
+                "Argon (Ar)"
+              ],
+              "correctAnswer": "Carbon dioxide (CO2)",
+              "hint": "Emitted from burning fossil fuels like coal, petrol, and diesel.",
+              "workedSolution": "Carbon dioxide is the principal anthropogenic greenhouse gas driving enhanced global warming, emitted in massive volumes from fossil fuel combustion and deforestation.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s18_2",
+              "difficulty": "medium",
+              "prompt": "Agricultural activities contribute significantly to methane emissions into the atmosphere primarily through:",
+              "options": [
+                "Photosynthesis in orange trees",
+                "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
+                "Harvesting ripe cocoa pods",
+                "Spraying water on vegetable beds"
+              ],
+              "correctAnswer": "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
+              "hint": "Anaerobic microbes in cattle stomachs and flooded rice mud produce methane.",
+              "workedSolution": "Methanogenic bacteria inside the rumen of cattle and in waterlogged anaerobic rice paddies produce large amounts of methane gas (CH4), which is released into the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Climate Change Manifestations & Localized Impact in Ghana",
+        "summary": "Evaluate localized climate change impacts in Ghana (coastal erosion in Keta/Ada, northern drought); contrast adaptation vs. mitigation.",
+        "notes": "### Climate Change Impact in Ghana: Coastal Erosion, Drought & Adaptive Strategies\n* **NaCCA Curriculum Code:** `B8.5.4.1`\n* **Core Competency:** Evaluate localized manifestations of climate change across Ghanaian ecological zones and contrast adaptation and mitigation.\n\n#### 1. Manifestations of Climate Change in Ghana\n* **Coastal Zone (e.g., Keta, Fuveme, Ada Foah):**\n  * Thermal expansion of warming ocean water and melting polar ice caps causes **accelerated Sea Level Rise (SLR)**.\n  * Catastrophic coastal erosion and storm surges destroy coastal fishing communities, roads, and residential homes.\n  * Saltwater intrusion into freshwater coastal aquifers contaminates drinking water and destroys agricultural farmlands.\n* **Forest & Middle Ecological Belt:**\n  * Erratic, unpredictable rainfall onset and unseasonal dry spells disrupt traditional cocoa and food crop planting cycles.\n  * Increased incidence of forest wildfires during extended dry Harmattan seasons.\n* **Northern Savannah Ecological Belt:**\n  * Prolonged heatwaves, desertification, drying of water dams (e.g., in Upper East and Upper West Regions).\n  * Severe crop failure of rain-fed sorghum and millet, exacerbating rural food insecurity.\n\n#### 2. Climate Mitigation vs. Climate Adaptation\n* **Mitigation (Addressing Root Causes):** Actions taken to reduce or eliminate greenhouse gas emissions, or enhance carbon sinks:\n  * Transitioning to clean renewable energy (solar photovoltaic, wind, hydro).\n  * Afforestation and reforestation (e.g., Green Ghana Day tree planting) to sequester atmospheric carbon into biomass.\n  * Phasing out petrol/diesel vehicles in favor of electric mobility.\n* **Adaptation (Managing Consequences):** Adjusting agricultural, social, and infrastructural systems to cope with the unavoidable impacts of climate change:\n  * Constructing sea defense walls (e.g., Keta Sea Defense Project boulder revetments) to halt coastal shoreline erosion.\n  * Breeding and cultivating drought-tolerant, early-maturing crop varieties (drought-tolerant maize hybrids).\n  * Investing in drip irrigation and rain-water harvesting systems to reduce dependence on erratic rainfall.",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s18_1",
+            "title": "Worked Example: Contrasting Climate Change Adaptation vs. Mitigation",
+            "problem": "A district assembly in Ghana implements two projects: Project A constructs a massive boulder sea-defense wall along the coastline at Keta. Project B plants 50,000 native mahogany seedlings across degraded forest lands. Categorize each project as either Climate Mitigation or Climate Adaptation and justify.",
+            "steps": [
+              "Project A (Sea Defense Wall) Classification: Climate Adaptation. Rationale: The sea defense wall does nothing to reduce atmospheric greenhouse gas concentrations or stop global temperatures from rising. Instead, it is an engineering response that protects human settlements from the direct physical consequences of rising sea levels and coastal erosion.",
+              "Project B (Tree Planting) Classification: Climate Mitigation. Rationale: Growing trees actively absorb carbon dioxide from the atmosphere through photosynthesis and sequester it into woody biomass, directly reducing the concentration of the primary greenhouse gas driving global warming."
+            ],
+            "finalAnswer": "Examiner Tip: Remember: Mitigation tackles the CAUSE (reducing greenhouse gases); Adaptation manages the EFFECTS (living with the consequences)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s18_1",
+              "difficulty": "low",
+              "prompt": "The construction of massive boulder sea defense walls along coastal communities like Keta to block ocean surge waves is an example of:",
+              "options": [
+                "Climate mitigation",
+                "Climate adaptation",
+                "Weather forecasting",
+                "Fossil fuel extraction"
+              ],
+              "correctAnswer": "Climate adaptation",
+              "hint": "It helps communities survive the consequences of rising sea levels.",
+              "workedSolution": "Building sea defense walls is an adaptation strategy that protects coastal infrastructure from the unavoidable physical impacts of sea level rise without reducing greenhouse gas emissions.",
+              "points": 1,
+              "learningCompetency": "B8.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s18_2",
+              "difficulty": "medium",
+              "prompt": "Which localized impact of climate change poses the greatest threat to agricultural farmers in the northern savannah region of Ghana?",
+              "options": [
+                "Extreme snowfall",
+                "Severe erratic rainfall, prolonged seasonal droughts, and desertification",
+                "Volcanic ash eruptions",
+                "Tsunamis in Lake Volta"
+              ],
+              "correctAnswer": "Severe erratic rainfall, prolonged seasonal droughts, and desertification",
+              "hint": "Northern Ghana relies on rain-fed cereal farming.",
+              "workedSolution": "Northern Ghana faces rising temperatures, desertification, and highly unpredictable rainfall patterns that cause frequent crop failures and water shortages for rain-fed agriculture.",
+              "points": 1,
+              "learningCompetency": "B8.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • The Green Economy, Decarbonization & Renewable Energy",
+        "summary": "Model green economy transitions: solar photovoltaic and wind energy, carbon credit markets, and environmental regulatory policies.",
+        "notes": "### The Green Economy, Renewable Energy & Global Decarbonization\n* **NaCCA Curriculum Code:** `B9.5.4.1`\n* **Core Competency:** Model the transition to a Green Economy, evaluate solar/wind renewable technologies, and explore carbon trading.\n\n#### 1. Concept of the Green Economy\nAn economic model that fosters sustainable economic growth, creates high-quality employment, and significantly reduces environmental risks and ecological scarcities:\n* Promotes low-carbon industrialization, resource efficiency, and social inclusivity.\n* Contrasts with the **Brown Economy**, which relies on destructive fossil fuel extraction and unconstrained environmental pollution.\n\n#### 2. Renewable Energy Technologies\nClean energy derived from natural resources that replenish faster than they are consumed:\n* **Solar Photovoltaic (PV) Energy:** Silicon solar panels convert radiant sunlight directly into direct current (DC) electricity via the photoelectric effect without emitting greenhouse gases (e.g., Kaleo and Lawra solar power plants in Upper West Region).\n* **Hydroelectric Power:** Harnesses the gravitational potential energy of falling water to drive turbine generators (e.g., Akosombo Dam, Bui Dam). Clean baseload electricity, though building large dams can alter river ecology.\n* **Wind Turbine Energy:** Converts kinetic energy of wind into mechanical rotational energy to drive electrical generators.\n* **Biomass & Biogas Energy:** Anaerobic digestion of organic agricultural residues into methane biogas, substituting wood fuel and preventing deforestation.\n\n#### 3. Carbon Markets & Environmental Policy\n* **Carbon Footprint:** The total greenhouse gas emissions (expressed in metric tons of $CO_2$ equivalent) caused directly and indirectly by an individual, organization, or product.\n* **Carbon Credits & Offsetting:** A market-based instrument where one carbon credit represents the verified reduction or removal of one metric ton of $CO_2$ from the atmosphere. High-emission industries purchase carbon credits from forest conservation projects (REDD+) to offset emissions.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s18_1",
+            "title": "Worked Example: Environmental Economics of Solar Photovoltaic vs. Diesel Generation",
+            "problem": "A rural clinic in the Northern Region requires 5,000 kWh of electricity per year. Compare installing a Solar Photovoltaic (PV) system with running a Diesel generator in terms of operating emissions and long-term sustainability.",
+            "steps": [
+              "Step 1: Diesel Generator Assessment — A diesel generator combusts petroleum diesel fuel, emitting approximately 2.68 kg of CO2 per liter of fuel consumed, alongside sulfur dioxide (SO2), nitrogen oxides (NOx), and hazardous particulate soot. It incurs ongoing volatile fuel purchasing and maintenance costs.",
+              "Step 2: Solar PV System Assessment — A solar photovoltaic array harnesses renewable solar irradiance with zero operating greenhouse gas emissions during electrical generation (0 kg CO2/kWh). Once installed, solar fuel is completely free.",
+              "Step 3: Strategic Conclusion — Solar PV aligns with the Green Economy by eliminating greenhouse gas emissions, reducing operating costs, ensuring quiet continuous power for refrigeration of medical vaccines, and avoiding local air pollution."
+            ],
+            "finalAnswer": "Examiner Tip: Emphasize both environmental decarbonization (zero emissions) and operational economics (free ongoing fuel)."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s18_1",
+              "difficulty": "low",
+              "prompt": "Which of the following is classified as a clean, renewable energy resource that does NOT release carbon dioxide during electricity generation?",
+              "options": [
+                "Diesel fuel",
+                "Solar photovoltaic power",
+                "Bituminous coal",
+                "Heavy fuel oil"
+              ],
+              "correctAnswer": "Solar photovoltaic power",
+              "hint": "It harnesses sunlight directly using silicon solar cells.",
+              "workedSolution": "Solar photovoltaic power generates electricity directly from sunlight via the photoelectric effect with zero greenhouse gas or particulate emissions during operation.",
+              "points": 1,
+              "learningCompetency": "B9.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s18_2",
+              "difficulty": "medium",
+              "prompt": "The total amount of greenhouse gases emitted into the atmosphere by a person, school, or business activity is known as their:",
+              "options": [
+                "Ecological niche",
+                "Carbon footprint",
+                "Trophic level",
+                "Food web"
+              ],
+              "correctAnswer": "Carbon footprint",
+              "hint": "It is measured in metric tons of CO2 equivalent.",
+              "workedSolution": "A carbon footprint is the comprehensive measure of total greenhouse gas emissions (expressed in CO2 equivalent) caused directly and indirectly by an entity's energy consumption and lifestyle.",
+              "points": 1,
+              "learningCompetency": "B9.5.4.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  },
+  {
+    "id": "sci_strand5_soil_science",
+    "topicId": "sci_strand5_soil_science",
+    "title": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "strandCode": "S5",
+    "subStrand": "Understanding Our Environment (Pedology, Physical Landforms & Soil Conservation)",
+    "subject": "Integrated Science",
+    "tier": "Junior Secondary (JHS)",
+    "badge": "NaCCA Common Core Programme (CCP)",
+    "description": "Examine the terrestrial lithosphere, geological weathering, and pedology through interactive sedimentology labs. Measures soil profile horizons, calculates soil moisture retention and percolation velocities, and implements engineering interventions to halt gully and sheet erosion.",
+    "totalPracticeQuestions": 9,
+    "version": 1,
+    "aliases": [
+      "b7_strand5_soil_weathering"
+    ],
+    "levels": {
+      "b7": {
+        "levelTitle": "Basic 7 (JHS 1) • Rock Weathering, Soil Texture & Physical Soil Properties",
+        "summary": "Differentiate physical, chemical, and biological rock weathering; measure soil texture fractions, capillarity, and water retention.",
+        "notes": "### Pedology: Rock Weathering, Soil Texture & Physical Properties\n* **NaCCA Curriculum Code:** `B7.5.5.1`\n* **Core Competency:** Differentiate physical, chemical, and biological rock weathering, analyze soil fractions, and measure capillarity and water retention.\n\n#### 1. The Process of Soil Formation (Pedogenesis)\nSoil is the upper weathered layer of Earth's crust capable of sustaining plant life, formed by the progressive disintegration of parent bedrock:\n* **Physical (Mechanical) Weathering:** Breakdown of rocks into smaller fragments without altering chemical composition:\n  * *Thermal Exfoliation:* Alternate rapid heating (expansion by day) and cooling (contraction by night) in arid zones causes outer rock layers to crack and peel off.\n  * *Freeze-Thaw (Frost Wedging):* Water penetrates rock fissures, freezes, expands by $9\\%$, and wedges the rock apart.\n  * *Abrasion:* Wind-blown sand and tumbling river boulders grind rock faces.\n* **Chemical Weathering:** Decomposition altering the chemical mineral structure of rocks:\n  * *Carbonation:* Rainwater dissolves atmospheric $CO_2$ forming dilute carbonic acid ($\\text{H}_2\\text{CO}_3$), which dissolves limestone (calcium carbonate):\n    $$\\text{CaCO}_{3(s)} + \\text{H}_2\\text{CO}_{3(aq)} \\rightarrow \\text{Ca(HCO}_3)_{2(aq)}$$\n  * *Hydration & Hydrolysis:* Chemical absorption of water molecules into mineral crystal lattices.\n  * *Oxidation:* Reaction of atmospheric oxygen with iron minerals forming reddish, crumbly iron oxide (rust).\n* **Biological Weathering:** Living organisms disintegrating rocks:\n  * Tree roots growing into microscopic cracks and exerting outward wedge pressure.\n  * Lichens and mosses secreting organic chelating acids that etch rock surfaces.\n  * Burrowing animals (earthworms, termites, rodents) pulverizing and aerating rock debris.\n\n#### 2. Soil Texture & Physical Particle Fractions\n* **Sand Particles ($0.05 - 2.0\\text{ mm}$):** Coarse, gritty feel, large macropores. Excellent aeration, rapid percolation drainage, poor water and nutrient retention.\n* **Silt Particles ($0.002 - 0.05\\text{ mm}$):** Silky, smooth, flour-like texture when dry; moderate drainage.\n* **Clay Particles ($<0.002\\text{ mm}$):** Microscopic colloidal plates, sticky and plastic when wet, hard when dry. Tiny micropores, very slow percolation drainage, massive water retention capacity, high cation exchange capacity (CEC).\n* **Loam Soil:** The ideal agricultural mixture (roughly $40\\%$ sand, $40\\%$ silt, $20\\%$ clay, rich in organic humus), offering optimal balance between drainage, aeration, and moisture/nutrient retention.",
+        "workedExamples": [
+          {
+            "id": "ex_b7_s19_1",
+            "title": "Worked Example: Investigating Soil Water Retention Capacity",
+            "problem": "A student places 100 grams of dry sandy soil and 100 grams of dry clay soil into two identical filter funnels plugged with cotton wool. Exactly 100 cm³ of water is poured into each funnel. After 30 minutes, 85 cm³ of water has filtered through the sand, while only 25 cm³ has filtered through the clay. Calculate the volume of water retained by each soil type and explain the difference.",
+            "steps": [
+              "Step 1: Calculate water retained by Sand: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 85 cm³ = 15 cm³.",
+              "Step 2: Calculate water retained by Clay: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 25 cm³ = 75 cm³.",
+              "Step 3: Scientific explanation of the difference: Sandy soil consists of large particles with large non-capillary macropores that allow water to drain rapidly under gravity with minimal retention. Clay soil consists of microscopic colloidal particles packed tightly with immense total surface area and tiny micropores, generating powerful capillary forces that hold large volumes of water."
+            ],
+            "finalAnswer": "Examiner Tip: State the calculation clearly: Volume retained = Initial water added - Volume collected in measuring cylinder."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b7_s19_1",
+              "difficulty": "low",
+              "prompt": "The disintegration of rocks into smaller pieces without any change in their chemical composition is called:",
+              "options": [
+                "Chemical weathering",
+                "Physical (mechanical) weathering",
+                "Biological oxidation",
+                "Erosion"
+              ],
+              "correctAnswer": "Physical (mechanical) weathering",
+              "hint": "Temperature changes and frost wedging are typical examples.",
+              "workedSolution": "Physical (mechanical) weathering fractures rocks into smaller fragments through mechanical forces (temperature expansion, frost wedging, abrasion) without altering chemical mineral identity.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b7_s19_2",
+              "difficulty": "medium",
+              "prompt": "Which soil type possesses the highest water-holding capacity and highest capillarity, but drains the slowest?",
+              "options": [
+                "Coarse sandy soil",
+                "Gravel",
+                "Clay soil",
+                "Pure silt"
+              ],
+              "correctAnswer": "Clay soil",
+              "hint": "Its microscopic particles create tiny capillary micropores.",
+              "workedSolution": "Clay particles are sub-microscopic with vast total surface area and tiny micropores, exerting high surface tension forces that retain large volumes of water and produce high capillary rise.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b8": {
+        "levelTitle": "Basic 8 (JHS 2) • Soil Profile Horizons & Ghanaian Landform Geology",
+        "summary": "Analyze master soil profile horizons (O, A, B, C, R); map common terrestrial landforms in Ghana (plains, plateaus, inselbergs).",
+        "notes": "### The Soil Profile: Master Horizons & Ghanaian Physical Landforms\n* **NaCCA Curriculum Code:** `B8.5.5.1`\n* **Core Competency:** Diagram and describe master soil horizons in a soil profile and identify geological formation processes of Ghanaian landforms.\n\n#### 1. The Soil Profile (Vertical Section of Soil)\nA vertical cross-section through the soil from the surface down to the underlying parent bedrock:\n* **O-Horizon (Organic Layer):** Surface layer composed of fresh and decomposing leaf litter, twigs, and organic debris.\n* **A-Horizon (Topsoil / Zone of Eluviation):** Dark, rich crumbly layer packed with decomposing organic **humus** and beneficial soil microbes (earthworms, bacteria). The primary biological root zone for arable crops. Minerals are leached downward by percolating water (eluviation).\n* **B-Horizon (Subsoil / Zone of Illuviation):** Denser, lighter-colored layer where leached clay particles, iron oxides, and minerals accumulate (illuviation). Contains few plant roots; poor aeration.\n* **C-Horizon (Parent Material / Regolith):** Partially weathered, fractured bedrock fragments undergoing initial weathering. Devoid of organic matter.\n* **R-Horizon (Bedrock):** Solid, unweathered continuous parent rock stratum (granite, basalt, sandstone, limestone).\n\n#### 2. Major Terrestrial Landforms in Ghana\n* **Coastal Plains:** Low-lying flat or undulating coastal plains (e.g., Accra Plains, Keta Lagoon basin).\n* **Plateaus & Escarpments:** Elevated flat-topped tablelands with steep cliff margins:\n  * *Kwahu Plateau & Mampong Scarp:* Steep sandstone escarpment creating significant orographic rainfall and microclimates.\n  * *Gambaga Escarpment:* High northern sandstone cliff bordering the White Volta basin.\n* **Inselbergs (Island Mountains):** Isolated steep-sided granite or gneiss hills rising abruptly from a flat surrounding plain, formed by differential erosion of surrounding weaker rocks (e.g., Shai Hills, Krobo Mountain).\n* **River Basins & Valleys:** Low-lying drainage catchment areas carved out by river erosion (e.g., Volta River Basin).",
+        "workedExamples": [
+          {
+            "id": "ex_b8_s19_1",
+            "title": "Worked Example: Structural Differences Between Topsoil (A-Horizon) and Subsoil (B-Horizon)",
+            "problem": "State two major physical and biological differences between the topsoil (A-horizon) and the subsoil (B-horizon) of a mature soil profile, and explain why farmers must avoid plowing so deeply that subsoil is brought to the surface.",
+            "steps": [
+              "Difference 1: Organic matter and color — The A-horizon (topsoil) is dark brown or black because it contains high concentrations of decomposing organic humus; the B-horizon (subsoil) is lighter in color (reddish or yellowish from iron oxides) and contains minimal organic matter.",
+              "Difference 2: Porosity and biological activity — The topsoil has loose, friable crumb structure with abundant earthworms, beneficial microbes, and macropores; the subsoil is compacted, dense, clay-rich, and poorly aerated.",
+              "Agronomic Hazard of Deep Plowing: Plowing too deeply inverts the profile, burying the fertile humus-rich topsoil and bringing dead, dense, infertile, poorly aerated subsoil to the surface, severely depressing seed germination and crop yields."
+            ],
+            "finalAnswer": "Examiner Tip: Always state that the topsoil is rich in humus and soil organisms, while the subsoil is a dense zone of mineral accumulation."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b8_s19_1",
+              "difficulty": "low",
+              "prompt": "In a mature soil profile, the uppermost layer of mineral soil rich in dark organic humus is the:",
+              "options": [
+                "A-horizon (Topsoil)",
+                "B-horizon (Subsoil)",
+                "C-horizon (Parent material)",
+                "R-horizon (Bedrock)"
+              ],
+              "correctAnswer": "A-horizon (Topsoil)",
+              "hint": "It is the primary growing medium for crop roots.",
+              "workedSolution": "The A-horizon (topsoil) is the uppermost mineral horizon enriched with dark organic humus, supporting active plant root systems and microbial life.",
+              "points": 1,
+              "learningCompetency": "B8.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b8_s19_2",
+              "difficulty": "medium",
+              "prompt": "An isolated, steep-sided granite hill rising abruptly from an otherwise flat plain (such as Shai Hills) is called an:",
+              "options": [
+                "Plateau",
+                "Inselberg",
+                "Estuary",
+                "Sandspit"
+              ],
+              "correctAnswer": "Inselberg",
+              "hint": "A German word meaning 'island mountain'.",
+              "workedSolution": "An inselberg is an isolated, steep-sided residual hill composed of erosion-resistant rock (like granite or gneiss) standing above an eroded, flat surrounding plain.",
+              "points": 1,
+              "learningCompetency": "B8.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      },
+      "b9": {
+        "levelTitle": "Basic 9 (JHS 3) • Soil Degradation, Erosion Dynamics & Soil Conservation",
+        "summary": "Diagnose erosion types (sheet, rill, gully); implement conservation engineering (contour plowing, vetiver grass strips, terracing).",
+        "notes": "### Soil Degradation: Erosion Dynamics & Soil Conservation Engineering\n* **NaCCA Curriculum Code:** `B9.5.5.1`\n* **Core Competency:** Classify types of soil erosion, analyze causes of soil degradation, and implement agricultural conservation methods.\n\n#### 1. Soil Erosion: Mechanisms & Types\nSoil erosion is the detachment, transport, and deposition of topsoil particles by wind or moving water:\n* **Water Erosion Progression:**\n  1. **Splash Erosion:** Kinetic impact of falling raindrops shatters soil aggregates, detaching particles and sealing surface pores.\n  2. **Sheet Erosion:** Overland runoff removes a uniform, thin layer of topsoil across an entire field; insidious because it occurs gradually without obvious channels.\n  3. **Rill Erosion:** Runoff concentrates into tiny, visible shallow channels (rills) that can still be smoothed over with normal plowing.\n  4. **Gully Erosion:** Uncontrolled runoff carves deep, wide chasms and canyons (gullies) that completely impassable for farm machinery and permanently destroy agricultural land.\n* **Wind Erosion:** Strong winds detach and carry away dry, bare, pulverized soil particles in arid areas.\n\n#### 2. Human Causes of Accelerated Soil Degradation\n* **Deforestation & Bush Burning:** Destroys vegetative cover and surface leaf litter, exposing bare topsoil to raindrop impact and wind.\n* **Overgrazing:** Excessive livestock stocking densities strip grass cover and compact soil with hooves, reducing infiltration.\n* **Plowing Up-and-Down Slopes:** Creates ready-made runoff channels that rapidly develop into destructive gullies.\n\n#### 3. Soil Conservation Engineering\n* **Contour Plowing & Ridging:** Plowing and constructing ridges across the slope along natural contour lines, creating small dams that slow surface runoff and encourage infiltration.\n* **Terracing:** Converting steep hillsides into a series of stepped, flat benches bordered by retaining dykes to eliminate steep slope runoff velocities.\n* **Strip Cropping & Vetiver Grass Barriers:** Alternating strips of erosion-susceptible row crops (maize) with dense, deep-rooted grass strips (Vetiver grass) that trap detached silt.\n* **Cover Cropping:** Planting dense sprawling legumes (e.g., *Mucuna*, cowpea) that shield the soil surface from direct raindrop impact.\n* **Windbreaks & Shelterbelts:** Planting rows of tall trees perpendicular to the prevailing wind direction to reduce surface wind velocities.",
+        "workedExamples": [
+          {
+            "id": "ex_b9_s19_1",
+            "title": "Worked Example: Designing Soil Conservation on a Sloping Farm",
+            "problem": "A farmer in a hilly area of the Volta Region plows up and down the slope. During heavy monsoonal rains, severe gullies have formed, washing away fertile topsoil into the valley. Advise the farmer on three practical soil conservation interventions to halt this erosion immediately.",
+            "steps": [
+              "Intervention 1: Transition to Contour Plowing — The farmer must stop plowing vertically up and down the hill. Plowing and ridging horizontally across the slope along natural contour lines creates ridges that act as physical dams, slowing surface runoff and promoting deep water infiltration.",
+              "Intervention 2: Planting Vetiver Grass Buffer Strips — Plant dense, permanent vegetative contour hedgerows of deep-rooted Vetiver grass (*Chrysopogon zizanioides*) across the slope. The dense network of stiff grass stems filters out detached silt particles while its 3-meter deep fibrous root system binds the soil firmly.",
+              "Intervention 3: Gully Plugging and Afforestation — Stabilize the active gullies by constructing check dams using loose boulders, sandbags, and bamboo stakes to slow runoff water velocity, and plant fast-growing leguminous trees along the gullies to stabilize slopes."
+            ],
+            "finalAnswer": "Examiner Tip: Highlight that plowing across the slope (contour plowing) reduces the velocity of runoff water, preventing gully formation."
+          }
+        ],
+        "practicePool": {
+          "low": [
+            {
+              "id": "q_b9_s19_1",
+              "difficulty": "low",
+              "prompt": "The uniform removal of a thin layer of topsoil across an entire bare field by sheet flow of rainwater is termed:",
+              "options": [
+                "Splash erosion",
+                "Sheet erosion",
+                "Gully erosion",
+                "Wind abrasion"
+              ],
+              "correctAnswer": "Sheet erosion",
+              "hint": "It removes a wide, flat 'sheet' of topsoil without forming deep trenches.",
+              "workedSolution": "Sheet erosion is the gradual, uniform removal of a thin layer of topsoil by overland sheet runoff, often going unnoticed until fertile topsoil is completely lost.",
+              "points": 1,
+              "learningCompetency": "B9.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "medium": [
+            {
+              "id": "q_b9_s19_2",
+              "difficulty": "medium",
+              "prompt": "Why is plowing across a sloping hillside along contour lines effective in preventing soil erosion?",
+              "options": [
+                "It makes the field look more colorful from an airplane",
+                "The horizontal ridges act as physical barriers that slow down surface runoff and encourage water infiltration into the soil",
+                "It prevents weeds from growing at night",
+                "It changes the direction of gravity"
+              ],
+              "correctAnswer": "The horizontal ridges act as physical barriers that slow down surface runoff and encourage water infiltration into the soil",
+              "hint": "Contour ridges act as miniature dams across the flow of water.",
+              "workedSolution": "Contour plowing creates horizontal ridges across the slope that break the velocity of running water, allowing it to pool and soak into the soil rather than carving out erosion channels.",
+              "points": 1,
+              "learningCompetency": "B9.5.5.1",
+              "type": "objective"
+            }
+          ],
+          "hard": []
+        }
+      }
+    },
+    "updatedAt": "2026-10-01T16:38:35.027Z"
+  }
+];
+
 export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
   {
-    "id": "b7_strand1_materials",
+    "id": "b7_sci_strand1_materials",
     "gradeLevel": "BS7",
     "strandNumber": 1,
-    "strandTitle": "Strand 1: Diversity of Matter",
-    "subStrandTitle": "Materials (Particulate Nature & Separation Techniques)",
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
     "order": 1,
     "notes": {
-      "summaryMarkdown": "### Particulate Nature of Matter & Separation of Mixtures\nMatter is anything that has mass and volume. The particulate theory states that all matter consists of minute particles (atoms, molecules, or ions) in continuous motion.\n\n#### States of Matter:\n1. **Solids**: Particles tightly packed in regular lattice; strong cohesive intermolecular forces; vibrate about fixed equilibrium points.\n2. **Liquids**: Particles loosely packed with kinetic freedom to slide past one another; fixed volume conforming to container geometry.\n3. **Gases**: Particles widely separated; negligible intermolecular attraction; high kinetic velocities occupying all available volume.\n\n#### Separation Techniques:\n* **Filtration**: Separates insoluble solid particles from a liquid mixture based on particle diameter using porous filter paper.\n* **Separating Funnel**: Separates two immiscible liquids (e.g. kerosene and water) exploiting density divergence.\n* **Simple Distillation**: Recovers pure solvent from soluble solid-liquid solutions by boiling and condensing in a Liebig condenser.\n* **Fractional Distillation**: Separates miscible liquids with close boiling points (e.g. crude oil refining, ethanol-water mixture).\n* **Evaporation to Dryness / Crystallization**: Recovers dissolved non-volatile solute from solution.",
-      "keyTerms": [
-        {
-          "term": "Immiscible Liquids",
-          "definition": "Liquids that do not mix to form a homogeneous solution (e.g. oil and water), forming separate distinct phases."
-        },
-        {
-          "term": "Filtrate",
-          "definition": "The clear liquid that passes through the filter medium during filtration."
-        },
-        {
-          "term": "Residue",
-          "definition": "Insoluble solid particles trapped on the filter paper after filtration."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 240 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"120\" cy=\"100\" r=\"18\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"2\"/><text x=\"120\" y=\"104\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text><circle cx=\"120\" cy=\"100\" r=\"42\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"100\" r=\"70\" fill=\"none\" stroke=\"#8b5cf6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"58\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"142\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"30\" r=\"4\" fill=\"#8b5cf6\"/><circle cx=\"120\" cy=\"170\" r=\"4\" fill=\"#8b5cf6\"/><text x=\"120\" y=\"192\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"middle\">Bohr Atomic Model</text></svg>"
+      "summaryMarkdown": "### Particulate Nature of Matter & Physical Separation Techniques\n* **NaCCA Curriculum Code:** `B7.1.1.1`\n* **Core Competency:** Demonstrate an understanding of the particulate nature of matter and distinguish among solids, liquids, and gases.\n\n#### 1. The Particulate Theory of Matter\nMatter is defined as anything that possesses mass and occupies space (volume). The particulate theory states:\n1. All matter consists of extremely minute particles (atoms, molecules, or ions).\n2. The particles are in continuous, random thermal motion (Brownian motion).\n3. Attractive intermolecular/interatomic forces exist between particles.\n4. Kinetic energy of the particles increases directly with temperature.\n\n#### 2. Fundamental States of Matter\n* **Solids:** Particles are tightly packed in regular crystal lattices, vibrating about fixed equilibrium points. High cohesive forces; fixed shape and fixed volume. Incompressible.\n* **Liquids:** Particles are closely packed but possess sufficient kinetic energy to slide past one another. Moderate intermolecular forces; definite volume conforming to container shape.\n* **Gases:** Particles are widely separated by large intermolecular distances with negligible attractive forces. Rapid, random linear motion; variable volume and shape. Highly compressible.\n\n#### 3. Separation Techniques for Heterogeneous Mixtures\n* **Filtration:** Separates an insoluble solid from a liquid suspension based on particle diameter using porous filter medium (e.g., separating sand from water).\n* **Decantation:** Pours off a supernatant liquid from a settled, dense solid precipitate.\n* **Simple Distillation:** Recovers pure solvent from a soluble solid-liquid solution via boiling and condensation in a Liebig condenser (e.g., pure water from saltwater).\n* **Fractional Distillation:** Separates miscible liquids with close boiling points (e.g., ethanol $\\approx 78^\\circ\\text{C}$ and water $100^\\circ\\text{C}$).\n* **Separating Funnel:** Separates immiscible liquids exploiting density divergence (e.g., kerosene and water).\n* **Paper Chromatography:** Separates soluble pigments or dyes based on differential solubility in mobile phase vs. stationary cellulose fibers.\n\n#### Key Terminology\n* **Brownian Motion:** The irregular, zig-zag motion of microscopic particles suspended in a fluid caused by collisions with fluid molecules.\n* **Filtrate:** The clear fluid that passes through the filter medium.\n* **Residue:** The insoluble solid retained on the filter paper.\n* **Immiscible Liquids:** Liquids that do not dissolve in each other and form distinct separate phases.",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b7_s1_01",
-        "questionPrompt": "Explain how a mixture containing table salt, fine sand, and iron filings can be separated into its pure components.",
-        "stepByStepSolution": "1. Wrap a bar magnet in cling film and sweep it through the dry mixture to attract and extract magnetic iron filings.\n2. Add distilled water to the remaining sand and salt mixture and stir thoroughly so that sodium chloride dissolves while sand remains insoluble.\n3. Pour the slurry through a filter funnel lined with filter paper: sand is collected as insoluble residue.\n4. Wash the sand residue with distilled water and dry it on watch glass.\n5. Heat the salt filtrate in an evaporating dish until water evaporates, leaving behind pure white salt crystals.",
-        "examinerTip": "Always separate magnetic materials first before introducing any solvent to avoid rusting."
+        "id": "ex_b7_s1_1",
+        "questionPrompt": "A student is provided with a dry mixture containing fine sand, common salt (NaCl), and iron filings. Outline a step-by-step procedure to recover all three components pure and dry.",
+        "stepByStepSolution": "Step 1: Magnetic Extraction — Pass a powerful bar magnet wrapped in thin paper repeatedly over the mixture. The ferromagnetic iron filings are attracted to the magnet, leaving behind sand and salt.\nStep 2: Dissolution — Transfer the remaining sand and salt mixture into a beaker containing distilled water. Stir vigorously with a glass rod. Sodium chloride dissolves completely to form an aqueous solution, while silica sand remains insoluble.\nStep 3: Filtration — Pour the slurry through a filter funnel lined with Whatman filter paper into a conical flask. The insoluble sand collects as the residue on the filter paper, while saltwater collects as the clear filtrate.\nStep 4: Washing & Drying Sand — Rinse the sand residue with distilled water, then dry in an oven or under direct sunlight.\nStep 5: Evaporation / Crystallization — Heat the saltwater filtrate in an evaporating dish until water evaporates, leaving behind pure white sodium chloride crystals.",
+        "examinerTip": "Examiner Tip: Always state the magnetic separation first before adding water; adding water first would wet the iron filings, causing rapid oxidation (rusting) and making magnetic separation ineffective."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b7_s1_q1",
+        "id": "q_b7_s1_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which state of matter has neither a definite shape nor a definite volume?",
-        "options": [
-          "Gas",
-          "Liquid",
-          "Solid",
-          "Crystal"
-        ],
-        "correctAnswer": "Gas",
-        "hint": "Gas particles move randomly with negligible intermolecular bonds.",
-        "workedSolution": "Gases expand spontaneously to occupy the entire volume and shape of their enclosure.",
-        "points": 1
-      },
-      {
-        "id": "b7_s1_q2",
-        "difficulty": "medium",
-        "type": "objective",
-        "prompt": "Which separation technique is most appropriate for obtaining pure drinking water from muddy seawater?",
+        "prompt": "Which of the following separation methods is most suitable for separating two immiscible liquids such as vegetable oil and water?",
         "options": [
           "Simple distillation",
-          "Filtration only",
-          "Magnetic separation",
-          "Sublimation"
+          "Separating funnel",
+          "Centrifugation",
+          "Fractional distillation"
         ],
-        "correctAnswer": "Simple distillation",
-        "hint": "Distillation boils the water into steam and condenses pure potable water, leaving behind salt and mud.",
-        "workedSolution": "Distillation vaporizes water away from non-volatile salts and suspended silt, condensing it into pure distillate.",
+        "correctAnswer": "Separating funnel",
+        "hint": "Consider that oil and water have different densities and do not mix.",
+        "workedSolution": "A separating funnel is specifically designed to separate immiscible liquids of differing densities. The denser water settles at the bottom and is drained via the stopcock, leaving the lighter oil layer above.",
         "points": 1
       },
       {
-        "id": "b7_s1_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "A student states that dissolving sugar in water is a chemical change. Criticize this statement with two scientific reasons.",
-        "correctAnswer": "Dissolving sugar is a physical change because: (1) No new chemical substance is formed; (2) The process is reversible by evaporating the water to recover original sugar crystals.",
-        "hint": "Consider reversibility and whether covalent bonds in sucrose were permanently broken.",
-        "workedSolution": "Dissolving sugar is a physical change: sugar molecules simply disperse among water molecules without forming new chemical bonds, and sugar can be quantitatively recovered by gentle crystallization.",
-        "points": 3
-      }
-    ]
-  },
-  {
-    "id": "b7_strand1_cells",
-    "gradeLevel": "BS7",
-    "strandNumber": 1,
-    "strandTitle": "Strand 1: Diversity of Matter",
-    "subStrandTitle": "Living Cells (Plant & Animal Cell Ultrastructure)",
-    "order": 2,
-    "notes": {
-      "summaryMarkdown": "### The Cell as the Fundamental Unit of Life\nThe cell is the basic structural, functional, and biological unit of all living organisms.\n\n#### Key Organelles & Functions:\n* **Nucleus**: Houses deoxyribonucleic acid (DNA); controls all cellular activities and directs protein synthesis.\n* **Cell Membrane**: Selectively permeable lipid bilayer regulating ionic and molecular transit into and out of the cytoplasm.\n* **Cell Wall**: Rigid non-living cellulose exoskeleton giving plant cells structural turgidity and osmotic lysis protection.\n* **Mitochondrion**: The powerhouse of the cell; site of aerobic cellular respiration generating adenosine triphosphate ($ATP$).\n* **Chloroplast**: Double-membraned organelle packed with chlorophyll pigments; site of photosynthetic glucose manufacture.\n* **Vacuole**: Large fluid-filled central sac in plants storing cell sap, mineral salts, and maintaining hydrostatic turgor pressure.",
-      "keyTerms": [
-        {
-          "term": "Prokaryote",
-          "definition": "A microscopic single-celled organism (e.g. bacterium) that lacks a true membrane-bound nucleus or membrane-bound organelles."
-        },
-        {
-          "term": "Eukaryote",
-          "definition": "An organism consisting of cells in which the genetic material is contained within a distinct membrane-bound nucleus."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 340 220\" width=\"100%\" height=\"180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><polygon points=\"50,30 290,30 310,180 70,190\" fill=\"#dcfce7\" stroke=\"#166534\" stroke-width=\"3.5\"/><polygon points=\"56,36 284,36 304,174 76,184\" fill=\"#f0fdf4\" stroke=\"#15803d\" stroke-width=\"1.5\"/><path d=\"M 120,60 Q 220,50 250,110 Q 230,160 140,150 Q 100,120 120,60 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"175\" y=\"110\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Vacuole</text><circle cx=\"95\" cy=\"90\" r=\"22\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"2\"/><circle cx=\"95\" cy=\"90\" r=\"8\" fill=\"#ca8a04\"/><text x=\"95\" y=\"125\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Nucleus</text><ellipse cx=\"260\" cy=\"60\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><text x=\"260\" y=\"85\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Chloroplast</text><ellipse cx=\"100\" cy=\"160\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><ellipse cx=\"220\" cy=\"165\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><text x=\"170\" y=\"210\" font-size=\"10\" font-weight=\"bold\" fill=\"#64748b\" text-anchor=\"middle\">PLANT CELL ULTRASTRUCTURE</text></svg>"
-    },
-    "sampleWorkedProblems": [
-      {
-        "id": "wp_b7_s2_01",
-        "questionPrompt": "Why does a red blood cell burst when placed in pure distilled water, whereas an epidermal plant cell swells without bursting?",
-        "stepByStepSolution": "1. Distilled water is hypotonic relative to the cell cytoplasm.\n2. Water moves into both cells down a water potential gradient via endosmosis.\n3. The animal red blood cell possesses only a fragile flexible plasma membrane that cannot withstand excessive hydrostatic pressure, resulting in osmotic lysis (bursting).\n4. The plant cell possesses a tough, rigid cellulose cell wall that exerts wall pressure (turgor pressure) counteracting internal hydrostatic pressure, preventing bursting.",
-        "examinerTip": "Clearly contrast the absence of cell wall in animal cells with its presence in plant cells."
-      }
-    ],
-    "drillQuestions": [
-      {
-        "id": "b7_s2_q1",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "Which organelle is responsible for generating chemical energy ($ATP$) through aerobic respiration?",
-        "options": [
-          "Mitochondrion",
-          "Ribosome",
-          "Golgi apparatus",
-          "Endoplasmic reticulum"
-        ],
-        "correctAnswer": "Mitochondrion",
-        "hint": "Referred to as the 'powerhouse' of the cell.",
-        "workedSolution": "Mitochondria oxidize pyruvate into carbon dioxide and water, phosphorylating ADP into energy-rich ATP.",
-        "points": 1
-      },
-      {
-        "id": "b7_s2_q2",
+        "id": "q_b7_s1_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which of the following cellular features is unique to plant cells compared to human epithelial cells?",
+        "prompt": "The continuous zig-zag motion of pollen grains or smoke particles suspended in air or water is direct evidence of:",
         "options": [
-          "Chloroplasts and cellulose cell wall",
-          "Mitochondria and nucleus",
-          "Endoplasmic reticulum and ribosomes",
-          "Cell membrane and cytoplasm"
+          "Electrostatic repulsion between particles",
+          "Gravitational convection currents",
+          "Continuous random collisions by invisible fluid molecules",
+          "Capillary action within the fluid medium"
         ],
-        "correctAnswer": "Chloroplasts and cellulose cell wall",
-        "hint": "Structures providing green pigment and rigid cell shape.",
-        "workedSolution": "Plant cells uniquely possess cellulose cell walls, chloroplasts, and large permanent vacuoles.",
+        "correctAnswer": "Continuous random collisions by invisible fluid molecules",
+        "hint": "Recall Robert Brown's observations of particulate kinetic theory.",
+        "workedSolution": "Brownian motion demonstrates the particulate nature of matter: suspended microscopic particles move erratically because they are bombarded from all directions by rapidly moving fluid molecules.",
         "points": 1
-      },
-      {
-        "id": "b7_s2_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "State two distinct advantages of specialized multicellular differentiation over unicellular amoebic life.",
-        "correctAnswer": "(1) Division of labor allows specialized cells to perform specific tasks with high efficiency (e.g. red blood cells for oxygen transport, neurons for impulses); (2) Damage to individual cells does not cause immediate death of the entire organism.",
-        "hint": "Think about efficiency and resilience in multicellular organisms.",
-        "workedSolution": "Multicellular differentiation allows specialization and high metabolic efficiency through division of labor, as well as greater organismal size and survival capability.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b8_strand1_atoms_bonding",
+    "id": "b8_sci_strand1_materials",
     "gradeLevel": "BS8",
     "strandNumber": 1,
-    "strandTitle": "Strand 1: Diversity of Matter",
-    "subStrandTitle": "Atomic Structure, Periodic Table & Chemical Bonds",
-    "order": 3,
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "order": 2,
     "notes": {
-      "summaryMarkdown": "### Atomic Architecture & Chemical Bonding\nAtoms are the indivisible building blocks of chemical elements composed of subatomic particles:\n* **Protons**: Positively charged ($+1$), mass $= 1\\text{ amu}$, located in nucleus.\n* **Neutrons**: Electrically neutral ($0$), mass $= 1\\text{ amu}$, located in nucleus.\n* **Electrons**: Negatively charged ($-1$), negligible mass, orbiting in shells ($K=2, L=8, M=8, N=2$).\n\n#### Chemical Bonding:\n1. **Ionic (Electrovalent) Bonding**: Electrostatic attraction formed when metals transfer valence electrons to non-metals (e.g. $Na \\rightarrow Na^+ + e^-$, $Cl + e^- \\rightarrow Cl^- \\implies NaCl$).\n2. **Covalent Bonding**: Formed when non-metal atoms share electron pairs to attain stable noble gas octets (e.g. $H_2O, CO_2, CH_4$).",
-      "keyTerms": [
-        {
-          "term": "Atomic Number (Z)",
-          "definition": "The total number of protons present in the nucleus of an atom."
-        },
-        {
-          "term": "Mass Number (A)",
-          "definition": "The total number of protons plus neutrons present in the nucleus."
-        },
-        {
-          "term": "Valency",
-          "definition": "The combining capacity of an atom, equal to the number of electrons lost, gained, or shared to achieve an octet."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 240 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"120\" cy=\"100\" r=\"18\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"2\"/><text x=\"120\" y=\"104\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text><circle cx=\"120\" cy=\"100\" r=\"42\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"100\" r=\"70\" fill=\"none\" stroke=\"#8b5cf6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"58\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"142\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"30\" r=\"4\" fill=\"#8b5cf6\"/><circle cx=\"120\" cy=\"170\" r=\"4\" fill=\"#8b5cf6\"/><text x=\"120\" y=\"192\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"middle\">Bohr Atomic Model</text></svg>"
+      "summaryMarkdown": "### Atomic Architecture, Periodic Trends & Chemical Bonding\n* **NaCCA Curriculum Code:** `B8.1.1.1`\n* **Core Competency:** Model atomic structure, write electron configurations for elements 1 to 20, and explain ionic and covalent bonding.\n\n#### 1. Subatomic Architecture of the Atom\nAn atom is the smallest electrically neutral unit of an element that retains chemical identity.\n* **Protons ($p^+$):** Positive charge (+1), mass $\\approx 1\\text{ amu}$, located in the dense central nucleus.\n* **Neutrons ($n^0$):** Neutral charge (0), mass $\\approx 1\\text{ amu}$, located in the central nucleus.\n* **Electrons ($e^-$):** Negative charge (-1), mass $\\approx \\frac{1}{1840}\\text{ amu}$, orbiting in discrete quantum electron energy shells ($K, L, M, N$).\n\n#### 2. Atomic Number & Mass Number\n* **Atomic Number ($Z$):** Number of protons in the nucleus of an atom. Defines element identity ($Z=p=e$ in neutral atoms).\n* **Mass Number ($A$):** Total number of nucleons: $A = \\text{protons} + \\text{neutrons}$.\n* **Electron Shell Capacity:** Maximum electrons per principal shell is $2n^2$:\n  * $K$-shell ($n=1$): max 2 electrons\n  * $L$-shell ($n=2$): max 8 electrons\n  * $M$-shell ($n=3$): max 8 electrons (for first 20 elements: duplet/octet stability)\n\n#### 3. Chemical Bonding Mechanisms\nAtoms bond to achieve stable noble gas electron configurations (duplet rule for He; octet rule for Ne, Ar):\n* **Ionic (Electrovalent) Bonding:** Involves the complete transfer of one or more valence electrons from an electropositive metal to an electronegative non-metal. Forms oppositely charged ions ($M^{n+}$ and $X^{m-}$) held by strong electrostatic forces (e.g., $\\text{NaCl}, \\text{CaO}, \\text{MgCl}_2$).\n* **Covalent Bonding:** Involves the mutual sharing of valence electron pairs between non-metallic atoms (e.g., $\\text{H}_2, \\text{O}_2, \\text{H}_2\\text{O}, \\text{CH}_4$).\n\n#### Key Terminology\n* **Valency:** The combining capacity of an atom, determined by the number of electrons lost, gained, or shared.\n* **Isotopes:** Atoms of the same chemical element possessing identical atomic numbers ($Z$) but differing mass numbers ($A$) due to different neutron counts.\n* **Cation:** A positively charged ion formed when a metal atom loses electrons ($e^-$).\n* **Anion:** A negatively charged ion formed when a non-metal atom gains electrons ($e^-$).",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b8_s1_01",
-        "questionPrompt": "Deduce the chemical formula of aluminum oxide given aluminum ($Z=13$) and oxygen ($Z=8$).",
-        "stepByStepSolution": "1. Aluminum configuration: 2, 8, 3. It loses 3 electrons to attain an octet: Valency = 3 ($Al^{3+}$).\n2. Oxygen configuration: 2, 6. It gains 2 electrons to attain an octet: Valency = 2 ($O^{2-}$).\n3. Swap and balance valencies: $Al_2O_3$.\n4. Formula is $Al_2O_3$.",
-        "examinerTip": "Always balance net charges: $2 \\times (+3) + 3 \\times (-2) = 0$."
+        "id": "ex_b8_s1_1",
+        "questionPrompt": "Magnesium has atomic number $Z=12$ and Chlorine has $Z=17$. Write their electron configurations, draw their Lewis structures, and show the formation of magnesium chloride.",
+        "stepByStepSolution": "Step 1: Write electron configurations: Magnesium (Mg, $Z=12$): 2, 8, 2. Chlorine (Cl, $Z=17$): 2, 8, 7.\nStep 2: Determine ion formation: Magnesium needs to lose 2 valence electrons to achieve stable octet [2, 8]: $\\text{Mg} \\rightarrow \\text{Mg}^{2+} + 2e^-$. Chlorine needs to gain 1 electron to achieve stable octet [2, 8, 8]: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.\nStep 3: Balance stoichiometry: One magnesium atom transfers 1 electron to each of two separate chlorine atoms: $\\text{Mg}^{2+} + 2\\text{Cl}^- \\rightarrow \\text{MgCl}_2$.\nStep 4: Characterize bond: The strong electrostatic attraction between $\\text{Mg}^{2+}$ and two $\\text{Cl}^-$ ions forms the ionic compound Magnesium Chloride ($\\text{MgCl}_2$).",
+        "examinerTip": "Examiner Tip: Clearly indicate charges on the ions inside square brackets: [Mg]2+ and 2[Cl]-. Ionic compounds do not form shared electron loops."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b8_s1_q1",
+        "id": "q_b8_s1_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the maximum number of electrons that can occupy the second electron shell (L-shell)?",
+        "prompt": "What is the electron configuration of an atom of Phosphorus with atomic number Z = 15?",
         "options": [
-          "8",
-          "2",
-          "18",
-          "32"
+          "2, 8, 5",
+          "2, 8, 3",
+          "2, 5, 8",
+          "2, 8, 7"
         ],
-        "correctAnswer": "8",
-        "hint": "Formula for maximum shell capacity is $2n^2$, where $n=2$.",
-        "workedSolution": "By the Bohr rule $2n^2$, the second shell ($n=2$) holds $2(2)^2 = 8$ electrons.",
+        "correctAnswer": "2, 8, 5",
+        "hint": "The K-shell takes 2, L-shell takes 8, and the remainder goes to the M-shell.",
+        "workedSolution": "For atomic number 15: K-shell = 2, L-shell = 8, M-shell = 15 - 10 = 5. Hence, electron configuration is 2, 8, 5.",
         "points": 1
       },
       {
-        "id": "b8_s1_q2",
+        "id": "q_b8_s1_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which pair of elements will react to form a covalent compound?",
+        "prompt": "Which pair of elements will combine predominantly by covalent bonding?",
         "options": [
-          "Carbon and Oxygen",
           "Sodium and Chlorine",
-          "Magnesium and Fluorine",
-          "Potassium and Sulfur"
+          "Carbon and Oxygen",
+          "Magnesium and Oxygen",
+          "Calcium and Fluorine"
         ],
         "correctAnswer": "Carbon and Oxygen",
         "hint": "Covalent bonds occur between non-metals sharing electron pairs.",
-        "workedSolution": "Carbon and oxygen are both non-metals; they share electrons to form covalent carbon dioxide ($CO_2$).",
+        "workedSolution": "Carbon and Oxygen are both non-metals. Neither loses electrons readily; instead, they share electron pairs to form covalent carbon dioxide (CO2). Metal + non-metal pairs form ionic bonds.",
         "points": 1
-      },
-      {
-        "id": "b8_s1_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Why does solid sodium chloride not conduct electricity, whereas molten or aqueous sodium chloride conducts freely?",
-        "correctAnswer": "In the solid state, $Na^+$ and $Cl^-$ ions are fixed tightly in a crystal lattice and cannot migrate. In molten or aqueous states, the lattice breaks down, freeing mobile ions to conduct current.",
-        "hint": "Electrical conduction requires mobile charge carriers (electrons or ions).",
-        "workedSolution": "Solid NaCl contains immobilized ions in a crystalline grid. When melted or dissolved in water, the lattice dissociates into mobile hydrated $Na^+$ and $Cl^-$ ions that freely migrate toward electrodes.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b9_strand1_acids_bases",
+    "id": "b9_sci_strand1_materials",
     "gradeLevel": "BS9",
     "strandNumber": 1,
-    "strandTitle": "Strand 1: Diversity of Matter",
-    "subStrandTitle": "Acids, Bases, Salts & Neutralization",
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "order": 3,
+    "notes": {
+      "summaryMarkdown": "### Acids, Bases, Salts & Neutralization Reactions\n* **NaCCA Curriculum Code:** `B9.1.1.1`\n* **Core Competency:** Characterize aqueous acids and bases, measure pH, write balanced neutralization equations, and describe salt preparation.\n\n#### 1. Chemistry of Acids\n* **Definition:** An acid is a proton ($H^+$) donor that produces hydronium ions ($H_3O^+$) in aqueous solution.\n* **Organic Acids:** Weak acids of biological origin (e.g., ethanoic acid in vinegar, citric acid in citrus fruits, lactic acid in sour milk).\n* **Mineral / Inorganic Acids:** Strong acids (e.g., hydrochloric acid $\\text{HCl}$, sulfuric acid $\\text{H}_2\\text{SO}_4$, nitric acid $\\text{HNO}_3$).\n* **Properties:** Sour taste, corrosive, turns blue litmus paper red, electrical conductors in solution.\n* **Key Reaction:** $\\text{Acid} + \\text{Reactive Metal} \\rightarrow \\text{Salt} + \\text{Hydrogen gas } (H_2 \\uparrow)$\n\n#### 2. Chemistry of Bases & Alkalis\n* **Base:** A substance that neutralizes an acid to produce salt and water only (metal oxides and metal hydroxides).\n* **Alkalis:** Soluble bases that produce hydroxide ions ($OH^-$) in aqueous solution (e.g., $\\text{NaOH}, \\text{KOH}, \\text{Ca(OH)}_2$).\n* **Properties:** Bitter taste, soapy/slippery feel, turns red litmus blue, corrosive in concentrated form.\n\n#### 3. The pH Scale & Indicators\n* $\\text{pH} < 7$: Acidic solution (high $[H^+]$)\n* $\\text{pH} = 7$: Neutral (pure water at $25^\\circ\\text{C}$)\n* $\\text{pH} > 7$: Basic / Alkaline solution (high $[OH^-]$)\n\n#### 4. Neutralization Reactions & Salts\n$\\text{Acid} + \\text{Base} \\rightarrow \\text{Salt} + \\text{Water}$\n* Example: $\\text{HCl}_{(aq)} + \\text{NaOH}_{(aq)} \\rightarrow \\text{NaCl}_{(aq)} + \\text{H}_2\\text{O}_{(l)}$\n* Net Ionic Equation: $H^+_{(aq)} + OH^-_{(aq)} \\rightarrow \\text{H}_2\\text{O}_{(l)}$\n* **Practical Applications:**\n  * Agricultural liming: applying calcium hydroxide $\\text{Ca(OH)}_2$ to acidic soils.\n  * Antacids: neutralizing excess gastric acid in stomach (e.g., magnesium hydroxide $\\text{Mg(OH)}_2$).\n  * Insect stings: treating wasp stings (alkaline) with vinegar (weak acid); bee stings (acidic) with baking soda (weak base).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s1_1",
+        "questionPrompt": "Write the balanced molecular and net ionic equations for the reaction between dilute sulfuric acid (H2SO4) and aqueous sodium hydroxide (NaOH).",
+        "stepByStepSolution": "Step 1: Identify reactants and products: Reactants: H2SO4(aq) + NaOH(aq). Products: Sodium sulfate (Na2SO4) + Water (H2O).\nStep 2: Balance the molecular equation: Sulfuric acid is diprotic (2 H+ ions), requiring 2 moles of NaOH: H2SO4(aq) + 2NaOH(aq) -> Na2SO4(aq) + 2H2O(l).\nStep 3: Write complete ionic equation: 2H+(aq) + SO4^2-(aq) + 2Na+(aq) + 2OH-(aq) -> 2Na+(aq) + SO4^2-(aq) + 2H2O(l).\nStep 4: Cancel spectator ions (Na+ and SO4^2-): 2H+(aq) + 2OH-(aq) -> 2H2O(l) => H+(aq) + OH-(aq) -> H2O(l).",
+        "examinerTip": "Examiner Tip: Note that sodium sulfate is Na2SO4 because the sulfate radical has a valency of 2 (SO4^2-) while sodium has a valency of 1 (Na+)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s1_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A liquid tested with universal indicator turns deep blue/purple with a pH of 13. This solution is:",
+        "options": [
+          "A strong acid",
+          "A weak acid",
+          "A strong alkali",
+          "Neutral"
+        ],
+        "correctAnswer": "A strong alkali",
+        "hint": "The pH scale ranges from 0 to 14. High values correspond to strong bases.",
+        "workedSolution": "A pH value of 13-14 indicates a very high concentration of hydroxide ions (OH-), characteristic of strong alkalis such as concentrated sodium hydroxide (NaOH).",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s1_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which gas is evolved when dilute hydrochloric acid reacts with calcium carbonate (marble chips)?",
+        "options": [
+          "Hydrogen gas",
+          "Oxygen gas",
+          "Carbon dioxide gas",
+          "Chlorine gas"
+        ],
+        "correctAnswer": "Carbon dioxide gas",
+        "hint": "Acid + Carbonate -> Salt + Water + Gas (turns lime water milky).",
+        "workedSolution": "The reaction is: 2HCl(aq) + CaCO3(s) -> CaCl2(aq) + H2O(l) + CO2(g). Carbon dioxide gas effervesces and turns clear calcium hydroxide (limewater) milky.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand1_cells",
+    "gradeLevel": "BS7",
+    "strandNumber": 1,
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 4,
     "notes": {
-      "summaryMarkdown": "### Chemistry of Acids, Bases & Neutralization\n#### Acids:\nSubstances that dissociate in aqueous solution to liberate hydrogen ions ($H^+$ or $H_3O^+$). Turn blue litmus red; pH $< 7$.\n* Strong mineral acids: $HCl, H_2SO_4, HNO_3$.\n* Weak organic acids: Citric acid (citrus), Ethanoic acid (vinegar), Lactic acid (sour milk).\n\n#### Bases & Alkalis:\nOxides and hydroxides of metals that react with acids to form salt and water only. Water-soluble bases are called **alkalis** ($NaOH, KOH, Ca(OH)_2$). Turn red litmus blue; pH $> 7$.\n\n#### Neutralization:\n$$\\text{Acid} + \\text{Base} \\rightarrow \\text{Salt} + \\text{Water}$$\n$$H^+\\text{(aq)} + OH^-\\text{(aq)} \\rightarrow H_2O\\text{(l)}$$",
-      "keyTerms": [
-        {
-          "term": "pH Scale",
-          "definition": "Logarithmic scale from 0 to 14 measuring hydrogen ion concentration; pH 7 is neutral, <7 acidic, >7 alkaline."
-        },
-        {
-          "term": "Indicator",
-          "definition": "A weak organic dye that exhibits distinct colors in acidic and alkaline media (e.g. litmus, phenolphthalein, methyl orange)."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 240 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"120\" cy=\"100\" r=\"18\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"2\"/><text x=\"120\" y=\"104\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text><circle cx=\"120\" cy=\"100\" r=\"42\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"100\" r=\"70\" fill=\"none\" stroke=\"#8b5cf6\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><circle cx=\"120\" cy=\"58\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"142\" r=\"4\" fill=\"#3b82f6\"/><circle cx=\"120\" cy=\"30\" r=\"4\" fill=\"#8b5cf6\"/><circle cx=\"120\" cy=\"170\" r=\"4\" fill=\"#8b5cf6\"/><text x=\"120\" y=\"192\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"middle\">Bohr Atomic Model</text></svg>"
+      "summaryMarkdown": "### The Cell as the Fundamental Unit of Life & Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate an understanding of the structure of plant and animal cells, observe wet mounts under the microscope, and identify organelles.\n\n#### 1. The Classical Cell Theory\nDeveloped by Schleiden, Schwann, and Virchow:\n1. All living organisms are composed of one or more cells.\n2. The cell is the basic structural and functional unit of life.\n3. All cells arise from pre-existing cells through biological division.\n\n#### 2. Optical Light Microscope Components\n* **Eyepiece (Ocular Lens):** Magnifies image (typically $10\\times$).\n* **Objective Lenses:** Provide low ($4\\times$), medium ($10\\times$), and high ($40\\times$) magnification.\n* **Coarse & Fine Adjustment Knobs:** Bring specimen into initial rapid focus and fine, sharp resolution.\n* **Stage & Clips:** Support slide with central aperture for light transmission.\n* **Diaphragm & Condenser:** Regulate intensity and cone angle of illumination.\n* $\\text{Total Magnification} = \\text{Eyepiece Power} \\times \\text{Objective Lens Power}$.\n\n#### 3. Ultrastructural Comparison: Plant vs. Animal Cells\n| Structural Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Wall** | Present (rigid cellulose framework) | Absent (flexible outer boundary) |\n| **Plasma Membrane** | Present (interior to cell wall) | Present (outermost living boundary) |\n| **Chloroplasts** | Present (contain chlorophyll for photosynthesis) | Absent |\n| **Vacuole** | Large, permanent, central sap vacuole | Small, temporary, non-central vacuoles |\n| **Shape & Rigidity** | Regular, definite angular geometry | Irregular, fluid, polymorphic geometry |\n| **Storage Form** | Starch grains | Glycogen granules |",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b9_s1_01",
-        "questionPrompt": "Write a balanced chemical equation for the reaction between dilute sulfuric acid ($H_2SO_4$) and sodium hydroxide ($NaOH$).",
-        "stepByStepSolution": "1. Identify reactants: Sulfuric acid ($H_2SO_4$) and Sodium hydroxide ($NaOH$).\n2. Predict products: Sodium sulfate ($Na_2SO_4$) and water ($H_2O$).\n3. Balance sodium atoms: Add coefficient 2 before $NaOH$.\n4. Balance hydrogen and oxygen: Add coefficient 2 before $H_2O$.\n5. Balanced equation: $$H_2SO_4\\text{(aq)} + 2NaOH\\text{(aq)} \\rightarrow Na_2SO_4\\text{(aq)} + 2H_2O\\text{(l)}$$.",
-        "examinerTip": "Always verify that every atom balances on both reactant and product sides."
+        "id": "ex_b7_s2_1",
+        "questionPrompt": "A student observes an epidermal onion cell under a light microscope using a 15x ocular eyepiece lens and a 40x high-power objective lens. Calculate total magnification and explain why iodine solution is added.",
+        "stepByStepSolution": "Step 1: Apply formula: Total Magnification = Magnification of Eyepiece x Magnification of Objective.\nStep 2: Substitute values: Total Magnification = 15 x 40 = 600x.\nStep 3: Staining rationale: Iodine solution stains cellular starch and selectively binds to nucleic acids, creating optical contrast so that the nucleus, cell wall, and cytoplasm become distinctly visible under brightfield illumination.",
+        "examinerTip": "Examiner Tip: Always state the multiplication unit 'x' in your magnification answer (e.g. 600x)."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b9_s1_q1",
+        "id": "q_b7_s2_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the pH value of pure distilled water at $25^\\circ\\text{C}$?",
+        "prompt": "Which organelle is present in a green plant cell but completely absent in an animal cell?",
         "options": [
-          "7.0",
-          "1.0",
-          "14.0",
-          "4.5"
+          "Mitochondrion",
+          "Cell membrane",
+          "Chloroplast",
+          "Nucleus"
         ],
-        "correctAnswer": "7.0",
-        "hint": "Pure water is neutral, having equal concentrations of $H^+$ and $OH^-$ ions.",
-        "workedSolution": "At $25^\\circ\\text{C}$, $[H^+] = [OH^-] = 10^{-7}\\text{ mol/dm}^3$, corresponding to pH = 7.0.",
+        "correctAnswer": "Chloroplast",
+        "hint": "Think about the green pigment required for photosynthesis.",
+        "workedSolution": "Chloroplasts contain chlorophyll pigments and thylakoid membranes necessary for photosynthesis. Animal cells do not photosynthesize and lack chloroplasts.",
         "points": 1
       },
       {
-        "id": "b9_s1_q2",
+        "id": "q_b7_s2_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which gas is evolved when dilute hydrochloric acid reacts with calcium carbonate chips?",
+        "prompt": "What is the primary physiological function of the cell membrane?",
         "options": [
-          "Carbon dioxide ($CO_2$)",
-          "Hydrogen ($H_2$)",
-          "Oxygen ($O_2$)",
-          "Chlorine ($Cl_2$)"
+          "Provide absolute rigid mechanical support to the plant stem",
+          "Selectively regulate the entry and exit of substances",
+          "Synthesize glucose using radiant solar energy",
+          "Store genetic chromosomes inside chromatin threads"
         ],
-        "correctAnswer": "Carbon dioxide ($CO_2$)",
-        "hint": "Acid + Carbonate -> Salt + Water + Carbon Dioxide. Turns limewater milky.",
-        "workedSolution": "$$CaCO_3\\text{(s)} + 2HCl\\text{(aq)} \\rightarrow CaCl_2\\text{(aq)} + H_2O\\text{(l)} + CO_2\\text{(g)}$$. The gas is carbon dioxide.",
+        "correctAnswer": "Selectively regulate the entry and exit of substances",
+        "hint": "The membrane is semi-permeable / selectively permeable.",
+        "workedSolution": "The plasma membrane is a phospholipid bilayer that acts as a selectively permeable barrier, controlling the transport of ions and organic molecules into and out of the cell.",
         "points": 1
-      },
-      {
-        "id": "b9_s1_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Explain how slaked lime ($Ca(OH)_2$) is used to remediate acidic farmland soil in agricultural practice.",
-        "correctAnswer": "Slaked lime is an alkaline base. When applied to acidic soil, it reacts with and neutralizes excess hydrogen ions ($H^+$), raising soil pH to an optimal neutral level (6.0 - 7.0) suitable for crop nutrient uptake.",
-        "hint": "Think about acid-base neutralization in agricultural liming.",
-        "workedSolution": "Liming neutralizes soil acidity through chemical neutralization ($Ca(OH)_2 + 2H^+ \\rightarrow Ca^{2+} + 2H_2O$), eliminating aluminum/manganese toxicity and unlocking phosphorus availability.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b7_strand2_earth_cycles",
-    "gradeLevel": "BS7",
-    "strandNumber": 2,
-    "strandTitle": "Strand 2: Cycles",
-    "subStrandTitle": "Earth Science & Biogeochemical Cycles",
+    "id": "b8_sci_strand1_cells",
+    "gradeLevel": "BS8",
+    "strandNumber": 1,
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 5,
     "notes": {
-      "summaryMarkdown": "### The Hydrological & Carbon Cycles\n#### The Water Cycle:\nContinuous circulation of water between oceans, atmosphere, and terrestrial ecosystems driven by solar energy.\n* **Evaporation**: Solar heating converts liquid surface water into water vapor.\n* **Transpiration**: Evaporation of water from microscopic leaf stomata into the atmosphere.\n* **Condensation**: Water vapor cools and coalesces into microscopic droplets, forming clouds.\n* **Precipitation**: Condensed water falls as rain, snow, or hail when clouds reach saturation.\n* **Percolation & Infiltration**: Downward movement of water into soil horizons to replenish underground aquifers.",
-      "keyTerms": [
-        {
-          "term": "Transpiration",
-          "definition": "The loss of water vapor from the aerial parts of plants, principally through the stomata of leaves."
-        },
-        {
-          "term": "Aquifer",
-          "definition": "An underground layer of water-bearing permeable rock or gravel yielding groundwater."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 360 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"50\" cy=\"40\" r=\"20\" fill=\"#facc15\" stroke=\"#eab308\" stroke-width=\"2\"/><path d=\"M 180,35 Q 210,15 240,35 Q 270,35 280,55 Q 260,75 220,75 Q 170,75 165,55 Z\" fill=\"#93c5fd\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"220\" y=\"55\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">Condensation</text><path d=\"M 180,165 Q 260,155 345,170 L 345,195 L 180,195 Z\" fill=\"#60a5fa\"/><text x=\"260\" y=\"185\" font-size=\"9\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Reservoir / Ocean</text><line x1=\"260\" y1=\"150\" x2=\"260\" y2=\"85\" stroke=\"#0284c7\" stroke-width=\"2\" stroke-dasharray=\"3,3\"/><polygon points=\"256,90 260,83 264,90\" fill=\"#0284c7\"/><text x=\"260\" y=\"118\" font-size=\"8\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Evaporation</text></svg>"
+      "summaryMarkdown": "### Cellular Specialization & Structure-Function Adaptations\n* **NaCCA Curriculum Code:** `B8.1.2.1`\n* **Core Competency:** Explain how cells differentiate and modify their structures to execute specialized physiological functions.\n\n#### 1. Cellular Differentiation & Specialization\nIn single-celled organisms (*Amoeba*, *Paramecium*), one cell carries out all metabolic activities. In multicellular organisms, cells differentiate through selective gene expression to perform specific functions with greater efficiency.\n\n#### 2. Specialized Plant Cells\n* **Root Hair Cells:** Long, thin tubular cytoplasmic extension greatly increases surface area-to-volume ratio for rapid absorption of water (osmosis) and dissolved mineral ions (active transport). Thin cell wall; no chloroplasts.\n* **Xylem Vessels:** Dead, hollow elongated tubes with cell walls reinforced by lignin. Form continuous capillaries for long-distance transport of water and mineral salts from roots to leaves; provides mechanical support.\n* **Phloem Sieve Tube Elements:** Living elongated cells with perforated sieve plates; translocate manufactured sucrose and amino acids from photosynthetic source to metabolic sinks.\n* **Guard Cells:** Bean-shaped epidermal cells containing chloroplasts. Inner cell wall is thicker and less elastic than outer wall. Changes in turgor pressure regulate stomatal opening and closing for gas exchange and transpiration control.\n\n#### 3. Specialized Animal Cells\n* **Red Blood Cells (Erythrocytes):** Biconcave disc geometry maximizes surface area for rapid oxygen diffusion; absence of nucleus leaves more volume for hemoglobin molecules; flexible to squeeze through microscopic capillaries.\n* **Nerve Cells (Neurons):** Elongated axons transmit electrochemical impulses over long distances; surrounded by insulating myelin sheath; terminal dendrites synapse with adjacent receptors/effectors.\n* **Spermatozoa:** Flagellated tail provides swimming motility toward ovum; head possesses an acrosome cap filled with hydrolytic enzymes to penetrate ovum jelly coat; midpiece packed with mitochondria for ATP energy.\n* **Muscle Cells:** Elongated fibers containing contractile actin and myosin proteins that contract and relax to produce coordinated mechanical movement.",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b7_s2_02",
-        "questionPrompt": "Explain how extensive deforestation in the Ashanti forest belt disrupts the regional water cycle.",
-        "stepByStepSolution": "1. Trees absorb large volumes of groundwater through roots and release it into the atmosphere via transpiration.\n2. Cutting down forest cover dramatically reduces transpiration rates, lowering local atmospheric moisture and humidity.\n3. With fewer condensation nuclei and less atmospheric moisture, cloud formation declines, resulting in erratic, diminished rainfall and desertification.\n4. Without leaf canopies and root networks, rainfall causes rapid flash surface runoff and erosion rather than infiltrating into groundwater aquifers.",
-        "examinerTip": "Connect biological transpiration directly to meteorological cloud formation and soil infiltration."
+        "id": "ex_b8_s2_1",
+        "questionPrompt": "State three distinct structural features of the human red blood cell and explain how each structure adapts the cell to its function.",
+        "stepByStepSolution": "Feature 1: Biconcave Disc Shape — Adaptation: Increases the surface area to volume ratio, facilitating rapid diffusion of oxygen into and out of the cell.\nFeature 2: Absence of Nucleus (and other organelles) at maturity — Adaptation: Maximizes internal cytoplasmic volume to pack more hemoglobin molecules, increasing oxygen-carrying capacity.\nFeature 3: Flexible Plasma Membrane — Adaptation: Allows the erythrocyte to bend and squeeze through narrow capillaries without rupturing.",
+        "examinerTip": "Examiner Tip: Always connect the physical structure directly to the biological function in adaptation questions."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b7_cy_q1",
+        "id": "q_b8_s2_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "By which process do clouds form in the upper troposphere from rising water vapor?",
+        "prompt": "Which specialized cell contains a high density of mitochondria in its midpiece to power rapid motility?",
         "options": [
-          "Condensation",
-          "Sublimation",
-          "Evaporation",
-          "Transpiration"
+          "White blood cell",
+          "Sperm cell (spermatozoon)",
+          "Xylem vessel",
+          "Guard cell"
         ],
-        "correctAnswer": "Condensation",
-        "hint": "Vapor cools as it ascends, changing from gas into liquid droplets.",
-        "workedSolution": "Rising water vapor cools below its dew point, condensing onto aerosol dust particles to form clouds.",
+        "correctAnswer": "Sperm cell (spermatozoon)",
+        "hint": "Mitochondria produce ATP needed for flagellar propulsion.",
+        "workedSolution": "The spermatozoon has a specialized midpiece packed with spiraled mitochondria that generate ATP energy to whip its flagellum and swim toward the ovum.",
         "points": 1
       },
       {
-        "id": "b7_cy_q2",
+        "id": "q_b8_s2_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary biological process that removes carbon dioxide directly from the atmosphere?",
+        "prompt": "The stomata of plant leaves open during daylight hours primarily because guard cells:",
         "options": [
-          "Photosynthesis by green plants",
-          "Cellular respiration by animals",
-          "Fermentation by yeast",
-          "Decomposition by fungi"
+          "Lose water by osmosis and become flaccid",
+          "Absorb water, become turgid, and curve outward due to unequal wall thickness",
+          "Lose their chloroplasts and shrink",
+          "Decompose their cellulose cell walls"
         ],
-        "correctAnswer": "Photosynthesis by green plants",
-        "hint": "Plants absorb $CO_2$ to synthesize carbohydrates.",
-        "workedSolution": "Green plants, algae, and cyanobacteria absorb $CO_2$ and water in the presence of sunlight to synthesize glucose, acting as primary carbon sinks.",
+        "correctAnswer": "Absorb water, become turgid, and curve outward due to unequal wall thickness",
+        "hint": "Remember that the inner wall of the guard cell is thicker than the outer wall.",
+        "workedSolution": "During photosynthesis, guard cells accumulate solutes, causing water influx by osmosis. As they swell with turgor, their thinner outer walls expand more than the thick inner walls, bowing apart and opening the stomatal pore.",
         "points": 1
-      },
-      {
-        "id": "b7_cy_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Describe how the burning of fossil fuels disrupts the dynamic equilibrium of the global carbon cycle.",
-        "correctAnswer": "Fossil fuels (coal, petroleum, natural gas) sequester carbon underground for millions of years. Rapid combustion releases massive volumes of ancient carbon as $CO_2$ into the atmosphere faster than forests and oceans can absorb it, causing the enhanced greenhouse effect.",
-        "hint": "Consider the imbalance between carbon emission rates and natural carbon sink absorption capacities.",
-        "workedSolution": "Industrial combustion bypasses geological timescales, discharging sequestered carbon directly into the atmosphere, creating a net surplus of $CO_2$ that drives global atmospheric warming.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b8_strand2_life_cycles",
-    "gradeLevel": "BS8",
-    "strandNumber": 2,
-    "strandTitle": "Strand 2: Cycles",
-    "subStrandTitle": "Life Cycle of Organisms (Complete & Incomplete Metamorphosis)",
+    "id": "b9_sci_strand1_cells",
+    "gradeLevel": "BS9",
+    "strandNumber": 1,
+    "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
+    "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 6,
     "notes": {
-      "summaryMarkdown": "### Insect Metamorphosis & Vector Control\nMetamorphosis is the biological process of physical development after birth or hatching, involving conspicuous changes in body structure through cell growth and differentiation.\n\n#### 1. Complete (Holometabolous) Metamorphosis:\nFour distinct developmental stages: **Egg -> Larva -> Pupa -> Adult (Imago)**.\n* **Housefly (*Musca domestica*)**: Egg laid on decaying matter -> Larva (feeding maggot) -> Pupa (inactive brown barrel) -> Winged adult. Vector of cholera, typhoid, and dysentery.\n* **Mosquito (*Anopheles*, *Culex*, *Aedes*)**: Egg laid on water -> Larva (wriggler breathing through siphon) -> Pupa (tumbler) -> Adult. *Anopheles* transmits malaria; *Aedes* transmits yellow fever/dengue.\n\n#### 2. Incomplete (Hemimetabolous) Metamorphosis:\nThree distinct stages: **Egg -> Nymph -> Adult**.\n* **Grasshopper / Cockroach**: Nymph hatches resembling a miniature wingless adult; undergoes successive molts (ecdysis) to achieve full size and develop wings.",
-      "keyTerms": [
-        {
-          "term": "Ecdysis (Molting)",
-          "definition": "The periodic shedding of the rigid chitinous exoskeleton in arthropods to allow organismal growth."
-        },
-        {
-          "term": "Pupa",
-          "definition": "The non-feeding, quiescent developmental stage of holometabolous insects during which internal metamorphosis occurs."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 360 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"50\" cy=\"40\" r=\"20\" fill=\"#facc15\" stroke=\"#eab308\" stroke-width=\"2\"/><path d=\"M 180,35 Q 210,15 240,35 Q 270,35 280,55 Q 260,75 220,75 Q 170,75 165,55 Z\" fill=\"#93c5fd\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"220\" y=\"55\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">Condensation</text><path d=\"M 180,165 Q 260,155 345,170 L 345,195 L 180,195 Z\" fill=\"#60a5fa\"/><text x=\"260\" y=\"185\" font-size=\"9\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Reservoir / Ocean</text><line x1=\"260\" y1=\"150\" x2=\"260\" y2=\"85\" stroke=\"#0284c7\" stroke-width=\"2\" stroke-dasharray=\"3,3\"/><polygon points=\"256,90 260,83 264,90\" fill=\"#0284c7\"/><text x=\"260\" y=\"118\" font-size=\"8\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Evaporation</text></svg>"
+      "summaryMarkdown": "### Multicellular Organization & Somatic Cell Division\n* **NaCCA Curriculum Code:** `B9.1.2.1`\n* **Core Competency:** Explain the levels of organization in multicellular organisms and describe somatic mitotic cell division for growth and repair.\n\n#### 1. Levels of Biological Organization\n* **1. Cell:** The basic structural and functional unit (e.g., muscle cell, palisade mesophyll cell).\n* **2. Tissue:** A group of specialized cells with similar structure working together to perform a specific function.\n  * *Plant Tissues:* Epidermal, vascular (xylem and phloem), photosynthetic mesophyll tissue.\n  * *Animal Tissues:* Epithelial, connective (blood, bone, cartilage), muscular, nervous tissue.\n* **3. Organ:** A collection of distinct tissues cooperating to carry out complex physiological tasks (e.g., Heart, Stomach, Leaf, Root).\n* **4. Organ System:** A group of interconnected organs coordinating major physiological processes (e.g., Digestive, Circulatory, Nervous systems).\n* **5. Organism:** A complete living entity composed of integrated organ systems functioning harmoniously.\n\n#### 2. Somatic Cell Division (Mitosis)\nMitosis is equational cell division in which a diploid parent cell ($2n$) divides to produce two genetically identical diploid daughter cells ($2n$).\n* **Biological Significance:**\n  * **Growth:** Increases cell number in developing multicellular organisms.\n  * **Tissue Repair & Regeneration:** Replaces damaged, worn-out cells (e.g., healing wounds, skin sloughing).\n  * **Asexual Reproduction:** Enables vegetative propagation in plants (e.g., cassava cuttings, potato tubers) and binary fission in unicellular organisms.\n* **Phases of Mitosis:**\n  * **Prophase:** Chromosomes condense; nuclear membrane breaks down; spindle fibers form.\n  * **Metaphase:** Chromosomes line up along the equatorial plate of the cell.\n  * **Anaphase:** Sister chromatids separate and are pulled to opposite spindle poles.\n  * **Telophase & Cytokinesis:** Nuclear membranes reform around daughter nuclei; cytoplasm divides.",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b8_s2_01",
-        "questionPrompt": "Explain why spraying oil on stagnant breeding water is more effective against mosquito larvae and pupae than spraying insecticides against adult mosquitoes.",
-        "stepByStepSolution": "1. Mosquito larvae and pupae are strictly aquatic and must regularly reach the water surface to breathe atmospheric oxygen via respiratory siphons or trumpets.\n2. A thin film of kerosene or engine oil spreads across the water surface, lowering surface tension and mechanically blocking the respiratory siphons, suffocating both larvae and pupae within hours.\n3. In contrast, adult mosquitoes are airborne and disperse widely over large areas, making adulticidal spraying temporary, costly, and prone to triggering insecticide resistance.",
-        "examinerTip": "Focus on the physical suffocation mechanism of the respiratory siphon at the aquatic stage."
+        "id": "ex_b9_s2_1",
+        "questionPrompt": "Arrange the following biological components in order of increasing complexity: Heart, Blood, Erythrocyte, Circulatory System, Human Being. Justify each classification.",
+        "stepByStepSolution": "Step 1: Erythrocyte (Cell) — Single specialized cell carrying oxygen.\nStep 2: Blood (Tissue) — Fluid connective tissue comprising erythrocytes, leukocytes, platelets, and plasma.\nStep 3: Heart (Organ) — Muscular pumping organ formed from cardiac muscle tissue, connective tissue, and nervous tissue.\nStep 4: Circulatory System (Organ System) — Network of coordinated organs including heart, blood vessels (arteries, veins, capillaries), and blood.\nStep 5: Human Being (Organism) — Multicellular organism functioning through the integrated actions of all body systems.",
+        "examinerTip": "Examiner Tip: Correct sequence is Cell -> Tissue -> Organ -> System -> Organism. Always state the connective tissue identity of blood."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b8_lc_q1",
+        "id": "q_b9_s2_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which stage in the life cycle of the housefly is known as the maggot?",
+        "prompt": "Blood in mammals is classified biologically as a:",
         "options": [
-          "Larva",
-          "Pupa",
-          "Nymph",
-          "Egg"
+          "Single specialized cell",
+          "Connective tissue",
+          "Pumping organ",
+          "Organ system"
         ],
-        "correctAnswer": "Larva",
-        "hint": "The voracious feeding stage that emerges from the egg.",
-        "workedSolution": "The larva of the housefly is a legless, cylindrical feeding maggot.",
+        "correctAnswer": "Connective tissue",
+        "hint": "It contains diverse cell types suspended in an extracellular fluid matrix (plasma).",
+        "workedSolution": "Blood is an animal connective tissue composed of diverse cellular components (erythrocytes, leukocytes, thrombocytes) suspended in an extracellular liquid matrix called plasma.",
         "points": 1
       },
       {
-        "id": "b8_lc_q2",
+        "id": "q_b9_s2_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which insect undergoes incomplete metamorphosis?",
+        "prompt": "Which biological process relies exclusively on mitotic cell division?",
         "options": [
-          "Grasshopper",
+          "Production of haploid gametes (sperm and egg cells)",
+          "Healing of a skin laceration by epithelial tissue repair",
+          "Reduction of chromosome count from diploid to haploid",
+          "Genetic variation through crossing over"
+        ],
+        "correctAnswer": "Healing of a skin laceration by epithelial tissue repair",
+        "hint": "Mitosis produces identical somatic cells for growth and tissue repair.",
+        "workedSolution": "Tissue repair and wound healing occur via mitosis, where diploid epidermal cells divide to produce genetically identical replacement cells. Gamete production is meiosis.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand2_earth_cycles",
+    "gradeLevel": "BS7",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "order": 7,
+    "notes": {
+      "summaryMarkdown": "### The Hydrological (Water) Cycle & Freshwater Conservation\n* **NaCCA Curriculum Code:** `B7.2.1.1`\n* **Core Competency:** Explain the stages of the water cycle and evaluate human activities on municipal watersheds.\n\n#### 1. Stages of the Hydrological Cycle\nThe water cycle is a continuous, solar-driven thermodynamic loop:\n* **Evaporation:** Solar radiative heating converts liquid water from oceans, rivers, and soil into water vapor.\n* **Transpiration:** Water loss as vapor from microscopic leaf stomata into the atmosphere.\n* **Condensation:** Rising warm, moist air expands and cools adiabatically; water vapor condenses around microscopic aerosol condensation nuclei to form clouds.\n* **Precipitation:** Condensed cloud droplets coalesce until gravitational pull overcomes air resistance, falling as rain, drizzle, or hail.\n* **Percolation & Infiltration:** Water seeps downward through soil pore spaces to recharge groundwater aquifers and water tables.\n* **Surface Runoff:** Excess precipitation flows overland into streams, rivers, and oceans.\n\n#### 2. Human Disturbances to Watersheds\n* Deforestation reduces vegetative interception and transpiration, accelerating soil erosion and flash flooding.\n* Unregulated alluvial gold mining (galamsey) pollutes water basins with toxic heavy metals (mercury, lead) and suspended silt.\n* Industrial effluent discharge causes severe eutrophication and biochemical oxygen demand (BOD) spikes.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s3_1",
+        "questionPrompt": "Explain two distinct roles that solar radiation plays in driving the hydrological cycle.",
+        "stepByStepSolution": "Role 1: Providing Latent Heat of Vaporization — Solar radiation heats oceanic, river, and terrestrial surfaces, providing the thermodynamic thermal energy required to break hydrogen bonds in liquid water, transforming it into atmospheric vapor.\nRole 2: Generating Atmospheric Convection Currents — Unequal solar heating of the Earth's surface creates pressure differentials and convective thermal updrafts that carry humid air to higher, cooler altitudes where condensation and cloud formation occur.",
+        "examinerTip": "Examiner Tip: Solar energy is the primary engine of the hydrological cycle; without solar thermal radiation, evaporation and cloud convection would cease."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s3_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The process by which green plants release water vapor through the stomata of their leaves into the atmosphere is termed:",
+        "options": [
+          "Precipitation",
+          "Transpiration",
+          "Respiration",
+          "Percolation"
+        ],
+        "correctAnswer": "Transpiration",
+        "hint": "It occurs specifically through leaf stomata pores.",
+        "workedSolution": "Transpiration is the evaporation of water from plant leaves through open stomata into the surrounding atmospheric boundary layer.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s3_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does large-scale forest clear-cutting (deforestation) affect local hydrological cycles?",
+        "options": [
+          "It increases cloud condensation and triples rainfall",
+          "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
+          "It permanently lowers atmospheric temperature",
+          "It stops evaporation from oceans"
+        ],
+        "correctAnswer": "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
+        "hint": "Fewer trees mean less water vapor released into the air.",
+        "workedSolution": "Deforestation drastically reduces plant transpiration, leading to lower atmospheric humidity and diminished localized rainfall, while barren soil suffers severe erosion and loss of water retention.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand2_earth_cycles",
+    "gradeLevel": "BS8",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "order": 8,
+    "notes": {
+      "summaryMarkdown": "### The Global Carbon Cycle & Atmospheric Equilibrium\n* **NaCCA Curriculum Code:** `B8.2.1.1`\n* **Core Competency:** Trace carbon movement through the biosphere, atmosphere, hydrosphere, and geosphere.\n\n#### 1. Carbon Sequestration & Release Pathways\nCarbon is the fundamental structural backbone of organic macromolecules.\n* **Carbon Removal Pathways (Carbon Sinks):**\n  * **Photosynthesis:** Terrestrial vegetation and marine phytoplankton absorb atmospheric $\\text{CO}_2$:\n    $$6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Light, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$$\n  * **Oceanic Dissolution:** $\\text{CO}_2$ dissolves into surface waters forming carbonic acid ($\\text{H}_2\\text{CO}_3$) and marine carbonate sediments (mollusk shells, corals).\n* **Carbon Release Pathways (Carbon Sources):**\n  * **Cellular Respiration:** Aerobic respiration by plants, animals, and microbes:\n    $$\\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2 \\rightarrow 6\\text{CO}_2 + 6\\text{H}_2\\text{O} + \\text{ATP}$$\n  * **Decomposition:** Saprophytic bacteria and fungi break down dead biomass, releasing $\\text{CO}_2$ and $\\text{CH}_4$.\n  * **Fossil Fuel Combustion:** Burning coal, crude oil, and natural gas oxidized stored subterranean carbon deposits.\n  * **Volcanic Outgassing:** Thermal degassing of subducted carbonate rocks.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s3_1",
+        "questionPrompt": "Demonstrate chemically how photosynthesis and aerobic cellular respiration form a complementary closed loop in the carbon cycle.",
+        "stepByStepSolution": "Step 1: Write photosynthesis equation: 6CO2 + 6H2O + Light Energy -> C6H12O6 (glucose) + 6O2. Carbon dioxide is absorbed from the atmosphere and fixed into organic carbohydrate biomass.\nStep 2: Write respiration equation: C6H12O6 + 6O2 -> 6CO2 + 6H2O + Energy (ATP). Heterotrophs and autotrophs oxidize glucose to yield metabolic energy, returning CO2 to the atmosphere.\nStep 3: Conclude complementarity: The products of photosynthesis (glucose and oxygen) serve directly as the reactants for cellular respiration, while the waste products of respiration (carbon dioxide and water) serve as the essential raw materials for photosynthesis.",
+        "examinerTip": "Examiner Tip: Notice that the two equations are the exact mathematical and chemical reverse of each other."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s3_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which biological process directly removes carbon dioxide gas from the atmosphere?",
+        "options": [
+          "Cellular respiration",
+          "Photosynthesis",
+          "Fermentation",
+          "Decomposition"
+        ],
+        "correctAnswer": "Photosynthesis",
+        "hint": "Green plants require this gas to synthesize carbohydrates.",
+        "workedSolution": "Photosynthesis is the primary biological carbon sequestration mechanism, where autotrophic organisms fix gaseous CO2 into organic carbon compounds using light energy.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s3_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary consequence of burning large reserves of fossil fuels on the global carbon cycle?",
+        "options": [
+          "Carbon dioxide is permanently removed from the atmosphere",
+          "Excess CO2 accumulates in the atmosphere, driving global warming",
+          "Oxygen levels drop to zero",
+          "Nitrogen gas in the air is destroyed"
+        ],
+        "correctAnswer": "Excess CO2 accumulates in the atmosphere, driving global warming",
+        "hint": "Fossil fuels release sequestered subterranean carbon back into the air.",
+        "workedSolution": "Combustion releases carbon sequestered over hundreds of millions of years in geological strata, overwhelming natural photosynthetic sinks and increasing atmospheric greenhouse gas concentrations.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand2_earth_cycles",
+    "gradeLevel": "BS9",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "order": 9,
+    "notes": {
+      "summaryMarkdown": "### The Nitrogen Cycle & Biological Nitrogen Fixation\n* **NaCCA Curriculum Code:** `B9.2.1.1`\n* **Core Competency:** Explain the chemical stages of the nitrogen cycle and identify the bacteria involved in soil fertility maintenance.\n\n#### 1. The Inert Atmospheric Nitrogen Paradox\nAlthough elemental nitrogen ($\\text{N}_2$) comprises $\\approx 78\\%$ of Earth's atmosphere, plants and animals cannot absorb gaseous $\\text{N}_2$ directly because of its extremely strong, unreactive covalent triple bond ($N \\equiv N$). It must first be fixed into soluble bioavailable ions: ammonium ($\\text{NH}_4^+$) and nitrates ($\\text{NO}_3^-$).\n\n#### 2. Key Chemical Stages of the Nitrogen Cycle\n* **1. Nitrogen Fixation:**\n  * **Biological:** Symbiotic bacteria (*Rhizobium*) residing in root nodules of leguminous plants (cowpea, groundnut, soybean) convert atmospheric $\\text{N}_2$ into organic amino compounds. Free-living soil bacteria (*Azotobacter*, *Clostridium*) also fix nitrogen.\n  * **Physical (Atmospheric):** High-voltage electrical lightning discharges break the $N \\equiv N$ triple bond, reacting with oxygen to form nitrogen oxides ($\\text{NO}, \\text{NO}_2$), which dissolve in rainfall as dilute nitric acid ($\\text{HNO}_3$).\n  * **Industrial:** The Haber-Bosch process manufactures synthetic ammonia fertilizer: $\\text{N}_2 + 3\\text{H}_2 \\rightleftharpoons 2\\text{NH}_3$.\n* **2. Ammonification:** Saprophytic putrefying bacteria and fungi break down dead proteinaceous tissue and urea wastes into ammonium compounds ($\\text{NH}_4^+$).\n* **3. Nitrification (Two-Step Aerobic Process):**\n  * Step A: *Nitrosomonas* bacteria oxidize ammonia into nitrites:\n    $$2\\text{NH}_3 + 3\\text{O}_2 \\rightarrow 2\\text{NO}_2^- + 2\\text{H}^+ + 2\\text{H}_2\\text{O}$$\n  * Step B: *Nitrobacter* bacteria oxidize nitrites into absorbable nitrates:\n    $$2\\text{NO}_2^- + \\text{O}_2 \\rightarrow 2\\text{NO}_3^-$$\n* **4. Assimilation:** Plant roots absorb nitrates via active transport, incorporating nitrogen into amino acids, proteins, and chlorophyll.\n* **5. Denitrification:** In waterlogged, anaerobic soils, *Pseudomonas denitrificans* bacteria convert soil nitrates back into gaseous molecular nitrogen ($\\text{N}_2 \\uparrow$), returning it to the atmosphere and depleting agricultural soil fertility.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s3_1",
+        "questionPrompt": "Explain why agricultural science teachers recommend planting leguminous crops such as cowpea or groundnut in crop rotation schemes before planting heavy nitrogen feeders like maize.",
+        "stepByStepSolution": "Step 1: Identify symbiotic relationship: Leguminous plants possess specialized root nodules housing colonies of symbiotic Rhizobium bacteria.\nStep 2: Mechanism of action: Rhizobium bacteria possess the nitrogenase enzyme complex capable of breaking the atmospheric N2 triple bond, converting inert gas into bioavailable ammonium compounds for the plant.\nStep 3: Residual soil enrichment: When the leguminous crop is harvested and its root residues decompose, large quantities of organic nitrogen compounds are converted by nitrifying bacteria into soluble nitrates (NO3-), naturally replenishing soil fertility for the subsequent maize crop without requiring synthetic nitrogen fertilizers.",
+        "examinerTip": "Examiner Tip: State the name of the bacterium (Rhizobium) and the plant structure (root nodules) explicitly for full marks."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s3_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which bacterium lives symbiotically inside the root nodules of leguminous plants to fix atmospheric nitrogen?",
+        "options": [
+          "Nitrosomonas",
+          "Rhizobium",
+          "Nitrobacter",
+          "Pseudomonas"
+        ],
+        "correctAnswer": "Rhizobium",
+        "hint": "It forms distinct pinkish nodules on roots of cowpeas and groundnuts.",
+        "workedSolution": "Rhizobium is the symbiotic nitrogen-fixing bacterium that inhabits the root nodules of legumes, converting gaseous N2 into bioavailable nitrogenous compounds.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s3_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The two-step biological oxidation of ammonia into nitrites and subsequently into nitrates is known as:",
+        "options": [
+          "Ammonification",
+          "Denitrification",
+          "Nitrification",
+          "Assimilation"
+        ],
+        "correctAnswer": "Nitrification",
+        "hint": "Nitrosomonas and Nitrobacter bacteria execute these oxidation steps.",
+        "workedSolution": "Nitrification is the aerobic conversion of ammonia to nitrite (by Nitrosomonas) and subsequently from nitrite to nitrate (by Nitrobacter), making nitrogen absorbable by plant root systems.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand2_life_cycles",
+    "gradeLevel": "BS7",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "order": 10,
+    "notes": {
+      "summaryMarkdown": "### Insect Metamorphosis: Complete vs. Incomplete Developmental Pathways\n* **NaCCA Curriculum Code:** `B7.2.2.1`\n* **Core Competency:** Distinguish between complete and incomplete metamorphosis and map the life stages of the cockroach and grasshopper.\n\n#### 1. Concept of Metamorphosis\nMetamorphosis is the biological developmental progression through distinct structural and physiological stages from egg to adult form.\n\n#### 2. Incomplete (Hemimetabolous) Metamorphosis\n* **Three Stages:** $\\text{Egg} \\rightarrow \\text{Nymph} \\rightarrow \\text{Adult (Imago)}$\n* The newly hatched **nymph** resembles a miniature, sexually immature, wingless version of the adult.\n* The nymph undergoes successive molting stages called **instars** (shedding its chitinous exoskeleton via ecdysis).\n* **Examples:** Cockroach (*Periplaneta americana*), grasshopper, dragonfly, praying mantis.\n* **Cockroach Biology:** Female deposits eggs encased in a protective purse-like capsule called an **ootheca**. Nymphs molt 6-13 times over several months before developing functional wings and reproductive maturity.\n\n#### 3. Complete (Holometabolous) Metamorphosis\n* **Four Stages:** $\\text{Egg} \\rightarrow \\text{Larva} \\rightarrow \\text{Pupa} \\rightarrow \\text{Adult}$\n* The larva differs completely from the adult in morphology, anatomy, diet, and habitat (e.g., caterpillar vs. butterfly).\n* The **pupa** is a non-feeding, quiescent developmental stage during which complete histolysis and organ rebuilding take place inside a cocoon or puparium.\n* **Examples:** Housefly, mosquito, butterfly, honeybee, beetle.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s4_1",
+        "questionPrompt": "Tabulate three differences between the developmental stages of the cockroach and the butterfly.",
+        "stepByStepSolution": "Difference 1: Type of metamorphosis — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Butterfly undergoes complete (holometabolous) metamorphosis.\nDifference 2: Number of developmental stages — Cockroach has 3 stages (Egg -> Nymph -> Adult); Butterfly has 4 stages (Egg -> Larva -> Pupa -> Adult).\nDifference 3: Resemblance of juvenile to adult — Cockroach nymph closely resembles the adult minus wings and reproductive organs; Butterfly larva (caterpillar) bears no morphological resemblance to the winged adult.",
+        "examinerTip": "Examiner Tip: Always present comparative questions in a clearly aligned table with matching rows."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s4_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The protective egg case in which a female cockroach deposits its eggs is called an:",
+        "options": [
+          "Ootheca",
+          "Pupa",
+          "Instar",
+          "Cocoon"
+        ],
+        "correctAnswer": "Ootheca",
+        "hint": "It is a hardened, purse-like proteinaceous casing.",
+        "workedSolution": "Female cockroaches enclose their fertilized eggs in a leathery, chitinous egg case called an ootheca, which shields developing embryos from desiccation and predators.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s4_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which insect exhibits incomplete metamorphosis during its life cycle?",
+        "options": [
           "Housefly",
           "Mosquito",
+          "Grasshopper",
           "Butterfly"
         ],
         "correctAnswer": "Grasshopper",
-        "hint": "This insect has only 3 lifecycle stages: Egg, Nymph, Adult.",
-        "workedSolution": "Grasshoppers undergo incomplete metamorphosis with three stages: Egg -> Nymph -> Adult.",
+        "hint": "The young nymph resembles the adult without passing through a pupal stage.",
+        "workedSolution": "Grasshoppers undergo incomplete metamorphosis with three stages: Egg -> Nymph -> Adult. The other options undergo complete 4-stage metamorphosis.",
         "points": 1
-      },
-      {
-        "id": "b8_lc_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "State three public health measures necessary to break the transmission cycle of housefly-borne diseases in community food markets.",
-        "correctAnswer": "(1) Storing all cooked and fresh food in fly-proof wire mesh showcases; (2) Disposing of organic garbage in tightly covered dustbins; (3) Constructing ventilated improved pit (VIP) latrines and screening drainage channels.",
-        "hint": "Prevent flies from contacting human feces and contaminating exposed food.",
-        "workedSolution": "Break transmission by denying flies access to breeding substrates (organic wastes/feces) and shielding food surfaces using fly-proof mesh covers.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b8_strand3_dentition",
+    "id": "b8_sci_strand2_life_cycles",
     "gradeLevel": "BS8",
-    "strandNumber": 3,
-    "strandTitle": "Strand 3: Systems",
-    "subStrandTitle": "The Human Body Systems (Dentition & Digestion)",
-    "order": 7,
-    "notes": {
-      "summaryMarkdown": "### Human Dentition & Digestive Architecture\nHumans are heterodonts possessing four distinct morphofunctional types of teeth adapted for an omnivorous diet:\n1. **Incisors** (8 total): Chisel-shaped crowns with sharp horizontal cutting edges; specialized for biting, snipping, and cutting food.\n2. **Canines** (4 total): Pointed conical crowns; specialized for piercing, gripping, and tearing fibrous meat.\n3. **Premolars** (8 total): Broad crowns with two distinct cusps (bicuspids); specialized for crushing and grinding food.\n4. **Molars** (12 total): Large flattened crowns with 4 to 5 grinding cusps; specialized for crushing and pulverizing food during mastication.\n\n#### Permanent Dental Formula:\n$$i\\frac{2}{2}, c\\frac{1}{1}, pm\\frac{2}{2}, m\\frac{3}{3} \\times 2 = 32\\text{ teeth}$$",
-      "keyTerms": [
-        {
-          "term": "Dental Plaque",
-          "definition": "A sticky, colorless biofilm of bacteria, salivary proteins, and food residues that adheres to teeth surfaces."
-        },
-        {
-          "term": "Enamel",
-          "definition": "The highly mineralized calcium hydroxyapatite protective outer layer covering the tooth crown; hardest tissue in the human body."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 320 180\" width=\"100%\" height=\"150\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><path d=\"M 50,140 Q 160,20 270,140\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\"/><rect x=\"145\" y=\"42\" width=\"14\" height=\"20\" rx=\"3\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"161\" y=\"42\" width=\"14\" height=\"20\" rx=\"3\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"160\" y=\"32\" font-size=\"9\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"middle\">Incisors (Biting)</text><polygon points=\"125,72 135,55 142,72\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><polygon points=\"180,72 187,55 197,72\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"110\" y=\"60\" font-size=\"8\" font-weight=\"bold\" fill=\"#d97706\" text-anchor=\"end\">Canines (Tearing)</text><rect x=\"90\" y=\"80\" width=\"16\" height=\"22\" rx=\"3\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"214\" y=\"80\" width=\"16\" height=\"22\" rx=\"3\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"75\" y=\"95\" font-size=\"8\" font-weight=\"bold\" fill=\"#059669\" text-anchor=\"end\">Premolars</text><rect x=\"65\" y=\"110\" width=\"18\" height=\"24\" rx=\"4\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"237\" y=\"110\" width=\"18\" height=\"24\" rx=\"4\" fill=\"#ffffff\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"50\" y=\"125\" font-size=\"8\" font-weight=\"bold\" fill=\"#7c3aed\" text-anchor=\"end\">Molars (Grinding)</text><text x=\"160\" y=\"170\" font-size=\"10\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">HUMAN LOWER JAW DENTITION</text></svg>"
-    },
-    "sampleWorkedProblems": [
-      {
-        "id": "wp_b8_s3_01",
-        "questionPrompt": "Explain the biochemical etiology of dental caries (tooth decay) and why fluoridated toothpaste provides prophylactic protection.",
-        "stepByStepSolution": "1. Cariogenic bacteria (*Streptococcus mutans*) residing in dental plaque metabolize dietary sucrose sugars via anaerobic glycolysis.\n2. This fermentation generates organic lactic acid, causing localized plaque pH to plunge below critical 5.5.\n3. The acidic medium demineralizes and dissolves calcium hydroxyapatite enamel, carving out dental cavities.\n4. Fluoride in toothpaste converts hydroxyapatite into fluorapatite ($Ca_5(PO_4)_3F$), which is substantially more resistant to acid demineralization and remineralizes early enamel lesions.",
-        "examinerTip": "Emphasize that bacteria + sugar = acid, and acid dissolves enamel minerals."
-      }
-    ],
-    "drillQuestions": [
-      {
-        "id": "b8_dt_q1",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "What is the total number of canine teeth present in a complete set of permanent adult human teeth?",
-        "options": [
-          "4",
-          "8",
-          "2",
-          "6"
-        ],
-        "correctAnswer": "4",
-        "hint": "There is one canine on each side of the upper and lower jaws (1 x 4).",
-        "workedSolution": "An adult human has 4 canines: 2 in the maxilla (upper jaw) and 2 in the mandible (lower jaw).",
-        "points": 1
-      },
-      {
-        "id": "b8_dt_q2",
-        "difficulty": "medium",
-        "type": "objective",
-        "prompt": "Which enzyme present in human saliva initiates the chemical digestion of carbohydrates in the mouth?",
-        "options": [
-          "Salivary amylase (ptyalin)",
-          "Pepsin",
-          "Trypsin",
-          "Gastric lipase"
-        ],
-        "correctAnswer": "Salivary amylase (ptyalin)",
-        "hint": "Hydrolyzes insoluble starch into sweet maltose disaccharides.",
-        "workedSolution": "Salivary amylase (ptyalin) catalyzes the hydrolytic cleavage of starch into maltose disaccharide sugars in the mouth at optimal neutral pH.",
-        "points": 1
-      },
-      {
-        "id": "b8_dt_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Compare the dentition of a sheep (herbivore) with that of a lion (carnivore) in relation to their dietary specializations.",
-        "correctAnswer": "Sheep possess a hard horny dental pad on the upper jaw and sharp lower incisors for shearing grass, with a diastema space and broad ridged molars for grinding cellulose. Lions possess long curved canines for suffocating prey and razor-sharp carnassial teeth for shearing bone and flesh.",
-        "hint": "Contrast grinding herbivorous molars and dental pad with shearing carnassial teeth and stabbing canines.",
-        "workedSolution": "Herbivores lack upper incisors (possessing a dental pad) and feature high-crowned molars for crushing cellulose. Carnivores possess elongated stabbing canines and specialized shearing carnassial premolars/molars.",
-        "points": 3
-      }
-    ]
-  },
-  {
-    "id": "b8_strand3_solar_system",
-    "gradeLevel": "BS8",
-    "strandNumber": 3,
-    "strandTitle": "Strand 3: Systems",
-    "subStrandTitle": "The Solar System & Planetary Dynamics",
-    "order": 8,
-    "notes": {
-      "summaryMarkdown": "### Structure of the Solar System\nThe Solar System consists of the Sun (a yellow dwarf star) and all celestial objects bound to it by gravitational attraction.\n\n#### 1. Inner (Terrestrial) Planets:\nDense, rocky composition, few or no moons, no ring systems:\n* **Mercury**: Closest planet to Sun; extreme temperature fluctuations; cratered surface.\n* **Venus**: Dense $CO_2$ atmosphere causing runaway greenhouse effect; hottest planet ($~465^\\circ\\text{C}$).\n* **Earth**: Only planet with abundant liquid surface water and life-supporting oxygen atmosphere.\n* **Mars**: The Red Planet; iron oxide surface dust; thin $CO_2$ atmosphere.\n\n#### 2. Outer (Gas & Ice Giants):\nLow densities, massive gaseous envelopes, numerous moons, ring systems:\n* **Jupiter**: Largest planet; famous Great Red Spot cyclonic storm.\n* **Saturn**: Spectacular planetary rings composed of water ice and rock fragments.\n* **Uranus & Neptune**: Ice giants containing frozen water, ammonia, and methane compounds.",
-      "keyTerms": [
-        {
-          "term": "Asteroid Belt",
-          "definition": "A circumstellar disc in the Solar System located between the orbits of Mars and Jupiter occupied by numerous irregularly shaped asteroids."
-        },
-        {
-          "term": "Light Year",
-          "definition": "The astronomical distance that light travels in a vacuum in one Julian year ($~9.46 \\times 10^{12}\\text{ km}$)."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 360 180\" width=\"100%\" height=\"150\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#090d16\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"20\" cy=\"90\" r=\"38\" fill=\"#f59e0b\" stroke=\"#fbbf24\" stroke-width=\"2\"/><text x=\"20\" y=\"95\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Sun</text><circle cx=\"90\" cy=\"90\" r=\"4\" fill=\"#a3a3a3\"/><text x=\"90\" y=\"110\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Mercury</text><circle cx=\"120\" cy=\"90\" r=\"7\" fill=\"#fbbf24\"/><text x=\"120\" y=\"110\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Venus</text><circle cx=\"155\" cy=\"90\" r=\"8\" fill=\"#38bdf8\"/><text x=\"155\" y=\"110\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Earth</text><circle cx=\"190\" cy=\"90\" r=\"6\" fill=\"#ef4444\"/><text x=\"190\" y=\"110\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Mars</text><line x1=\"210\" y1=\"30\" x2=\"210\" y2=\"150\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,3\"/><text x=\"210\" y=\"22\" font-size=\"7\" fill=\"#94a3b8\" text-anchor=\"middle\">Asteroid Belt</text><circle cx=\"245\" cy=\"90\" r=\"16\" fill=\"#f97316\"/><text x=\"245\" y=\"120\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Jupiter</text><circle cx=\"295\" cy=\"90\" r=\"13\" fill=\"#eab308\"/><ellipse cx=\"295\" cy=\"90\" rx=\"20\" ry=\"4\" fill=\"none\" stroke=\"#fef08a\" stroke-width=\"1.5\"/><text x=\"295\" y=\"120\" font-size=\"7\" fill=\"#cbd5e1\" text-anchor=\"middle\">Saturn</text></svg>"
-    },
-    "sampleWorkedProblems": [
-      {
-        "id": "wp_b8_s3_02",
-        "questionPrompt": "Why is Venus substantially hotter than Mercury, even though Mercury is located much closer to the Sun?",
-        "stepByStepSolution": "1. Mercury possesses virtually no atmosphere to trap heat, radiating absorbed solar thermal energy immediately into space at night.\n2. In contrast, Venus possesses an extremely thick, dense atmosphere composed of 96% carbon dioxide ($CO_2$) beneath thick sulfuric acid clouds.\n3. Carbon dioxide acts as a potent greenhouse gas, permitting incoming shortwave solar radiation to penetrate but absorbing and re-radiating outgoing infrared thermal radiation.\n4. This creates a severe runaway greenhouse effect, trapping heat and maintaining surface temperatures above $460^\\circ\\text{C}$ globally.",
-        "examinerTip": "Attribute the temperature difference directly to Venus's thick carbon dioxide greenhouse atmosphere."
-      }
-    ],
-    "drillQuestions": [
-      {
-        "id": "b8_ss_q1",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "Which is the largest planet in the Solar System?",
-        "options": [
-          "Jupiter",
-          "Saturn",
-          "Neptune",
-          "Earth"
-        ],
-        "correctAnswer": "Jupiter",
-        "hint": "The massive gas giant featuring the Great Red Spot.",
-        "workedSolution": "Jupiter is the most massive planet in the Solar System, possessing more than twice the mass of all other planets combined.",
-        "points": 1
-      },
-      {
-        "id": "b8_ss_q2",
-        "difficulty": "medium",
-        "type": "objective",
-        "prompt": "Where is the Asteroid Belt located within our Solar System?",
-        "options": [
-          "Between the orbits of Mars and Jupiter",
-          "Between Earth and Mars",
-          "Beyond the orbit of Neptune",
-          "Between Mercury and Venus"
-        ],
-        "correctAnswer": "Between the orbits of Mars and Jupiter",
-        "hint": "It divides the inner rocky planets from the outer gas giants.",
-        "workedSolution": "The main Asteroid Belt is situated in the circumstellar region between the orbits of Mars and Jupiter.",
-        "points": 1
-      },
-      {
-        "id": "b8_ss_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Distinguish between a meteor, a meteoroid, and a meteorite.",
-        "correctAnswer": "A meteoroid is a small rocky or metallic fragment traveling through outer space. A meteor is the streak of light produced when a meteoroid burns up entering Earth's atmosphere. A meteorite is the surviving fragment that strikes Earth's surface.",
-        "hint": "Consider location: space vs atmosphere vs landed on Earth's surface.",
-        "workedSolution": "Meteoroid = space particle; Meteor = shooting star streak during atmospheric friction entry; Meteorite = terrestrial impact remnant.",
-        "points": 3
-      }
-    ]
-  },
-  {
-    "id": "b8_strand4_electricity",
-    "gradeLevel": "BS8",
-    "strandNumber": 4,
-    "strandTitle": "Strand 4: Forces and Energy",
-    "subStrandTitle": "Electricity & Basic Electronics (Semiconductors & Circuits)",
-    "order": 9,
-    "notes": {
-      "summaryMarkdown": "### Fundamentals of Electricity & Semiconductor Electronics\n#### Basic Electronic Components:\n* **Resistor**: Limits electrical current flow and drops potential difference according to Ohm's Law ($V = IR$).\n* **Capacitor**: Stores electrical charge on parallel conductive plates separated by a dielectric ($Q = CV$).\n* **Diode**: P-N junction semiconductor device that allows current to flow in only one direction (forward bias) while blocking reverse current.\n* **Light-Emitting Diode (LED)**: Semiconductor diode that emits visible photons when electrons recombine with holes in forward bias.\n\n#### Diode Biasing:\n* **Forward Bias**: Anode (p-type) connected to positive terminal; cathode (n-type) connected to negative terminal. Depletion layer shrinks, allowing current conduction.\n* **Reverse Bias**: Anode connected to negative terminal; cathode to positive terminal. Depletion layer expands, blocking conventional current.",
-      "keyTerms": [
-        {
-          "term": "Forward Bias",
-          "definition": "The condition where an external voltage is applied across a p-n junction diode in the direction that permits charge carriers to cross the junction freely."
-        },
-        {
-          "term": "Depletion Region",
-          "definition": "The insulating region at a p-n junction devoid of mobile charge carriers."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 320 150\" width=\"100%\" height=\"130\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/><rect x=\"30\" y=\"30\" width=\"260\" height=\"90\" rx=\"4\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\"/><polygon points=\"150,20 170,30 150,40\" fill=\"#38bdf8\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/><line x1=\"170\" y1=\"20\" x2=\"170\" y2=\"40\" stroke=\"#38bdf8\" stroke-width=\"2\"/><text x=\"160\" y=\"15\" font-size=\"10\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">Diode (Forward Bias)</text><line x1=\"75\" y1=\"65\" x2=\"75\" y2=\"85\" stroke=\"#facc15\" stroke-width=\"3\"/><line x1=\"85\" y1=\"70\" x2=\"85\" y2=\"80\" stroke=\"#facc15\" stroke-width=\"2\"/><circle cx=\"230\" cy=\"75\" r=\"14\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\"/><text x=\"230\" y=\"105\" font-size=\"9\" font-weight=\"bold\" fill=\"#fbbf24\" text-anchor=\"middle\">Lamp Lights</text></svg>"
-    },
-    "sampleWorkedProblems": [
-      {
-        "id": "wp_b8_s4_01",
-        "questionPrompt": "In an electronic circuit, an LED rated at 2.0 V and 20 mA is powered by a 9.0 V battery. Calculate the value of the protective series resistor required.",
-        "stepByStepSolution": "1. Determine voltage drop across resistor: $$V_R = V_{battery} - V_{LED} = 9.0\\text{ V} - 2.0\\text{ V} = 7.0\\text{ V}$$.\n2. Convert current to amperes: $$I = 20\\text{ mA} = 0.020\\text{ A}$$.\n3. Apply Ohm's Law: $$R = \\frac{V_R}{I} = \\frac{7.0\\text{ V}}{0.020\\text{ A}} = 350\\;\\Omega$$.\n4. A $350\\;\\Omega$ protective current-limiting resistor is required.",
-        "examinerTip": "Never forget to subtract the LED forward voltage drop before applying Ohm's law to the resistor."
-      }
-    ],
-    "drillQuestions": [
-      {
-        "id": "b8_el_q1",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "Which electronic component allows electrical current to flow in one direction only?",
-        "options": [
-          "Diode",
-          "Resistor",
-          "Capacitor",
-          "Transformer"
-        ],
-        "correctAnswer": "Diode",
-        "hint": "Acts like a one-way electronic check valve.",
-        "workedSolution": "A semiconductor diode conducts current freely in forward bias and blocks current in reverse bias.",
-        "points": 1
-      },
-      {
-        "id": "b8_el_q2",
-        "difficulty": "medium",
-        "type": "objective",
-        "prompt": "Why must a current-limiting resistor always be placed in series with an LED in a circuit?",
-        "options": [
-          "To prevent excessive electrical current from burning out the delicate semiconductor junction",
-          "To change the color of the emitted light",
-          "To convert alternating current into direct current",
-          "To recharge the dry cell battery"
-        ],
-        "correctAnswer": "To prevent excessive electrical current from burning out the delicate semiconductor junction",
-        "hint": "LEDs have negligible resistance when conducting; excessive current destroys the diode junction.",
-        "workedSolution": "In forward bias, LEDs exhibit very low internal resistance. Without a series ballast resistor, large current flows causing thermal burnout.",
-        "points": 1
-      },
-      {
-        "id": "b8_el_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Explain how a bridge rectifier constructed with four semiconductor diodes converts alternating current (AC) into direct current (DC).",
-        "correctAnswer": "During each alternating half-cycle of AC voltage, two diagonally opposite diodes enter forward bias and conduct, while the other two enter reverse bias and block current. This redirects both alternating polarities through the load in the identical direction, producing unidirectional pulsating DC.",
-        "hint": "Consider diode pairs conducting alternately during positive and negative AC half-cycles.",
-        "workedSolution": "Bridge rectification directs both halves of the AC waveform through alternate forward-biased diode pairs so that current passes through the load in a single constant direction.",
-        "points": 3
-      }
-    ]
-  },
-  {
-    "id": "b9_strand4_force_motion",
-    "gradeLevel": "BS9",
-    "strandNumber": 4,
-    "strandTitle": "Strand 4: Forces and Energy",
-    "subStrandTitle": "Force, Motion, Pressure & Mechanics",
-    "order": 10,
-    "notes": {
-      "summaryMarkdown": "### Classical Mechanics, Newton's Laws & Fluid Pressure\n#### Newton's Laws of Motion:\n1. **First Law (Inertia)**: An object remains in its state of rest or uniform motion in a straight line unless acted upon by a resultant external force.\n2. **Second Law ($F = ma$)**: The rate of change of momentum of a body is directly proportional to the applied resultant force and takes place in the direction of the force.\n3. **Third Law (Action & Reaction)**: If body A exerts a force on body B, body B exerts an equal and opposite force on body A ($F_{action} = -F_{reaction}$).\n\n#### Pressure in Fluids:\n$$P = \\frac{\\text{Force (N)}}{\\text{Area (m}^2\\text{)}} = \\frac{F}{A}\\text{ (Pascals)}$$\n$$P_{liquid} = h \\rho g\\text{ (increases linearly with depth } h\\text{)}$$",
-      "keyTerms": [
-        {
-          "term": "Inertia",
-          "definition": "The natural reluctance of any physical body to change its state of rest or uniform velocity."
-        },
-        {
-          "term": "Pascal (Pa)",
-          "definition": "The SI unit of pressure equivalent to one Newton per square meter ($1\\text{ N/m}^2$)."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 340 160\" width=\"100%\" height=\"140\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"125\" x2=\"310\" y2=\"125\" stroke=\"#64748b\" stroke-width=\"2\"/><polygon points=\"160,85 145,125 175,125\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"2\"/><circle cx=\"160\" cy=\"85\" r=\"3.5\" fill=\"#ffffff\"/><text x=\"160\" y=\"142\" font-size=\"10\" font-weight=\"bold\" fill=\"#1d4ed8\" text-anchor=\"middle\">Fulcrum (Pivot)</text><line x1=\"50\" y1=\"85\" x2=\"290\" y2=\"85\" stroke=\"#1e293b\" stroke-width=\"4\"/><rect x=\"60\" y=\"55\" width=\"30\" height=\"30\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.5\"/><text x=\"75\" y=\"45\" font-size=\"10\" font-weight=\"bold\" fill=\"#b91c1c\" text-anchor=\"middle\">Load (L)</text><line x1=\"270\" y1=\"50\" x2=\"270\" y2=\"82\" stroke=\"#16a34a\" stroke-width=\"2.5\"/><polygon points=\"266,78 270,85 274,78\" fill=\"#16a34a\"/><text x=\"270\" y=\"42\" font-size=\"10\" font-weight=\"bold\" fill=\"#16a34a\" text-anchor=\"middle\">Effort (E)</text><text x=\"110\" y=\"75\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Load arm</text><text x=\"215\" y=\"75\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Effort arm</text></svg>"
-    },
-    "sampleWorkedProblems": [
-      {
-        "id": "wp_b9_s4_01",
-        "questionPrompt": "A hydraulic vehicle lift has a small piston of cross-sectional area $0.02\\text{ m}^2$ and a large piston of area $0.80\\text{ m}^2$. Calculate the minimum force that must be applied to the small piston to lift a car of mass $1,600\\text{ kg}$ ($g = 10\\text{ m/s}^2$).",
-        "stepByStepSolution": "1. Calculate weight of car (Load): $$F_2 = mg = 1,600\\text{ kg} \\times 10\\text{ m/s}^2 = 16,000\\text{ N}$$.\n2. According to Pascal's Principle, pressure is transmitted undiminished: $$P_1 = P_2 \\implies \\frac{F_1}{A_1} = \\frac{F_2}{A_2}$$.\n3. Rearrange for effort force $F_1$: $$F_1 = F_2 \\times \\frac{A_1}{A_2} = 16,000\\text{ N} \\times \\frac{0.02\\text{ m}^2}{0.80\\text{ m}^2}$$.\n4. $$F_1 = 16,000 \\times \\frac{1}{40} = 400\\text{ N}$$.\n5. A modest force of $400\\text{ N}$ lifts the $16,000\\text{ N}$ automobile.",
-        "examinerTip": "State Pascal's principle clearly: pressure is equal throughout an enclosed hydraulic fluid."
-      }
-    ],
-    "drillQuestions": [
-      {
-        "id": "b9_fm_q1",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "Which physical quantity is obtained from the product of mass and acceleration ($F = ma$)?",
-        "options": [
-          "Resultant Force",
-          "Work Done",
-          "Kinetic Energy",
-          "Momentum"
-        ],
-        "correctAnswer": "Resultant Force",
-        "hint": "Newton's Second Law of Motion.",
-        "workedSolution": "Newton's Second Law defines resultant force as mass multiplied by acceleration: $$F = ma$$.",
-        "points": 1
-      },
-      {
-        "id": "b9_fm_q2",
-        "difficulty": "medium",
-        "type": "objective",
-        "prompt": "Why do broad caterpillar tracks enable heavy agricultural bulldozers to traverse marshy swamp soil without sinking?",
-        "options": [
-          "Large contact surface area significantly reduces the pressure exerted on the ground",
-          "The tracks weigh less than circular rubber tires",
-          "The tracks emit vibrations that solidify muddy water",
-          "They increase gravitational attraction"
-        ],
-        "correctAnswer": "Large contact surface area significantly reduces the pressure exerted on the ground",
-        "hint": "Pressure is inversely proportional to surface area ($P = F/A$).",
-        "workedSolution": "Broad tracks maximize contact area $A$. Since $P = F/A$, spreading vehicle weight over a large area drastically reduces ground pressure, preventing sinking.",
-        "points": 1
-      },
-      {
-        "id": "b9_fm_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "A passenger standing in a moving Metro Mass bus lunges forward when the driver brakes suddenly. Explain this phenomenon using Newton's First Law of Motion.",
-        "correctAnswer": "Due to inertia, the passenger's body possesses forward momentum matching the bus's forward velocity. When brakes apply an external stopping force to the bus wheels, no external force has acted directly on the passenger's upper torso, which continues moving forward at constant velocity.",
-        "hint": "Refer to inertia and resistance to changes in uniform velocity.",
-        "workedSolution": "Newton's First Law (Law of Inertia) dictates that the passenger's body tends to maintain its uniform forward velocity until restrained, causing the apparent forward lunge upon sudden deceleration.",
-        "points": 3
-      }
-    ]
-  },
-  {
-    "id": "b9_strand5_climate_change",
-    "gradeLevel": "BS9",
-    "strandNumber": 5,
-    "strandTitle": "Strand 5: Humans and the Environment",
-    "subStrandTitle": "Climate Change, Green Economy & Waste Management",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
     "order": 11,
     "notes": {
-      "summaryMarkdown": "### Climate Change Dynamics & The Green Economy\n#### The Greenhouse Effect:\nNatural warming of the planet driven by greenhouse gases ($CO_2, CH_4, N_2O, H_2O\\text{ vapor}$) that absorb terrestrial infrared radiation.\n* **Enhanced Greenhouse Effect**: Anthropogenic emissions from industrial fossil fuel burning and deforestation amplify atmospheric thermal trapping, causing global surface temperature rises, rising sea levels, and severe droughts.\n\n#### Green Economy & Circular Resource Strategies:\n* **Transition to Renewable Energy**: Solar PV arrays, wind turbines, and micro-hydro schemes replacing fossil thermal plants.\n* **Integrated Waste Management (3Rs)**:\n  1. *Reduce*: Minimizing plastic packaging and single-use commodities at source.\n  2. *Reuse*: Reutilizing containers and items repeatedly without reprocessing.\n  3. *Recycle*: Industrial collection and remanufacturing of post-consumer polymers, glass, and metals into secondary products.\n* **Composting**: Converting organic biodegradable fractions into humus soil conditioner, averting anaerobic methane generation in landfills.",
-      "keyTerms": [
-        {
-          "term": "Greenhouse Gas (GHG)",
-          "definition": "Atmospheric gases capable of absorbing and emitting radiant infrared energy within the thermal infrared range."
-        },
-        {
-          "term": "Circular Economy",
-          "definition": "An economic model targeting zero waste through perpetual recycling, refurbishment, and remanufacturing of material streams."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 360 200\" width=\"100%\" height=\"160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"50\" cy=\"40\" r=\"20\" fill=\"#facc15\" stroke=\"#eab308\" stroke-width=\"2\"/><path d=\"M 180,35 Q 210,15 240,35 Q 270,35 280,55 Q 260,75 220,75 Q 170,75 165,55 Z\" fill=\"#93c5fd\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"220\" y=\"55\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">Condensation</text><path d=\"M 180,165 Q 260,155 345,170 L 345,195 L 180,195 Z\" fill=\"#60a5fa\"/><text x=\"260\" y=\"185\" font-size=\"9\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Reservoir / Ocean</text><line x1=\"260\" y1=\"150\" x2=\"260\" y2=\"85\" stroke=\"#0284c7\" stroke-width=\"2\" stroke-dasharray=\"3,3\"/><polygon points=\"256,90 260,83 264,90\" fill=\"#0284c7\"/><text x=\"260\" y=\"118\" font-size=\"8\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Evaporation</text></svg>"
+      "summaryMarkdown": "### Pathogenic Vectors: The Mosquito and Housefly Lifecycles\n* **NaCCA Curriculum Code:** `B8.2.2.1`\n* **Core Competency:** Trace life cycles of the mosquito and housefly, analyze disease transmission, and evaluate vector control.\n\n#### 1. Life Cycle of the Mosquito (*Anopheles*, *Aedes*, *Culex*)\nUndergoes complete metamorphosis in aquatic and terrestrial habitats:\n* **Egg:** Female *Anopheles* lays single boat-shaped eggs with lateral air floats on clean stagnant water. *Culex* lays eggs stuck together in rafts on polluted water.\n* **Larva (Wriggler):** Aquatic, active feeder. Breathes atmospheric air at the water surface:\n  * *Anopheles:* Lacks respiratory siphon; rests parallel to water surface.\n  * *Culex:* Possesses long breathing siphon; hangs at an angle from water surface.\n* **Pupa (Tumbler):** Comma-shaped, active non-feeding stage. Breathes through a pair of thoracic respiratory trumpets.\n* **Adult (Imago):** Emerges at water surface.\n  * Only female mosquitoes feed on vertebrate blood (requiring iron and proteins for egg maturation); males feed exclusively on plant nectar.\n  * *Anopheles* transmits *Plasmodium* (Malaria); *Aedes* transmits Yellow Fever & Dengue; *Culex* transmits *Wuchereria bancrofti* (Elephantiasis/Filariasis).\n\n#### 2. Life Cycle of the Housefly (*Musca domestica*)\n* **Egg:** Laid in batches on warm, decaying organic matter, feces, and garbage.\n* **Larva (Maggot):** Legless, conical white larva that feeds on decaying organic material.\n* **Pupa:** Barrel-shaped, dark brown puparium in dry soil.\n* **Adult:** Mechanical vector of pathogens (cholera, typhoid, dysentery). Houseflies vomit digestive enzymes onto solid food, sponge up the liquefied solution, and contaminate food surfaces with hairy appendages and fecal drops.\n\n#### 3. Vector Control & Ecological Disruption\n* **Larval Control:** Pouring oil/kerosene films on stagnant water surfaces to block respiratory siphons (suffocation); biological control using *Gambusia* (mosquito fish) or *Bacillus thuringiensis israelensis* (Bti).\n* **Adult Control:** Insecticide-Treated Nets (ITNs), indoor residual spraying, outdoor fogging.\n* **Environmental Sanitation:** Eliminating stagnant pools, clearing empty tins and tires, covering trash bins.",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b9_s5_01",
-        "questionPrompt": "Discuss two practical climate adaptation strategies that coastal communities along the Gulf of Guinea in Ghana can implement against sea erosion.",
-        "stepByStepSolution": "1. Construction of Rock Groynes and Sea Defense Boulders: Armoring vulnerable coastlines (e.g. Keta, Ada) with heavy granite boulders dissipates wave kinetic energy and arrests longshore sand drift.\n2. Mangrove Wetland Afforestation: Replanting indigenous red and white mangrove trees along lagoons stabilizes shoreline sediments with dense prop roots while creating fish nurseries and sequestering carbon.",
-        "examinerTip": "Provide specific engineering (sea defense walls) and ecological (mangrove restoration) interventions."
+        "id": "ex_b8_s4_1",
+        "questionPrompt": "Explain scientifically how pouring a thin film of kerosene or waste oil over stagnant pools of water eliminates mosquito larvae and pupae.",
+        "stepByStepSolution": "Step 1: Identify respiratory adaptation: Mosquito larvae (wrigglers) and pupae (tumblers) are aquatic but must breathe atmospheric oxygen at the water surface via respiratory siphons (larvae) or respiratory trumpets (pupae).\nStep 2: Surface tension and barrier effect: The thin oil film drastically reduces the surface tension of the water and forms an impermeable physical hydrocarbon barrier between the air and water.\nStep 3: Asphyxiation: When the larvae pierce the surface film to breathe, oil enters and blocks their microscopic spiracles and respiratory siphons, leading to rapid asphyxiation (suffocation) and death within hours.",
+        "examinerTip": "Examiner Tip: Emphasize that oil acts by mechanical suffocation, not by chemical poisoning of the water."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b9_cc_q1",
+        "id": "q_b8_s4_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is a primary greenhouse gas produced by livestock enteric fermentation and anaerobic landfills?",
+        "prompt": "The active, aquatic, non-feeding stage in the mosquito life cycle is called the:",
         "options": [
-          "Methane ($CH_4$)",
-          "Oxygen ($O_2$)",
-          "Nitrogen ($N_2$)",
-          "Helium ($He$)"
+          "Maggot",
+          "Pupa (tumbler)",
+          "Larva (wriggler)",
+          "Nymph"
         ],
-        "correctAnswer": "Methane ($CH_4$)",
-        "hint": "A hydrocarbon gas emitted by ruminant belching and decomposing landfill refuse.",
-        "workedSolution": "Methane ($CH_4$) is an extremely potent greenhouse gas with a global warming potential 28 times greater than carbon dioxide.",
+        "correctAnswer": "Pupa (tumbler)",
+        "hint": "It is comma-shaped and breathes through thoracic trumpets.",
+        "workedSolution": "The mosquito pupa (tumbler) is comma-shaped, highly mobile, and does not feed while transforming into the adult imago.",
         "points": 1
       },
       {
-        "id": "b9_cc_q2",
+        "id": "q_b8_s4_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "How does composting organic market waste contribute to climate change mitigation?",
+        "prompt": "How does the housefly transmit pathogens such as Vibrio cholerae to human food?",
         "options": [
-          "Aerobic composting prevents the anaerobic generation of potent methane gas in landfills",
-          "It stops the sun from shining on the soil",
-          "It absorbs solar radiation and turns it into liquid water",
-          "It eliminates the need for rainfall permanently"
+          "By injecting saliva into human blood through piercing mouthparts",
+          "Through mechanical transfer on its hairy legs and regurgitating digestive fluid on food",
+          "By laying eggs inside the human intestine",
+          "By drinking all water from the food"
         ],
-        "correctAnswer": "Aerobic composting prevents the anaerobic generation of potent methane gas in landfills",
-        "hint": "Aerobic microbes produce $CO_2$ and humus, preventing the formation of $CH_4$.",
-        "workedSolution": "When organic waste is buried in landfills, anaerobic microbes generate methane ($CH_4$). Aerobic composting produces benign humus without methane emissions.",
+        "correctAnswer": "Through mechanical transfer on its hairy legs and regurgitating digestive fluid on food",
+        "hint": "Houseflies have sponging mouthparts, not piercing-sucking mouthparts.",
+        "workedSolution": "Houseflies act as mechanical vectors. Pathogens adhere to their hairy legs, body, and sticky footpads. When feeding, they regurgitate digestive saliva and defecate on food, contaminating it.",
         "points": 1
-      },
-      {
-        "id": "b9_cc_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Formulate a three-point waste valorization plan for a Junior High School to achieve a 'Zero Waste to Landfill' policy.",
-        "correctAnswer": "(1) Source segregation: Install color-coded bins for organic food scraps, plastics, and paper; (2) School composting facility: Aerobically convert cafeteria food waste into organic manure for the school vegetable garden; (3) Polymer recycling partnership: Collect and clean post-consumer PET water bottles for sale to local plastic pelletizing enterprises.",
-        "hint": "Address segregation at source, composting organics, and recycling polymers.",
-        "workedSolution": "A sustainable zero-waste plan pairs source segregation with on-site biological recovery (composting for agriculture) and industrial recycling partnerships for inorganic polymers.",
-        "points": 3
       }
     ]
   },
   {
-    "id": "b7_strand5_soil_weathering",
-    "gradeLevel": "BS7",
-    "strandNumber": 5,
-    "strandTitle": "Strand 5: Humans and the Environment",
-    "subStrandTitle": "Soil Formation, Weathering & Physical Properties",
+    "id": "b9_sci_strand2_life_cycles",
+    "gradeLevel": "BS9",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
     "order": 12,
     "notes": {
-      "summaryMarkdown": "### Rock Weathering & Physical Soil Profiles\nSoil is the upper weathered crust of the Earth supporting plant life, composed of mineral particles (45%), organic matter (5%), water (25%), and air (25%).\n\n#### Weathering of Rocks:\n1. **Physical (Mechanical) Weathering**: Breakdown of rocks into smaller particles without chemical alteration (e.g. exfoliation from temperature fluctuation, frost wedging in crevices, root wedging).\n2. **Chemical Weathering**: Decomposition of rock minerals through chemical reactions (e.g. carbonation of limestone by carbonic acid, hydration, oxidation of iron-bearing minerals to rust).\n3. **Biological Weathering**: Disintegration caused by living organisms (e.g. burrowing worms, moss/lichen humic acid excretion).\n\n#### Soil Physical Types:\n* **Sandy Soil**: Coarse particles, large pores, rapid drainage, low water/nutrient retention, highly aerated.\n* **Clayey Soil**: Fine microscopic particles (<0.002 mm), tiny pores, high water retention, poorly aerated, prone to waterlogging.\n* **Loamy Soil**: Balanced mixture of sand, silt, clay, and organic humus; optimal drainage and aeration for crop agriculture.",
-      "keyTerms": [
-        {
-          "term": "Weathering",
-          "definition": "The in situ breakdown and decomposition of rocks and minerals at or near the Earth's surface by physical, chemical, and biological processes."
-        },
-        {
-          "term": "Humus",
-          "definition": "The dark, amorphous organic component of soil formed by the microbial decomposition of plant and animal residues."
-        }
-      ],
-      "diagramSvg": "<svg viewBox=\"0 0 340 220\" width=\"100%\" height=\"180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><polygon points=\"50,30 290,30 310,180 70,190\" fill=\"#dcfce7\" stroke=\"#166534\" stroke-width=\"3.5\"/><polygon points=\"56,36 284,36 304,174 76,184\" fill=\"#f0fdf4\" stroke=\"#15803d\" stroke-width=\"1.5\"/><path d=\"M 120,60 Q 220,50 250,110 Q 230,160 140,150 Q 100,120 120,60 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"175\" y=\"110\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Vacuole</text><circle cx=\"95\" cy=\"90\" r=\"22\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"2\"/><circle cx=\"95\" cy=\"90\" r=\"8\" fill=\"#ca8a04\"/><text x=\"95\" y=\"125\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Nucleus</text><ellipse cx=\"260\" cy=\"60\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><text x=\"260\" y=\"85\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Chloroplast</text><ellipse cx=\"100\" cy=\"160\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><ellipse cx=\"220\" cy=\"165\" rx=\"14\" ry=\"8\" fill=\"#22c55e\" stroke=\"#15803d\"/><text x=\"170\" y=\"210\" font-size=\"10\" font-weight=\"bold\" fill=\"#64748b\" text-anchor=\"middle\">PLANT CELL ULTRASTRUCTURE</text></svg>"
+      "summaryMarkdown": "### Agricultural Crop Pests & Integrated Pest Management (IPM)\n* **NaCCA Curriculum Code:** `B9.2.2.1`\n* **Core Competency:** Classify agricultural pests by feeding habits, analyze crop damage, and implement Integrated Pest Management (IPM).\n\n#### 1. Classification of Crop Pests by Feeding Mechanism\n* **Biting and Chewing Pests:** Possess strong, serrated mandibles and maxillae to masticate vegetative tissue (e.g., grasshoppers, locusts, armyworms, beetles, caterpillars). Cause extensive defoliation, reducing photosynthetic capacity.\n* **Piercing and Sucking Pests:** Possess needle-like tubular stylets to pierce plant tissues and suck cell sap (e.g., aphids, cotton stainers, mealybugs, whiteflies, cocoa mirids/capsids). Cause leaf curling, chlorosis, and transmit viral plant diseases (e.g., Cocoa Swollen Shoot Virus).\n* **Boring Pests:** Larvae bore into plant stems, pods, or grains (e.g., maize stem borer *Busseola fusca*, coffee berry borer). Weaken structural lodging resistance and kill growing shoots.\n\n#### 2. Major Storage Pests\n* **Maize Weevil (*Sitophilus zeamais*):** Female bores holes into mature maize kernels to deposit eggs; larvae feed internally on the endosperm and embryo, leaving hollow grains riddled with characteristic exit holes.\n* **Cowpea Weevil (*Callosobruchus maculatus*):** Infests dried cowpea beans, reducing seeds to empty shells and dust.\n\n#### 3. Integrated Pest Management (IPM) Paradigm\nIPM combines ecological, cultural, biological, and chemical methods to minimize pest damage while safeguarding environmental health:\n1. **Cultural Controls:** Crop rotation, early planting, field sanitation, intercropping with repellent plants.\n2. **Biological Controls:** Introducing natural parasites, parasitoids (e.g., *Trichogramma* wasps), and predators (ladybird beetles).\n3. **Physical / Mechanical Controls:** Hand-picking caterpillars, light traps, hermetic Purdue Improved Crop Storage (PICS) bags for grains.\n4. **Chemical Controls:**Judicious, targeted application of selective, biodegradable pesticides as a last resort.",
+      "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "wp_b7_s5_01",
-        "questionPrompt": "Explain how onion-peeling exfoliation physical weathering occurs on exposed granite inselbergs in northern Ghana.",
-        "stepByStepSolution": "1. Granite rock is a poor conductor of heat.\n2. During cloudless daytime in northern Ghana, intense solar radiation causes the outer rock shell to expand rapidly while the cooler interior remains unaffected.\n3. At night, surface temperatures plummet, causing rapid thermal contraction of the outer rock layer.\n4. These cyclical expansions and contractions generate intense shearing differential stresses between outer and inner layers.\n5. Over repeated diurnal cycles, the outer rock shell develops curved stress fractures and peels off in curved concentric sheets like onion skins.",
-        "examinerTip": "Highlight that rock is a poor thermal conductor, resulting in thermal gradient stresses."
+        "id": "ex_b9_s4_1",
+        "questionPrompt": "Explain how Purdue Improved Crop Storage (PICS) hermetic storage bags protect grain from the maize weevil without chemical insecticides.",
+        "stepByStepSolution": "Step 1: Bag construction — PICS technology uses two inner high-density polyethylene liners encased inside a protective outer woven polypropylene sack.\nStep 2: Mechanism of action — Once grains are sealed tightly inside, the respiration of live grains and infesting weevils continues, consuming the limited trapped oxygen and producing carbon dioxide.\nStep 3: Hypoxia and death — Within 24-48 hours, oxygen concentration inside the sealed bag drops from 21% to below 5%, while CO2 levels rise. This hypoxic atmosphere halts insect feeding, arrests egg development, and suffocates all life stages (larvae, pupae, adults) without chemical residues.",
+        "examinerTip": "Examiner Tip: Emphasize that PICS bags function by oxygen deprivation (suffocation) through natural metabolic depletion."
       }
     ],
     "drillQuestions": [
       {
-        "id": "b7_sw_q1",
+        "id": "q_b9_s4_1",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which soil constituent represents approximately 45% of the volumetric composition of ideal agricultural soil?",
+        "prompt": "The maize weevil (Sitophilus zeamais) damages stored grains by:",
         "options": [
-          "Inorganic Mineral Matter",
-          "Organic Humus",
-          "Soil Air",
-          "Soil Water"
+          "Sucking water from the cob leaves",
+          "Larvae feeding internally on the endosperm and embryo",
+          "Injecting toxic venom into the roots",
+          "Covering grains with spider silk"
         ],
-        "correctAnswer": "Inorganic Mineral Matter",
-        "hint": "Weathered rock fragments, sand, silt, and clay particles.",
-        "workedSolution": "Ideal loam soil consists of 45% mineral particles, 25% water, 25% air, and 5% organic matter.",
+        "correctAnswer": "Larvae feeding internally on the endosperm and embryo",
+        "hint": "The larva develops inside the grain kernel.",
+        "workedSolution": "Female maize weevils bore into kernels to deposit eggs. Developing larvae consume the internal starch endosperm and embryo, leaving hollow, nutritionally depleted grains.",
         "points": 1
       },
       {
-        "id": "b7_sw_q2",
+        "id": "q_b9_s4_2",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why does clay soil become sticky and plastic when wet and rock-hard when baked dry by the sun?",
+        "prompt": "Aphids damage crops primarily through their mouthparts, which are adapted for:",
         "options": [
-          "Clay consists of microscopic colloidal plate-like particles with high cohesion and water-holding capacity",
-          "Clay has the largest macro-pore diameters among all soils",
-          "Clay contains 90% quartz gravel",
-          "Clay repels water molecules through electrostatic repulsion"
+          "Biting and chewing leaves",
+          "Piercing epidermal tissues and sucking phloem sap",
+          "Chewing deep into woody roots",
+          "Scraping surface algae off tree trunks"
         ],
-        "correctAnswer": "Clay consists of microscopic colloidal plate-like particles with high cohesion and water-holding capacity",
-        "hint": "Colloidal sheet particles cling together tightly when lubricated by water.",
-        "workedSolution": "Clay particles (<0.002 mm) are colloidal flat plates with massive surface area per unit mass, developing high cohesion when wet and baking into rigid crusts when dehydrated.",
+        "correctAnswer": "Piercing epidermal tissues and sucking phloem sap",
+        "hint": "Aphids have needle-like stylets.",
+        "workedSolution": "Aphids are piercing and sucking insects with needle-like stylets that penetrate plant vascular bundles to extract nutrient-rich phloem sap, transmitting plant viruses.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand2_crop_production",
+    "gradeLevel": "BS7",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Agricultural Crop Production Systems (Plant Nutrients, Seedbeds, Harvesting & Storage)",
+    "order": 13,
+    "notes": {
+      "summaryMarkdown": "### Crop Agronomy: Classification, Nursery Management & Germination Testing\n* **NaCCA Curriculum Code:** `B7.2.3.1`\n* **Core Competency:** Classify agricultural crops, demonstrate seedbed preparation, and conduct seed germination viability percentage trials.\n\n#### 1. Classification of Crops\n* **By Life Cycle:**\n  * **Annuals:** Complete life cycle in one growing season (e.g., maize, rice, cowpea, tomato).\n  * **Biennials:** Require two growing seasons: vegetative growth in year 1; flowering and seed set in year 2 (e.g., carrot, cabbage, onion).\n  * **Perennials:** Live for more than two years, bearing repeated harvests (e.g., cocoa, oil palm, mango, citrus, rubber).\n* **By Economic Agronomic Use:**\n  * Cereals / Grains (maize, sorghum, millet, rice).\n  * Legumes / Pulses (cowpea, groundnut, soybean, bambara groundnut).\n  * Root & Tuber crops (cassava, yam, cocoyam, sweet potato).\n  * Vegetables (tomato, pepper, garden egg, okra).\n  * Tree / Cash crops (cocoa, coffee, cashew, oil palm).\n\n#### 2. Seed Nursery Bed Preparation\n* Nursery beds provide a controlled, protected micro-environment for tiny, delicate seeds (e.g., tomato, pepper, cabbage) before field transplanting.\n* **Soil Requirements:** Friable, well-drained topsoil mixed with well-rotted organic compost ($2:1$ ratio).\n* **Shading & Sterilization:** Shading protects tender seedlings from solar scorching and beating raindrops; soil heating/sterilization destroys weed seeds and soil-borne fungal pathogens (*damping-off*).\n\n#### 3. Seed Germination Viability Test\n$$\\text{Germination Percentage} (\\%) = \\frac{\\text{Number of Seeds Germinated}}{\\text{Total Number of Seeds Planted}} \\times 100$$\nA viability test above $85\\%$ indicates premium seed quality suitable for direct field sowing.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s5_1",
+        "questionPrompt": "An agricultural officer samples 200 seeds from a bag of certified hybrid seed maize and places them on moist filter paper in Petri dishes. After 6 days, 174 seeds have successfully germinated. Calculate the germination percentage and determine if the seed batch is viable for commercial planting (minimum threshold = 80%).",
+        "stepByStepSolution": "Step 1: Write the formula: Germination Percentage = (Number of Germinated Seeds / Total Seeds Planted) x 100%.\nStep 2: Substitute values: Germination Percentage = (174 / 200) x 100% = 0.87 x 100% = 87%.\nStep 3: Evaluate against threshold: Since 87% is greater than the standard 80% threshold, the seed lot is viable, healthy, and recommended for commercial planting.",
+        "examinerTip": "Examiner Tip: Always state the formula before substituting numbers. Show the calculation steps clearly."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s5_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A crop that completes its vegetative, flowering, and seed maturation cycle within a single growing season is classified as an:",
+        "options": [
+          "Perennial crop",
+          "Biennial crop",
+          "Annual crop",
+          "Evergreen crop"
+        ],
+        "correctAnswer": "Annual crop",
+        "hint": "Maize, cowpea, and rice are common examples.",
+        "workedSolution": "Annual crops (such as maize and cowpea) complete their entire life cycle from germination to harvest within one year or one growing season.",
         "points": 1
       },
       {
-        "id": "b7_sw_q3",
-        "difficulty": "high",
-        "type": "structured",
-        "prompt": "Describe the chemical reaction that occurs when acid rainwater dissolves limestone bedrock to create karst caves.",
-        "correctAnswer": "Atmospheric carbon dioxide dissolves in rainwater to form weak carbonic acid: $$H_2O + CO_2 \\rightarrow H_2CO_3$$. When acidic rain trickles over limestone ($CaCO_3$), it reacts to form soluble calcium hydrogen carbonate: $$CaCO_3\\text{(s)} + H_2CO_3\\text{(aq)} \\rightarrow Ca(HCO_3)_2\\text{(aq)}$$, gradually washing away rock to hollow out caves.",
-        "hint": "Write equations for carbonic acid formation and conversion of insoluble $CaCO_3$ to soluble $Ca(HCO_3)_2$.",
-        "workedSolution": "Carbonation chemical weathering: $$CaCO_3\\text{(s)} + H_2O\\text{(l)} + CO_2\\text{(g)} \\rightarrow Ca(HCO_3)_2\\text{(aq)}$$. Insoluble calcium carbonate is transformed into soluble bicarbonate that leaches away.",
-        "points": 3
+        "id": "q_b7_s5_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "If 45 out of 50 sampled tomato seeds germinate successfully on moist blotting paper, what is the germination viability percentage?",
+        "options": [
+          "80%",
+          "85%",
+          "90%",
+          "95%"
+        ],
+        "correctAnswer": "90%",
+        "hint": "Divide 45 by 50 and multiply by 100.",
+        "workedSolution": "Germination % = (45 / 50) x 100 = 0.90 x 100 = 90%.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand2_crop_production",
+    "gradeLevel": "BS8",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Agricultural Crop Production Systems (Plant Nutrients, Seedbeds, Harvesting & Storage)",
+    "order": 14,
+    "notes": {
+      "summaryMarkdown": "### Plant Nutrition, Deficiency Symptoms & Fertilizer Management\n* **NaCCA Curriculum Code:** `B8.2.3.1`\n* **Core Competency:** Differentiate macronutrients and micronutrients, identify deficiency symptoms, and prepare organic compost.\n\n#### 1. Essential Plant Nutrients\nPlants require 17 essential chemical elements for normal growth and reproduction:\n* **Non-Mineral Nutrients (from air & water):** Carbon (C), Hydrogen (H), Oxygen (O).\n* **Primary Macronutrients (required in large amounts):**\n  * **Nitrogen (N):** Promotes vigorous vegetative leafy growth, synthesis of chlorophyll and enzymes.\n  * **Phosphorus (P):** Stimulates rapid root development, energy transfer (ATP), and early flowering/fruiting.\n  * **Potassium (K):** Activates over 60 enzymes, regulates stomatal opening/closing, enhances disease resistance and tuber filling.\n* **Secondary Macronutrients:** Calcium (Ca), Magnesium (Mg — central atom of chlorophyll), Sulfur (S).\n* **Micronutrients (Trace elements, required in minute quantities):** Iron (Fe), Zinc (Zn), Boron (B), Manganese (Mn), Copper (Cu), Molybdenum (Mo), Chlorine (Cl).\n\n#### 2. Visual Deficiency Symptoms\n* **Nitrogen (N) Deficiency:** General chlorosis (yellowing) starting on older, lower leaves; stunted, spindly stalks.\n* **Phosphorus (P) Deficiency:** Purple or bronze tinting along leaf margins and veins; severely underdeveloped root systems; delayed crop maturity.\n* **Potassium (K) Deficiency:** Marginal chlorosis followed by necrosis (scorched/burnt edges) of older leaves; weak lodging stems.\n* **Magnesium (Mg) Deficiency:** Interveinal chlorosis (veins remain green while leaf lamina turns yellow) on older leaves.\n\n#### 3. Organic vs. Inorganic Fertilizers\n* **Inorganic / Mineral Fertilizers:** High nutrient concentration, rapid solubility and uptake (e.g., NPK 15-15-15, Urea $46\\%\\text{ N}$, Single Superphosphate). Risk of soil acidification and leaching eutrophication if over-applied.\n* **Organic Fertilizers (Compost, Farmyard Manure):** Low nutrient concentration but improves soil crumb structure, cation exchange capacity (CEC), and water retention without chemical burns.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s5_1",
+        "questionPrompt": "A farmer notices that older leaves of maize plants are exhibiting prominent V-shaped yellowing starting from the leaf tips down the midrib, and plants are stunted. Identify the deficient nutrient and recommend an immediate corrective remedy.",
+        "stepByStepSolution": "Step 1: Analyze visual symptoms: V-shaped chlorosis beginning at the tips of mature lower leaves and progressing inward along the central midrib is the classic diagnostic signature of Nitrogen (N) deficiency.\nStep 2: Biological rationale: Nitrogen is a mobile element in plant tissue; when deficient, the plant mobilizes existing nitrogen from older leaves to sustain new growing shoots, causing older leaves to yellow first.\nStep 3: Corrective recommendation: Apply a fast-acting nitrogenous fertilizer such as Urea (46% N) or Calcium Ammonium Nitrate (CAN) as a top-dressing, or incorporate well-cured farmyard manure into the root zone.",
+        "examinerTip": "Examiner Tip: Note the distinction between mobile nutrients (deficiency appears on older leaves first: N, P, K, Mg) and immobile nutrients (deficiency appears on young leaves first: Ca, Fe)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s5_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which essential plant nutrient is the central metallic ion in the chlorophyll molecule responsible for photosynthesis?",
+        "options": [
+          "Iron",
+          "Magnesium",
+          "Calcium",
+          "Zinc"
+        ],
+        "correctAnswer": "Magnesium",
+        "hint": "Its deficiency causes interveinal chlorosis.",
+        "workedSolution": "Magnesium (Mg2+) is the central coordination atom in the porphyrin ring of the chlorophyll molecule. Deficiency causes loss of green color between leaf veins.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s5_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A bag of commercial compound fertilizer labeled 'NPK 15-15-15' indicates that it contains:",
+        "options": [
+          "15% Nitrogen, 15% Phosphorus, and 15% Potassium",
+          "15 grams of pure rock in every kilogram",
+          "15 total chemical elements mixed together",
+          "Equal parts sand, loam, and clay"
+        ],
+        "correctAnswer": "15% Nitrogen, 15% Phosphorus, and 15% Potassium",
+        "hint": "N = Nitrogen, P = Phosphorus (as P2O5), K = Potassium (as K2O).",
+        "workedSolution": "The grade 15-15-15 denotes that the fertilizer contains 15% available Nitrogen (N), 15% available Phosphorus (P2O5), and 15% soluble Potassium (K2O) by weight.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand2_crop_production",
+    "gradeLevel": "BS9",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Agricultural Crop Production Systems (Plant Nutrients, Seedbeds, Harvesting & Storage)",
+    "order": 15,
+    "notes": {
+      "summaryMarkdown": "### Cultural Agronomic Operations & Post-Harvest Technologies\n* **NaCCA Curriculum Code:** `B9.2.3.1`\n* **Core Competency:** Demonstrate post-nursery cultural practices and deploy advanced post-harvest grain/tuber storage methods.\n\n#### 1. Field Cultural Agronomic Practices\n* **Pricking Out:** Transferring crowded seedlings from dense germination seed trays into individual nursery beds or polythene pots to encourage root expansion.\n* **Hardening Off:** Gradually reducing water supply and shade exposure 7-10 days before field transplanting to condition seedlings to withstand harsh outdoor conditions.\n* **Transplanting:** Moving hardened seedlings to the permanent field; best performed late in the afternoon or on overcast, humid days to minimize transpiration shock.\n* **Thinning:** Removing weak, diseased, or excess seedlings to maintain optimal crop plant spacing.\n* **Supplying (Filling In):** Replacing seedlings that died after transplanting to ensure full field plant density.\n* **Staking:** Supporting weak-stemmed plants (e.g., tomatoes, yams) with vertical poles to keep leaves and fruit off the damp ground, preventing fungal rot and improving solar exposure.\n* **Mulching:** Covering the soil surface around plants with dry vegetative matter (grass, straw). Conserves soil moisture, suppresses weed growth, moderates soil temperature, and adds organic humus upon decomposition.\n\n#### 2. Post-Harvest Grain & Tuber Preservation\nPost-harvest losses in West Africa routinely claim $30-40\\%$ of harvested food before reaching market:\n* **Solar Dehydration / Oven Drying:** Reducing grain moisture content to below $12-14\\%$ to inhibit fungal mold (*Aspergillus flavus* producing aflatoxins) and insect proliferation.\n* **Hermetic Storage (PICS Technology):** Air-tight multi-layer bags that suffocate weevils without hazardous synthetic chemical dusts.\n* **Traditional Cribs:** Raised slatted timber structures that allow free natural cross-ventilation for drying unhusked maize cobs.\n* **Yam Barns:** Vertical wooden trellis systems under shade trees that provide ventilation to prevent tuber bruising, sprouting, and fungal rotting.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s5_1",
+        "questionPrompt": "Describe the horticultural procedure of 'hardening-off' vegetable seedlings prior to transplanting and explain the physiological benefits to the seedling.",
+        "stepByStepSolution": "Step 1: Procedure — Beginning 7 to 10 days before field transplanting, the farmer gradually removes the nursery shade cloth to expose seedlings to full direct sunlight and concurrently reduces irrigation frequency.\nStep 2: Physiological adjustments — The seedling responds by accumulating carbohydrates in stem tissues, developing a thicker waxy leaf cuticle, and strengthening cellular cell walls.\nStep 3: Agronomic outcome — Hardened seedlings experience significantly less transplanting shock, resist wilting from midday heat, and exhibit higher survival rates in the open field.",
+        "examinerTip": "Examiner Tip: Always state both components of hardening off: reducing water AND increasing sunlight exposure."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s5_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The cultural practice of replacing dead or missing seedlings in the field a few days after transplanting is called:",
+        "options": [
+          "Thinning",
+          "Pricking out",
+          "Supplying (filling in)",
+          "Staking"
+        ],
+        "correctAnswer": "Supplying (filling in)",
+        "hint": "It ensures full plant population per hectare.",
+        "workedSolution": "Supplying (also called filling-in or beat-up) is the replacement of seedlings that failed to establish after initial transplanting, maintaining the required field plant population density.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s5_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must cereal grains be dried to a moisture content of 12% to 14% before long-term storage in silos?",
+        "options": [
+          "To make the grains heavy for market scales",
+          "To prevent growth of aflatoxin-producing molds and suppress insect embryo emergence",
+          "To allow grains to absorb cooking oil faster",
+          "To turn the grain kernels brown"
+        ],
+        "correctAnswer": "To prevent growth of aflatoxin-producing molds and suppress insect embryo emergence",
+        "hint": "Fungi and bacteria require moisture above 14% to multiply.",
+        "workedSolution": "Moisture levels above 14% promote fungal spoilage (such as Aspergillus flavus which produces carcinogenic aflatoxins) and stimulate grain weevil activity. Drying below 13% preserves seed viability and food safety.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand2_animal_production",
+    "gradeLevel": "BS7",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
+    "order": 16,
+    "notes": {
+      "summaryMarkdown": "### Domestic Farm Animals: Classification & Economic Significance\n* **NaCCA Curriculum Code:** `B7.2.4.1`\n* **Core Competency:** Classify domestic livestock and evaluate their economic and nutritional contributions.\n\n#### 1. Classification of Domestic Farm Animals\n* **Ruminants (Polygastric animals):** Herbivorous mammals possessing a complex four-chambered stomach (Rumen, Reticulum, Omasum, Abomasum) capable of digesting cellulose via microbial fermentation.\n  * *Large Ruminants:* Cattle (West African Shorthorn, N'Dama, Zebu).\n  * *Small Ruminants:* Sheep (Djallonké), Goats (West African Dwarf).\n* **Non-Ruminants (Monogastric animals):** Animals possessing a single simple stomach chamber:\n  * Pigs (Swine), Rabbits, Horses, Donkeys.\n* **Poultry:** Domesticated avian species raised for meat and eggs:\n  * Chickens (layers, broilers), Ducks, Turkeys, Guinea fowls, Quails.\n\n#### 2. Economic & Nutritional Significance of Livestock\n* **Nutritional Security:** High-biological-value animal protein containing all essential amino acids, iron, zinc, and vitamin B12 (meat, milk, eggs).\n* **Industrial Raw Materials:** Hides and skins for leather footwear and garments; wool and down feathers; bone meal and blood meal for feeds.\n* **Draft Power & Transport:** Bullocks and donkeys providing traction power for plowing and cart transportation in the northern savannah.\n* **Organic Manure:** Dung and poultry droppings serve as high-nitrogen organic fertilizers for arable crop production.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s6_1",
+        "questionPrompt": "Classify the following domestic animals into Ruminants or Non-Ruminants, and justify each classification: Sheep, Pig, Rabbit, Cattle, Horse.",
+        "stepByStepSolution": "Sheep: Ruminant — Possesses a complex 4-chambered stomach; chews the cud (regurgitates partially digested boluses).\nPig: Non-Ruminant (Monogastric) — Possesses a single, simple acid-secreting stomach chamber.\nRabbit: Non-Ruminant (Hindgut Fermenter) — Possesses a single simple stomach, relying on an enlarged caecum for cellulose breakdown.\nCattle: Ruminant — True polygastric herbivore possessing rumen, reticulum, omasum, and abomasum chambers.\nHorse: Non-Ruminant (Hindgut Fermenter) — Single stomach; digests cellulose in the caecum and colon.",
+        "examinerTip": "Examiner Tip: Note that while rabbits and horses eat grass, they are NOT ruminants because they do not have a four-chambered stomach and do not chew the cud."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s6_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following farm animals is a small ruminant native to West Africa?",
+        "options": [
+          "West African Dwarf goat",
+          "Commercial broiler chicken",
+          "Large White pig",
+          "New Zealand White rabbit"
+        ],
+        "correctAnswer": "West African Dwarf goat",
+        "hint": "It is a small polygastric animal known for high trypanosomiasis resistance.",
+        "workedSolution": "The West African Dwarf goat and Djallonké sheep are indigenous small ruminants possessing four-chambered stomachs and adapted to humid West African ecologies.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s6_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are domestic cattle classified as polygastric animals while domestic pigs are monogastric?",
+        "options": [
+          "Cattle eat meat while pigs eat grass",
+          "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
+          "Pigs can fly while cattle cannot",
+          "Cattle have four hearts while pigs have one"
+        ],
+        "correctAnswer": "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
+        "hint": "Poly = many; Mono = single; Gastric = stomach.",
+        "workedSolution": "Cattle have a complex four-chambered digestive tract (rumen, reticulum, omasum, abomasum) for microbial cellulose fermentation, whereas pigs have a single simple glandular stomach.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand2_animal_production",
+    "gradeLevel": "BS8",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
+    "order": 17,
+    "notes": {
+      "summaryMarkdown": "### Livestock Nutrition & Digestive Physiology\n* **NaCCA Curriculum Code:** `B8.2.4.1`\n* **Core Competency:** Contrast the digestive anatomy of ruminants and monogastrics and formulate balanced rations.\n\n#### 1. Ruminant Digestive Physiology\nThe four stomach compartments of a ruminant:\n* **1. Rumen (Paunch):** The largest fermentation chamber (up to $80\\%$ of stomach volume). Houses trillions of symbiotic anaerobic bacteria, protozoa, and fungi that secrete cellulase enzymes to break down cellulose and hemicellulose into volatile fatty acids (VFAs: acetate, propionate, butyrate).\n* **2. Reticulum (Honeycomb):** Traps foreign heavy objects (hardware chamber); coordinates regurgitation of feed boluses back to the mouth for rumination (chewing the cud).\n* **3. Omasum (Manyplies / Bible):** Highly folded laminar leaves that absorb excess water, bicarbonate, and residual VFAs from the digesta.\n* **4. Abomasum (True Stomach):** The glandular compartment analogous to the monogastric stomach; secretes hydrochloric acid ($\\text{HCl}$) and pepsin for enzymatic protein digestion.\n\n#### 2. Classification of Livestock Feeds\n* **Roughages:** High in crude fiber ($>18\\%$) and low in Total Digestible Nutrients (TDN $<60\\%$). Essential for maintaining rumen motility and microbial fermentation (e.g., pasture grasses, silage, hay, legume haulms).\n* **Concentrates:** Low in crude fiber ($<18\\%$) and high in TDN ($>60\\%$):\n  * *Energy Concentrates:* Grains (maize, sorghum, rice bran, wheat offal).\n  * *Protein Concentrates:* Soybean meal, fish meal, cotton seed cake, groundnut cake.\n* **Supplements & Additives:** Bone meal and oyster shells (Ca & P for bone and eggshell formation), mineral salt licks, vitamin premixes, probiotics.\n\n#### 3. Maintenance vs. Production Rations\n* **Maintenance Ration:** The minimum balanced feed required to keep an animal alive and healthy at constant body weight without productive output.\n* **Production Ration:** The additional quantity of feed supplied above maintenance requirements to support growth, milk synthesis, egg laying, or draft work.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s6_1",
+        "questionPrompt": "Explain why a sheep can digest dry grass and fibrous straw efficiently while a pig fed the exact same diet will starve from malnutrition.",
+        "stepByStepSolution": "Step 1: Enzyme limitation — Neither vertebrate sheep nor pigs can produce the enzyme cellulase endogenously in their digestive tracts.\nStep 2: Rumen microbial fermentation — Sheep possess a specialized rumen hosting dense populations of symbiotic anaerobic microbes (bacteria and protozoa) that ferment cellulose into digestible volatile fatty acids (VFAs), which are absorbed as energy.\nStep 3: Monogastric limitation — Pigs possess a single simple glandular stomach lacking a pre-gastric fermentation chamber. Without cellulase-producing microbes, the fibrous cellulose passes through the pig's gut undigested and excreted as waste.",
+        "examinerTip": "Examiner Tip: Always identify volatile fatty acids (VFAs) as the primary energy currency absorbed by ruminants from cellulose fermentation."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s6_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which compartment of the ruminant stomach is considered the 'true stomach' because it secretes gastric enzymes and hydrochloric acid?",
+        "options": [
+          "Rumen",
+          "Reticulum",
+          "Omasum",
+          "Abomasum"
+        ],
+        "correctAnswer": "Abomasum",
+        "hint": "It functions identically to the human stomach.",
+        "workedSolution": "The abomasum is the fourth glandular compartment of the ruminant stomach that secretes digestive enzymes (pepsin) and HCl for true chemical digestion.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s6_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Oyster shell meal and steamed bone meal are incorporated into poultry layers' feed primarily to provide:",
+        "options": [
+          "Vitamin C for feather shine",
+          "Calcium and phosphorus for strong eggshell formation and skeletal strength",
+          "Excess dietary fat for fast body weight",
+          "Cellulose for stomach digestion"
+        ],
+        "correctAnswer": "Calcium and phosphorus for strong eggshell formation and skeletal strength",
+        "hint": "Eggshells are made of calcium carbonate.",
+        "workedSolution": "Commercial laying hens require large amounts of bioavailable calcium (Ca) and phosphorus (P) to construct rigid calcium carbonate eggshells and prevent cage layer fatigue (osteoporosis).",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand2_animal_production",
+    "gradeLevel": "BS9",
+    "strandNumber": 2,
+    "strandTitle": "STRAND 2: CYCLES",
+    "subStrandTitle": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
+    "order": 18,
+    "notes": {
+      "summaryMarkdown": "### Livestock Housing, Biosecurity & Veterinary Disease Management\n* **NaCCA Curriculum Code:** `B9.2.4.1`\n* **Core Competency:** Evaluate livestock housing systems, implement biosecurity protocols, and establish disease control regimes.\n\n#### 1. Livestock Housing Systems\n* **Poultry Housing Systems:**\n  * **Free-Range (Extensive):** Birds scavenge freely; low capital cost, but high mortality from predators, theft, and uncontrolled pathogen exposure.\n  * **Deep Litter System (Semi-Intensive):** Birds housed on concrete floors covered with 5-10 cm absorbent litter (wood shavings, chopped straw); protects from elements; requires frequent litter turning to prevent ammonia toxicity.\n  * **Battery Cage System (Intensive):** Layers housed in tiered wire cages with automatic egg rollout; high stocking density, clean eggs, and zero coccidiosis from litter pecking; requires high initial capital.\n* **Piggery (Pig Sties):** Concrete floors sloped toward drainage channels for daily washing; separate farrowing pens fitted with guard rails to prevent the sow from accidentally crushing piglets.\n* **Cattle Kraals / Sheds:** Fenced paddocks with shaded resting areas and feed/water troughs.\n\n#### 2. Biosecurity Protocols on the Farm\n* Installation of disinfectant footbaths (containing Virkon-S or formalin) at all farm entry gates.\n* Strict quarantine of newly purchased livestock for 14-21 days before introduction to the main herd.\n* Routine disposal of livestock mortalities via deep burial with quicklime or complete incineration.\n* Restricted visitor access and vehicle tire disinfection.\n\n#### 3. Major Livestock Diseases & Prevention\n* **Newcastle Disease (Viral - Poultry):** Respiratory distress, green diarrhea, twisted neck (torticollis). Prevented by Newcastle vaccination (I-2 or Lasota vaccine in drinking water).\n* **African Swine Fever (ASF - Viral - Pigs):** High fever, internal hemorrhages, high mortality. No effective vaccine; controlled strictly by biosecurity and culling.\n* **Anthrax (Bacterial - *Bacillus anthracis* - Ruminants):** Sudden death, uncoagulated tarry blood exuding from natural orifices. Carcasses must not be opened (spores form in air); vaccinated annually with Anthrax Spore Vaccine.\n* **Coccidiosis (Protozoan - *Eimeria* - Poultry & Rabbits):** Bloody diarrhea, ruffled feathers from damp litter. Controlled with coccidiostats in feed and dry litter management.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s6_1",
+        "questionPrompt": "A commercial broiler farmer reports that 4-week-old birds are huddling with ruffled feathers, refusing feed, and passing bloody droppings. The deep litter inside the poultry house is wet and emits a foul odor. Diagnose the condition and outline immediate and long-term control measures.",
+        "stepByStepSolution": "Step 1: Clinical diagnosis — Bloody diarrhea, anorexia, and ruffled feathers in 4-week-old broilers raised on wet litter are pathognomonic symptoms of Coccidiosis caused by the protozoan parasite Eimeria.\nStep 2: Immediate treatment — Administer an approved anticoccidial medication (e.g. Amprolium or Toltrazuril) through the flock's drinking water for 3 to 5 consecutive days.\nStep 3: Long-term environmental control — Immediately remove and replace the damp, caked litter with dry wood shavings. Fix leaking water drinkers, improve ventilation to lower humidity, and maintain dry litter to prevent the sporulation of infectious coccidial oocysts.",
+        "examinerTip": "Examiner Tip: Note that coccidiosis oocysts require warmth and moisture to become infective; dry litter prevents the disease cycle."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s6_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which livestock disease causes chickens to display green diarrhea, gasping, and a twisted neck (torticollis)?",
+        "options": [
+          "Newcastle disease",
+          "Anthrax",
+          "Foot and mouth disease",
+          "Rickets"
+        ],
+        "correctAnswer": "Newcastle disease",
+        "hint": "It is a deadly viral avian disease controlled by the Lasota vaccine.",
+        "workedSolution": "Newcastle disease is a highly contagious paramyxovirus infection of poultry that attacks respiratory, gastrointestinal, and nervous systems, leading to characteristic neck twisting and death.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s6_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must a farm animal suspected of having died from Anthrax NEVER be cut open for an autopsy?",
+        "options": [
+          "The animal's meat will spoil too fast",
+          "Exposure of Bacillus anthracis bacteria to atmospheric air induces formation of highly resilient, deadly spores",
+          "The skin is too thick to cut with knives",
+          "Anthrax bacteria turn into water when exposed to sunlight"
+        ],
+        "correctAnswer": "Exposure of Bacillus anthracis bacteria to atmospheric air induces formation of highly resilient, deadly spores",
+        "hint": "Anthrax bacteria form spores upon contact with air.",
+        "workedSolution": "Bacillus anthracis is a spore-forming bacterium. If an infected carcass is opened, exposure to atmospheric oxygen triggers sporulation, creating indestructible spores that contaminate the soil for decades and infect humans.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand3_human_body",
+    "gradeLevel": "BS7",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Human Body Systems (Digestion, Dentition, Respiration & Circulation)",
+    "order": 19,
+    "notes": {
+      "summaryMarkdown": "### Human Dentition: Tooth Structure, Dental Formulas & Oral Health\n* **NaCCA Curriculum Code:** `B7.3.1.1`\n* **Core Competency:** Identify human tooth types, relate anatomy to function, analyze tooth decay, and demonstrate oral hygiene.\n\n#### 1. Human Dental Architecture\nHumans are heterodonts (possessing different types of teeth) and diphyodonts (developing two sets of teeth in a lifetime):\n* **Deciduous (Milk) Teeth:** 20 teeth in children; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, m\\frac{2}{2} = 10 \\times 2 = 20$.\n* **Permanent Teeth:** 32 teeth in adults; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, pm\\frac{2}{2}, m\\frac{3}{3} = 16 \\times 2 = 32$.\n\n#### 2. Tooth Types & Functions\n* **Incisors (8):** Chisel-shaped with sharp cutting edges; biting and cutting food chunks.\n* **Canines (4):** Conical, pointed, dagger-like crowns; piercing, gripping, and tearing fibrous meat.\n* **Premolars (8):** Broad crowns with two pointed projections (cusps); crushing and grinding food.\n* **Molars (12):** Broad, flat occlusal surface with 4-5 cusps; heavy mastication and pulverizing.\n\n#### 3. Microscopic Anatomy of a Tooth\n* **Crown:** Visible portion projecting above the gum.\n  * *Enamel:* The hardest biological substance in the human body ($96\\%$ calcium hydroxyapatite crystals); shields against mechanical wear and acid erosion.\n  * *Dentine:* Hard bone-like living tissue beneath enamel containing microscopic fluid-filled tubules.\n  * *Pulp Cavity:* Living central core containing blood capillaries (nourishment) and sensory nerve fibers (pain reception).\n* **Neck:** Constricted boundary region surrounded by the gum (gingiva).\n* **Root:** Anchored in the alveolar bone socket of the jaw by the periodontal ligament and coated with cementum.\n\n#### 4. Pathology of Dental Caries (Tooth Decay)\n1. Food residues rich in refined sucrose adhere to tooth surfaces.\n2. Oral bacteria (*Streptococcus mutans*) ferment sugars within the sticky biofilm (plaque), producing lactic acid.\n3. When plaque pH drops below 5.5, organic acids demineralize calcium phosphate in the enamel.\n4. Erosion penetrates dentine into the pulp cavity, exposing sensory nerves and causing excruciating toothache and abscesses.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s7_1",
+        "questionPrompt": "The adult human dental formula is written as i: 2/2, c: 1/1, pm: 2/2, m: 3/3. Calculate the total number of teeth in the adult human mouth and determine the total number of grinding teeth.",
+        "stepByStepSolution": "Step 1: Understand formula structure — The dental formula represents the count of teeth in one quadrant of the upper jaw over one quadrant of the lower jaw (half of the mouth).\nStep 2: Sum upper and lower jaw counts in one half: Upper half = 2 + 1 + 2 + 3 = 8 teeth. Lower half = 2 + 1 + 2 + 3 = 8 teeth. Total for one side = 16 teeth.\nStep 3: Multiply by 2 for bilateral symmetry: Total teeth in adult mouth = 16 x 2 = 32 teeth.\nStep 4: Calculate total grinding teeth (premolars + molars): Premolars = (2 + 2) x 2 = 8. Molars = (3 + 3) x 2 = 12. Total grinding teeth = 8 + 12 = 20 teeth.",
+        "examinerTip": "Examiner Tip: Always remember to multiply the total dental formula count by 2 to account for both left and right sides of the jaw."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s7_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The hardest biological substance in the human body, covering the crown of the tooth, is the:",
+        "options": [
+          "Dentine",
+          "Enamel",
+          "Cementum",
+          "Alveolar bone"
+        ],
+        "correctAnswer": "Enamel",
+        "hint": "It is the non-living outer calcified layer.",
+        "workedSolution": "Enamel is the highly mineralized, hardest substance in the human body, protecting the underlying dentine and pulp from physical mastication wear and chemical attack.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s7_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Dental caries (tooth decay) is initiated chemically when mouth bacteria:",
+        "options": [
+          "Release basic ammonia that burns the gums",
+          "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
+          "Drink all water from the salivary glands",
+          "Inject poisonous enzymes into the dentine"
+        ],
+        "correctAnswer": "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
+        "hint": "Plaque bacteria produce acid from sugary foods.",
+        "workedSolution": "Oral plaque bacteria metabolize residual sucrose sugars to synthesize lactic acid, which drops oral pH below the critical threshold (5.5), dissolving hydroxyapatite mineral crystals in the tooth enamel.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand3_human_body",
+    "gradeLevel": "BS8",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Human Body Systems (Digestion, Dentition, Respiration & Circulation)",
+    "order": 20,
+    "notes": {
+      "summaryMarkdown": "### The Human Digestive System: Alimentary Anatomy & Enzymatic Catabolism\n* **NaCCA Curriculum Code:** `B8.3.1.1`\n* **Core Competency:** Trace the organs of the alimentary canal, describe digestive enzyme action, and explain nutrient absorption in the ileum.\n\n#### 1. The Alimentary Canal Journey\n* **Mouth (Buccal Cavity):** Teeth masticate food into a bolus; salivary amylase (ptyalin) hydrolyzes cooked starch into maltose; tongue rolls bolus into pharynx.\n* **Esophagus:** Wave-like rhythmic muscular contractions (**peristalsis**) propel bolus through the cardiac sphincter into the stomach.\n* **Stomach:** Muscular sac churning food with gastric juice into acidic **chyme**:\n  * *Hydrochloric Acid (HCl):* Provides low pH (1.5-2.0) to destroy ingested pathogens and activate pepsinogen into active pepsin.\n  * *Pepsin:* Protease enzyme that cleaves complex proteins into smaller polypeptide fragments.\n  * *Mucus:* Coats and protects the gastric epithelium from self-digestion (ulcers).\n* **Duodenum (First section of small intestine):** Receives bile from liver/gallbladder and pancreatic juice from the pancreas:\n  * *Bile (no enzymes):* Alkaline fluid containing bile salts that **emulsifies** large lipid globules into microscopic droplets, vastly increasing surface area for lipase action; neutralizes acidic chyme.\n  * *Pancreatic Amylase:* Converts remaining starch into maltose.\n  * *Trypsin:* Converts polypeptides into dipeptides.\n  * *Pancreatic Lipase:* Hydrolyzes emulsified lipids into glycerol and three fatty acid chains.\n* **Ileum (Small intestine):** Terminal chemical digestion by intestinal enzymes (maltase, sucrase, lactase, peptidases).\n* **Villi & Microvilli Absorption:** Folded finger-like projections maximizing absorption surface area:\n  * Glucose, amino acids, vitamins, and minerals are absorbed into central blood capillaries.\n  * Fatty acids and glycerol reassemble into triglycerides and enter the central **lacteal** (lymphatic vessel).\n* **Colon (Large Intestine):** Reabsorbs water and mineral salts, compacting indigestible dietary fiber (roughage) into feces.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s7_1",
+        "questionPrompt": "Bile contains no digestive enzymes whatsoever. Explain two critical physiological reasons why digestion of fats cannot proceed effectively without bile.",
+        "stepByStepSolution": "Reason 1: Emulsification of Lipids — Fats are hydrophobic and coalesce into large insoluble globules. Bile salts act as biological detergents that break large fat globules into microscopic emulsion droplets, dramatically increasing the surface area for pancreatic lipase to access and hydrolyze ester bonds.\nReason 2: Neutralization of Acidic Chyme — Chyme leaving the stomach is highly acidic (pH 1.5-2.0 due to HCl). Bile is strongly alkaline (rich in sodium bicarbonate), neutralizing the acid and establishing the optimal slightly alkaline pH (7.5-8.0) required for pancreatic and intestinal enzymes to function without denaturation.",
+        "examinerTip": "Examiner Tip: Never state that bile 'digests' fats. Bile 'emulsifies' fats physically, which allows lipase to digest them chemically."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s7_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The wave-like muscular contraction of the muscular walls of the esophagus that moves food toward the stomach is called:",
+        "options": [
+          "Peristalsis",
+          "Mastication",
+          "Emulsification",
+          "Assimilation"
+        ],
+        "correctAnswer": "Peristalsis",
+        "hint": "It is involuntary contraction and relaxation of smooth muscles.",
+        "workedSolution": "Peristalsis is the rhythmic, coordinated contraction and relaxation of circular and longitudinal smooth muscles in the alimentary tract that propels the food bolus forward.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s7_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which digestive enzyme is secreted into the stomach to initiate the chemical breakdown of proteins?",
+        "options": [
+          "Salivary amylase",
+          "Pepsin",
+          "Lipase",
+          "Maltase"
+        ],
+        "correctAnswer": "Pepsin",
+        "hint": "It requires an acidic pH provided by hydrochloric acid.",
+        "workedSolution": "Pepsin is secreted by gastric chief cells as inactive pepsinogen, which is activated by stomach HCl to cleave peptide bonds in dietary proteins, producing polypeptides.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand3_human_body",
+    "gradeLevel": "BS9",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Human Body Systems (Digestion, Dentition, Respiration & Circulation)",
+    "order": 21,
+    "notes": {
+      "summaryMarkdown": "### Respiratory Gas Exchange & Cardiovascular Hemodynamics\n* **NaCCA Curriculum Code:** `B9.3.1.1`\n* **Core Competency:** Model the mechanics of breathing and alveoli gas diffusion, and trace double blood circulation through the human heart.\n\n#### 1. Mechanics of Breathing (Ventilation)\n* **Inhalation (Inspiration):**\n  * External intercostal muscles contract; rib cage swings upward and outward.\n  * Diaphragm contracts and flattens downward.\n  * Thoracic cavity volume increases; intrathoracic pulmonary pressure drops below atmospheric pressure.\n  * Atmospheric air rushes down the pressure gradient into the lungs.\n* **Exhalation (Expiration):**\n  * External intercostal muscles relax; rib cage moves downward and inward.\n  * Diaphragm relaxes, returning to its domed upward position.\n  * Thoracic volume decreases; internal pulmonary pressure rises above atmospheric pressure.\n  * Air is forced passively out of the lungs.\n\n#### 2. Pulmonary Alveoli Gas Exchange\nAlveoli are microscopic air sacs adapted for gas diffusion:\n* Millions of alveoli provide a massive surface area ($\\approx 70\\text{ m}^2$).\n* Wall is a single layer of squamous epithelial cells (ultra-thin diffusion distance).\n* Moist inner surface dissolves oxygen gas before diffusion.\n* Surrounded by dense networks of pulmonary capillaries maintaining a steep concentration gradient:\n  * Oxygen diffuses from high concentration in alveolar air into deoxygenated blood, binding to hemoglobin to form **oxyhemoglobin**.\n  * Carbon dioxide diffuses from high concentration in venous blood across the alveolar wall into alveolar air for exhalation.\n\n#### 3. Cardiovascular Circulation: Double Circulatory Loop\nHumans possess a **closed, double circulatory system** (blood passes twice through the four-chambered heart during one complete circuit):\n* **Pulmonary Circulation:** Right ventricle $\\rightarrow$ Pulmonary Artery $\\rightarrow$ Lungs (oxygenation) $\\rightarrow$ Pulmonary Veins $\\rightarrow$ Left Atrium.\n* **Systemic Circulation:** Left Ventricle (thickest myocardium) $\\rightarrow$ Aorta $\\rightarrow$ Body Organs and Tissues $\\rightarrow$ Vena Cava $\\rightarrow$ Right Atrium.\n* **Blood Vessels:**\n  * *Arteries:* Carry high-pressure blood away from heart; thick muscular and elastic walls; no valves (except aortic and pulmonary semilunar valves).\n  * *Veins:* Return low-pressure blood toward heart; thin muscular walls; contain semilunar valves to prevent backflow.\n  * *Capillaries:* Microscopic vessels one cell thick for metabolic diffusion.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s7_1",
+        "questionPrompt": "The myocardium of the human left ventricle is nearly three times thicker than that of the right ventricle. Explain the physiological necessity of this structural difference.",
+        "stepByStepSolution": "Step 1: Identify destination of pumped blood — The right ventricle pumps deoxygenated blood a very short distance to the nearby lungs via the pulmonary artery against low vascular resistance.\nStep 2: Contrast left ventricle workload — The left ventricle must contract with sufficient hydrostatic force to pump oxygenated blood through the systemic circulation via the aorta to all organs, extremities (head, toes), and capillary beds of the entire body against high peripheral resistance.\nStep 3: Functional adaptation — A much thicker layer of cardiac muscle tissue generates the powerful systolic contractile pressure required to circulate blood throughout the entire systemic vascular tree.",
+        "examinerTip": "Examiner Tip: Always mention systemic circulation vs. pulmonary circulation when comparing ventricular wall thicknesses."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s7_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which blood vessel carries oxygenated blood from the lungs directly into the left atrium of the heart?",
+        "options": [
+          "Pulmonary artery",
+          "Pulmonary vein",
+          "Aorta",
+          "Vena cava"
+        ],
+        "correctAnswer": "Pulmonary vein",
+        "hint": "It is the only vein in the human body carrying oxygen-rich blood.",
+        "workedSolution": "The pulmonary vein is an anatomical exception; it returns newly oxygenated blood from the lungs to the left atrium of the heart.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s7_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "During human inhalation (inspiration), what happens to the diaphragm and the volume of the thoracic cavity?",
+        "options": [
+          "Diaphragm arches upward into a dome; thoracic volume decreases",
+          "Diaphragm contracts and flattens downward; thoracic volume increases",
+          "Diaphragm turns into liquid; volume stays unchanged",
+          "Diaphragm stops working completely"
+        ],
+        "correctAnswer": "Diaphragm contracts and flattens downward; thoracic volume increases",
+        "hint": "Expanding the chest creates a partial vacuum that draws air in.",
+        "workedSolution": "During inhalation, the diaphragm contracts and flattens downward while external intercostal muscles elevate the ribs, expanding thoracic volume and lowering internal lung pressure below atmospheric pressure.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand3_solar_system",
+    "gradeLevel": "BS7",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
+    "order": 22,
+    "notes": {
+      "summaryMarkdown": "### The Solar System: Planetary Architecture & Orbital Scales\n* **NaCCA Curriculum Code:** `B7.3.2.1`\n* **Core Competency:** Classify the planets of the solar system into terrestrial and Jovian planets and describe their relative orbital characteristics.\n\n#### 1. Structure of the Solar System\nThe Solar System comprises the Sun (a G-type main-sequence star containing $99.86\\%$ of the system's mass), eight planets, dwarf planets (Pluto, Ceres), over 200 planetary moons, and billions of asteroids and comets held in orbital equilibrium by gravity.\n* **Order of Planets from the Sun:** Mercury $\\rightarrow$ Venus $\\rightarrow$ Earth $\\rightarrow$ Mars $\\rightarrow$ Jupiter $\\rightarrow$ Saturn $\\rightarrow$ Uranus $\\rightarrow$ Neptune.\n* Mnemonic: *My Very Educated Mother Just Served Us Noodles*.\n\n#### 2. Terrestrial (Inner) vs. Jovian (Outer) Planets\n* **Inner Terrestrial Planets (Mercury, Venus, Earth, Mars):**\n  * Located between the Sun and the Main Asteroid Belt.\n  * Composed predominantly of dense silicate rock and metallic iron-nickel cores.\n  * High densities ($>3.9\\text{ g/cm}^3$), solid impact-cratered surfaces, shallow atmospheres, few or no natural satellites, and zero planetary rings.\n* **Outer Jovian Planets (Jupiter, Saturn, Uranus, Neptune):**\n  * Located beyond the Asteroid Belt.\n  * Massive gas and ice giants composed of hydrogen, helium, methane, and ammonia.\n  * Low average densities (Saturn's density $\\approx 0.69\\text{ g/cm}^3$ is less than liquid water), deep turbulent atmospheres, extensive ring systems, and dozens of natural moons.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s8_1",
+        "questionPrompt": "Give three key physical differences between the inner terrestrial planets and the outer Jovian planets of our Solar System.",
+        "stepByStepSolution": "Difference 1: Composition — Inner planets are rocky bodies with solid silicate crusts and metallic cores; outer planets are gaseous and icy bodies composed mainly of hydrogen, helium, and methane.\nDifference 2: Size and Mass — Inner planets are comparatively small in diameter and low in mass; outer planets are massive giants (Jupiter alone has over 300 times Earth's mass).\nDifference 3: Rings and Moons — Inner planets have zero rings and few moons (Earth has 1, Mars has 2); outer planets all possess complex ring systems and dozens of orbiting moons.",
+        "examinerTip": "Examiner Tip: Note that all four outer planets (Jupiter, Saturn, Uranus, Neptune) have ring systems, though Saturn's rings are the most prominent and visible."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s8_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is the closest planet to the Sun in our Solar System?",
+        "options": [
+          "Venus",
+          "Mercury",
+          "Mars",
+          "Earth"
+        ],
+        "correctAnswer": "Mercury",
+        "hint": "It has the shortest orbital period of 88 Earth days.",
+        "workedSolution": "Mercury is the innermost planet orbiting closest to the Sun at an average distance of approximately 57.9 million kilometers.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s8_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is Venus significantly hotter on its surface than Mercury, even though Mercury is much closer to the Sun?",
+        "options": [
+          "Venus contains radioactive lava oceans",
+          "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
+          "Venus generates nuclear fusion in its core",
+          "Mercury is covered in ice that reflects all sunlight"
+        ],
+        "correctAnswer": "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
+        "hint": "Venus has an extremely dense CO2 atmosphere.",
+        "workedSolution": "Although Mercury is closer to the Sun, it has virtually no atmosphere to trap heat. Venus has an ultra-dense atmosphere of 96% CO2 with surface pressures 92 times Earth's, driving a catastrophic runaway greenhouse effect that elevates surface temperatures to 465°C.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand3_solar_system",
+    "gradeLevel": "BS8",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
+    "order": 23,
+    "notes": {
+      "summaryMarkdown": "### Celestial Mechanics: Rotation, Revolution & Eclipse Optics\n* **NaCCA Curriculum Code:** `B8.3.2.1`\n* **Core Competency:** Explain the causes of day and night, seasonal variations, and the optical geometry of solar and lunar eclipses.\n\n#### 1. Planetary Motions: Rotation vs. Revolution\n* **Rotation (Diurnal Cycle):** Earth spins on its internal polar axis from West to East once every 24 hours. The half facing the Sun experiences daylight; the half facing away experiences nighttime.\n* **Revolution (Annual Seasonal Cycle):** Earth orbits around the Sun in an elliptical path once every $365\\frac{1}{4}$ days. Earth's rotational axis is tilted at an angle of $23.5^\\circ$ relative to its orbital plane (ecliptic). This axial tilt alters the angle of incidence and duration of sunlight received by the Northern and Southern Hemispheres, creating seasons (solstices and equinoxes).\n\n#### 2. The Optical Geometry of Eclipses\nEclipses occur because light travels in straight lines (**rectilinear propagation**), casting shadows:\n* **Umbra:** The central, completely dark shadow zone where all light is blocked.\n* **Penumbra:** The outer, partially illuminated shadow zone where only a portion of the light source is obscured.\n\n#### 3. Solar Eclipse (Eclipse of the Sun)\n* **Alignment:** $\\text{Sun} \\rightarrow \\text{Moon} \\rightarrow \\text{Earth}$ (Occurs only during New Moon phase).\n* The Moon passes directly between the Sun and Earth, casting its shadow onto Earth's surface. Observers in the umbra experience a **Total Solar Eclipse**; observers in the penumbra see a **Partial Solar Eclipse**.\n\n#### 4. Lunar Eclipse (Eclipse of the Moon)\n* **Alignment:** $\\text{Sun} \\rightarrow \\text{Earth} \\rightarrow \\text{Moon}$ (Occurs only during Full Moon phase).\n* Earth passes directly between the Sun and Moon, casting its large shadow across the lunar surface. Because Earth is larger than the Moon, lunar eclipses can be observed simultaneously from the entire nighttime hemisphere.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s8_1",
+        "questionPrompt": "Draw diagrams or state the exact celestial alignments during: (a) a Total Solar Eclipse, and (b) a Total Lunar Eclipse. Explain why a solar eclipse lasts only a few minutes at any one location on Earth.",
+        "stepByStepSolution": "Part (a) Solar Eclipse Alignment: Sun -> Moon -> Earth. The Moon is in the middle, casting its small conical shadow (umbra) onto a narrow strip of Earth's surface.\nPart (b) Lunar Eclipse Alignment: Sun -> Earth -> Moon. The Earth is in the middle, casting its large shadow across the surface of the Moon.\nExplanation of Duration: The Moon is much smaller than the Earth, so its dark umbral shadow is tiny (rarely exceeding 270 km in diameter on Earth). Because Earth is rotating rapidly on its axis while the Moon moves in orbit, the small umbral shadow sweeps swiftly across the Earth's surface, so totality at any single location lasts only 2 to 7.5 minutes maximum.",
+        "examinerTip": "Examiner Tip: Remember: In a Solar eclipse, the Moon is in the middle. In a Lunar eclipse, the Earth is in the middle."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s8_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The regular alternation of day and night on Earth is caused by the:",
+        "options": [
+          "Revolution of Earth around the Sun",
+          "Rotation of Earth on its tilted axis every 24 hours",
+          "Movement of the Sun around the Earth",
+          "Changing phases of the Moon"
+        ],
+        "correctAnswer": "Rotation of Earth on its tilted axis every 24 hours",
+        "hint": "The Earth spins like a top on its own axis.",
+        "workedSolution": "Earth's rotation on its axis once every 24 hours causes different longitudes to alternate between facing the Sun (daylight) and facing away into deep space (night).",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s8_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "During a solar eclipse, what is the correct spatial arrangement of the celestial bodies?",
+        "options": [
+          "Earth is between Sun and Moon",
+          "Moon is between Sun and Earth",
+          "Sun is between Earth and Moon",
+          "Mars is between Sun and Moon"
+        ],
+        "correctAnswer": "Moon is between Sun and Earth",
+        "hint": "The Moon blocks our view of the Sun.",
+        "workedSolution": "A solar eclipse occurs when the Moon passes directly between the Sun and Earth, casting its shadow (umbra and penumbra) onto the Earth's surface.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand3_solar_system",
+    "gradeLevel": "BS9",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
+    "order": 24,
+    "notes": {
+      "summaryMarkdown": "### Universal Gravitation & Artificial Satellite Technology\n* **NaCCA Curriculum Code:** `B9.3.2.1`\n* **Core Competency:** Apply the law of gravitation to orbital mechanics and examine satellite applications in communication, meteorology, and resource exploration.\n\n#### 1. Newton's Law of Universal Gravitation\nEvery mass in the universe attracts every other mass with a force directly proportional to the product of their masses and inversely proportional to the square of the distance between their centers:\n$$F_g = G \\frac{m_1 m_2}{r^2}$$\n* $F_g$: Gravitational force of attraction (N)\n* $G$: Universal gravitational constant ($6.674 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$)\n* $m_1, m_2$: Masses of the interacting bodies (kg)\n* $r$: Center-to-center distance (m)\n* **Orbital Balance:** A satellite remains in stable orbit when the inward gravitational pull provides the exact centripetal force required for circular motion:\n  $$\\frac{G M m}{r^2} = \\frac{m v^2}{r} \\implies v = \\sqrt{\\frac{GM}{r}}$$\n\n#### 2. Types of Artificial Satellites & Orbital Classes\n* **Low Earth Orbit (LEO, altitude 160 – 2,000 km):**\n  * Orbital period: $\\approx 90-120\\text{ minutes}$.\n  * High spatial resolution; used for Earth observation, spy surveillance, remote sensing, and the International Space Station (ISS).\n* **Medium Earth Orbit (MEO, altitude 2,000 – 35,786 km):**\n  * Orbital period: $\\approx 12\\text{ hours}$.\n  * Houses Global Positioning System (GPS) constellations.\n* **Geostationary Orbit (GEO, fixed altitude $35,786\\text{ km}$ above the Equator):**\n  * Orbital period matches Earth's rotation exactly ($24\\text{ hours}$).\n  * Appears permanently stationary over one longitude; ideal for continental weather tracking and direct-to-home telecommunications (satellite television, telecommunication relays).\n\n#### 3. Socio-Economic Value of Space Technology for Ghana\n* **Telecommunications:** Global internet connectivity, rural cellular backhaul, and educational broadcasting.\n* **Meteorology & Early Warning:** Tracking Atlantic tropical storm cyclogenesis, predicting monsoonal rainfall onset for farmers.\n* **Resource Mapping:** Satellite multispectral imaging monitors illegal gold mining (galamsey) destruction of river basins, deforestation rates, and urban land encroachment.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s8_1",
+        "questionPrompt": "Explain why communication satellites such as those providing satellite television and internet to Ghana are placed in Geostationary Orbit (GEO) at 35,786 km rather than in Low Earth Orbit (LEO).",
+        "stepByStepSolution": "Step 1: Define GEO orbital period — At an altitude of exactly 35,786 km directly above the Earth's equator, a satellite's orbital period matches the Earth's 24-hour rotational period precisely.\nStep 2: Ground perspective — Because the satellite orbits at the exact same rotational velocity as the Earth below, it remains permanently stationary relative to an observer on the ground.\nStep 3: Engineering advantage — Ground-based receiving dishes (such as residential satellite TV dishes) can be fixed permanently in one direction pointing at the satellite in the sky without requiring expensive motorized tracking systems needed for fast-moving LEO satellites.",
+        "examinerTip": "Examiner Tip: State clearly that the orbital period in GEO equals Earth's rotational period (24 hours), keeping the satellite fixed over one geographic point."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s8_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An artificial satellite positioned in Geostationary Orbit (GEO) completes one full revolution around the Earth in approximately:",
+        "options": [
+          "90 minutes",
+          "12 hours",
+          "24 hours",
+          "30 days"
+        ],
+        "correctAnswer": "24 hours",
+        "hint": "Its period matches the Earth's rotational period.",
+        "workedSolution": "A geostationary satellite has an orbital period of exactly 24 hours, synchronizing with Earth's rotation to remain stationary over a fixed equatorial coordinate.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s8_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "According to Newton's Law of Universal Gravitation, if the distance between two orbiting celestial bodies is doubled, the gravitational attraction between them becomes:",
+        "options": [
+          "Doubled",
+          "Halved",
+          "One-quarter of the original force",
+          "Four times greater"
+        ],
+        "correctAnswer": "One-quarter of the original force",
+        "hint": "The force follows an inverse-square law with distance: F proportional to 1/r^2.",
+        "workedSolution": "Gravitational force follows the inverse-square law: F proportional to 1/r^2. Doubling the distance (2r) reduces the force to 1/(2^2) = 1/4 of its initial magnitude.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand3_ecosystems",
+    "gradeLevel": "BS7",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Ecosystems & Environmental Interdependence (Habitats, Trophic Levels, Food Webs & Pyramids)",
+    "order": 25,
+    "notes": {
+      "summaryMarkdown": "### Ecosystems, Ecological Niches & Environmental Adaptations\n* **NaCCA Curriculum Code:** `B7.3.3.1`\n* **Core Competency:** Differentiate biotic and abiotic components of ecosystems and identify physical adaptations of organisms to their habitats.\n\n#### 1. The Structure of an Ecosystem\nAn ecosystem is a self-sustaining ecological community comprising living (**biotic**) organisms interacting with their non-living physical (**abiotic**) environment:\n* **Biotic Components:**\n  * *Producers (Autotrophs):* Green plants and algae that synthesize organic food via photosynthesis.\n  * *Consumers (Heterotrophs):* Primary consumers (herbivores), secondary/tertiary consumers (carnivores, omnivores).\n  * *Decomposers (Saprotrophs):* Bacteria and fungi that recycle nutrients from dead organic matter.\n* **Abiotic Factors:** Sunlight, temperature, rainfall, humidity, soil pH, salinity, dissolved oxygen.\n\n#### 2. Major Habitat Types & Adaptations\n* **Terrestrial Habitats:**\n  * *Tropical Rainforest:* High canopy trees with buttress roots for structural stability; climbing epiphytes and lianas; arboreal animals with prehensile tails.\n  * *Savanna Grassland:* Drought-tolerant deciduous trees with thick fire-resistant bark; deep taproots; animals adapted for rapid running (herbivores and carnivores).\n* **Aquatic Habitats:**\n  * *Freshwater (Ponds, Rivers):* Submerged plants (*Ceratophyllum*) with flexible stems and dissected leaves; floating plants (*Pistia*) with spongy, aerenchymous air-filled tissues.\n  * *Marine / Estuarine (Mangroves):* Halophytic mangrove trees possessing specialized aerial breathing roots (**pneumatophores**) to access oxygen in waterlogged anaerobic mud, and salt-excreting leaf glands.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s9_1",
+        "questionPrompt": "Mangrove swamps are characterized by high salinity and oxygen-depleted, waterlogged mud. Explain two specific structural adaptations that allow red and black mangrove trees to thrive in this habitat.",
+        "stepByStepSolution": "Adaptation 1: Pneumatophores (Breathing Roots) — Waterlogged coastal mud contains virtually zero dissolved oxygen. Black mangroves develop specialized pencil-like roots called pneumatophores that grow vertically upward above the high tide water surface, possessing porous lenticels for atmospheric gas exchange.\nAdaptation 2: Stilt Roots (Prop Roots) — Red mangroves develop branching stilt roots that arch outward from the main trunk into the soft, shifting tidal mud, anchoring the tree securely against wave action and tidal currents while filtering out excess toxic salts.",
+        "examinerTip": "Examiner Tip: State the environmental challenge (lack of oxygen in mud, soft shifting soil) and pair it with the corresponding anatomical adaptation."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s9_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The non-living physical and chemical factors in an ecosystem (such as sunlight, rainfall, and soil pH) are termed:",
+        "options": [
+          "Biotic factors",
+          "Abiotic factors",
+          "Symbiotic factors",
+          "Trophic factors"
+        ],
+        "correctAnswer": "Abiotic factors",
+        "hint": "The prefix 'a-' means without or non-living.",
+        "workedSolution": "Abiotic factors are the non-living chemical and physical variables (temperature, light, moisture, minerals) that shape the ecological environment.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s9_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which structural feature enables floating water lettuce (Pistia) to remain buoyant on the surface of freshwater ponds?",
+        "options": [
+          "Thick heavy wooden stems",
+          "Aerenchyma tissues filled with air spaces",
+          "Large taproots anchored in deep rocks",
+          "Spines that inject venom into fish"
+        ],
+        "correctAnswer": "Aerenchyma tissues filled with air spaces",
+        "hint": "Internal air pockets provide biological buoyancy.",
+        "workedSolution": "Floating aquatic macrophytes contain spongy aerenchyma tissue containing large intercellular air pockets that provide buoyancy, keeping leaves at the water surface for photosynthesis.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand3_ecosystems",
+    "gradeLevel": "BS8",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Ecosystems & Environmental Interdependence (Habitats, Trophic Levels, Food Webs & Pyramids)",
+    "order": 26,
+    "notes": {
+      "summaryMarkdown": "### Trophic Dynamics: Food Chains, Complex Webs & Energy Pyramids\n* **NaCCA Curriculum Code:** `B8.3.3.1`\n* **Core Competency:** Construct food chains and webs, and explain energy dissipation across ecological trophic pyramids.\n\n#### 1. Food Chains & Trophic Levels\nA food chain is a linear feeding sequence showing the flow of organic energy from producers to consumers:\n* **Trophic Level 1:** Primary Producers (Green plants, phytoplankton) — Fix solar energy.\n* **Trophic Level 2:** Primary Consumers (Herbivores: caterpillars, grasshoppers, zooplankton).\n* **Trophic Level 3:** Secondary Consumers (Carnivores: lizards, frogs, small fish).\n* **Trophic Level 4:** Tertiary Consumers (Apex predators: hawks, eagles, lions, sharks).\n* *Convention:* The arrow ($\\rightarrow$) indicates **flow of energy** (\"is eaten by\"):\n  $$\\text{Grass} \\rightarrow \\text{Grasshopper} \\rightarrow \\text{Toad} \\rightarrow \\text{Snake} \\rightarrow \\text{Hawk}$$\n\n#### 2. The 10% Trophic Energy Transfer Rule\nAccording to Lindeman's Efficiency Law:\n* Only approximately **10% of the chemical energy** stored in the biomass of one trophic level is transferred to and incorporated into the next higher trophic level.\n* **Where does the 90% go?**\n  * Metabolic cellular respiration generating thermal heat lost to the environment ($E = mc\\Delta T$).\n  * Excretion, unconsumed biomass, and undigested waste (feces, bones, cellulose).\n* **Ecological Consequence:** Because energy dissipates rapidly, food chains rarely exceed 4 to 5 trophic links before available energy is insufficient to sustain another predator population.\n\n#### 3. Ecological Pyramids\n* **Pyramid of Numbers:** Shows the total count of individual organisms at each trophic level. Can be inverted (e.g., one large oak tree supporting thousands of aphids).\n* **Pyramid of Biomass:** Shows the total dry weight of living organic matter at each level. Usually upright in terrestrial biomes.\n* **Pyramid of Energy:** Always upright; energy availability decreases progressively at each ascending trophic level due to the Second Law of Thermodynamics.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s9_1",
+        "questionPrompt": "In a grassland ecosystem, green maize plants fix 50,000 kJ of solar energy into chemical carbohydrate biomass. Calculate the energy available to: (a) grasshoppers (primary consumers), (b) toads (secondary consumers), and (c) hawks (tertiary consumers), assuming a standard 10% trophic transfer efficiency.",
+        "stepByStepSolution": "Step 1: Producer energy = 50,000 kJ.\nStep 2: Energy to Primary Consumers (Grasshoppers) = 10% of 50,000 kJ = 0.10 x 50,000 = 5,000 kJ.\nStep 3: Energy to Secondary Consumers (Toads) = 10% of 5,000 kJ = 0.10 x 5,000 = 500 kJ.\nStep 4: Energy to Tertiary Consumers (Hawks) = 10% of 500 kJ = 0.10 x 500 = 50 kJ.",
+        "examinerTip": "Examiner Tip: Notice that from 50,000 kJ at the producer level, only 50 kJ reaches the apex hawk. 49,950 kJ was dissipated as metabolic heat and waste along the chain."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s9_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a terrestrial food chain, the direction of the arrow between two organisms represents the:",
+        "options": [
+          "Physical movement of the animal",
+          "Flow of energy from prey to predator",
+          "Direction of wind in the habitat",
+          "Age difference between the animals"
+        ],
+        "correctAnswer": "Flow of energy from prey to predator",
+        "hint": "The arrow points toward the consumer eating the food.",
+        "workedSolution": "In ecological diagrams, the arrow always points from the organism being consumed to the consumer, tracing the transfer of chemical energy through the ecosystem.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s9_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why can a pyramid of energy NEVER be inverted in any natural, balanced ecosystem?",
+        "options": [
+          "Energy is created out of nothing by carnivores",
+          "Energy is progressively lost as metabolic heat at every trophic step according to thermodynamic laws",
+          "Plants eat animals at night",
+          "Decomposers destroy all energy"
+        ],
+        "correctAnswer": "Energy is progressively lost as metabolic heat at every trophic step according to thermodynamic laws",
+        "hint": "The Second Law of Thermodynamics dictates continuous energy dissipation.",
+        "workedSolution": "Because energy is continuously lost as metabolic heat during respiration at each trophic transition, each successive level receives less energy than the one below it. Thus, energy pyramids are strictly upright.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand3_ecosystems",
+    "gradeLevel": "BS9",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Ecosystems & Environmental Interdependence (Habitats, Trophic Levels, Food Webs & Pyramids)",
+    "order": 27,
+    "notes": {
+      "summaryMarkdown": "### Symbiotic Interactions, Ecological Balance & Biomagnification\n* **NaCCA Curriculum Code:** `B9.3.3.1`\n* **Core Competency:** Evaluate mutualism, commensalism, and parasitism, and trace the biomagnification of persistent non-biodegradable toxins.\n\n#### 1. Symbiotic Interdependence in Communities\n* **Mutualism ($+/+$):** An obligatory or beneficial relationship in which both species benefit:\n  * *Rhizobium* bacteria in legume root nodules: bacterium gains carbohydrates; legume receives fixed nitrogen.\n  * Pollinators (bees, sunbirds) and flowering plants: pollinator receives nectar; plant achieves cross-pollination.\n  * Lichens: Mutualistic association between an alga/cyanobacterium (provides photosynthetic sugars) and a fungus (provides water, minerals, and mechanical anchorage).\n* **Commensalism ($+/0$):** One organism benefits while the other is neither helped nor harmed:\n  * Epiphytic orchids growing on tall forest tree trunks to access sunlight without taking nutrients from the host.\n  * Cattle egrets feeding on insects disturbed by grazing livestock.\n* **Parasitism ($+/-$):** One organism (parasite) benefits at the direct expense of the host:\n  * Ectoparasites: Ticks and lice feeding on livestock blood.\n  * Endoparasites: *Plasmodium* in human erythrocytes; tapeworms (*Taenia*) in mammalian intestines.\n\n#### 2. Bioaccumulation vs. Biomagnification\n* **Bioaccumulation:** The gradual buildup of a non-biodegradable chemical substance (e.g., DDT, methylmercury, microplastics) inside the tissues of an individual organism over its lifespan.\n* **Biomagnification:** The progressive increase in concentration of persistent, fat-soluble, non-biodegradable toxins at **successively higher trophic levels** of a food chain.\n  * Phytoplankton absorbs trace pesticide from water ($0.00005\\text{ ppm}$).\n  * Zooplankton eats thousands of phytoplankton ($0.04\\text{ ppm}$).\n  * Small fish eat zooplankton ($0.5\\text{ ppm}$).\n  * Large predatory fish eat small fish ($2.0\\text{ ppm}$).\n  * Apex predator (Fish eagle, human) accumulates lethal concentrations ($25.0\\text{ ppm}$), leading to reproductive failure, eggshell thinning, organ damage, and mortality.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s9_1",
+        "questionPrompt": "Gold miners discharge mercury into a river basin at a low concentration of 0.001 ppm. Explain why apex predatory fish (such as tigerfish) in the same river contain mercury concentrations exceeding 20 ppm.",
+        "stepByStepSolution": "Step 1: Chemical nature of mercury — Mercury (specifically organic methylmercury) is persistent, non-biodegradable, and lipophilic (fat-soluble), meaning organisms cannot easily excrete or metabolize it.\nStep 2: Trophic amplification — Primary producers (algae) absorb trace mercury. Herbivorous small fish consume millions of algae over time, bioaccumulating mercury in their fatty tissues.\nStep 3: Apex accumulation — Apex predatory tigerfish consume thousands of small fish throughout their lifetime. Because the toxin is retained while biomass is burned for energy, the concentration of mercury multiplies at each ascending trophic level (biomagnification), reaching lethal concentrations 20,000 times higher than ambient water levels.",
+        "examinerTip": "Examiner Tip: Clearly distinguish between bioaccumulation (within one organism over time) and biomagnification (amplifying across trophic levels)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s9_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The symbiotic association between honeybees and flowering plants, where both species benefit, is classified as:",
+        "options": [
+          "Parasitism",
+          "Mutualism",
+          "Commensalism",
+          "Predation"
+        ],
+        "correctAnswer": "Mutualism",
+        "hint": "Both partners gain a distinct biological advantage (+/+).",
+        "workedSolution": "Mutualism is an interspecific interaction in which both species benefit (+/+): the bee obtains nectar and pollen for food, while the plant achieves successful cross-pollination.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s9_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens to the concentration of persistent, non-biodegradable pesticides (such as DDT) as they pass up a food chain?",
+        "options": [
+          "The concentration decreases to zero at the top",
+          "The concentration increases progressively at each higher trophic level",
+          "The pesticide turns into sugar in carnivores",
+          "The concentration remains completely unchanged"
+        ],
+        "correctAnswer": "The concentration increases progressively at each higher trophic level",
+        "hint": "This phenomenon is called biological magnification.",
+        "workedSolution": "Because persistent fat-soluble toxins cannot be broken down or excreted, they accumulate in fatty tissues. Predators consume large numbers of contaminated prey, causing toxin concentration to multiply at each ascending trophic level.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand3_farming_systems",
+    "gradeLevel": "BS7",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Farming Systems & Agro-Ecology (Crop Rotation, Mixed Farming & Organic Agriculture)",
+    "order": 28,
+    "notes": {
+      "summaryMarkdown": "### Farming Systems: Traditional Practices & Agro-Ecological Sustainability\n* **NaCCA Curriculum Code:** `B7.3.4.1`\n* **Core Competency:** Identify farming systems in Ghana, assess ecological sustainability, and evaluate land rotation.\n\n#### 1. Traditional Farming Archetypes\n* **Shifting Cultivation:** The farmer clears a patch of virgin forest by slash-and-burn, cultivates crops for 2-3 years until soil fertility declines, then abandons the land and relocates the entire homestead to clear a new forest area. Only feasible where human population density is very low and land is abundant.\n* **Land Rotation (Bush Fallowing):** The farmer clears a plot, crops it for a few seasons, and then leaves the land fallow for several years to regenerate natural vegetation and soil organic matter, while the farmer moves to another plot **without moving the settlement**.\n* **Mixed Cropping (Intercropping):** Cultivating two or more different crop species simultaneously on the same piece of land (e.g., maize intercropped with cowpea or cassava).\n  * *Advantages:* Insurance against total crop failure, diverse food supply, soil cover suppressing weeds, legumes fixing nitrogen for cereal companions.\n* **Monoculture (Continuous Cropping):** Growing a single crop species exclusively on the same plot season after season (e.g., commercial rice or sugarcane plantations).\n  * *Disadvantages:* Rapid depletion of specific soil nutrients, buildup of host-specific insect pests and soil diseases, high reliance on synthetic fertilizers and pesticides.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s10_1",
+        "questionPrompt": "Shifting cultivation was widely practiced by traditional Ghanaian farmers centuries ago. Explain two reasons why shifting cultivation is no longer sustainable or practical in modern Ghana.",
+        "stepByStepSolution": "Reason 1: Rapid Population Growth and Land Pressure — Rapid population growth has increased the demand for arable land, residential housing, and commercial infrastructure. Farmers no longer have access to vast tracts of uncultivated forest land to abandon and relocate settlements.\nReason 2: Severe Deforestation and Climate Change — Repeatedly burning virgin forest accelerates environmental degradation, destroys biodiversity, causes widespread loss of carbon sinks, and exacerbates seasonal drought.\nConclusion: Farmers must transition to permanent, intensive soil management systems such as crop rotation, agroforestry, and organic farming.",
+        "examinerTip": "Examiner Tip: State the primary driver: high population density leading to land scarcity."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s10_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The farming practice of planting two or more different crops simultaneously on the same plot of land is termed:",
+        "options": [
+          "Monoculture",
+          "Mixed cropping (intercropping)",
+          "Pastoral nomadism",
+          "Continuous cropping"
+        ],
+        "correctAnswer": "Mixed cropping (intercropping)",
+        "hint": "Farmers often mix maize with beans.",
+        "workedSolution": "Mixed cropping (or intercropping) is the cultivation of two or more crop varieties simultaneously on the same field to maximize land use and reduce risk of total crop loss.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s10_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary difference between shifting cultivation and bush fallowing (land rotation)?",
+        "options": [
+          "In shifting cultivation, the farmer never plants crops",
+          "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
+          "Bush fallowing uses tractors while shifting cultivation uses airplanes",
+          "Shifting cultivation is only done in the desert"
+        ],
+        "correctAnswer": "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
+        "hint": "Consider whether the home/village relocates.",
+        "workedSolution": "Under shifting cultivation, the farmer relocates the entire household/homestead to a distant new site. In bush fallowing, the settlement is permanent, and the farmer rotates between surrounding plots.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand3_farming_systems",
+    "gradeLevel": "BS8",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Farming Systems & Agro-Ecology (Crop Rotation, Mixed Farming & Organic Agriculture)",
+    "order": 29,
+    "notes": {
+      "summaryMarkdown": "### Crop Rotation: Agronomic Principles & Multi-Year Design\n* **NaCCA Curriculum Code:** `B8.3.4.1`\n* **Core Competency:** Formulate crop rotation programs following scientific agronomic principles to sustain soil productivity.\n\n#### 1. The Concept of Crop Rotation\nCrop rotation is the practice of growing a planned sequence of different crop species on the same piece of land over recurrent seasons:\n* Plot is partitioned into equal sections corresponding to the number of years in the rotation cycle (e.g., 4 plots for a 4-year rotation).\n\n#### 2. Fundamental Scientific Principles of Crop Rotation\n1. **Alternate Shallow and Deep Rooters:** Deep-rooted crops (e.g., yam, cassava, pigeon pea) absorb nutrients and moisture from subsoil horizons and open up soil channels; shallow-rooted crops (e.g., maize, onion) feed from the topsoil.\n2. **Include Nitrogen-Fixing Legumes:** Leguminous crops (cowpea, groundnut, soybean) possess root nodules with *Rhizobium* that fix atmospheric nitrogen, replenishing soil nitrogen reserves for the subsequent crop.\n3. **Alternate Heavy Feeders with Light Feeders:** Heavy nutrient extractors (e.g., maize, yam) should be followed by restorative crops (legumes) or light feeders (leafy vegetables).\n4. **Disrupt Pest and Pathogen Cycles:** Crops belonging to the same botanical family (e.g., Solanaceae: tomato, pepper, eggplant, potato) share the same insect pests and diseases (bacterial wilt, nematodes) and must **never** follow one another sequentially.\n5. **Alternate Weed-Suppressing Cover Crops:** Dense canopy crops (cowpea, sweet potato) suppress weeds, reducing weed seed banks for subsequent crops.\n\n#### 3. Standard 4-Year Crop Rotation Model\n| Year | Plot 1 | Plot 2 | Plot 3 | Plot 4 |\n| :---: | :---: | :---: | :---: | :---: |\n| **Year 1** | Yam (Deep feeder) | Cowpea (Legume) | Maize (Shallow feeder) | Tomato (Vegetable) |\n| **Year 2** | Cowpea (Legume) | Maize (Shallow feeder) | Tomato (Vegetable) | Yam (Deep feeder) |\n| **Year 3** | Maize (Shallow feeder) | Tomato (Vegetable) | Yam (Deep feeder) | Cowpea (Legume) |\n| **Year 4** | Tomato (Vegetable) | Yam (Deep feeder) | Cowpea (Legume) | Maize (Shallow feeder) |",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s10_1",
+        "questionPrompt": "A farmer in the Eastern Region has three adjacent plots and wishes to cultivate Maize (cereal), Cowpea (legume), and Cassava (deep rooter). Design a 3-year crop rotation schedule and explain why cowpea must precede maize.",
+        "stepByStepSolution": "Step 1: Assign crops to plots in Year 1: Plot 1: Cassava (Deep rooter); Plot 2: Cowpea (Legume); Plot 3: Maize (Cereal).\nStep 2: Rotate sequence for Year 2: Plot 1: Cowpea; Plot 2: Maize; Plot 3: Cassava.\nStep 3: Rotate sequence for Year 3: Plot 1: Maize; Plot 2: Cassava; Plot 3: Cowpea.\nStep 4: Rationale for Cowpea preceding Maize: Maize is a heavy nitrogen extractor requiring large nitrogen inputs for leafy vegetative growth. Cowpea fixes atmospheric nitrogen via symbiotic Rhizobium root nodules; when harvested, decomposing root residues enrich the topsoil with bioavailable nitrates, directly feeding the subsequent maize crop.",
+        "examinerTip": "Examiner Tip: In rotation tables, verify that each crop moves through every plot over the cycle and no crop repeats on the same plot in consecutive years."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s10_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a properly planned crop rotation program, why must leguminous crops (such as cowpea or groundnut) be included?",
+        "options": [
+          "To attract caterpillars to the field",
+          "To fix atmospheric nitrogen and enrich soil fertility naturally",
+          "To remove all water from the subsoil",
+          "To make the soil permanently acidic"
+        ],
+        "correctAnswer": "To fix atmospheric nitrogen and enrich soil fertility naturally",
+        "hint": "Legumes have symbiotic nitrogen-fixing root nodules.",
+        "workedSolution": "Leguminous crops host Rhizobium bacteria in their root nodules that convert atmospheric N2 into soluble soil nitrogen, restoring soil fertility for subsequent heavy feeders.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s10_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should tomato, pepper, and garden egg NOT follow each other in consecutive seasons on the same plot?",
+        "options": [
+          "They are all bitter crops",
+          "They belong to the same botanical family (Solanaceae) and share common pests and diseases",
+          "They cross-pollinate to produce poison",
+          "They refuse to grow in sunlight"
+        ],
+        "correctAnswer": "They belong to the same botanical family (Solanaceae) and share common pests and diseases",
+        "hint": "Solanaceous crops share common pathogens like bacterial wilt and root-knot nematodes.",
+        "workedSolution": "Crops from the same botanical family share susceptibility to the same pests (e.g. fruit borers) and diseases (bacterial wilt, viral mosaics). Planting them consecutively allows pest populations to multiply uncontrollably.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand3_farming_systems",
+    "gradeLevel": "BS9",
+    "strandNumber": 3,
+    "strandTitle": "STRAND 3: SYSTEMS",
+    "subStrandTitle": "Farming Systems & Agro-Ecology (Crop Rotation, Mixed Farming & Organic Agriculture)",
+    "order": 30,
+    "notes": {
+      "summaryMarkdown": "### Integrated Farming Systems, Agroforestry & Organic Agriculture\n* **NaCCA Curriculum Code:** `B9.3.4.1`\n* **Core Competency:** Evaluate mixed farming, agroforestry, and organic agriculture for economic resilience and environmental sustainability.\n\n#### 1. Integrated Mixed Farming (Crop-Livestock Symbiosis)\nA system in which crop production and animal husbandry are integrated on the same farm enterprise to create closed resource-recovery loops:\n* **Crops $\\rightarrow$ Animals:** Crop residues (maize stover, cowpea haulms, cassava peels) provide feed and bedding for cattle, sheep, and pigs.\n* **Animals $\\rightarrow$ Crops:** Animal manure (rich in N, P, K and organic matter) fertilizes crop fields; draft animals (bullocks) provide traction for plowing and transport.\n* **Economic Resilience:** Diversified income streams protect the farmer against commodity price volatility and localized drought.\n\n#### 2. Agroforestry & Alley Cropping\nThe deliberate integration of woody perennials (trees, shrubs) with arable crops and/or livestock on the same land management unit:\n* **Alley Cropping:** Arable crops are grown in alleyways between hedgerows of nitrogen-fixing leguminous trees (e.g., *Leucaena leucocephala*, *Gliricidia sepium*).\n  * Hedgerows are pruned periodically, and the green foliage is incorporated into the soil as **green manure**.\n  * Deep tree roots recycle leached nutrients and prevent wind and water soil erosion.\n\n#### 3. Certified Organic Agriculture\nA holistic production management system that avoids the use of synthetic chemical inputs (mineral fertilizers, chemical pesticides, hormones, antibiotics):\n* Relies on ecological processes: crop rotation, green manures, compost, biological pest control, and mechanical weeding.\n* **Environmental Benefits:** Eliminates groundwater pesticide contamination, preserves pollinator populations (bees), protects soil microbial biodiversity, and produces residue-free food.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s10_1",
+        "questionPrompt": "Diagram and describe the closed-loop ecological relationship between dairy cattle and maize crop production on an integrated mixed farm.",
+        "stepByStepSolution": "Step 1: Input to Animals (Crop to Livestock) — Maize crop residues (stalks, leaves, cobs) remaining after grain harvest are harvested and chopped into nutritious silage and fodder to feed dairy cattle.\nStep 2: Input to Crops (Livestock to Crop) — Cattle consume the fodder and produce large quantities of manure. The farmer composts cattle dung and slurry, returning rich organic nutrients (N, P, K) to the maize fields to rebuild soil humus.\nStep 3: Economic and Ecological Outcome — The farmer eliminates the cost of purchasing synthetic chemical fertilizers and commercial livestock feeds, while closing the nutrient cycle and preventing agricultural waste pollution.",
+        "examinerTip": "Examiner Tip: Use the term 'closed-loop nutrient cycling' to summarize how waste from one enterprise serves as the raw material for the other."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s10_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A farming system where arable crop production and domestic animal husbandry are integrated on the same farm is called:",
+        "options": [
+          "Mixed farming",
+          "Monoculture",
+          "Pastoralism",
+          "Shifting cultivation"
+        ],
+        "correctAnswer": "Mixed farming",
+        "hint": "The farmer raises both crops and animals.",
+        "workedSolution": "Mixed farming is the integrated practice of cultivating arable crops and raising livestock on the same enterprise, creating mutual resource interdependence.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s10_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In agroforestry alley cropping, why are hedgerows of leguminous trees (such as Gliricidia) planted between food crops?",
+        "options": [
+          "To block all sunlight from the food crops",
+          "Their prunings provide nitrogen-rich green manure and their deep roots recycle leached nutrients",
+          "To attract elephants to the farm",
+          "To poison the weeds with synthetic chemicals"
+        ],
+        "correctAnswer": "Their prunings provide nitrogen-rich green manure and their deep roots recycle leached nutrients",
+        "hint": "Gliricidia foliage fixes nitrogen and is incorporated as green mulch.",
+        "workedSolution": "Leguminous hedgerows fix nitrogen, capture leached nutrients from deep soil horizons, and when pruned, provide nutrient-rich organic green manure and protective mulch for alley food crops.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand4_energy_waves",
+    "gradeLevel": "BS7",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Energy, Heat Transfer & Light Waves (Forms, Heat Conduction/Radiation, Rectilinear Propagation)",
+    "order": 31,
+    "notes": {
+      "summaryMarkdown": "### Energy Forms, Conservation of Energy & Mechanical Energy Transformations\n* **NaCCA Curriculum Code:** `B7.4.1.1`\n* **Core Competency:** Classify forms of energy, apply the Law of Conservation of Energy, and calculate mechanical kinetic and potential energy.\n\n#### 1. The Nature of Energy & The Conservation Law\nEnergy is defined as the capacity or ability to do work (measured in Joules, $\\text{J}$).\n* **The Law of Conservation of Energy:** Energy can neither be created nor destroyed; it can only be transformed from one form into another. The total energy of an isolated system remains constant.\n\n#### 2. Forms of Energy\n* **Kinetic Energy ($E_k$):** Energy possessed by an object due to its motion:\n  $$E_k = \\frac{1}{2}mv^2$$\n  ($m$: mass in kg; $v$: velocity in m/s).\n* **Gravitational Potential Energy ($E_p$):** Energy stored in an object due to its position in a gravitational field:\n  $$E_p = mgh$$\n  ($m$: mass in kg; $g$: acceleration due to gravity $\\approx 9.8$ or $10\\text{ m/s}^2$; $h$: vertical height in meters).\n* **Mechanical Energy ($E_m$):** Total sum of kinetic and potential energy in a mechanical system:\n  $$E_m = E_k + E_p = \\text{constant (in the absence of friction)}$$\n* Other forms: Chemical (stored in food, fuels, batteries), Thermal (internal kinetic energy of vibrating atoms), Electrical, Radiant / Solar, Sound, Nuclear.\n\n#### 3. Energy Transformations in Everyday Devices\n* Hydroelectric Dam: Gravitational potential energy of reservoir water $\\rightarrow$ Kinetic energy of falling water $\\rightarrow$ Mechanical rotational kinetic energy of turbine $\\rightarrow$ Electrical energy from generator.\n* Flashlight: Chemical energy of dry cell $\\rightarrow$ Electrical energy through wires $\\rightarrow$ Radiant light + Thermal heat from bulb filament.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s11_1",
+        "questionPrompt": "A coconut of mass 2.0 kg hangs from a palm tree at a height of 15.0 meters above the ground. (Take g = 10 m/s²). Calculate: (a) Its gravitational potential energy while hanging, (b) Its kinetic energy just before striking the ground, assuming negligible air resistance, (c) Its velocity upon impact.",
+        "stepByStepSolution": "Part (a): Calculate Potential Energy: Ep = mgh = 2.0 kg x 10 m/s² x 15.0 m = 300 Joules (J).\nPart (b): Apply Conservation of Energy: At maximum height, Ek = 0 and Ep = 300 J. Just before impact (h = 0), all potential energy is converted entirely into kinetic energy. Therefore, Ek = 300 J.\nPart (c): Calculate impact velocity: Ek = 1/2 m v² => 300 = 1/2 x (2.0) x v² => 300 = 1.0 x v² => v = sqrt(300) ≈ 17.32 m/s.",
+        "examinerTip": "Examiner Tip: Always state the principle of conservation of mechanical energy when equating potential energy at top to kinetic energy at bottom."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s11_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The SI unit for measuring work and energy is the:",
+        "options": [
+          "Watt (W)",
+          "Joule (J)",
+          "Newton (N)",
+          "Pascal (Pa)"
+        ],
+        "correctAnswer": "Joule (J)",
+        "hint": "Named after James Prescott Joule.",
+        "workedSolution": "The Joule (J) is the standard International System of Units (SI) measurement for energy and mechanical work done.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s11_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A 50 kg runner sprints at a velocity of 6 m/s. What is the runner's kinetic energy?",
+        "options": [
+          "150 J",
+          "300 J",
+          "900 J",
+          "1800 J"
+        ],
+        "correctAnswer": "900 J",
+        "hint": "Use Ek = 1/2 * m * v^2.",
+        "workedSolution": "Ek = 0.5 * m * v^2 = 0.5 * 50 kg * (6 m/s)^2 = 25 * 36 = 900 Joules.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand4_energy_waves",
+    "gradeLevel": "BS8",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Energy, Heat Transfer & Light Waves (Forms, Heat Conduction/Radiation, Rectilinear Propagation)",
+    "order": 32,
+    "notes": {
+      "summaryMarkdown": "### Thermodynamics: Conduction, Convection, Radiation & Thermal Insulation\n* **NaCCA Curriculum Code:** `B8.4.1.1`\n* **Core Competency:** Compare thermal conduction, convection, and radiation, and evaluate the engineering design of the vacuum flask (Dewar flask).\n\n#### 1. Modes of Thermal Energy Transfer\nHeat is thermal energy in transit from a region of higher temperature to lower temperature:\n* **Conduction (in solids):** Direct transfer of kinetic vibrational energy from atom to atom through collisions, and through the drift of free delocalized valence electrons in metals (which explains why metals are superior thermal conductors compared to non-metals and insulators).\n* **Convection (in fluids: liquids & gases):** Heat transfer through the physical bulk movement of the fluid itself. Fluid near the heat source warms up, expands, becomes less dense, and ascends; cooler, denser fluid descends to replace it, establishing a continuous **convection current** (e.g., land and sea breezes, boiling water in a kettle, domestic room ventilation).\n* **Radiation (through vacuums & transparent media):** Heat transfer by electromagnetic infrared waves without requiring any material medium. Can travel across the vacuum of outer space (e.g., solar radiation warming Earth).\n  * Dark, dull, matte black surfaces are **best absorbers and best emitters** of thermal radiation.\n  * Light, shiny, polished silver surfaces are **poor absorbers and best reflectors** of thermal radiation.\n\n#### 2. The Vacuum Flask (Dewar Flask) Engineering\nDesigned to keep hot liquids hot or cold liquids cold by minimizing all three modes of heat transfer:\n1. **Double-walled glass vessel with a vacuum gap:** The complete vacuum between the walls eliminates heat transfer by **conduction and convection** (since both require a physical material medium).\n2. **Silvered inner glass walls:** Highly polished silver surfaces **reflect infrared thermal radiation** back into the hot liquid (or reflect external radiant heat away from cold liquid).\n3. **Insulating cork or plastic stopper:** Low-conductivity plastic/cork minimizes heat loss by **conduction**, while tightly sealing the flask to stop heat loss via **convection and evaporation** of vapor.\n4. **Protective outer casing & shock-absorbing rubber pads:** Shield the fragile inner glass vacuum bottle from physical mechanical impact.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s11_1",
+        "questionPrompt": "Explain how convection currents produce a cool sea breeze blowing from the Gulf of Guinea onto the coastal land during daytime in Accra.",
+        "stepByStepSolution": "Step 1: Specific heat capacity divergence — During daytime, the sun radiates equal heat to both the land and sea. Soil and rock have a much lower specific heat capacity than water, so the coastal land heats up significantly faster than the sea.\nStep 2: Air density and thermal updraft — The air layer directly above the hot land warms, expands, decreases in density, and rises vertically, creating a localized low-pressure zone over the land.\nStep 3: Convective displacement — The cooler, denser, high-pressure air resting over the ocean flows inland down the pressure gradient to replace the rising warm air. This daytime onshore wind is felt as the refreshing 'sea breeze'.",
+        "examinerTip": "Examiner Tip: Always mention the lower heat capacity of land compared to water as the root cause of the differential heating."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s11_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which mode of thermal energy transfer does NOT require any physical medium and can travel across the vacuum of space?",
+        "options": [
+          "Conduction",
+          "Convection",
+          "Radiation (Infrared)",
+          "Evaporation"
+        ],
+        "correctAnswer": "Radiation (Infrared)",
+        "hint": "This is how solar heat reaches Earth from the Sun.",
+        "workedSolution": "Radiation transfers heat via electromagnetic infrared waves, which propagate at the speed of light through empty space without requiring atomic matter.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s11_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The double silvered walls inside a vacuum flask are specifically designed to minimize heat transfer by:",
+        "options": [
+          "Conduction",
+          "Convection",
+          "Radiation",
+          "Peristalsis"
+        ],
+        "correctAnswer": "Radiation",
+        "hint": "Shiny mirror-like surfaces reflect electromagnetic waves.",
+        "workedSolution": "Polished silver surfaces are poor radiant emitters and excellent infrared reflectors, bouncing radiant heat back into the flask to prevent radiation loss.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand4_energy_waves",
+    "gradeLevel": "BS9",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Energy, Heat Transfer & Light Waves (Forms, Heat Conduction/Radiation, Rectilinear Propagation)",
+    "order": 33,
+    "notes": {
+      "summaryMarkdown": "### Geometrical Optics: Rectilinear Propagation, Pinhole Cameras & Reflection\n* **NaCCA Curriculum Code:** `B9.4.1.1`\n* **Core Competency:** Demonstrate that light travels in straight lines, explain shadow/pinhole optics, and apply laws of plane mirror reflection.\n\n#### 1. Rectilinear Propagation of Light\nLight travels in straight lines through any homogeneous, transparent optical medium:\n* **Evidence:** Formation of sharp-edged shadows, eclipses, laser beam tracks, and the operation of the pinhole camera.\n* **Ray & Beam:** A ray is the path along which light energy travels (represented by a straight line with an arrow); a beam is a collection of parallel, divergent, or convergent rays.\n\n#### 2. The Pinhole Camera\nA light-proof box with a tiny pinhole aperture on one face and a translucent screen (tracing paper) on the opposite face:\n* **Image Characteristics:**\n  * **Inverted (upside down):** Light rays from the top of the object travel in straight lines through the tiny pinhole and strike the bottom of the screen; rays from the bottom strike the top.\n  * **Real:** Can be projected and focused onto a physical screen.\n  * **Diminished or Magnified:** Depends on the ratio of object distance to image distance.\n* **Magnification Formula:**\n  $$\\text{Magnification } (m) = \\frac{\\text{Height of Image } (h_i)}{\\text{Height of Object } (h_o)} = \\frac{\\text{Image Distance } (v)}{\\text{Object Distance } (u)}$$\n\n#### 3. Laws of Reflection of Light\nWhen a light ray strikes a polished, smooth reflective boundary (plane mirror):\n1. **First Law:** The incident ray, the reflected ray, and the normal to the surface at the point of incidence all lie in the same geometric plane.\n2. **Second Law:** The angle of incidence ($\\theta_i$) is exactly equal to the angle of reflection ($\\theta_r$):\n   $$\\angle i = \\angle r$$\n* **Characteristics of Images in a Plane Mirror:**\n  * Virtual (cannot be formed on a screen; formed behind the mirror where rays appear to diverge).\n  * Upright (erect).\n  * Same size as the object (magnification $m = 1$).\n  * Laterally inverted (left appears as right, right appears as left).\n  * Object distance from mirror equals virtual image distance behind mirror ($u = v$).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s11_1",
+        "questionPrompt": "A tree of height 12.0 meters stands at a distance of 30.0 meters from a pinhole camera. The camera has a length (distance from pinhole to translucent screen) of 20.0 cm. Calculate the height of the inverted image formed on the screen.",
+        "stepByStepSolution": "Step 1: Convert all units to consistent SI units (meters): Object height (ho) = 12.0 m; Object distance (u) = 30.0 m; Image distance (v) = 20.0 cm = 0.20 m.\nStep 2: Write magnification equality: m = hi / ho = v / u.\nStep 3: Solve for image height (hi): hi = (v x ho) / u = (0.20 m x 12.0 m) / 30.0 m.\nStep 4: Compute: hi = 2.4 / 30.0 = 0.08 meters = 8.0 cm.",
+        "examinerTip": "Examiner Tip: Remember that the camera length represents the image distance (v). Always ensure units are converted before computing."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s11_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The image formed on the translucent viewing screen of a pinhole camera is always:",
+        "options": [
+          "Virtual and upright",
+          "Real and inverted",
+          "Virtual and enlarged",
+          "Real and laterally inverted only"
+        ],
+        "correctAnswer": "Real and inverted",
+        "hint": "Light rays cross at the pinhole.",
+        "workedSolution": "Because light travels in straight lines, rays crossing through the tiny pinhole project an inverted (upside down) image that is real because it is formed on a physical screen.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s11_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "If a ray of light strikes a smooth plane mirror at an angle of 35° to the normal line, what is the angle between the incident ray and the reflected ray?",
+        "options": [
+          "35°",
+          "55°",
+          "70°",
+          "90°"
+        ],
+        "correctAnswer": "70°",
+        "hint": "Angle of incidence = Angle of reflection. Total angle = i + r.",
+        "workedSolution": "By the second law of reflection, angle of incidence i = angle of reflection r = 35°. The total angular separation between the incident ray and the reflected ray is i + r = 35° + 35° = 70°.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand4_electricity",
+    "gradeLevel": "BS7",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Electricity, Electronics & Semiconductors (Generation, Circuits, PN Diodes & Transmission)",
+    "order": 34,
+    "notes": {
+      "summaryMarkdown": "### Fundamental Electricity: Conductors, Insulators & Simple Circuits\n* **NaCCA Curriculum Code:** `B7.4.2.1`\n* **Core Competency:** Differentiate conductors and insulators, assemble electrochemical cells, and construct functional electrical circuits.\n\n#### 1. Electric Charge & Current\n* **Electric Current ($I$):** The rate of flow of electric charge (electrons) through an electrical conductor:\n  $$I = \\frac{Q}{t}$$\n  (Current $I$ in Amperes $\\text{A}$; Charge $Q$ in Coulombs $\\text{C}$; Time $t$ in seconds).\n* **Conductors:** Materials containing abundant free, delocalized valence electrons that drift easily under electric potential differences (e.g., copper, aluminum, silver, graphite, salt solutions).\n* **Insulators:** Materials whose valence electrons are tightly bound in covalent/ionic bonds, preventing current flow (e.g., rubber, dry wood, polythene, glass, porcelain).\n\n#### 2. Sources of Electrical Energy: Electrochemical Cells\n* **Primary Cells:** Chemical reactions are irreversible; cannot be recharged once reactants are exhausted (e.g., Leclanché dry cell, zinc-carbon battery).\n* **Secondary (Storage) Cells:** Chemical reactions are reversible; can be recharged repeatedly by passing electric current in reverse (e.g., Lead-acid automobile accumulator, Lithium-ion smartphone battery).\n\n#### 3. Components of a Basic Electric Circuit\n* **Energy Source:** Battery / cell providing electromotive force (EMF).\n* **Conductors:** Insulated copper connecting wires.\n* **Control Device:** Switch (key) to open (interrupt) or close (complete) the electrical path.\n* **Load:** Component converting electrical energy into useful work (e.g., light bulb, resistor, buzzer).\n* **Short Circuit Hazard:** Occurs when current bypasses the load through an accidental zero-resistance path, causing intense current surge ($I = V/R$), extreme Joule heating, and electrical fires.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s12_1",
+        "questionPrompt": "An electric torch bulb draws a steady current of 0.50 Amperes from a dry cell for 10 minutes. Calculate: (a) The total electrical charge that flows through the filament, (b) Explain why graphite conducts electricity while diamond (both made of carbon) is an electrical insulator.",
+        "stepByStepSolution": "Part (a): Convert time to SI seconds: t = 10 minutes = 10 x 60 = 600 seconds.\nApply charge formula: Q = I x t = 0.50 A x 600 s = 300 Coulombs (C).\nPart (b) Graphite vs. Diamond: Carbon has 4 valence electrons. In diamond, each carbon atom forms 4 rigid covalent bonds with adjacent carbons, leaving zero free electrons. In graphite, each carbon bonds to only 3 neighbors in hexagonal sheets, leaving one free delocalized valence electron per carbon atom to drift and conduct electricity.",
+        "examinerTip": "Examiner Tip: Always convert minutes to seconds in electrical formulas (t in seconds)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s12_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following non-metallic solid materials is an exceptional electrical conductor?",
+        "options": [
+          "Sulfur crystal",
+          "Graphite (carbon)",
+          "Phosphorus block",
+          "Plastic rod"
+        ],
+        "correctAnswer": "Graphite (carbon)",
+        "hint": "It contains delocalized electrons between hexagonal carbon layers.",
+        "workedSolution": "Graphite is an allotrope of carbon in which each atom is bonded to three others, leaving one delocalized valence electron free to migrate across layers and conduct electricity.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s12_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary operational difference between a primary cell and a secondary accumulator cell?",
+        "options": [
+          "Primary cells produce AC, secondary cells produce DC",
+          "Secondary cells can be recharged with reverse current, whereas primary cells are non-rechargeable",
+          "Primary cells are only used in electric cars",
+          "Secondary cells do not use chemicals"
+        ],
+        "correctAnswer": "Secondary cells can be recharged with reverse current, whereas primary cells are non-rechargeable",
+        "hint": "Think about single-use dry batteries vs. car batteries.",
+        "workedSolution": "Primary cells involve irreversible chemical reactions and must be discarded when exhausted. Secondary cells (accumulators) have reversible chemical reactions and can be recharged.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand4_electricity",
+    "gradeLevel": "BS8",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Electricity, Electronics & Semiconductors (Generation, Circuits, PN Diodes & Transmission)",
+    "order": 35,
+    "notes": {
+      "summaryMarkdown": "### Circuit Analysis: Ohm's Law & Series-Parallel Topologies\n* **NaCCA Curriculum Code:** `B8.4.2.1`\n* **Core Competency:** State and verify Ohm’s Law, measure electrical parameters with multimeters, and calculate equivalent resistances.\n\n#### 1. Ohm's Law\nAt constant physical temperature, the electric current ($I$) flowing through a metallic conductor is directly proportional to the potential difference ($V$) applied across its ends:\n$$V = I \\times R$$\n* $V$: Potential difference / Voltage (Volts, $\\text{V}$)\n* $I$: Current (Amperes, $\\text{A}$)\n* $R$: Electrical Resistance (Ohms, $\\Omega$)\n* **Meters:**\n  * **Ammeter:** Measures current; has negligible internal resistance; must be connected in **series**.\n  * **Voltmeter:** Measures potential difference; has extremely high internal resistance; must be connected in **parallel** across the component.\n\n#### 2. Series Circuit Characteristics\n* Components connected end-to-end in a single continuous loop.\n* **Current:** Same current flows through every component ($I_{\\text{total}} = I_1 = I_2 = I_3$).\n* **Voltage:** Total potential difference divides across components ($V_{\\text{total}} = V_1 + V_2 + V_3$).\n* **Equivalent Resistance:**\n  $$R_{\\text{eq}} = R_1 + R_2 + R_3$$\n* *Disadvantage:* If one lamp blows or is disconnected, the entire circuit is broken and all lamps extinguish.\n\n#### 3. Parallel Circuit Characteristics\n* Components connected across common junction nodes (branches).\n* **Voltage:** Same voltage across every branch ($V_{\\text{total}} = V_1 = V_2 = V_3$).\n* **Current:** Total current divides among branches ($I_{\\text{total}} = I_1 + I_2 + I_3$).\n* **Equivalent Resistance:**\n  $$\\frac{1}{R_{\\text{eq}}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}$$\n* *Advantage:* Domestic residential wiring is connected in parallel: each appliance operates independently at full mains voltage ($230\\text{ V}$).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s12_1",
+        "questionPrompt": "Two resistors of resistance 6.0 Ω and 12.0 Ω are connected in parallel across a 12.0 V direct current battery. Calculate: (a) The equivalent resistance of the parallel combination, (b) The total current drawn from the battery, (c) The current flowing through the 6.0 Ω resistor.",
+        "stepByStepSolution": "Part (a): Calculate Equivalent Resistance: 1/Req = 1/R1 + 1/R2 = 1/6.0 + 1/12.0 = 2/12.0 + 1/12.0 = 3/12.0 = 1/4.0. Inverting yields Req = 4.0 Ω.\nPart (b): Calculate Total Current using Ohm's Law: Itotal = V / Req = 12.0 V / 4.0 Ω = 3.0 Amperes (A).\nPart (c): Calculate Current in 6.0 Ω branch: In parallel, voltage across each branch equals source voltage (12.0 V). I_6 = V / R1 = 12.0 V / 6.0 Ω = 2.0 Amperes (A).",
+        "examinerTip": "Examiner Tip: Notice that the equivalent resistance of a parallel circuit (4.0 Ω) is always less than the smallest individual resistor (6.0 Ω)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s12_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a circuit diagram, how must an ammeter and a voltmeter be connected relative to the electrical load?",
+        "options": [
+          "Ammeter in series; Voltmeter in parallel",
+          "Ammeter in parallel; Voltmeter in series",
+          "Both must be connected in series",
+          "Both must be connected in parallel"
+        ],
+        "correctAnswer": "Ammeter in series; Voltmeter in parallel",
+        "hint": "Ammeters measure current flowing through; voltmeters measure potential difference across.",
+        "workedSolution": "An ammeter has low resistance and must be wired in series so that all current passes through it. A voltmeter has high resistance and must be connected in parallel across the load.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s12_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Three identical 9 Ω resistors are connected in parallel across a power supply. What is the equivalent resistance of the network?",
+        "options": [
+          "27 Ω",
+          "9 Ω",
+          "3 Ω",
+          "1 Ω"
+        ],
+        "correctAnswer": "3 Ω",
+        "hint": "1/Req = 1/9 + 1/9 + 1/9 = 3/9.",
+        "workedSolution": "1/Req = 1/9 + 1/9 + 1/9 = 3/9 = 1/3. Therefore, Req = 3 Ω.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand4_electricity",
+    "gradeLevel": "BS9",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Electricity, Electronics & Semiconductors (Generation, Circuits, PN Diodes & Transmission)",
+    "order": 36,
+    "notes": {
+      "summaryMarkdown": "### Solid-State Physics: Semiconductors, Diodes, LEDs & Rectification\n* **NaCCA Curriculum Code:** `B9.4.2.1`\n* **Core Competency:** Explain semiconductor doping, describe p-n junction diode operation, and model alternating current rectification.\n\n#### 1. Semiconductor Band Theory & Doping\nSemiconductors (e.g., Silicon, Germanium) have electrical conductivity intermediate between conductors and insulators:\n* **Intrinsic Semiconductors:** Pure silicon crystals ($Z=14$, 4 valence electrons forming covalent tetrahedrons). Poor conductors at room temperature.\n* **Doping:** The deliberate addition of minute trace impurities to dramatically alter conductivity:\n  * **N-type Semiconductor:** Doped with **pentavalent** impurity atoms (5 valence electrons: Phosphorus, Arsenic). Four electrons bond; the fifth is donated as a **free conduction electron** (majority charge carriers: negative electrons).\n  * **P-type Semiconductor:** Doped with **trivalent** impurity atoms (3 valence electrons: Boron, Gallium). Creates electron vacancies called **holes** that act as mobile positive charges (majority charge carriers: positive holes).\n\n#### 2. The P-N Junction Diode\nFormed by joining p-type and n-type semiconductor crystal regions:\n* **Forward Bias:** Connect positive battery terminal to p-side; negative terminal to n-side. Repels majority carriers across the junction, collapsing the internal depletion layer. The diode conducts large electric current.\n* **Reverse Bias:** Connect positive terminal to n-side; negative to p-side. Widens the non-conductive depletion layer. Current is blocked (virtually zero, except for minute microampere leakage).\n* **Unidirectional Characteristic:** A p-n junction diode permits electric current to flow in **only one direction** (anode $\\rightarrow$ cathode).\n\n#### 3. Light-Emitting Diodes (LEDs) & Rectification\n* **LED:** A specialized p-n junction diode (using Gallium Arsenide phosphide) that emits photons of radiant light when forward-biased, as electrons recombine with holes at the junction. Highly energy-efficient compared to incandescent filament bulbs.\n* **Rectification:** The conversion of Alternating Current (AC) into Direct Current (DC):\n  * **Half-Wave Rectifier:** Single diode suppresses negative AC half-cycles, allowing only positive current pulses through the load.\n  * **Full-Wave Bridge Rectifier:** Four diodes configured in a bridge loop convert both positive and negative AC half-cycles into continuous unidirectional DC output.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s12_1",
+        "questionPrompt": "A 50 Hz sinusoidal alternating current (AC) signal is connected to a circuit containing a single p-n junction diode and a resistive load. Explain the operation of the diode during the positive and negative half-cycles of the AC waveform.",
+        "stepByStepSolution": "Step 1: Positive Half-Cycle — The alternating voltage makes the anode (p-side) positive relative to the cathode (n-side). The diode is in Forward Bias. The depletion barrier is overcome, allowing current to pass through the load.\nStep 2: Negative Half-Cycle — The alternating input polarity reverses, making the anode negative relative to the cathode. The diode is in Reverse Bias. The depletion layer widens, blocking current flow entirely through the load.\nStep 3: Output Characteristic — The resulting current output consists of intermittent positive pulses flowing strictly in one direction (pulsating DC). This process is Half-Wave Rectification.",
+        "examinerTip": "Examiner Tip: Always state that the diode conducts during forward bias and blocks current during reverse bias to achieve rectification."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s12_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the majority electric charge carriers in an n-type semiconductor?",
+        "options": [
+          "Free electrons",
+          "Positive holes",
+          "Protons",
+          "Neutrons"
+        ],
+        "correctAnswer": "Free electrons",
+        "hint": "N-type stands for negative charge carriers.",
+        "workedSolution": "In n-type semiconductors, doping with pentavalent donor atoms (like phosphorus) creates an excess of free delocalized conduction electrons as the majority charge carriers.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s12_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A semiconductor diode allows significant electric current to flow when it is connected in:",
+        "options": [
+          "Reverse bias",
+          "Forward bias",
+          "Open circuit",
+          "Ground state"
+        ],
+        "correctAnswer": "Forward bias",
+        "hint": "Positive battery terminal connected to the p-type anode.",
+        "workedSolution": "In forward bias (positive to p-type, negative to n-type), the applied voltage overcomes the internal junction barrier, allowing majority carriers to cross and conduct current.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand4_forces_mechanics",
+    "gradeLevel": "BS7",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Forces, Motion, Magnetism & Mechanics (Newton's Laws, Simple/Complex Machines, Fluid Pressure)",
+    "order": 37,
+    "notes": {
+      "summaryMarkdown": "### Types of Forces, Frictional Dynamics & Magnetic Fields\n* **NaCCA Curriculum Code:** `B7.4.3.1`\n* **Core Competency:** Classify contact and non-contact forces, analyze the nature of friction, and map magnetic field flux around permanent magnets.\n\n#### 1. Fundamental Concept of Force\nA force is a push or pull exerted on an object resulting from its interaction with another object (vector quantity measured in Newtons, $\\text{N}$).\n* **Effects of Force:** Can change an object's speed, direction of motion, shape/dimensions (deformation), or initiate/halt motion.\n\n#### 2. Contact vs. Non-Contact (Action-at-a-Distance) Forces\n* **Contact Forces (require physical macroscopic contact):**\n  * *Frictional Force:* Opposes relative motion between two touching surfaces.\n  * *Tension Force:* Transmitted through a stretched string, cable, or spring.\n  * *Normal Reaction Force:* Perpendicular contact force exerted by a supportive surface.\n  * *Air Resistance / Viscous Drag:* Fluid frictional drag opposing motion through air/water.\n* **Non-Contact Forces (act across empty space via physical fields):**\n  * *Gravitational Force:* Inward attractive force between masses ($W = mg$).\n  * *Electrostatic Force:* Attraction or repulsion between stationary electric charges.\n  * *Magnetic Force:* Attraction or repulsion exerted by magnetic fields.\n\n#### 3. Magnetic Fields & Magnetic Flux\n* A **magnetic field** is the region surrounding a magnet within which magnetic forces can be detected.\n* **Magnetic Poles:** Every magnet has two poles: North ($N$) and South ($S$).\n  * *Law of Magnetism:* Like magnetic poles repel; unlike magnetic poles attract.\n* **Magnetic Field Lines (Flux):**\n  * Continuous smooth imaginary lines that emerge from the North pole and enter the South pole externally.\n  * Field lines never intersect.\n  * Density of field lines indicates magnetic field strength (strongest near poles).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s13_1",
+        "questionPrompt": "A wooden crate of mass 25.0 kg rests stationary on a flat horizontal concrete warehouse floor. (Take g = 10 m/s²). Calculate: (a) The downward gravitational force (weight) acting on the crate, (b) The magnitude and direction of the normal reaction force exerted by the floor.",
+        "stepByStepSolution": "Part (a): Weight formula: W = m x g = 25.0 kg x 10 m/s² = 250 Newtons (N) directed vertically downward toward Earth's center.\nPart (b): Normal Reaction Force: Because the crate is in static equilibrium with zero vertical acceleration (a = 0), net vertical force equals zero (Sigma F_y = 0).\nTherefore: Normal Reaction (R) - Weight (W) = 0 => R = W = 250 Newtons (N) directed vertically upward perpendicular to the floor.",
+        "examinerTip": "Examiner Tip: Always state both magnitude (250 N) and direction (vertically upward) for vector quantities like normal reaction force."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s13_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following forces is classified as a non-contact (action-at-a-distance) force?",
+        "options": [
+          "Friction force",
+          "Gravitational force",
+          "Tension in a rope",
+          "Air resistance drag"
+        ],
+        "correctAnswer": "Gravitational force",
+        "hint": "It pulls objects without needing physical contact.",
+        "workedSolution": "Gravitational, electrostatic, and magnetic forces act across empty space via physical force fields without physical contact.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s13_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The magnetic field lines outside a bar magnet always emerge from the:",
+        "options": [
+          "South pole and enter the North pole",
+          "North pole and enter the South pole",
+          "Center of the magnet and radiate outward in circles",
+          "East pole and travel West"
+        ],
+        "correctAnswer": "North pole and enter the South pole",
+        "hint": "Follow the direction indicated by a magnetic compass needle.",
+        "workedSolution": "By convention, magnetic field lines emerge from the magnetic North pole and loop continuously to enter the magnetic South pole.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand4_forces_mechanics",
+    "gradeLevel": "BS8",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Forces, Motion, Magnetism & Mechanics (Newton's Laws, Simple/Complex Machines, Fluid Pressure)",
+    "order": 38,
+    "notes": {
+      "summaryMarkdown": "### Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency\n* **NaCCA Curriculum Code:** `B8.4.3.1`\n* **Core Competency:** Explain the operation of simple machines, derive Mechanical Advantage, Velocity Ratio, and calculate mechanical Efficiency.\n\n#### 1. Fundamental Principles of Simple Machines\nA machine is a mechanical device that enables work to be done more easily, rapidly, or safely by applying an Effort ($E$) to overcome a Load ($L$).\n* **Mechanical Advantage (MA):** Force multiplication factor:\n  $$\\text{MA} = \\frac{\\text{Load } (L)}{\\text{Effort } (E)}$$\n  ($\\text{MA} > 1$: force multiplier; $\\text{MA} < 1$: speed multiplier).\n* **Velocity Ratio (VR):** Distance movement ratio (independent of friction):\n  $$\\text{VR} = \\frac{\\text{Distance moved by Effort } (d_E)}{\\text{Distance moved by Load } (d_L)}$$\n* **Efficiency ($\\eta$):** Percentage of input work converted into useful output work:\n  $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{\\text{MA}}{\\text{VR}} \\times 100\\%$$\n* *Real Machine Limitation:* In real machines, efficiency is **always less than 100%** because part of the work input is dissipated overcoming friction between moving parts and lifting the machine's own weight.\n\n#### 2. Classes of Simple Machines\n* **Levers:** Rigid bar pivoting on a fixed fulcrum (pivot):\n  * **Class 1 (Fulcrum in middle):** Crowbar, scissors, claw hammer, see-saw ($L - F - E$).\n  * **Class 2 (Load in middle):** Wheelbarrow, nutcracker, bottle opener ($F - L - E$). $\\text{MA} > 1$ always.\n  * **Class 3 (Effort in middle):** Sugar tongs, human forearm, tweezers ($F - E - L$). $\\text{MA} < 1$ (speed/distance multiplier).\n* **Inclined Plane (Ramp):**\n  $$\\text{VR} = \\frac{\\text{Length of Slope } (l)}{\\text{Vertical Height } (h)} = \\frac{1}{\\sin \\theta}$$\n* **Pulley Systems:**\n  * Single Fixed Pulley: $\\text{VR} = 1$ (changes direction of effort only).\n  * Block and Tackle System: $\\text{VR} = \\text{total number of rope segments supporting the movable block}$.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s13_1",
+        "questionPrompt": "A block and tackle pulley system consisting of 4 pulleys is used to raise a load of 800 N through a vertical height of 2.5 m. An effort of 250 N is applied. Calculate: (a) Mechanical Advantage (MA), (b) Velocity Ratio (VR), (c) Efficiency of the pulley system.",
+        "stepByStepSolution": "Part (a): Calculate MA: MA = Load / Effort = 800 N / 250 N = 3.2.\nPart (b): Determine VR: For a standard block and tackle system, Velocity Ratio equals the total number of pulleys in the system: VR = 4.\nPart (c): Calculate Efficiency: Efficiency (eta) = (MA / VR) x 100% = (3.2 / 4.0) x 100% = 0.80 x 100% = 80%.",
+        "examinerTip": "Examiner Tip: Note that MA and VR are ratios with no units. Efficiency is expressed as a percentage (80%)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s13_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A wheelbarrow belongs to which class of levers, and which element is positioned in the middle?",
+        "options": [
+          "First class; Fulcrum in middle",
+          "Second class; Load in middle",
+          "Third class; Effort in middle",
+          "Fourth class; Wheel in middle"
+        ],
+        "correctAnswer": "Second class; Load in middle",
+        "hint": "The wheel is the pivot, the cargo is in the center, and the handles are the effort.",
+        "workedSolution": "In a second-class lever (like a wheelbarrow), the load is positioned between the fulcrum (wheel axle) and the effort (handles). Mechanical advantage is always greater than 1.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s13_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the mechanical efficiency of any practical machine always strictly less than 100%?",
+        "options": [
+          "Energy is destroyed inside the machine",
+          "Part of the input work is wasted overcoming friction and moving machine parts as heat",
+          "Gravity pulls machines down",
+          "Electric current always stops machines"
+        ],
+        "correctAnswer": "Part of the input work is wasted overcoming friction and moving machine parts as heat",
+        "hint": "Friction between moving surfaces converts useful work into waste heat.",
+        "workedSolution": "Frictional resistance between moving parts and the gravitational weight of the machine itself consume part of the input work, converting it into wasted thermal energy. Thus, MA is always less than VR.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand4_forces_mechanics",
+    "gradeLevel": "BS9",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Forces, Motion, Magnetism & Mechanics (Newton's Laws, Simple/Complex Machines, Fluid Pressure)",
+    "order": 39,
+    "notes": {
+      "summaryMarkdown": "### Classical Mechanics: Newton's Laws of Motion, Momentum & Fluid Statics\n* **NaCCA Curriculum Code:** `B9.4.3.1`\n* **Core Competency:** Apply Newton’s Three Laws of Motion, calculate linear momentum, and solve solid and hydrostatic fluid pressure problems.\n\n#### 1. Newton's Three Laws of Motion\n* **Newton's First Law (Law of Inertia):** An object remains at rest or continues moving at constant velocity in a straight line unless acted upon by a net external resultant force.\n  * *Inertia:* The reluctance of a body to alter its state of rest or uniform motion (proportional to mass).\n* **Newton's Second Law:** The rate of change of momentum of an object is directly proportional to the applied resultant force and occurs in the direction of the force:\n  $$F = ma$$\n  ($F$: force in N; $m$: mass in kg; $a$: acceleration in $\\text{m/s}^2$).\n  * *Linear Momentum ($p$):* $p = mv$ (kg·m/s).\n* **Newton's Third Law (Action & Reaction):** Whenever one object exerts a force on a second object, the second object exerts an equal and opposite force on the first ($F_{\\text{action}} = -F_{\\text{reaction}}$).\n  * Examples: Rocket propulsion, recoil of a fired gun, swimming stroke mechanics.\n\n#### 2. Solid Pressure Mechanics\nPressure is the perpendicular compressive force applied per unit surface area:\n$$P = \\frac{F}{A}$$\n* $P$: Pressure (Pascals, $\\text{Pa}$ or $\\text{N/m}^2$)\n* $F$: Perpendicular force (N)\n* $A$: Surface contact area ($\\text{m}^2$)\n* **Inverse Area Principle:**\n  * Small contact area $\\rightarrow$ Massive pressure (e.g., sharp injection needle, sharp knife blade).\n  * Large contact area $\\rightarrow$ Low pressure to prevent sinking (e.g., wide caterpillar tracks on excavators, broad elephant feet, snowshoes).\n\n#### 3. Fluid Hydrostatic Pressure\nPressure in a stationary liquid acts equally in all directions and increases directly with depth and liquid density:\n$$P = \\rho g h$$\n* $\\rho$: Fluid density ($\\text{kg/m}^3$)\n* $g$: Gravitational acceleration ($10\\text{ m/s}^2$)\n* $h$: Depth below liquid surface (m)\n* **Pascal's Principle:** Pressure applied to an enclosed incompressible fluid is transmitted undiminished throughout the fluid and to the walls of the container:\n  $$\\frac{F_1}{A_1} = \\frac{F_2}{A_2}$$\n  (Basis of hydraulic car jacks, hydraulic braking systems, and heavy industrial excavators).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s13_1",
+        "questionPrompt": "A hydraulic garage car lift has a small input piston of cross-sectional area 0.02 m² and a large output slave piston of area 1.20 m². An effort force of 300 N is applied downward on the small piston. Calculate: (a) The fluid pressure transmitted through the hydraulic oil, (b) The maximum load force (weight of car) that can be lifted by the large piston.",
+        "stepByStepSolution": "Part (a): Calculate fluid pressure generated: P = F1 / A1 = 300 N / 0.02 m² = 15,000 Pascals (Pa) or N/m².\nPart (b): Apply Pascal's Principle: Pressure is transmitted undiminished through the hydraulic oil: P1 = P2 = 15,000 Pa.\nRearrange for output force: F2 = P x A2 = 15,000 N/m² x 1.20 m² = 18,000 Newtons (N).\nConclusion: An input effort of only 300 N generates an output lifting force of 18,000 N (enough to lift an 1,800 kg automobile) — a force multiplication factor of 60!",
+        "examinerTip": "Examiner Tip: Note that the hydraulic press is a force multiplier: F2/F1 = A2/A1."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s13_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "According to Newton's Second Law of Motion, what resultant force is required to accelerate a 4.0 kg cart at 3.5 m/s²?",
+        "options": [
+          "7.5 N",
+          "12.0 N",
+          "14.0 N",
+          "28.0 N"
+        ],
+        "correctAnswer": "14.0 N",
+        "hint": "Use F = m * a.",
+        "workedSolution": "F = m * a = 4.0 kg * 3.5 m/s² = 14.0 Newtons.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s13_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do massive construction excavators operate on wide caterpillar steel tracks rather than standard narrow rubber wheels?",
+        "options": [
+          "Tracks look more impressive",
+          "The large contact area reduces ground pressure (P = F/A), preventing the heavy excavator from sinking into soft mud",
+          "Steel tracks increase speed to 100 km/h",
+          "Tracks do not require engines"
+        ],
+        "correctAnswer": "The large contact area reduces ground pressure (P = F/A), preventing the heavy excavator from sinking into soft mud",
+        "hint": "Pressure is inversely proportional to surface contact area.",
+        "workedSolution": "Because Pressure = Force / Area, spreading the massive machine weight over wide caterpillar tracks dramatically lowers pressure per square meter, preventing the machine from sinking into soft soil.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand4_agricultural_tools",
+    "gradeLevel": "BS7",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Agricultural Tools & Farm Implements (Safety, Maintenance & Mechanization)",
+    "order": 40,
+    "notes": {
+      "summaryMarkdown": "### Agricultural Hand Tools: Classification, Functions & Workshop Safety\n* **NaCCA Curriculum Code:** `B7.4.4.1`\n* **Core Competency:** Classify farm tools by functional use, describe ergonomic features, and demonstrate safety protocols.\n\n#### 1. Functional Classification of Agricultural Hand Tools\n* **Cutting & Clearing Tools:**\n  * *Cutlass (Machete):* Heavy steel blade with curved or straight cutting edge; land clearing, bush slashing, harvesting, weeding.\n  * *Sickle:* Curved serrated steel blade; harvesting cereal grains (rice, wheat) and cutting livestock pasture grass.\n  * *Pruning Shears (Secateurs):* Scissor-like spring-loaded bypass blades; precision trimming of tree shoots, buds, and diseased branches.\n* **Digging & Tillage Tools:**\n  * *West African Hoe (Earth Hoe):* Wide curved steel blade fitted to a short curved wooden handle; breaking clods, making ridges and mounds, weeding.\n  * *Spade & Shovel:* Flat blade for digging straight trench walls (spade); dished scooping blade for shoveling and lifting loose soil, sand, and fertilizer.\n  * *Pickaxe (Mattock):* Pointed steel pick at one end, wide chisel at the other; breaking compacted stony subsoil and excavating stubborn tree roots.\n* **Gathering & Levelling Tools:**\n  * *Rake:* Transverse bar with steel teeth; gathering vegetative debris, leveling seedbed surfaces, breaking fine soil surface crusts.\n* **Carrying & Transport Tools:**\n  * *Wheelbarrow:* Second-class lever transport machine ($F - L - E$); hauling soil, manure, harvested tubers, and inputs across the farm.\n\n#### 2. Workshop & Field Safety Principles\n* Always inspect wooden handles for splits and loose rivets before swinging.\n* Maintain a minimum safe clearance distance ($>3\\text{ meters}$) from coworkers when slashing with cutlasses.\n* Carry sharp tools pointing downward toward the ground, never over the shoulder.\n* Never leave sharp cutting edges exposed on the ground pointing upward.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s14_1",
+        "questionPrompt": "A junior high school agricultural club is allocated an overgrown, stony fallow plot to establish a school vegetable garden. List four distinct hand tools required and state the specific operational role of each tool in proper chronological order.",
+        "stepByStepSolution": "Step 1: Cutlass (Machete) — Slashing dense weeds, tall brush, and small shrubs to clear the surface vegetation.\nStep 2: Pickaxe (Mattock) — Breaking up the hard, compacted, stony ground and digging out stubborn tree roots and stumps.\nStep 3: Spade / Earth Hoe — Digging the loosened soil, turning over topsoil clods, and shaping raised vegetable nursery beds and ridges.\nStep 4: Garden Rake — Gathering stones and cleared weed roots, and finely pulverizing and leveling the seedbed topsoil for seed sowing.",
+        "examinerTip": "Examiner Tip: Always present multi-step tool questions in logical agronomic sequence from clearing to final seedbed leveling."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s14_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which agricultural hand tool is specifically designed for harvesting cereal crops like rice and cutting pasture grass?",
+        "options": [
+          "Pruning saw",
+          "Sickle",
+          "Pickaxe",
+          "Rake"
+        ],
+        "correctAnswer": "Sickle",
+        "hint": "It has a sharp, curved crescent-shaped blade.",
+        "workedSolution": "A sickle has a curved crescent steel blade engineered to gather and slice cereal stems and forage grasses with a single sweep.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s14_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary agricultural function of a garden rake during seedbed preparation?",
+        "options": [
+          "Felling large forest trees",
+          "Breaking compacted subsoil rocks",
+          "Gathering cleared weed debris and leveling the topsoil surface",
+          "Digging deep drainage trenches"
+        ],
+        "correctAnswer": "Gathering cleared weed debris and leveling the topsoil surface",
+        "hint": "It has a horizontal metal bar with multiple downward teeth.",
+        "workedSolution": "The steel teeth of a garden rake comb through loosened soil to gather stones and organic debris while leveling the friable seedbed surface.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand4_agricultural_tools",
+    "gradeLevel": "BS8",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Agricultural Tools & Farm Implements (Safety, Maintenance & Mechanization)",
+    "order": 41,
+    "notes": {
+      "summaryMarkdown": "### Agricultural Tool Maintenance, Metallurgy & Rust Prevention Chemistry\n* **NaCCA Curriculum Code:** `B8.4.4.1`\n* **Core Competency:** Demonstrate sharpening techniques, handle fitting, and apply electrochemical principles of rust prevention.\n\n#### 1. Daily & Periodic Tool Maintenance\n* **Cleaning:** Wash off adhering soil, plant sap, and organic residues immediately after field use; damp soil contains moisture and microbial acids that accelerate rusting.\n* **Sharpening:** Restore sharp cutting bevels on cutlasses, hoes, and shears using a flat mill bastard file, oilstone, or whetstone held at the correct bevel angle ($20-30^\\circ$).\n* **Wooden Handle Fitting:** Replace split, splintered handles; secure handles into tool eyes using wooden or steel expansion wedges to prevent blades from flying off during swinging.\n\n#### 2. The Chemistry of Rusting (Iron Corrosion)\nRusting is an electrochemical oxidation reaction requiring **both oxygen and moisture** simultaneously:\n$$4\\text{Fe}_{(s)} + 3\\text{O}_{2(g)} + 2x\\text{H}_2\\text{O}_{(l)} \\rightarrow 2\\text{Fe}_2\\text{O}_3 \\cdot x\\text{H}_2\\text{O}_{(s)} \\text{ (Hydrated Iron(III) Oxide)}$$\n* Unlike aluminum oxide (which forms a protective impervious skin), iron rust is porous, flaky, and continuously peels away, exposing fresh sub-surface iron to ongoing destruction.\n\n#### 3. Methods of Rust Prevention on Farm Tools\n* **Oiling & Greasing:** Applying a thin film of clean mineral oil or grease on clean steel blades forms a physical barrier that prevents atmospheric oxygen and moisture from contacting the metal.\n* **Galvanizing:** Coating steel with a sacrificial protective layer of zinc (Zn). Zinc oxidizes preferentially, protecting iron even if scratched.\n* **Painting:** Applying anti-corrosive primer and oil paint to non-cutting metal surfaces (e.g., wheelbarrow trays, tractor frames).\n* **Proper Storage:** Storing tools elevated off damp concrete floors in a dry, well-ventilated tool shed.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s14_1",
+        "questionPrompt": "A student sets up three test tubes to investigate the conditions required for iron nails to rust: Tube 1 has nails in tap water exposed to air; Tube 2 has nails in boiled water covered with an oil layer; Tube 3 has nails in dry air with anhydrous calcium chloride. Predict and explain the results after 7 days.",
+        "stepByStepSolution": "Tube 1 Prediction: Nails rust heavily. Rationale: Both dissolved oxygen and liquid water are present simultaneously, enabling the electrochemical oxidation of iron to hydrated iron(III) oxide.\nTube 2 Prediction: No rusting occurs. Rationale: Boiling water expelled all dissolved oxygen, and the floating oil barrier prevents atmospheric air from dissolving back into the water. Water is present, but oxygen is absent.\nTube 3 Prediction: No rusting occurs. Rationale: Anhydrous calcium chloride absorbs all atmospheric water vapor, creating a completely dry environment. Oxygen is present, but moisture is absent.\nConclusion: Rusting requires BOTH moisture and oxygen simultaneously. Depriving the metal of either factor halts corrosion completely.",
+        "examinerTip": "Examiner Tip: This classic BECE experiment proves that both air (oxygen) and water are essential for rusting."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s14_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the two essential environmental factors required simultaneously for iron farm tools to rust?",
+        "options": [
+          "Nitrogen and heat",
+          "Oxygen and moisture (water)",
+          "Carbon dioxide and sunlight",
+          "Hydrogen and wind"
+        ],
+        "correctAnswer": "Oxygen and moisture (water)",
+        "hint": "Rust is hydrated iron(III) oxide.",
+        "workedSolution": "Rusting is an electrochemical oxidation reaction that cannot proceed without both atmospheric oxygen and liquid water/moisture.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s14_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should used engine oil or clean grease be wiped over cutlass blades before storing them in a tool shed?",
+        "options": [
+          "To make the cutlass smell nice",
+          "To create a physical barrier preventing atmospheric moisture and oxygen from contacting iron atoms",
+          "To make the blade softer for cutting",
+          "To dissolve the steel"
+        ],
+        "correctAnswer": "To create a physical barrier preventing atmospheric moisture and oxygen from contacting iron atoms",
+        "hint": "Hydrophobic oil barriers block moisture and air.",
+        "workedSolution": "Oil and grease are hydrophobic hydrocarbons that form an impermeable seal over metal surfaces, blocking oxygen and water molecules from contacting iron atoms.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand4_agricultural_tools",
+    "gradeLevel": "BS9",
+    "strandNumber": 4,
+    "strandTitle": "STRAND 4: FORCES AND ENERGY",
+    "subStrandTitle": "Agricultural Tools & Farm Implements (Safety, Maintenance & Mechanization)",
+    "order": 42,
+    "notes": {
+      "summaryMarkdown": "### Agricultural Mechanization & Tractor-Coupled Farm Implements\n* **NaCCA Curriculum Code:** `B9.4.4.1`\n* **Core Competency:** Classify primary and secondary tillage implements, analyze tractor mechanisms, and evaluate the socio-economic impact of mechanization.\n\n#### 1. Concept of Agricultural Mechanization\nThe application of mechanical engineering technology, tractors, motorized implements, and automation to agricultural production to reduce human drudgery, accelerate operations, and increase yields per hectare.\n\n#### 2. Primary Tillage Implements (Primary Cultivation)\nUsed to break open uncultivated soil, invert topsoil clods, and bury vegetative surface residues:\n* **Mouldboard Plow:** Slices, lifts, inverts, and completely rolls over soil furrows. Best suited for stone-free, moist, cohesive soils.\n* **Disc Plow:** Features concave, revolving steel discs mounted on heavy bearings. Revolves over hidden subterranean tree roots, rocks, and hard obstructions without breaking; the standard primary tillage implement used in stony West African savannah soils.\n* **Chisel Plow (Subsoiler):** Heavy steel shanks that shatter compacted impervious hardpans at depths of 40-70 cm without inverting soil layers.\n\n#### 3. Secondary Tillage Implements (Refining Seedbed)\nFollows primary plowing to pulverize large clods into a fine, friable tilth:\n* **Disc Harrow:** Arrays of rotating scalloped or smooth steel discs that pulverize clods and incorporate fertilizer.\n* **Cultivators & Rotavators:** Rotating blades that prepare refined seedbeds and control inter-row weeds.\n* **Seed Drills / Planters:** Tractor-drawn implements that meter, furrow, deposit seed at uniform depths, and cover seeds in a single pass.\n\n#### 4. Harvesting Machinery\n* **Combine Harvester:** Multi-functional self-propelled machine that executes **reaping, threshing, de-husking, and winnowing** of cereal grains (rice, maize, wheat) simultaneously in the field, reducing harvest labor by $95\\%$.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s14_1",
+        "questionPrompt": "A commercial maize farming project in the Afram Plains of Ghana needs to select a primary tillage plow for virgin land containing scattered tree roots and concealed granite rocks. Recommend the most appropriate plow and justify your choice with two mechanical reasons.",
+        "stepByStepSolution": "Recommendation: The Disc Plow must be selected.\nReason 1: Rolling Action Over Obstacles — Unlike the rigid share and mouldboard of a mouldboard plow (which would catch on subterranean roots and snap the shear pin or bend the beam), the circular concave discs of a disc plow roll and ride over buried rocks and roots without stopping the tractor.\nReason 2: Cutting Tough Vegetation — The sharp revolving steel discs act like rotating circular knives, slicing through dense fibrous root clumps and trash without clogging the implement beam.\nConclusion: The disc plow is mechanically suited to hard, abrasive, root-infested tropical soils.",
+        "examinerTip": "Examiner Tip: Emphasize that the rotating disc rolls over obstructions, whereas the mouldboard plow is a rigid implement suited to stone-free, pre-cleared land."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s14_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which tractor-drawn primary tillage implement is best suited for plowing stony and root-infested soils in West Africa?",
+        "options": [
+          "Mouldboard plow",
+          "Disc plow",
+          "Garden trowel",
+          "Secateurs"
+        ],
+        "correctAnswer": "Disc plow",
+        "hint": "Its revolving discs roll over buried obstructions.",
+        "workedSolution": "The disc plow features revolving circular concave steel discs that roll over buried stones and roots without jamming or shearing the frame, making it ideal for tropical soils.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s14_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A combine harvester is termed a 'combine' machine because it integrates which agricultural operations simultaneously?",
+        "options": [
+          "Plowing, planting, weeding, and watering",
+          "Reaping (cutting), threshing, separating, and cleaning grain in a single pass",
+          "Milking cows and feeding chickens",
+          "Manufacturing fertilizer and packaging bags"
+        ],
+        "correctAnswer": "Reaping (cutting), threshing, separating, and cleaning grain in a single pass",
+        "hint": "It combines multiple harvesting tasks into one operation.",
+        "workedSolution": "A combine harvester combines the traditionally separate operations of reaping (cutting the crop), threshing (separating grains from stems), and winnowing (cleaning chaff from grains) into a continuous mechanical pass.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand5_waste_management",
+    "gradeLevel": "BS7",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Waste Management & Environmental Sanitation (Solid/Liquid/Toxic Waste, Composting & Recycling)",
+    "order": 43,
+    "notes": {
+      "summaryMarkdown": "### Waste Classification, Environmental Sanitation & Source Segregation\n* **NaCCA Curriculum Code:** `B7.5.1.1`\n* **Core Competency:** Classify municipal wastes into biodegradable and non-biodegradable, evaluate sanitation hazards, and implement source separation.\n\n#### 1. Fundamental Classification of Waste\nWaste is any material discarded by the holder as no longer useful:\n* **By Physical State:**\n  * *Solid Waste:* Garbage, plastics, paper, scrap metal, agricultural crop residues, electronic waste (e-waste).\n  * *Liquid Waste:* Sewage (blackwater from toilets), sullage (greywater from kitchens and baths), industrial chemical effluents, agricultural slurry runoff.\n  * *Gaseous Waste:* Flue gas, smoke particulates, carbon monoxide ($CO$), sulfur dioxide ($SO_2$).\n* **By Biological Degradability:**\n  * *Biodegradable Waste:* Organic materials derived from living organisms that can be broken down into natural humic substances by microorganisms (bacteria and fungi) (e.g., food leftovers, vegetable peelings, animal dung, paper).\n  * *Non-Biodegradable Waste:* Synthetic materials that cannot be broken down by biological decomposers, persisting in the environment for centuries (e.g., plastics, polythene bags, glass, aluminium cans, Styrofoam).\n\n#### 2. Hazards of Poor Waste Disposal in Ghana\n* Blockage of urban storm drainage channels (e.g., Odaw River in Accra) causing catastrophic seasonal flash floods.\n* Leaching of toxic chemical contaminants (heavy metals, organic toxins) into groundwater tables.\n* Breeding reservoirs for pathogenic disease vectors (mosquitoes transmitting malaria, houseflies transmitting cholera and dysentery).\n* Marine pollution: Non-biodegradable single-use plastics choking coastal fish and sea turtles in the Gulf of Guinea.\n\n#### 3. Source Segregation Systems\nSorting waste at the point of generation into distinct color-coded receptacles:\n* Green: Organic compostable food waste.\n* Blue: Recyclable plastics, glass bottles, and aluminium cans.\n* Black: General non-recyclable residual waste.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s15_1",
+        "questionPrompt": "In many suburban communities in Ghana, residents either dispose of rubbish in unengineered open dumps or burn piles of plastic waste in open fires. Explain two severe public health and environmental hazards associated with this practice.",
+        "stepByStepSolution": "Hazard 1: Toxic Carcinogenic Air Emissions — Burning plastics (especially polyvinyl chloride - PVC and polythene) releases highly toxic dioxins, furans, and black carbon soot particulates. Inhalation triggers severe acute asthma, chronic obstructive pulmonary disease (COPD), and long-term lung cancer.\nHazard 2: Toxic Leachate Contamination of Aquifers — In unengineered open dumps, rainwater percolates through decomposing rubbish, dissolving heavy metals (lead, cadmium from discarded batteries) and organic poisons into a toxic dark fluid called leachate. This leachate seeps into underground aquifers, poisoning domestic borehole drinking water.",
+        "examinerTip": "Examiner Tip: Note the specific atmospheric toxins (dioxins and furans) produced when plastics undergo low-temperature incomplete combustion."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s15_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following household waste items is completely biodegradable?",
+        "options": [
+          "Plastic water sachet (polythene)",
+          "Cassava peelings",
+          "Broken glass bottle",
+          "Aluminum beverage can"
+        ],
+        "correctAnswer": "Cassava peelings",
+        "hint": "It is an organic plant residue that decomposes naturally.",
+        "workedSolution": "Cassava peelings are organic vegetable matter that soil saprophytic bacteria and fungi can enzymatically break down into harmless organic compost.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s15_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the toxic liquid called that forms when rainwater percolates through unsealed open garbage dumps?",
+        "options": [
+          "Filtrate",
+          "Leachate",
+          "Chyme",
+          "Distillate"
+        ],
+        "correctAnswer": "Leachate",
+        "hint": "It contaminates groundwater aquifers.",
+        "workedSolution": "Leachate is the highly toxic, concentrated liquid that dissolves and leaches heavy metals and pathogens as rainwater drains through decomposing landfill garbage.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand5_waste_management",
+    "gradeLevel": "BS8",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Waste Management & Environmental Sanitation (Solid/Liquid/Toxic Waste, Composting & Recycling)",
+    "order": 44,
+    "notes": {
+      "summaryMarkdown": "### Composting Technology: Microbiology, C:N Ratios & Organic Recycling\n* **NaCCA Curriculum Code:** `B8.5.1.1`\n* **Core Competency:** Explain the biological process of composting, manage the Carbon-to-Nitrogen ratio, and produce organic fertilizer.\n\n#### 1. The Science of Composting\nComposting is the controlled aerobic biological decomposition of organic solid wastes by a succession of microorganisms (bacteria, actinomycetes, fungi) into dark, crumbly, nutrient-rich **humus**.\n\n#### 2. The Carbon-to-Nitrogen Ratio ($C:N$ Ratio)\nMicroorganisms require carbon for energy ($E$) and nitrogen for protein synthesis. The optimal $C:N$ ratio for active aerobic composting is approximately **$30:1$**:\n* **\"Browns\" (Carbon-Rich Materials):** Provide structural porosity and aerate the pile (e.g., dry leaves, straw, wood shavings, sawdust, cardboard; $C:N > 60:1$).\n* **\"Greens\" (Nitrogen-Rich Materials):** Provide moisture and nitrogen for microbial reproduction (e.g., fresh grass clippings, green vegetable scraps, poultry manure, cow dung; $C:N < 20:1$).\n* *Imbalance:*\n  * Too much Carbon: Decomposition slows down to a crawl.\n  * Too much Nitrogen: Excess nitrogen escapes as foul-smelling ammonia gas ($NH_3$).\n\n#### 3. Stages of Aerobic Composting\n1. **Mesophilic Phase (Day 1-3, $20-45^\\circ\\text{C}$):** Mesophilic bacteria rapidly metabolize soluble sugars and amino acids, generating metabolic heat.\n2. **Thermophilic Phase (Day 4-15, $45-65^\\circ\\text{C}$):** Thermophilic bacteria (*Bacillus*) take over. High core temperature ($>55^\\circ\\text{C}$) is essential because it **pasteurizes the compost**, destroying pathogenic bacteria (*Salmonella*, *E. coli*) and killing weed seeds.\n3. **Cooling & Maturation Phase (Week 3-8, $<40^\\circ\\text{C}$):** Fungi and actinomycetes break down tough cellulose and lignin. The compost stabilizes into sweet-smelling, earthy, dark brown humus.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s15_1",
+        "questionPrompt": "A student agricultural club builds a compost heap. The teacher instructs them to turn the pile inside-out using a pitchfork once every 7 days. Give two scientific reasons why physical turning is critical to successful aerobic composting.",
+        "stepByStepSolution": "Reason 1: Aeration and Oxygen Replenishment — The thermophilic microorganisms that break down organic waste are strictly aerobic (require molecular O2). Over time, microbial respiration consumes all trapped oxygen. Turning introduces fresh atmospheric air into the core, preventing anaerobic fermentation that would cause foul odors (hydrogen sulfide) and stall decomposition.\nReason 2: Temperature and Material Mixing — The outermost layers of the heap remain cool and dry. Turning moves the outer uncomposted vegetative matter into the hot, active interior core while redistributing moisture, ensuring uniform pasteurization and complete decomposition of all weed seeds and pathogens.",
+        "examinerTip": "Examiner Tip: Emphasize both oxygen replenishment for aerobic microbes and moving cooler outer layers into the hot core."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s15_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The optimal Carbon-to-Nitrogen (C:N) ratio recommended for active aerobic composting is approximately:",
+        "options": [
+          "1:1",
+          "10:1",
+          "30:1",
+          "100:1"
+        ],
+        "correctAnswer": "30:1",
+        "hint": "Roughly 30 parts carbon to 1 part nitrogen by weight.",
+        "workedSolution": "A 30:1 C:N ratio supplies the ideal balance of carbon for microbial energy and nitrogen for cellular protein synthesis, maximizing decomposition speed without ammonia odor.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s15_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must the internal temperature of a compost pile reach 55°C to 65°C during the thermophilic phase?",
+        "options": [
+          "To set the compost pile on fire",
+          "To thermal-pasteurize the compost, destroying pathogenic microorganisms and weed seeds",
+          "To melt plastic scraps in the pile",
+          "To turn the compost into charcoal"
+        ],
+        "correctAnswer": "To thermal-pasteurize the compost, destroying pathogenic microorganisms and weed seeds",
+        "hint": "High heat kills harmful germs and weed seeds.",
+        "workedSolution": "Thermophilic temperatures between 55°C and 65°C pasteurize the biomass, killing human and plant pathogens (E. coli, Salmonella) and deactivating dormant weed seeds.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand5_waste_management",
+    "gradeLevel": "BS9",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Waste Management & Environmental Sanitation (Solid/Liquid/Toxic Waste, Composting & Recycling)",
+    "order": 45,
+    "notes": {
+      "summaryMarkdown": "### The Circular Economy: The 5R Paradigm & Engineered Sanitary Landfills\n* **NaCCA Curriculum Code:** `B9.5.1.1`\n* **Core Competency:** Deploy the 5R hierarchy and analyze the engineering architecture of modern sanitary landfills.\n\n#### 1. The 5R Waste Management Hierarchy\nA prioritized circular-economy framework designed to decouple economic activity from resource consumption and environmental degradation:\n1. **Refuse:** Decline unnecessary, wasteful, or single-use items (e.g., refusing single-use plastic carrier bags; bringing a reusable cotton tote).\n2. **Reduce:** Minimize the overall volume of waste generated at source by choosing products with minimal packaging or longer lifespans.\n3. **Reuse:** Extend product life by repeatedly using an item for its original or new purpose without industrial reprocessing (e.g., refilling glass bottles, reusing cardboard cartons).\n4. **Recycle:** Industrially processing discarded waste materials into new consumer products (e.g., melting plastic PET bottles into polyester clothing fibers, remelting scrap aluminium into cooking pots).\n5. **Rot (Compost):** Diverting organic biodegradable food and yard wastes into composting systems to regenerate agricultural soils.\n\n#### 2. Engineering Architecture of a Modern Sanitary Landfill\nUnlike primitive open dumps, an engineered sanitary landfill is an isolated biological and chemical containment cell:\n* **Composite Bottom Liner:** Dense compacted clay layer ($>60\\text{ cm}$, hydraulic conductivity $<10^{-7}\\text{ cm/s}$) topped with a high-density polyethylene (HDPE) geomembrane to prevent any toxic fluid seepage into surrounding aquifers.\n* **Leachate Collection System:** Perforated HDPE drainage pipes embedded in gravel beds at the base that pump toxic leachate to an onsite biological wastewater treatment facility.\n* **Biogas Extraction Network:** Vertical perforated gas wells that capture methane gas ($\\text{CH}_4$) produced by anaerobic decomposition, flaring it or burning it to generate clean municipal electricity.\n* **Daily Soil Cover:** 15 cm of compacted soil applied over waste daily to control disease vectors (flies, rats), prevent fires, and suppress odors.\n* **Final Impermeable Cap & Revegetation:** Sealed cap preventing rainwater infiltration once the cell reaches capacity.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s15_1",
+        "questionPrompt": "Municipal organic waste in an engineered landfill decomposes anaerobically to produce biogas containing 55% Methane (CH4) and 45% Carbon Dioxide (CO2). Explain why modern landfills capture and combust this methane to generate electricity rather than venting it into the atmosphere.",
+        "stepByStepSolution": "Reason 1: Potent Greenhouse Gas Mitigation — Methane (CH4) is a super-pollutant with a Global Warming Potential (GWP) 28 to 36 times greater than carbon dioxide over a 100-year timescale. Vented methane severely accelerates global warming. Burning it converts CH4 into CO2 and H2O (CH4 + 2O2 -> CO2 + 2H2O), dramatically lowering net radiative forcing.\nReason 2: Renewable Energy Recovery — Methane is a high-energy combustible hydrocarbon fuel. Channeling captured biogas into gas turbine generators produces clean, renewable electricity to power the landfill facility and feed the national electricity grid.\nReason 3: Explosion Hazard Prevention — Methane is explosive when mixed with air at concentrations between 5% and 15%. Venting creates dangerous subterranean explosion risks in nearby settlements.",
+        "examinerTip": "Examiner Tip: Always state that methane has a global warming potential over 28 times greater than CO2 to explain the climatic necessity of combustion."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s15_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In the 5R waste hierarchy, which strategy is considered the most environmentally preferred and effective?",
+        "options": [
+          "Recycle",
+          "Rot",
+          "Refuse",
+          "Incinerate"
+        ],
+        "correctAnswer": "Refuse",
+        "hint": "Preventing waste before it is even created is best.",
+        "workedSolution": "Refusing unnecessary single-use items is at the pinnacle of the waste hierarchy because it eliminates the environmental footprint of production, transport, and disposal completely.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s15_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of the high-density polyethylene (HDPE) geomembrane liner at the bottom of a modern sanitary landfill?",
+        "options": [
+          "To make the landfill waterproof so fish can live in it",
+          "To prevent toxic chemical leachate from seeping downward into groundwater aquifers",
+          "To reflect sunlight into outer space",
+          "To speed up plastic decomposition"
+        ],
+        "correctAnswer": "To prevent toxic chemical leachate from seeping downward into groundwater aquifers",
+        "hint": "It acts as an impermeable barrier against toxic fluids.",
+        "workedSolution": "The thick HDPE geomembrane and compacted clay liner create an impermeable containment barrier that prevents toxic leachate from contaminating municipal groundwater drinking aquifers.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand5_human_health",
+    "gradeLevel": "BS7",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Human Health & Disease Control (Deficiency, Viral, Bacterial, Communicable & Lifestyle Diseases)",
+    "order": 46,
+    "notes": {
+      "summaryMarkdown": "### Human Nutrition: Balanced Diets & Nutritional Deficiency Disorders\n* **NaCCA Curriculum Code:** `B7.5.2.1`\n* **Core Competency:** Classify food nutrients, design balanced adolescent diets, and diagnose common nutritional deficiency diseases.\n\n#### 1. Classes of Food Nutrients\n* **Carbohydrates:** Primary energetic fuel ($17\\text{ kJ/g}$) for cellular metabolism (e.g., starch in yam, cassava, maize, rice; glucose).\n* **Proteins:** Polymers of amino acids required for growth, somatic tissue repair, enzyme and antibody synthesis ($17\\text{ kJ/g}$) (e.g., fish, beans, eggs, meat, milk).\n* **Lipids (Fats & Oils):** Concentrated long-term energy storage ($38\\text{ kJ/g}$), structural cell membranes, thermal insulation, shock absorption for organs.\n* **Vitamins (Organic Micronutrients):** Fat-soluble (A, D, E, K) and Water-soluble (B-complex, C). Essential coenzymes in biochemical reactions.\n* **Minerals (Inorganic Micronutrients):** Calcium, Iron, Iodine, Sodium, Potassium.\n* **Dietary Fiber (Roughage):** Indigestible cellulose providing bulk to stimulate intestinal peristalsis and prevent constipation.\n* **Water:** Universal biological solvent, thermoregulation through sweat evaporation, metabolic reaction medium.\n\n#### 2. Major Nutritional Deficiency Disorders\n* **Kwashiorkor:** Severe protein deficiency with adequate caloric intake. Symptoms: protruding belly (ascites from fluid edema), reddish/brown thinned hair, flaky skin dermatosis, apathy.\n* **Marasmus:** Total caloric and protein starvation. Symptoms: extreme skeletal emaciation (\"skin and bones\"), sunken eyes, loose folded skin, elderly facial appearance.\n* **Scurvy (Vitamin C Deficiency):** Bleeding spongy gums, delayed wound healing, subcutaneous hemorrhages (bruises) due to defective collagen synthesis.\n* **Rickets (Vitamin D / Calcium Deficiency in Children):** Soft, pliable leg bones bowing under body weight (bowlegs, knock-knees), deformed ribcage (pigeon chest).\n* **Nutritional Anemia (Iron Deficiency):** Chronic fatigue, paleness of conjunctiva and fingernail beds, breathlessness due to reduced hemoglobin production.\n* **Goitre (Iodine Deficiency):** Abnormal enlargement of the thyroid gland in the neck due to lack of iodine for thyroxine synthesis.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s16_1",
+        "questionPrompt": "A community health nurse in a rural clinic examines two malnourished children: Child A is severely emaciated with skin tightly stretched over bones and an old-man face. Child B has swollen legs, an enlarged distended abdomen, pale thinned reddish hair, and skin lesions. Diagnose the specific condition of each child.",
+        "stepByStepSolution": "Child A Diagnosis: Marasmus — Caused by severe total dietary deficiency of both energy calories (carbohydrates/fats) and proteins. The body breaks down its own muscle and subcutaneous fat, leaving a completely emaciated skeletal appearance.\nChild B Diagnosis: Kwashiorkor — Caused by severe protein deficiency while consuming starchy carbohydrates. Low blood albumin causes fluid leakage into abdominal tissues (edema/ascites), causing the characteristic swollen belly and extremities, alongside depigmented hair and dermatitis.",
+        "examinerTip": "Examiner Tip: Remember: Kwashiorkor = protein deficiency with swollen belly (edema); Marasmus = total calorie/protein starvation with skeletal wasting."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s16_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A child presenting with spongy, bleeding gums and loose teeth is suffering from a deficiency of:",
+        "options": [
+          "Vitamin A",
+          "Vitamin C",
+          "Vitamin D",
+          "Iron"
+        ],
+        "correctAnswer": "Vitamin C",
+        "hint": "Citrus fruits like oranges and limes cure this disease (scurvy).",
+        "workedSolution": "Vitamin C (ascorbic acid) is vital for collagen synthesis. Deficiency causes scurvy, characterized by capillary fragility, bleeding gums, and poor wound healing.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s16_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The abnormal enlargement of the thyroid gland in the human neck (goitre) is caused by a dietary deficiency of which mineral element?",
+        "options": [
+          "Calcium",
+          "Iron",
+          "Iodine",
+          "Potassium"
+        ],
+        "correctAnswer": "Iodine",
+        "hint": "Table salt is iodized to prevent this condition.",
+        "workedSolution": "Iodine is an essential micronutrient required by the thyroid gland to synthesize thyroxine hormone. Iodine deficiency triggers thyroid hyperplasia, forming a goitre.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand5_human_health",
+    "gradeLevel": "BS8",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Human Health & Disease Control (Deficiency, Viral, Bacterial, Communicable & Lifestyle Diseases)",
+    "order": 47,
+    "notes": {
+      "summaryMarkdown": "### Infectious Pathogens: Bacterial, Viral & Protozoan Epidemiology\n* **NaCCA Curriculum Code:** `B8.5.2.1`\n* **Core Competency:** Classify infectious diseases by pathogenic agent, analyze transmission cycles, and establish clinical prevention protocols.\n\n#### 1. Pathogenic Classifications\n* **Bacteria:** Single-celled prokaryotic organisms. Pathogenic bacteria produce toxic exotoxins or endotoxins:\n  * *Cholera (*Vibrio cholerae*):* Water-borne pathogen; secretes cholera toxin causing massive watery diarrhea (\"rice-water stools\"), fatal dehydration, and electrolyte shock within hours.\n  * *Tuberculosis (*Mycobacterium tuberculosis*):* Airborne respiratory droplet infection; persistent cough ($>2\\text{ weeks}$), hemoptysis (coughing blood), night sweats, weight loss.\n  * *Typhoid (*Salmonella typhi*):* Contaminated food and water; prolonged stepwise fever, abdominal pain.\n* **Viruses:** Submicroscopic obligate intracellular parasites containing DNA or RNA in a protein capsid:\n  * *Poliomyelitis:* Enterovirus attacking motor neurons of the spinal cord, causing irreversible acute flaccid paralysis. Prevented by Oral Polio Vaccine (OPV).\n  * *Measles:* Airborne paramyxovirus causing high fever, conjunctivitis, and maculopapular skin rash.\n  * *Viral Hepatitis (Hepatitis B):* Blood and bodily fluid transmission; targets hepatocytes, causing jaundice, liver cirrhosis, and hepatocellular carcinoma.\n* **Protozoa:** Unicellular eukaryotic parasites:\n  * *Malaria (*Plasmodium falciparum*):* Transmitted by the bite of infected female *Anopheles* mosquitoes; high cyclical fevers, chills, hemolytic anemia, splenomegaly.\n\n#### 2. Disease Prevention & Epidemiological Triad\n* **Interrupting Transmission:** Boiling drinking water, chlorination, using Insecticide-Treated Nets (ITNs), proper human waste disposal via Water Closets (WC).\n* **Active Immunization:** The Expanded Programme on Immunization (EPI) vaccines: BCG (Tuberculosis), Pentavalent (DTP-HepB-Hib), OPV (Polio), Measles-Rubella, RTS,S/AS01 (Malaria vaccine).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s16_1",
+        "questionPrompt": "An outbreak of cholera occurs in an informal settlement following seasonal flood contamination of drinking wells. Patients pass profuse watery diarrhea. Explain the immediate life-saving medical intervention and the biochemical rationale of Oral Rehydration Salts (ORS).",
+        "stepByStepSolution": "Step 1: Immediate clinical priority — Cholera kills not from infection alone, but from catastrophic hypovolemic dehydration (loss of up to 1 liter of fluid per hour) and acute metabolic acidosis from electrolyte loss.\nStep 2: Oral Rehydration Salts (ORS) formulation — A standardized solution containing clean boiled water, sodium chloride (salt), and glucose (sugar) in exact stoichiometric proportions.\nStep 3: Biochemical rationale of the sodium-glucose cotransporter — The cholera toxin permanently activates adenylate cyclase, blocking normal sodium absorption. However, the intestinal sodium-glucose cotransport mechanism (SGLT-1) in the ileum remains functional; glucose facilitates the coupled transport of sodium ions across the intestinal wall into the bloodstream, drawing water back into the body by osmosis.",
+        "examinerTip": "Examiner Tip: Note that ORS works because glucose facilitates sodium absorption via the SGLT-1 cotransporter, drawing water back into blood by osmosis."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s16_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which pathogenic protozoan parasite is transmitted by the bite of a female Anopheles mosquito to cause malaria?",
+        "options": [
+          "Vibrio cholerae",
+          "Plasmodium falciparum",
+          "Mycobacterium tuberculosis",
+          "Salmonella typhi"
+        ],
+        "correctAnswer": "Plasmodium falciparum",
+        "hint": "It invades human red blood cells.",
+        "workedSolution": "Plasmodium falciparum is the deadly protozoan parasite transmitted by female Anopheles mosquitoes that infects liver hepatocytes and erythrocytes, causing malaria.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s16_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The BCG (Bacillus Calmette-Guérin) vaccine administered to newborn infants protects against which bacterial infection?",
+        "options": [
+          "Cholera",
+          "Tuberculosis",
+          "Measles",
+          "Yellow fever"
+        ],
+        "correctAnswer": "Tuberculosis",
+        "hint": "Tuberculosis is caused by Mycobacterium tuberculosis.",
+        "workedSolution": "The BCG vaccine is an attenuated strain of Mycobacterium bovis that stimulates active adaptive immunity against human pulmonary and extrapulmonary tuberculosis.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand5_human_health",
+    "gradeLevel": "BS9",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Human Health & Disease Control (Deficiency, Viral, Bacterial, Communicable & Lifestyle Diseases)",
+    "order": 48,
+    "notes": {
+      "summaryMarkdown": "### Chronic Non-Communicable Diseases, STIs & Adaptive Immunity\n* **NaCCA Curriculum Code:** `B9.5.2.1`\n* **Core Competency:** Differentiate communicable and chronic non-communicable lifestyle diseases, analyze STIs/HIV transmission, and explain adaptive immunity.\n\n#### 1. Chronic Non-Communicable Lifestyle Diseases (NCDs)\nNCDs are non-infectious, long-duration chronic conditions driven by genetic, physiological, environmental, and behavioral lifestyle factors:\n* **Hypertension (High Blood Pressure):** Persistent resting blood pressure $>140/90\\text{ mmHg}$. Silent killer damaging arterial endothelium, accelerating atheroma plaque formation, leading to myocardial infarction (heart attack) and hemorrhagic cerebrovascular stroke. Driven by high dietary sodium, obesity, chronic stress, and lack of exercise.\n* **Type 2 Diabetes Mellitus:** Metabolic endocrine disorder characterized by chronic hyperglycemia resulting from target cell **insulin resistance** and secondary pancreatic beta-cell dysfunction. Symptoms: polyuria (frequent urination), polydipsia (excessive thirst), polyphagia (hunger), delayed wound healing, diabetic retinopathy, neuropathy.\n* **Coronary Heart Disease (CHD):** Atherosclerotic plaque narrowing coronary arteries, causing angina pectoris and heart failure.\n\n#### 2. Sexually Transmitted Infections (STIs) & HIV/AIDS\n* **HIV / AIDS:** Human Immunodeficiency Virus infects and destroys **CD4+ T-helper lymphocytes**, crippling the host's adaptive immune system. Opportunistic infections (candidiasis, Kaposi sarcoma, pulmonary TB) result in fatal Acquired Immunodeficiency Syndrome.\n* *Transmission:* Unprotected sexual intercourse with an infected partner, blood transfusions with unscreened blood, unsterilized needles, vertical mother-to-child transmission during birth/breastfeeding.\n* **Other STIs:** Syphilis (*Treponema pallidum*), Gonorrhea (*Neisseria gonorrhoeae*), Chlamydia.\n\n#### 3. Fundamentals of the Human Immune System\n* **Innate (Non-Specific) Immunity:** First line of defense: unbroken skin, hydrochloric acid in stomach, mucosal lysozymes, phagocytic white blood cells (neutrophils, macrophages).\n* **Adaptive (Specific) Immunity:**\n  * **B-Lymphocytes:** Produce specific protein **antibodies (immunoglobulins)** that bind to foreign antigens, neutralizing toxins and marking pathogens for destruction (humoral response).\n  * **T-Lymphocytes:** Killer T-cells destroy virus-infected cells; Helper T-cells coordinate the immune response (cellular response).\n  * **Immunological Memory:** Memory B-cells persist for decades, conferring rapid, powerful immunity upon re-exposure to the same antigen (basis of vaccination).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s16_1",
+        "questionPrompt": "Explain the physiological mechanism by which an artificial vaccine (such as the measles vaccine) confers long-lasting immunological protection against real-world pathogen infection without causing the disease.",
+        "stepByStepSolution": "Step 1: Antigen introduction — The vaccine delivers an attenuated (weakened) or inactivated viral pathogen possessing intact surface antigens but incapable of causing full-blown disease.\nStep 2: Primary immune response — Host dendritic cells and macrophages engulf the vaccine antigens and present them to naive B and T lymphocytes. B-cells activate, proliferate, and differentiate into plasma cells that secrete specific neutralizing antibodies.\nStep 3: Creation of Memory Cells — A subset of activated B and T cells differentiate into long-lived Memory Cells that remain dormant in lymphoid tissues for decades.\nStep 4: Secondary immune response — If the individual is exposed to the real, virulent wild-type measles virus in the future, memory cells instantly recognize the antigen and launch a massive, rapid flood of antibodies within hours, destroying the pathogen before it can establish infection or clinical illness.",
+        "examinerTip": "Examiner Tip: Always mention 'Memory B and T cells' and 'rapid secondary immune response' when explaining vaccine protection."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s16_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The Human Immunodeficiency Virus (HIV) cripples the human immune system primarily by destroying which specialized cells?",
+        "options": [
+          "Red blood cells (erythrocytes)",
+          "CD4+ T-helper lymphocytes",
+          "Platelets (thrombocytes)",
+          "Bone osteocytes"
+        ],
+        "correctAnswer": "CD4+ T-helper lymphocytes",
+        "hint": "These white blood cells coordinate adaptive immune defenses.",
+        "workedSolution": "HIV specifically targets and destroys CD4+ T-helper lymphocytes, collapsing the adaptive immune system and leaving the patient vulnerable to fatal opportunistic infections.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s16_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which chronic non-communicable lifestyle disease is characterized by target tissue resistance to the hormone insulin, resulting in elevated blood glucose levels?",
+        "options": [
+          "Type 2 Diabetes Mellitus",
+          "Kwashiorkor",
+          "Sickle cell anemia",
+          "Tuberculosis"
+        ],
+        "correctAnswer": "Type 2 Diabetes Mellitus",
+        "hint": "It is a metabolic endocrine disorder associated with obesity and high-sugar diets.",
+        "workedSolution": "Type 2 Diabetes is characterized by cellular insulin resistance, preventing glucose uptake from blood into cells and causing chronic hyperglycemia.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand5_science_industry",
+    "gradeLevel": "BS7",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Science, Industry & Career Pathways (STEM Careers, Ghanaian/Global Scientists, Indigenous Tech)",
+    "order": 49,
+    "notes": {
+      "summaryMarkdown": "### Indigenous Ghanaian Technologies & Applied Scientific Principles\n* **NaCCA Curriculum Code:** `B7.5.3.1`\n* **Core Competency:** Explain the scientific principles underlying traditional Ghanaian cottage industries and indigenous manufacturing.\n\n#### 1. Traditional Soap Making (Saponification with Local Alkalis)\n* **Raw Materials:** Ash from dried cocoa pods, plantain peels, or palm bunches; vegetable oils (palm kernel oil, coconut oil).\n* **Chemical Principle:**\n  * The ash contains high concentrations of water-soluble alkaline potassium carbonate ($\\text{K}_2\\text{CO}_3$).\n  * Leaching the ash with water produces a strong alkaline solution of potassium hydroxide:\n    $$\\text{K}_2\\text{CO}_{3(aq)} + \\text{Ca(OH)}_{2(aq)} \\rightarrow 2\\text{KOH}_{(aq)} + \\text{CaCO}_{3(s)}$$\n  * **Saponification Reaction:** Boiling potassium alkali with vegetable triglycerides hydrolyzes ester bonds, yielding glycerol and potassium carboxylate salts (traditional soft black soap / *alata samina*):\n    $$\\text{Fat / Triglyceride} + \\text{Potassium Hydroxide} \\rightarrow \\text{Glycerol} + \\text{Potassium Soap}$$\n\n#### 2. Indigenous Shea Butter Extraction (*Karité*)\n* **Process:** Shea nuts are boiled, sun-dried, de-shelled, roasted, pulverized into a fine paste, and churned vigorously by hand with water.\n* **Scientific Principle:** Churning destabilizes the natural lipid emulsion. Adding cold water causes the lighter hydrophobic shea fat to coalesce and float as a white curd on the surface, separating from the denser water-soluble residues by density divergence.\n\n#### 3. Traditional Earthenware Pottery\n* **Process:** Weathered riverbed clay is kneaded to remove trapped air bubbles, sculpted on a wheel or by hand, sun-dried, and fired in open wood kilns.\n* **Scientific Principle:** Firing at high temperatures ($>800^\\circ\\text{C}$) drives off structural water of crystallization, permanently transforming soft, pliable hydrated aluminum silicates into hard, vitrified, chemically inert ceramic structures (*asanka* / grinding bowls).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s17_1",
+        "questionPrompt": "Explain the scientific chemical basis of using cocoa pod husk ash and palm kernel oil in the traditional manufacture of Ghanaian black soap (alata samina).",
+        "stepByStepSolution": "Step 1: Origin of the alkali — Cocoa pod husks contain significant amounts of potassium salts absorbed from tropical soils. When burned, they leave behind potassium carbonate (K2CO3). Boiling this ash with water leaches out soluble potassium hydroxide (KOH), a strong chemical alkali.\nStep 2: Saponification reaction — When the hot alkaline leachate is boiled with palm kernel oil (which contains triglycerides/esters of fatty acids), alkaline hydrolysis occurs (saponification).\nStep 3: Product formation — The ester bonds of the triglycerides are cleaved, releasing glycerol and potassium salts of fatty acids, which solidify upon cooling into the traditional cleansing soft soap.",
+        "examinerTip": "Examiner Tip: Use the term 'saponification' and identify potassium hydroxide as the active alkali extracted from cocoa pod ash."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s17_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In traditional Ghanaian soap making, cocoa pod husk ash is used because it provides:",
+        "options": [
+          "Synthetic perfume",
+          "Strong potassium alkali solution for saponification",
+          "Acid to neutralize the soap",
+          "Plastic hardening agents"
+        ],
+        "correctAnswer": "Strong potassium alkali solution for saponification",
+        "hint": "Ashes of plants are rich in alkaline potassium carbonate.",
+        "workedSolution": "Burning cocoa pod husks yields ash rich in potassium carbonate, which dissolves in water to form the strong potassium alkali necessary to hydrolyze vegetable oils into soap.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s17_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must freshly molded clay pottery (such as traditional asanka) be fired at high temperatures in a kiln?",
+        "options": [
+          "To melt the clay into glass",
+          "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
+          "To color the clay bright green",
+          "To make the pot dissolve in water"
+        ],
+        "correctAnswer": "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
+        "hint": "Firing causes irreversible thermal vitrification.",
+        "workedSolution": "High-temperature kiln firing drives off chemically bound water from hydrated aluminum silicates, causing ceramic vitrification and sintering that turns soft clay into a rigid, permanent, water-insoluble pot.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand5_science_industry",
+    "gradeLevel": "BS8",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Science, Industry & Career Pathways (STEM Careers, Ghanaian/Global Scientists, Indigenous Tech)",
+    "order": 50,
+    "notes": {
+      "summaryMarkdown": "### Ghanaian Scientific Heritage: Pioneering Minds & Global Breakthroughs\n* **NaCCA Curriculum Code:** `B8.5.3.1`\n* **Core Competency:** Evaluate landmark research contributions of Ghanaian and African scientists to global physics, biochemistry, and medicine.\n\n#### 1. Professor Francis Kofi Ampenyin Allotey (1932 – 2017)\n* **Field:** Mathematical Physics and Quantum Optics.\n* **Major Discovery — The Allotey Formalism:** Formulated the definitive mathematical technique used to explain the soft X-ray spectroscopy emission of metals. Known globally as the **\"Allotey Effect\"**, it proved that electron-hole scattering in matter causes a resonance anomaly in soft X-ray spectra.\n* **National Impact:** Founding Fellow of the African Academy of Sciences; pioneered computer science education in Ghana; established the African Institute for Mathematical Sciences (AIMS Ghana).\n\n#### 2. Professor Marian Ewurama Addy (1942 – 2014)\n* **Field:** Biochemistry and Molecular Herbal Pharmacology.\n* **Scientific Contributions:** Conducted groundbreaking scientific biochemical validation of traditional Ghanaian herbal medicines, specifically identifying the active anti-asthmatic and anti-diabetic phytochemical compounds in indigenous medicinal plants (*Desmodium adscendens*).\n* **Public Engagement:** Pioneer host and quiz mistress of the prestigious **National Science & Maths Quiz (NSMQ)**, inspiring generations of Ghanaian youth into STEM careers.\n\n#### 3. Dr. Thomas Owusu Mensah (1950 – 2024)\n* **Field:** Chemical Engineering and Fiber Optics Technology.\n* **Inventions:** Awarded multiple core international patents for pioneering high-speed optical fiber manufacturing processes, which reduced fiber optic cable costs and enabled global high-speed broadband internet and laser communication networks.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s17_1",
+        "questionPrompt": "Explain the significance of the 'Allotey Effect' discovered by Ghanaian mathematical physicist Prof. Francis Allotey to the global scientific understanding of matter.",
+        "stepByStepSolution": "Step 1: Theoretical context — In the 1960s, international physicists observed anomalies in the soft X-ray spectra emitted by metals that classical theories could not explain.\nStep 2: Mathematical breakthrough — Prof. Allotey applied advanced quantum mechanics and mathematical physics to demonstrate that when a core electron is ejected from an atom by an X-ray, the resulting positive core hole attracts conduction electrons, creating a localized resonance effect that distorts the emission spectrum.\nStep 3: Global legacy — His groundbreaking formulation (the Allotey Effect) became standard physics worldwide, earning him international acclaim and establishing Africa's capability to contribute to the frontiers of theoretical physics.",
+        "examinerTip": "Examiner Tip: Associate Prof. Francis Allotey with soft X-ray spectroscopy, the Allotey Effect, and mathematical physics."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s17_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which renowned Ghanaian mathematical physicist discovered the 'Allotey Effect' in soft X-ray spectroscopy of metals?",
+        "options": [
+          "Prof. Marian Ewurama Addy",
+          "Prof. Francis Kofi Allotey",
+          "Dr. Kwame Nkrumah",
+          "Prof. Alexander Animalu"
+        ],
+        "correctAnswer": "Prof. Francis Kofi Allotey",
+        "hint": "He was a pioneer of computer science and theoretical physics in Ghana.",
+        "workedSolution": "Professor Francis Allotey formulated the Allotey Formalism explaining soft X-ray spectroscopy in metals, which earned him global recognition.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s17_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Professor Marian Ewurama Addy is celebrated in Ghanaian scientific history for her dual role as a pioneering biochemist investigating herbal medicines and:",
+        "options": [
+          "The premier quiz mistress of the National Science and Maths Quiz (NSMQ)",
+          "The first female pilot in Ghana",
+          "The inventor of the electric motor",
+          "A commercial cocoa farmer"
+        ],
+        "correctAnswer": "The premier quiz mistress of the National Science and Maths Quiz (NSMQ)",
+        "hint": "She hosted the famous secondary school science competition for years.",
+        "workedSolution": "Prof. Marian Ewurama Addy was a celebrated professor of biochemistry at the University of Ghana and the iconic founding quiz mistress of the National Science & Maths Quiz.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand5_science_industry",
+    "gradeLevel": "BS9",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Science, Industry & Career Pathways (STEM Careers, Ghanaian/Global Scientists, Indigenous Tech)",
+    "order": 51,
+    "notes": {
+      "summaryMarkdown": "### Industrial Applications of Science & STEM Career Pathways\n* **NaCCA Curriculum Code:** `B9.5.3.1`\n* **Core Competency:** Connect chemical and biological principles to national industries, and analyze prerequisite academic pathways for STEM careers.\n\n#### 1. Major Science-Driven Industries in Ghana\n* **Petrochemical Industry (Tema Oil Refinery, Jubilee Oilfield):** Fractional distillation of crude oil into liquefied petroleum gas (LPG), petrol, kerosene, diesel, and bitumen; catalytic cracking to produce petrochemical feedstocks for plastics.\n* **Food & Beverage Industrial Biotechnology:** Industrial fermentation utilizing yeast (*Saccharomyces cerevisiae*) to manufacture baked goods and beverages; industrial fruit juice processing; aseptic pasteurization and UHT milk packaging.\n* **Pharmaceutical & Chemical Manufacturing:** Synthesis of essential medicines (antimalarials, analgesics, antibiotics), formulation of disinfectants, detergents, and agrochemicals (fertilizers, pesticides).\n* **Mining & Extractive Metallurgy:** Processing gold ore using cyanidation and carbon-in-pulp (CIP) extraction, and bauxite-alumina processing.\n\n#### 2. Charting Pathways into STEM Vocations\n* **Science, Technology, Engineering, and Mathematics (STEM):**\n  * *Medical & Health Sciences:* Medicine, Surgery, Pharmacy, Biomedical Engineering, Nursing, Public Health Epidemiology.\n  * *Engineering & Built Environment:* Civil Engineering, Electrical/Electronic Engineering, Mechanical & Mechatronics Engineering, Computer Software Engineering.\n  * *Agricultural & Environmental Sciences:* Agronomy, Food Science & Post-Harvest Technology, Veterinary Medicine, Environmental Resource Management, Renewable Energy Technology.\n* **Secondary & Tertiary Academic Pathways:**\n  * JHS Core Science + Mathematics $\\rightarrow$ SHS Elective Science / Applied Technical / General Agriculture $\\rightarrow$ University / Polytechnic degrees in engineering, medicine, and applied computing.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s17_1",
+        "questionPrompt": "Petroleum crude oil arriving at the refinery is a dark, viscous mixture of hundreds of hydrocarbons. Describe the industrial physical separation process used to produce domestic LPG, petrol, and diesel.",
+        "stepByStepSolution": "Step 1: Industrial furnace heating — Crude oil is heated in a high-temperature industrial furnace to approximately 350-400°C until vaporized, and introduced into the base of a tall fractionating column.\nStep 2: Temperature gradient in the tower — The fractionating column is engineered with a temperature gradient: hottest at the bottom (350°C) and progressively cooler towards the top (40°C).\nStep 3: Fractional condensation — As vapors ascend, hydrocarbons with large molecules and high boiling points (e.g. diesel, lubricating oil) condense near the bottom trays. Lighter hydrocarbons with smaller molecules and lower boiling points (petrol/gasoline) rise to higher, cooler trays before condensing. The lightest hydrocarbon gases (propane, butane) do not condense and exit the top as Liquefied Petroleum Gas (LPG).",
+        "examinerTip": "Examiner Tip: Emphasize that separation is based on continuous differences in boiling points corresponding to carbon chain length."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s17_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The industrial process used to separate crude oil into distinct commercial fractions (such as petrol, kerosene, and diesel) is:",
+        "options": [
+          "Paper chromatography",
+          "Fractional distillation",
+          "Filtration",
+          "Simple crystallization"
+        ],
+        "correctAnswer": "Fractional distillation",
+        "hint": "It exploits differences in boiling points inside a tall fractionating column.",
+        "workedSolution": "Fractional distillation separates crude petroleum hydrocarbons based on continuous differences in their boiling points inside a fractionating column.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s17_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A student who aspires to become a Biomedical Engineer designing artificial limbs and hospital diagnostic equipment should pursue which academic elective track at Senior High School?",
+        "options": [
+          "General Arts",
+          "Elective Science (Physics, Chemistry, Elective Maths, Biology)",
+          "Visual Arts",
+          "Home Economics"
+        ],
+        "correctAnswer": "Elective Science (Physics, Chemistry, Elective Maths, Biology)",
+        "hint": "Biomedical engineering combines human biology with advanced physics and mathematics.",
+        "workedSolution": "Biomedical engineering requires foundational competencies in physics (biomechanics, circuits), chemistry (biomaterials), mathematics, and biology, requiring the SHS Elective Science program.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand5_climate_change",
+    "gradeLevel": "BS7",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Climate Change & The Green Economy (Global Warming, Adaptation, Renewable Energy & Mitigation)",
+    "order": 52,
+    "notes": {
+      "summaryMarkdown": "### The Greenhouse Effect & Global Warming Dynamics\n* **NaCCA Curriculum Code:** `B7.5.4.1`\n* **Core Competency:** Explain the natural and enhanced greenhouse effect and identify major anthropogenic greenhouse gas sources.\n\n#### 1. The Natural Greenhouse Effect\n* Solar shortwave electromagnetic radiation (visible light, ultraviolet) penetrates Earth's atmosphere unimpeded and is absorbed by the surface.\n* The warmed Earth re-emits energy as **longer-wavelength infrared radiation** (thermal heat).\n* Naturally occurring atmospheric greenhouse gases absorb and re-radiate this outgoing infrared radiation in all directions, trapping heat in the troposphere.\n* **Without the natural greenhouse effect**, Earth's average surface temperature would plummet to $-18^\\circ\\text{C}$ (instead of the hospitable $+15^\\circ\\text{C}$), freezing the oceans solid.\n\n#### 2. Major Greenhouse Gases & Anthropogenic Sources\n* **Carbon Dioxide ($CO_2$):** Responsible for $\\approx 65\\%$ of enhanced radiative forcing. Emitted from combustion of fossil fuels (coal, oil, gas) for electricity and transport; widespread deforestation (reducing photosynthetic sinks).\n* **Methane ($CH_4$):** 28 times more potent than $CO_2$. Emitted from enteric fermentation in ruminant livestock (cattle belching), anaerobic decomposition in flooded paddy rice fields, and organic landfill off-gassing.\n* **Nitrous Oxide ($N_2O$):** 265 times more potent than $CO_2$. Over-application of synthetic nitrogen fertilizers on agricultural soils; industrial nitric acid production.\n* **Fluorinated Gases (CFCs, HFCs):** Synthetic refrigerants, aerosol propellants, and semiconductor manufacturing solvents.\n\n#### 3. The Enhanced Greenhouse Effect\nExcessive human emissions over the past 150 years have drastically increased greenhouse gas concentrations, thickening the thermal atmospheric blanket, trapping excess infrared energy, and driving unprecedented **anthropogenic global warming**.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s18_1",
+        "questionPrompt": "Explain why greenhouse gases allow incoming solar radiation to reach Earth's surface but trap outgoing radiation attempting to escape into space.",
+        "stepByStepSolution": "Step 1: Incident solar radiation — The Sun is extremely hot (~5,500°C surface temperature) and emits shortwave electromagnetic radiation (visible light and UV). Greenhouse gases in Earth's atmosphere are transparent to short wavelengths, allowing solar rays to pass through directly and warm the Earth's surface.\nStep 2: Terrestrial re-emission — The warmed Earth is much cooler (~15°C) and re-radiates thermal energy as longwave infrared radiation.\nStep 3: Molecular absorption — Greenhouse gas molecules (CO2, CH4, H2O vapor) possess molecular bond vibrational frequencies that resonate with and absorb longwave infrared photons, re-radiating heat back down toward Earth and preventing its escape into deep space.",
+        "examinerTip": "Examiner Tip: Highlight the physical difference: incoming radiation is shortwave (passes through); outgoing terrestrial radiation is longwave infrared (absorbed)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s18_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which atmospheric gas accounts for the largest proportion of human-induced enhanced greenhouse warming?",
+        "options": [
+          "Nitrogen (N2)",
+          "Carbon dioxide (CO2)",
+          "Oxygen (O2)",
+          "Argon (Ar)"
+        ],
+        "correctAnswer": "Carbon dioxide (CO2)",
+        "hint": "Emitted from burning fossil fuels like coal, petrol, and diesel.",
+        "workedSolution": "Carbon dioxide is the principal anthropogenic greenhouse gas driving enhanced global warming, emitted in massive volumes from fossil fuel combustion and deforestation.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s18_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Agricultural activities contribute significantly to methane emissions into the atmosphere primarily through:",
+        "options": [
+          "Photosynthesis in orange trees",
+          "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
+          "Harvesting ripe cocoa pods",
+          "Spraying water on vegetable beds"
+        ],
+        "correctAnswer": "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
+        "hint": "Anaerobic microbes in cattle stomachs and flooded rice mud produce methane.",
+        "workedSolution": "Methanogenic bacteria inside the rumen of cattle and in waterlogged anaerobic rice paddies produce large amounts of methane gas (CH4), which is released into the atmosphere.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand5_climate_change",
+    "gradeLevel": "BS8",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Climate Change & The Green Economy (Global Warming, Adaptation, Renewable Energy & Mitigation)",
+    "order": 53,
+    "notes": {
+      "summaryMarkdown": "### Climate Change Impact in Ghana: Coastal Erosion, Drought & Adaptive Strategies\n* **NaCCA Curriculum Code:** `B8.5.4.1`\n* **Core Competency:** Evaluate localized manifestations of climate change across Ghanaian ecological zones and contrast adaptation and mitigation.\n\n#### 1. Manifestations of Climate Change in Ghana\n* **Coastal Zone (e.g., Keta, Fuveme, Ada Foah):**\n  * Thermal expansion of warming ocean water and melting polar ice caps causes **accelerated Sea Level Rise (SLR)**.\n  * Catastrophic coastal erosion and storm surges destroy coastal fishing communities, roads, and residential homes.\n  * Saltwater intrusion into freshwater coastal aquifers contaminates drinking water and destroys agricultural farmlands.\n* **Forest & Middle Ecological Belt:**\n  * Erratic, unpredictable rainfall onset and unseasonal dry spells disrupt traditional cocoa and food crop planting cycles.\n  * Increased incidence of forest wildfires during extended dry Harmattan seasons.\n* **Northern Savannah Ecological Belt:**\n  * Prolonged heatwaves, desertification, drying of water dams (e.g., in Upper East and Upper West Regions).\n  * Severe crop failure of rain-fed sorghum and millet, exacerbating rural food insecurity.\n\n#### 2. Climate Mitigation vs. Climate Adaptation\n* **Mitigation (Addressing Root Causes):** Actions taken to reduce or eliminate greenhouse gas emissions, or enhance carbon sinks:\n  * Transitioning to clean renewable energy (solar photovoltaic, wind, hydro).\n  * Afforestation and reforestation (e.g., Green Ghana Day tree planting) to sequester atmospheric carbon into biomass.\n  * Phasing out petrol/diesel vehicles in favor of electric mobility.\n* **Adaptation (Managing Consequences):** Adjusting agricultural, social, and infrastructural systems to cope with the unavoidable impacts of climate change:\n  * Constructing sea defense walls (e.g., Keta Sea Defense Project boulder revetments) to halt coastal shoreline erosion.\n  * Breeding and cultivating drought-tolerant, early-maturing crop varieties (drought-tolerant maize hybrids).\n  * Investing in drip irrigation and rain-water harvesting systems to reduce dependence on erratic rainfall.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s18_1",
+        "questionPrompt": "A district assembly in Ghana implements two projects: Project A constructs a massive boulder sea-defense wall along the coastline at Keta. Project B plants 50,000 native mahogany seedlings across degraded forest lands. Categorize each project as either Climate Mitigation or Climate Adaptation and justify.",
+        "stepByStepSolution": "Project A (Sea Defense Wall) Classification: Climate Adaptation. Rationale: The sea defense wall does nothing to reduce atmospheric greenhouse gas concentrations or stop global temperatures from rising. Instead, it is an engineering response that protects human settlements from the direct physical consequences of rising sea levels and coastal erosion.\nProject B (Tree Planting) Classification: Climate Mitigation. Rationale: Growing trees actively absorb carbon dioxide from the atmosphere through photosynthesis and sequester it into woody biomass, directly reducing the concentration of the primary greenhouse gas driving global warming.",
+        "examinerTip": "Examiner Tip: Remember: Mitigation tackles the CAUSE (reducing greenhouse gases); Adaptation manages the EFFECTS (living with the consequences)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s18_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The construction of massive boulder sea defense walls along coastal communities like Keta to block ocean surge waves is an example of:",
+        "options": [
+          "Climate mitigation",
+          "Climate adaptation",
+          "Weather forecasting",
+          "Fossil fuel extraction"
+        ],
+        "correctAnswer": "Climate adaptation",
+        "hint": "It helps communities survive the consequences of rising sea levels.",
+        "workedSolution": "Building sea defense walls is an adaptation strategy that protects coastal infrastructure from the unavoidable physical impacts of sea level rise without reducing greenhouse gas emissions.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s18_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which localized impact of climate change poses the greatest threat to agricultural farmers in the northern savannah region of Ghana?",
+        "options": [
+          "Extreme snowfall",
+          "Severe erratic rainfall, prolonged seasonal droughts, and desertification",
+          "Volcanic ash eruptions",
+          "Tsunamis in Lake Volta"
+        ],
+        "correctAnswer": "Severe erratic rainfall, prolonged seasonal droughts, and desertification",
+        "hint": "Northern Ghana relies on rain-fed cereal farming.",
+        "workedSolution": "Northern Ghana faces rising temperatures, desertification, and highly unpredictable rainfall patterns that cause frequent crop failures and water shortages for rain-fed agriculture.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand5_climate_change",
+    "gradeLevel": "BS9",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Climate Change & The Green Economy (Global Warming, Adaptation, Renewable Energy & Mitigation)",
+    "order": 54,
+    "notes": {
+      "summaryMarkdown": "### The Green Economy, Renewable Energy & Global Decarbonization\n* **NaCCA Curriculum Code:** `B9.5.4.1`\n* **Core Competency:** Model the transition to a Green Economy, evaluate solar/wind renewable technologies, and explore carbon trading.\n\n#### 1. Concept of the Green Economy\nAn economic model that fosters sustainable economic growth, creates high-quality employment, and significantly reduces environmental risks and ecological scarcities:\n* Promotes low-carbon industrialization, resource efficiency, and social inclusivity.\n* Contrasts with the **Brown Economy**, which relies on destructive fossil fuel extraction and unconstrained environmental pollution.\n\n#### 2. Renewable Energy Technologies\nClean energy derived from natural resources that replenish faster than they are consumed:\n* **Solar Photovoltaic (PV) Energy:** Silicon solar panels convert radiant sunlight directly into direct current (DC) electricity via the photoelectric effect without emitting greenhouse gases (e.g., Kaleo and Lawra solar power plants in Upper West Region).\n* **Hydroelectric Power:** Harnesses the gravitational potential energy of falling water to drive turbine generators (e.g., Akosombo Dam, Bui Dam). Clean baseload electricity, though building large dams can alter river ecology.\n* **Wind Turbine Energy:** Converts kinetic energy of wind into mechanical rotational energy to drive electrical generators.\n* **Biomass & Biogas Energy:** Anaerobic digestion of organic agricultural residues into methane biogas, substituting wood fuel and preventing deforestation.\n\n#### 3. Carbon Markets & Environmental Policy\n* **Carbon Footprint:** The total greenhouse gas emissions (expressed in metric tons of $CO_2$ equivalent) caused directly and indirectly by an individual, organization, or product.\n* **Carbon Credits & Offsetting:** A market-based instrument where one carbon credit represents the verified reduction or removal of one metric ton of $CO_2$ from the atmosphere. High-emission industries purchase carbon credits from forest conservation projects (REDD+) to offset emissions.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s18_1",
+        "questionPrompt": "A rural clinic in the Northern Region requires 5,000 kWh of electricity per year. Compare installing a Solar Photovoltaic (PV) system with running a Diesel generator in terms of operating emissions and long-term sustainability.",
+        "stepByStepSolution": "Step 1: Diesel Generator Assessment — A diesel generator combusts petroleum diesel fuel, emitting approximately 2.68 kg of CO2 per liter of fuel consumed, alongside sulfur dioxide (SO2), nitrogen oxides (NOx), and hazardous particulate soot. It incurs ongoing volatile fuel purchasing and maintenance costs.\nStep 2: Solar PV System Assessment — A solar photovoltaic array harnesses renewable solar irradiance with zero operating greenhouse gas emissions during electrical generation (0 kg CO2/kWh). Once installed, solar fuel is completely free.\nStep 3: Strategic Conclusion — Solar PV aligns with the Green Economy by eliminating greenhouse gas emissions, reducing operating costs, ensuring quiet continuous power for refrigeration of medical vaccines, and avoiding local air pollution.",
+        "examinerTip": "Examiner Tip: Emphasize both environmental decarbonization (zero emissions) and operational economics (free ongoing fuel)."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s18_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is classified as a clean, renewable energy resource that does NOT release carbon dioxide during electricity generation?",
+        "options": [
+          "Diesel fuel",
+          "Solar photovoltaic power",
+          "Bituminous coal",
+          "Heavy fuel oil"
+        ],
+        "correctAnswer": "Solar photovoltaic power",
+        "hint": "It harnesses sunlight directly using silicon solar cells.",
+        "workedSolution": "Solar photovoltaic power generates electricity directly from sunlight via the photoelectric effect with zero greenhouse gas or particulate emissions during operation.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s18_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The total amount of greenhouse gases emitted into the atmosphere by a person, school, or business activity is known as their:",
+        "options": [
+          "Ecological niche",
+          "Carbon footprint",
+          "Trophic level",
+          "Food web"
+        ],
+        "correctAnswer": "Carbon footprint",
+        "hint": "It is measured in metric tons of CO2 equivalent.",
+        "workedSolution": "A carbon footprint is the comprehensive measure of total greenhouse gas emissions (expressed in CO2 equivalent) caused directly and indirectly by an entity's energy consumption and lifestyle.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b7_sci_strand5_soil_science",
+    "gradeLevel": "BS7",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "order": 55,
+    "notes": {
+      "summaryMarkdown": "### Pedology: Rock Weathering, Soil Texture & Physical Properties\n* **NaCCA Curriculum Code:** `B7.5.5.1`\n* **Core Competency:** Differentiate physical, chemical, and biological rock weathering, analyze soil fractions, and measure capillarity and water retention.\n\n#### 1. The Process of Soil Formation (Pedogenesis)\nSoil is the upper weathered layer of Earth's crust capable of sustaining plant life, formed by the progressive disintegration of parent bedrock:\n* **Physical (Mechanical) Weathering:** Breakdown of rocks into smaller fragments without altering chemical composition:\n  * *Thermal Exfoliation:* Alternate rapid heating (expansion by day) and cooling (contraction by night) in arid zones causes outer rock layers to crack and peel off.\n  * *Freeze-Thaw (Frost Wedging):* Water penetrates rock fissures, freezes, expands by $9\\%$, and wedges the rock apart.\n  * *Abrasion:* Wind-blown sand and tumbling river boulders grind rock faces.\n* **Chemical Weathering:** Decomposition altering the chemical mineral structure of rocks:\n  * *Carbonation:* Rainwater dissolves atmospheric $CO_2$ forming dilute carbonic acid ($\\text{H}_2\\text{CO}_3$), which dissolves limestone (calcium carbonate):\n    $$\\text{CaCO}_{3(s)} + \\text{H}_2\\text{CO}_{3(aq)} \\rightarrow \\text{Ca(HCO}_3)_{2(aq)}$$\n  * *Hydration & Hydrolysis:* Chemical absorption of water molecules into mineral crystal lattices.\n  * *Oxidation:* Reaction of atmospheric oxygen with iron minerals forming reddish, crumbly iron oxide (rust).\n* **Biological Weathering:** Living organisms disintegrating rocks:\n  * Tree roots growing into microscopic cracks and exerting outward wedge pressure.\n  * Lichens and mosses secreting organic chelating acids that etch rock surfaces.\n  * Burrowing animals (earthworms, termites, rodents) pulverizing and aerating rock debris.\n\n#### 2. Soil Texture & Physical Particle Fractions\n* **Sand Particles ($0.05 - 2.0\\text{ mm}$):** Coarse, gritty feel, large macropores. Excellent aeration, rapid percolation drainage, poor water and nutrient retention.\n* **Silt Particles ($0.002 - 0.05\\text{ mm}$):** Silky, smooth, flour-like texture when dry; moderate drainage.\n* **Clay Particles ($<0.002\\text{ mm}$):** Microscopic colloidal plates, sticky and plastic when wet, hard when dry. Tiny micropores, very slow percolation drainage, massive water retention capacity, high cation exchange capacity (CEC).\n* **Loam Soil:** The ideal agricultural mixture (roughly $40\\%$ sand, $40\\%$ silt, $20\\%$ clay, rich in organic humus), offering optimal balance between drainage, aeration, and moisture/nutrient retention.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b7_s19_1",
+        "questionPrompt": "A student places 100 grams of dry sandy soil and 100 grams of dry clay soil into two identical filter funnels plugged with cotton wool. Exactly 100 cm³ of water is poured into each funnel. After 30 minutes, 85 cm³ of water has filtered through the sand, while only 25 cm³ has filtered through the clay. Calculate the volume of water retained by each soil type and explain the difference.",
+        "stepByStepSolution": "Step 1: Calculate water retained by Sand: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 85 cm³ = 15 cm³.\nStep 2: Calculate water retained by Clay: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 25 cm³ = 75 cm³.\nStep 3: Scientific explanation of the difference: Sandy soil consists of large particles with large non-capillary macropores that allow water to drain rapidly under gravity with minimal retention. Clay soil consists of microscopic colloidal particles packed tightly with immense total surface area and tiny micropores, generating powerful capillary forces that hold large volumes of water.",
+        "examinerTip": "Examiner Tip: State the calculation clearly: Volume retained = Initial water added - Volume collected in measuring cylinder."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b7_s19_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The disintegration of rocks into smaller pieces without any change in their chemical composition is called:",
+        "options": [
+          "Chemical weathering",
+          "Physical (mechanical) weathering",
+          "Biological oxidation",
+          "Erosion"
+        ],
+        "correctAnswer": "Physical (mechanical) weathering",
+        "hint": "Temperature changes and frost wedging are typical examples.",
+        "workedSolution": "Physical (mechanical) weathering fractures rocks into smaller fragments through mechanical forces (temperature expansion, frost wedging, abrasion) without altering chemical mineral identity.",
+        "points": 1
+      },
+      {
+        "id": "q_b7_s19_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which soil type possesses the highest water-holding capacity and highest capillarity, but drains the slowest?",
+        "options": [
+          "Coarse sandy soil",
+          "Gravel",
+          "Clay soil",
+          "Pure silt"
+        ],
+        "correctAnswer": "Clay soil",
+        "hint": "Its microscopic particles create tiny capillary micropores.",
+        "workedSolution": "Clay particles are sub-microscopic with vast total surface area and tiny micropores, exerting high surface tension forces that retain large volumes of water and produce high capillary rise.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b8_sci_strand5_soil_science",
+    "gradeLevel": "BS8",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "order": 56,
+    "notes": {
+      "summaryMarkdown": "### The Soil Profile: Master Horizons & Ghanaian Physical Landforms\n* **NaCCA Curriculum Code:** `B8.5.5.1`\n* **Core Competency:** Diagram and describe master soil horizons in a soil profile and identify geological formation processes of Ghanaian landforms.\n\n#### 1. The Soil Profile (Vertical Section of Soil)\nA vertical cross-section through the soil from the surface down to the underlying parent bedrock:\n* **O-Horizon (Organic Layer):** Surface layer composed of fresh and decomposing leaf litter, twigs, and organic debris.\n* **A-Horizon (Topsoil / Zone of Eluviation):** Dark, rich crumbly layer packed with decomposing organic **humus** and beneficial soil microbes (earthworms, bacteria). The primary biological root zone for arable crops. Minerals are leached downward by percolating water (eluviation).\n* **B-Horizon (Subsoil / Zone of Illuviation):** Denser, lighter-colored layer where leached clay particles, iron oxides, and minerals accumulate (illuviation). Contains few plant roots; poor aeration.\n* **C-Horizon (Parent Material / Regolith):** Partially weathered, fractured bedrock fragments undergoing initial weathering. Devoid of organic matter.\n* **R-Horizon (Bedrock):** Solid, unweathered continuous parent rock stratum (granite, basalt, sandstone, limestone).\n\n#### 2. Major Terrestrial Landforms in Ghana\n* **Coastal Plains:** Low-lying flat or undulating coastal plains (e.g., Accra Plains, Keta Lagoon basin).\n* **Plateaus & Escarpments:** Elevated flat-topped tablelands with steep cliff margins:\n  * *Kwahu Plateau & Mampong Scarp:* Steep sandstone escarpment creating significant orographic rainfall and microclimates.\n  * *Gambaga Escarpment:* High northern sandstone cliff bordering the White Volta basin.\n* **Inselbergs (Island Mountains):** Isolated steep-sided granite or gneiss hills rising abruptly from a flat surrounding plain, formed by differential erosion of surrounding weaker rocks (e.g., Shai Hills, Krobo Mountain).\n* **River Basins & Valleys:** Low-lying drainage catchment areas carved out by river erosion (e.g., Volta River Basin).",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b8_s19_1",
+        "questionPrompt": "State two major physical and biological differences between the topsoil (A-horizon) and the subsoil (B-horizon) of a mature soil profile, and explain why farmers must avoid plowing so deeply that subsoil is brought to the surface.",
+        "stepByStepSolution": "Difference 1: Organic matter and color — The A-horizon (topsoil) is dark brown or black because it contains high concentrations of decomposing organic humus; the B-horizon (subsoil) is lighter in color (reddish or yellowish from iron oxides) and contains minimal organic matter.\nDifference 2: Porosity and biological activity — The topsoil has loose, friable crumb structure with abundant earthworms, beneficial microbes, and macropores; the subsoil is compacted, dense, clay-rich, and poorly aerated.\nAgronomic Hazard of Deep Plowing: Plowing too deeply inverts the profile, burying the fertile humus-rich topsoil and bringing dead, dense, infertile, poorly aerated subsoil to the surface, severely depressing seed germination and crop yields.",
+        "examinerTip": "Examiner Tip: Always state that the topsoil is rich in humus and soil organisms, while the subsoil is a dense zone of mineral accumulation."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b8_s19_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a mature soil profile, the uppermost layer of mineral soil rich in dark organic humus is the:",
+        "options": [
+          "A-horizon (Topsoil)",
+          "B-horizon (Subsoil)",
+          "C-horizon (Parent material)",
+          "R-horizon (Bedrock)"
+        ],
+        "correctAnswer": "A-horizon (Topsoil)",
+        "hint": "It is the primary growing medium for crop roots.",
+        "workedSolution": "The A-horizon (topsoil) is the uppermost mineral horizon enriched with dark organic humus, supporting active plant root systems and microbial life.",
+        "points": 1
+      },
+      {
+        "id": "q_b8_s19_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An isolated, steep-sided granite hill rising abruptly from an otherwise flat plain (such as Shai Hills) is called an:",
+        "options": [
+          "Plateau",
+          "Inselberg",
+          "Estuary",
+          "Sandspit"
+        ],
+        "correctAnswer": "Inselberg",
+        "hint": "A German word meaning 'island mountain'.",
+        "workedSolution": "An inselberg is an isolated, steep-sided residual hill composed of erosion-resistant rock (like granite or gneiss) standing above an eroded, flat surrounding plain.",
+        "points": 1
+      }
+    ]
+  },
+  {
+    "id": "b9_sci_strand5_soil_science",
+    "gradeLevel": "BS9",
+    "strandNumber": 5,
+    "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
+    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "order": 57,
+    "notes": {
+      "summaryMarkdown": "### Soil Degradation: Erosion Dynamics & Soil Conservation Engineering\n* **NaCCA Curriculum Code:** `B9.5.5.1`\n* **Core Competency:** Classify types of soil erosion, analyze causes of soil degradation, and implement agricultural conservation methods.\n\n#### 1. Soil Erosion: Mechanisms & Types\nSoil erosion is the detachment, transport, and deposition of topsoil particles by wind or moving water:\n* **Water Erosion Progression:**\n  1. **Splash Erosion:** Kinetic impact of falling raindrops shatters soil aggregates, detaching particles and sealing surface pores.\n  2. **Sheet Erosion:** Overland runoff removes a uniform, thin layer of topsoil across an entire field; insidious because it occurs gradually without obvious channels.\n  3. **Rill Erosion:** Runoff concentrates into tiny, visible shallow channels (rills) that can still be smoothed over with normal plowing.\n  4. **Gully Erosion:** Uncontrolled runoff carves deep, wide chasms and canyons (gullies) that completely impassable for farm machinery and permanently destroy agricultural land.\n* **Wind Erosion:** Strong winds detach and carry away dry, bare, pulverized soil particles in arid areas.\n\n#### 2. Human Causes of Accelerated Soil Degradation\n* **Deforestation & Bush Burning:** Destroys vegetative cover and surface leaf litter, exposing bare topsoil to raindrop impact and wind.\n* **Overgrazing:** Excessive livestock stocking densities strip grass cover and compact soil with hooves, reducing infiltration.\n* **Plowing Up-and-Down Slopes:** Creates ready-made runoff channels that rapidly develop into destructive gullies.\n\n#### 3. Soil Conservation Engineering\n* **Contour Plowing & Ridging:** Plowing and constructing ridges across the slope along natural contour lines, creating small dams that slow surface runoff and encourage infiltration.\n* **Terracing:** Converting steep hillsides into a series of stepped, flat benches bordered by retaining dykes to eliminate steep slope runoff velocities.\n* **Strip Cropping & Vetiver Grass Barriers:** Alternating strips of erosion-susceptible row crops (maize) with dense, deep-rooted grass strips (Vetiver grass) that trap detached silt.\n* **Cover Cropping:** Planting dense sprawling legumes (e.g., *Mucuna*, cowpea) that shield the soil surface from direct raindrop impact.\n* **Windbreaks & Shelterbelts:** Planting rows of tall trees perpendicular to the prevailing wind direction to reduce surface wind velocities.",
+      "keyTerms": []
+    },
+    "sampleWorkedProblems": [
+      {
+        "id": "ex_b9_s19_1",
+        "questionPrompt": "A farmer in a hilly area of the Volta Region plows up and down the slope. During heavy monsoonal rains, severe gullies have formed, washing away fertile topsoil into the valley. Advise the farmer on three practical soil conservation interventions to halt this erosion immediately.",
+        "stepByStepSolution": "Intervention 1: Transition to Contour Plowing — The farmer must stop plowing vertically up and down the hill. Plowing and ridging horizontally across the slope along natural contour lines creates ridges that act as physical dams, slowing surface runoff and promoting deep water infiltration.\nIntervention 2: Planting Vetiver Grass Buffer Strips — Plant dense, permanent vegetative contour hedgerows of deep-rooted Vetiver grass (*Chrysopogon zizanioides*) across the slope. The dense network of stiff grass stems filters out detached silt particles while its 3-meter deep fibrous root system binds the soil firmly.\nIntervention 3: Gully Plugging and Afforestation — Stabilize the active gullies by constructing check dams using loose boulders, sandbags, and bamboo stakes to slow runoff water velocity, and plant fast-growing leguminous trees along the gullies to stabilize slopes.",
+        "examinerTip": "Examiner Tip: Highlight that plowing across the slope (contour plowing) reduces the velocity of runoff water, preventing gully formation."
+      }
+    ],
+    "drillQuestions": [
+      {
+        "id": "q_b9_s19_1",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The uniform removal of a thin layer of topsoil across an entire bare field by sheet flow of rainwater is termed:",
+        "options": [
+          "Splash erosion",
+          "Sheet erosion",
+          "Gully erosion",
+          "Wind abrasion"
+        ],
+        "correctAnswer": "Sheet erosion",
+        "hint": "It removes a wide, flat 'sheet' of topsoil without forming deep trenches.",
+        "workedSolution": "Sheet erosion is the gradual, uniform removal of a thin layer of topsoil by overland sheet runoff, often going unnoticed until fertile topsoil is completely lost.",
+        "points": 1
+      },
+      {
+        "id": "q_b9_s19_2",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is plowing across a sloping hillside along contour lines effective in preventing soil erosion?",
+        "options": [
+          "It makes the field look more colorful from an airplane",
+          "The horizontal ridges act as physical barriers that slow down surface runoff and encourage water infiltration into the soil",
+          "It prevents weeds from growing at night",
+          "It changes the direction of gravity"
+        ],
+        "correctAnswer": "The horizontal ridges act as physical barriers that slow down surface runoff and encourage water infiltration into the soil",
+        "hint": "Contour ridges act as miniature dams across the flow of water.",
+        "workedSolution": "Contour plowing creates horizontal ridges across the slope that break the velocity of running water, allowing it to pool and soak into the soil rather than carving out erosion channels.",
+        "points": 1
       }
     ]
   }

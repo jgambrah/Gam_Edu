@@ -18,7 +18,7 @@ import {
   TopicalPracticeQuestion,
   TopicalPracticeDifficulty
 } from '@/lib/topical-lab-types';
-import { NACCA_JHS_SCIENCE_TOPICAL_UNITS } from '../data/jhs-science-curriculum';
+import { NACCA_JHS_SCIENCE_19_HUBS, NACCA_JHS_SCIENCE_TOPICAL_UNITS } from '../data/jhs-science-curriculum';
 
 export const topicalLabKeys = {
   all: ['topical_labs'] as const,
@@ -166,19 +166,20 @@ export const DEFAULT_JHS_ENGLISH_MANIFEST: SubjectTopicsManifest = {
 export const DEFAULT_JHS_SCIENCE_MANIFEST: SubjectTopicsManifest = {
   subject: 'Integrated Science',
   tier: 'Junior Secondary (JHS)',
-  totalTopics: NACCA_JHS_SCIENCE_TOPICAL_UNITS.length,
-  topics: NACCA_JHS_SCIENCE_TOPICAL_UNITS.map(unit => ({
-    id: unit.id,
-    title: unit.subStrandTitle,
-    strandCode: `S${unit.strandNumber}`,
-    strandName: unit.strandTitle.toUpperCase(),
-    strand: unit.strandTitle.toUpperCase(),
-    subStrand: unit.subStrandTitle,
-    levelsAvailable: [unit.gradeLevel.replace('BS', 'B')],
+  totalTopics: NACCA_JHS_SCIENCE_19_HUBS.length,
+  topics: NACCA_JHS_SCIENCE_19_HUBS.map(hub => ({
+    id: hub.id,
+    title: hub.title,
+    strandCode: hub.strandCode || 'S1',
+    strandName: (hub.strand || 'STRAND 1: DIVERSITY OF MATTER').toUpperCase(),
+    strand: (hub.strand || 'STRAND 1: DIVERSITY OF MATTER').toUpperCase(),
+    subStrand: hub.subStrand || '',
+    levelsAvailable: ['B7', 'B8', 'B9'],
     status: 'ready',
     hasNotes: true,
-    questionCount: unit.drillQuestions.length,
-    description: `NaCCA CCP ${unit.gradeLevel} unit on ${unit.subStrandTitle} with interactive labs, worked examples, and graded practice pools.`
+    questionCount: hub.totalPracticeQuestions,
+    totalQuestions: hub.totalPracticeQuestions,
+    description: hub.description
   }))
 };
 
@@ -377,6 +378,19 @@ export async function getSubjectTopicsManifest(
 }
 
 const TOPIC_DOC_ALIASES: Record<string, string> = {
+  // NaCCA Science 19-Hub Aliases
+  b7_strand1_materials: 'sci_strand1_materials',
+  b7_strand1_cells: 'sci_strand1_cells',
+  b7_strand2_water_cycle: 'sci_strand2_earth_cycles',
+  b7_strand2_life_cycles: 'sci_strand2_life_cycles',
+  b8_strand3_dentition: 'sci_strand3_human_body',
+  b8_strand3_solar_system: 'sci_strand3_solar_system',
+  b8_strand4_energy: 'sci_strand4_energy_waves',
+  b8_strand4_electricity: 'sci_strand4_electricity',
+  b9_strand4_force_motion: 'sci_strand4_forces_mechanics',
+  b9_strand4_machines: 'sci_strand4_forces_mechanics',
+  b9_strand5_waste_mgmt: 'sci_strand5_waste_management',
+  b9_strand5_science_industry: 'sci_strand5_science_industry',
   cockcrow_literary_devices: 'beacon_of_light_anthology_literary_devices',
   literature_cockcrow_canon: 'beacon_of_light_anthology_literary_devices',
   the_cockcrow_anthology_literary_devices: 'beacon_of_light_anthology_literary_devices',
@@ -475,6 +489,9 @@ function adaptEnglishOrGenericDocToTopicalLab(docId: string, data: any): Topical
  * Completely pure Science content with zero leakage of English or Mathematics data.
  */
 export function adaptScienceUnitToTopicalLab(unit: any): TopicalLabDocument {
+  if (unit && unit.levels && unit.levels.b7 && unit.levels.b8 && unit.levels.b9) {
+    return unit as TopicalLabDocument;
+  }
   const lvlKey = (unit.gradeLevel?.toLowerCase() || 'b7').replace('bs', 'b');
   const mapDrill = (q: any): TopicalPracticeQuestion => ({
     id: q.id || `drill_${Math.random().toString(36).substr(2, 6)}`,
@@ -562,7 +579,7 @@ export async function fetchTopicalLabDoc(
   levelId: string = 'jhs',
   subjectId: string = 'math'
 ): Promise<TopicalLabDocument | null> {
-  const isScienceDocId = topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
+  const isScienceDocId = topicDocId.startsWith('sci_strand') || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
   const isEnglishDocId = topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('beacon') || topicDocId.includes('cockcrow');
   const effectiveSubjectId = isScienceDocId ? 'science' : (isEnglishDocId ? 'english' : subjectId);
   try {
@@ -700,20 +717,25 @@ export async function fetchTopicalLabDoc(
       return adaptEnglishOrGenericDocToTopicalLab(topicalDocSnap.id, data);
     }
 
-    // 1. Primary check in topical_units (e.g. Science units: b7_strand1_materials)
-    const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical_units', topicDocId);
+    // 1. Primary check in topical_units (e.g. Science hubs: sci_strand1_materials or b7_strand1_materials)
+    const resolvedScienceDocId = TOPIC_DOC_ALIASES[topicDocId] || topicDocId;
+    const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical_units', resolvedScienceDocId);
     const unitSnap = await getDoc(unitRef);
     if (unitSnap.exists()) {
       const data = unitSnap.data() as any;
-      if (data.notes && data.drillQuestions) {
+      if (data.notes && data.drillQuestions && !data.levels) {
         return adaptScienceUnitToTopicalLab({ ...data, id: unitSnap.id });
       }
       return { ...(data as TopicalLabDocument), id: unitSnap.id };
     }
 
-    // 1b. Fallback for Science: Direct lookup in embedded NaCCA master curriculum
+    // 1b. Fallback for Science: Direct lookup in embedded NaCCA master 19 hubs curriculum
     if (isScienceDocId) {
-      const fallbackUnit = NACCA_JHS_SCIENCE_TOPICAL_UNITS.find(u => u.id === topicDocId);
+      const hub19 = NACCA_JHS_SCIENCE_19_HUBS.find(h => h.id === resolvedScienceDocId || (h as any).aliases?.includes(topicDocId));
+      if (hub19) {
+        return hub19;
+      }
+      const fallbackUnit = NACCA_JHS_SCIENCE_TOPICAL_UNITS.find(u => u.id === topicDocId || u.id === resolvedScienceDocId);
       if (fallbackUnit) {
         return adaptScienceUnitToTopicalLab(fallbackUnit);
       }
