@@ -47,15 +47,15 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
   {
     "id": "sci_strand1_materials",
     "topicId": "sci_strand1_materials",
-    "title": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "title": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "strand": "STRAND 1: DIVERSITY OF MATTER",
     "strandCode": "S1",
-    "subStrand": "Materials (Particulate Nature, Chemical Bonding & Acid-Base Equilibria)",
+    "subStrand": "Materials (States of Matter, Elements & Atomic Structure)",
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
-    "description": "Explore the macroscopic and subatomic properties of matter through interactive particle simulations and chemical testing labs. Students progress from physical state transitions and separation techniques to atomic electron configurations, covalent/ionic bonding, and aqueous neutralization reactions.",
-    "totalPracticeQuestions": 9,
+    "description": "Explore the particulate nature of matter, physical properties of solids, liquids, and gases, everyday importance of essential substances, chemical symbols, subatomic particles, electron configuration, and the Periodic Table.",
+    "totalPracticeQuestions": 11,
     "version": 1,
     "aliases": [
       "b7_strand1_materials",
@@ -64,64 +64,127 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Physical Properties, States of Matter & Separation Techniques",
-        "summary": "Master the particulate nature of matter, states of matter, and physical separation techniques for heterogeneous mixtures.",
-        "notes": "### Particulate Nature of Matter & Physical Separation Techniques\n* **NaCCA Curriculum Code:** `B7.1.1.1`\n* **Core Competency:** Demonstrate an understanding of the particulate nature of matter and distinguish among solids, liquids, and gases.\n\n#### 1. The Particulate Theory of Matter\nMatter is defined as anything that possesses mass and occupies space (volume). The particulate theory states:\n1. All matter consists of extremely minute particles (atoms, molecules, or ions).\n2. The particles are in continuous, random thermal motion (Brownian motion).\n3. Attractive intermolecular/interatomic forces exist between particles.\n4. Kinetic energy of the particles increases directly with temperature.\n\n#### 2. Fundamental States of Matter\n* **Solids:** Particles are tightly packed in regular crystal lattices, vibrating about fixed equilibrium points. High cohesive forces; fixed shape and fixed volume. Incompressible.\n* **Liquids:** Particles are closely packed but possess sufficient kinetic energy to slide past one another. Moderate intermolecular forces; definite volume conforming to container shape.\n* **Gases:** Particles are widely separated by large intermolecular distances with negligible attractive forces. Rapid, random linear motion; variable volume and shape. Highly compressible.\n\n#### 3. Separation Techniques for Heterogeneous Mixtures\n* **Filtration:** Separates an insoluble solid from a liquid suspension based on particle diameter using porous filter medium (e.g., separating sand from water).\n* **Decantation:** Pours off a supernatant liquid from a settled, dense solid precipitate.\n* **Simple Distillation:** Recovers pure solvent from a soluble solid-liquid solution via boiling and condensation in a Liebig condenser (e.g., pure water from saltwater).\n* **Fractional Distillation:** Separates miscible liquids with close boiling points (e.g., ethanol $\\approx 78^\\circ\\text{C}$ and water $100^\\circ\\text{C}$).\n* **Separating Funnel:** Separates immiscible liquids exploiting density divergence (e.g., kerosene and water).\n* **Paper Chromatography:** Separates soluble pigments or dyes based on differential solubility in mobile phase vs. stationary cellulose fibers.\n\n#### Key Terminology\n* **Brownian Motion:** The irregular, zig-zag motion of microscopic particles suspended in a fluid caused by collisions with fluid molecules.\n* **Filtrate:** The clear fluid that passes through the filter medium.\n* **Residue:** The insoluble solid retained on the filter paper.\n* **Immiscible Liquids:** Liquids that do not dissolve in each other and form distinct separate phases.",
+        "levelTitle": "Basic 7 (JHS 1) • States of Matter, Everyday Substances & Atomic Structure",
+        "summary": "Master the three states of matter (solids, liquids, gases), particle theory and compressibility, everyday importance of liquids and special solids (dry ice, table salt), chemical elements and symbols, atomic structure (protons, neutrons, electrons), electron configuration (2n² rule), and the broad groups of the Periodic Table.",
+        "notes": "### Unit 1: Understanding Matter and Its Three Everyday States\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter is everything around us that has mass and occupies space (volume).\n\n#### 1. The Three States of Matter & Particle Behavior\n* **Solids:** Particles are packed closely together in a neat, orderly pattern. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### 2. Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Elements, the Periodic Table, and Atomic Structure\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n\n#### Historical Foundation & Definition:\n* In 1869, Russian chemist Dmitri Mendeleev organized known elements into the **Periodic Table** based on recurring chemical behaviors and atomic patterns.\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### Chemical Naming & International Symbols:\n* Each element has a 1- or 2-letter Berzelius symbol. The first letter is always **CAPITALIZED**; the second letter (if present) is always lowercase.\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n#### Subatomic Architecture of the Atom:\nAn atom comprises three subatomic particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, located in the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, situated in the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **Electron Shell Configuration ($2n^2$ Rule):**\n  * First Shell ($K$ shell): Holds a maximum of $2$ electrons.\n  * Second Shell ($L$ shell): Holds a maximum of $8$ electrons.\n  * Third Shell ($M$ shell): Holds a maximum of $8$ electrons (for the first 20 elements).\n\n---\n\n### Unit 4: Broad Groups of the Periodic Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n\n1. **Metals:** Located on the left and central sectors. Shiny (lustrous), malleable, ductile, high melting points, and excellent conductors of heat and electricity. Readily lose electrons to form positive cations.\n   * *Examples:* Iron ($\\text{Fe}$ — structural beams), Aluminium ($\\text{Al}$ — cookware, aircraft), Copper ($\\text{Cu}$ — electrical wiring), Gold ($\\text{Au}$ — jewellery, corrosion-free contacts).\n2. **Non-Metals:** Located on the right sector. Dull appearance, brittle when solid, low density, poor electrical/thermal conductors (graphite is an exception). Accept or share electrons.\n   * *Examples:* Oxygen ($\\text{O}$ — respiration, combustion), Chlorine ($\\text{Cl}$ — water sanitation), Nitrogen ($\\text{N}$ — food packaging, fertilizers), Phosphorus ($\\text{P}$ — safety matches).\n3. **Semi-Metals (Metalloids):** Border the zigzag diagonal dividing line. Possess intermediate metallic and non-metallic traits. Act as semiconductors (poor conductors at low temperatures, highly conductive when heated or doped).\n   * *Six Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Key Application:* Silicon and Germanium power the global electronics industry in microchips, transistors, and solar photovoltaics.\n4. **Noble Gases (Group 18 / Group 0):** The extreme right column. Colorless, odorless, chemically unreactive (inert) gases with completely filled valence electron shells (Helium has $2$; Neon and Argon have $8$).\n   * *Examples:* Helium ($\\text{He}$ — lighter-than-air party balloons), Argon ($\\text{Ar}$ — inert shield in incandescent bulbs).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron. Cut easily with a knife; react violently with water to liberate hydrogen gas (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Reactive metals with 2 valence electrons; denser and harder than Group 1 (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / Group 7):** Very reactive non-metals with 7 valence electrons. Exist naturally as diatomic pairs ($F_2, Cl_2, Br_2, I_2$).\n\n---\n\n### Unit 5: First Twenty Elements Reference Table\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Chemical Class |\n| :---: | :--- | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | 1 | 1 | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | 2 | 2 (Duplet) | Noble Gas |\n| **3** | Lithium | $\\text{Li}$ | 2, 1 | 1 | Alkali Metal |\n| **4** | Beryllium | $\\text{Be}$ | 2, 2 | 2 | Alkaline Earth Metal |\n| **5** | Boron | $\\text{B}$ | 2, 3 | 3 | Metalloid |\n| **6** | Carbon | $\\text{C}$ | 2, 4 | 4 | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | 2, 5 | 5 | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | 2, 6 | 6 | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | 2, 7 | 7 | Halogen |\n| **10** | Neon | $\\text{Ne}$ | 2, 8 | 8 (Octet) | Noble Gas |\n| **11** | Sodium | $\\text{Na}$ | 2, 8, 1 | 1 | Alkali Metal |\n| **12** | Magnesium | $\\text{Mg}$ | 2, 8, 2 | 2 | Alkaline Earth Metal |\n| **13** | Aluminium | $\\text{Al}$ | 2, 8, 3 | 3 | Metal |\n| **14** | Silicon | $\\text{Si}$ | 2, 8, 4 | 4 | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | 2, 8, 5 | 5 | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | 2, 8, 6 | 6 | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | 2, 8, 7 | 7 | Halogen |\n| **18** | Argon | $\\text{Ar}$ | 2, 8, 8 | 8 (Octet) | Noble Gas |\n| **19** | Potassium | $\\text{K}$ | 2, 8, 8, 1 | 1 | Alkali Metal |\n| **20** | Calcium | $\\text{Ca}$ | 2, 8, 8, 2 | 2 | Alkaline Earth Metal |",
         "workedExamples": [
           {
-            "id": "ex_b7_s1_1",
-            "title": "Worked Example: Multi-Stage Separation of Salt, Sand, and Iron Filings",
-            "problem": "A student is provided with a dry mixture containing fine sand, common salt (NaCl), and iron filings. Outline a step-by-step procedure to recover all three components pure and dry.",
+            "id": "ex_b7_s1_mat_01",
+            "title": "Worked Problem: Atomic Number, Mass Number & Subatomic Particle Calculation",
+            "problem": "An uncharged atom of Sodium has an atomic number of 11 and a mass number of 23. (a) State the number of protons, neutrons, and electrons present in this neutral atom. (b) Deduce its electron configuration. (c) Identify its group and period on the Periodic Table.",
             "steps": [
-              "Step 1: Magnetic Extraction — Pass a powerful bar magnet wrapped in thin paper repeatedly over the mixture. The ferromagnetic iron filings are attracted to the magnet, leaving behind sand and salt.",
-              "Step 2: Dissolution — Transfer the remaining sand and salt mixture into a beaker containing distilled water. Stir vigorously with a glass rod. Sodium chloride dissolves completely to form an aqueous solution, while silica sand remains insoluble.",
-              "Step 3: Filtration — Pour the slurry through a filter funnel lined with Whatman filter paper into a conical flask. The insoluble sand collects as the residue on the filter paper, while saltwater collects as the clear filtrate.",
-              "Step 4: Washing & Drying Sand — Rinse the sand residue with distilled water, then dry in an oven or under direct sunlight.",
-              "Step 5: Evaporation / Crystallization — Heat the saltwater filtrate in an evaporating dish until water evaporates, leaving behind pure white sodium chloride crystals."
+              "Step 1: Proton count — The atomic number (Z) directly gives the number of protons. Therefore, number of protons = 11.",
+              "Step 2: Electron count — In an uncharged (neutral) atom, the positive charge cancels the negative charge, so number of electrons equals number of protons = 11.",
+              "Step 3: Neutron count — Mass Number (A) = Protons (Z) + Neutrons (n). Hence, Neutrons = A - Z = 23 - 11 = 12 neutrons.",
+              "Step 4: Electron Configuration — Distribute the 11 electrons following the 2n² rule: 1st shell (K) takes 2, 2nd shell (L) takes 8, and the 3rd shell (M) takes the remaining 1. Configuration = 2, 8, 1.",
+              "Step 5: Group and Period Determination — The number of valence electrons (outermost shell) gives the Group number = Group 1. The number of occupied electron shells (3 shells) gives the Period number = Period 3."
             ],
-            "finalAnswer": "Examiner Tip: Always state the magnetic separation first before adding water; adding water first would wet the iron filings, causing rapid oxidation (rusting) and making magnetic separation ineffective."
+            "finalAnswer": "Examiner Tip: Always state the formula (A = Z + n) explicitly before substituting values. For neutral atoms, clearly mention that protons = electrons."
+          },
+          {
+            "id": "ex_b7_s1_mat_02",
+            "title": "Worked Problem: Comparative Analysis of the Three States of Matter",
+            "problem": "Construct a comparative table outlining three clear differences between solids, liquids, and gases with respect to (i) particle arrangement, (ii) particle movement, and (iii) compressibility.",
+            "steps": [
+              "1. Particle Arrangement: Solids have particles tightly packed in a regular, orderly lattice; liquids have particles close together in an irregular, random arrangement; gases have particles spaced widely apart with large empty voids.",
+              "2. Particle Movement: Solid particles only vibrate about fixed positions; liquid particles slide smoothly past one another with moderate kinetic energy; gas particles move rapidly and randomly in straight lines in all directions.",
+              "3. Compressibility: Solids and liquids are practically incompressible because their particles are already in close contact; gases are highly compressible because external pressure can force the widely spaced particles into the empty voids."
+            ],
+            "finalAnswer": "Examiner Tip: Never say gas particles 'shrink' during compression; always state that particles are pushed closer together into the empty spaces."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s1_1",
+              "id": "BS7_MAT_MCQ_01",
               "difficulty": "low",
-              "prompt": "Which of the following separation methods is most suitable for separating two immiscible liquids such as vegetable oil and water?",
+              "prompt": "Which of the following substances can naturally exist as a solid, a liquid, and a gas under normal conditions on Earth?",
               "options": [
-                "Simple distillation",
-                "Separating funnel",
-                "Centrifugation",
-                "Fractional distillation"
+                "A. Iron",
+                "B. Carbon dioxide",
+                "C. Water",
+                "D. Mercury"
               ],
-              "correctAnswer": "Separating funnel",
-              "hint": "Consider that oil and water have different densities and do not mix.",
-              "workedSolution": "A separating funnel is specifically designed to separate immiscible liquids of differing densities. The denser water settles at the bottom and is drained via the stopcock, leaving the lighter oil layer above.",
+              "correctAnswer": "C. Water",
+              "hint": "Think of ice cubes, running tap fluid, and boiling steam.",
+              "workedSolution": "Water is unique on Earth in that it freezes into solid ice below 0°C, exists as liquid water at ambient temperatures, and boils/evaporates into gaseous steam and water vapor above 100°C.",
               "points": 1,
-              "learningCompetency": "B7.1.1.1",
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "BS7_MAT_MCQ_03",
+              "difficulty": "low",
+              "prompt": "The total number of protons located inside the nucleus of an atom is defined as its:",
+              "options": [
+                "A. Mass number",
+                "B. Atomic number",
+                "C. Valency number",
+                "D. Neutron number"
+              ],
+              "correctAnswer": "B. Atomic number",
+              "hint": "Represented by the symbol Z, it identifies the element's position on the Periodic Table.",
+              "workedSolution": "The atomic number (Z) refers specifically to the count of positive protons in an atom's nucleus and uniquely defines the chemical identity of the element.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s1_2",
+              "id": "BS7_MAT_MCQ_02",
               "difficulty": "medium",
-              "prompt": "The continuous zig-zag motion of pollen grains or smoke particles suspended in air or water is direct evidence of:",
+              "prompt": "A sample of gas can be easily compressed into a smaller volume primarily because:",
               "options": [
-                "Electrostatic repulsion between particles",
-                "Gravitational convection currents",
-                "Continuous random collisions by invisible fluid molecules",
-                "Capillary action within the fluid medium"
+                "A. The individual particles shrink when external pressure is applied",
+                "B. There are large empty spaces between the gas particles",
+                "C. The gas particles lose mass under pressure",
+                "D. The gas particles slow down and stick together"
               ],
-              "correctAnswer": "Continuous random collisions by invisible fluid molecules",
-              "hint": "Recall Robert Brown's observations of particulate kinetic theory.",
-              "workedSolution": "Brownian motion demonstrates the particulate nature of matter: suspended microscopic particles move erratically because they are bombarded from all directions by rapidly moving fluid molecules.",
+              "correctAnswer": "B. There are large empty spaces between the gas particles",
+              "hint": "Consider the intermolecular distances in gases compared to solids and liquids.",
+              "workedSolution": "Gas particles are separated by vast intermolecular empty spaces. Applying external pressure forces the particles closer together into these vacant gaps without altering particle size or mass.",
               "points": 1,
-              "learningCompetency": "B7.1.1.1",
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "BS7_MAT_MCQ_04",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements is classified as a semi-metal (metalloid) and widely used in computer microchips as a semiconductor?",
+              "options": [
+                "A. Silicon",
+                "B. Sulfur",
+                "C. Sodium",
+                "D. Silver"
+              ],
+              "correctAnswer": "A. Silicon",
+              "hint": "It has atomic number 14 with electron configuration 2, 8, 4.",
+              "workedSolution": "Silicon (Si) is a metalloid located along the diagonal staircase of the Periodic Table. It exhibits intermediate electrical conductivity and acts as the foundational semiconductor for microprocessors.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "BS7_MAT_MCQ_05",
+              "difficulty": "hard",
+              "prompt": "Why are Group 18 noble gases (such as helium, neon, and argon) chemically inert and unreactive under standard conditions?",
+              "options": [
+                "A. They have no protons or neutrons in their nucleus",
+                "B. Their outermost electron shells are already completely full (duplet or octet)",
+                "C. They are too heavy to collide with other atoms",
+                "D. Their positive nuclear charge repels all incoming molecules"
+              ],
+              "correctAnswer": "B. Their outermost electron shells are already completely full (duplet or octet)",
+              "hint": "Chemical bonding occurs when atoms seek stable full valence shells; noble gases already possess this.",
+              "workedSolution": "Helium has a full duplet (2 electrons) while Neon and Argon have full octets (8 valence electrons). Having full valence shells gives them extraordinary chemical stability, so they do not gain, lose, or share electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -245,7 +308,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.026Z"
+    "updatedAt": "2026-10-01T18:50:48.318Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -444,7 +507,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -640,7 +703,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -837,7 +900,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -1032,7 +1095,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -1229,7 +1292,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -1426,7 +1489,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -1623,7 +1686,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -1818,7 +1881,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.335Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -2014,7 +2077,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -2210,7 +2273,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -2407,7 +2470,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -2605,7 +2668,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -2803,7 +2866,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -2996,7 +3059,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -3191,7 +3254,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -3386,7 +3449,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -3582,7 +3645,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -3779,7 +3842,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T16:38:35.027Z"
+    "updatedAt": "2026-10-01T18:50:48.336Z"
   }
 ];
 
@@ -3789,51 +3852,105 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS7",
     "strandNumber": 1,
     "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
-    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "subStrandTitle": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "order": 1,
     "notes": {
-      "summaryMarkdown": "### Particulate Nature of Matter & Physical Separation Techniques\n* **NaCCA Curriculum Code:** `B7.1.1.1`\n* **Core Competency:** Demonstrate an understanding of the particulate nature of matter and distinguish among solids, liquids, and gases.\n\n#### 1. The Particulate Theory of Matter\nMatter is defined as anything that possesses mass and occupies space (volume). The particulate theory states:\n1. All matter consists of extremely minute particles (atoms, molecules, or ions).\n2. The particles are in continuous, random thermal motion (Brownian motion).\n3. Attractive intermolecular/interatomic forces exist between particles.\n4. Kinetic energy of the particles increases directly with temperature.\n\n#### 2. Fundamental States of Matter\n* **Solids:** Particles are tightly packed in regular crystal lattices, vibrating about fixed equilibrium points. High cohesive forces; fixed shape and fixed volume. Incompressible.\n* **Liquids:** Particles are closely packed but possess sufficient kinetic energy to slide past one another. Moderate intermolecular forces; definite volume conforming to container shape.\n* **Gases:** Particles are widely separated by large intermolecular distances with negligible attractive forces. Rapid, random linear motion; variable volume and shape. Highly compressible.\n\n#### 3. Separation Techniques for Heterogeneous Mixtures\n* **Filtration:** Separates an insoluble solid from a liquid suspension based on particle diameter using porous filter medium (e.g., separating sand from water).\n* **Decantation:** Pours off a supernatant liquid from a settled, dense solid precipitate.\n* **Simple Distillation:** Recovers pure solvent from a soluble solid-liquid solution via boiling and condensation in a Liebig condenser (e.g., pure water from saltwater).\n* **Fractional Distillation:** Separates miscible liquids with close boiling points (e.g., ethanol $\\approx 78^\\circ\\text{C}$ and water $100^\\circ\\text{C}$).\n* **Separating Funnel:** Separates immiscible liquids exploiting density divergence (e.g., kerosene and water).\n* **Paper Chromatography:** Separates soluble pigments or dyes based on differential solubility in mobile phase vs. stationary cellulose fibers.\n\n#### Key Terminology\n* **Brownian Motion:** The irregular, zig-zag motion of microscopic particles suspended in a fluid caused by collisions with fluid molecules.\n* **Filtrate:** The clear fluid that passes through the filter medium.\n* **Residue:** The insoluble solid retained on the filter paper.\n* **Immiscible Liquids:** Liquids that do not dissolve in each other and form distinct separate phases.",
+      "summaryMarkdown": "### Unit 1: Understanding Matter and Its Three Everyday States\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter is everything around us that has mass and occupies space (volume).\n\n#### 1. The Three States of Matter & Particle Behavior\n* **Solids:** Particles are packed closely together in a neat, orderly pattern. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### 2. Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Elements, the Periodic Table, and Atomic Structure\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n\n#### Historical Foundation & Definition:\n* In 1869, Russian chemist Dmitri Mendeleev organized known elements into the **Periodic Table** based on recurring chemical behaviors and atomic patterns.\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### Chemical Naming & International Symbols:\n* Each element has a 1- or 2-letter Berzelius symbol. The first letter is always **CAPITALIZED**; the second letter (if present) is always lowercase.\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n#### Subatomic Architecture of the Atom:\nAn atom comprises three subatomic particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, located in the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, situated in the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **Electron Shell Configuration ($2n^2$ Rule):**\n  * First Shell ($K$ shell): Holds a maximum of $2$ electrons.\n  * Second Shell ($L$ shell): Holds a maximum of $8$ electrons.\n  * Third Shell ($M$ shell): Holds a maximum of $8$ electrons (for the first 20 elements).\n\n---\n\n### Unit 4: Broad Groups of the Periodic Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n\n1. **Metals:** Located on the left and central sectors. Shiny (lustrous), malleable, ductile, high melting points, and excellent conductors of heat and electricity. Readily lose electrons to form positive cations.\n   * *Examples:* Iron ($\\text{Fe}$ — structural beams), Aluminium ($\\text{Al}$ — cookware, aircraft), Copper ($\\text{Cu}$ — electrical wiring), Gold ($\\text{Au}$ — jewellery, corrosion-free contacts).\n2. **Non-Metals:** Located on the right sector. Dull appearance, brittle when solid, low density, poor electrical/thermal conductors (graphite is an exception). Accept or share electrons.\n   * *Examples:* Oxygen ($\\text{O}$ — respiration, combustion), Chlorine ($\\text{Cl}$ — water sanitation), Nitrogen ($\\text{N}$ — food packaging, fertilizers), Phosphorus ($\\text{P}$ — safety matches).\n3. **Semi-Metals (Metalloids):** Border the zigzag diagonal dividing line. Possess intermediate metallic and non-metallic traits. Act as semiconductors (poor conductors at low temperatures, highly conductive when heated or doped).\n   * *Six Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Key Application:* Silicon and Germanium power the global electronics industry in microchips, transistors, and solar photovoltaics.\n4. **Noble Gases (Group 18 / Group 0):** The extreme right column. Colorless, odorless, chemically unreactive (inert) gases with completely filled valence electron shells (Helium has $2$; Neon and Argon have $8$).\n   * *Examples:* Helium ($\\text{He}$ — lighter-than-air party balloons), Argon ($\\text{Ar}$ — inert shield in incandescent bulbs).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron. Cut easily with a knife; react violently with water to liberate hydrogen gas (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Reactive metals with 2 valence electrons; denser and harder than Group 1 (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / Group 7):** Very reactive non-metals with 7 valence electrons. Exist naturally as diatomic pairs ($F_2, Cl_2, Br_2, I_2$).\n\n---\n\n### Unit 5: First Twenty Elements Reference Table\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Chemical Class |\n| :---: | :--- | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | 1 | 1 | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | 2 | 2 (Duplet) | Noble Gas |\n| **3** | Lithium | $\\text{Li}$ | 2, 1 | 1 | Alkali Metal |\n| **4** | Beryllium | $\\text{Be}$ | 2, 2 | 2 | Alkaline Earth Metal |\n| **5** | Boron | $\\text{B}$ | 2, 3 | 3 | Metalloid |\n| **6** | Carbon | $\\text{C}$ | 2, 4 | 4 | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | 2, 5 | 5 | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | 2, 6 | 6 | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | 2, 7 | 7 | Halogen |\n| **10** | Neon | $\\text{Ne}$ | 2, 8 | 8 (Octet) | Noble Gas |\n| **11** | Sodium | $\\text{Na}$ | 2, 8, 1 | 1 | Alkali Metal |\n| **12** | Magnesium | $\\text{Mg}$ | 2, 8, 2 | 2 | Alkaline Earth Metal |\n| **13** | Aluminium | $\\text{Al}$ | 2, 8, 3 | 3 | Metal |\n| **14** | Silicon | $\\text{Si}$ | 2, 8, 4 | 4 | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | 2, 8, 5 | 5 | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | 2, 8, 6 | 6 | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | 2, 8, 7 | 7 | Halogen |\n| **18** | Argon | $\\text{Ar}$ | 2, 8, 8 | 8 (Octet) | Noble Gas |\n| **19** | Potassium | $\\text{K}$ | 2, 8, 8, 1 | 1 | Alkali Metal |\n| **20** | Calcium | $\\text{Ca}$ | 2, 8, 8, 2 | 2 | Alkaline Earth Metal |",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s1_1",
-        "questionPrompt": "A student is provided with a dry mixture containing fine sand, common salt (NaCl), and iron filings. Outline a step-by-step procedure to recover all three components pure and dry.",
-        "stepByStepSolution": "Step 1: Magnetic Extraction — Pass a powerful bar magnet wrapped in thin paper repeatedly over the mixture. The ferromagnetic iron filings are attracted to the magnet, leaving behind sand and salt.\nStep 2: Dissolution — Transfer the remaining sand and salt mixture into a beaker containing distilled water. Stir vigorously with a glass rod. Sodium chloride dissolves completely to form an aqueous solution, while silica sand remains insoluble.\nStep 3: Filtration — Pour the slurry through a filter funnel lined with Whatman filter paper into a conical flask. The insoluble sand collects as the residue on the filter paper, while saltwater collects as the clear filtrate.\nStep 4: Washing & Drying Sand — Rinse the sand residue with distilled water, then dry in an oven or under direct sunlight.\nStep 5: Evaporation / Crystallization — Heat the saltwater filtrate in an evaporating dish until water evaporates, leaving behind pure white sodium chloride crystals.",
-        "examinerTip": "Examiner Tip: Always state the magnetic separation first before adding water; adding water first would wet the iron filings, causing rapid oxidation (rusting) and making magnetic separation ineffective."
+        "id": "ex_b7_s1_mat_01",
+        "questionPrompt": "An uncharged atom of Sodium has an atomic number of 11 and a mass number of 23. (a) State the number of protons, neutrons, and electrons present in this neutral atom. (b) Deduce its electron configuration. (c) Identify its group and period on the Periodic Table.",
+        "stepByStepSolution": "Step 1: Proton count — The atomic number (Z) directly gives the number of protons. Therefore, number of protons = 11.\nStep 2: Electron count — In an uncharged (neutral) atom, the positive charge cancels the negative charge, so number of electrons equals number of protons = 11.\nStep 3: Neutron count — Mass Number (A) = Protons (Z) + Neutrons (n). Hence, Neutrons = A - Z = 23 - 11 = 12 neutrons.\nStep 4: Electron Configuration — Distribute the 11 electrons following the 2n² rule: 1st shell (K) takes 2, 2nd shell (L) takes 8, and the 3rd shell (M) takes the remaining 1. Configuration = 2, 8, 1.\nStep 5: Group and Period Determination — The number of valence electrons (outermost shell) gives the Group number = Group 1. The number of occupied electron shells (3 shells) gives the Period number = Period 3.",
+        "examinerTip": "Examiner Tip: Always state the formula (A = Z + n) explicitly before substituting values. For neutral atoms, clearly mention that protons = electrons."
+      },
+      {
+        "id": "ex_b7_s1_mat_02",
+        "questionPrompt": "Construct a comparative table outlining three clear differences between solids, liquids, and gases with respect to (i) particle arrangement, (ii) particle movement, and (iii) compressibility.",
+        "stepByStepSolution": "1. Particle Arrangement: Solids have particles tightly packed in a regular, orderly lattice; liquids have particles close together in an irregular, random arrangement; gases have particles spaced widely apart with large empty voids.\n2. Particle Movement: Solid particles only vibrate about fixed positions; liquid particles slide smoothly past one another with moderate kinetic energy; gas particles move rapidly and randomly in straight lines in all directions.\n3. Compressibility: Solids and liquids are practically incompressible because their particles are already in close contact; gases are highly compressible because external pressure can force the widely spaced particles into the empty voids.",
+        "examinerTip": "Examiner Tip: Never say gas particles 'shrink' during compression; always state that particles are pushed closer together into the empty spaces."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s1_1",
+        "id": "BS7_MAT_MCQ_01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following separation methods is most suitable for separating two immiscible liquids such as vegetable oil and water?",
+        "prompt": "Which of the following substances can naturally exist as a solid, a liquid, and a gas under normal conditions on Earth?",
         "options": [
-          "Simple distillation",
-          "Separating funnel",
-          "Centrifugation",
-          "Fractional distillation"
+          "A. Iron",
+          "B. Carbon dioxide",
+          "C. Water",
+          "D. Mercury"
         ],
-        "correctAnswer": "Separating funnel",
-        "hint": "Consider that oil and water have different densities and do not mix.",
-        "workedSolution": "A separating funnel is specifically designed to separate immiscible liquids of differing densities. The denser water settles at the bottom and is drained via the stopcock, leaving the lighter oil layer above.",
+        "correctAnswer": "C. Water",
+        "hint": "Think of ice cubes, running tap fluid, and boiling steam.",
+        "workedSolution": "Water is unique on Earth in that it freezes into solid ice below 0°C, exists as liquid water at ambient temperatures, and boils/evaporates into gaseous steam and water vapor above 100°C.",
         "points": 1
       },
       {
-        "id": "q_b7_s1_2",
+        "id": "BS7_MAT_MCQ_03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The total number of protons located inside the nucleus of an atom is defined as its:",
+        "options": [
+          "A. Mass number",
+          "B. Atomic number",
+          "C. Valency number",
+          "D. Neutron number"
+        ],
+        "correctAnswer": "B. Atomic number",
+        "hint": "Represented by the symbol Z, it identifies the element's position on the Periodic Table.",
+        "workedSolution": "The atomic number (Z) refers specifically to the count of positive protons in an atom's nucleus and uniquely defines the chemical identity of the element.",
+        "points": 1
+      },
+      {
+        "id": "BS7_MAT_MCQ_02",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "The continuous zig-zag motion of pollen grains or smoke particles suspended in air or water is direct evidence of:",
+        "prompt": "A sample of gas can be easily compressed into a smaller volume primarily because:",
         "options": [
-          "Electrostatic repulsion between particles",
-          "Gravitational convection currents",
-          "Continuous random collisions by invisible fluid molecules",
-          "Capillary action within the fluid medium"
+          "A. The individual particles shrink when external pressure is applied",
+          "B. There are large empty spaces between the gas particles",
+          "C. The gas particles lose mass under pressure",
+          "D. The gas particles slow down and stick together"
         ],
-        "correctAnswer": "Continuous random collisions by invisible fluid molecules",
-        "hint": "Recall Robert Brown's observations of particulate kinetic theory.",
-        "workedSolution": "Brownian motion demonstrates the particulate nature of matter: suspended microscopic particles move erratically because they are bombarded from all directions by rapidly moving fluid molecules.",
+        "correctAnswer": "B. There are large empty spaces between the gas particles",
+        "hint": "Consider the intermolecular distances in gases compared to solids and liquids.",
+        "workedSolution": "Gas particles are separated by vast intermolecular empty spaces. Applying external pressure forces the particles closer together into these vacant gaps without altering particle size or mass.",
+        "points": 1
+      },
+      {
+        "id": "BS7_MAT_MCQ_04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements is classified as a semi-metal (metalloid) and widely used in computer microchips as a semiconductor?",
+        "options": [
+          "A. Silicon",
+          "B. Sulfur",
+          "C. Sodium",
+          "D. Silver"
+        ],
+        "correctAnswer": "A. Silicon",
+        "hint": "It has atomic number 14 with electron configuration 2, 8, 4.",
+        "workedSolution": "Silicon (Si) is a metalloid located along the diagonal staircase of the Periodic Table. It exhibits intermediate electrical conductivity and acts as the foundational semiconductor for microprocessors.",
+        "points": 1
+      },
+      {
+        "id": "BS7_MAT_MCQ_05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are Group 18 noble gases (such as helium, neon, and argon) chemically inert and unreactive under standard conditions?",
+        "options": [
+          "A. They have no protons or neutrons in their nucleus",
+          "B. Their outermost electron shells are already completely full (duplet or octet)",
+          "C. They are too heavy to collide with other atoms",
+          "D. Their positive nuclear charge repels all incoming molecules"
+        ],
+        "correctAnswer": "B. Their outermost electron shells are already completely full (duplet or octet)",
+        "hint": "Chemical bonding occurs when atoms seek stable full valence shells; noble gases already possess this.",
+        "workedSolution": "Helium has a full duplet (2 electrons) while Neon and Argon have full octets (8 valence electrons). Having full valence shells gives them extraordinary chemical stability, so they do not gain, lose, or share electrons.",
         "points": 1
       }
     ]
@@ -3843,7 +3960,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS8",
     "strandNumber": 1,
     "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
-    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "subStrandTitle": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "order": 2,
     "notes": {
       "summaryMarkdown": "### Atomic Architecture, Periodic Trends & Chemical Bonding\n* **NaCCA Curriculum Code:** `B8.1.1.1`\n* **Core Competency:** Model atomic structure, write electron configurations for elements 1 to 20, and explain ionic and covalent bonding.\n\n#### 1. Subatomic Architecture of the Atom\nAn atom is the smallest electrically neutral unit of an element that retains chemical identity.\n* **Protons ($p^+$):** Positive charge (+1), mass $\\approx 1\\text{ amu}$, located in the dense central nucleus.\n* **Neutrons ($n^0$):** Neutral charge (0), mass $\\approx 1\\text{ amu}$, located in the central nucleus.\n* **Electrons ($e^-$):** Negative charge (-1), mass $\\approx \\frac{1}{1840}\\text{ amu}$, orbiting in discrete quantum electron energy shells ($K, L, M, N$).\n\n#### 2. Atomic Number & Mass Number\n* **Atomic Number ($Z$):** Number of protons in the nucleus of an atom. Defines element identity ($Z=p=e$ in neutral atoms).\n* **Mass Number ($A$):** Total number of nucleons: $A = \\text{protons} + \\text{neutrons}$.\n* **Electron Shell Capacity:** Maximum electrons per principal shell is $2n^2$:\n  * $K$-shell ($n=1$): max 2 electrons\n  * $L$-shell ($n=2$): max 8 electrons\n  * $M$-shell ($n=3$): max 8 electrons (for first 20 elements: duplet/octet stability)\n\n#### 3. Chemical Bonding Mechanisms\nAtoms bond to achieve stable noble gas electron configurations (duplet rule for He; octet rule for Ne, Ar):\n* **Ionic (Electrovalent) Bonding:** Involves the complete transfer of one or more valence electrons from an electropositive metal to an electronegative non-metal. Forms oppositely charged ions ($M^{n+}$ and $X^{m-}$) held by strong electrostatic forces (e.g., $\\text{NaCl}, \\text{CaO}, \\text{MgCl}_2$).\n* **Covalent Bonding:** Involves the mutual sharing of valence electron pairs between non-metallic atoms (e.g., $\\text{H}_2, \\text{O}_2, \\text{H}_2\\text{O}, \\text{CH}_4$).\n\n#### Key Terminology\n* **Valency:** The combining capacity of an atom, determined by the number of electrons lost, gained, or shared.\n* **Isotopes:** Atoms of the same chemical element possessing identical atomic numbers ($Z$) but differing mass numbers ($A$) due to different neutron counts.\n* **Cation:** A positively charged ion formed when a metal atom loses electrons ($e^-$).\n* **Anion:** A negatively charged ion formed when a non-metal atom gains electrons ($e^-$).",
@@ -3897,7 +4014,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS9",
     "strandNumber": 1,
     "strandTitle": "STRAND 1: DIVERSITY OF MATTER",
-    "subStrandTitle": "Materials & Chemical Substances (States, Atomic Structure, Periodic Table, Bonding & Acids/Bases)",
+    "subStrandTitle": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "order": 3,
     "notes": {
       "summaryMarkdown": "### Acids, Bases, Salts & Neutralization Reactions\n* **NaCCA Curriculum Code:** `B9.1.1.1`\n* **Core Competency:** Characterize aqueous acids and bases, measure pH, write balanced neutralization equations, and describe salt preparation.\n\n#### 1. Chemistry of Acids\n* **Definition:** An acid is a proton ($H^+$) donor that produces hydronium ions ($H_3O^+$) in aqueous solution.\n* **Organic Acids:** Weak acids of biological origin (e.g., ethanoic acid in vinegar, citric acid in citrus fruits, lactic acid in sour milk).\n* **Mineral / Inorganic Acids:** Strong acids (e.g., hydrochloric acid $\\text{HCl}$, sulfuric acid $\\text{H}_2\\text{SO}_4$, nitric acid $\\text{HNO}_3$).\n* **Properties:** Sour taste, corrosive, turns blue litmus paper red, electrical conductors in solution.\n* **Key Reaction:** $\\text{Acid} + \\text{Reactive Metal} \\rightarrow \\text{Salt} + \\text{Hydrogen gas } (H_2 \\uparrow)$\n\n#### 2. Chemistry of Bases & Alkalis\n* **Base:** A substance that neutralizes an acid to produce salt and water only (metal oxides and metal hydroxides).\n* **Alkalis:** Soluble bases that produce hydroxide ions ($OH^-$) in aqueous solution (e.g., $\\text{NaOH}, \\text{KOH}, \\text{Ca(OH)}_2$).\n* **Properties:** Bitter taste, soapy/slippery feel, turns red litmus blue, corrosive in concentrated form.\n\n#### 3. The pH Scale & Indicators\n* $\\text{pH} < 7$: Acidic solution (high $[H^+]$)\n* $\\text{pH} = 7$: Neutral (pure water at $25^\\circ\\text{C}$)\n* $\\text{pH} > 7$: Basic / Alkaline solution (high $[OH^-]$)\n\n#### 4. Neutralization Reactions & Salts\n$\\text{Acid} + \\text{Base} \\rightarrow \\text{Salt} + \\text{Water}$\n* Example: $\\text{HCl}_{(aq)} + \\text{NaOH}_{(aq)} \\rightarrow \\text{NaCl}_{(aq)} + \\text{H}_2\\text{O}_{(l)}$\n* Net Ionic Equation: $H^+_{(aq)} + OH^-_{(aq)} \\rightarrow \\text{H}_2\\text{O}_{(l)}$\n* **Practical Applications:**\n  * Agricultural liming: applying calcium hydroxide $\\text{Ca(OH)}_2$ to acidic soils.\n  * Antacids: neutralizing excess gastric acid in stomach (e.g., magnesium hydroxide $\\text{Mg(OH)}_2$).\n  * Insect stings: treating wasp stings (alkaline) with vinegar (weak acid); bee stings (acidic) with baking soda (weak base).",
