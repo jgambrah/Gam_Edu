@@ -55,7 +55,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Explore the particulate nature of matter, physical properties of solids, liquids, and gases, everyday importance of essential substances, chemical symbols, subatomic particles, electron configuration, and the Periodic Table.",
-    "totalPracticeQuestions": 11,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b7_strand1_materials",
@@ -96,35 +96,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "BS7_MAT_MCQ_01",
+              "id": "B7_MAT_F01",
               "difficulty": "low",
-              "prompt": "Which of the following substances can naturally exist as a solid, a liquid, and a gas under normal conditions on Earth?",
+              "prompt": "Anything that has mass and occupies space is scientifically defined as:",
               "options": [
-                "A. Iron",
-                "B. Carbon dioxide",
-                "C. Water",
-                "D. Mercury"
+                "A. Force",
+                "B. Energy",
+                "C. Matter",
+                "D. Vacuum"
               ],
-              "correctAnswer": "C. Water",
-              "hint": "Think of ice cubes, running tap fluid, and boiling steam.",
-              "workedSolution": "Water is unique on Earth in that it freezes into solid ice below 0°C, exists as liquid water at ambient temperatures, and boils/evaporates into gaseous steam and water vapor above 100°C.",
+              "correctAnswer": "C. Matter",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Matter is defined as any physical substance that possesses mass and occupies a volume of space.",
               "points": 1,
               "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
             },
             {
-              "id": "BS7_MAT_MCQ_03",
+              "id": "B7_MAT_F02",
               "difficulty": "low",
-              "prompt": "The total number of protons located inside the nucleus of an atom is defined as its:",
+              "prompt": "Which of the following is a naturally occurring material?",
+              "options": [
+                "A. Plastic",
+                "B. Wood",
+                "C. Ceramic",
+                "D. Nylon"
+              ],
+              "correctAnswer": "B. Wood",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Wood is a natural material obtained directly from plants, whereas plastics and ceramics are synthetic or processed.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F03",
+              "difficulty": "low",
+              "prompt": "Which of the following substances exists as a solid at room temperature?",
+              "options": [
+                "A. Kerosene",
+                "B. Iron",
+                "C. Oxygen",
+                "D. Steam"
+              ],
+              "correctAnswer": "B. Iron",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Iron is a metallic solid with high particle cohesion at room temperature.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F04",
+              "difficulty": "low",
+              "prompt": "Which state of matter has a fixed volume but changes shape to match its container?",
+              "options": [
+                "A. Solid",
+                "B. Liquid",
+                "C. Gas",
+                "D. Plasma"
+              ],
+              "correctAnswer": "B. Liquid",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Liquids have fixed volumes because their particles remain close, but they lack fixed shapes because particles slide past one another.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F05",
+              "difficulty": "low",
+              "prompt": "Which state of matter has neither a definite shape nor a definite volume?",
+              "options": [
+                "A. Solid",
+                "B. Liquid",
+                "C. Gas",
+                "D. Metal"
+              ],
+              "correctAnswer": "C. Gas",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Gas particles are far apart and move rapidly, expanding to fill any space completely.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F06",
+              "difficulty": "low",
+              "prompt": "How do particles move in a solid material?",
+              "options": [
+                "A. Move freely in straight lines",
+                "B. Slide easily past each other",
+                "C. Vibrate only at fixed positions",
+                "D. Travel at high speeds"
+              ],
+              "correctAnswer": "C. Vibrate only at fixed positions",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Strong interatomic forces lock solid particles into fixed positions where they only vibrate.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F07",
+              "difficulty": "low",
+              "prompt": "The chemical symbol for Sodium derived from its Latin name Natrium is:",
+              "options": [
+                "A. So",
+                "B. Sd",
+                "C. Na",
+                "D. S"
+              ],
+              "correctAnswer": "C. Na",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Sodium takes its standard chemical symbol 'Na' from Natrium.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F08",
+              "difficulty": "low",
+              "prompt": "Which of the following elements is represented by the chemical symbol 'K'?",
+              "options": [
+                "A. Calcium",
+                "B. Potassium",
+                "C. Phosphorus",
+                "D. Krypton"
+              ],
+              "correctAnswer": "B. Potassium",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Potassium takes the symbol 'K' from its Latin name Kalium.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F09",
+              "difficulty": "low",
+              "prompt": "What is the atomic number of Hydrogen?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 4"
+              ],
+              "correctAnswer": "A. 1",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Hydrogen is the very first element on the periodic table with an atomic number of 1.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F10",
+              "difficulty": "low",
+              "prompt": "Which subatomic particle carries a negative electric charge?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Positron"
+              ],
+              "correctAnswer": "C. Electron",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Electrons carry a relative unit negative charge (-1).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F11",
+              "difficulty": "low",
+              "prompt": "Which subatomic particle has no electrical charge (neutral)?",
+              "options": [
+                "A. Electron",
+                "B. Neutron",
+                "C. Proton",
+                "D. Alpha particle"
+              ],
+              "correctAnswer": "B. Neutron",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Neutrons are electrically neutral, carrying a charge of 0.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F12",
+              "difficulty": "low",
+              "prompt": "Where are protons located inside an atom?",
+              "options": [
+                "A. In the electron orbits",
+                "B. Inside the nucleus",
+                "C. Free in space",
+                "D. Outside the shells"
+              ],
+              "correctAnswer": "B. Inside the nucleus",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Protons and neutrons reside in the central core known as the nucleus.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F13",
+              "difficulty": "low",
+              "prompt": "The total number of protons found in the nucleus of an atom is termed its:",
               "options": [
                 "A. Mass number",
                 "B. Atomic number",
-                "C. Valency number",
+                "C. Valency",
                 "D. Neutron number"
               ],
               "correctAnswer": "B. Atomic number",
-              "hint": "Represented by the symbol Z, it identifies the element's position on the Periodic Table.",
-              "workedSolution": "The atomic number (Z) refers specifically to the count of positive protons in an atom's nucleus and uniquely defines the chemical identity of the element.",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "The atomic number (Z) refers specifically to the proton count in an atom.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F14",
+              "difficulty": "low",
+              "prompt": "Dry ice is the solid state of which substance?",
+              "options": [
+                "A. Water",
+                "B. Carbon dioxide",
+                "C. Nitrogen",
+                "D. Ammonia"
+              ],
+              "correctAnswer": "B. Carbon dioxide",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Dry ice is frozen carbon dioxide gas.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F15",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an alkali metal?",
+              "options": [
+                "A. Iron",
+                "B. Lithium",
+                "C. Calcium",
+                "D. Chlorine"
+              ],
+              "correctAnswer": "B. Lithium",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Lithium is located in Group 1, making it an alkali metal.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F16",
+              "difficulty": "low",
+              "prompt": "Which Russian scientist published the first recognizable Periodic Table in 1869?",
+              "options": [
+                "A. Dmitri Mendeleev",
+                "B. Isaac Newton",
+                "C. John Dalton",
+                "D. Robert Boyle"
+              ],
+              "correctAnswer": "A. Dmitri Mendeleev",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Dmitri Mendeleev organized elements systematically into the early periodic table in 1869.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F17",
+              "difficulty": "low",
+              "prompt": "Elements placed in Group 18 (Group 8) of the periodic table are known as:",
+              "options": [
+                "A. Halogens",
+                "B. Alkali metals",
+                "C. Noble gases",
+                "D. Alkaline earth metals"
+              ],
+              "correctAnswer": "C. Noble gases",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Group 18 elements with complete outer electron shells are the noble gases.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F18",
+              "difficulty": "low",
+              "prompt": "What is the maximum number of electrons that the first electron shell (K-shell) can hold?",
+              "options": [
+                "A. 2",
+                "B. 8",
+                "C. 18",
+                "D. 32"
+              ],
+              "correctAnswer": "A. 2",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Using 2n², the K-shell (n=1) holds a maximum of 2 electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F19",
+              "difficulty": "low",
+              "prompt": "What is the maximum number of electrons held by the second electron shell (L-shell)?",
+              "options": [
+                "A. 2",
+                "B. 8",
+                "C. 18",
+                "D. 32"
+              ],
+              "correctAnswer": "B. 8",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Using 2n², the L-shell (n=2) holds a maximum of 2(2)² = 8 electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F20",
+              "difficulty": "low",
+              "prompt": "Which of the following materials is a synthetic substance?",
+              "options": [
+                "A. Clay",
+                "B. Stone",
+                "C. Plastic",
+                "D. Cotton"
+              ],
+              "correctAnswer": "C. Plastic",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Plastics are synthetic polymers manufactured from chemical processing.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F21",
+              "difficulty": "low",
+              "prompt": "Metals are typically found on which side of the periodic table?",
+              "options": [
+                "A. Far right",
+                "B. Left side",
+                "C. Top row only",
+                "D. Bottom row only"
+              ],
+              "correctAnswer": "B. Left side",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Metals occupy the left and central sectors of the periodic table.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F22",
+              "difficulty": "low",
+              "prompt": "Which metal exists as a liquid at room temperature?",
+              "options": [
+                "A. Copper",
+                "B. Mercury",
+                "C. Silver",
+                "D. Aluminium"
+              ],
+              "correctAnswer": "B. Mercury",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Mercury (Hg) is a dense metal that remains liquid at standard ambient temperatures.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F23",
+              "difficulty": "low",
+              "prompt": "The property that allows metals to be hammered into thin sheets without shattering is:",
+              "options": [
+                "A. Ductility",
+                "B. Brittleness",
+                "C. Malleability",
+                "D. Conductivity"
+              ],
+              "correctAnswer": "C. Malleability",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Malleability describes the ability of a material to deform under compressive stress into sheets.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F24",
+              "difficulty": "low",
+              "prompt": "Which element has the chemical symbol 'Fe'?",
+              "options": [
+                "A. Fluorine",
+                "B. Iron",
+                "C. Lead",
+                "D. Zinc"
+              ],
+              "correctAnswer": "B. Iron",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Iron derives its symbol 'Fe' from Ferrum.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F25",
+              "difficulty": "low",
+              "prompt": "Elements that share properties of both metals and non-metals are called:",
+              "options": [
+                "A. Transition metals",
+                "B. Metalloids",
+                "C. Halogens",
+                "D. Inert gases"
+              ],
+              "correctAnswer": "B. Metalloids",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Metalloids or semi-metals display intermediate metallic and non-metallic traits.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F26",
+              "difficulty": "low",
+              "prompt": "What is the relative mass of an electron compared to a proton?",
+              "options": [
+                "A. 1 a.m.u.",
+                "B. Double the proton",
+                "C. Negligible (almost 0)",
+                "D. 10 a.m.u."
+              ],
+              "correctAnswer": "C. Negligible (almost 0)",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Electrons have a negligible relative mass of about 1/1840 a.m.u. compared to nucleons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F27",
+              "difficulty": "low",
+              "prompt": "Which element has an atomic number of 6?",
+              "options": [
+                "A. Beryllium",
+                "B. Carbon",
+                "C. Oxygen",
+                "D. Nitrogen"
+              ],
+              "correctAnswer": "B. Carbon",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Carbon is the 6th element in the periodic table.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F28",
+              "difficulty": "low",
+              "prompt": "Which of the following is a noble gas?",
+              "options": [
+                "A. Chlorine",
+                "B. Helium",
+                "C. Hydrogen",
+                "D. Oxygen"
+              ],
+              "correctAnswer": "B. Helium",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Helium belongs to Group 18 and has an unreactive completed duplet shell.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F29",
+              "difficulty": "low",
+              "prompt": "A pure substance that cannot be broken down into simpler substances by chemical means is an:",
+              "options": [
+                "A. Element",
+                "B. Alloy",
+                "C. Mixture",
+                "D. Emulsion"
+              ],
+              "correctAnswer": "A. Element",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "An element consists of a single type of atom and cannot be chemically degraded into simpler parts.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F30",
+              "difficulty": "low",
+              "prompt": "Which of the following gases is essential for combustion (burning)?",
+              "options": [
+                "A. Nitrogen",
+                "B. Argon",
+                "C. Oxygen",
+                "D. Helium"
+              ],
+              "correctAnswer": "C. Oxygen",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Oxygen supports respiration and is necessary for combustion reactions.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F31",
+              "difficulty": "low",
+              "prompt": "The property of metals that allows them to be drawn into thin wires is:",
+              "options": [
+                "A. Malleability",
+                "B. Ductility",
+                "C. Lustre",
+                "D. Sonority"
+              ],
+              "correctAnswer": "B. Ductility",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Ductility is the mechanical property of being pulled or drawn into wires.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F32",
+              "difficulty": "low",
+              "prompt": "Which of the following is an alkaline earth metal (Group 2)?",
+              "options": [
+                "A. Sodium",
+                "B. Magnesium",
+                "C. Aluminium",
+                "D. Silicon"
+              ],
+              "correctAnswer": "B. Magnesium",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Magnesium has 2 valence electrons and belongs to Group 2.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F33",
+              "difficulty": "low",
+              "prompt": "What is the chemical symbol for Gold?",
+              "options": [
+                "A. Go",
+                "B. Gd",
+                "C. Au",
+                "D. Ag"
+              ],
+              "correctAnswer": "C. Au",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Gold takes 'Au' from its Latin name Aurum.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F34",
+              "difficulty": "low",
+              "prompt": "What is the chemical symbol for Silver?",
+              "options": [
+                "A. Si",
+                "B. Ag",
+                "C. Sl",
+                "D. Sv"
+              ],
+              "correctAnswer": "B. Ag",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Silver takes 'Ag' from its Latin name Argentum.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F35",
+              "difficulty": "low",
+              "prompt": "Which subatomic particles are found grouped together inside the nucleus?",
+              "options": [
+                "A. Protons and electrons",
+                "B. Neutrons and electrons",
+                "C. Protons and neutrons",
+                "D. Electrons only"
+              ],
+              "correctAnswer": "C. Protons and neutrons",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Protons and neutrons constitute the central nucleus and are called nucleons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F36",
+              "difficulty": "low",
+              "prompt": "In a neutral atom, the number of protons always equals the number of:",
+              "options": [
+                "A. Neutrons",
+                "B. Electrons",
+                "C. Nucleons",
+                "D. Shells"
+              ],
+              "correctAnswer": "B. Electrons",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "In an uncharged atom, total positive charges (protons) equal total negative charges (electrons).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F37",
+              "difficulty": "low",
+              "prompt": "Which of the following is a halogen?",
+              "options": [
+                "A. Chlorine",
+                "B. Neon",
+                "C. Argon",
+                "D. Sulfur"
+              ],
+              "correctAnswer": "A. Chlorine",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Chlorine has 7 valence electrons and belongs to Group 17 (Halogens).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F38",
+              "difficulty": "low",
+              "prompt": "What state of matter is water vapor?",
+              "options": [
+                "A. Solid",
+                "B. Liquid",
+                "C. Gas",
+                "D. Plasma"
+              ],
+              "correctAnswer": "C. Gas",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Water vapor and steam are the gaseous state of water.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F39",
+              "difficulty": "low",
+              "prompt": "Which gas is commonly used to fill party balloons because it is lighter than air and non-flammable?",
+              "options": [
+                "A. Hydrogen",
+                "B. Helium",
+                "C. Oxygen",
+                "D. Carbon dioxide"
+              ],
+              "correctAnswer": "B. Helium",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Helium is an inert, low-density gas safe for balloon inflation.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F40",
+              "difficulty": "low",
+              "prompt": "Which material is classified as a semi-metal (metalloid)?",
+              "options": [
+                "A. Carbon",
+                "B. Silicon",
+                "C. Copper",
+                "D. Sulfur"
+              ],
+              "correctAnswer": "B. Silicon",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Silicon is a recognized metalloid used in semiconductors.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F41",
+              "difficulty": "low",
+              "prompt": "Which term describes the ringing sound produced when a metal is struck?",
+              "options": [
+                "A. Malleability",
+                "B. Sonorous",
+                "C. Ductility",
+                "D. Brittleness"
+              ],
+              "correctAnswer": "B. Sonorous",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Sonorous materials produce a sustained ringing note upon impact.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F42",
+              "difficulty": "low",
+              "prompt": "What is the atomic number of Calcium?",
+              "options": [
+                "A. 12",
+                "B. 18",
+                "C. 20",
+                "D. 24"
+              ],
+              "correctAnswer": "C. 20",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Calcium is the 20th element in the periodic table.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F43",
+              "difficulty": "low",
+              "prompt": "Which element is used in water treatment to destroy disease-causing microbes?",
+              "options": [
+                "A. Nitrogen",
+                "B. Chlorine",
+                "C. Helium",
+                "D. Carbon"
+              ],
+              "correctAnswer": "B. Chlorine",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Chlorine gas or hypochlorite is standard in water disinfection.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F44",
+              "difficulty": "low",
+              "prompt": "What is the mass number of an atom with 7 protons and 7 neutrons?",
+              "options": [
+                "A. 7",
+                "B. 0",
+                "C. 14",
+                "D. 49"
+              ],
+              "correctAnswer": "C. 14",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Mass number A = Z + n = 7 + 7 = 14.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F45",
+              "difficulty": "low",
+              "prompt": "Which non-metal is capable of conducting electricity?",
+              "options": [
+                "A. Diamond",
+                "B. Sulfur",
+                "C. Graphite",
+                "D. Phosphorus"
+              ],
+              "correctAnswer": "C. Graphite",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Graphite possesses delocalized electrons that permit electrical conductivity unlike other non-metals.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F46",
+              "difficulty": "low",
+              "prompt": "What happens to the density of gases compared to liquids and solids?",
+              "options": [
+                "A. Gases have much higher density",
+                "B. Gases have equal density",
+                "C. Gases have much lower density",
+                "D. Gases have infinite density"
+              ],
+              "correctAnswer": "C. Gases have much lower density",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Large empty spaces between gas particles result in very low densities.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F47",
+              "difficulty": "low",
+              "prompt": "Which element is used to preserve archaeological specimens and determine their age?",
+              "options": [
+                "A. Iron",
+                "B. Carbon",
+                "C. Sodium",
+                "D. Argon"
+              ],
+              "correctAnswer": "B. Carbon",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Carbon (specifically carbon-14) is used in radiometric age dating.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F48",
+              "difficulty": "low",
+              "prompt": "Which of the following is a physical property of liquids?",
+              "options": [
+                "A. Inability to flow",
+                "B. Definite volume",
+                "C. Rigid shape",
+                "D. High compressibility"
+              ],
+              "correctAnswer": "B. Definite volume",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Liquids have fixed volumes but adapt to container contours.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F49",
+              "difficulty": "low",
+              "prompt": "The symbol 'Cu' represents which element?",
+              "options": [
+                "A. Calcium",
+                "B. Copper",
+                "C. Carbon",
+                "D. Cobalt"
+              ],
+              "correctAnswer": "B. Copper",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Copper derives its symbol 'Cu' from Cuprum.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_F50",
+              "difficulty": "low",
+              "prompt": "What is the physical state of common table salt at room temperature?",
+              "options": [
+                "A. Solid",
+                "B. Liquid",
+                "C. Gas",
+                "D. Vapor"
+              ],
+              "correctAnswer": "A. Solid",
+              "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+              "workedSolution": "Table salt (sodium chloride) forms an ionic solid lattice at standard conditions.",
               "points": 1,
               "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
@@ -132,35 +948,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "BS7_MAT_MCQ_02",
+              "id": "B7_MAT_I01",
               "difficulty": "medium",
-              "prompt": "A sample of gas can be easily compressed into a smaller volume primarily because:",
+              "prompt": "Why do gases fill the entire volume of any closed container while liquids do not?",
               "options": [
-                "A. The individual particles shrink when external pressure is applied",
-                "B. There are large empty spaces between the gas particles",
-                "C. The gas particles lose mass under pressure",
-                "D. The gas particles slow down and stick together"
+                "A. Gas particles are heavier than liquid particles",
+                "B. Gas particles have negligible forces of attraction and move independently",
+                "C. Liquid particles have zero kinetic energy",
+                "D. Gas particles attract one another strongly"
               ],
-              "correctAnswer": "B. There are large empty spaces between the gas particles",
-              "hint": "Consider the intermolecular distances in gases compared to solids and liquids.",
-              "workedSolution": "Gas particles are separated by vast intermolecular empty spaces. Applying external pressure forces the particles closer together into these vacant gaps without altering particle size or mass.",
+              "correctAnswer": "B. Gas particles have negligible forces of attraction and move independently",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Because intermolecular attractions are negligible, gas particles travel freely until restricted by boundaries.",
               "points": 1,
               "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
             },
             {
-              "id": "BS7_MAT_MCQ_04",
+              "id": "B7_MAT_I02",
               "difficulty": "medium",
-              "prompt": "Which of the following elements is classified as a semi-metal (metalloid) and widely used in computer microchips as a semiconductor?",
+              "prompt": "An atom has an atomic number of 11 and a mass number of 23. How many neutrons are in its nucleus?",
               "options": [
-                "A. Silicon",
-                "B. Sulfur",
-                "C. Sodium",
-                "D. Silver"
+                "A. 11",
+                "B. 12",
+                "C. 23",
+                "D. 34"
               ],
-              "correctAnswer": "A. Silicon",
-              "hint": "It has atomic number 14 with electron configuration 2, 8, 4.",
-              "workedSolution": "Silicon (Si) is a metalloid located along the diagonal staircase of the Periodic Table. It exhibits intermediate electrical conductivity and acts as the foundational semiconductor for microprocessors.",
+              "correctAnswer": "B. 12",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Neutrons n = A - Z = 23 - 11 = 12.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I03",
+              "difficulty": "medium",
+              "prompt": "What is the electron arrangement of a neutral Phosphorus atom with atomic number 15?",
+              "options": [
+                "A. 2, 8, 5",
+                "B. 2, 5, 8",
+                "C. 2, 13",
+                "D. 15"
+              ],
+              "correctAnswer": "A. 2, 8, 5",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Following the 2n² capacity, 15 electrons distribute as 2 in shell 1, 8 in shell 2, and 5 in shell 3 (2, 8, 5).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I04",
+              "difficulty": "medium",
+              "prompt": "Why can a syringe filled with air be compressed easily, while one filled with water resists compression?",
+              "options": [
+                "A. Water molecules shrink under pressure",
+                "B. Air molecules are soft, but water molecules are hard",
+                "C. Air has large intermolecular spaces, whereas water particles are already closely packed",
+                "D. Water leaks through the syringe walls"
+              ],
+              "correctAnswer": "C. Air has large intermolecular spaces, whereas water particles are already closely packed",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Gaseous air contains vast interstitial voids between particles, whereas liquid water particles are in close contact.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I05",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has 2 valence electrons in its neutral ground state?",
+              "options": [
+                "A. Sodium (Z = 11)",
+                "B. Magnesium (Z = 12)",
+                "C. Aluminium (Z = 13)",
+                "D. Silicon (Z = 14)"
+              ],
+              "correctAnswer": "B. Magnesium (Z = 12)",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Magnesium has the configuration 2, 8, 2, showing 2 electrons in its valence shell.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I06",
+              "difficulty": "medium",
+              "prompt": "Why is solid dry ice (frozen CO₂) preferred over water ice when transporting perishable foods?",
+              "options": [
+                "A. It turns into liquid water when melting",
+                "B. It sublimes directly into gas without leaving wet residues",
+                "C. It is completely warm to touch",
+                "D. It generates oxygen gas"
+              ],
+              "correctAnswer": "B. It sublimes directly into gas without leaving wet residues",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Dry ice sublimes directly into gaseous carbon dioxide, keeping packaging clean and moisture-free.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I07",
+              "difficulty": "medium",
+              "prompt": "What is the valence electron number of elements found in Group 17 (the halogens)?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 7",
+                "D. 8"
+              ],
+              "correctAnswer": "C. 7",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Halogens such as Fluorine and Chlorine possess 7 valence electrons in their outermost shell.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I08",
+              "difficulty": "medium",
+              "prompt": "Which property makes Silicon exceptionally valuable in the production of microchips and transistors?",
+              "options": [
+                "A. Extreme malleability and softness",
+                "B. Its behavior as a semiconductor of electricity",
+                "C. Extremely high reactivity with air",
+                "D. Highly sonorous resonance"
+              ],
+              "correctAnswer": "B. Its behavior as a semiconductor of electricity",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Silicon is a metalloid semiconductor whose electrical conductivity can be precisely modulated.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I09",
+              "difficulty": "medium",
+              "prompt": "An atom has a nuclide notation of 19_9 F. What is the number of electrons orbiting its nucleus?",
+              "options": [
+                "A. 9",
+                "B. 10",
+                "C. 19",
+                "D. 28"
+              ],
+              "correctAnswer": "A. 9",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "In a neutral atom, electron count equals proton count (Z = 9).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I10",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the electrical conducting behavior of metals?",
+              "options": [
+                "A. They conduct poorly due to tightly fixed electrons",
+                "B. They conduct efficiently because of the presence of mobile, free electrons",
+                "C. They conduct only when frozen solid",
+                "D. They never conduct electricity"
+              ],
+              "correctAnswer": "B. They conduct efficiently because of the presence of mobile, free electrons",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Metallic bonding provides delocalized electrons that drift under an electrical potential difference.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I11",
+              "difficulty": "medium",
+              "prompt": "How do Group 1 alkali metals achieve a stable noble gas configuration during reactions?",
+              "options": [
+                "A. By gaining 7 electrons",
+                "B. By losing their single valence electron",
+                "C. By sharing 4 pairs of electrons",
+                "D. By remaining unchanged"
+              ],
+              "correctAnswer": "B. By losing their single valence electron",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Alkali metals donate their 1 outer valence electron to form stable +1 cations.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I12",
+              "difficulty": "medium",
+              "prompt": "Which of the following correctly pairs an element with its chemical symbol?",
+              "options": [
+                "A. Lead - Le",
+                "B. Iron - Ir",
+                "C. Potassium - K",
+                "D. Silver - Si"
+              ],
+              "correctAnswer": "C. Potassium - K",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Potassium is correctly symbolized as K (Kalium).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I13",
+              "difficulty": "medium",
+              "prompt": "What holds particles in a rigid, fixed lattice inside a solid?",
+              "options": [
+                "A. Gravitational repulsion",
+                "B. Strong intermolecular/interatomic attractive forces",
+                "C. High kinetic velocity",
+                "D. Continuous expansion"
+              ],
+              "correctAnswer": "B. Strong intermolecular/interatomic attractive forces",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Strong electrostatic attractions counteract particle kinetic energy, pinning particles into position.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I14",
+              "difficulty": "medium",
+              "prompt": "Which element has an electron configuration of 2, 8, 8?",
+              "options": [
+                "A. Neon",
+                "B. Argon",
+                "C. Chlorine",
+                "D. Potassium"
+              ],
+              "correctAnswer": "B. Argon",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Argon has atomic number 18 (2 + 8 + 8 = 18 electrons).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I15",
+              "difficulty": "medium",
+              "prompt": "Why are noble gases chemically unreactive?",
+              "options": [
+                "A. They have no protons",
+                "B. Their outermost electron shells are completely filled",
+                "C. They are all solids",
+                "D. They have odd numbers of electrons"
+              ],
+              "correctAnswer": "B. Their outermost electron shells are completely filled",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Filled valence shells (duplet in Helium, octets in others) confer high thermodynamic stability.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I16",
+              "difficulty": "medium",
+              "prompt": "Why is table salt (NaCl) applied to fresh meat and fish in preservation?",
+              "options": [
+                "A. It cooks the meat with heat",
+                "B. It draws moisture out through osmosis, inhibiting bacterial growth",
+                "C. It turns the meat into a liquid",
+                "D. It replaces protein with carbohydrates"
+              ],
+              "correctAnswer": "B. It draws moisture out through osmosis, inhibiting bacterial growth",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "High salt concentration creates a hypertonic environment that dehydrates microbes.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I17",
+              "difficulty": "medium",
+              "prompt": "Which of the following lists contains only metalloids (semi-metals)?",
+              "options": [
+                "A. Sodium, Potassium, Lithium",
+                "B. Boron, Silicon, Germanium",
+                "C. Oxygen, Nitrogen, Chlorine",
+                "D. Iron, Copper, Zinc"
+              ],
+              "correctAnswer": "B. Boron, Silicon, Germanium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Boron, Silicon, and Germanium are recognized metalloids.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I18",
+              "difficulty": "medium",
+              "prompt": "An element Y has atomic number 12 and mass number 24. What is its standard nuclide representation?",
+              "options": [
+                "A. 12_24 Y",
+                "B. 24_12 Y",
+                "C. 36_12 Y",
+                "D. 24_24 Y"
+              ],
+              "correctAnswer": "B. 24_12 Y",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Nuclide notation places mass number (A) as superscript and atomic number (Z) as subscript: 24_12 Y.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I19",
+              "difficulty": "medium",
+              "prompt": "Which of the following statements about non-metals is true?",
+              "options": [
+                "A. They are all sonorous",
+                "B. They readily conduct electricity (except graphite)",
+                "C. They generally have low melting and boiling points compared to metals",
+                "D. They can all be drawn into wires"
+              ],
+              "correctAnswer": "C. They generally have low melting and boiling points compared to metals",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Non-metals typically have lower melting and boiling points and are non-ductile.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I20",
+              "difficulty": "medium",
+              "prompt": "What is the function of synovial fluid in the human body?",
+              "options": [
+                "A. Pump oxygen to the lungs",
+                "B. Lubricate movable joints to minimize friction and wear",
+                "C. Filter waste from the kidneys",
+                "D. Produce red blood cells"
+              ],
+              "correctAnswer": "B. Lubricate movable joints to minimize friction and wear",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Synovial fluid provides lubrication between articular cartilage surfaces.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I21",
+              "difficulty": "medium",
+              "prompt": "What is the mass number of an atom consisting of 17 protons, 18 neutrons, and 17 electrons?",
+              "options": [
+                "A. 17",
+                "B. 18",
+                "C. 34",
+                "D. 35"
+              ],
+              "correctAnswer": "D. 35",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I22",
+              "difficulty": "medium",
+              "prompt": "Which gas makes up the largest percentage of atmospheric air?",
+              "options": [
+                "A. Oxygen",
+                "B. Carbon dioxide",
+                "C. Nitrogen",
+                "D. Argon"
+              ],
+              "correctAnswer": "C. Nitrogen",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Nitrogen constitutes approximately 78% of dry atmospheric air.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I23",
+              "difficulty": "medium",
+              "prompt": "Why does a liquid diffuse more slowly than a gas at the same temperature?",
+              "options": [
+                "A. Liquid particles are held by stronger intermolecular forces and have lower speeds",
+                "B. Liquid particles are stationary",
+                "C. Gas particles have higher mass",
+                "D. Liquids cannot diffuse"
+              ],
+              "correctAnswer": "A. Liquid particles are held by stronger intermolecular forces and have lower speeds",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Liquid particles experience significant cohesive attractions and short mean free paths.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I24",
+              "difficulty": "medium",
+              "prompt": "Which element has 4 electrons in its second shell (L-shell)?",
+              "options": [
+                "A. Beryllium",
+                "B. Boron",
+                "C. Carbon",
+                "D. Oxygen"
+              ],
+              "correctAnswer": "C. Carbon",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Carbon (Z = 6) has the configuration 2, 4.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I25",
+              "difficulty": "medium",
+              "prompt": "A substance with high melting point, high density, and lustrous appearance that donates electrons is a:",
+              "options": [
+                "A. Non-metal",
+                "B. Metal",
+                "C. Noble gas",
+                "D. Halogen"
+              ],
+              "correctAnswer": "B. Metal",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "High thermal stability, lustre, density, and electron donation characterize metals.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I26",
+              "difficulty": "medium",
+              "prompt": "Why are alkali metals stored immersed under kerosene or mineral oil?",
+              "options": [
+                "A. To prevent them from freezing",
+                "B. To prevent spontaneous reactions with atmospheric moisture and oxygen",
+                "C. To dissolve them into fuel",
+                "D. To change their color"
+              ],
+              "correctAnswer": "B. To prevent spontaneous reactions with atmospheric moisture and oxygen",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Group 1 metals oxidize rapidly and react vigorously with atmospheric water vapor.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I27",
+              "difficulty": "medium",
+              "prompt": "An atom has 8 electrons. How many electrons are needed to complete its valence shell to achieve an octet?",
+              "options": [
+                "A. 0",
+                "B. 2",
+                "C. 4",
+                "D. 6"
+              ],
+              "correctAnswer": "B. 2",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "An atom with 8 electrons has configuration 2, 6. It requires 2 additional electrons to reach an octet (8).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I28",
+              "difficulty": "medium",
+              "prompt": "Why is mercury used inside traditional fever thermometers?",
+              "options": [
+                "A. It expands uniformly with temperature changes and remains liquid over a wide range",
+                "B. It is lighter than water",
+                "C. It is an insulator of heat",
+                "D. It evaporates rapidly"
+              ],
+              "correctAnswer": "A. It expands uniformly with temperature changes and remains liquid over a wide range",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Mercury is a liquid metal with uniform thermal expansion and high thermal conductivity.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I29",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has the electron configuration 2, 8, 2?",
+              "options": [
+                "A. Sodium",
+                "B. Magnesium",
+                "C. Aluminium",
+                "D. Calcium"
+              ],
+              "correctAnswer": "B. Magnesium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Magnesium has atomic number 12 (2 + 8 + 2).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I30",
+              "difficulty": "medium",
+              "prompt": "What is the key difference between an element and a compound?",
+              "options": [
+                "A. An element contains only one kind of atom, whereas a compound contains two or more elements chemically combined",
+                "B. Elements are always liquids",
+                "C. Compounds can be broken down by physical filtration",
+                "D. Elements are always man-made"
+              ],
+              "correctAnswer": "A. An element contains only one kind of atom, whereas a compound contains two or more elements chemically combined",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Elements consist of identical atoms, whereas compounds feature chemically bonded distinct elements.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I31",
+              "difficulty": "medium",
+              "prompt": "How many electrons are in the outer shell of an atom of Sulfur (Z = 16)?",
+              "options": [
+                "A. 2",
+                "B. 4",
+                "C. 6",
+                "D. 8"
+              ],
+              "correctAnswer": "C. 6",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Sulfur has configuration 2, 8, 6, meaning it has 6 valence electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I32",
+              "difficulty": "medium",
+              "prompt": "Why do halogens exist as diatomic molecules in their pure elemental state (e.g., Cl₂)?",
+              "options": [
+                "A. To share a pair of electrons so each atom attains a stable octet",
+                "B. Because they are metals",
+                "C. Because they have full shells naturally",
+                "D. Due to gravitational forces"
+              ],
+              "correctAnswer": "A. To share a pair of electrons so each atom attains a stable octet",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Each halogen atom shares one electron with another, mutually fulfilling the octet rule.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I33",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements is classified as an alkaline earth metal?",
+              "options": [
+                "A. Potassium",
+                "B. Calcium",
+                "C. Chlorine",
+                "D. Neon"
+              ],
+              "correctAnswer": "B. Calcium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Calcium (Z = 20, config: 2, 8, 8, 2) is a Group 2 alkaline earth metal.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I34",
+              "difficulty": "medium",
+              "prompt": "What role does water play in human digestion?",
+              "options": [
+                "A. It prevents food from breaking down",
+                "B. It acts as a solvent and medium for digestive enzymes to hydrolyze food",
+                "C. It acts as an inorganic mineral salt",
+                "D. It converts starch into proteins directly"
+              ],
+              "correctAnswer": "B. It acts as a solvent and medium for digestive enzymes to hydrolyze food",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Water dissolves nutrients, forms digestive secretions, and acts as a reactant in hydrolysis.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I35",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has the lowest density at room temperature?",
+              "options": [
+                "A. Iron",
+                "B. Lead",
+                "C. Helium",
+                "D. Gold"
+              ],
+              "correctAnswer": "C. Helium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Helium is a light noble gas, having an extremely low density compared to condensed solids.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I36",
+              "difficulty": "medium",
+              "prompt": "Which element has 3 shells and 1 valence electron?",
+              "options": [
+                "A. Lithium",
+                "B. Sodium",
+                "C. Potassium",
+                "D. Rubidium"
+              ],
+              "correctAnswer": "B. Sodium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Sodium has configuration 2, 8, 1 (occupying shells K, L, M).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I37",
+              "difficulty": "medium",
+              "prompt": "What type of forces must be overcome when ice melts into liquid water?",
+              "options": [
+                "A. Covalent bonds",
+                "B. Intermolecular attractive forces",
+                "C. Nuclear forces",
+                "D. Gravity"
+              ],
+              "correctAnswer": "B. Intermolecular attractive forces",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Melting breaks intermolecular bonds that hold water molecules in crystalline arrays, without cleaving O-H covalent bonds.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I38",
+              "difficulty": "medium",
+              "prompt": "Which element has an atomic mass of approximately 40 and an atomic number of 20?",
+              "options": [
+                "A. Argon",
+                "B. Potassium",
+                "C. Calcium",
+                "D. Scandium"
+              ],
+              "correctAnswer": "C. Calcium",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Calcium has Z = 20 and A = 40 (20 protons and 20 neutrons).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I39",
+              "difficulty": "medium",
+              "prompt": "Why is aluminium alloyed with magnesium to make aircraft bodies?",
+              "options": [
+                "A. To make it heavier",
+                "B. To create a strong, durable material with low density",
+                "C. To make it dissolve in rain",
+                "D. To conduct heat rapidly"
+              ],
+              "correctAnswer": "B. To create a strong, durable material with low density",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Aluminium-magnesium alloys offer high tensile strength combined with lightweight density.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I40",
+              "difficulty": "medium",
+              "prompt": "How many electrons are in the M-shell of an uncharged Chlorine atom (Z = 17)?",
+              "options": [
+                "A. 2",
+                "B. 7",
+                "C. 8",
+                "D. 17"
+              ],
+              "correctAnswer": "B. 7",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Chlorine distributes as K=2, L=8, M=7.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I41",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements is a gas that supports animal and plant cellular respiration?",
+              "options": [
+                "A. Nitrogen",
+                "B. Oxygen",
+                "C. Carbon dioxide",
+                "D. Hydrogen"
+              ],
+              "correctAnswer": "B. Oxygen",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Oxygen is the terminal electron acceptor in aerobic respiration.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I42",
+              "difficulty": "medium",
+              "prompt": "Which element has the symbol 'Pb'?",
+              "options": [
+                "A. Potassium",
+                "B. Phosphorus",
+                "C. Lead",
+                "D. Platinum"
+              ],
+              "correctAnswer": "C. Lead",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Lead derives 'Pb' from its Latin name Plumbum.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I43",
+              "difficulty": "medium",
+              "prompt": "What is the net electrical charge of an atomic nucleus containing 8 protons and 8 neutrons?",
+              "options": [
+                "A. 0",
+                "B. -8",
+                "C. +8",
+                "D. +16"
+              ],
+              "correctAnswer": "C. +8",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Neutrons contribute 0 charge; 8 protons contribute an aggregate +8 charge.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I44",
+              "difficulty": "medium",
+              "prompt": "Why does a drop of ink spread throughout a beaker of stationary water?",
+              "options": [
+                "A. Due to chemical decomposition",
+                "B. Due to diffusion driven by continuous molecular motion",
+                "C. Due to boiling",
+                "D. Due to gravitational settling"
+              ],
+              "correctAnswer": "B. Due to diffusion driven by continuous molecular motion",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Random collisions of water and ink particles result in spontaneous diffusion.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I45",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has the electron configuration 2, 8, 7?",
+              "options": [
+                "A. Fluorine",
+                "B. Chlorine",
+                "C. Argon",
+                "D. Bromine"
+              ],
+              "correctAnswer": "B. Chlorine",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Chlorine (Z = 17) has configuration 2, 8, 7.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I46",
+              "difficulty": "medium",
+              "prompt": "What happens to the kinetic energy of particles as a substance is heated?",
+              "options": [
+                "A. Kinetic energy decreases",
+                "B. Kinetic energy increases and particles move faster",
+                "C. Kinetic energy drops to zero",
+                "D. Kinetic energy remains completely unchanged"
+              ],
+              "correctAnswer": "B. Kinetic energy increases and particles move faster",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Thermal energy increases average kinetic velocity and particle vibration.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I47",
+              "difficulty": "medium",
+              "prompt": "What property of nitrogen gas makes it suitable for packaging potato chips and snacks?",
+              "options": [
+                "A. It is sweet-scented",
+                "B. It is inert and prevents oil oxidation and food spoilage",
+                "C. It is corrosive",
+                "D. It is highly radioactive"
+              ],
+              "correctAnswer": "B. It is inert and prevents oil oxidation and food spoilage",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Inert nitrogen flushes out oxygen, preventing rancidity of fats.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I48",
+              "difficulty": "medium",
+              "prompt": "How many electrons does a neutral Beryllium atom have in its outermost shell?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 4"
+              ],
+              "correctAnswer": "B. 2",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Beryllium (Z = 4) has configuration 2, 2, showing 2 valence electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I49",
+              "difficulty": "medium",
+              "prompt": "Which element has atomic number 14?",
+              "options": [
+                "A. Aluminium",
+                "B. Silicon",
+                "C. Phosphorus",
+                "D. Sulfur"
+              ],
+              "correctAnswer": "B. Silicon",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Silicon is element 14 on the periodic table.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_I50",
+              "difficulty": "medium",
+              "prompt": "Which of the following is true regarding neutrons?",
+              "options": [
+                "A. They determine the chemical bonding behavior of elements",
+                "B. They reside in shells outside the nucleus",
+                "C. They add mass to the nucleus without changing its electric charge",
+                "D. They have negative charge"
+              ],
+              "correctAnswer": "C. They add mass to the nucleus without changing its electric charge",
+              "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+              "workedSolution": "Neutrons possess ~1 a.m.u. mass but zero charge, stabilizing nuclear mass.",
               "points": 1,
               "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
@@ -168,18 +1800,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "hard": [
             {
-              "id": "BS7_MAT_MCQ_05",
+              "id": "B7_MAT_A01",
               "difficulty": "hard",
-              "prompt": "Why are Group 18 noble gases (such as helium, neon, and argon) chemically inert and unreactive under standard conditions?",
+              "prompt": "An element X has a mass number of 39 and contains 20 neutrons in its nucleus. What is its electronic configuration?",
               "options": [
-                "A. They have no protons or neutrons in their nucleus",
-                "B. Their outermost electron shells are already completely full (duplet or octet)",
-                "C. They are too heavy to collide with other atoms",
-                "D. Their positive nuclear charge repels all incoming molecules"
+                "A. 2, 8, 8, 1",
+                "B. 2, 8, 9",
+                "C. 2, 8, 8, 2",
+                "D. 2, 8, 10"
               ],
-              "correctAnswer": "B. Their outermost electron shells are already completely full (duplet or octet)",
-              "hint": "Chemical bonding occurs when atoms seek stable full valence shells; noble gases already possess this.",
-              "workedSolution": "Helium has a full duplet (2 electrons) while Neon and Argon have full octets (8 valence electrons). Having full valence shells gives them extraordinary chemical stability, so they do not gain, lose, or share electrons.",
+              "correctAnswer": "A. 2, 8, 8, 1",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Atomic number Z = A - n = 39 - 20 = 19 (Potassium). Its configuration is 2, 8, 8, 1.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A02",
+              "difficulty": "hard",
+              "prompt": "Why does a metal spoon expand slightly when placed in a bowl of boiling water?",
+              "options": [
+                "A. The spoon absorbs water into its particles",
+                "B. Thermal energy increases particle vibrations, pushing them slightly farther apart",
+                "C. The individual atoms grow in physical diameter",
+                "D. New electrons enter the metal lattice"
+              ],
+              "correctAnswer": "B. Thermal energy increases particle vibrations, pushing them slightly farther apart",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Heating increases vibrational amplitudes of atomic lattices, causing thermal expansion.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A03",
+              "difficulty": "hard",
+              "prompt": "Element A has atomic number 12 and Element B has atomic number 8. How many electrons are transferred when they react chemically?",
+              "options": [
+                "A. 1 electron from B to A",
+                "B. 2 electrons from A to B",
+                "C. 2 electrons from B to A",
+                "D. 4 shared pairs of electrons"
+              ],
+              "correctAnswer": "B. 2 electrons from A to B",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Element A (Magnesium: 2, 8, 2) donates its 2 valence electrons to Element B (Oxygen: 2, 6) to form MgO.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A04",
+              "difficulty": "hard",
+              "prompt": "Why is the boiling point of water much higher than that of methane gas (CH₄), even though both are small molecules?",
+              "options": [
+                "A. Methane contains metal atoms",
+                "B. Water molecules are bound by stronger intermolecular forces than methane molecules",
+                "C. Methane is an ionic solid",
+                "D. Water has no chemical bonds"
+              ],
+              "correctAnswer": "B. Water molecules are bound by stronger intermolecular forces than methane molecules",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Stronger cohesive intermolecular forces in liquid water require more thermal energy to dissociate into gas.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A05",
+              "difficulty": "hard",
+              "prompt": "A neutral nuclide is symbolized as 31_15 P. How many protons, neutrons, and electrons does it contain?",
+              "options": [
+                "A. 15 protons, 16 neutrons, 15 electrons",
+                "B. 15 protons, 31 neutrons, 15 electrons",
+                "C. 16 protons, 15 neutrons, 16 electrons",
+                "D. 31 protons, 15 neutrons, 16 electrons"
+              ],
+              "correctAnswer": "A. 15 protons, 16 neutrons, 15 electrons",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Protons = Z = 15; Electrons = 15; Neutrons = A - Z = 31 - 15 = 16.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A06",
+              "difficulty": "hard",
+              "prompt": "Why do elements in the same vertical Group of the Periodic Table show similar chemical reactivities?",
+              "options": [
+                "A. They contain identical numbers of neutrons",
+                "B. They share the same number of valence electrons in their outermost shell",
+                "C. They possess identical atomic masses",
+                "D. They occupy the same horizontal row"
+              ],
+              "correctAnswer": "B. They share the same number of valence electrons in their outermost shell",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Valence electrons dictate chemical bonding and reactive mechanisms.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A07",
+              "difficulty": "hard",
+              "prompt": "Before welding a damaged empty fuel tanker, safety technicians often place blocks of dry ice inside. What is the chemical reason for this?",
+              "options": [
+                "A. To wash the fuel residues away with liquid water",
+                "B. To sublime into heavy carbon dioxide gas, displacing oxygen and preventing explosive combustion",
+                "C. To freeze the steel metal until it softens",
+                "D. To ignite the leftover fuel slowly"
+              ],
+              "correctAnswer": "B. To sublime into heavy carbon dioxide gas, displacing oxygen and preventing explosive combustion",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Subliming CO₂ blankets the interior, displacing atmospheric O₂ to eliminate explosion risks.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A08",
+              "difficulty": "hard",
+              "prompt": "Why does the electrical conductivity of semiconductor metalloids like Germanium increase when heated, unlike pure metals?",
+              "options": [
+                "A. Heating frees more valence electrons into conduction pathways",
+                "B. Heating causes the metalloid to turn into liquid copper",
+                "C. Heating decreases the number of charge carriers",
+                "D. Metalloids lose their atomic structure"
+              ],
+              "correctAnswer": "A. Heating frees more valence electrons into conduction pathways",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "In semiconductors, thermal excitation promotes bound valence electrons across the band gap into mobile conduction states.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A09",
+              "difficulty": "hard",
+              "prompt": "Which of the following configurations represents an atom that readily forms an anion with a -1 charge?",
+              "options": [
+                "A. 2, 1",
+                "B. 2, 8, 2",
+                "C. 2, 8, 7",
+                "D. 2, 8, 8"
+              ],
+              "correctAnswer": "C. 2, 8, 7",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "An atom with configuration 2, 8, 7 needs 1 electron to complete its octet, forming a -1 anion.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A10",
+              "difficulty": "hard",
+              "prompt": "Why are gases compressible while liquids and solids are practically incompressible?",
+              "options": [
+                "A. Gas particles are tiny, but solid particles are enormous",
+                "B. Gas particles are separated by vast inter-particle voids, while liquid/solid particles are closely packed",
+                "C. Gas particles collapse in size under pressure",
+                "D. Solids lose their mass when compressed"
+              ],
+              "correctAnswer": "B. Gas particles are separated by vast inter-particle voids, while liquid/solid particles are closely packed",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Compression reduces empty spaces between particles; such voids are largely absent in liquids and solids.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A11",
+              "difficulty": "hard",
+              "prompt": "If an uncharged atom has an electron configuration of 2, 8, 8, 2, what is its position on the Periodic Table?",
+              "options": [
+                "A. Period 2, Group 4",
+                "B. Period 4, Group 2",
+                "C. Period 3, Group 2",
+                "D. Period 4, Group 8"
+              ],
+              "correctAnswer": "B. Period 4, Group 2",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "It occupies 4 electron shells (Period 4) and has 2 valence electrons (Group 2, Calcium).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A12",
+              "difficulty": "hard",
+              "prompt": "How does perspiration (sweating) cool the human body on a hot sunny day?",
+              "options": [
+                "A. The water generates cold ice on the skin",
+                "B. Liquid sweat absorbs latent heat of vaporization from the skin to evaporate into gas",
+                "C. Sweat stops blood flow in the skin",
+                "D. Sweat reflects sunlight like a mirror"
+              ],
+              "correctAnswer": "B. Liquid sweat absorbs latent heat of vaporization from the skin to evaporate into gas",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Phase change from liquid to gas absorbs latent heat energy, lowering skin temperature.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A13",
+              "difficulty": "hard",
+              "prompt": "Why is graphite able to conduct electricity while diamond cannot, even though both are made purely of carbon atoms?",
+              "options": [
+                "A. Graphite contains mobile, delocalized electrons between layers, whereas diamond has all four valence electrons locked in bonds",
+                "B. Graphite is a metal, but diamond is a gas",
+                "C. Diamond has no carbon atoms",
+                "D. Graphite is an ionic compound"
+              ],
+              "correctAnswer": "A. Graphite contains mobile, delocalized electrons between layers, whereas diamond has all four valence electrons locked in bonds",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Each carbon in graphite bonds to three others, leaving one delocalized electron per atom to conduct electricity.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A14",
+              "difficulty": "hard",
+              "prompt": "What is the mass number of an ion that has 11 protons, 12 neutrons, and 10 electrons?",
+              "options": [
+                "A. 10",
+                "B. 11",
+                "C. 21",
+                "D. 23"
+              ],
+              "correctAnswer": "D. 23",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Mass number depends only on nucleons: A = protons + neutrons = 11 + 12 = 23 (Na⁺).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A15",
+              "difficulty": "hard",
+              "prompt": "Why do halogens react vigorously with alkali metals?",
+              "options": [
+                "A. Alkali metals want to donate 1 electron and halogens need to accept 1 electron for both to achieve octets",
+                "B. Both elements are noble gases",
+                "C. Both elements have zero valence electrons",
+                "D. Halogens donate protons to alkali metals"
+              ],
+              "correctAnswer": "A. Alkali metals want to donate 1 electron and halogens need to accept 1 electron for both to achieve octets",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Alkali metals (1 valence electron) and halogens (7 valence electrons) have complementary affinities, forming stable ionic lattices.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A16",
+              "difficulty": "hard",
+              "prompt": "An element has an atomic number of 13. Which statement accurately describes its chemical bonding behavior?",
+              "options": [
+                "A. It gains 5 electrons to become stable",
+                "B. It donates its 3 valence electrons to form a +3 cation",
+                "C. It does not react because it is a noble gas",
+                "D. It forms only diatomic gas molecules"
+              ],
+              "correctAnswer": "B. It donates its 3 valence electrons to form a +3 cation",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Aluminium (2, 8, 3) donates its 3 valence electrons to achieve an octet.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A17",
+              "difficulty": "hard",
+              "prompt": "Which of the following elements has the greatest tendency to form an unreactive, monatomic gas?",
+              "options": [
+                "A. Oxygen (Z = 8)",
+                "B. Fluorine (Z = 9)",
+                "C. Neon (Z = 10)",
+                "D. Sodium (Z = 11)"
+              ],
+              "correctAnswer": "C. Neon (Z = 10)",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Neon has a closed-shell electron configuration (2, 8), remaining monatomic and non-reactive.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A18",
+              "difficulty": "hard",
+              "prompt": "Two elements are represented as 35_17 Cl and 37_17 Cl. How do they differ?",
+              "options": [
+                "A. They have different numbers of protons",
+                "B. They have different numbers of neutrons (isotopes)",
+                "C. They belong to different groups",
+                "D. One is a metal and the other is a noble gas"
+              ],
+              "correctAnswer": "B. They have different numbers of neutrons (isotopes)",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Isotopes have identical atomic numbers (17 protons) but different neutron counts (18 vs 20 neutrons).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A19",
+              "difficulty": "hard",
+              "prompt": "Why does liquid water take the shape of any container into which it is poured?",
+              "options": [
+                "A. Its particles are pinned in a rigid crystal lattice",
+                "B. Its intermolecular attractions allow particles to slide past one another under gravity",
+                "C. It has zero mass",
+                "D. It expands to infinite volume"
+              ],
+              "correctAnswer": "B. Its intermolecular attractions allow particles to slide past one another under gravity",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Particle mobility combined with intermolecular cohesion enables liquids to conform to container walls.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A20",
+              "difficulty": "hard",
+              "prompt": "What is the identity of an element that has 8 protons, 8 neutrons, and 10 electrons?",
+              "options": [
+                "A. Neutral Oxygen atom",
+                "B. Oxide anion (O²⁻)",
+                "C. Fluorine ion",
+                "D. Neon atom"
+              ],
+              "correctAnswer": "B. Oxide anion (O²⁻)",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "8 protons identify it as Oxygen. Having 10 electrons gives it a 2- net charge (O²⁻).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A21",
+              "difficulty": "hard",
+              "prompt": "Why is the density of iron much greater than the density of oxygen gas at standard conditions?",
+              "options": [
+                "A. Iron atoms are packed closely in a solid crystal, whereas oxygen molecules are separated by vast empty spaces",
+                "B. Iron atoms have no volume",
+                "C. Oxygen molecules have negative mass",
+                "D. Iron absorbs gravitational waves"
+              ],
+              "correctAnswer": "A. Iron atoms are packed closely in a solid crystal, whereas oxygen molecules are separated by vast empty spaces",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Density = mass/volume; solids contain vastly more atoms per unit volume than gases.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A22",
+              "difficulty": "hard",
+              "prompt": "An uncharged atom has 2 electrons in shell 1, 8 electrons in shell 2, and 6 electrons in shell 3. What is its chemical valency?",
+              "options": [
+                "A. 2",
+                "B. 4",
+                "C. 6",
+                "D. 8"
+              ],
+              "correctAnswer": "A. 2",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "With 6 valence electrons, it needs 2 electrons to complete an octet, giving it a combining capacity (valency) of 2.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A23",
+              "difficulty": "hard",
+              "prompt": "Why do hot air balloons rise in the atmosphere?",
+              "options": [
+                "A. Heating air causes its particles to move faster and spread farther apart, making warm air less dense than surrounding cold air",
+                "B. Heating removes mass from air molecules",
+                "C. Heated air turns into helium",
+                "D. Hot air particles stop moving"
+              ],
+              "correctAnswer": "A. Heating air causes its particles to move faster and spread farther apart, making warm air less dense than surrounding cold air",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Thermal expansion lowers gas density, producing buoyant uplift in denser ambient air.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A24",
+              "difficulty": "hard",
+              "prompt": "Which of the following elements has the electronic structure of a noble gas when it loses 1 electron?",
+              "options": [
+                "A. Sodium",
+                "B. Magnesium",
+                "C. Chlorine",
+                "D. Calcium"
+              ],
+              "correctAnswer": "A. Sodium",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Sodium (2, 8, 1) loses 1 electron to become Na⁺ (2, 8), matching Neon.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A25",
+              "difficulty": "hard",
+              "prompt": "Why is chlorine added to municipal swimming pools and water works?",
+              "options": [
+                "A. To improve the taste of water",
+                "B. To act as a strong oxidizing disinfectant that kills pathogenic bacteria and viruses",
+                "C. To prevent water from evaporating",
+                "D. To turn the water blue"
+              ],
+              "correctAnswer": "B. To act as a strong oxidizing disinfectant that kills pathogenic bacteria and viruses",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Chlorine forms hypochlorous acid in water, destroying pathogenic micro-organisms.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A26",
+              "difficulty": "hard",
+              "prompt": "How many electrons can the N-shell (n = 4) hold theoretically according to the 2n² formula?",
+              "options": [
+                "A. 8",
+                "B. 16",
+                "C. 18",
+                "D. 32"
+              ],
+              "correctAnswer": "D. 32",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Maximum capacity = 2(4)² = 2(16) = 32 electrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A27",
+              "difficulty": "hard",
+              "prompt": "Why can metals conduct heat much faster than non-metallic solids like wood or plastic?",
+              "options": [
+                "A. Metals contain free-moving delocalized electrons that rapidly transfer thermal kinetic energy across the lattice",
+                "B. Wood atoms are larger than metal atoms",
+                "C. Metals generate their own internal heat",
+                "D. Plastics have no particles"
+              ],
+              "correctAnswer": "A. Metals contain free-moving delocalized electrons that rapidly transfer thermal kinetic energy across the lattice",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Delocalized conduction electrons rapidly propagate kinetic energy throughout metals.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A28",
+              "difficulty": "hard",
+              "prompt": "An element belongs to Group 2 and Period 3 of the Periodic Table. What is its atomic number?",
+              "options": [
+                "A. 6",
+                "B. 10",
+                "C. 12",
+                "D. 20"
+              ],
+              "correctAnswer": "C. 12",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Period 3 = 3 shells; Group 2 = 2 valence electrons. Configuration: 2, 8, 2 (Z = 12, Magnesium).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A29",
+              "difficulty": "hard",
+              "prompt": "What happens when a bottle of perfume is opened in one corner of an enclosed room?",
+              "options": [
+                "A. The liquid perfume sinks into the floor and stays there",
+                "B. Perfume molecules evaporate and diffuse randomly through air particle collisions until distributed evenly",
+                "C. Air particles push all perfume particles out of the window instantly",
+                "D. The perfume freezes"
+              ],
+              "correctAnswer": "B. Perfume molecules evaporate and diffuse randomly through air particle collisions until distributed evenly",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Volatile liquid particles vaporize and undergo net diffusion across concentration gradients.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A30",
+              "difficulty": "hard",
+              "prompt": "Which of the following compounds is formed by an ionic bond?",
+              "options": [
+                "A. Water (H₂O)",
+                "B. Sodium Chloride (NaCl)",
+                "C. Methane (CH₄)",
+                "D. Carbon dioxide (CO₂)"
+              ],
+              "correctAnswer": "B. Sodium Chloride (NaCl)",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "NaCl is formed by complete electron transfer from metal Na to non-metal Cl.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A31",
+              "difficulty": "hard",
+              "prompt": "What is the valency of Carbon (Z = 6)?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 4"
+              ],
+              "correctAnswer": "D. 4",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Carbon has 4 valence electrons and forms 4 covalent bonds to complete its octet (tetravalent).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A32",
+              "difficulty": "hard",
+              "prompt": "Why does ice float on liquid water?",
+              "options": [
+                "A. Ice particles lose mass as they freeze",
+                "B. Water molecules form an open crystalline cage lattice that makes solid ice less dense than liquid water",
+                "C. Ice contains trapped bubbles of pure oxygen only",
+                "D. Liquid water repels cold objects"
+              ],
+              "correctAnswer": "B. Water molecules form an open crystalline cage lattice that makes solid ice less dense than liquid water",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Open hydrogen-bonded lattice geometry causes water to expand upon freezing, decreasing its solid density.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A33",
+              "difficulty": "hard",
+              "prompt": "An atom has 19 protons and 20 neutrons. What is its chemical symbol?",
+              "options": [
+                "A. Ca",
+                "B. K",
+                "C. Ar",
+                "D. Sc"
+              ],
+              "correctAnswer": "B. K",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "19 protons uniquely define Potassium (K).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A34",
+              "difficulty": "hard",
+              "prompt": "Why are noble gases monatomic while halogens are diatomic?",
+              "options": [
+                "A. Noble gases have complete outer shells and need no bonding, whereas halogens need to share an electron pair to become stable",
+                "B. Noble gases have no mass",
+                "C. Halogens are metals",
+                "D. Noble gases are always liquids"
+              ],
+              "correctAnswer": "A. Noble gases have complete outer shells and need no bonding, whereas halogens need to share an electron pair to become stable",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Full octets make noble gases stable as single atoms; halogens require diatomic pairing to achieve stability.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A35",
+              "difficulty": "hard",
+              "prompt": "Which of the following transitions represents sublimation?",
+              "options": [
+                "A. Solid directly to gas",
+                "B. Liquid to solid",
+                "C. Gas to liquid",
+                "D. Liquid to gas"
+              ],
+              "correctAnswer": "A. Solid directly to gas",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Sublimation is the direct endothermic phase transformation of solid into gas (e.g., dry ice).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A36",
+              "difficulty": "hard",
+              "prompt": "What is the total number of electrons in an oxide ion (O²⁻)?",
+              "options": [
+                "A. 6",
+                "B. 8",
+                "C. 10",
+                "D. 12"
+              ],
+              "correctAnswer": "C. 10",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "A neutral Oxygen atom has 8 electrons; an O²⁻ ion has gained 2 extra electrons (8 + 2 = 10).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A37",
+              "difficulty": "hard",
+              "prompt": "Why are electrical wires made of copper coated with plastic?",
+              "options": [
+                "A. Copper is a conductor while plastic is an insulator that prevents electric shocks",
+                "B. Plastic conducts electricity better than copper",
+                "C. Copper dissolves in air",
+                "D. To make the wire heavier"
+              ],
+              "correctAnswer": "A. Copper is a conductor while plastic is an insulator that prevents electric shocks",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Copper provides low-resistance conduction; the outer polymer insulator protects against current leakage and shocks.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A38",
+              "difficulty": "hard",
+              "prompt": "Which element has 18 protons and 22 neutrons in its nucleus?",
+              "options": [
+                "A. Calcium",
+                "B. Argon",
+                "C. Potassium",
+                "D. Chlorine"
+              ],
+              "correctAnswer": "B. Argon",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Z = 18 corresponds to Argon (Ar).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A39",
+              "difficulty": "hard",
+              "prompt": "Why does a gas exert pressure on the walls of its container?",
+              "options": [
+                "A. The particles are attracted to the container walls",
+                "B. Billions of rapid gas particles continuously collide elastically with the container walls",
+                "C. Gravity pulls gas particles outward",
+                "D. The gas particles expand in diameter"
+              ],
+              "correctAnswer": "B. Billions of rapid gas particles continuously collide elastically with the container walls",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Gas pressure results from the aggregate force exerted per unit area by colliding gas particles.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A40",
+              "difficulty": "hard",
+              "prompt": "What is the electron configuration of an uncharged Aluminium atom (Z = 13)?",
+              "options": [
+                "A. 2, 8, 3",
+                "B. 2, 3, 8",
+                "C. 3, 8, 2",
+                "D. 2, 11"
+              ],
+              "correctAnswer": "A. 2, 8, 3",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Aluminium fills shells as K=2, L=8, M=3.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A41",
+              "difficulty": "hard",
+              "prompt": "Why are alkali metals more reactive than alkaline earth metals in the same period?",
+              "options": [
+                "A. Losing 1 valence electron requires less energy than losing 2 valence electrons",
+                "B. Alkali metals are non-metals",
+                "C. Alkaline earth metals have no valence electrons",
+                "D. Alkali metals have more neutrons"
+              ],
+              "correctAnswer": "A. Losing 1 valence electron requires less energy than losing 2 valence electrons",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "The first ionization energy to remove 1 valence electron is lower than the combined ionization energy to lose 2.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A42",
+              "difficulty": "hard",
+              "prompt": "Which of the following subatomic particles determines the isotope identity of an element?",
+              "options": [
+                "A. Electron",
+                "B. Neutron",
+                "C. Proton",
+                "D. Photon"
+              ],
+              "correctAnswer": "B. Neutron",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Isotopes of an element share the same proton number but differ in neutron count.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A43",
+              "difficulty": "hard",
+              "prompt": "Why is argon gas used in incandescent light bulbs instead of ordinary air?",
+              "options": [
+                "A. Air contains oxygen which would burn the hot tungsten filament, whereas argon is inert",
+                "B. Argon produces electricity",
+                "C. Air is too heavy",
+                "D. Argon cools the bulb to freezing point"
+              ],
+              "correctAnswer": "A. Air contains oxygen which would burn the hot tungsten filament, whereas argon is inert",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Inert argon prevents thermal oxidation and rapid vaporization of the incandescent filament.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A44",
+              "difficulty": "hard",
+              "prompt": "Which of the following elements has the electron configuration 2, 8, 8, 1?",
+              "options": [
+                "A. Sodium",
+                "B. Potassium",
+                "C. Calcium",
+                "D. Chlorine"
+              ],
+              "correctAnswer": "B. Potassium",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Potassium (Z = 19) has the configuration 2, 8, 8, 1.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A45",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of blood plasma in terms of states of matter?",
+              "options": [
+                "A. It acts as an aqueous fluid medium that transports cells, nutrients, and wastes throughout the body",
+                "B. It forms solid bone tissue",
+                "C. It vaporizes into oxygen gas",
+                "D. It insulates nerves with fat"
+              ],
+              "correctAnswer": "A. It acts as an aqueous fluid medium that transports cells, nutrients, and wastes throughout the body",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Liquid blood plasma (~92% water) provides the hydrostatic solvent for nutrient and metabolite transport.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A46",
+              "difficulty": "hard",
+              "prompt": "Why does a balloon filled with air shrink slightly when placed in a freezer?",
+              "options": [
+                "A. Air leaks through the balloon skin",
+                "B. Cooling reduces particle kinetic energy, so particles collide less forcefully and move closer together",
+                "C. The air molecules decrease in weight",
+                "D. The rubber absorbs the air"
+              ],
+              "correctAnswer": "B. Cooling reduces particle kinetic energy, so particles collide less forcefully and move closer together",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Lower thermal energy reduces molecular velocity and collision rates, decreasing volume at constant external pressure.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A47",
+              "difficulty": "hard",
+              "prompt": "Which element has 7 protons and forms a diatomic molecule that makes up most of the atmosphere?",
+              "options": [
+                "A. Carbon",
+                "B. Nitrogen",
+                "C. Oxygen",
+                "D. Hydrogen"
+              ],
+              "correctAnswer": "B. Nitrogen",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Z = 7 is Nitrogen (N₂), constituting ~78% of air.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A48",
+              "difficulty": "hard",
+              "prompt": "How does Boron differ from Sodium?",
+              "options": [
+                "A. Boron is a semi-metal/metalloid, while Sodium is a highly reactive alkali metal",
+                "B. Boron is a noble gas",
+                "C. Sodium is a non-metal gas",
+                "D. Boron has 11 protons"
+              ],
+              "correctAnswer": "A. Boron is a semi-metal/metalloid, while Sodium is a highly reactive alkali metal",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Boron is a metalloid (Group 13), whereas Sodium is an electropositive alkali metal (Group 1).",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A49",
+              "difficulty": "hard",
+              "prompt": "What constitutes the mass number of an atom?",
+              "options": [
+                "A. Protons + Electrons",
+                "B. Protons + Neutrons",
+                "C. Neutrons + Electrons",
+                "D. Protons only"
+              ],
+              "correctAnswer": "B. Protons + Neutrons",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Mass number A = Z + n, accounting for nuclear protons and neutrons.",
+              "points": 1,
+              "learningCompetency": "B7.1.1.1 & B7.1.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_MAT_A50",
+              "difficulty": "hard",
+              "prompt": "Why does liquid water have a definite volume even though its shape varies?",
+              "options": [
+                "A. Intermolecular attractive forces are strong enough to keep particles close together, but not rigid enough to lock them in place",
+                "B. The particles cannot move at all",
+                "C. Gravity only affects solids",
+                "D. Water molecules have zero kinetic energy"
+              ],
+              "correctAnswer": "A. Intermolecular attractive forces are strong enough to keep particles close together, but not rigid enough to lock them in place",
+              "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+              "workedSolution": "Cohesive attractions prevent particles from separating, while translational freedom permits fluid flow.",
               "points": 1,
               "learningCompetency": "B7.1.1.1 & B7.1.1.2",
               "type": "objective"
@@ -308,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.318Z"
+    "updatedAt": "2026-10-01T18:58:01.312Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -507,7 +2972,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -703,7 +3168,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -900,7 +3365,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -1095,7 +3560,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -1292,7 +3757,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -1489,7 +3954,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -1686,7 +4151,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -1881,7 +4346,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.335Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -2077,7 +4542,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -2273,7 +4738,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -2470,7 +4935,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -2668,7 +5133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -2866,7 +5331,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -3059,7 +5524,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -3254,7 +5719,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -3449,7 +5914,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -3645,7 +6110,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -3842,7 +6307,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:50:48.336Z"
+    "updatedAt": "2026-10-01T18:58:01.313Z"
   }
 ];
 
@@ -3874,83 +6339,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "BS7_MAT_MCQ_01",
+        "id": "B7_MAT_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following substances can naturally exist as a solid, a liquid, and a gas under normal conditions on Earth?",
+        "prompt": "Anything that has mass and occupies space is scientifically defined as:",
         "options": [
-          "A. Iron",
-          "B. Carbon dioxide",
-          "C. Water",
-          "D. Mercury"
+          "A. Force",
+          "B. Energy",
+          "C. Matter",
+          "D. Vacuum"
         ],
-        "correctAnswer": "C. Water",
-        "hint": "Think of ice cubes, running tap fluid, and boiling steam.",
-        "workedSolution": "Water is unique on Earth in that it freezes into solid ice below 0°C, exists as liquid water at ambient temperatures, and boils/evaporates into gaseous steam and water vapor above 100°C.",
+        "correctAnswer": "C. Matter",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Matter is defined as any physical substance that possesses mass and occupies a volume of space.",
         "points": 1
       },
       {
-        "id": "BS7_MAT_MCQ_03",
+        "id": "B7_MAT_F02",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The total number of protons located inside the nucleus of an atom is defined as its:",
+        "prompt": "Which of the following is a naturally occurring material?",
+        "options": [
+          "A. Plastic",
+          "B. Wood",
+          "C. Ceramic",
+          "D. Nylon"
+        ],
+        "correctAnswer": "B. Wood",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Wood is a natural material obtained directly from plants, whereas plastics and ceramics are synthetic or processed.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following substances exists as a solid at room temperature?",
+        "options": [
+          "A. Kerosene",
+          "B. Iron",
+          "C. Oxygen",
+          "D. Steam"
+        ],
+        "correctAnswer": "B. Iron",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Iron is a metallic solid with high particle cohesion at room temperature.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which state of matter has a fixed volume but changes shape to match its container?",
+        "options": [
+          "A. Solid",
+          "B. Liquid",
+          "C. Gas",
+          "D. Plasma"
+        ],
+        "correctAnswer": "B. Liquid",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Liquids have fixed volumes because their particles remain close, but they lack fixed shapes because particles slide past one another.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which state of matter has neither a definite shape nor a definite volume?",
+        "options": [
+          "A. Solid",
+          "B. Liquid",
+          "C. Gas",
+          "D. Metal"
+        ],
+        "correctAnswer": "C. Gas",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Gas particles are far apart and move rapidly, expanding to fill any space completely.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do particles move in a solid material?",
+        "options": [
+          "A. Move freely in straight lines",
+          "B. Slide easily past each other",
+          "C. Vibrate only at fixed positions",
+          "D. Travel at high speeds"
+        ],
+        "correctAnswer": "C. Vibrate only at fixed positions",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Strong interatomic forces lock solid particles into fixed positions where they only vibrate.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The chemical symbol for Sodium derived from its Latin name Natrium is:",
+        "options": [
+          "A. So",
+          "B. Sd",
+          "C. Na",
+          "D. S"
+        ],
+        "correctAnswer": "C. Na",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Sodium takes its standard chemical symbol 'Na' from Natrium.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following elements is represented by the chemical symbol 'K'?",
+        "options": [
+          "A. Calcium",
+          "B. Potassium",
+          "C. Phosphorus",
+          "D. Krypton"
+        ],
+        "correctAnswer": "B. Potassium",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Potassium takes the symbol 'K' from its Latin name Kalium.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the atomic number of Hydrogen?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 3",
+          "D. 4"
+        ],
+        "correctAnswer": "A. 1",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Hydrogen is the very first element on the periodic table with an atomic number of 1.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which subatomic particle carries a negative electric charge?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Positron"
+        ],
+        "correctAnswer": "C. Electron",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Electrons carry a relative unit negative charge (-1).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which subatomic particle has no electrical charge (neutral)?",
+        "options": [
+          "A. Electron",
+          "B. Neutron",
+          "C. Proton",
+          "D. Alpha particle"
+        ],
+        "correctAnswer": "B. Neutron",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Neutrons are electrically neutral, carrying a charge of 0.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where are protons located inside an atom?",
+        "options": [
+          "A. In the electron orbits",
+          "B. Inside the nucleus",
+          "C. Free in space",
+          "D. Outside the shells"
+        ],
+        "correctAnswer": "B. Inside the nucleus",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Protons and neutrons reside in the central core known as the nucleus.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The total number of protons found in the nucleus of an atom is termed its:",
         "options": [
           "A. Mass number",
           "B. Atomic number",
-          "C. Valency number",
+          "C. Valency",
           "D. Neutron number"
         ],
         "correctAnswer": "B. Atomic number",
-        "hint": "Represented by the symbol Z, it identifies the element's position on the Periodic Table.",
-        "workedSolution": "The atomic number (Z) refers specifically to the count of positive protons in an atom's nucleus and uniquely defines the chemical identity of the element.",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "The atomic number (Z) refers specifically to the proton count in an atom.",
         "points": 1
       },
       {
-        "id": "BS7_MAT_MCQ_02",
-        "difficulty": "medium",
+        "id": "B7_MAT_F14",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "A sample of gas can be easily compressed into a smaller volume primarily because:",
+        "prompt": "Dry ice is the solid state of which substance?",
         "options": [
-          "A. The individual particles shrink when external pressure is applied",
-          "B. There are large empty spaces between the gas particles",
-          "C. The gas particles lose mass under pressure",
-          "D. The gas particles slow down and stick together"
+          "A. Water",
+          "B. Carbon dioxide",
+          "C. Nitrogen",
+          "D. Ammonia"
         ],
-        "correctAnswer": "B. There are large empty spaces between the gas particles",
-        "hint": "Consider the intermolecular distances in gases compared to solids and liquids.",
-        "workedSolution": "Gas particles are separated by vast intermolecular empty spaces. Applying external pressure forces the particles closer together into these vacant gaps without altering particle size or mass.",
+        "correctAnswer": "B. Carbon dioxide",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Dry ice is frozen carbon dioxide gas.",
         "points": 1
       },
       {
-        "id": "BS7_MAT_MCQ_04",
-        "difficulty": "medium",
+        "id": "B7_MAT_F15",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following elements is classified as a semi-metal (metalloid) and widely used in computer microchips as a semiconductor?",
+        "prompt": "Which of the following is an example of an alkali metal?",
         "options": [
-          "A. Silicon",
+          "A. Iron",
+          "B. Lithium",
+          "C. Calcium",
+          "D. Chlorine"
+        ],
+        "correctAnswer": "B. Lithium",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Lithium is located in Group 1, making it an alkali metal.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which Russian scientist published the first recognizable Periodic Table in 1869?",
+        "options": [
+          "A. Dmitri Mendeleev",
+          "B. Isaac Newton",
+          "C. John Dalton",
+          "D. Robert Boyle"
+        ],
+        "correctAnswer": "A. Dmitri Mendeleev",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Dmitri Mendeleev organized elements systematically into the early periodic table in 1869.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Elements placed in Group 18 (Group 8) of the periodic table are known as:",
+        "options": [
+          "A. Halogens",
+          "B. Alkali metals",
+          "C. Noble gases",
+          "D. Alkaline earth metals"
+        ],
+        "correctAnswer": "C. Noble gases",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Group 18 elements with complete outer electron shells are the noble gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the maximum number of electrons that the first electron shell (K-shell) can hold?",
+        "options": [
+          "A. 2",
+          "B. 8",
+          "C. 18",
+          "D. 32"
+        ],
+        "correctAnswer": "A. 2",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Using 2n², the K-shell (n=1) holds a maximum of 2 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the maximum number of electrons held by the second electron shell (L-shell)?",
+        "options": [
+          "A. 2",
+          "B. 8",
+          "C. 18",
+          "D. 32"
+        ],
+        "correctAnswer": "B. 8",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Using 2n², the L-shell (n=2) holds a maximum of 2(2)² = 8 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following materials is a synthetic substance?",
+        "options": [
+          "A. Clay",
+          "B. Stone",
+          "C. Plastic",
+          "D. Cotton"
+        ],
+        "correctAnswer": "C. Plastic",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Plastics are synthetic polymers manufactured from chemical processing.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Metals are typically found on which side of the periodic table?",
+        "options": [
+          "A. Far right",
+          "B. Left side",
+          "C. Top row only",
+          "D. Bottom row only"
+        ],
+        "correctAnswer": "B. Left side",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Metals occupy the left and central sectors of the periodic table.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which metal exists as a liquid at room temperature?",
+        "options": [
+          "A. Copper",
+          "B. Mercury",
+          "C. Silver",
+          "D. Aluminium"
+        ],
+        "correctAnswer": "B. Mercury",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Mercury (Hg) is a dense metal that remains liquid at standard ambient temperatures.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The property that allows metals to be hammered into thin sheets without shattering is:",
+        "options": [
+          "A. Ductility",
+          "B. Brittleness",
+          "C. Malleability",
+          "D. Conductivity"
+        ],
+        "correctAnswer": "C. Malleability",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Malleability describes the ability of a material to deform under compressive stress into sheets.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which element has the chemical symbol 'Fe'?",
+        "options": [
+          "A. Fluorine",
+          "B. Iron",
+          "C. Lead",
+          "D. Zinc"
+        ],
+        "correctAnswer": "B. Iron",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Iron derives its symbol 'Fe' from Ferrum.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Elements that share properties of both metals and non-metals are called:",
+        "options": [
+          "A. Transition metals",
+          "B. Metalloids",
+          "C. Halogens",
+          "D. Inert gases"
+        ],
+        "correctAnswer": "B. Metalloids",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Metalloids or semi-metals display intermediate metallic and non-metallic traits.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the relative mass of an electron compared to a proton?",
+        "options": [
+          "A. 1 a.m.u.",
+          "B. Double the proton",
+          "C. Negligible (almost 0)",
+          "D. 10 a.m.u."
+        ],
+        "correctAnswer": "C. Negligible (almost 0)",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Electrons have a negligible relative mass of about 1/1840 a.m.u. compared to nucleons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which element has an atomic number of 6?",
+        "options": [
+          "A. Beryllium",
+          "B. Carbon",
+          "C. Oxygen",
+          "D. Nitrogen"
+        ],
+        "correctAnswer": "B. Carbon",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Carbon is the 6th element in the periodic table.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a noble gas?",
+        "options": [
+          "A. Chlorine",
+          "B. Helium",
+          "C. Hydrogen",
+          "D. Oxygen"
+        ],
+        "correctAnswer": "B. Helium",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Helium belongs to Group 18 and has an unreactive completed duplet shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A pure substance that cannot be broken down into simpler substances by chemical means is an:",
+        "options": [
+          "A. Element",
+          "B. Alloy",
+          "C. Mixture",
+          "D. Emulsion"
+        ],
+        "correctAnswer": "A. Element",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "An element consists of a single type of atom and cannot be chemically degraded into simpler parts.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following gases is essential for combustion (burning)?",
+        "options": [
+          "A. Nitrogen",
+          "B. Argon",
+          "C. Oxygen",
+          "D. Helium"
+        ],
+        "correctAnswer": "C. Oxygen",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Oxygen supports respiration and is necessary for combustion reactions.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The property of metals that allows them to be drawn into thin wires is:",
+        "options": [
+          "A. Malleability",
+          "B. Ductility",
+          "C. Lustre",
+          "D. Sonority"
+        ],
+        "correctAnswer": "B. Ductility",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Ductility is the mechanical property of being pulled or drawn into wires.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an alkaline earth metal (Group 2)?",
+        "options": [
+          "A. Sodium",
+          "B. Magnesium",
+          "C. Aluminium",
+          "D. Silicon"
+        ],
+        "correctAnswer": "B. Magnesium",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Magnesium has 2 valence electrons and belongs to Group 2.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Gold?",
+        "options": [
+          "A. Go",
+          "B. Gd",
+          "C. Au",
+          "D. Ag"
+        ],
+        "correctAnswer": "C. Au",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Gold takes 'Au' from its Latin name Aurum.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Silver?",
+        "options": [
+          "A. Si",
+          "B. Ag",
+          "C. Sl",
+          "D. Sv"
+        ],
+        "correctAnswer": "B. Ag",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Silver takes 'Ag' from its Latin name Argentum.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which subatomic particles are found grouped together inside the nucleus?",
+        "options": [
+          "A. Protons and electrons",
+          "B. Neutrons and electrons",
+          "C. Protons and neutrons",
+          "D. Electrons only"
+        ],
+        "correctAnswer": "C. Protons and neutrons",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Protons and neutrons constitute the central nucleus and are called nucleons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a neutral atom, the number of protons always equals the number of:",
+        "options": [
+          "A. Neutrons",
+          "B. Electrons",
+          "C. Nucleons",
+          "D. Shells"
+        ],
+        "correctAnswer": "B. Electrons",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "In an uncharged atom, total positive charges (protons) equal total negative charges (electrons).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a halogen?",
+        "options": [
+          "A. Chlorine",
+          "B. Neon",
+          "C. Argon",
+          "D. Sulfur"
+        ],
+        "correctAnswer": "A. Chlorine",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Chlorine has 7 valence electrons and belongs to Group 17 (Halogens).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What state of matter is water vapor?",
+        "options": [
+          "A. Solid",
+          "B. Liquid",
+          "C. Gas",
+          "D. Plasma"
+        ],
+        "correctAnswer": "C. Gas",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Water vapor and steam are the gaseous state of water.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which gas is commonly used to fill party balloons because it is lighter than air and non-flammable?",
+        "options": [
+          "A. Hydrogen",
+          "B. Helium",
+          "C. Oxygen",
+          "D. Carbon dioxide"
+        ],
+        "correctAnswer": "B. Helium",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Helium is an inert, low-density gas safe for balloon inflation.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which material is classified as a semi-metal (metalloid)?",
+        "options": [
+          "A. Carbon",
+          "B. Silicon",
+          "C. Copper",
+          "D. Sulfur"
+        ],
+        "correctAnswer": "B. Silicon",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Silicon is a recognized metalloid used in semiconductors.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which term describes the ringing sound produced when a metal is struck?",
+        "options": [
+          "A. Malleability",
+          "B. Sonorous",
+          "C. Ductility",
+          "D. Brittleness"
+        ],
+        "correctAnswer": "B. Sonorous",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Sonorous materials produce a sustained ringing note upon impact.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the atomic number of Calcium?",
+        "options": [
+          "A. 12",
+          "B. 18",
+          "C. 20",
+          "D. 24"
+        ],
+        "correctAnswer": "C. 20",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Calcium is the 20th element in the periodic table.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which element is used in water treatment to destroy disease-causing microbes?",
+        "options": [
+          "A. Nitrogen",
+          "B. Chlorine",
+          "C. Helium",
+          "D. Carbon"
+        ],
+        "correctAnswer": "B. Chlorine",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Chlorine gas or hypochlorite is standard in water disinfection.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the mass number of an atom with 7 protons and 7 neutrons?",
+        "options": [
+          "A. 7",
+          "B. 0",
+          "C. 14",
+          "D. 49"
+        ],
+        "correctAnswer": "C. 14",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Mass number A = Z + n = 7 + 7 = 14.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which non-metal is capable of conducting electricity?",
+        "options": [
+          "A. Diamond",
           "B. Sulfur",
-          "C. Sodium",
-          "D. Silver"
+          "C. Graphite",
+          "D. Phosphorus"
         ],
-        "correctAnswer": "A. Silicon",
-        "hint": "It has atomic number 14 with electron configuration 2, 8, 4.",
-        "workedSolution": "Silicon (Si) is a metalloid located along the diagonal staircase of the Periodic Table. It exhibits intermediate electrical conductivity and acts as the foundational semiconductor for microprocessors.",
+        "correctAnswer": "C. Graphite",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Graphite possesses delocalized electrons that permit electrical conductivity unlike other non-metals.",
         "points": 1
       },
       {
-        "id": "BS7_MAT_MCQ_05",
+        "id": "B7_MAT_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to the density of gases compared to liquids and solids?",
+        "options": [
+          "A. Gases have much higher density",
+          "B. Gases have equal density",
+          "C. Gases have much lower density",
+          "D. Gases have infinite density"
+        ],
+        "correctAnswer": "C. Gases have much lower density",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Large empty spaces between gas particles result in very low densities.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which element is used to preserve archaeological specimens and determine their age?",
+        "options": [
+          "A. Iron",
+          "B. Carbon",
+          "C. Sodium",
+          "D. Argon"
+        ],
+        "correctAnswer": "B. Carbon",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Carbon (specifically carbon-14) is used in radiometric age dating.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a physical property of liquids?",
+        "options": [
+          "A. Inability to flow",
+          "B. Definite volume",
+          "C. Rigid shape",
+          "D. High compressibility"
+        ],
+        "correctAnswer": "B. Definite volume",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Liquids have fixed volumes but adapt to container contours.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The symbol 'Cu' represents which element?",
+        "options": [
+          "A. Calcium",
+          "B. Copper",
+          "C. Carbon",
+          "D. Cobalt"
+        ],
+        "correctAnswer": "B. Copper",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Copper derives its symbol 'Cu' from Cuprum.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the physical state of common table salt at room temperature?",
+        "options": [
+          "A. Solid",
+          "B. Liquid",
+          "C. Gas",
+          "D. Vapor"
+        ],
+        "correctAnswer": "A. Solid",
+        "hint": "Recall the fundamental definitions and everyday examples of matter, elements, and atomic properties.",
+        "workedSolution": "Table salt (sodium chloride) forms an ionic solid lattice at standard conditions.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I01",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do gases fill the entire volume of any closed container while liquids do not?",
+        "options": [
+          "A. Gas particles are heavier than liquid particles",
+          "B. Gas particles have negligible forces of attraction and move independently",
+          "C. Liquid particles have zero kinetic energy",
+          "D. Gas particles attract one another strongly"
+        ],
+        "correctAnswer": "B. Gas particles have negligible forces of attraction and move independently",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Because intermolecular attractions are negligible, gas particles travel freely until restricted by boundaries.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has an atomic number of 11 and a mass number of 23. How many neutrons are in its nucleus?",
+        "options": [
+          "A. 11",
+          "B. 12",
+          "C. 23",
+          "D. 34"
+        ],
+        "correctAnswer": "B. 12",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Neutrons n = A - Z = 23 - 11 = 12.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron arrangement of a neutral Phosphorus atom with atomic number 15?",
+        "options": [
+          "A. 2, 8, 5",
+          "B. 2, 5, 8",
+          "C. 2, 13",
+          "D. 15"
+        ],
+        "correctAnswer": "A. 2, 8, 5",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Following the 2n² capacity, 15 electrons distribute as 2 in shell 1, 8 in shell 2, and 5 in shell 3 (2, 8, 5).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why can a syringe filled with air be compressed easily, while one filled with water resists compression?",
+        "options": [
+          "A. Water molecules shrink under pressure",
+          "B. Air molecules are soft, but water molecules are hard",
+          "C. Air has large intermolecular spaces, whereas water particles are already closely packed",
+          "D. Water leaks through the syringe walls"
+        ],
+        "correctAnswer": "C. Air has large intermolecular spaces, whereas water particles are already closely packed",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Gaseous air contains vast interstitial voids between particles, whereas liquid water particles are in close contact.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has 2 valence electrons in its neutral ground state?",
+        "options": [
+          "A. Sodium (Z = 11)",
+          "B. Magnesium (Z = 12)",
+          "C. Aluminium (Z = 13)",
+          "D. Silicon (Z = 14)"
+        ],
+        "correctAnswer": "B. Magnesium (Z = 12)",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Magnesium has the configuration 2, 8, 2, showing 2 electrons in its valence shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is solid dry ice (frozen CO₂) preferred over water ice when transporting perishable foods?",
+        "options": [
+          "A. It turns into liquid water when melting",
+          "B. It sublimes directly into gas without leaving wet residues",
+          "C. It is completely warm to touch",
+          "D. It generates oxygen gas"
+        ],
+        "correctAnswer": "B. It sublimes directly into gas without leaving wet residues",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Dry ice sublimes directly into gaseous carbon dioxide, keeping packaging clean and moisture-free.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the valence electron number of elements found in Group 17 (the halogens)?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 7",
+          "D. 8"
+        ],
+        "correctAnswer": "C. 7",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Halogens such as Fluorine and Chlorine possess 7 valence electrons in their outermost shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which property makes Silicon exceptionally valuable in the production of microchips and transistors?",
+        "options": [
+          "A. Extreme malleability and softness",
+          "B. Its behavior as a semiconductor of electricity",
+          "C. Extremely high reactivity with air",
+          "D. Highly sonorous resonance"
+        ],
+        "correctAnswer": "B. Its behavior as a semiconductor of electricity",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Silicon is a metalloid semiconductor whose electrical conductivity can be precisely modulated.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has a nuclide notation of 19_9 F. What is the number of electrons orbiting its nucleus?",
+        "options": [
+          "A. 9",
+          "B. 10",
+          "C. 19",
+          "D. 28"
+        ],
+        "correctAnswer": "A. 9",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "In a neutral atom, electron count equals proton count (Z = 9).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the electrical conducting behavior of metals?",
+        "options": [
+          "A. They conduct poorly due to tightly fixed electrons",
+          "B. They conduct efficiently because of the presence of mobile, free electrons",
+          "C. They conduct only when frozen solid",
+          "D. They never conduct electricity"
+        ],
+        "correctAnswer": "B. They conduct efficiently because of the presence of mobile, free electrons",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Metallic bonding provides delocalized electrons that drift under an electrical potential difference.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do Group 1 alkali metals achieve a stable noble gas configuration during reactions?",
+        "options": [
+          "A. By gaining 7 electrons",
+          "B. By losing their single valence electron",
+          "C. By sharing 4 pairs of electrons",
+          "D. By remaining unchanged"
+        ],
+        "correctAnswer": "B. By losing their single valence electron",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Alkali metals donate their 1 outer valence electron to form stable +1 cations.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following correctly pairs an element with its chemical symbol?",
+        "options": [
+          "A. Lead - Le",
+          "B. Iron - Ir",
+          "C. Potassium - K",
+          "D. Silver - Si"
+        ],
+        "correctAnswer": "C. Potassium - K",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Potassium is correctly symbolized as K (Kalium).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What holds particles in a rigid, fixed lattice inside a solid?",
+        "options": [
+          "A. Gravitational repulsion",
+          "B. Strong intermolecular/interatomic attractive forces",
+          "C. High kinetic velocity",
+          "D. Continuous expansion"
+        ],
+        "correctAnswer": "B. Strong intermolecular/interatomic attractive forces",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Strong electrostatic attractions counteract particle kinetic energy, pinning particles into position.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has an electron configuration of 2, 8, 8?",
+        "options": [
+          "A. Neon",
+          "B. Argon",
+          "C. Chlorine",
+          "D. Potassium"
+        ],
+        "correctAnswer": "B. Argon",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Argon has atomic number 18 (2 + 8 + 8 = 18 electrons).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are noble gases chemically unreactive?",
+        "options": [
+          "A. They have no protons",
+          "B. Their outermost electron shells are completely filled",
+          "C. They are all solids",
+          "D. They have odd numbers of electrons"
+        ],
+        "correctAnswer": "B. Their outermost electron shells are completely filled",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Filled valence shells (duplet in Helium, octets in others) confer high thermodynamic stability.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is table salt (NaCl) applied to fresh meat and fish in preservation?",
+        "options": [
+          "A. It cooks the meat with heat",
+          "B. It draws moisture out through osmosis, inhibiting bacterial growth",
+          "C. It turns the meat into a liquid",
+          "D. It replaces protein with carbohydrates"
+        ],
+        "correctAnswer": "B. It draws moisture out through osmosis, inhibiting bacterial growth",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "High salt concentration creates a hypertonic environment that dehydrates microbes.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following lists contains only metalloids (semi-metals)?",
+        "options": [
+          "A. Sodium, Potassium, Lithium",
+          "B. Boron, Silicon, Germanium",
+          "C. Oxygen, Nitrogen, Chlorine",
+          "D. Iron, Copper, Zinc"
+        ],
+        "correctAnswer": "B. Boron, Silicon, Germanium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Boron, Silicon, and Germanium are recognized metalloids.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An element Y has atomic number 12 and mass number 24. What is its standard nuclide representation?",
+        "options": [
+          "A. 12_24 Y",
+          "B. 24_12 Y",
+          "C. 36_12 Y",
+          "D. 24_24 Y"
+        ],
+        "correctAnswer": "B. 24_12 Y",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Nuclide notation places mass number (A) as superscript and atomic number (Z) as subscript: 24_12 Y.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following statements about non-metals is true?",
+        "options": [
+          "A. They are all sonorous",
+          "B. They readily conduct electricity (except graphite)",
+          "C. They generally have low melting and boiling points compared to metals",
+          "D. They can all be drawn into wires"
+        ],
+        "correctAnswer": "C. They generally have low melting and boiling points compared to metals",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Non-metals typically have lower melting and boiling points and are non-ductile.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of synovial fluid in the human body?",
+        "options": [
+          "A. Pump oxygen to the lungs",
+          "B. Lubricate movable joints to minimize friction and wear",
+          "C. Filter waste from the kidneys",
+          "D. Produce red blood cells"
+        ],
+        "correctAnswer": "B. Lubricate movable joints to minimize friction and wear",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Synovial fluid provides lubrication between articular cartilage surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the mass number of an atom consisting of 17 protons, 18 neutrons, and 17 electrons?",
+        "options": [
+          "A. 17",
+          "B. 18",
+          "C. 34",
+          "D. 35"
+        ],
+        "correctAnswer": "D. 35",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which gas makes up the largest percentage of atmospheric air?",
+        "options": [
+          "A. Oxygen",
+          "B. Carbon dioxide",
+          "C. Nitrogen",
+          "D. Argon"
+        ],
+        "correctAnswer": "C. Nitrogen",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Nitrogen constitutes approximately 78% of dry atmospheric air.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a liquid diffuse more slowly than a gas at the same temperature?",
+        "options": [
+          "A. Liquid particles are held by stronger intermolecular forces and have lower speeds",
+          "B. Liquid particles are stationary",
+          "C. Gas particles have higher mass",
+          "D. Liquids cannot diffuse"
+        ],
+        "correctAnswer": "A. Liquid particles are held by stronger intermolecular forces and have lower speeds",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Liquid particles experience significant cohesive attractions and short mean free paths.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has 4 electrons in its second shell (L-shell)?",
+        "options": [
+          "A. Beryllium",
+          "B. Boron",
+          "C. Carbon",
+          "D. Oxygen"
+        ],
+        "correctAnswer": "C. Carbon",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Carbon (Z = 6) has the configuration 2, 4.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A substance with high melting point, high density, and lustrous appearance that donates electrons is a:",
+        "options": [
+          "A. Non-metal",
+          "B. Metal",
+          "C. Noble gas",
+          "D. Halogen"
+        ],
+        "correctAnswer": "B. Metal",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "High thermal stability, lustre, density, and electron donation characterize metals.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are alkali metals stored immersed under kerosene or mineral oil?",
+        "options": [
+          "A. To prevent them from freezing",
+          "B. To prevent spontaneous reactions with atmospheric moisture and oxygen",
+          "C. To dissolve them into fuel",
+          "D. To change their color"
+        ],
+        "correctAnswer": "B. To prevent spontaneous reactions with atmospheric moisture and oxygen",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Group 1 metals oxidize rapidly and react vigorously with atmospheric water vapor.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has 8 electrons. How many electrons are needed to complete its valence shell to achieve an octet?",
+        "options": [
+          "A. 0",
+          "B. 2",
+          "C. 4",
+          "D. 6"
+        ],
+        "correctAnswer": "B. 2",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "An atom with 8 electrons has configuration 2, 6. It requires 2 additional electrons to reach an octet (8).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is mercury used inside traditional fever thermometers?",
+        "options": [
+          "A. It expands uniformly with temperature changes and remains liquid over a wide range",
+          "B. It is lighter than water",
+          "C. It is an insulator of heat",
+          "D. It evaporates rapidly"
+        ],
+        "correctAnswer": "A. It expands uniformly with temperature changes and remains liquid over a wide range",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Mercury is a liquid metal with uniform thermal expansion and high thermal conductivity.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has the electron configuration 2, 8, 2?",
+        "options": [
+          "A. Sodium",
+          "B. Magnesium",
+          "C. Aluminium",
+          "D. Calcium"
+        ],
+        "correctAnswer": "B. Magnesium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Magnesium has atomic number 12 (2 + 8 + 2).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the key difference between an element and a compound?",
+        "options": [
+          "A. An element contains only one kind of atom, whereas a compound contains two or more elements chemically combined",
+          "B. Elements are always liquids",
+          "C. Compounds can be broken down by physical filtration",
+          "D. Elements are always man-made"
+        ],
+        "correctAnswer": "A. An element contains only one kind of atom, whereas a compound contains two or more elements chemically combined",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Elements consist of identical atoms, whereas compounds feature chemically bonded distinct elements.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many electrons are in the outer shell of an atom of Sulfur (Z = 16)?",
+        "options": [
+          "A. 2",
+          "B. 4",
+          "C. 6",
+          "D. 8"
+        ],
+        "correctAnswer": "C. 6",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Sulfur has configuration 2, 8, 6, meaning it has 6 valence electrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do halogens exist as diatomic molecules in their pure elemental state (e.g., Cl₂)?",
+        "options": [
+          "A. To share a pair of electrons so each atom attains a stable octet",
+          "B. Because they are metals",
+          "C. Because they have full shells naturally",
+          "D. Due to gravitational forces"
+        ],
+        "correctAnswer": "A. To share a pair of electrons so each atom attains a stable octet",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Each halogen atom shares one electron with another, mutually fulfilling the octet rule.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements is classified as an alkaline earth metal?",
+        "options": [
+          "A. Potassium",
+          "B. Calcium",
+          "C. Chlorine",
+          "D. Neon"
+        ],
+        "correctAnswer": "B. Calcium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Calcium (Z = 20, config: 2, 8, 8, 2) is a Group 2 alkaline earth metal.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role does water play in human digestion?",
+        "options": [
+          "A. It prevents food from breaking down",
+          "B. It acts as a solvent and medium for digestive enzymes to hydrolyze food",
+          "C. It acts as an inorganic mineral salt",
+          "D. It converts starch into proteins directly"
+        ],
+        "correctAnswer": "B. It acts as a solvent and medium for digestive enzymes to hydrolyze food",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Water dissolves nutrients, forms digestive secretions, and acts as a reactant in hydrolysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has the lowest density at room temperature?",
+        "options": [
+          "A. Iron",
+          "B. Lead",
+          "C. Helium",
+          "D. Gold"
+        ],
+        "correctAnswer": "C. Helium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Helium is a light noble gas, having an extremely low density compared to condensed solids.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has 3 shells and 1 valence electron?",
+        "options": [
+          "A. Lithium",
+          "B. Sodium",
+          "C. Potassium",
+          "D. Rubidium"
+        ],
+        "correctAnswer": "B. Sodium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Sodium has configuration 2, 8, 1 (occupying shells K, L, M).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What type of forces must be overcome when ice melts into liquid water?",
+        "options": [
+          "A. Covalent bonds",
+          "B. Intermolecular attractive forces",
+          "C. Nuclear forces",
+          "D. Gravity"
+        ],
+        "correctAnswer": "B. Intermolecular attractive forces",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Melting breaks intermolecular bonds that hold water molecules in crystalline arrays, without cleaving O-H covalent bonds.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has an atomic mass of approximately 40 and an atomic number of 20?",
+        "options": [
+          "A. Argon",
+          "B. Potassium",
+          "C. Calcium",
+          "D. Scandium"
+        ],
+        "correctAnswer": "C. Calcium",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Calcium has Z = 20 and A = 40 (20 protons and 20 neutrons).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is aluminium alloyed with magnesium to make aircraft bodies?",
+        "options": [
+          "A. To make it heavier",
+          "B. To create a strong, durable material with low density",
+          "C. To make it dissolve in rain",
+          "D. To conduct heat rapidly"
+        ],
+        "correctAnswer": "B. To create a strong, durable material with low density",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Aluminium-magnesium alloys offer high tensile strength combined with lightweight density.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many electrons are in the M-shell of an uncharged Chlorine atom (Z = 17)?",
+        "options": [
+          "A. 2",
+          "B. 7",
+          "C. 8",
+          "D. 17"
+        ],
+        "correctAnswer": "B. 7",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Chlorine distributes as K=2, L=8, M=7.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements is a gas that supports animal and plant cellular respiration?",
+        "options": [
+          "A. Nitrogen",
+          "B. Oxygen",
+          "C. Carbon dioxide",
+          "D. Hydrogen"
+        ],
+        "correctAnswer": "B. Oxygen",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Oxygen is the terminal electron acceptor in aerobic respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has the symbol 'Pb'?",
+        "options": [
+          "A. Potassium",
+          "B. Phosphorus",
+          "C. Lead",
+          "D. Platinum"
+        ],
+        "correctAnswer": "C. Lead",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Lead derives 'Pb' from its Latin name Plumbum.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the net electrical charge of an atomic nucleus containing 8 protons and 8 neutrons?",
+        "options": [
+          "A. 0",
+          "B. -8",
+          "C. +8",
+          "D. +16"
+        ],
+        "correctAnswer": "C. +8",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Neutrons contribute 0 charge; 8 protons contribute an aggregate +8 charge.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a drop of ink spread throughout a beaker of stationary water?",
+        "options": [
+          "A. Due to chemical decomposition",
+          "B. Due to diffusion driven by continuous molecular motion",
+          "C. Due to boiling",
+          "D. Due to gravitational settling"
+        ],
+        "correctAnswer": "B. Due to diffusion driven by continuous molecular motion",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Random collisions of water and ink particles result in spontaneous diffusion.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has the electron configuration 2, 8, 7?",
+        "options": [
+          "A. Fluorine",
+          "B. Chlorine",
+          "C. Argon",
+          "D. Bromine"
+        ],
+        "correctAnswer": "B. Chlorine",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Chlorine (Z = 17) has configuration 2, 8, 7.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens to the kinetic energy of particles as a substance is heated?",
+        "options": [
+          "A. Kinetic energy decreases",
+          "B. Kinetic energy increases and particles move faster",
+          "C. Kinetic energy drops to zero",
+          "D. Kinetic energy remains completely unchanged"
+        ],
+        "correctAnswer": "B. Kinetic energy increases and particles move faster",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Thermal energy increases average kinetic velocity and particle vibration.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What property of nitrogen gas makes it suitable for packaging potato chips and snacks?",
+        "options": [
+          "A. It is sweet-scented",
+          "B. It is inert and prevents oil oxidation and food spoilage",
+          "C. It is corrosive",
+          "D. It is highly radioactive"
+        ],
+        "correctAnswer": "B. It is inert and prevents oil oxidation and food spoilage",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Inert nitrogen flushes out oxygen, preventing rancidity of fats.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many electrons does a neutral Beryllium atom have in its outermost shell?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 3",
+          "D. 4"
+        ],
+        "correctAnswer": "B. 2",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Beryllium (Z = 4) has configuration 2, 2, showing 2 valence electrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has atomic number 14?",
+        "options": [
+          "A. Aluminium",
+          "B. Silicon",
+          "C. Phosphorus",
+          "D. Sulfur"
+        ],
+        "correctAnswer": "B. Silicon",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Silicon is element 14 on the periodic table.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is true regarding neutrons?",
+        "options": [
+          "A. They determine the chemical bonding behavior of elements",
+          "B. They reside in shells outside the nucleus",
+          "C. They add mass to the nucleus without changing its electric charge",
+          "D. They have negative charge"
+        ],
+        "correctAnswer": "C. They add mass to the nucleus without changing its electric charge",
+        "hint": "Consider the particulate behavior, electron configurations, and periodic trends.",
+        "workedSolution": "Neutrons possess ~1 a.m.u. mass but zero charge, stabilizing nuclear mass.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A01",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why are Group 18 noble gases (such as helium, neon, and argon) chemically inert and unreactive under standard conditions?",
+        "prompt": "An element X has a mass number of 39 and contains 20 neutrons in its nucleus. What is its electronic configuration?",
         "options": [
-          "A. They have no protons or neutrons in their nucleus",
-          "B. Their outermost electron shells are already completely full (duplet or octet)",
-          "C. They are too heavy to collide with other atoms",
-          "D. Their positive nuclear charge repels all incoming molecules"
+          "A. 2, 8, 8, 1",
+          "B. 2, 8, 9",
+          "C. 2, 8, 8, 2",
+          "D. 2, 8, 10"
         ],
-        "correctAnswer": "B. Their outermost electron shells are already completely full (duplet or octet)",
-        "hint": "Chemical bonding occurs when atoms seek stable full valence shells; noble gases already possess this.",
-        "workedSolution": "Helium has a full duplet (2 electrons) while Neon and Argon have full octets (8 valence electrons). Having full valence shells gives them extraordinary chemical stability, so they do not gain, lose, or share electrons.",
+        "correctAnswer": "A. 2, 8, 8, 1",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Atomic number Z = A - n = 39 - 20 = 19 (Potassium). Its configuration is 2, 8, 8, 1.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a metal spoon expand slightly when placed in a bowl of boiling water?",
+        "options": [
+          "A. The spoon absorbs water into its particles",
+          "B. Thermal energy increases particle vibrations, pushing them slightly farther apart",
+          "C. The individual atoms grow in physical diameter",
+          "D. New electrons enter the metal lattice"
+        ],
+        "correctAnswer": "B. Thermal energy increases particle vibrations, pushing them slightly farther apart",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Heating increases vibrational amplitudes of atomic lattices, causing thermal expansion.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Element A has atomic number 12 and Element B has atomic number 8. How many electrons are transferred when they react chemically?",
+        "options": [
+          "A. 1 electron from B to A",
+          "B. 2 electrons from A to B",
+          "C. 2 electrons from B to A",
+          "D. 4 shared pairs of electrons"
+        ],
+        "correctAnswer": "B. 2 electrons from A to B",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Element A (Magnesium: 2, 8, 2) donates its 2 valence electrons to Element B (Oxygen: 2, 6) to form MgO.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the boiling point of water much higher than that of methane gas (CH₄), even though both are small molecules?",
+        "options": [
+          "A. Methane contains metal atoms",
+          "B. Water molecules are bound by stronger intermolecular forces than methane molecules",
+          "C. Methane is an ionic solid",
+          "D. Water has no chemical bonds"
+        ],
+        "correctAnswer": "B. Water molecules are bound by stronger intermolecular forces than methane molecules",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Stronger cohesive intermolecular forces in liquid water require more thermal energy to dissociate into gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A neutral nuclide is symbolized as 31_15 P. How many protons, neutrons, and electrons does it contain?",
+        "options": [
+          "A. 15 protons, 16 neutrons, 15 electrons",
+          "B. 15 protons, 31 neutrons, 15 electrons",
+          "C. 16 protons, 15 neutrons, 16 electrons",
+          "D. 31 protons, 15 neutrons, 16 electrons"
+        ],
+        "correctAnswer": "A. 15 protons, 16 neutrons, 15 electrons",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Protons = Z = 15; Electrons = 15; Neutrons = A - Z = 31 - 15 = 16.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do elements in the same vertical Group of the Periodic Table show similar chemical reactivities?",
+        "options": [
+          "A. They contain identical numbers of neutrons",
+          "B. They share the same number of valence electrons in their outermost shell",
+          "C. They possess identical atomic masses",
+          "D. They occupy the same horizontal row"
+        ],
+        "correctAnswer": "B. They share the same number of valence electrons in their outermost shell",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Valence electrons dictate chemical bonding and reactive mechanisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Before welding a damaged empty fuel tanker, safety technicians often place blocks of dry ice inside. What is the chemical reason for this?",
+        "options": [
+          "A. To wash the fuel residues away with liquid water",
+          "B. To sublime into heavy carbon dioxide gas, displacing oxygen and preventing explosive combustion",
+          "C. To freeze the steel metal until it softens",
+          "D. To ignite the leftover fuel slowly"
+        ],
+        "correctAnswer": "B. To sublime into heavy carbon dioxide gas, displacing oxygen and preventing explosive combustion",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Subliming CO₂ blankets the interior, displacing atmospheric O₂ to eliminate explosion risks.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the electrical conductivity of semiconductor metalloids like Germanium increase when heated, unlike pure metals?",
+        "options": [
+          "A. Heating frees more valence electrons into conduction pathways",
+          "B. Heating causes the metalloid to turn into liquid copper",
+          "C. Heating decreases the number of charge carriers",
+          "D. Metalloids lose their atomic structure"
+        ],
+        "correctAnswer": "A. Heating frees more valence electrons into conduction pathways",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "In semiconductors, thermal excitation promotes bound valence electrons across the band gap into mobile conduction states.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following configurations represents an atom that readily forms an anion with a -1 charge?",
+        "options": [
+          "A. 2, 1",
+          "B. 2, 8, 2",
+          "C. 2, 8, 7",
+          "D. 2, 8, 8"
+        ],
+        "correctAnswer": "C. 2, 8, 7",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "An atom with configuration 2, 8, 7 needs 1 electron to complete its octet, forming a -1 anion.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are gases compressible while liquids and solids are practically incompressible?",
+        "options": [
+          "A. Gas particles are tiny, but solid particles are enormous",
+          "B. Gas particles are separated by vast inter-particle voids, while liquid/solid particles are closely packed",
+          "C. Gas particles collapse in size under pressure",
+          "D. Solids lose their mass when compressed"
+        ],
+        "correctAnswer": "B. Gas particles are separated by vast inter-particle voids, while liquid/solid particles are closely packed",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Compression reduces empty spaces between particles; such voids are largely absent in liquids and solids.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "If an uncharged atom has an electron configuration of 2, 8, 8, 2, what is its position on the Periodic Table?",
+        "options": [
+          "A. Period 2, Group 4",
+          "B. Period 4, Group 2",
+          "C. Period 3, Group 2",
+          "D. Period 4, Group 8"
+        ],
+        "correctAnswer": "B. Period 4, Group 2",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "It occupies 4 electron shells (Period 4) and has 2 valence electrons (Group 2, Calcium).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does perspiration (sweating) cool the human body on a hot sunny day?",
+        "options": [
+          "A. The water generates cold ice on the skin",
+          "B. Liquid sweat absorbs latent heat of vaporization from the skin to evaporate into gas",
+          "C. Sweat stops blood flow in the skin",
+          "D. Sweat reflects sunlight like a mirror"
+        ],
+        "correctAnswer": "B. Liquid sweat absorbs latent heat of vaporization from the skin to evaporate into gas",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Phase change from liquid to gas absorbs latent heat energy, lowering skin temperature.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is graphite able to conduct electricity while diamond cannot, even though both are made purely of carbon atoms?",
+        "options": [
+          "A. Graphite contains mobile, delocalized electrons between layers, whereas diamond has all four valence electrons locked in bonds",
+          "B. Graphite is a metal, but diamond is a gas",
+          "C. Diamond has no carbon atoms",
+          "D. Graphite is an ionic compound"
+        ],
+        "correctAnswer": "A. Graphite contains mobile, delocalized electrons between layers, whereas diamond has all four valence electrons locked in bonds",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Each carbon in graphite bonds to three others, leaving one delocalized electron per atom to conduct electricity.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the mass number of an ion that has 11 protons, 12 neutrons, and 10 electrons?",
+        "options": [
+          "A. 10",
+          "B. 11",
+          "C. 21",
+          "D. 23"
+        ],
+        "correctAnswer": "D. 23",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Mass number depends only on nucleons: A = protons + neutrons = 11 + 12 = 23 (Na⁺).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do halogens react vigorously with alkali metals?",
+        "options": [
+          "A. Alkali metals want to donate 1 electron and halogens need to accept 1 electron for both to achieve octets",
+          "B. Both elements are noble gases",
+          "C. Both elements have zero valence electrons",
+          "D. Halogens donate protons to alkali metals"
+        ],
+        "correctAnswer": "A. Alkali metals want to donate 1 electron and halogens need to accept 1 electron for both to achieve octets",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Alkali metals (1 valence electron) and halogens (7 valence electrons) have complementary affinities, forming stable ionic lattices.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element has an atomic number of 13. Which statement accurately describes its chemical bonding behavior?",
+        "options": [
+          "A. It gains 5 electrons to become stable",
+          "B. It donates its 3 valence electrons to form a +3 cation",
+          "C. It does not react because it is a noble gas",
+          "D. It forms only diatomic gas molecules"
+        ],
+        "correctAnswer": "B. It donates its 3 valence electrons to form a +3 cation",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Aluminium (2, 8, 3) donates its 3 valence electrons to achieve an octet.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following elements has the greatest tendency to form an unreactive, monatomic gas?",
+        "options": [
+          "A. Oxygen (Z = 8)",
+          "B. Fluorine (Z = 9)",
+          "C. Neon (Z = 10)",
+          "D. Sodium (Z = 11)"
+        ],
+        "correctAnswer": "C. Neon (Z = 10)",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Neon has a closed-shell electron configuration (2, 8), remaining monatomic and non-reactive.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Two elements are represented as 35_17 Cl and 37_17 Cl. How do they differ?",
+        "options": [
+          "A. They have different numbers of protons",
+          "B. They have different numbers of neutrons (isotopes)",
+          "C. They belong to different groups",
+          "D. One is a metal and the other is a noble gas"
+        ],
+        "correctAnswer": "B. They have different numbers of neutrons (isotopes)",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Isotopes have identical atomic numbers (17 protons) but different neutron counts (18 vs 20 neutrons).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does liquid water take the shape of any container into which it is poured?",
+        "options": [
+          "A. Its particles are pinned in a rigid crystal lattice",
+          "B. Its intermolecular attractions allow particles to slide past one another under gravity",
+          "C. It has zero mass",
+          "D. It expands to infinite volume"
+        ],
+        "correctAnswer": "B. Its intermolecular attractions allow particles to slide past one another under gravity",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Particle mobility combined with intermolecular cohesion enables liquids to conform to container walls.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the identity of an element that has 8 protons, 8 neutrons, and 10 electrons?",
+        "options": [
+          "A. Neutral Oxygen atom",
+          "B. Oxide anion (O²⁻)",
+          "C. Fluorine ion",
+          "D. Neon atom"
+        ],
+        "correctAnswer": "B. Oxide anion (O²⁻)",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "8 protons identify it as Oxygen. Having 10 electrons gives it a 2- net charge (O²⁻).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the density of iron much greater than the density of oxygen gas at standard conditions?",
+        "options": [
+          "A. Iron atoms are packed closely in a solid crystal, whereas oxygen molecules are separated by vast empty spaces",
+          "B. Iron atoms have no volume",
+          "C. Oxygen molecules have negative mass",
+          "D. Iron absorbs gravitational waves"
+        ],
+        "correctAnswer": "A. Iron atoms are packed closely in a solid crystal, whereas oxygen molecules are separated by vast empty spaces",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Density = mass/volume; solids contain vastly more atoms per unit volume than gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An uncharged atom has 2 electrons in shell 1, 8 electrons in shell 2, and 6 electrons in shell 3. What is its chemical valency?",
+        "options": [
+          "A. 2",
+          "B. 4",
+          "C. 6",
+          "D. 8"
+        ],
+        "correctAnswer": "A. 2",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "With 6 valence electrons, it needs 2 electrons to complete an octet, giving it a combining capacity (valency) of 2.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do hot air balloons rise in the atmosphere?",
+        "options": [
+          "A. Heating air causes its particles to move faster and spread farther apart, making warm air less dense than surrounding cold air",
+          "B. Heating removes mass from air molecules",
+          "C. Heated air turns into helium",
+          "D. Hot air particles stop moving"
+        ],
+        "correctAnswer": "A. Heating air causes its particles to move faster and spread farther apart, making warm air less dense than surrounding cold air",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Thermal expansion lowers gas density, producing buoyant uplift in denser ambient air.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following elements has the electronic structure of a noble gas when it loses 1 electron?",
+        "options": [
+          "A. Sodium",
+          "B. Magnesium",
+          "C. Chlorine",
+          "D. Calcium"
+        ],
+        "correctAnswer": "A. Sodium",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Sodium (2, 8, 1) loses 1 electron to become Na⁺ (2, 8), matching Neon.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is chlorine added to municipal swimming pools and water works?",
+        "options": [
+          "A. To improve the taste of water",
+          "B. To act as a strong oxidizing disinfectant that kills pathogenic bacteria and viruses",
+          "C. To prevent water from evaporating",
+          "D. To turn the water blue"
+        ],
+        "correctAnswer": "B. To act as a strong oxidizing disinfectant that kills pathogenic bacteria and viruses",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Chlorine forms hypochlorous acid in water, destroying pathogenic micro-organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How many electrons can the N-shell (n = 4) hold theoretically according to the 2n² formula?",
+        "options": [
+          "A. 8",
+          "B. 16",
+          "C. 18",
+          "D. 32"
+        ],
+        "correctAnswer": "D. 32",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Maximum capacity = 2(4)² = 2(16) = 32 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why can metals conduct heat much faster than non-metallic solids like wood or plastic?",
+        "options": [
+          "A. Metals contain free-moving delocalized electrons that rapidly transfer thermal kinetic energy across the lattice",
+          "B. Wood atoms are larger than metal atoms",
+          "C. Metals generate their own internal heat",
+          "D. Plastics have no particles"
+        ],
+        "correctAnswer": "A. Metals contain free-moving delocalized electrons that rapidly transfer thermal kinetic energy across the lattice",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Delocalized conduction electrons rapidly propagate kinetic energy throughout metals.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element belongs to Group 2 and Period 3 of the Periodic Table. What is its atomic number?",
+        "options": [
+          "A. 6",
+          "B. 10",
+          "C. 12",
+          "D. 20"
+        ],
+        "correctAnswer": "C. 12",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Period 3 = 3 shells; Group 2 = 2 valence electrons. Configuration: 2, 8, 2 (Z = 12, Magnesium).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What happens when a bottle of perfume is opened in one corner of an enclosed room?",
+        "options": [
+          "A. The liquid perfume sinks into the floor and stays there",
+          "B. Perfume molecules evaporate and diffuse randomly through air particle collisions until distributed evenly",
+          "C. Air particles push all perfume particles out of the window instantly",
+          "D. The perfume freezes"
+        ],
+        "correctAnswer": "B. Perfume molecules evaporate and diffuse randomly through air particle collisions until distributed evenly",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Volatile liquid particles vaporize and undergo net diffusion across concentration gradients.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following compounds is formed by an ionic bond?",
+        "options": [
+          "A. Water (H₂O)",
+          "B. Sodium Chloride (NaCl)",
+          "C. Methane (CH₄)",
+          "D. Carbon dioxide (CO₂)"
+        ],
+        "correctAnswer": "B. Sodium Chloride (NaCl)",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "NaCl is formed by complete electron transfer from metal Na to non-metal Cl.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the valency of Carbon (Z = 6)?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 3",
+          "D. 4"
+        ],
+        "correctAnswer": "D. 4",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Carbon has 4 valence electrons and forms 4 covalent bonds to complete its octet (tetravalent).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does ice float on liquid water?",
+        "options": [
+          "A. Ice particles lose mass as they freeze",
+          "B. Water molecules form an open crystalline cage lattice that makes solid ice less dense than liquid water",
+          "C. Ice contains trapped bubbles of pure oxygen only",
+          "D. Liquid water repels cold objects"
+        ],
+        "correctAnswer": "B. Water molecules form an open crystalline cage lattice that makes solid ice less dense than liquid water",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Open hydrogen-bonded lattice geometry causes water to expand upon freezing, decreasing its solid density.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An atom has 19 protons and 20 neutrons. What is its chemical symbol?",
+        "options": [
+          "A. Ca",
+          "B. K",
+          "C. Ar",
+          "D. Sc"
+        ],
+        "correctAnswer": "B. K",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "19 protons uniquely define Potassium (K).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are noble gases monatomic while halogens are diatomic?",
+        "options": [
+          "A. Noble gases have complete outer shells and need no bonding, whereas halogens need to share an electron pair to become stable",
+          "B. Noble gases have no mass",
+          "C. Halogens are metals",
+          "D. Noble gases are always liquids"
+        ],
+        "correctAnswer": "A. Noble gases have complete outer shells and need no bonding, whereas halogens need to share an electron pair to become stable",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Full octets make noble gases stable as single atoms; halogens require diatomic pairing to achieve stability.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following transitions represents sublimation?",
+        "options": [
+          "A. Solid directly to gas",
+          "B. Liquid to solid",
+          "C. Gas to liquid",
+          "D. Liquid to gas"
+        ],
+        "correctAnswer": "A. Solid directly to gas",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Sublimation is the direct endothermic phase transformation of solid into gas (e.g., dry ice).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the total number of electrons in an oxide ion (O²⁻)?",
+        "options": [
+          "A. 6",
+          "B. 8",
+          "C. 10",
+          "D. 12"
+        ],
+        "correctAnswer": "C. 10",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "A neutral Oxygen atom has 8 electrons; an O²⁻ ion has gained 2 extra electrons (8 + 2 = 10).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are electrical wires made of copper coated with plastic?",
+        "options": [
+          "A. Copper is a conductor while plastic is an insulator that prevents electric shocks",
+          "B. Plastic conducts electricity better than copper",
+          "C. Copper dissolves in air",
+          "D. To make the wire heavier"
+        ],
+        "correctAnswer": "A. Copper is a conductor while plastic is an insulator that prevents electric shocks",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Copper provides low-resistance conduction; the outer polymer insulator protects against current leakage and shocks.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which element has 18 protons and 22 neutrons in its nucleus?",
+        "options": [
+          "A. Calcium",
+          "B. Argon",
+          "C. Potassium",
+          "D. Chlorine"
+        ],
+        "correctAnswer": "B. Argon",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Z = 18 corresponds to Argon (Ar).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a gas exert pressure on the walls of its container?",
+        "options": [
+          "A. The particles are attracted to the container walls",
+          "B. Billions of rapid gas particles continuously collide elastically with the container walls",
+          "C. Gravity pulls gas particles outward",
+          "D. The gas particles expand in diameter"
+        ],
+        "correctAnswer": "B. Billions of rapid gas particles continuously collide elastically with the container walls",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Gas pressure results from the aggregate force exerted per unit area by colliding gas particles.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the electron configuration of an uncharged Aluminium atom (Z = 13)?",
+        "options": [
+          "A. 2, 8, 3",
+          "B. 2, 3, 8",
+          "C. 3, 8, 2",
+          "D. 2, 11"
+        ],
+        "correctAnswer": "A. 2, 8, 3",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Aluminium fills shells as K=2, L=8, M=3.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are alkali metals more reactive than alkaline earth metals in the same period?",
+        "options": [
+          "A. Losing 1 valence electron requires less energy than losing 2 valence electrons",
+          "B. Alkali metals are non-metals",
+          "C. Alkaline earth metals have no valence electrons",
+          "D. Alkali metals have more neutrons"
+        ],
+        "correctAnswer": "A. Losing 1 valence electron requires less energy than losing 2 valence electrons",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "The first ionization energy to remove 1 valence electron is lower than the combined ionization energy to lose 2.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following subatomic particles determines the isotope identity of an element?",
+        "options": [
+          "A. Electron",
+          "B. Neutron",
+          "C. Proton",
+          "D. Photon"
+        ],
+        "correctAnswer": "B. Neutron",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Isotopes of an element share the same proton number but differ in neutron count.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is argon gas used in incandescent light bulbs instead of ordinary air?",
+        "options": [
+          "A. Air contains oxygen which would burn the hot tungsten filament, whereas argon is inert",
+          "B. Argon produces electricity",
+          "C. Air is too heavy",
+          "D. Argon cools the bulb to freezing point"
+        ],
+        "correctAnswer": "A. Air contains oxygen which would burn the hot tungsten filament, whereas argon is inert",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Inert argon prevents thermal oxidation and rapid vaporization of the incandescent filament.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following elements has the electron configuration 2, 8, 8, 1?",
+        "options": [
+          "A. Sodium",
+          "B. Potassium",
+          "C. Calcium",
+          "D. Chlorine"
+        ],
+        "correctAnswer": "B. Potassium",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Potassium (Z = 19) has the configuration 2, 8, 8, 1.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of blood plasma in terms of states of matter?",
+        "options": [
+          "A. It acts as an aqueous fluid medium that transports cells, nutrients, and wastes throughout the body",
+          "B. It forms solid bone tissue",
+          "C. It vaporizes into oxygen gas",
+          "D. It insulates nerves with fat"
+        ],
+        "correctAnswer": "A. It acts as an aqueous fluid medium that transports cells, nutrients, and wastes throughout the body",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Liquid blood plasma (~92% water) provides the hydrostatic solvent for nutrient and metabolite transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a balloon filled with air shrink slightly when placed in a freezer?",
+        "options": [
+          "A. Air leaks through the balloon skin",
+          "B. Cooling reduces particle kinetic energy, so particles collide less forcefully and move closer together",
+          "C. The air molecules decrease in weight",
+          "D. The rubber absorbs the air"
+        ],
+        "correctAnswer": "B. Cooling reduces particle kinetic energy, so particles collide less forcefully and move closer together",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Lower thermal energy reduces molecular velocity and collision rates, decreasing volume at constant external pressure.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which element has 7 protons and forms a diatomic molecule that makes up most of the atmosphere?",
+        "options": [
+          "A. Carbon",
+          "B. Nitrogen",
+          "C. Oxygen",
+          "D. Hydrogen"
+        ],
+        "correctAnswer": "B. Nitrogen",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Z = 7 is Nitrogen (N₂), constituting ~78% of air.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Boron differ from Sodium?",
+        "options": [
+          "A. Boron is a semi-metal/metalloid, while Sodium is a highly reactive alkali metal",
+          "B. Boron is a noble gas",
+          "C. Sodium is a non-metal gas",
+          "D. Boron has 11 protons"
+        ],
+        "correctAnswer": "A. Boron is a semi-metal/metalloid, while Sodium is a highly reactive alkali metal",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Boron is a metalloid (Group 13), whereas Sodium is an electropositive alkali metal (Group 1).",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What constitutes the mass number of an atom?",
+        "options": [
+          "A. Protons + Electrons",
+          "B. Protons + Neutrons",
+          "C. Neutrons + Electrons",
+          "D. Protons only"
+        ],
+        "correctAnswer": "B. Protons + Neutrons",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Mass number A = Z + n, accounting for nuclear protons and neutrons.",
+        "points": 1
+      },
+      {
+        "id": "B7_MAT_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does liquid water have a definite volume even though its shape varies?",
+        "options": [
+          "A. Intermolecular attractive forces are strong enough to keep particles close together, but not rigid enough to lock them in place",
+          "B. The particles cannot move at all",
+          "C. Gravity only affects solids",
+          "D. Water molecules have zero kinetic energy"
+        ],
+        "correctAnswer": "A. Intermolecular attractive forces are strong enough to keep particles close together, but not rigid enough to lock them in place",
+        "hint": "Apply your analytical understanding of subatomic interactions, thermodynamic phase changes, and periodic classifications.",
+        "workedSolution": "Cohesive attractions prevent particles from separating, while translational freedom permits fluid flow.",
         "points": 1
       }
     ]
