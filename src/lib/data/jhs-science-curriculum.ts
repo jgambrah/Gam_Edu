@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.105Z"
+    "updatedAt": "2026-10-02T19:16:45.904Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.106Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.106Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.106Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -8721,67 +8721,132 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Master the science of plant growth, nursery husbandry, and harvest storage through simulated agricultural trials. Focuses on essential macronutrients and micronutrients, seed viability testing, nursing techniques, and loss mitigation in grain and tuber silos.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 11,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Crop Classification, Seedbed Preparation & Viability Testing",
-        "summary": "Classify crops by life cycle and economic use; prepare seed nursery beds and perform seed germination viability tests.",
-        "notes": "### Crop Agronomy: Classification, Nursery Management & Germination Testing\n* **NaCCA Curriculum Code:** `B7.2.3.1`\n* **Core Competency:** Classify agricultural crops, demonstrate seedbed preparation, and conduct seed germination viability percentage trials.\n\n#### 1. Classification of Crops\n* **By Life Cycle:**\n  * **Annuals:** Complete life cycle in one growing season (e.g., maize, rice, cowpea, tomato).\n  * **Biennials:** Require two growing seasons: vegetative growth in year 1; flowering and seed set in year 2 (e.g., carrot, cabbage, onion).\n  * **Perennials:** Live for more than two years, bearing repeated harvests (e.g., cocoa, oil palm, mango, citrus, rubber).\n* **By Economic Agronomic Use:**\n  * Cereals / Grains (maize, sorghum, millet, rice).\n  * Legumes / Pulses (cowpea, groundnut, soybean, bambara groundnut).\n  * Root & Tuber crops (cassava, yam, cocoyam, sweet potato).\n  * Vegetables (tomato, pepper, garden egg, okra).\n  * Tree / Cash crops (cocoa, coffee, cashew, oil palm).\n\n#### 2. Seed Nursery Bed Preparation\n* Nursery beds provide a controlled, protected micro-environment for tiny, delicate seeds (e.g., tomato, pepper, cabbage) before field transplanting.\n* **Soil Requirements:** Friable, well-drained topsoil mixed with well-rotted organic compost ($2:1$ ratio).\n* **Shading & Sterilization:** Shading protects tender seedlings from solar scorching and beating raindrops; soil heating/sterilization destroys weed seeds and soil-borne fungal pathogens (*damping-off*).\n\n#### 3. Seed Germination Viability Test\n$$\\text{Germination Percentage} (\\%) = \\frac{\\text{Number of Seeds Germinated}}{\\text{Total Number of Seeds Planted}} \\times 100$$\nA viability test above $85\\%$ indicates premium seed quality suitable for direct field sowing.",
+        "levelTitle": "Basic 7 (JHS 1) • Crop Production: Plant Nutrients, Organic Manures, Inorganic Fertilizers & Application Techniques",
+        "summary": "Distinguish between macro-nutrients and micro-nutrients required for healthy crop development, identify physiological roles and deficiency symptoms (N, P, K, Ca, Fe, Mn), compare organic manures and inorganic fertilizers, master composting methods (pit and heap) with vector diagrams, and evaluate practical application methods (broadcasting, ring placement, side dressing, fertigation).",
+        "notes": "### Unit 1: Classification of Plant Nutrients: Macro vs. Micro Elements\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Mineral nutrition of crops, physiological roles, and deficiency symptoms.\n\n#### 1. Biological Definition of Plant Nutrients\n**Plant nutrients** are essential mineral elements absorbed from the soil solution by root hair cells that crops require to construct biological tissues, synthesize proteins and chlorophyll, activate metabolic enzymes, and complete their reproductive life cycle. Without adequate availability of these elements, crops exhibit distinct metabolic disorders, stunted vegetative development, and severe yield reductions.\n\n#### 2. Categorization of Essential Mineral Nutrients\n1. **Macro-nutrients (Major Mineral Elements):**\n   * **Definition:** Essential mineral elements demanded by crops in relatively large quantities for fundamental structural growth, leafy biomass formation, and root establishment.\n   * **Primary Macro-elements:**\n     * **Nitrogen ($\\\\text{N}$):** Primary driver of vegetative shoot growth, cellular synthesis of amino acids, nucleic acids, and the green pigment chlorophyll.\n     * **Phosphorus ($\\\\text{P}$):** Stimulates rapid root proliferation, cellular energy currency transfer ($\\\\text{ATP}$ synthesis), seed germination, early flowering, and fruit ripening.\n     * **Potassium ($\\\\text{K}$):** Essential enzymatic co-factor, regulates stomatal aperture for plant water economy, and accelerates carbohydrate (sugar and starch) translocation.\n   * **Secondary Macro-elements:**\n     * **Calcium ($\\\\text{Ca}$):** Strengthens plant cell walls as calcium pectate in the middle lamella and supports root elongation.\n     * **Magnesium ($\\\\text{Mg}$):** Central metallic atom in the chlorophyll ring molecule; activates photosynthetic and respiratory enzymes.\n     * **Sulfur ($\\\\text{S}$):** Essential constituent of sulfur-containing amino acids (methionine, cysteine) and pungent plant oils.\n\n2. **Micro-nutrients (Minor / Trace Elements):**\n   * **Definition:** Essential mineral elements required by crops in minute (trace) quantities. Although required in tiny amounts, their absence halts metabolic pathways and causes severe physiological abnormalities.\n   * **Representative Trace Elements:**\n     * **Iron ($\\\\text{Fe}$):** Biochemical catalyst in chlorophyll formation and electron transport chains.\n     * **Manganese ($\\\\text{Mn}$):** Facilitates photosynthetic water-splitting ($\\\\text{Hill reaction}$) and cellular oxidation-reduction reactions.\n     * **Zinc ($\\\\text{Zn}$), Copper ($\\\\text{Cu}$), Boron ($\\\\text{B}$), Molybdenum ($\\\\text{Mo}$), and Chlorine ($\\\\text{Cl}$)**.\n\n#### 3. Core Nutrients: Physiological Roles and Deficiency Signs\n| Mineral Element | Macro / Micro | Vital Physiological Function | Diagnostic Deficiency Symptoms |\n| :--- | :--- | :--- | :--- |\n| **Nitrogen (N)** | Macro | Drives leafy vegetative growth, forms amino acids, plant proteins, nucleic acids, and green chlorophyll molecules. | **Chlorosis**: General yellowing of older leaves, stunted shoot growth, and premature leaf necrosis. |\n| **Phosphorus (P)** | Macro | Stimulates rapid root development, drives cellular energy transfer (ATP), and promotes early flowering, seed set, and fruit ripening. | Development of reddish-purple coloration on older leaves and stems, poor root growth, and thin, slender stalks. |\n| **Potassium (K)** | Macro | Activates essential enzymes, regulates stomatal opening for water balance, and facilitates starch and sugar translocation. | **Hidden hunger** initially, followed by marginal leaf scorch (burning along leaf edges) and mottled older leaves. |\n| **Calcium (Ca)** | Macro | Strengthens plant cell walls (calcium pectate in middle lamella) and supports root tip elongation. | Stunted root tips, weak stems, blossom end rot in tomatoes, and distorted terminal growing buds. |\n| **Iron (Fe)** | Micro | Acts as a biochemical catalyst in the synthesis of green chlorophyll molecules. | **Interveinal chlorosis**: Yellowing of leaf blades between dark green veins, appearing first on young leaves. |\n| **Manganese (Mn)** | Micro | Regulates cellular oxidation-reduction reactions and supports photosynthetic enzymes. | Yellowish-green discoloration and mottled chlorotic patterns across young expanding leaves. |\n\n---\n\n### Unit 2: Organic Fertilizers & Manures\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Soil conditioning, biological decomposition, and sustainable composting.\n\n#### 1. Nature and Definition of Organic Manures\n**Organic fertilizers** consist of decomposed plant residues and animal excreta that release mineral nutrients gradually through microbial mineralization while profoundly enhancing the physical, chemical, and biological condition of the soil.\n\n#### 2. Major Classes of Organic Manures:\n1. **Farmyard Manure (FYM):**\n   * A decomposed blend of livestock dung, urine, and straw or wood-shavings used as animal bedding in livestock housing. Rich in nitrogen and organic matter.\n2. **Green Manure:**\n   * Fast-growing, succulent, leafy crops (predominantly legumes such as mucuna, cowpea, or crotalaria) cultivated directly on the field and ploughed into the topsoil before flowering. Green manuring fixes atmospheric nitrogen ($\\\\text{N}_2$) and adds massive active biomass.\n3. **Compost Manure:**\n   * A nutrient-rich, crumbly, dark brown or black organic humus produced by the controlled aerobic decomposition of gathered crop residues, food scraps, weeds, dry leaves, and farm wastes by beneficial microorganisms.\n\n#### 3. Principles of Composting and Microbial Starters\n* **Aerobic Biological Process:** Composting relies on oxygen-breathing bacteria, actinomycetes, and fungi that metabolize organic carbon compounds, generating internal heat ($55^{\\\\circ}\\\\text{C}$ to $65^{\\\\circ}\\\\text{C}$) that destroys weed seeds and pathogens.\n* **Microbial Starters:** Nitrogen-rich organic materials (poultry droppings, fresh cow dung, fertile topsoil, or wood ash) layered into the compost to introduce initial microbial colonies and supply nitrogen for microbial protein synthesis.\n* **Composting Methods:**\n  * **The Pit Method:** Organic layers are packed into excavated trenches ($1\\\\text{ to }2\\\\text{ feet}$ deep). Best suited for dry, arid savanna regions to retain moisture.\n  * **The Heap (Stack) Method:** Organic layers are built above ground in free-standing square piles ($1.5\\\\text{m} \\\\times 1.5\\\\text{m}$). Allows easy manual turning, superior aeration, and is ideal for wet, tropical conditions.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"360\" viewBox=\"0 0 680 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"soilBase\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"100%\" stop-color=\"#451a03\"/>\n    </linearGradient>\n    <linearGradient id=\"dryBrowns\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#b45309\"/>\n      <stop offset=\"100%\" stop-color=\"#92400e\"/>\n    </linearGradient>\n    <linearGradient id=\"freshGreens\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n    <linearGradient id=\"animalManure\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#525252\"/>\n      <stop offset=\"100%\" stop-color=\"#262626\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CROSS-SECTION OF AN AEROBIC COMPOST HEAP</text>\n  <text x=\"340\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Layered Carbon (Browns), Nitrogen (Greens), Starter Inoculant, and Aeration Base</text>\n  <rect x=\"40\" y=\"310\" width=\"600\" height=\"30\" fill=\"#334155\"/>\n  <text x=\"340\" y=\"330\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Undisturbed Ground Level / Native Soil</text>\n  <polygon points=\"120,310 160,265 520,265 560,310\" fill=\"url(#dryBrowns)\"/>\n  <text x=\"340\" y=\"292\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Base Layer: Coarse Twigs, Stover &amp; Brush (Allows Air Inflow)</text>\n  <polygon points=\"160,265 190,225 490,225 520,265\" fill=\"url(#freshGreens)\"/>\n  <text x=\"340\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Green Layer: Fresh Crop Trimmings, Grass &amp; Leaves (Nitrogen)</text>\n  <polygon points=\"190,225 220,185 460,185 490,225\" fill=\"url(#animalManure)\"/>\n  <text x=\"340\" y=\"208\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Manure / Starter Layer: Animal Droppings &amp; Microbe Inoculant</text>\n  <polygon points=\"220,185 250,145 430,145 460,185\" fill=\"url(#dryBrowns)\"/>\n  <text x=\"340\" y=\"168\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Brown Layer: Dry Leaves, Maize Stover &amp; Straw (Carbon)</text>\n  <polygon points=\"250,145 280,105 400,105 430,145\" fill=\"url(#soilBase)\"/>\n  <text x=\"340\" y=\"128\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Top Seal: Garden Soil &amp; Dry Straw Cap (Conserves Moisture)</text>\n  <line x1=\"280\" y1=\"75\" x2=\"280\" y2=\"290\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-dasharray=\"4\"/>\n  <line x1=\"400\" y1=\"75\" x2=\"400\" y2=\"290\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-dasharray=\"4\"/>\n  <text x=\"280\" y=\"70\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Aeration Vent</text>\n  <text x=\"400\" y=\"70\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Aeration Vent</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 3.1: Layering Architecture of an Aerobic Compost Pile (Heap Method)</em></p>\n</div>\n\n#### 4. Agronomic Benefits of Organic Manures:\n1. **Improves Soil Structure:** Binds loose sandy soils and loosens dense clay soils into a crumb structure that encourages root penetration.\n2. **Increases Water Retention:** Organic humus absorbs and holds several times its weight in water, buffering crops against drought spells.\n3. **Sustained Nutrient Release:** Mineral nutrients are bound organically and released gradually over months, minimizing leaching losses.\n4. **Feeds Soil Microbiome:** Supplies carbon substrates that stimulate earthworms, mycorrhizal fungi, and beneficial nitrogen-fixing bacteria.\n5. **Natural pH Buffer:** Neutralizes excessive soil acidity or alkalinity, stabilizing the root environment.\n6. **Prevents Soil Erosion:** Topsoil enriched with organic matter resists surface compaction, crusting, and water runoff.\n\n---\n\n### Unit 3: Inorganic (Chemical) Fertilizers: Types & Comparisons\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Synthetic nutrient formulations, straight vs. compound grades, and ecological risks.\n\n#### 1. Nature and Definition of Inorganic Fertilizers\n**Inorganic (chemical) fertilizers** are industrially manufactured or chemically synthesized mineral salts formulated to deliver specific, highly concentrated plant nutrients in readily soluble forms that root systems can absorb immediately.\n\n#### 2. Classification of Inorganic Fertilizers:\n1. **Straight (Single / Simple) Fertilizers:**\n   * Supply only **one primary macro-nutrient** ($\\\\text{N}$, $\\\\text{P}$, or $\\\\text{K}$).\n   * *Examples:*\n     * **Urea** [$\\\\approx 46\\\\%\\\\text{ N}$]: Highly concentrated synthetic nitrogen fertilizer.\n     * **Sulfate of Ammonia** [$\\\\approx 21\\\\%\\\\text{ N}$, $24\\\\%\\\\text{ S}$]: Supplies nitrogen and acidifies alkaline soils.\n     * **Single Superphosphate (SSP)** [$\\\\approx 18\\\\text{--}20\\\\%\\\\text{ P}_2\\\\text{O}_5$]: Supplies immediately available phosphorus and calcium.\n     * **Muriate of Potash (Potassium Chloride, KCl)** [$\\\\approx 60\\\\%\\\\text{ K}_2\\\\text{O}$]: Supplies concentrated potassium for starch and fruit quality.\n\n2. **Compound (Mixed / Multi-Nutrient) Fertilizers:**\n   * Industrially granulated blends containing **two or more primary plant nutrients** in stated percentage ratios by weight.\n   * *Examples:*\n     * **NPK 15:15:15:** Supplies $15\\\\%\\\\text{ N}$, $15\\\\%\\\\text{ P}_2\\\\text{O}_5$, and $15\\\\%\\\\text{ K}_2\\\\text{O}$ by weight (balanced multi-purpose basal fertilizer).\n     * **NPK 20:20:20:** Highly concentrated balanced complete fertilizer.\n     * **NPK 10:20:10:** High-phosphorus formulation formulated to encourage root crop establishment and flowering.\n\n#### 3. Environmental and Soil Hazards of Chemical Fertilizers:\n* **High Leaching Losses:** High solubility causes nitrates ($\\\\text{NO}_3^-$) to wash past shallow roots during tropical storms into groundwater aquifers.\n* **Soil Acidification:** Chronic, unmanaged application of ammonium-based fertilizers lowers soil pH over time, locking up other nutrients.\n* **Chemical Root Scorch:** High salt index can dehydrate delicate young root cells (osmotic burn) if placed in direct physical contact.\n* **Eutrophication:** Agricultural runoff carrying dissolved phosphates and nitrates triggers massive algal blooms in rivers and lakes, causing fish mortality.\n* **Zero Soil Humus:** Chemical salts do not add organic carbon, leading to long-term soil structure degradation if used without manures.\n\n#### 4. Systematic Comparison: Organic Manures vs. Inorganic Fertilizers\n| Evaluation Metric | Organic Manures (FYM, Compost, Green Manure) | Inorganic Fertilizers (NPK, Urea, Sulfates) |\n| :--- | :--- | :--- |\n| **Source / Origin** | Natural plant wastes, crop residues, and animal dung. | Industrially synthesized mineral salts. |\n| **Nutrient Concentration** | Low and variable nutrient content; bulky to transport. | High, standardized nutrient content per unit weight. |\n| **Release Rate** | Slow and sustained as organic matter breaks down. | Rapidly soluble; immediately accessible to root systems. |\n| **Impact on Soil Structure** | Adds humus, increases aeration, and improves crumb structure. | Does not build soil humus or improve physical structure. |\n| **Water Retention Effect** | Significantly raises the soil's water-holding capacity. | No beneficial contribution to soil moisture retention. |\n| **Leaching & Runoff Risk** | Minimal leaching; nutrients remain bound to organic humus. | Leaches readily through sandy profiles into groundwater. |\n| **Impact on Soil Organisms** | Stimulates beneficial earthworms and decomposer microbes. | Excessive, direct contact can harm soil microbial populations. |\n\n---\n\n### Unit 4: Practical Fertilizer Application Techniques in the School Garden\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Field placement geometry, timing, and efficient school farm management.\n\n#### 1. Key Agronomic Factors Governing Application:\n* **Crop Growth Stage:** Basal dressing at planting (targeting roots with phosphorus) vs. top-dressing during active leafy growth (targeting shoots with nitrogen).\n* **Soil Moisture & Characteristics:** Fertilizers must only be applied to moist soil; applying dry chemical salts to dry soil scorches roots.\n* **Weed Control Timing:** Fields must be thoroughly weeded prior to fertilizer placement to prevent weeds from stealing crop nutrients.\n* **Weather Forecast:** Avoid application immediately prior to heavy downpours to prevent surface wash-off and erosion.\n\n#### 2. Field Application Methods:\n1. **Broadcasting:**\n   * Uniformly scattering granular fertilizer across the entire soil surface by hand or mechanical spreader. Typically performed before final tillage or ploughing.\n2. **Ring Application Method:**\n   * Fertilizer is distributed evenly in a shallow circular furrow dug around the base of the crop, directly beneath the outer canopy drip line (radius $r$). This targets expanding feeder roots while strictly avoiding stem contact to prevent chemical burns. Ideal for tree crops, fruit trees, and widely spaced plants (cassava, tomatoes).\n3. **Side-Dressing (Band Placement):**\n   * Applying fertilizer in continuous narrow bands in shallow furrows running parallel to crop rows, approximately $5\\\\text{--}8\\\\text{ cm}$ away from plant stems. Standard method for maize, sorghum, and vegetables during vegetative top-dressing.\n4. **Drilling / Seed Band Placement:**\n   * Placing fertilizer simultaneously with seeds into narrow furrows slightly below and to the side of the seed line during mechanical or hand sowing.\n5. **Foliar Spraying:**\n   * Dissolving completely soluble liquid fertilizer or micronutrients in water and spraying a fine mist directly onto crop foliage for rapid absorption through leaf stomata.\n6. **Fertigation:**\n   * Injecting water-soluble fertilizers directly into agricultural drip or overhead irrigation systems, providing simultaneous watering and feeding.\n7. **Plough-Sole Placement:**\n   * Depositing fertilizer in a continuous ribbon along the bottom of the open plough furrow during land preparation, which is covered when the next furrow slice is turned.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"700\" height=\"300\" viewBox=\"0 0 700 300\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"700\" height=\"300\" rx=\"12\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <g transform=\"translate(50, 20)\">\n    <rect width=\"270\" height=\"255\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/>\n    <text x=\"135\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RING APPLICATION METHOD</text>\n    <ellipse cx=\"135\" cy=\"145\" rx=\"85\" ry=\"45\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"6\" stroke-dasharray=\"10 6\"/>\n    <ellipse cx=\"135\" cy=\"145\" rx=\"18\" ry=\"10\" fill=\"#78350f\"/>\n    <circle cx=\"135\" cy=\"138\" r=\"12\" fill=\"#15803d\"/>\n    <path d=\"M 135 138 Q 115 110 95 115 M 135 138 Q 155 110 175 115 M 135 138 Q 135 95 135 85\" stroke=\"#16a34a\" stroke-width=\"3\" fill=\"none\"/>\n    <line x1=\"135\" y1=\"145\" x2=\"220\" y2=\"145\" stroke=\"#0f172a\" stroke-width=\"1\" stroke-dasharray=\"3\"/>\n    <text x=\"175\" y=\"140\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#475569\">Radius (r)</text>\n    <text x=\"135\" y=\"215\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Circular Trench Around Canopy</text>\n    <text x=\"135\" y=\"232\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Prevents stem burning; targets root tips</text>\n  </g>\n  <g transform=\"translate(380, 20)\">\n    <rect width=\"270\" height=\"255\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/>\n    <text x=\"135\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">SIDE-DRESSING (BAND) METHOD</text>\n    <line x1=\"30\" y1=\"115\" x2=\"240\" y2=\"115\" stroke=\"#d97706\" stroke-width=\"6\" stroke-dasharray=\"8 5\"/>\n    <line x1=\"30\" y1=\"195\" x2=\"240\" y2=\"195\" stroke=\"#d97706\" stroke-width=\"6\" stroke-dasharray=\"8 5\"/>\n    <g transform=\"translate(65, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <g transform=\"translate(135, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <g transform=\"translate(205, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <text x=\"135\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">Linear Fertilizer Bands Beside Rows</text>\n    <text x=\"135\" y=\"235\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Applied as a booster feed to growing crops</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 3.2: Common Field Fertilizer Placement Patterns (Ring Method vs. Side Dressing)</em></p>\n</div>\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s5_1",
-            "title": "Worked Example: Calculating Seed Germination Viability Percentage",
-            "problem": "An agricultural officer samples 200 seeds from a bag of certified hybrid seed maize and places them on moist filter paper in Petri dishes. After 6 days, 174 seeds have successfully germinated. Calculate the germination percentage and determine if the seed batch is viable for commercial planting (minimum threshold = 80%).",
+            "id": "ex_b7_s2_crop_01",
+            "title": "Worked Problem: Calculating Nutrient Content from NPK Fertilizer Grades",
+            "problem": "A school farm purchases a 50 kg bag of compound fertilizer labeled NPK 15:15:15 for their vegetable garden. Calculate: (a) The percentage of Nitrogen, Phosphorus, and Potassium in the bag, and (b) The exact mass (in kilograms) of pure Nitrogen (N) supplied by this 50 kg bag.",
             "steps": [
-              "Step 1: Write the formula: Germination Percentage = (Number of Germinated Seeds / Total Seeds Planted) x 100%.",
-              "Step 2: Substitute values: Germination Percentage = (174 / 200) x 100% = 0.87 x 100% = 87%.",
-              "Step 3: Evaluate against threshold: Since 87% is greater than the standard 80% threshold, the seed lot is viable, healthy, and recommended for commercial planting."
+              "Step 1: Understand the NPK grade notation — The three numbers represent the percentage by weight of Nitrogen (N), available Phosphate (P2O5), and soluble Potash (K2O). Here, N = 15%, P = 15%, K = 15%.",
+              "Step 2: State the formula for nutrient mass — Mass of Nutrient = (Percentage of Nutrient / 100) x Total Bag Mass.",
+              "Step 3: Substitute the known values for Nitrogen — Mass of Nitrogen = (15 / 100) x 50 kg = 0.15 x 50 kg = 7.5 kg.",
+              "Step 4: State the final conclusion — The 50 kg bag supplies exactly 7.5 kg of pure Nitrogen, 7.5 kg of Phosphorus, and 7.5 kg of Potassium. The remaining 27.5 kg consists of carrier material, filler, and conditioning agents."
             ],
-            "finalAnswer": "Examiner Tip: Always state the formula before substituting numbers. Show the calculation steps clearly."
+            "finalAnswer": "Examiner Tip: Compound fertilizer labels always follow the standard N:P:K sequence. The numbers represent percentages by weight, not kilograms."
+          },
+          {
+            "id": "ex_b7_s2_crop_02",
+            "title": "Worked Problem: Crop Nutrient Deficiency Diagnosis & Corrective Strategy",
+            "problem": "During an agricultural inspection of a JHS school farm, students observe that their 4-week-old maize crops display general yellowing (chlorosis) starting on older lower leaves, while the terminal young leaves remain pale green. In contrast, nearby tomato plants show stunted roots with dark reddish-purple leaf undersides. (a) Identify the deficient nutrient in the maize and the tomato crops, and (b) Recommend an immediate inorganic or organic remedial plan for each crop.",
+            "steps": [
+              "Step 1: Analyze maize deficiency symptoms — Generalized yellowing (chlorosis) beginning on older lower leaves is the diagnostic signature of Nitrogen (N) deficiency, because Nitrogen is mobile within the plant and is mobilized from older leaves to sustain younger growing tips.",
+              "Step 2: Analyze tomato deficiency symptoms — Reddish-purple discoloration on older leaves accompanied by stunted root elongation is the classic diagnostic signature of Phosphorus (P) deficiency.",
+              "Step 3: Recommend remedial plan for maize — Side-dress the maize rows with a quick-release nitrogen fertilizer (such as Urea at 46% N or Sulfate of Ammonia), or apply a liquid compost tea / poultry manure slurry as an organic top-dressing.",
+              "Step 4: Recommend remedial plan for tomatoes — Apply Single Superphosphate (SSP) or a high-phosphorus NPK blend (e.g., NPK 10:20:10) close to the root zone, or incorporate bone meal compost into the soil around the tomato plants."
+            ],
+            "finalAnswer": "Examiner Tip: Remember mobility: Nitrogen and Phosphorus are mobile in plants, so deficiency signs appear first on older leaves; Iron and Calcium are immobile, so deficiency signs appear first on young growing shoots."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s5_1",
+              "id": "B7_CROP_MCQ_01",
               "difficulty": "low",
-              "prompt": "A crop that completes its vegetative, flowering, and seed maturation cycle within a single growing season is classified as an:",
+              "prompt": "Which of the following groups consists exclusively of major plant macro-nutrients?",
               "options": [
-                "Perennial crop",
-                "Biennial crop",
-                "Annual crop",
-                "Evergreen crop"
+                "A. Nitrogen, Phosphorus, Potassium",
+                "B. Iron, Zinc, Manganese",
+                "C. Boron, Copper, Chlorine",
+                "D. Molybdenum, Nitrogen, Sulfur"
               ],
-              "correctAnswer": "Annual crop",
-              "hint": "Maize, cowpea, and rice are common examples.",
-              "workedSolution": "Annual crops (such as maize and cowpea) complete their entire life cycle from germination to harvest within one year or one growing season.",
+              "correctAnswer": "A. Nitrogen, Phosphorus, Potassium",
+              "hint": "Macro-nutrients are required in large quantities; recall the standard N-P-K classification.",
+              "workedSolution": "Nitrogen, Phosphorus, and Potassium are primary macro-nutrients required in large quantities by growing crops for vegetative growth, root establishment, and yield formation.",
               "points": 1,
-              "learningCompetency": "B7.2.3.1",
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_MCQ_02",
+              "difficulty": "low",
+              "prompt": "A maize plant in a school farm exhibits generalized yellowing (chlorosis) starting on its older bottom leaves, alongside stunted growth. Which mineral nutrient is most likely deficient?",
+              "options": [
+                "A. Potassium",
+                "B. Nitrogen",
+                "C. Phosphorus",
+                "D. Iron"
+              ],
+              "correctAnswer": "B. Nitrogen",
+              "hint": "This element is essential for chlorophyll and protein synthesis; deficiency causes chlorosis on older leaves.",
+              "workedSolution": "Nitrogen deficiency leads to chlorosis (loss of green chlorophyll), appearing first on older leaves as mobile nitrogen is translocated to younger growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s5_2",
+              "id": "B7_CROP_MCQ_03",
               "difficulty": "medium",
-              "prompt": "If 45 out of 50 sampled tomato seeds germinate successfully on moist blotting paper, what is the germination viability percentage?",
+              "prompt": "What is the primary advantage of incorporating organic compost into sandy soils over using chemical fertilizers exclusively?",
               "options": [
-                "80%",
-                "85%",
-                "90%",
-                "95%"
+                "A. It dissolves instantly in rainwater",
+                "B. It improves soil structure and increases the soil's water-holding capacity",
+                "C. It eliminates the need for weeding entirely",
+                "D. It makes the soil acidic"
               ],
-              "correctAnswer": "90%",
-              "hint": "Divide 45 by 50 and multiply by 100.",
-              "workedSolution": "Germination % = (45 / 50) x 100 = 0.90 x 100 = 90%.",
+              "correctAnswer": "B. It improves soil structure and increases the soil's water-holding capacity",
+              "hint": "Organic matter supplies decomposed humus that binds loose sandy soil particles.",
+              "workedSolution": "Organic compost provides decomposed humus that binds loose sandy soil particles together, improving both crumb structure and moisture retention capacity.",
               "points": 1,
-              "learningCompetency": "B7.2.3.1",
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_MCQ_04",
+              "difficulty": "medium",
+              "prompt": "A commercial fertilizer labeled NPK 15:15:15 is classified scientifically as a:",
+              "options": [
+                "A. Straight fertilizer",
+                "B. Single fertilizer",
+                "C. Compound fertilizer",
+                "D. Green manure"
+              ],
+              "correctAnswer": "C. Compound fertilizer",
+              "hint": "It contains multiple major plant nutrients blended in a defined percentage ratio.",
+              "workedSolution": "NPK 15:15:15 is a compound (mixed) fertilizer because it contains three primary nutrients (Nitrogen, Phosphorus, Potassium) blended in a defined ratio.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_CROP_MCQ_05",
+              "difficulty": "hard",
+              "prompt": "Which method of fertilizer application involves injecting water-soluble fertilizers directly through an agricultural irrigation system?",
+              "options": [
+                "A. Side-dressing",
+                "B. Broadcasting",
+                "C. Fertigation",
+                "D. Plough-sole placement"
+              ],
+              "correctAnswer": "C. Fertigation",
+              "hint": "The term combines \"fertilizer\" and \"irrigation\".",
+              "workedSolution": "Fertigation is the modern agronomic practice of dissolving and supplying water-soluble fertilizers directly through irrigation lines (drip or sprinkler).",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -8903,7 +8968,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -9100,7 +9165,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -9297,7 +9362,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -9494,7 +9559,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -9689,7 +9754,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -9885,7 +9950,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -10081,7 +10146,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -10278,7 +10343,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -10476,7 +10541,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -10674,7 +10739,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -10867,7 +10932,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -11062,7 +11127,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -11257,7 +11322,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -11453,7 +11518,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -11650,7 +11715,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:03:09.107Z"
+    "updatedAt": "2026-10-02T19:16:45.905Z"
   }
 ];
 
@@ -19695,48 +19760,102 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Agricultural Crop Production Systems (Plant Nutrients, Seedbeds, Harvesting & Storage)",
     "order": 13,
     "notes": {
-      "summaryMarkdown": "### Crop Agronomy: Classification, Nursery Management & Germination Testing\n* **NaCCA Curriculum Code:** `B7.2.3.1`\n* **Core Competency:** Classify agricultural crops, demonstrate seedbed preparation, and conduct seed germination viability percentage trials.\n\n#### 1. Classification of Crops\n* **By Life Cycle:**\n  * **Annuals:** Complete life cycle in one growing season (e.g., maize, rice, cowpea, tomato).\n  * **Biennials:** Require two growing seasons: vegetative growth in year 1; flowering and seed set in year 2 (e.g., carrot, cabbage, onion).\n  * **Perennials:** Live for more than two years, bearing repeated harvests (e.g., cocoa, oil palm, mango, citrus, rubber).\n* **By Economic Agronomic Use:**\n  * Cereals / Grains (maize, sorghum, millet, rice).\n  * Legumes / Pulses (cowpea, groundnut, soybean, bambara groundnut).\n  * Root & Tuber crops (cassava, yam, cocoyam, sweet potato).\n  * Vegetables (tomato, pepper, garden egg, okra).\n  * Tree / Cash crops (cocoa, coffee, cashew, oil palm).\n\n#### 2. Seed Nursery Bed Preparation\n* Nursery beds provide a controlled, protected micro-environment for tiny, delicate seeds (e.g., tomato, pepper, cabbage) before field transplanting.\n* **Soil Requirements:** Friable, well-drained topsoil mixed with well-rotted organic compost ($2:1$ ratio).\n* **Shading & Sterilization:** Shading protects tender seedlings from solar scorching and beating raindrops; soil heating/sterilization destroys weed seeds and soil-borne fungal pathogens (*damping-off*).\n\n#### 3. Seed Germination Viability Test\n$$\\text{Germination Percentage} (\\%) = \\frac{\\text{Number of Seeds Germinated}}{\\text{Total Number of Seeds Planted}} \\times 100$$\nA viability test above $85\\%$ indicates premium seed quality suitable for direct field sowing.",
+      "summaryMarkdown": "### Unit 1: Classification of Plant Nutrients: Macro vs. Micro Elements\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Mineral nutrition of crops, physiological roles, and deficiency symptoms.\n\n#### 1. Biological Definition of Plant Nutrients\n**Plant nutrients** are essential mineral elements absorbed from the soil solution by root hair cells that crops require to construct biological tissues, synthesize proteins and chlorophyll, activate metabolic enzymes, and complete their reproductive life cycle. Without adequate availability of these elements, crops exhibit distinct metabolic disorders, stunted vegetative development, and severe yield reductions.\n\n#### 2. Categorization of Essential Mineral Nutrients\n1. **Macro-nutrients (Major Mineral Elements):**\n   * **Definition:** Essential mineral elements demanded by crops in relatively large quantities for fundamental structural growth, leafy biomass formation, and root establishment.\n   * **Primary Macro-elements:**\n     * **Nitrogen ($\\\\text{N}$):** Primary driver of vegetative shoot growth, cellular synthesis of amino acids, nucleic acids, and the green pigment chlorophyll.\n     * **Phosphorus ($\\\\text{P}$):** Stimulates rapid root proliferation, cellular energy currency transfer ($\\\\text{ATP}$ synthesis), seed germination, early flowering, and fruit ripening.\n     * **Potassium ($\\\\text{K}$):** Essential enzymatic co-factor, regulates stomatal aperture for plant water economy, and accelerates carbohydrate (sugar and starch) translocation.\n   * **Secondary Macro-elements:**\n     * **Calcium ($\\\\text{Ca}$):** Strengthens plant cell walls as calcium pectate in the middle lamella and supports root elongation.\n     * **Magnesium ($\\\\text{Mg}$):** Central metallic atom in the chlorophyll ring molecule; activates photosynthetic and respiratory enzymes.\n     * **Sulfur ($\\\\text{S}$):** Essential constituent of sulfur-containing amino acids (methionine, cysteine) and pungent plant oils.\n\n2. **Micro-nutrients (Minor / Trace Elements):**\n   * **Definition:** Essential mineral elements required by crops in minute (trace) quantities. Although required in tiny amounts, their absence halts metabolic pathways and causes severe physiological abnormalities.\n   * **Representative Trace Elements:**\n     * **Iron ($\\\\text{Fe}$):** Biochemical catalyst in chlorophyll formation and electron transport chains.\n     * **Manganese ($\\\\text{Mn}$):** Facilitates photosynthetic water-splitting ($\\\\text{Hill reaction}$) and cellular oxidation-reduction reactions.\n     * **Zinc ($\\\\text{Zn}$), Copper ($\\\\text{Cu}$), Boron ($\\\\text{B}$), Molybdenum ($\\\\text{Mo}$), and Chlorine ($\\\\text{Cl}$)**.\n\n#### 3. Core Nutrients: Physiological Roles and Deficiency Signs\n| Mineral Element | Macro / Micro | Vital Physiological Function | Diagnostic Deficiency Symptoms |\n| :--- | :--- | :--- | :--- |\n| **Nitrogen (N)** | Macro | Drives leafy vegetative growth, forms amino acids, plant proteins, nucleic acids, and green chlorophyll molecules. | **Chlorosis**: General yellowing of older leaves, stunted shoot growth, and premature leaf necrosis. |\n| **Phosphorus (P)** | Macro | Stimulates rapid root development, drives cellular energy transfer (ATP), and promotes early flowering, seed set, and fruit ripening. | Development of reddish-purple coloration on older leaves and stems, poor root growth, and thin, slender stalks. |\n| **Potassium (K)** | Macro | Activates essential enzymes, regulates stomatal opening for water balance, and facilitates starch and sugar translocation. | **Hidden hunger** initially, followed by marginal leaf scorch (burning along leaf edges) and mottled older leaves. |\n| **Calcium (Ca)** | Macro | Strengthens plant cell walls (calcium pectate in middle lamella) and supports root tip elongation. | Stunted root tips, weak stems, blossom end rot in tomatoes, and distorted terminal growing buds. |\n| **Iron (Fe)** | Micro | Acts as a biochemical catalyst in the synthesis of green chlorophyll molecules. | **Interveinal chlorosis**: Yellowing of leaf blades between dark green veins, appearing first on young leaves. |\n| **Manganese (Mn)** | Micro | Regulates cellular oxidation-reduction reactions and supports photosynthetic enzymes. | Yellowish-green discoloration and mottled chlorotic patterns across young expanding leaves. |\n\n---\n\n### Unit 2: Organic Fertilizers & Manures\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Soil conditioning, biological decomposition, and sustainable composting.\n\n#### 1. Nature and Definition of Organic Manures\n**Organic fertilizers** consist of decomposed plant residues and animal excreta that release mineral nutrients gradually through microbial mineralization while profoundly enhancing the physical, chemical, and biological condition of the soil.\n\n#### 2. Major Classes of Organic Manures:\n1. **Farmyard Manure (FYM):**\n   * A decomposed blend of livestock dung, urine, and straw or wood-shavings used as animal bedding in livestock housing. Rich in nitrogen and organic matter.\n2. **Green Manure:**\n   * Fast-growing, succulent, leafy crops (predominantly legumes such as mucuna, cowpea, or crotalaria) cultivated directly on the field and ploughed into the topsoil before flowering. Green manuring fixes atmospheric nitrogen ($\\\\text{N}_2$) and adds massive active biomass.\n3. **Compost Manure:**\n   * A nutrient-rich, crumbly, dark brown or black organic humus produced by the controlled aerobic decomposition of gathered crop residues, food scraps, weeds, dry leaves, and farm wastes by beneficial microorganisms.\n\n#### 3. Principles of Composting and Microbial Starters\n* **Aerobic Biological Process:** Composting relies on oxygen-breathing bacteria, actinomycetes, and fungi that metabolize organic carbon compounds, generating internal heat ($55^{\\\\circ}\\\\text{C}$ to $65^{\\\\circ}\\\\text{C}$) that destroys weed seeds and pathogens.\n* **Microbial Starters:** Nitrogen-rich organic materials (poultry droppings, fresh cow dung, fertile topsoil, or wood ash) layered into the compost to introduce initial microbial colonies and supply nitrogen for microbial protein synthesis.\n* **Composting Methods:**\n  * **The Pit Method:** Organic layers are packed into excavated trenches ($1\\\\text{ to }2\\\\text{ feet}$ deep). Best suited for dry, arid savanna regions to retain moisture.\n  * **The Heap (Stack) Method:** Organic layers are built above ground in free-standing square piles ($1.5\\\\text{m} \\\\times 1.5\\\\text{m}$). Allows easy manual turning, superior aeration, and is ideal for wet, tropical conditions.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"360\" viewBox=\"0 0 680 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"soilBase\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"100%\" stop-color=\"#451a03\"/>\n    </linearGradient>\n    <linearGradient id=\"dryBrowns\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#b45309\"/>\n      <stop offset=\"100%\" stop-color=\"#92400e\"/>\n    </linearGradient>\n    <linearGradient id=\"freshGreens\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n    <linearGradient id=\"animalManure\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#525252\"/>\n      <stop offset=\"100%\" stop-color=\"#262626\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CROSS-SECTION OF AN AEROBIC COMPOST HEAP</text>\n  <text x=\"340\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Layered Carbon (Browns), Nitrogen (Greens), Starter Inoculant, and Aeration Base</text>\n  <rect x=\"40\" y=\"310\" width=\"600\" height=\"30\" fill=\"#334155\"/>\n  <text x=\"340\" y=\"330\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Undisturbed Ground Level / Native Soil</text>\n  <polygon points=\"120,310 160,265 520,265 560,310\" fill=\"url(#dryBrowns)\"/>\n  <text x=\"340\" y=\"292\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Base Layer: Coarse Twigs, Stover &amp; Brush (Allows Air Inflow)</text>\n  <polygon points=\"160,265 190,225 490,225 520,265\" fill=\"url(#freshGreens)\"/>\n  <text x=\"340\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Green Layer: Fresh Crop Trimmings, Grass &amp; Leaves (Nitrogen)</text>\n  <polygon points=\"190,225 220,185 460,185 490,225\" fill=\"url(#animalManure)\"/>\n  <text x=\"340\" y=\"208\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Manure / Starter Layer: Animal Droppings &amp; Microbe Inoculant</text>\n  <polygon points=\"220,185 250,145 430,145 460,185\" fill=\"url(#dryBrowns)\"/>\n  <text x=\"340\" y=\"168\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Brown Layer: Dry Leaves, Maize Stover &amp; Straw (Carbon)</text>\n  <polygon points=\"250,145 280,105 400,105 430,145\" fill=\"url(#soilBase)\"/>\n  <text x=\"340\" y=\"128\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Top Seal: Garden Soil &amp; Dry Straw Cap (Conserves Moisture)</text>\n  <line x1=\"280\" y1=\"75\" x2=\"280\" y2=\"290\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-dasharray=\"4\"/>\n  <line x1=\"400\" y1=\"75\" x2=\"400\" y2=\"290\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-dasharray=\"4\"/>\n  <text x=\"280\" y=\"70\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Aeration Vent</text>\n  <text x=\"400\" y=\"70\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Aeration Vent</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 3.1: Layering Architecture of an Aerobic Compost Pile (Heap Method)</em></p>\n</div>\n\n#### 4. Agronomic Benefits of Organic Manures:\n1. **Improves Soil Structure:** Binds loose sandy soils and loosens dense clay soils into a crumb structure that encourages root penetration.\n2. **Increases Water Retention:** Organic humus absorbs and holds several times its weight in water, buffering crops against drought spells.\n3. **Sustained Nutrient Release:** Mineral nutrients are bound organically and released gradually over months, minimizing leaching losses.\n4. **Feeds Soil Microbiome:** Supplies carbon substrates that stimulate earthworms, mycorrhizal fungi, and beneficial nitrogen-fixing bacteria.\n5. **Natural pH Buffer:** Neutralizes excessive soil acidity or alkalinity, stabilizing the root environment.\n6. **Prevents Soil Erosion:** Topsoil enriched with organic matter resists surface compaction, crusting, and water runoff.\n\n---\n\n### Unit 3: Inorganic (Chemical) Fertilizers: Types & Comparisons\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Synthetic nutrient formulations, straight vs. compound grades, and ecological risks.\n\n#### 1. Nature and Definition of Inorganic Fertilizers\n**Inorganic (chemical) fertilizers** are industrially manufactured or chemically synthesized mineral salts formulated to deliver specific, highly concentrated plant nutrients in readily soluble forms that root systems can absorb immediately.\n\n#### 2. Classification of Inorganic Fertilizers:\n1. **Straight (Single / Simple) Fertilizers:**\n   * Supply only **one primary macro-nutrient** ($\\\\text{N}$, $\\\\text{P}$, or $\\\\text{K}$).\n   * *Examples:*\n     * **Urea** [$\\\\approx 46\\\\%\\\\text{ N}$]: Highly concentrated synthetic nitrogen fertilizer.\n     * **Sulfate of Ammonia** [$\\\\approx 21\\\\%\\\\text{ N}$, $24\\\\%\\\\text{ S}$]: Supplies nitrogen and acidifies alkaline soils.\n     * **Single Superphosphate (SSP)** [$\\\\approx 18\\\\text{--}20\\\\%\\\\text{ P}_2\\\\text{O}_5$]: Supplies immediately available phosphorus and calcium.\n     * **Muriate of Potash (Potassium Chloride, KCl)** [$\\\\approx 60\\\\%\\\\text{ K}_2\\\\text{O}$]: Supplies concentrated potassium for starch and fruit quality.\n\n2. **Compound (Mixed / Multi-Nutrient) Fertilizers:**\n   * Industrially granulated blends containing **two or more primary plant nutrients** in stated percentage ratios by weight.\n   * *Examples:*\n     * **NPK 15:15:15:** Supplies $15\\\\%\\\\text{ N}$, $15\\\\%\\\\text{ P}_2\\\\text{O}_5$, and $15\\\\%\\\\text{ K}_2\\\\text{O}$ by weight (balanced multi-purpose basal fertilizer).\n     * **NPK 20:20:20:** Highly concentrated balanced complete fertilizer.\n     * **NPK 10:20:10:** High-phosphorus formulation formulated to encourage root crop establishment and flowering.\n\n#### 3. Environmental and Soil Hazards of Chemical Fertilizers:\n* **High Leaching Losses:** High solubility causes nitrates ($\\\\text{NO}_3^-$) to wash past shallow roots during tropical storms into groundwater aquifers.\n* **Soil Acidification:** Chronic, unmanaged application of ammonium-based fertilizers lowers soil pH over time, locking up other nutrients.\n* **Chemical Root Scorch:** High salt index can dehydrate delicate young root cells (osmotic burn) if placed in direct physical contact.\n* **Eutrophication:** Agricultural runoff carrying dissolved phosphates and nitrates triggers massive algal blooms in rivers and lakes, causing fish mortality.\n* **Zero Soil Humus:** Chemical salts do not add organic carbon, leading to long-term soil structure degradation if used without manures.\n\n#### 4. Systematic Comparison: Organic Manures vs. Inorganic Fertilizers\n| Evaluation Metric | Organic Manures (FYM, Compost, Green Manure) | Inorganic Fertilizers (NPK, Urea, Sulfates) |\n| :--- | :--- | :--- |\n| **Source / Origin** | Natural plant wastes, crop residues, and animal dung. | Industrially synthesized mineral salts. |\n| **Nutrient Concentration** | Low and variable nutrient content; bulky to transport. | High, standardized nutrient content per unit weight. |\n| **Release Rate** | Slow and sustained as organic matter breaks down. | Rapidly soluble; immediately accessible to root systems. |\n| **Impact on Soil Structure** | Adds humus, increases aeration, and improves crumb structure. | Does not build soil humus or improve physical structure. |\n| **Water Retention Effect** | Significantly raises the soil's water-holding capacity. | No beneficial contribution to soil moisture retention. |\n| **Leaching & Runoff Risk** | Minimal leaching; nutrients remain bound to organic humus. | Leaches readily through sandy profiles into groundwater. |\n| **Impact on Soil Organisms** | Stimulates beneficial earthworms and decomposer microbes. | Excessive, direct contact can harm soil microbial populations. |\n\n---\n\n### Unit 4: Practical Fertilizer Application Techniques in the School Garden\n* **Curriculum Standard:** NaCCA `B7.2.3.1.1`\n* **Core Concept:** Field placement geometry, timing, and efficient school farm management.\n\n#### 1. Key Agronomic Factors Governing Application:\n* **Crop Growth Stage:** Basal dressing at planting (targeting roots with phosphorus) vs. top-dressing during active leafy growth (targeting shoots with nitrogen).\n* **Soil Moisture & Characteristics:** Fertilizers must only be applied to moist soil; applying dry chemical salts to dry soil scorches roots.\n* **Weed Control Timing:** Fields must be thoroughly weeded prior to fertilizer placement to prevent weeds from stealing crop nutrients.\n* **Weather Forecast:** Avoid application immediately prior to heavy downpours to prevent surface wash-off and erosion.\n\n#### 2. Field Application Methods:\n1. **Broadcasting:**\n   * Uniformly scattering granular fertilizer across the entire soil surface by hand or mechanical spreader. Typically performed before final tillage or ploughing.\n2. **Ring Application Method:**\n   * Fertilizer is distributed evenly in a shallow circular furrow dug around the base of the crop, directly beneath the outer canopy drip line (radius $r$). This targets expanding feeder roots while strictly avoiding stem contact to prevent chemical burns. Ideal for tree crops, fruit trees, and widely spaced plants (cassava, tomatoes).\n3. **Side-Dressing (Band Placement):**\n   * Applying fertilizer in continuous narrow bands in shallow furrows running parallel to crop rows, approximately $5\\\\text{--}8\\\\text{ cm}$ away from plant stems. Standard method for maize, sorghum, and vegetables during vegetative top-dressing.\n4. **Drilling / Seed Band Placement:**\n   * Placing fertilizer simultaneously with seeds into narrow furrows slightly below and to the side of the seed line during mechanical or hand sowing.\n5. **Foliar Spraying:**\n   * Dissolving completely soluble liquid fertilizer or micronutrients in water and spraying a fine mist directly onto crop foliage for rapid absorption through leaf stomata.\n6. **Fertigation:**\n   * Injecting water-soluble fertilizers directly into agricultural drip or overhead irrigation systems, providing simultaneous watering and feeding.\n7. **Plough-Sole Placement:**\n   * Depositing fertilizer in a continuous ribbon along the bottom of the open plough furrow during land preparation, which is covered when the next furrow slice is turned.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"700\" height=\"300\" viewBox=\"0 0 700 300\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"700\" height=\"300\" rx=\"12\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <g transform=\"translate(50, 20)\">\n    <rect width=\"270\" height=\"255\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/>\n    <text x=\"135\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RING APPLICATION METHOD</text>\n    <ellipse cx=\"135\" cy=\"145\" rx=\"85\" ry=\"45\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"6\" stroke-dasharray=\"10 6\"/>\n    <ellipse cx=\"135\" cy=\"145\" rx=\"18\" ry=\"10\" fill=\"#78350f\"/>\n    <circle cx=\"135\" cy=\"138\" r=\"12\" fill=\"#15803d\"/>\n    <path d=\"M 135 138 Q 115 110 95 115 M 135 138 Q 155 110 175 115 M 135 138 Q 135 95 135 85\" stroke=\"#16a34a\" stroke-width=\"3\" fill=\"none\"/>\n    <line x1=\"135\" y1=\"145\" x2=\"220\" y2=\"145\" stroke=\"#0f172a\" stroke-width=\"1\" stroke-dasharray=\"3\"/>\n    <text x=\"175\" y=\"140\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#475569\">Radius (r)</text>\n    <text x=\"135\" y=\"215\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Circular Trench Around Canopy</text>\n    <text x=\"135\" y=\"232\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Prevents stem burning; targets root tips</text>\n  </g>\n  <g transform=\"translate(380, 20)\">\n    <rect width=\"270\" height=\"255\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/>\n    <text x=\"135\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">SIDE-DRESSING (BAND) METHOD</text>\n    <line x1=\"30\" y1=\"115\" x2=\"240\" y2=\"115\" stroke=\"#d97706\" stroke-width=\"6\" stroke-dasharray=\"8 5\"/>\n    <line x1=\"30\" y1=\"195\" x2=\"240\" y2=\"195\" stroke=\"#d97706\" stroke-width=\"6\" stroke-dasharray=\"8 5\"/>\n    <g transform=\"translate(65, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <g transform=\"translate(135, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <g transform=\"translate(205, 155)\">\n      <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#15803d\"/>\n      <path d=\"M 0 0 L -10 -15 M 0 0 L 10 -15\" stroke=\"#16a34a\" stroke-width=\"2.5\"/>\n    </g>\n    <text x=\"135\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">Linear Fertilizer Bands Beside Rows</text>\n    <text x=\"135\" y=\"235\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Applied as a booster feed to growing crops</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 3.2: Common Field Fertilizer Placement Patterns (Ring Method vs. Side Dressing)</em></p>\n</div>\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s5_1",
-        "questionPrompt": "An agricultural officer samples 200 seeds from a bag of certified hybrid seed maize and places them on moist filter paper in Petri dishes. After 6 days, 174 seeds have successfully germinated. Calculate the germination percentage and determine if the seed batch is viable for commercial planting (minimum threshold = 80%).",
-        "stepByStepSolution": "Step 1: Write the formula: Germination Percentage = (Number of Germinated Seeds / Total Seeds Planted) x 100%.\nStep 2: Substitute values: Germination Percentage = (174 / 200) x 100% = 0.87 x 100% = 87%.\nStep 3: Evaluate against threshold: Since 87% is greater than the standard 80% threshold, the seed lot is viable, healthy, and recommended for commercial planting.",
-        "examinerTip": "Examiner Tip: Always state the formula before substituting numbers. Show the calculation steps clearly."
+        "id": "ex_b7_s2_crop_01",
+        "questionPrompt": "A school farm purchases a 50 kg bag of compound fertilizer labeled NPK 15:15:15 for their vegetable garden. Calculate: (a) The percentage of Nitrogen, Phosphorus, and Potassium in the bag, and (b) The exact mass (in kilograms) of pure Nitrogen (N) supplied by this 50 kg bag.",
+        "stepByStepSolution": "Step 1: Understand the NPK grade notation — The three numbers represent the percentage by weight of Nitrogen (N), available Phosphate (P2O5), and soluble Potash (K2O). Here, N = 15%, P = 15%, K = 15%.\nStep 2: State the formula for nutrient mass — Mass of Nutrient = (Percentage of Nutrient / 100) x Total Bag Mass.\nStep 3: Substitute the known values for Nitrogen — Mass of Nitrogen = (15 / 100) x 50 kg = 0.15 x 50 kg = 7.5 kg.\nStep 4: State the final conclusion — The 50 kg bag supplies exactly 7.5 kg of pure Nitrogen, 7.5 kg of Phosphorus, and 7.5 kg of Potassium. The remaining 27.5 kg consists of carrier material, filler, and conditioning agents.",
+        "examinerTip": "Examiner Tip: Compound fertilizer labels always follow the standard N:P:K sequence. The numbers represent percentages by weight, not kilograms."
+      },
+      {
+        "id": "ex_b7_s2_crop_02",
+        "questionPrompt": "During an agricultural inspection of a JHS school farm, students observe that their 4-week-old maize crops display general yellowing (chlorosis) starting on older lower leaves, while the terminal young leaves remain pale green. In contrast, nearby tomato plants show stunted roots with dark reddish-purple leaf undersides. (a) Identify the deficient nutrient in the maize and the tomato crops, and (b) Recommend an immediate inorganic or organic remedial plan for each crop.",
+        "stepByStepSolution": "Step 1: Analyze maize deficiency symptoms — Generalized yellowing (chlorosis) beginning on older lower leaves is the diagnostic signature of Nitrogen (N) deficiency, because Nitrogen is mobile within the plant and is mobilized from older leaves to sustain younger growing tips.\nStep 2: Analyze tomato deficiency symptoms — Reddish-purple discoloration on older leaves accompanied by stunted root elongation is the classic diagnostic signature of Phosphorus (P) deficiency.\nStep 3: Recommend remedial plan for maize — Side-dress the maize rows with a quick-release nitrogen fertilizer (such as Urea at 46% N or Sulfate of Ammonia), or apply a liquid compost tea / poultry manure slurry as an organic top-dressing.\nStep 4: Recommend remedial plan for tomatoes — Apply Single Superphosphate (SSP) or a high-phosphorus NPK blend (e.g., NPK 10:20:10) close to the root zone, or incorporate bone meal compost into the soil around the tomato plants.",
+        "examinerTip": "Examiner Tip: Remember mobility: Nitrogen and Phosphorus are mobile in plants, so deficiency signs appear first on older leaves; Iron and Calcium are immobile, so deficiency signs appear first on young growing shoots."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s5_1",
+        "id": "B7_CROP_MCQ_01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "A crop that completes its vegetative, flowering, and seed maturation cycle within a single growing season is classified as an:",
+        "prompt": "Which of the following groups consists exclusively of major plant macro-nutrients?",
         "options": [
-          "Perennial crop",
-          "Biennial crop",
-          "Annual crop",
-          "Evergreen crop"
+          "A. Nitrogen, Phosphorus, Potassium",
+          "B. Iron, Zinc, Manganese",
+          "C. Boron, Copper, Chlorine",
+          "D. Molybdenum, Nitrogen, Sulfur"
         ],
-        "correctAnswer": "Annual crop",
-        "hint": "Maize, cowpea, and rice are common examples.",
-        "workedSolution": "Annual crops (such as maize and cowpea) complete their entire life cycle from germination to harvest within one year or one growing season.",
+        "correctAnswer": "A. Nitrogen, Phosphorus, Potassium",
+        "hint": "Macro-nutrients are required in large quantities; recall the standard N-P-K classification.",
+        "workedSolution": "Nitrogen, Phosphorus, and Potassium are primary macro-nutrients required in large quantities by growing crops for vegetative growth, root establishment, and yield formation.",
         "points": 1
       },
       {
-        "id": "q_b7_s5_2",
+        "id": "B7_CROP_MCQ_02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A maize plant in a school farm exhibits generalized yellowing (chlorosis) starting on its older bottom leaves, alongside stunted growth. Which mineral nutrient is most likely deficient?",
+        "options": [
+          "A. Potassium",
+          "B. Nitrogen",
+          "C. Phosphorus",
+          "D. Iron"
+        ],
+        "correctAnswer": "B. Nitrogen",
+        "hint": "This element is essential for chlorophyll and protein synthesis; deficiency causes chlorosis on older leaves.",
+        "workedSolution": "Nitrogen deficiency leads to chlorosis (loss of green chlorophyll), appearing first on older leaves as mobile nitrogen is translocated to younger growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_MCQ_03",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "If 45 out of 50 sampled tomato seeds germinate successfully on moist blotting paper, what is the germination viability percentage?",
+        "prompt": "What is the primary advantage of incorporating organic compost into sandy soils over using chemical fertilizers exclusively?",
         "options": [
-          "80%",
-          "85%",
-          "90%",
-          "95%"
+          "A. It dissolves instantly in rainwater",
+          "B. It improves soil structure and increases the soil's water-holding capacity",
+          "C. It eliminates the need for weeding entirely",
+          "D. It makes the soil acidic"
         ],
-        "correctAnswer": "90%",
-        "hint": "Divide 45 by 50 and multiply by 100.",
-        "workedSolution": "Germination % = (45 / 50) x 100 = 0.90 x 100 = 90%.",
+        "correctAnswer": "B. It improves soil structure and increases the soil's water-holding capacity",
+        "hint": "Organic matter supplies decomposed humus that binds loose sandy soil particles.",
+        "workedSolution": "Organic compost provides decomposed humus that binds loose sandy soil particles together, improving both crumb structure and moisture retention capacity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_MCQ_04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A commercial fertilizer labeled NPK 15:15:15 is classified scientifically as a:",
+        "options": [
+          "A. Straight fertilizer",
+          "B. Single fertilizer",
+          "C. Compound fertilizer",
+          "D. Green manure"
+        ],
+        "correctAnswer": "C. Compound fertilizer",
+        "hint": "It contains multiple major plant nutrients blended in a defined percentage ratio.",
+        "workedSolution": "NPK 15:15:15 is a compound (mixed) fertilizer because it contains three primary nutrients (Nitrogen, Phosphorus, Potassium) blended in a defined ratio.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_MCQ_05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which method of fertilizer application involves injecting water-soluble fertilizers directly through an agricultural irrigation system?",
+        "options": [
+          "A. Side-dressing",
+          "B. Broadcasting",
+          "C. Fertigation",
+          "D. Plough-sole placement"
+        ],
+        "correctAnswer": "C. Fertigation",
+        "hint": "The term combines \"fertilizer\" and \"irrigation\".",
+        "workedSolution": "Fertigation is the modern agronomic practice of dissolving and supplying water-soluble fertilizers directly through irrigation lines (drip or sprinkler).",
         "points": 1
       }
     ]
