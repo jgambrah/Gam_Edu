@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.561Z"
+    "updatedAt": "2026-10-02T20:58:46.035Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.036Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.036Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.036Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -8721,7 +8721,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Master the science of plant growth, nursery husbandry, and harvest storage through simulated agricultural trials. Focuses on essential macronutrients and micronutrients, seed viability testing, nursing techniques, and loss mitigation in grain and tuber silos.",
-    "totalPracticeQuestions": 11,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
@@ -8758,35 +8758,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "B7_CROP_MCQ_01",
+              "id": "B7_CROP_F01",
               "difficulty": "low",
-              "prompt": "Which of the following groups consists exclusively of major plant macro-nutrients?",
+              "prompt": "Mineral elements absorbed by plants from the soil to support growth and reproduction are called:",
               "options": [
-                "A. Nitrogen, Phosphorus, Potassium",
-                "B. Iron, Zinc, Manganese",
-                "C. Boron, Copper, Chlorine",
-                "D. Molybdenum, Nitrogen, Sulfur"
+                "A. Soil pollutants",
+                "B. Plant nutrients",
+                "C. Soil pathogens",
+                "D. Weeds"
               ],
-              "correctAnswer": "A. Nitrogen, Phosphorus, Potassium",
-              "hint": "Macro-nutrients are required in large quantities; recall the standard N-P-K classification.",
-              "workedSolution": "Nitrogen, Phosphorus, and Potassium are primary macro-nutrients required in large quantities by growing crops for vegetative growth, root establishment, and yield formation.",
+              "correctAnswer": "B. Plant nutrients",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Plant nutrients are essential chemical elements absorbed by plants from the soil to grow, develop, and thrive.",
               "points": 1,
               "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_CROP_MCQ_02",
+              "id": "B7_CROP_F02",
               "difficulty": "low",
-              "prompt": "A maize plant in a school farm exhibits generalized yellowing (chlorosis) starting on its older bottom leaves, alongside stunted growth. Which mineral nutrient is most likely deficient?",
+              "prompt": "Nutrients required by crops in relatively large quantities for proper growth are termed:",
               "options": [
-                "A. Potassium",
-                "B. Nitrogen",
-                "C. Phosphorus",
-                "D. Iron"
+                "A. Micro-nutrients",
+                "B. Trace nutrients",
+                "C. Macro-nutrients",
+                "D. Rare elements"
               ],
-              "correctAnswer": "B. Nitrogen",
-              "hint": "This element is essential for chlorophyll and protein synthesis; deficiency causes chlorosis on older leaves.",
-              "workedSolution": "Nitrogen deficiency leads to chlorosis (loss of green chlorophyll), appearing first on older leaves as mobile nitrogen is translocated to younger growth.",
+              "correctAnswer": "C. Macro-nutrients",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Macro or major nutrients are elements that plants require in large quantities for efficient growth and development.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F03",
+              "difficulty": "low",
+              "prompt": "Which of the following is a primary macro-nutrient for plants?",
+              "options": [
+                "A. Zinc",
+                "B. Iron",
+                "C. Nitrogen",
+                "D. Copper"
+              ],
+              "correctAnswer": "C. Nitrogen",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Nitrogen is one of the three primary macro-nutrients (N, P, K) required in large quantities by crops.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F04",
+              "difficulty": "low",
+              "prompt": "What are micro-nutrients in crop science?",
+              "options": [
+                "A. Nutrients that plants do not need at all",
+                "B. Nutrients required by plants in small or trace amounts",
+                "C. Nutrients that only poisonous plants absorb",
+                "D. Nutrients that turn into water"
+              ],
+              "correctAnswer": "B. Nutrients required by plants in small or trace amounts",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Micro or minor nutrients are elements required by plants in small or trace quantities.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F05",
+              "difficulty": "low",
+              "prompt": "Which of the following elements is classified as a micro-nutrient?",
+              "options": [
+                "A. Phosphorus",
+                "B. Potassium",
+                "C. Iron",
+                "D. Calcium"
+              ],
+              "correctAnswer": "C. Iron",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Iron is a micro-nutrient required in minute amounts, whereas phosphorus, potassium, and calcium are macro-nutrients.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F06",
+              "difficulty": "low",
+              "prompt": "Which primary nutrient promotes lush vegetative leaf and stem development in crops?",
+              "options": [
+                "A. Nitrogen",
+                "B. Potassium",
+                "C. Zinc",
+                "D. Boron"
+              ],
+              "correctAnswer": "A. Nitrogen",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Nitrogen is essential for vegetative growth and is a main component of chlorophyll, proteins, and enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F07",
+              "difficulty": "low",
+              "prompt": "The general yellowing of older leaves due to a lack of chlorophyll is known as:",
+              "options": [
+                "A. Necrosis",
+                "B. Chlorosis",
+                "C. Osmosis",
+                "D. Plasmolysis"
+              ],
+              "correctAnswer": "B. Chlorosis",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Chlorosis is the loss of green coloration in plant tissues, causing leaves to turn yellowish.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F08",
+              "difficulty": "low",
+              "prompt": "Which plant nutrient is primarily responsible for strong root development and early fruit ripening?",
+              "options": [
+                "A. Nitrogen",
+                "B. Phosphorus",
+                "C. Chlorine",
+                "D. Molybdenum"
+              ],
+              "correctAnswer": "B. Phosphorus",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Phosphorus is involved in cellular energy transfer, root/tuber growth, flowering, and early maturity.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F09",
+              "difficulty": "low",
+              "prompt": "A deficiency of phosphorus in maize plants typically causes older leaves to turn:",
+              "options": [
+                "A. Purple or reddish-purple",
+                "B. Pure white",
+                "C. Bright yellow",
+                "D. Pitch black"
+              ],
+              "correctAnswer": "A. Purple or reddish-purple",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Phosphorus deficiency leads to stunted green growth and characteristic purple or reddish discoloration on older leaves.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F10",
+              "difficulty": "low",
+              "prompt": "Which macro-nutrient plays a major role in regulating stomata opening and enzyme activation in plants?",
+              "options": [
+                "A. Iron",
+                "B. Potassium",
+                "C. Copper",
+                "D. Manganese"
+              ],
+              "correctAnswer": "B. Potassium",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Potassium (K) regulates water uptake, activates cellular enzymes, and aids sugar and starch transport.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F11",
+              "difficulty": "low",
+              "prompt": "Fertilizers derived from decomposed plant matter and animal wastes are known as:",
+              "options": [
+                "A. Inorganic fertilizers",
+                "B. Organic fertilizers (manures)",
+                "C. Chemical salts",
+                "D. Synthetic granules"
+              ],
+              "correctAnswer": "B. Organic fertilizers (manures)",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Organic fertilizers or manures are prepared from plant remains and animal wastes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F12",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an organic fertilizer?",
+              "options": [
+                "A. NPK 15:15:15",
+                "B. Farmyard manure",
+                "C. Urea",
+                "D. Sulfate of ammonia"
+              ],
+              "correctAnswer": "B. Farmyard manure",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Farmyard manure is an organic fertilizer composed of animal excreta and bedding materials.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F13",
+              "difficulty": "low",
+              "prompt": "Green manure is produced by:",
+              "options": [
+                "A. Mixing cow dung with green paint",
+                "B. Growing leafy crops (often legumes) and ploughing them into the soil while green",
+                "C. Collecting dry maize stalks from a grain store",
+                "D. Spraying green chemicals on weeds"
+              ],
+              "correctAnswer": "B. Growing leafy crops (often legumes) and ploughing them into the soil while green",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Green manure consists of fresh leguminous or leafy crops ploughed directly into the soil while still growing.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F14",
+              "difficulty": "low",
+              "prompt": "Compost is formed through the biological decomposition of organic wastes by:",
+              "options": [
+                "A. Heat engines",
+                "B. Microorganisms (bacteria and fungi)",
+                "C. Chemical sprays",
+                "D. Direct sunlight alone"
+              ],
+              "correctAnswer": "B. Microorganisms (bacteria and fungi)",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Composting is a natural process where soil microorganisms break down organic materials into rich humus.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F15",
+              "difficulty": "low",
+              "prompt": "Which of the following materials can be safely added to a school garden compost pile?",
+              "options": [
+                "A. Broken glass bottles",
+                "B. Plastic shopping bags",
+                "C. Dry leaves and vegetable scraps",
+                "D. Rusty iron nails"
+              ],
+              "correctAnswer": "C. Dry leaves and vegetable scraps",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Biodegradable organic matter such as dry leaves, vegetable scraps, and grass cuttings are suitable compost inputs.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F16",
+              "difficulty": "low",
+              "prompt": "What is the purpose of adding 'starters' to a newly built compost pile?",
+              "options": [
+                "A. To stop decomposition completely",
+                "B. To introduce beneficial microorganisms and nutrients that kickstart decomposition",
+                "C. To attract insect pests",
+                "D. To turn the compost into stone"
+              ],
+              "correctAnswer": "B. To introduce beneficial microorganisms and nutrients that kickstart decomposition",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Starters (like animal manure, coffee grounds, and fertile topsoil) provide the microorganisms and nutrients needed to initiate composting.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F17",
+              "difficulty": "low",
+              "prompt": "Which composting method involves digging a trench 1 to 2 feet deep into the ground?",
+              "options": [
+                "A. Heap method",
+                "B. Pit method",
+                "C. Broadcasting method",
+                "D. Foliar method"
+              ],
+              "correctAnswer": "B. Pit method",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Pit composting involves excavating a hole or trench in the ground to hold and decompose organic matter.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F18",
+              "difficulty": "low",
+              "prompt": "Which composting method involves stacking organic materials into a mound above ground level?",
+              "options": [
+                "A. Pit method",
+                "B. Heap (Stack) method",
+                "C. Drilling method",
+                "D. Fertigation"
+              ],
+              "correctAnswer": "B. Heap (Stack) method",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "The stack or heap method builds organic materials into a raised pile on the soil surface.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F19",
+              "difficulty": "low",
+              "prompt": "A chemical substance synthesized in factories to release nutrients for plant growth is called an:",
+              "options": [
+                "A. Organic manure",
+                "B. Inorganic (chemical) fertilizer",
+                "C. Earthworm casting",
+                "D. Mulch layer"
+              ],
+              "correctAnswer": "B. Inorganic (chemical) fertilizer",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Inorganic fertilizers are manufactured chemical substances formulated to supply specific plant nutrients.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F20",
+              "difficulty": "low",
+              "prompt": "An inorganic fertilizer that supplies only ONE major plant nutrient is called a:",
+              "options": [
+                "A. Compound fertilizer",
+                "B. Mixed fertilizer",
+                "C. Straight (simple) fertilizer",
+                "D. Complete fertilizer"
+              ],
+              "correctAnswer": "C. Straight (simple) fertilizer",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Straight or simple fertilizers contain only one of the major plant nutrients (N, P, or K).",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F21",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a straight nitrogen fertilizer?",
+              "options": [
+                "A. Muriate of potash",
+                "B. Urea",
+                "C. Rock phosphate",
+                "D. NPK 15:15:15"
+              ],
+              "correctAnswer": "B. Urea",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Urea is a straight fertilizer that supplies only nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F22",
+              "difficulty": "low",
+              "prompt": "A fertilizer that contains two or more major plant nutrients combined in a set ratio is a:",
+              "options": [
+                "A. Straight fertilizer",
+                "B. Compound (mixed) fertilizer",
+                "C. Micro-fertilizer",
+                "D. Single fertilizer"
+              ],
+              "correctAnswer": "B. Compound (mixed) fertilizer",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Compound or mixed fertilizers contain two or more major nutrients in suitable percentage combinations.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F23",
+              "difficulty": "low",
+              "prompt": "What nutrients do the letters 'N-P-K' on a commercial fertilizer bag stand for?",
+              "options": [
+                "A. Nickel, Phosphorus, Krypton",
+                "B. Nitrogen, Phosphorus, Potassium",
+                "C. Sodium, Lead, Calcium",
+                "D. Nitrogen, Protein, Kalium"
+              ],
+              "correctAnswer": "B. Nitrogen, Phosphorus, Potassium",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "N stands for Nitrogen, P for Phosphorus, and K for Potassium (Kalium).",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F24",
+              "difficulty": "low",
+              "prompt": "In an NPK 15:15:15 fertilizer bag, what is the percentage of nitrogen present?",
+              "options": [
+                "A. 5%",
+                "B. 15%",
+                "C. 30%",
+                "D. 45%"
+              ],
+              "correctAnswer": "B. 15%",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "The numbers indicate the percentage of available N, P2O5, and K2O respectively; here, nitrogen constitutes 15%.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F25",
+              "difficulty": "low",
+              "prompt": "The method of scattering fertilizer evenly across the entire surface of a cleared farm plot is:",
+              "options": [
+                "A. Side dressing",
+                "B. Ring method",
+                "C. Broadcasting",
+                "D. Fertigation"
+              ],
+              "correctAnswer": "C. Broadcasting",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Broadcasting is the uniform distribution of fertilizer over the entire surface of a field.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F26",
+              "difficulty": "low",
+              "prompt": "The method of applying fertilizer in a circular shallow ditch around a growing plant is the:",
+              "options": [
+                "A. Ring method",
+                "B. Broadcasting method",
+                "C. Foliar spray",
+                "D. Plough-sole method"
+              ],
+              "correctAnswer": "A. Ring method",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "In the ring method, fertilizer is applied in a circular furrow equidistant around the base of the plant.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F27",
+              "difficulty": "low",
+              "prompt": "Why should fertilizer applied by the ring method NOT touch the plant stem directly?",
+              "options": [
+                "A. It will freeze the stem",
+                "B. The concentrated chemical salts can scorch or burn plant tissues",
+                "C. It will turn the fertilizer into stone",
+                "D. The stem will eat the fertilizer too fast"
+              ],
+              "correctAnswer": "B. The concentrated chemical salts can scorch or burn plant tissues",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Direct contact between concentrated fertilizer salts and vegetative stems can cause tissue scorching and chemical damage.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F28",
+              "difficulty": "low",
+              "prompt": "Applying fertilizer along the side of a line of growing crops in the field is called:",
+              "options": [
+                "A. Foliar spraying",
+                "B. Side dressing",
+                "C. Broadcasting",
+                "D. Sowing"
+              ],
+              "correctAnswer": "B. Side dressing",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Side dressing involves applying fertilizer in bands to the side of established crop rows.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F29",
+              "difficulty": "low",
+              "prompt": "Applying liquid fertilizer directly to plant leaves as a fine spray is termed the:",
+              "options": [
+                "A. Foliar method",
+                "B. Ring method",
+                "C. Drilling method",
+                "D. Plough-sole method"
+              ],
+              "correctAnswer": "A. Foliar method",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "The foliar method applies diluted liquid fertilizers directly onto crop foliage.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F30",
+              "difficulty": "low",
+              "prompt": "Supplying fertilizer to crops through an agricultural irrigation system is called:",
+              "options": [
+                "A. Broadcasting",
+                "B. Fertigation",
+                "C. Ring placement",
+                "D. Drilling"
+              ],
+              "correctAnswer": "B. Fertigation",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Fertigation is the application of water-soluble fertilizers through irrigation lines.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F31",
+              "difficulty": "low",
+              "prompt": "Which of the following is an advantage of organic fertilizers over chemical fertilizers?",
+              "options": [
+                "A. They leach easily through soil",
+                "B. They improve soil structure and water-holding capacity",
+                "C. They always burn plant roots",
+                "D. They are very difficult to decompose"
+              ],
+              "correctAnswer": "B. They improve soil structure and water-holding capacity",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Organic fertilizers add humus, improving soil physical structure and increasing water retention.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F32",
+              "difficulty": "low",
+              "prompt": "The downward washing of dissolved plant nutrients below the root zone by heavy rain is called:",
+              "options": [
+                "A. Leaching",
+                "B. Aeration",
+                "C. Respiration",
+                "D. Transpiration"
+              ],
+              "correctAnswer": "A. Leaching",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Leaching occurs when excess water drains dissolved soluble minerals deep into the soil beyond root reach.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F33",
+              "difficulty": "low",
+              "prompt": "Which of the following inorganic fertilizers supplies potassium to crops?",
+              "options": [
+                "A. Muriate of potash",
+                "B. Urea",
+                "C. Single superphosphate",
+                "D. Calcium nitrate"
+              ],
+              "correctAnswer": "A. Muriate of potash",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Muriate of potash (potassium chloride) is a straight fertilizer supplying potassium.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F34",
+              "difficulty": "low",
+              "prompt": "Which secondary macro-nutrient is essential for cell wall structure and root tip growth?",
+              "options": [
+                "A. Calcium",
+                "B. Iron",
+                "C. Zinc",
+                "D. Chlorine"
+              ],
+              "correctAnswer": "A. Calcium",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Calcium is a macro-nutrient required for stabilizing cell walls and supporting apical growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F35",
+              "difficulty": "low",
+              "prompt": "Manganese in plant nutrition functions as a:",
+              "options": [
+                "A. Component of wood",
+                "B. Catalyst in chlorophyll activity and regulator of oxidation-reduction reactions",
+                "C. Major structural element of the cell wall",
+                "D. Primary source of starch"
+              ],
+              "correctAnswer": "B. Catalyst in chlorophyll activity and regulator of oxidation-reduction reactions",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Manganese regulates oxidation-reduction reactions and assists chlorophyll activity.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F36",
+              "difficulty": "low",
+              "prompt": "What is the primary danger of applying chemical fertilizers right before a heavy storm?",
+              "options": [
+                "A. The plants will freeze",
+                "B. Nutrients will be washed away into nearby streams, causing runoff pollution and wasting fertilizer",
+                "C. The fertilizer will turn into weed seeds",
+                "D. The soil will turn into sand"
+              ],
+              "correctAnswer": "B. Nutrients will be washed away into nearby streams, causing runoff pollution and wasting fertilizer",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Heavy downpours wash away surface fertilizer into local water bodies, causing chemical runoff and eutrophication.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F37",
+              "difficulty": "low",
+              "prompt": "Which component in compost provides organic carbon (brown material)?",
+              "options": [
+                "A. Dry maize stalks and dry straw",
+                "B. Fresh wet cow dung",
+                "C. Pure tap water",
+                "D. Green grass trimmings"
+              ],
+              "correctAnswer": "A. Dry maize stalks and dry straw",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Dry maize stalks, straw, and dead leaves are carbon-rich 'brown' materials in composting.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F38",
+              "difficulty": "low",
+              "prompt": "Which component in compost supplies nitrogen (green material)?",
+              "options": [
+                "A. Fresh poultry droppings and fresh green leaves",
+                "B. Sawdust",
+                "C. Dry cardboard",
+                "D. Polythene"
+              ],
+              "correctAnswer": "A. Fresh poultry droppings and fresh green leaves",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Fresh green trimmings and animal droppings provide the nitrogen required by decomposing microbes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F39",
+              "difficulty": "low",
+              "prompt": "Why should weeds be cleared around crops before applying fertilizer?",
+              "options": [
+                "A. Weeds make the farm look too green",
+                "B. Weeds will aggressively absorb the added nutrients, starving the cultivated crops",
+                "C. Fertilizer only dissolves when touching weeds",
+                "D. Weeds turn fertilizer into rock"
+              ],
+              "correctAnswer": "B. Weeds will aggressively absorb the added nutrients, starving the cultivated crops",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Weeds compete for applied nutrients, which reduces fertilizer use efficiency for the target crop.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F40",
+              "difficulty": "low",
+              "prompt": "What is the effect of repeated, excessive use of ammonium-based chemical fertilizers on soil pH?",
+              "options": [
+                "A. It increases soil acidity",
+                "B. It makes the soil alkaline",
+                "C. It neutralizes all salts",
+                "D. It has no effect"
+              ],
+              "correctAnswer": "A. It increases soil acidity",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Continuous, unbuffered use of ammonium-based fertilizers can gradually increase soil acidity.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F41",
+              "difficulty": "low",
+              "prompt": "Which of the following organic manures is formed from decomposed animal bedding mixed with dung and urine?",
+              "options": [
+                "A. Green manure",
+                "B. Farmyard manure",
+                "C. Rock phosphate",
+                "D. Urea"
+              ],
+              "correctAnswer": "B. Farmyard manure",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Farmyard manure is a decomposed mix of livestock bedding, animal dung, and urine.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F42",
+              "difficulty": "low",
+              "prompt": "Which plant nutrient functions as a structural building block of plant proteins and amino acids?",
+              "options": [
+                "A. Nitrogen",
+                "B. Chlorine",
+                "C. Boron",
+                "D. Copper"
+              ],
+              "correctAnswer": "A. Nitrogen",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Nitrogen is a constituent of amino acids, proteins, and nucleic acids in plant tissues.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F43",
+              "difficulty": "low",
+              "prompt": "In band placement (drilling), where is fertilizer placed relative to the seed?",
+              "options": [
+                "A. On the top of the leaves",
+                "B. In narrow furrows below and to the side of the seed line at planting",
+                "C. Far away outside the farm",
+                "D. Directly inside the seed embryo"
+              ],
+              "correctAnswer": "B. In narrow furrows below and to the side of the seed line at planting",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Drilling places fertilizer in a band slightly below and to the side of the seed furrow to avoid seedling burn.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F44",
+              "difficulty": "low",
+              "prompt": "Which of the following is a symptom of nitrogen deficiency in growing plants?",
+              "options": [
+                "A. Rapid growth and dark green leaves",
+                "B. Stunted growth and yellowing (chlorosis) of older leaves",
+                "C. Purple streaks on stems",
+                "D. Swollen root tips"
+              ],
+              "correctAnswer": "B. Stunted growth and yellowing (chlorosis) of older leaves",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Nitrogen deficiency causes general chlorosis and stunted shoot growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F45",
+              "difficulty": "low",
+              "prompt": "Why is compost considered environmentally friendly?",
+              "options": [
+                "A. It releases harmful greenhouse gases rapidly",
+                "B. It recycles organic waste safely into the soil without toxic chemical residues",
+                "C. It kills all soil bacteria",
+                "D. It replaces soil with plastic"
+              ],
+              "correctAnswer": "B. It recycles organic waste safely into the soil without toxic chemical residues",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Composting recycles organic farm and kitchen residues into beneficial soil humus naturally.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F46",
+              "difficulty": "low",
+              "prompt": "What is 'necrosis' in plant pathology?",
+              "options": [
+                "A. Rapid formation of flowers",
+                "B. The death and browning of plant tissues or leaf patches",
+                "C. The absorption of water by root hairs",
+                "D. The creation of green chlorophyll"
+              ],
+              "correctAnswer": "B. The death and browning of plant tissues or leaf patches",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Necrosis is the browning and localized death of plant tissues caused by severe nutrient deficiency or disease.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F47",
+              "difficulty": "low",
+              "prompt": "Which of the following fertilizers is applied in a continuous line at the bottom of a plough furrow?",
+              "options": [
+                "A. Ring method",
+                "B. Foliar spray",
+                "C. Plough-sole method",
+                "D. Fertigation"
+              ],
+              "correctAnswer": "C. Plough-sole method",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "The plough-sole method places fertilizer in a continuous band along the bottom of an open furrow as the field is ploughed.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F48",
+              "difficulty": "low",
+              "prompt": "Which element acts as a catalyst in chlorophyll formation, with deficiency causing interveinal leaf yellowing?",
+              "options": [
+                "A. Iron (Fe)",
+                "B. Phosphorus (P)",
+                "C. Potassium (K)",
+                "D. Calcium (Ca)"
+              ],
+              "correctAnswer": "A. Iron (Fe)",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Iron is required for chlorophyll synthesis, and its deficiency causes distinct leaf chlorosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F49",
+              "difficulty": "low",
+              "prompt": "Why do organic fertilizers have a longer-lasting effect in the soil than chemical fertilizers?",
+              "options": [
+                "A. They are made of solid rock",
+                "B. Their nutrients are released gradually as soil microorganisms decompose the organic matter",
+                "C. They never dissolve in water",
+                "D. They remain dry forever"
+              ],
+              "correctAnswer": "B. Their nutrients are released gradually as soil microorganisms decompose the organic matter",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Organic nutrients are released slowly as microbes mineralize organic matter over extended periods.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_F50",
+              "difficulty": "low",
+              "prompt": "Which of the following is NOT an organic fertilizer?",
+              "options": [
+                "A. Poultry droppings",
+                "B. Ammonium nitrate",
+                "C. Compost",
+                "D. Cow dung"
+              ],
+              "correctAnswer": "B. Ammonium nitrate",
+              "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+              "workedSolution": "Ammonium nitrate is a synthetic inorganic chemical fertilizer.",
               "points": 1,
               "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
@@ -8794,35 +9610,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "B7_CROP_MCQ_03",
+              "id": "B7_CROP_I01",
               "difficulty": "medium",
-              "prompt": "What is the primary advantage of incorporating organic compost into sandy soils over using chemical fertilizers exclusively?",
+              "prompt": "Why does chlorosis caused by nitrogen deficiency show up on older bottom leaves first rather than young top leaves?",
               "options": [
-                "A. It dissolves instantly in rainwater",
-                "B. It improves soil structure and increases the soil's water-holding capacity",
-                "C. It eliminates the need for weeding entirely",
-                "D. It makes the soil acidic"
+                "A. Older leaves do not receive rainfall",
+                "B. Nitrogen is mobile within the plant and is mobilized from older foliage to young, active tissues",
+                "C. Older leaves have thicker cell walls that repel nitrogen",
+                "D. Insects only suck nitrogen from older leaves"
               ],
-              "correctAnswer": "B. It improves soil structure and increases the soil's water-holding capacity",
-              "hint": "Organic matter supplies decomposed humus that binds loose sandy soil particles.",
-              "workedSolution": "Organic compost provides decomposed humus that binds loose sandy soil particles together, improving both crumb structure and moisture retention capacity.",
+              "correctAnswer": "B. Nitrogen is mobile within the plant and is mobilized from older foliage to young, active tissues",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Because nitrogen is mobile within plant tissues, plants translocate it from older leaves to growing tips during deficiencies.",
               "points": 1,
               "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_CROP_MCQ_04",
+              "id": "B7_CROP_I02",
               "difficulty": "medium",
-              "prompt": "A commercial fertilizer labeled NPK 15:15:15 is classified scientifically as a:",
+              "prompt": "How does potassium deficiency produce the condition known as 'hidden hunger' in crops?",
               "options": [
-                "A. Straight fertilizer",
-                "B. Single fertilizer",
-                "C. Compound fertilizer",
-                "D. Green manure"
+                "A. The plant stops absorbing water completely",
+                "B. Crop yield and internal health decline before visible visual symptoms like leaf scorch appear",
+                "C. The roots turn into leaves",
+                "D. The leaves turn pitch black immediately"
               ],
-              "correctAnswer": "C. Compound fertilizer",
-              "hint": "It contains multiple major plant nutrients blended in a defined percentage ratio.",
-              "workedSolution": "NPK 15:15:15 is a compound (mixed) fertilizer because it contains three primary nutrients (Nitrogen, Phosphorus, Potassium) blended in a defined ratio.",
+              "correctAnswer": "B. Crop yield and internal health decline before visible visual symptoms like leaf scorch appear",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Hidden hunger describes a state where metabolic efficiency and yield decrease without immediate visible foliar symptoms.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I03",
+              "difficulty": "medium",
+              "prompt": "What is the primary agronomic advantage of ploughing leguminous green manures into a farm plot?",
+              "options": [
+                "A. They absorb all the soil moisture to dry out the field",
+                "B. Legumes fix atmospheric nitrogen via symbiotic root bacteria, enriching the soil with organic nitrogen upon decomposition",
+                "C. They attract weed seeds to the plot",
+                "D. They prevent earthworms from entering"
+              ],
+              "correctAnswer": "B. Legumes fix atmospheric nitrogen via symbiotic root bacteria, enriching the soil with organic nitrogen upon decomposition",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Leguminous green manures fix atmospheric nitrogen through Rhizobium bacteria, supplying natural nitrogen to subsequent crops.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I04",
+              "difficulty": "medium",
+              "prompt": "Why is regular aeration (turning) critical during heap composting?",
+              "options": [
+                "A. To cool the heap to zero degrees",
+                "B. To provide oxygen for aerobic decomposing bacteria and prevent foul odors from anaerobic decomposition",
+                "C. To allow earthworms to escape the pile",
+                "D. Dry out the compost completely"
+              ],
+              "correctAnswer": "B. To provide oxygen for aerobic decomposing bacteria and prevent foul odors from anaerobic decomposition",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Turning introduces oxygen, maintaining aerobic respiration and preventing foul-smelling anaerobic conditions.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I05",
+              "difficulty": "medium",
+              "prompt": "A farmer intends to stimulate strong root anchorage and early seed production in cereal crops. Which fertilizer should be selected?",
+              "options": [
+                "A. A high-phosphorus formulation (such as single superphosphate or NPK 10:20:10)",
+                "B. Pure urea (46% N)",
+                "C. Muriate of potash",
+                "D. Lime only"
+              ],
+              "correctAnswer": "A. A high-phosphorus formulation (such as single superphosphate or NPK 10:20:10)",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Phosphorus is the primary nutrient that supports root branching, early stalk development, and seed setting.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I06",
+              "difficulty": "medium",
+              "prompt": "Why are sandy soils far more prone to nutrient leaching than clayey soils?",
+              "options": [
+                "A. Sandy soils have large pore spaces and low cation exchange capacity, allowing water to carry dissolved ions away easily",
+                "B. Sandy soils contain too many earthworms",
+                "C. Sand dissolves in water",
+                "D. Clay soils repel chemical fertilizers"
+              ],
+              "correctAnswer": "A. Sandy soils have large pore spaces and low cation exchange capacity, allowing water to carry dissolved ions away easily",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Coarse sand particles have larger macropores and low binding capacity, allowing dissolved fertilizer salts to leach rapidly.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I07",
+              "difficulty": "medium",
+              "prompt": "What happens when synthetic chemical fertilizer is applied in direct contact with germinating seeds?",
+              "options": [
+                "A. The seeds germinate in 1 hour",
+                "B. High osmotic salt concentrations draw water out of the seed embryo, causing dehydration and germination failure (seed burn)",
+                "C. The seeds turn into compost",
+                "D. The seeds produce double root systems"
+              ],
+              "correctAnswer": "B. High osmotic salt concentrations draw water out of the seed embryo, causing dehydration and germination failure (seed burn)",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "High salt concentrations around the seed embryo draw water out osmotically, injuring or killing the seedling.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I08",
+              "difficulty": "medium",
+              "prompt": "How does the cation buffering capacity of organic manures help stabilize soil quality?",
+              "options": [
+                "A. It keeps the soil permanently frozen",
+                "B. Humus buffers against rapid pH shifts, mitigating extreme soil acidity or alkalinity",
+                "C. It turns clay into sand",
+                "D. It removes air from the soil"
+              ],
+              "correctAnswer": "B. Humus buffers against rapid pH shifts, mitigating extreme soil acidity or alkalinity",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Organic humus provides buffering capacity through ion exchange, stabilizing soil pH against sharp swings.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I09",
+              "difficulty": "medium",
+              "prompt": "Under which conditions is the foliar application of fertilizer most recommended?",
+              "options": [
+                "A. When heavy rain is falling directly on the leaves",
+                "B. During acute micro-nutrient deficiencies, or when dry soils limit nutrient uptake through the root system",
+                "C. When the plant is completely leafless in the dark",
+                "D. When the field is completely flooded"
+              ],
+              "correctAnswer": "B. During acute micro-nutrient deficiencies, or when dry soils limit nutrient uptake through the root system",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Foliar feeding bypasses soil limitations to correct micronutrient deficiencies rapidly through leaf absorption.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I10",
+              "difficulty": "medium",
+              "prompt": "What is the primary environmental impact when agricultural fertilizer runoff drains into freshwater lakes?",
+              "options": [
+                "A. The water becomes completely clear",
+                "B. High nitrogen and phosphorus trigger excessive algae blooms, which deplete dissolved oxygen upon dying (eutrophication)",
+                "C. The lake turns into dry soil",
+                "D. Water salinity decreases to zero"
+              ],
+              "correctAnswer": "B. High nitrogen and phosphorus trigger excessive algae blooms, which deplete dissolved oxygen upon dying (eutrophication)",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Nitrate and phosphate runoff fuels rapid algae growth, depleting dissolved oxygen and harming aquatic life.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I11",
+              "difficulty": "medium",
+              "prompt": "Why is the pit method of composting preferred in arid or semi-arid zones over the heap method?",
+              "options": [
+                "A. Pits trap and conserve moisture better, preventing the composting mass from drying out in hot, dry winds",
+                "B. Pits do not require organic waste",
+                "C. Pits require no manual labor to prepare",
+                "D. Heaps attract more rainfall"
+              ],
+              "correctAnswer": "A. Pits trap and conserve moisture better, preventing the composting mass from drying out in hot, dry winds",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Excavated pits shield the composting mass from dry surface winds, retaining moisture needed for microbial breakdown.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I12",
+              "difficulty": "medium",
+              "prompt": "A soil test indicates a pH of 4.2 (highly acidic). What is a likely consequence of this soil condition on added phosphorus fertilizer?",
+              "options": [
+                "A. Phosphorus becomes fixed by iron and aluminium oxides into insoluble compounds, making it unavailable to plants",
+                "B. Phosphorus evaporates as gas",
+                "C. Phosphorus turns into nitrogen",
+                "D. Phosphorus doubles in solubility"
+              ],
+              "correctAnswer": "A. Phosphorus becomes fixed by iron and aluminium oxides into insoluble compounds, making it unavailable to plants",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "At low pH, soluble phosphate binds with iron and aluminium ions, forming insoluble precipitates that plants cannot absorb.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I13",
+              "difficulty": "medium",
+              "prompt": "Which of the following fertilizers is best suited as a fast-acting vegetative top-dressing for leafy vegetables like cabbage?",
+              "options": [
+                "A. Rock phosphate",
+                "B. Urea or Sulfate of Ammonia",
+                "C. Muriate of potash",
+                "D. Agricultural limestone"
+              ],
+              "correctAnswer": "B. Urea or Sulfate of Ammonia",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Soluble nitrogenous fertilizers (such as urea or sulfate of ammonia) deliver quick nitrogen to drive leafy growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I14",
+              "difficulty": "medium",
+              "prompt": "How does the application of farmyard manure benefit beneficial soil organisms like earthworms?",
+              "options": [
+                "A. It poisons their eggs",
+                "B. It provides organic carbon and nutrients as food sources while improving moisture and aeration in their habitat",
+                "C. It suffocates them by compacting the soil",
+                "D. It turns them into insects"
+              ],
+              "correctAnswer": "B. It provides organic carbon and nutrients as food sources while improving moisture and aeration in their habitat",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Manure feeds saprophytic microbes and earthworms, fostering soil biological activity.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I15",
+              "difficulty": "medium",
+              "prompt": "What is the main drawback of applying un-decomposed, fresh straw or sawdust directly to growing crops?",
+              "options": [
+                "A. It causes immediate nitrogen immobilization ('nitrogen tie-up') as soil microbes consume available nitrogen to break down the carbon",
+                "B. It causes plants to produce flowers overnight",
+                "C. It floods the soil with toxic phosphorus",
+                "D. It hardens into rock"
+              ],
+              "correctAnswer": "A. It causes immediate nitrogen immobilization ('nitrogen tie-up') as soil microbes consume available nitrogen to break down the carbon",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Decomposers consume soil nitrogen to break down high-carbon sawdust, causing temporary nitrogen deficiency in crops.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I16",
+              "difficulty": "medium",
+              "prompt": "Why is side-dressing considered more resource-efficient than broadcasting for widely spaced crops like maize?",
+              "options": [
+                "A. Broadcasting takes more rainfall",
+                "B. Side-dressing concentrates nutrients near the crop root zone rather than fertilizing the open spaces between rows",
+                "C. Side-dressing turns all fertilizers into liquids",
+                "D. Broadcasting requires airplanes only"
+              ],
+              "correctAnswer": "B. Side-dressing concentrates nutrients near the crop root zone rather than fertilizing the open spaces between rows",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Side-dressing places nutrients adjacent to the crop rows, reducing nutrient uptake by weeds in the inter-row spaces.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I17",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements is a component of plant cell membranes and functions as a secondary messenger in biochemical signaling?",
+              "options": [
+                "A. Calcium (Ca)",
+                "B. Molybdenum (Mo)",
+                "C. Chlorine (Cl)",
+                "D. Nitrogen (N)"
+              ],
+              "correctAnswer": "A. Calcium (Ca)",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Calcium stabilizes cell walls and membranes while acting as an intracellular signaling messenger.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I18",
+              "difficulty": "medium",
+              "prompt": "A tomato grower observes 'leaf burn' along the margins of older leaves, while fruit stalks remain weak. Which deficiency does this suggest?",
+              "options": [
+                "A. Nitrogen",
+                "B. Potassium",
+                "C. Zinc",
+                "D. Iron"
+              ],
+              "correctAnswer": "B. Potassium",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Marginal chlorosis and necrotic scorch along leaf edges are diagnostic indicators of potassium deficiency.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I19",
+              "difficulty": "medium",
+              "prompt": "Why is it important to consider the soil's moisture content before applying chemical fertilizers?",
+              "options": [
+                "A. Fertilizers require moisture to dissolve into ionic forms for root absorption; applying salts to bone-dry soil risks root burn",
+                "B. Moisture stops fertilizers from dissolving",
+                "C. Dry soil causes fertilizers to evaporate as clouds",
+                "D. Fertilizer only works in ice"
+              ],
+              "correctAnswer": "A. Fertilizers require moisture to dissolve into ionic forms for root absorption; applying salts to bone-dry soil risks root burn",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Nutrient ions require soil water to dissociate into absorbable solutions; dry conditions concentrate salts, injuring roots.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I20",
+              "difficulty": "medium",
+              "prompt": "What is the function of the layer of straw or native soil placed on top of a finished compost heap?",
+              "options": [
+                "A. To prevent rainwater and heat from leaving the pile, and protect it from wind erosion and scavenger birds",
+                "B. To make the compost cold",
+                "C. To prevent air from ever entering",
+                "D. To turn the heap into charcoal"
+              ],
+              "correctAnswer": "A. To prevent rainwater and heat from leaving the pile, and protect it from wind erosion and scavenger birds",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "A top mulch cap insulates the compost mass, maintains internal moisture, and protects it from weather extremes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I21",
+              "difficulty": "medium",
+              "prompt": "Which inorganic fertilizer contains sulfur in addition to nitrogen?",
+              "options": [
+                "A. Muriate of potash",
+                "B. Sulfate of ammonia",
+                "C. Urea",
+                "D. Triple superphosphate"
+              ],
+              "correctAnswer": "B. Sulfate of ammonia",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Sulfate of ammonia, (NH4)2SO4, delivers both nitrogen and sulfur to growing crops.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I22",
+              "difficulty": "medium",
+              "prompt": "Why does organic manure reduce the risk of topsoil erosion by surface water?",
+              "options": [
+                "A. It acts as a hard sheet of glass",
+                "B. Organic humus binds soil particles into stable aggregates that improve infiltration and resist detachment by raindrops",
+                "C. It kills all grass",
+                "D. It turns soil into river water"
+              ],
+              "correctAnswer": "B. Organic humus binds soil particles into stable aggregates that improve infiltration and resist detachment by raindrops",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Humus binds loose soil into stable aggregates, increasing infiltration and resisting water erosion.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I23",
+              "difficulty": "medium",
+              "prompt": "Why are compound fertilizers like NPK 20:20:20 widely utilized by commercial vegetable farmers?",
+              "options": [
+                "A. They are completely free to buy",
+                "B. They deliver a balanced, concentrated ratio of the three primary nutrients in a single field application",
+                "C. They replace the need for water",
+                "D. They keep plants from blooming"
+              ],
+              "correctAnswer": "B. They deliver a balanced, concentrated ratio of the three primary nutrients in a single field application",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Balanced NPK fertilizers supply all three primary macro-nutrients in uniform granules, streamlining application.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I24",
+              "difficulty": "medium",
+              "prompt": "How does fertigation improve nutrient use efficiency compared to manual broadcasting?",
+              "options": [
+                "A. Nutrients are dissolved in irrigation water and delivered directly to the root zone with minimal volatilization or waste",
+                "B. It burns weeds using hot water",
+                "C. It requires no pipes or pumps",
+                "D. It eliminates the need for sunlight"
+              ],
+              "correctAnswer": "A. Nutrients are dissolved in irrigation water and delivered directly to the root zone with minimal volatilization or waste",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Fertigation places dissolved, bioavailable nutrients directly at the active root zone through the irrigation system.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I25",
+              "difficulty": "medium",
+              "prompt": "What is the biological role of zinc in crop development?",
+              "options": [
+                "A. Making wood hard",
+                "B. Synthesis of growth hormones (like auxin) and activation of specific plant enzyme systems",
+                "C. Creating soil earthworms",
+                "D. Turning fruits red"
+              ],
+              "correctAnswer": "B. Synthesis of growth hormones (like auxin) and activation of specific plant enzyme systems",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Zinc acts as an essential cofactor for enzyme systems and regulates auxin synthesis for stem elongation.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I26",
+              "difficulty": "medium",
+              "prompt": "Why should poultry manure be allowed to cure and decompose before being applied directly to tender seedlings?",
+              "options": [
+                "A. It is too cold when fresh",
+                "B. Fresh poultry manure has a high ammonium content and salt concentration that can scorch delicate roots",
+                "C. It dissolves immediately into gas",
+                "D. Seedlings prefer stones"
+              ],
+              "correctAnswer": "B. Fresh poultry manure has a high ammonium content and salt concentration that can scorch delicate roots",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Fresh poultry droppings are rich in uric acid and soluble salts, which can burn plant roots if not cured.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I27",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the correct technique for ring placement on tree crops?",
+              "options": [
+                "A. Pouring fertilizer onto the tree trunk",
+                "B. Digging a circular trench matching the drip line of the leaf canopy where active feeder roots are concentrated",
+                "C. Throwing fertilizer on the upper branches",
+                "D. Scattering granules in neighboring properties"
+              ],
+              "correctAnswer": "B. Digging a circular trench matching the drip line of the leaf canopy where active feeder roots are concentrated",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "The canopy drip line corresponds to the concentration of active feeder root tips, making it the ideal placement zone.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I28",
+              "difficulty": "medium",
+              "prompt": "What is the consequence of applying excessive nitrogen to cereal crops like rice and wheat?",
+              "options": [
+                "A. Immediate death of the seeds",
+                "B. Excessive, weak vegetative growth that causes plants to fall over (lodging) and delays maturity",
+                "C. Rapid formation of deep roots",
+                "D. The soil becomes pure rock"
+              ],
+              "correctAnswer": "B. Excessive, weak vegetative growth that causes plants to fall over (lodging) and delays maturity",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Excessive nitrogen stimulates rapid vegetative growth with weak stems, predisposing cereals to lodging.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I29",
+              "difficulty": "medium",
+              "prompt": "Which diagnostic symptom distinguishes iron deficiency from nitrogen deficiency?",
+              "options": [
+                "A. Iron deficiency causes chlorosis on younger top leaves first, whereas nitrogen deficiency shows on older bottom leaves first",
+                "B. Iron turns leaves black",
+                "C. Nitrogen turns stems red",
+                "D. Iron only affects roots"
+              ],
+              "correctAnswer": "A. Iron deficiency causes chlorosis on younger top leaves first, whereas nitrogen deficiency shows on older bottom leaves first",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Iron is immobile and shows symptoms on young leaves, while mobile nitrogen is scavenged from older leaves first.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I30",
+              "difficulty": "medium",
+              "prompt": "How does the application of agricultural limestone (calcium carbonate) help acidic soils?",
+              "options": [
+                "A. It neutralizes soil acidity, raising the pH to a range where nutrients become more soluble and available",
+                "B. It turns the soil into pure sand",
+                "C. It stops water from draining",
+                "D. It destroys all nutrients"
+              ],
+              "correctAnswer": "A. It neutralizes soil acidity, raising the pH to a range where nutrients become more soluble and available",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Liming neutralizes soil acidity, creating a favorable pH that improves nutrient availability and microbial activity.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I31",
+              "difficulty": "medium",
+              "prompt": "What is the role of molybdenum as a micro-nutrient in leguminous crops?",
+              "options": [
+                "A. Coloring flower petals",
+                "B. Serving as an essential component of the nitrogenase enzyme used by root bacteria to fix atmospheric nitrogen",
+                "C. Making seeds soft",
+                "D. Pumping water into leaves"
+              ],
+              "correctAnswer": "B. Serving as an essential component of the nitrogenase enzyme used by root bacteria to fix atmospheric nitrogen",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Molybdenum is a core cofactor of the nitrogenase enzyme, which Rhizobium bacteria use to fix nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I32",
+              "difficulty": "medium",
+              "prompt": "Why is broadcasting considered unsuitable for high-value vegetable crops in weed-infested soils?",
+              "options": [
+                "A. Vegetables cannot absorb chemical fertilizers",
+                "B. Broadcasting feeds inter-row weeds equally, increasing weed competition and wasting fertilizer",
+                "C. Broadcasting freezes the soil",
+                "D. The fertilizer will turn into poison"
+              ],
+              "correctAnswer": "B. Broadcasting feeds inter-row weeds equally, increasing weed competition and wasting fertilizer",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Broadcasting scatters nutrients over the entire field, feeding weeds between rows as well as the crop.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I33",
+              "difficulty": "medium",
+              "prompt": "Which nutrient deficiency causes poor bark development and slender stems in grass crops?",
+              "options": [
+                "A. Nitrogen",
+                "B. Phosphorus",
+                "C. Chlorine",
+                "D. Iron"
+              ],
+              "correctAnswer": "B. Phosphorus",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Phosphorus deficiency produces slender, weak stems, poor root architecture, and reduced bark development.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I34",
+              "difficulty": "medium",
+              "prompt": "What is the main benefit of mixing diverse organic residues (greens and browns) in a compost pile?",
+              "options": [
+                "A. To provide a balanced carbon-to-nitrogen (C:N) ratio that sustains rapid microbial decomposition",
+                "B. To make the pile look colorful",
+                "C. To prevent the pile from absorbing water",
+                "D. To turn the compost into sand"
+              ],
+              "correctAnswer": "A. To provide a balanced carbon-to-nitrogen (C:N) ratio that sustains rapid microbial decomposition",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Balancing carbon-rich browns with nitrogen-rich greens maintains an optimal C:N ratio for decomposer microbes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I35",
+              "difficulty": "medium",
+              "prompt": "Why must single superphosphate be applied close to plant roots during planting?",
+              "options": [
+                "A. Phosphorus moves very slowly in the soil and does not leach rapidly like nitrogen",
+                "B. Phosphorus evaporates within 5 minutes",
+                "C. Roots run away from phosphorus",
+                "D. It dissolves only in air"
+              ],
+              "correctAnswer": "A. Phosphorus moves very slowly in the soil and does not leach rapidly like nitrogen",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Phosphate ions bind readily to soil particles, making localized placement near root tips necessary for uptake.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I36",
+              "difficulty": "medium",
+              "prompt": "What is the primary indicator that an aerobic compost heap has successfully broken down and finished curing?",
+              "options": [
+                "A. It smells like rotten eggs and is boiling hot",
+                "B. It has cooled down to ambient temperature, smells earthy, and looks like a dark crumbly humus",
+                "C. The materials remain completely green and dry",
+                "D. It turns into liquid water"
+              ],
+              "correctAnswer": "B. It has cooled down to ambient temperature, smells earthy, and looks like a dark crumbly humus",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Finished compost stabilizes into a cool, dark, crumbly material with a pleasant, earthy odor.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I37",
+              "difficulty": "medium",
+              "prompt": "How does chemical fertilizer runoff harm local drinking water quality?",
+              "options": [
+                "A. It turns water into solid ice",
+                "B. High nitrate concentrations in drinking water can cause methemoglobinemia (blue baby syndrome) in infants",
+                "C. It makes water taste like sugar",
+                "D. It removes all minerals from water"
+              ],
+              "correctAnswer": "B. High nitrate concentrations in drinking water can cause methemoglobinemia (blue baby syndrome) in infants",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Nitrate contamination from agricultural runoff poses serious health risks in drinking water, including methemoglobinemia.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I38",
+              "difficulty": "medium",
+              "prompt": "Which plant nutrient assists in root nodule formation and disease resistance in leguminous crops?",
+              "options": [
+                "A. Phosphorus",
+                "B. Lead",
+                "C. Mercury",
+                "D. Cadmium"
+              ],
+              "correctAnswer": "A. Phosphorus",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Phosphorus supports root growth and provides the ATP needed for symbiotic root nodule development.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I39",
+              "difficulty": "medium",
+              "prompt": "Why are compound fertilizers often coated with specialized polymers by manufacturers?",
+              "options": [
+                "A. To make them look bright",
+                "B. To slow down nutrient release, reducing leaching losses and extending feeding duration",
+                "C. To prevent farmers from handling them",
+                "D. To turn them into plastic"
+              ],
+              "correctAnswer": "B. To slow down nutrient release, reducing leaching losses and extending feeding duration",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Polymer coatings create controlled-release granules that meter out nutrients slowly, minimizing leaching.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I40",
+              "difficulty": "medium",
+              "prompt": "What is the primary biological role of boron in flowering crops?",
+              "options": [
+                "A. Making leaves blue",
+                "B. Pollen tube germination, sugar translocation, and cell wall formation",
+                "C. Creating seeds without flowers",
+                "D. Repelling insects"
+              ],
+              "correctAnswer": "B. Pollen tube germination, sugar translocation, and cell wall formation",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Boron is a micro-nutrient required for pollen tube growth, successful fertilization, and carbohydrate transport.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I41",
+              "difficulty": "medium",
+              "prompt": "How does the application of farmyard manure affect compacted heavy clay soils?",
+              "options": [
+                "A. It turns clay into concrete",
+                "B. It loosens clay particles, improving internal drainage, porosity, and aeration",
+                "C. It prevents roots from penetrating",
+                "D. It removes all air"
+              ],
+              "correctAnswer": "B. It loosens clay particles, improving internal drainage, porosity, and aeration",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Organic matter opens up dense clay soils, improving structure, permeability, and root aeration.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I42",
+              "difficulty": "medium",
+              "prompt": "Which of the following practices is recommended when applying urea to a maize field?",
+              "options": [
+                "A. Leaving it exposed on dry soil on a hot windy afternoon",
+                "B. Incorporating it into moist soil or covering it with soil immediately to minimize ammonia gas volatilization",
+                "C. Mixing it with engine oil",
+                "D. Dissolving it in kerosene"
+              ],
+              "correctAnswer": "B. Incorporating it into moist soil or covering it with soil immediately to minimize ammonia gas volatilization",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Covering urea incorporates it into the soil, preventing surface enzymes from converting it to volatile ammonia gas.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I43",
+              "difficulty": "medium",
+              "prompt": "What symptom on growing crops indicates severe sulfur deficiency?",
+              "options": [
+                "A. Uniform pale yellowing on younger leaves, as sulfur is relatively immobile in plant tissues",
+                "B. Leaves turning dark purple",
+                "C. Roots growing above the ground",
+                "D. Black spots on stems"
+              ],
+              "correctAnswer": "A. Uniform pale yellowing on younger leaves, as sulfur is relatively immobile in plant tissues",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Because sulfur is relatively immobile, deficiency symptoms appear first as chlorosis on younger leaves.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I44",
+              "difficulty": "medium",
+              "prompt": "Why does excessive reliance on chemical fertilizers degrade natural soil fertility over time?",
+              "options": [
+                "A. They provide mineral nutrients without returning organic carbon, starving soil microbes and breaking down crumb structure",
+                "B. They turn the soil into water",
+                "C. They cause crops to produce wood only",
+                "D. They attract birds"
+              ],
+              "correctAnswer": "A. They provide mineral nutrients without returning organic carbon, starving soil microbes and breaking down crumb structure",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Continuous mineral fertilization without organic additions depletes humus, degrading soil structure and microbial life.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I45",
+              "difficulty": "medium",
+              "prompt": "Under what circumstance is band placement preferred over broadcasting at planting?",
+              "options": [
+                "A. When establishing widely spaced row crops in soils with moderate to low fertility",
+                "B. When planting flooded paddy rice",
+                "C. When planting dense pasture grasses",
+                "D. When no crop has been planted"
+              ],
+              "correctAnswer": "A. When establishing widely spaced row crops in soils with moderate to low fertility",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Band placement concentrates fertilizer near emerging seedlings, improving early uptake in row crops.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I46",
+              "difficulty": "medium",
+              "prompt": "What is the function of copper as a trace element in crops?",
+              "options": [
+                "A. Photosynthetic electron transport and enzymatic activation for lignin synthesis in cell walls",
+                "B. Creating copper metal inside seeds",
+                "C. Replacing water in stems",
+                "D. Turning plants brown"
+              ],
+              "correctAnswer": "A. Photosynthetic electron transport and enzymatic activation for lignin synthesis in cell walls",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Copper participates in photosynthetic electron transport and activates enzymes involved in lignin production.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I47",
+              "difficulty": "medium",
+              "prompt": "Why should compost heaps be kept moist (like a wrung-out sponge) throughout decomposition?",
+              "options": [
+                "A. To drown pests",
+                "B. Decomposing bacteria and fungi require moisture to survive and metabolize organic substrates",
+                "C. To prevent the pile from producing fertilizer",
+                "D. To turn the pile into ice"
+              ],
+              "correctAnswer": "B. Decomposing bacteria and fungi require moisture to survive and metabolize organic substrates",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Adequate moisture is required for microbial metabolism and enzymatic activity within the compost pile.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I48",
+              "difficulty": "medium",
+              "prompt": "What is the primary visual symptom of magnesium deficiency in broadleaf plants?",
+              "options": [
+                "A. Interveinal chlorosis on older leaves, because magnesium is mobile and forms the central atom of the chlorophyll molecule",
+                "B. Leaves turning solid black",
+                "C. Instant loss of all roots",
+                "D. Production of red flowers"
+              ],
+              "correctAnswer": "A. Interveinal chlorosis on older leaves, because magnesium is mobile and forms the central atom of the chlorophyll molecule",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Magnesium is the central atom in chlorophyll; its deficiency causes interveinal chlorosis on older leaves.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I49",
+              "difficulty": "medium",
+              "prompt": "Why is the plough-sole method beneficial for deep-rooted perennial crops?",
+              "options": [
+                "A. It places fertilizer deep in the subsoil where deep roots forage and moisture persists during dry periods",
+                "B. It burns surface weeds",
+                "C. It prevents plants from growing tall",
+                "D. It dissolves the plough"
+              ],
+              "correctAnswer": "A. It places fertilizer deep in the subsoil where deep roots forage and moisture persists during dry periods",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Depositing fertilizer at the furrow bottom places nutrients in deeper, moisture-retentive root zones.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_I50",
+              "difficulty": "medium",
+              "prompt": "What is the benefit of using both organic manure and inorganic fertilizer together (Integrated Nutrient Management)?",
+              "options": [
+                "A. Chemical fertilizer provides immediate nutrients, while manure improves soil physical structure, moisture retention, and long-term fertility",
+                "B. They cancel each other out completely",
+                "C. It saves money by avoiding planting crops",
+                "D. It turns crops into wild trees"
+              ],
+              "correctAnswer": "A. Chemical fertilizer provides immediate nutrients, while manure improves soil physical structure, moisture retention, and long-term fertility",
+              "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+              "workedSolution": "Combining both sources pairs rapid nutrient availability with improvements in soil structure and microbial health.",
               "points": 1,
               "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
@@ -8830,18 +10462,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "hard": [
             {
-              "id": "B7_CROP_MCQ_05",
+              "id": "B7_CROP_A01",
               "difficulty": "hard",
-              "prompt": "Which method of fertilizer application involves injecting water-soluble fertilizers directly through an agricultural irrigation system?",
+              "prompt": "A school farm soil test reveals high total phosphorus, yet maize plants display purple older leaves and stunted roots. What soil condition explains this paradox?",
               "options": [
-                "A. Side-dressing",
-                "B. Broadcasting",
-                "C. Fertigation",
-                "D. Plough-sole placement"
+                "A. The soil is too wet for roots",
+                "B. Soil acidity (pH below 5.0) causes phosphorus fixation by soluble aluminium and iron cations, rendering it insoluble and unassimilable",
+                "C. The maize plants are absorbing too much nitrogen",
+                "D. Earthworms have consumed all the phosphorus"
               ],
-              "correctAnswer": "C. Fertigation",
-              "hint": "The term combines \"fertilizer\" and \"irrigation\".",
-              "workedSolution": "Fertigation is the modern agronomic practice of dissolving and supplying water-soluble fertilizers directly through irrigation lines (drip or sprinkler).",
+              "correctAnswer": "B. Soil acidity (pH below 5.0) causes phosphorus fixation by soluble aluminium and iron cations, rendering it insoluble and unassimilable",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "In acidic soils, phosphate forms insoluble precipitates with iron and aluminium ions, preventing root absorption despite high soil totals.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A02",
+              "difficulty": "hard",
+              "prompt": "Why does adding high-carbon sawdust (C:N ratio 400:1) to a garden soil cause crop plants to turn yellow and stop growing?",
+              "options": [
+                "A. The sawdust produces poisonous acids",
+                "B. Decomposing microorganisms consume all available soil mineral nitrogen to build their own biomass, causing temporary nitrogen immobilization",
+                "C. The sawdust reflects all incoming sunlight",
+                "D. Wood particles absorb all water permanently"
+              ],
+              "correctAnswer": "B. Decomposing microorganisms consume all available soil mineral nitrogen to build their own biomass, causing temporary nitrogen immobilization",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Microbes decompose carbon-rich material by scavenging inorganic soil nitrogen, temporarily starving crops of nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A03",
+              "difficulty": "hard",
+              "prompt": "Calculate the mass of pure nitrogen contained in a 50 kg bag of commercial NPK 20:10:10 fertilizer.",
+              "options": [
+                "A. 5 kg",
+                "B. 10 kg",
+                "C. 20 kg",
+                "D. 25 kg"
+              ],
+              "correctAnswer": "B. 10 kg",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "The formulation is 20% nitrogen by weight: 20% of 50 kg = 0.20 * 50 kg = 10 kg of pure nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A04",
+              "difficulty": "hard",
+              "prompt": "How does potassium (K) regulate water conservation in crops during sudden seasonal dry spells?",
+              "options": [
+                "A. It forms a plastic wax on leaf surfaces",
+                "B. It acts as an osmotic solute; pumping K+ out of guard cells causes stomatal closure, reducing transpirational water loss",
+                "C. It changes liquid water into solid ice inside the roots",
+                "D. It prevents the roots from taking in soil water"
+              ],
+              "correctAnswer": "B. It acts as an osmotic solute; pumping K+ out of guard cells causes stomatal closure, reducing transpirational water loss",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Potassium fluxes control guard cell turgor, closing stomatal pores to conserve internal moisture under water stress.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A05",
+              "difficulty": "hard",
+              "prompt": "Why does applying chemical fertilizers to a waterlogged, flooded soil often result in significant nitrogen loss to the atmosphere?",
+              "options": [
+                "A. Nitrogen turns into solid rock",
+                "B. Anaerobic conditions foster denitrifying bacteria that convert soil nitrates into volatile nitrous oxide and dinitrogen gas",
+                "C. Water destroys the nitrogen nucleus",
+                "D. Flooding freezes the fertilizer salts"
+              ],
+              "correctAnswer": "B. Anaerobic conditions foster denitrifying bacteria that convert soil nitrates into volatile nitrous oxide and dinitrogen gas",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Anaerobic conditions in waterlogged soils drive microbial denitrification, releasing nitrogen gas into the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A06",
+              "difficulty": "hard",
+              "prompt": "How does the high cation exchange capacity (CEC) of organic humus prevent fertilizer leaching in sandy topsoils?",
+              "options": [
+                "A. Humus particles carry negative electrical charges that hold positively charged nutrient ions (K+, Ca2+, Mg2+, NH4+), preventing wash-out",
+                "B. Humus freezes rainwater on contact",
+                "C. Humus turns all nutrients into non-polar gases",
+                "D. It turns sand into glass"
+              ],
+              "correctAnswer": "A. Humus particles carry negative electrical charges that hold positively charged nutrient ions (K+, Ca2+, Mg2+, NH4+), preventing wash-out",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Negatively charged humus colloids hold nutrient cations electrostatically, reducing leaching losses.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A07",
+              "difficulty": "hard",
+              "prompt": "A tomato grower notices blossom-end rot (dark, leathery, sunken patches on fruit bases) during rapid fruit expansion. What nutritional factor is responsible?",
+              "options": [
+                "A. Calcium deficiency caused by erratic water transport, as calcium moves primarily through transpirational water flow",
+                "B. Excessive iron intake",
+                "C. Lack of atmospheric nitrogen",
+                "D. Over-application of compost"
+              ],
+              "correctAnswer": "A. Calcium deficiency caused by erratic water transport, as calcium moves primarily through transpirational water flow",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Blossom-end rot is caused by localized calcium deficiency in expanding fruit tissues, often worsened by uneven transpiration.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A08",
+              "difficulty": "hard",
+              "prompt": "Why does compost pile temperature rise naturally to 55°C–65°C during active decomposition?",
+              "options": [
+                "A. Chemical fertilizers ignite inside the pile",
+                "B. Exothermic cellular respiration by billions of active thermophilic microorganisms releases heat energy as they break down organic carbon",
+                "C. The compost attracts solar rays like a mirror",
+                "D. Spontaneous nuclear decay occurs in organic matter"
+              ],
+              "correctAnswer": "B. Exothermic cellular respiration by billions of active thermophilic microorganisms releases heat energy as they break down organic carbon",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Microbial metabolism of organic carbon is exothermic, heating the core of well-insulated aerobic piles.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A09",
+              "difficulty": "hard",
+              "prompt": "What is the biological benefit of maintaining compost temperatures above 55°C for several consecutive days?",
+              "options": [
+                "A. It kills weed seeds and pathogenic bacteria or insect larvae, pasteurizing the finished organic manure",
+                "B. It turns the pile into charcoal",
+                "C. It prevents any further microbial activity",
+                "D. It dissolves all mineral elements"
+              ],
+              "correctAnswer": "A. It kills weed seeds and pathogenic bacteria or insect larvae, pasteurizing the finished organic manure",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Thermophilic temperatures destroy weed seeds, insect eggs, and human or plant pathogens in the pile.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A10",
+              "difficulty": "hard",
+              "prompt": "How does chemical fertilizer runoff into a slow-moving river trigger massive fish mortality?",
+              "options": [
+                "A. The fertilizer poisons the fish directly on contact",
+                "B. Nitrogen and phosphorus drive an algal bloom; when algae die, aerobic decomposers multiply and consume dissolved oxygen, suffocating the fish",
+                "C. The fertilizer turns the river water into solid salt",
+                "D. Fertilizer blocks fish vision"
+              ],
+              "correctAnswer": "B. Nitrogen and phosphorus drive an algal bloom; when algae die, aerobic decomposers multiply and consume dissolved oxygen, suffocating the fish",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Runoff causes eutrophication: dying algal blooms fuel bacterial decomposition, which strips dissolved oxygen from the water.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A11",
+              "difficulty": "hard",
+              "prompt": "A 50 kg bag of NPK 15:15:15 is compared with a 50 kg bag of NPK 20:10:10. How do they differ in total nutrient content?",
+              "options": [
+                "A. NPK 15:15:15 contains 22.5 kg of total nutrients (N+P+K), while NPK 20:10:10 contains 20 kg of total nutrients",
+                "B. Both bags contain exactly 50 kg of pure active nutrients",
+                "C. NPK 20:10:10 has zero nitrogen",
+                "D. NPK 15:15:15 contains no phosphorus"
+              ],
+              "correctAnswer": "A. NPK 15:15:15 contains 22.5 kg of total nutrients (N+P+K), while NPK 20:10:10 contains 20 kg of total nutrients",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "NPK 15:15:15 has 45% active nutrients (0.45 * 50 = 22.5 kg); NPK 20:10:10 has 40% active nutrients (0.40 * 50 = 20 kg).",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A12",
+              "difficulty": "hard",
+              "prompt": "Why does continuous application of sulfate of ammonia, (NH4)2SO4, acidify soil faster than urea application?",
+              "options": [
+                "A. Sulfate of ammonia contains pure battery acid",
+                "B. Microbial nitrification of ammonium (NH4+) releases two hydrogen ions (H+) for every ammonium ion oxidized to nitrate",
+                "C. Sulfate evaporates soil water",
+                "D. Urea contains calcium carbonate"
+              ],
+              "correctAnswer": "B. Microbial nitrification of ammonium (NH4+) releases two hydrogen ions (H+) for every ammonium ion oxidized to nitrate",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Bacterial nitrification of ammonium releases free hydrogen ions into the soil solution, lowering pH over time.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A13",
+              "difficulty": "hard",
+              "prompt": "How does foliar fertilization bypass root uptake barriers in alkaline soils with a pH above 8.0?",
+              "options": [
+                "A. It forces the soil to become acidic",
+                "B. Nutrients are absorbed directly through the leaf cuticle and stomatal pores, bypassing soil precipitation reactions",
+                "C. It turns the roots into leaves",
+                "D. It removes the leaves entirely"
+              ],
+              "correctAnswer": "B. Nutrients are absorbed directly through the leaf cuticle and stomatal pores, bypassing soil precipitation reactions",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Nutrients applied to foliage enter directly through stomata and cuticular pores, avoiding soil fixation.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A14",
+              "difficulty": "hard",
+              "prompt": "Why do organic farming advocates recommend incorporating crop residues back into topsoil rather than burning them (slash-and-burn)?",
+              "options": [
+                "A. Burning makes the soil cold",
+                "B. Burning volatilizes carbon, nitrogen, and sulfur into the atmosphere as polluting gases, destroying organic matter and soil structure",
+                "C. Burning creates too much water",
+                "D. Crop residues are poisonous to fire"
+              ],
+              "correctAnswer": "B. Burning volatilizes carbon, nitrogen, and sulfur into the atmosphere as polluting gases, destroying organic matter and soil structure",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Burning drives off nitrogen and carbon into the atmosphere, destroying organic matter and soil aggregation.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A15",
+              "difficulty": "hard",
+              "prompt": "What is the physiological role of molybdenum in non-legume crops like cauliflower?",
+              "options": [
+                "A. Synthesis of wood fibers",
+                "B. Serving as an essential component of the nitrate reductase enzyme, which converts absorbed nitrate into amino acids",
+                "C. Producing fruit sugars directly",
+                "D. Suppressing leaf diseases"
+              ],
+              "correctAnswer": "B. Serving as an essential component of the nitrate reductase enzyme, which converts absorbed nitrate into amino acids",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Molybdenum is a cofactor in nitrate reductase, which reduces nitrate into forms usable for protein synthesis.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A16",
+              "difficulty": "hard",
+              "prompt": "Why must single superphosphate granules be placed in bands rather than mixed through the entire soil profile?",
+              "options": [
+                "A. Broadcasting exposes phosphate ions to more soil minerals, increasing fixation into insoluble forms and lowering uptake",
+                "B. Phosphate dissolves into gas when broadcast",
+                "C. Phosphate attracts birds that eat the fertilizer",
+                "D. Phosphate causes immediate soil freezing"
+              ],
+              "correctAnswer": "A. Broadcasting exposes phosphate ions to more soil minerals, increasing fixation into insoluble forms and lowering uptake",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Band placement limits soil contact, reducing fixation by iron and aluminium oxides and keeping phosphorus available to roots.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A17",
+              "difficulty": "hard",
+              "prompt": "Why does severe iron deficiency cause younger leaves to turn yellow while their leaf veins stay green (interveinal chlorosis)?",
+              "options": [
+                "A. Iron is mobile and leaves the veins last",
+                "B. Iron is immobile in plant tissues; expanding leaf cells cannot synthesize chlorophyll, but structural vascular veins retain initial iron",
+                "C. Veins do not contain chlorophyll",
+                "D. Iron only flows through the air"
+              ],
+              "correctAnswer": "B. Iron is immobile in plant tissues; expanding leaf cells cannot synthesize chlorophyll, but structural vascular veins retain initial iron",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Because iron is immobile, developing interveinal leaf tissue lacks iron for chlorophyll synthesis, while veins retain baseline amounts.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A18",
+              "difficulty": "hard",
+              "prompt": "What soil condition creates a high risk of fertilizer salt injury (root plasmolysis) in school gardens?",
+              "options": [
+                "A. Applying high doses of chemical fertilizer to dry soils under intense midday heat",
+                "B. Applying cured compost during steady drizzle",
+                "C. Mulching with dry grass",
+                "D. Ploughing under green manure crops"
+              ],
+              "correctAnswer": "A. Applying high doses of chemical fertilizer to dry soils under intense midday heat",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Applying soluble salts to dry soil sharply lowers soil water potential, drawing water out of roots osmotically.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A19",
+              "difficulty": "hard",
+              "prompt": "Why does adding wood ash to a compost pile increase its potassium content while raising its pH?",
+              "options": [
+                "A. Wood ash contains potassium carbonate (potash) and basic oxides that neutralize acids and contribute potassium",
+                "B. Wood ash is made of pure nitrogen",
+                "C. Wood ash acts as an organic weed killer",
+                "D. Wood ash turns water into salt"
+              ],
+              "correctAnswer": "A. Wood ash contains potassium carbonate (potash) and basic oxides that neutralize acids and contribute potassium",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Wood ash is rich in potassium carbonate and alkaline earth oxides, which add potassium and raise pH.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A20",
+              "difficulty": "hard",
+              "prompt": "How does chlorine act as a beneficial micro-nutrient in crops?",
+              "options": [
+                "A. It acts as an osmotic balancing solute in cell vacuoles and plays an essential role in the photosynthetic splitting of water (photolysis)",
+                "B. It bleaches the leaves to keep them white",
+                "C. It turns roots into wood",
+                "D. It destroys all insects automatically"
+              ],
+              "correctAnswer": "A. It acts as an osmotic balancing solute in cell vacuoles and plays an essential role in the photosynthetic splitting of water (photolysis)",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Chloride functions as an osmotic solute, helps maintain cell turgor, and participates in water-splitting during photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A21",
+              "difficulty": "hard",
+              "prompt": "What is the biological difference between 'mineralization' and 'immobilization' in soil nitrogen cycling?",
+              "options": [
+                "A. Mineralization converts organic nitrogen into plant-absorbable inorganic ions; immobilization ties up inorganic ions into microbial biomass",
+                "B. Mineralization destroys nitrogen; immobilization creates new nitrogen",
+                "C. Mineralization happens only in rocks; immobilization occurs only in air",
+                "D. Both terms describe identical chemical pathways"
+              ],
+              "correctAnswer": "A. Mineralization converts organic nitrogen into plant-absorbable inorganic ions; immobilization ties up inorganic ions into microbial biomass",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Mineralization releases inorganic ammonium from organic matter; immobilization occurs when microbes incorporate mineral nitrogen into their own cells.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A22",
+              "difficulty": "hard",
+              "prompt": "Why is side-dressing with urea recommended at the knee-high growth stage in maize rather than applying all nitrogen at sowing?",
+              "options": [
+                "A. Maize plants cannot absorb nutrients when young",
+                "B. Split application aligns nitrogen availability with the rapid vegetative uptake phase, reducing early leaching losses",
+                "C. Urea evaporates if applied after flowering",
+                "D. Sowing requires no fertilizer"
+              ],
+              "correctAnswer": "B. Split application aligns nitrogen availability with the rapid vegetative uptake phase, reducing early leaching losses",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Split applications match nutrient delivery to periods of peak plant demand, minimizing leaching losses.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A23",
+              "difficulty": "hard",
+              "prompt": "A farmer mixes diammonium phosphate (DAP) with unslaked lime (calcium oxide) in a bucket before field application. Why is this considered an agronomic mistake?",
+              "options": [
+                "A. The mixture turns into solid rock instantly",
+                "B. The strong alkali triggers a chemical reaction that converts ammonium into ammonia gas, causing significant gaseous nitrogen loss",
+                "C. Lime destroys the phosphorus atom",
+                "D. It makes the fertilizer explode"
+              ],
+              "correctAnswer": "B. The strong alkali triggers a chemical reaction that converts ammonium into ammonia gas, causing significant gaseous nitrogen loss",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Mixing ammonium fertilizers with alkaline lime converts ammonium into volatile ammonia gas, wasting nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A24",
+              "difficulty": "hard",
+              "prompt": "How does the application of well-rotted farmyard manure improve root penetration in compacted subsoils?",
+              "options": [
+                "A. It dissolves all soil minerals",
+                "B. Humic substances stimulate root elongation and encourage burrowing soil fauna, which create continuous biopores",
+                "C. It hardens the soil",
+                "D. It removes the need for roots"
+              ],
+              "correctAnswer": "B. Humic substances stimulate root elongation and encourage burrowing soil fauna, which create continuous biopores",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Humic substances improve crumb structure and stimulate earthworm activity, opening macro-pores for root growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A25",
+              "difficulty": "hard",
+              "prompt": "Why does manganese deficiency in crops occur more frequently on calcareous, alkaline soils (pH above 7.5)?",
+              "options": [
+                "A. High pH oxidizes manganese into insoluble, oxidized forms that plant roots cannot absorb",
+                "B. Alkaline soils contain no manganese",
+                "C. Calcium eats manganese",
+                "D. High pH turns manganese into a gas"
+              ],
+              "correctAnswer": "A. High pH oxidizes manganese into insoluble, oxidized forms that plant roots cannot absorb",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "At alkaline pH, manganese is oxidized into insoluble forms, causing deficiencies despite total soil presence.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A26",
+              "difficulty": "hard",
+              "prompt": "Why does a compost pile with too much nitrogenous waste (like fresh poultry manure) produce a strong, unpleasant ammonia smell?",
+              "options": [
+                "A. The pile is too dry",
+                "B. The C:N ratio is too low; decomposers have excess nitrogen relative to carbon, releasing surplus nitrogen as volatile ammonia gas",
+                "C. Microorganisms have died",
+                "D. The compost is turning into plastic"
+              ],
+              "correctAnswer": "B. The C:N ratio is too low; decomposers have excess nitrogen relative to carbon, releasing surplus nitrogen as volatile ammonia gas",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "An oversupply of nitrogen relative to available carbon causes decomposing microbes to vent excess nitrogen as ammonia gas.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A27",
+              "difficulty": "hard",
+              "prompt": "Why is drip fertigation considered the most water- and nutrient-efficient method for commercial vegetable production?",
+              "options": [
+                "A. It operates without human supervision",
+                "B. It applies measured, dissolved nutrient doses directly to the active root zone, virtually eliminating evaporation, runoff, and deep percolation",
+                "C. It requires no fertilizers",
+                "D. It turns crops into perennials"
+              ],
+              "correctAnswer": "B. It applies measured, dissolved nutrient doses directly to the active root zone, virtually eliminating evaporation, runoff, and deep percolation",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Drip fertigation delivers targeted water and dissolved nutrients directly to root zones, maximizing efficiency.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A28",
+              "difficulty": "hard",
+              "prompt": "How does sulfur deficiency impair the nutritional quality of harvestable grain in cereal crops?",
+              "options": [
+                "A. It prevents crops from absorbing water",
+                "B. Sulfur is required to synthesize essential amino acids (methionine and cysteine); its absence halts complete protein formation",
+                "C. It turns the grain purple",
+                "D. It causes roots to die"
+              ],
+              "correctAnswer": "B. Sulfur is required to synthesize essential amino acids (methionine and cysteine); its absence halts complete protein formation",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Sulfur is a structural component of essential amino acids (cysteine, methionine) required for grain protein assembly.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A29",
+              "difficulty": "hard",
+              "prompt": "Why do organic fertilizers have lower, unstandardized percentage nutrient guarantees compared to synthetic fertilizers?",
+              "options": [
+                "A. Chemical factories intentionally make manures poor",
+                "B. Manures are derived from variable biological feedstocks whose composition fluctuates based on diet, bedding, and decomposition conditions",
+                "C. Organic matter contains no real nutrients",
+                "D. Manures are completely synthetic"
+              ],
+              "correctAnswer": "B. Manures are derived from variable biological feedstocks whose composition fluctuates based on diet, bedding, and decomposition conditions",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Organic manures derive from diverse biological wastes, resulting in variable nutrient concentrations compared to formulated synthetic fertilizers.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A30",
+              "difficulty": "hard",
+              "prompt": "What is the primary agronomic danger of applying chemical nitrogen fertilizer at rates far exceeding soil test recommendations?",
+              "options": [
+                "A. Crops grow too slowly",
+                "B. Excessive shoot growth with thin cell walls increases susceptibility to insect pests, fungal diseases, and lodging, while contaminating aquifers",
+                "C. The soil becomes completely alkaline",
+                "D. The plants lose their green chlorophyll"
+              ],
+              "correctAnswer": "B. Excessive shoot growth with thin cell walls increases susceptibility to insect pests, fungal diseases, and lodging, while contaminating aquifers",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Excess nitrogen promotes soft, succulent vegetative growth vulnerable to pests and diseases, and increases nitrate leaching into groundwater.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A31",
+              "difficulty": "hard",
+              "prompt": "How does mycorrhizal fungal colonization enhance phosphorus absorption in crop plants?",
+              "options": [
+                "A. Fungi produce green leaves for the plant",
+                "B. Fungal hyphae extend beyond the root depletion zone, solubilizing fixed mineral phosphorus and funneling it back to the host roots",
+                "C. Fungi convert soil into water",
+                "D. Fungi destroy excess nitrogen"
+              ],
+              "correctAnswer": "B. Fungal hyphae extend beyond the root depletion zone, solubilizing fixed mineral phosphorus and funneling it back to the host roots",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Mycorrhizal hyphae extend past the root depletion zone, exuding organic acids that solubilize fixed phosphate for uptake.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A32",
+              "difficulty": "hard",
+              "prompt": "Why is rock phosphate unsuited as a fast-acting top-dressing fertilizer for annual vegetables?",
+              "options": [
+                "A. It dissolves too rapidly in rainwater",
+                "B. It has very low water solubility and requires acidic soil conditions and time to break down into plant-available orthophosphate",
+                "C. It contains toxic concentrations of nitrogen",
+                "D. It evaporates on exposure to sunlight"
+              ],
+              "correctAnswer": "B. It has very low water solubility and requires acidic soil conditions and time to break down into plant-available orthophosphate",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Rock phosphate is an insoluble raw mineral that releases plant-available phosphorus very slowly, making it unsuitable for quick seasonal boosts.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A33",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical cause of mottled chlorosis on older leaves during severe magnesium deficiency?",
+              "options": [
+                "A. Magnesium is translocated from older foliage to young expanding tissues to maintain chlorophyll production at the growing tips",
+                "B. Magnesium breaks down into iron",
+                "C. The cell wall collapses",
+                "D. Starch turns into nitrogen"
+              ],
+              "correctAnswer": "A. Magnesium is translocated from older foliage to young expanding tissues to maintain chlorophyll production at the growing tips",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Because magnesium is mobile, plants remobilize it from older leaves to support growing tips during deficiencies, producing older leaf chlorosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A34",
+              "difficulty": "hard",
+              "prompt": "Why does adding fresh wood chips directly to an agricultural field without nitrogen supplementation cause temporary crop stunting?",
+              "options": [
+                "A. Wood chips absorb all sunlight",
+                "B. The wide C:N ratio causes soil bacteria to immobilize available mineral nitrogen, starving the crop until the wood decomposes",
+                "C. Wood chips release harmful herbicide chemicals",
+                "D. Wood chips prevent roots from breathing"
+              ],
+              "correctAnswer": "B. The wide C:N ratio causes soil bacteria to immobilize available mineral nitrogen, starving the crop until the wood decomposes",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "High-carbon materials trigger microbial nitrogen immobilization, which depletes plant-available nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A35",
+              "difficulty": "hard",
+              "prompt": "How does incorporating organic manures help neutralize the adverse effects of excessive chemical fertilizer applications?",
+              "options": [
+                "A. It cools the soil to freezing point",
+                "B. Organic colloids increase soil cation exchange capacity, buffering salt concentrations and binding excess ions in the soil solution",
+                "C. Manure destroys all chemical elements",
+                "D. It turns fertilizers into water"
+              ],
+              "correctAnswer": "B. Organic colloids increase soil cation exchange capacity, buffering salt concentrations and binding excess ions in the soil solution",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Humus provides a high buffering capacity that adsorbs excess fertilizer salts, moderating salinity stress in the root zone.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A36",
+              "difficulty": "hard",
+              "prompt": "What is the primary chemical difference between straight single superphosphate (SSP) and triple superphosphate (TSP)?",
+              "options": [
+                "A. SSP contains gypsum (calcium sulfate) delivering sulfur, while TSP is a more concentrated phosphorus source with minimal sulfur",
+                "B. TSP contains 50% nitrogen",
+                "C. SSP is an organic fertilizer",
+                "D. TSP cannot dissolve in water"
+              ],
+              "correctAnswer": "A. SSP contains gypsum (calcium sulfate) delivering sulfur, while TSP is a more concentrated phosphorus source with minimal sulfur",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Single superphosphate contains calcium sulfate (supplying sulfur), while triple superphosphate is a more concentrated, low-sulfur phosphorus fertilizer.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A37",
+              "difficulty": "hard",
+              "prompt": "Why are foliar micro-nutrient sprays more effective than soil applications in highly alkaline soils?",
+              "options": [
+                "A. Foliar feeding directly enters leaf tissues, bypassing soil chemical reactions that precipitate micro-nutrients into insoluble oxides",
+                "B. Alkaline soils absorb foliar sprays from the air",
+                "C. Leaves do not need micro-nutrients",
+                "D. Soil micro-nutrients only work in darkness"
+              ],
+              "correctAnswer": "A. Foliar feeding directly enters leaf tissues, bypassing soil chemical reactions that precipitate micro-nutrients into insoluble oxides",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Foliar sprays deliver micronutrients directly to leaf tissues, bypassing the alkaline soil conditions that lock them up.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A38",
+              "difficulty": "hard",
+              "prompt": "How does the application of well-aerated compost suppress common soil-borne fungal pathogens?",
+              "options": [
+                "A. It acts as an inorganic poison",
+                "B. It introduces diverse beneficial microorganisms that outcompete, parasitize, or inhibit soil-borne plant pathogens",
+                "C. It heats the soil to 100°C permanently",
+                "D. It removes all water from the root zone"
+              ],
+              "correctAnswer": "B. It introduces diverse beneficial microorganisms that outcompete, parasitize, or inhibit soil-borne plant pathogens",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Diverse communities of beneficial microbes in mature compost outcompete and suppress harmful soil-borne fungi.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A39",
+              "difficulty": "hard",
+              "prompt": "What is the metabolic fate of nitrate (NO3-) ions absorbed by plant roots from inorganic fertilizer?",
+              "options": [
+                "A. They are stored as rocks inside the nucleus",
+                "B. They are enzymatically reduced to ammonium and incorporated into amino acids to synthesize plant proteins and enzymes",
+                "C. They are exhaled directly through stomata as gas",
+                "D. They are turned into starch"
+              ],
+              "correctAnswer": "B. They are enzymatically reduced to ammonium and incorporated into amino acids to synthesize plant proteins and enzymes",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Nitrate reductase reduces absorbed nitrate to ammonium, which is then incorporated into amino acids and proteins.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A40",
+              "difficulty": "hard",
+              "prompt": "Why is the placement of starter fertilizer bands 5 cm to the side and 5 cm below the seed line (2x2 rule) standard in mechanized planting?",
+              "options": [
+                "A. To hide the fertilizer from birds",
+                "B. It places nutrients within reach of developing roots while avoiding osmotic salt injury to the emerging seedling",
+                "C. It prevents weeds from growing anywhere on the farm",
+                "D. It makes seeds germinate without water"
+              ],
+              "correctAnswer": "B. It places nutrients within reach of developing roots while avoiding osmotic salt injury to the emerging seedling",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "The 2x2 band placement positions starter nutrients near expanding roots while protecting delicate seeds from salt burn.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A41",
+              "difficulty": "hard",
+              "prompt": "Why does severe boron deficiency lead to cracked stems and hollow hearts in root and tuber crops?",
+              "options": [
+                "A. Boron is required for calcium utilization and cell wall cross-linking; its absence causes structural collapse in expanding tissues",
+                "B. Boron attracts stem-boring caterpillars",
+                "C. Boron stops water absorption",
+                "D. Boron makes stems turn into leaves"
+              ],
+              "correctAnswer": "A. Boron is required for calcium utilization and cell wall cross-linking; its absence causes structural collapse in expanding tissues",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Boron crosslinks cell wall pectins; a deficiency causes cell wall breakdown, resulting in cracked stems and hollow tissues.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A42",
+              "difficulty": "hard",
+              "prompt": "How does applying farmyard manure help reclaim saline-sodic soils?",
+              "options": [
+                "A. It dissolves all salts into clean air",
+                "B. Decomposition produces organic acids and carbon dioxide that help solubilize native calcium, displacing harmful sodium ions from clay sites",
+                "C. It turns sodium into potassium",
+                "D. It stops water from moving"
+              ],
+              "correctAnswer": "B. Decomposition produces organic acids and carbon dioxide that help solubilize native calcium, displacing harmful sodium ions from clay sites",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Organic acids released during manure decomposition help mobilize calcium, displacing sodium from soil exchange complexes.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A43",
+              "difficulty": "hard",
+              "prompt": "Why is ammonium nitrate preferred over urea for cold, wet spring plantings in temperate regions?",
+              "options": [
+                "A. Ammonium nitrate supplies pre-formed nitrate that plants absorb immediately, whereas urea requires microbial enzymatic conversion that slows in cold soils",
+                "B. Urea freezes at room temperature",
+                "C. Ammonium nitrate is completely non-chemical",
+                "D. Urea kills cold-weather crops"
+              ],
+              "correctAnswer": "A. Ammonium nitrate supplies pre-formed nitrate that plants absorb immediately, whereas urea requires microbial enzymatic conversion that slows in cold soils",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Urea requires warm, microbial urease activity to release plant-available ions, whereas nitrate is immediately absorbable in cool soils.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A44",
+              "difficulty": "hard",
+              "prompt": "What is the primary agronomic objective of testing soil samples before purchasing and applying commercial fertilizers?",
+              "options": [
+                "A. To ensure the soil is dark in color",
+                "B. To quantify existing nutrient reserves and pH, enabling tailored fertilizer application that prevents both nutrient deficiencies and wasteful over-application",
+                "C. To kill existing weed seeds in the laboratory",
+                "D. To determine if the soil contains earthworms only"
+              ],
+              "correctAnswer": "B. To quantify existing nutrient reserves and pH, enabling tailored fertilizer application that prevents both nutrient deficiencies and wasteful over-application",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Soil testing measures residual nutrients and pH, guiding balanced, cost-effective fertilizer applications.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A45",
+              "difficulty": "hard",
+              "prompt": "Why does over-liming an acidic soil (raising pH above 7.0) inadvertently trigger micronutrient deficiencies in crops?",
+              "options": [
+                "A. High pH precipitates micronutrients (iron, manganese, zinc, copper) into insoluble hydroxides that root hairs cannot absorb",
+                "B. Lime destroys all micronutrient atoms",
+                "C. Micronutrients evaporate into clouds at neutral pH",
+                "D. Over-liming turns soil into rock"
+              ],
+              "correctAnswer": "A. High pH precipitates micronutrients (iron, manganese, zinc, copper) into insoluble hydroxides that root hairs cannot absorb",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Over-liming raises soil pH too high, precipitating metallic micronutrients into insoluble forms unavailable to roots.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A46",
+              "difficulty": "hard",
+              "prompt": "How does applying organic mulch to an established crop field conserve both soil water and applied nutrients?",
+              "options": [
+                "A. Mulch reflects sunlight, reduces surface evaporation, checks weed competition, and slowly adds humus to the soil profile",
+                "B. Mulch prevents rain from entering the ground",
+                "C. Mulch turns all fertilizers into liquids",
+                "D. Mulch eliminates the need for plant roots"
+              ],
+              "correctAnswer": "A. Mulch reflects sunlight, reduces surface evaporation, checks weed competition, and slowly adds humus to the soil profile",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Organic mulch buffers soil temperatures, limits evaporative water loss, suppresses weeds, and breaks down into humus.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A47",
+              "difficulty": "hard",
+              "prompt": "Why does potassium deficiency cause lodging (falling over) in cereal crops like maize and sorghum?",
+              "options": [
+                "A. Potassium gives leaves a blue color",
+                "B. Potassium maintains cell turgor and strengthens structural stalk tissues; deficient stalks become thin, brittle, and easily break in wind",
+                "C. Potassium makes plants too light",
+                "D. Potassium produces root nodules"
+              ],
+              "correctAnswer": "B. Potassium maintains cell turgor and strengthens structural stalk tissues; deficient stalks become thin, brittle, and easily break in wind",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Potassium supports cell turgor and stalk strength; low potassium produces weak, brittle stems prone to lodging.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A48",
+              "difficulty": "hard",
+              "prompt": "What is the main physiological mechanism that allows green manure to improve subsoil nutrient availability for shallow-rooted crops?",
+              "options": [
+                "A. Green manures destroy all subsoil rocks",
+                "B. Deep-rooting green manure crops absorb nutrients from deep subsoil layers and deposit them in the topsoil when ploughed under and decomposed",
+                "C. Green manures freeze the subsoil",
+                "D. Green manures prevent roots from growing"
+              ],
+              "correctAnswer": "B. Deep-rooting green manure crops absorb nutrients from deep subsoil layers and deposit them in the topsoil when ploughed under and decomposed",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Deep-rooted green manures scavenge subsoil nutrients and recycle them into the topsoil when incorporated and decomposed.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A49",
+              "difficulty": "hard",
+              "prompt": "How does excessive chemical fertilizer use accelerate atmospheric global warming?",
+              "options": [
+                "A. Fertilizer granules produce fire on the soil",
+                "B. Excess nitrogen fertilizer stimulates soil microbes to emit nitrous oxide (N2O), a potent greenhouse gas with high global warming potential",
+                "C. Fertilizers reflect cold air into outer space",
+                "D. Fertilizer stops clouds from forming"
+              ],
+              "correctAnswer": "B. Excess nitrogen fertilizer stimulates soil microbes to emit nitrous oxide (N2O), a potent greenhouse gas with high global warming potential",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Surplus agricultural nitrogen drives microbial nitrification and denitrification, releasing nitrous oxide, a potent greenhouse gas.",
+              "points": 1,
+              "learningCompetency": "B7.2.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CROP_A50",
+              "difficulty": "hard",
+              "prompt": "Which of the following scenarios best demonstrates balanced, sustainable Integrated Plant Nutrient Management on a school farm?",
+              "options": [
+                "A. Applying maximum doses of synthetic urea every week without testing the soil",
+                "B. Using compost to build soil structure and water-holding capacity, supplemented with targeted, soil-test-based compound fertilizer doses during rapid growth",
+                "C. Never applying any nutrients and relying on native soil fertility indefinitely",
+                "D. Burning all crop residues after harvest and using only wood ash"
+              ],
+              "correctAnswer": "B. Using compost to build soil structure and water-holding capacity, supplemented with targeted, soil-test-based compound fertilizer doses during rapid growth",
+              "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+              "workedSolution": "Combining organic compost with targeted, test-based mineral fertilization sustains soil health, optimizes crop yield, and protects the environment.",
               "points": 1,
               "learningCompetency": "B7.2.3.1.1",
               "type": "objective"
@@ -8968,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.036Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -8988,7 +11453,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
       "b7": {
         "levelTitle": "Basic 7 (JHS 1) • Animal Production: Digestive Anatomy, Breeds & Commercial Husbandry",
         "summary": "Classify farm animals anatomically into ruminants (polygastric) and non-ruminants (monogastric), examine the four-chambered ruminant stomach and avian digestive tract, identify commercial breeds and production traits of rabbits, sheep, goats, cattle, fowl, and turkeys, and evaluate biosecurity guidelines.",
-        "notes": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"740\" height=\"420\" viewBox=\"0 0 740 420\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#ffedd5\"/>\n      <stop offset=\"100%\" stop-color=\"#fdba74\"/>\n    </linearGradient>\n    <linearGradient id=\"reticGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fcd34d\"/>\n    </linearGradient>\n    <linearGradient id=\"omasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#e0f2fe\"/>\n      <stop offset=\"100%\" stop-color=\"#7dd3fc\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fee2e2\"/>\n      <stop offset=\"100%\" stop-color=\"#f87171\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"740\" height=\"420\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF THE FOUR-CHAMBERED RUMINANT STOMACH</text>\n  <text x=\"370\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Functional Flow: Esophagus → Rumen &amp; Reticulum → Omasum → Abomasum (True Stomach) → Duodenum</text>\n  <g id=\"organ_tract\">\n    <path d=\"M 520 280 Q 560 270 590 300 T 660 300 T 710 280\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"12\" stroke-linecap=\"round\"/>\n    <path d=\"M 430 190 C 470 190 530 210 520 280 C 510 320 440 330 380 300 C 350 285 360 230 400 200 Z\" fill=\"url(#abomasumGrad)\" stroke=\"#dc2626\" stroke-width=\"2\"/>\n    <path d=\"M 170 120 C 190 70 340 60 390 110 C 430 150 420 250 360 290 C 290 320 180 310 150 250 C 140 220 145 150 170 120 Z\" fill=\"url(#rumenGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 160 140 C 170 130 200 140 200 170 C 200 220 150 250 110 230 C 80 210 85 170 110 145 C 125 135 145 135 160 140 Z\" fill=\"url(#reticGrad)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n    <path d=\"M 115 165 L 125 160 L 135 165 L 135 175 L 125 180 L 115 175 Z M 135 165 L 145 160 L 155 165 L 155 175 L 145 180 L 135 175 Z M 125 180 L 135 175 L 145 180 L 145 190 L 135 195 L 125 190 Z\" fill=\"none\" stroke=\"#b45309\" stroke-width=\"1\" opacity=\"0.6\"/>\n    <circle cx=\"410\" cy=\"165\" r=\"42\" fill=\"url(#omasumGrad)\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <path d=\"M 395 135 Q 410 165 395 195 M 410 125 Q 425 165 410 205 M 425 135 Q 435 165 425 195\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\" opacity=\"0.7\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"14\" stroke-linecap=\"round\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#cbd5e1\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"75\" y1=\"80\" x2=\"75\" y2=\"45\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"75\" cy=\"80\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"75\" y=\"38\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Esophagus (Gullet)</text>\n    <line x1=\"140\" y1=\"210\" x2=\"100\" y2=\"285\" stroke=\"#b45309\" stroke-width=\"1.2\"/>\n    <circle cx=\"140\" cy=\"210\" r=\"2.5\" fill=\"#b45309\"/>\n    <rect x=\"15\" y=\"290\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fcd34d\"/>\n    <text x=\"97\" y=\"306\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">2. Reticulum (\"Honeycomb\")</text>\n    <text x=\"97\" y=\"322\" font-size=\"10\" fill=\"#78350f\" text-anchor=\"middle\">Cud formation &amp; sorting</text>\n    <line x1=\"280\" y1=\"180\" x2=\"280\" y2=\"345\" stroke=\"#c2410c\" stroke-width=\"1.2\"/>\n    <circle cx=\"280\" cy=\"180\" r=\"2.5\" fill=\"#c2410c\"/>\n    <rect x=\"195\" y=\"350\" width=\"170\" height=\"44\" rx=\"4\" fill=\"#fff7ed\" stroke=\"#fdba74\"/>\n    <text x=\"280\" y=\"367\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">1. Rumen (\"Paunch\")</text>\n    <text x=\"280\" y=\"383\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Primary fermentation vat (~80%)</text>\n    <line x1=\"410\" y1=\"123\" x2=\"410\" y2=\"80\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <circle cx=\"410\" cy=\"123\" r=\"2.5\" fill=\"#0284c7\"/>\n    <rect x=\"330\" y=\"65\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/>\n    <text x=\"412\" y=\"81\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. Omasum (\"Manyplies\")</text>\n    <text x=\"412\" y=\"96\" font-size=\"10\" fill=\"#0284c7\" text-anchor=\"middle\">Water &amp; VFA absorption</text>\n    <line x1=\"460\" y1=\"280\" x2=\"460\" y2=\"345\" stroke=\"#dc2626\" stroke-width=\"1.2\"/>\n    <circle cx=\"460\" cy=\"280\" r=\"2.5\" fill=\"#dc2626\"/>\n    <rect x=\"380\" y=\"350\" width=\"165\" height=\"44\" rx=\"4\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/>\n    <text x=\"462\" y=\"367\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4. Abomasum (\"True Stomach\")</text>\n    <text x=\"462\" y=\"383\" font-size=\"10\" fill=\"#7f1d1d\" text-anchor=\"middle\">Gastric juices &amp; protein enzymes</text>\n    <line x1=\"620\" y1=\"300\" x2=\"620\" y2=\"345\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"620\" cy=\"300\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"620\" y=\"364\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Small Intestine</text>\n    <text x=\"620\" y=\"378\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">(Duodenum)</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"520\" viewBox=\"0 0 680 520\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cropGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#fb923c\"/>\n    </linearGradient>\n    <linearGradient id=\"gizzardGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fca5a5\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"520\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ALIMENTARY CANAL OF THE DOMESTIC FOWL</text>\n  <text x=\"340\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Pathway: Beak → Esophagus → Crop → Proventriculus → Gizzard → Intestine &amp; Caeca → Cloaca</text>\n  <g transform=\"translate(140, 20)\">\n    <path d=\"M 120 45 L 120 100\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M 124 85 C 155 80 185 95 185 120 C 185 145 150 155 124 140 Z\" fill=\"url(#cropGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 120 135 L 120 165\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\"/>\n    <path d=\"M 112 165 C 105 175 105 195 112 205 L 128 205 C 135 195 135 175 128 165 Z\" fill=\"#fbcfe8\" stroke=\"#db2777\" stroke-width=\"2\"/>\n    <circle cx=\"117\" cy=\"180\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"123\" cy=\"188\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"118\" cy=\"195\" r=\"1.5\" fill=\"#be185d\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"30\" ry=\"24\" fill=\"url(#gizzardGrad)\" stroke=\"#9f1239\" stroke-width=\"2\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"14\" ry=\"11\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/>\n    <circle cx=\"142\" cy=\"223\" r=\"1.5\" fill=\"#475569\"/>\n    <circle cx=\"147\" cy=\"227\" r=\"1.2\" fill=\"#475569\"/>\n    <circle cx=\"148\" cy=\"222\" r=\"1.4\" fill=\"#475569\"/>\n    <path d=\"M 130 245 C 110 270 95 300 120 315 C 145 325 155 295 140 270\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <path d=\"M 140 270 C 130 250 80 320 110 345 C 140 370 170 340 140 380 C 120 405 135 425 135 435\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n    <path d=\"M 135 435 C 115 425 90 390 85 365 C 80 345 92 345 96 355 C 105 380 125 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <path d=\"M 135 435 C 145 420 175 385 180 365 C 185 345 174 345 170 355 C 160 380 142 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <line x1=\"135\" y1=\"435\" x2=\"135\" y2=\"455\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n    <ellipse cx=\"135\" cy=\"470\" rx=\"16\" ry=\"14\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/>\n    <line x1=\"126\" y1=\"482\" x2=\"144\" y2=\"482\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"260\" y1=\"85\" x2=\"360\" y2=\"85\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"260\" cy=\"85\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"370\" y=\"88\" font-weight=\"bold\" fill=\"#334155\">Esophagus (Gullet)</text>\n    <line x1=\"310\" y1=\"135\" x2=\"360\" y2=\"120\" stroke=\"#ea580c\" stroke-width=\"1.2\"/>\n    <circle cx=\"310\" cy=\"135\" r=\"2.5\" fill=\"#ea580c\"/>\n    <text x=\"370\" y=\"117\" font-weight=\"bold\" fill=\"#c2410c\">Crop</text>\n    <text x=\"370\" y=\"132\" font-size=\"10\" fill=\"#7c2d12\">Temporary storage &amp; moistening of grains</text>\n    <line x1=\"265\" y1=\"200\" x2=\"360\" y2=\"175\" stroke=\"#db2777\" stroke-width=\"1.2\"/>\n    <circle cx=\"265\" cy=\"200\" r=\"2.5\" fill=\"#db2777\"/>\n    <text x=\"370\" y=\"172\" font-weight=\"bold\" fill=\"#be185d\">Proventriculus (Glandular Stomach)</text>\n    <text x=\"370\" y=\"187\" font-size=\"10\" fill=\"#831843\">Secretes gastric acid &amp; pepsin</text>\n    <line x1=\"305\" y1=\"245\" x2=\"360\" y2=\"230\" stroke=\"#9f1239\" stroke-width=\"1.2\"/>\n    <circle cx=\"305\" cy=\"245\" r=\"2.5\" fill=\"#9f1239\"/>\n    <text x=\"370\" y=\"227\" font-weight=\"bold\" fill=\"#9f1239\">Gizzard (Ventriculus)</text>\n    <text x=\"370\" y=\"242\" font-size=\"10\" fill=\"#881337\">Dense muscular organ; grinds with grit</text>\n    <line x1=\"290\" y1=\"330\" x2=\"360\" y2=\"300\" stroke=\"#e11d48\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"330\" r=\"2.5\" fill=\"#e11d48\"/>\n    <text x=\"370\" y=\"297\" font-weight=\"bold\" fill=\"#be123c\">Small Intestine (Duodenum &amp; Ileum)</text>\n    <text x=\"370\" y=\"312\" font-size=\"10\" fill=\"#475569\">Enzymatic digestion &amp; nutrient absorption</text>\n    <line x1=\"225\" y1=\"400\" x2=\"120\" y2=\"400\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"225\" cy=\"400\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"110\" y=\"396\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Paired Caeca</text>\n    <text x=\"110\" y=\"411\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Bacterial fiber fermentation</text>\n    <line x1=\"275\" y1=\"465\" x2=\"360\" y2=\"440\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"275\" cy=\"465\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"370\" y=\"437\" font-weight=\"bold\" fill=\"#334155\">Large Intestine (Colon)</text>\n    <text x=\"370\" y=\"451\" font-size=\"10\" fill=\"#64748b\">Water reabsorption</text>\n    <line x1=\"290\" y1=\"490\" x2=\"360\" y2=\"485\" stroke=\"#0f172a\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"490\" r=\"2.5\" fill=\"#0f172a\"/>\n    <text x=\"370\" y=\"482\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca &amp; Vent</text>\n    <text x=\"370\" y=\"497\" font-size=\"10\" fill=\"#475569\">Common chamber for feces, uric acid &amp; eggs</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous & Commercial Sheep Breeds:**\n  * **Indigenous:** West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge), Nungua Blackhead, Ouda Fulani (long-legged savanna breed), and Yankasa.\n  * **Exotic:** Australian Merino, Spanish Merino (fine wool), and Finnish Landrace.\n* **Morphological Differences: Goat vs. Sheep**\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards. | Longer tail hanging limply downwards. |\n| **Beard Presence** | Present in both mature bucks (males) and does. | Present only on mature rams (males). |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks. | Lacks specialized rubbery friction pads. |\n| **Body Odor** | Mature bucks emit an intense, musky odor. | Rams lack an offensive musky odor. |\n| **Interdigital Glands** | Glands between toes are absent. | Specialized sweat/scent glands present between toes. |\n| **Feeding Behavior** | Agile **browsers**; prefer shrubs, tree leaves, and twigs. | Ground **grazers**; prefer low-growing grass and clovers. |\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:** Friesian / Holstein (highest milk volume, black-and-white markings), Jersey (high butterfat content, golden-fawn color), Ayrshire, and White Fulani (dual-purpose zebu).\n* **Beef Breeds:** Aberdeen Angus (solid black, compact, high marbling), Hereford, West African Shorthorn (WAS), N'Dama (humpless, trypano-tolerant forest cattle), Muturu, and Sokoto Gudali.\n* **Conformation Contrast: Dairy vs. Beef Cattle**\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct **wedge-shaped (triangular)** frame. | **Rectangular, blocky, square-shaped** body frame. |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones. | Deep, heavily fleshed thighs, loin, and rounded rump. |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder. | Small, tight, poorly developed udder. |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck. | Short, stout, thickset muscular legs and short neck. |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
+        "notes": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"740\" height=\"420\" viewBox=\"0 0 740 420\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#ffedd5\"/>\n      <stop offset=\"100%\" stop-color=\"#fdba74\"/>\n    </linearGradient>\n    <linearGradient id=\"reticGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fcd34d\"/>\n    </linearGradient>\n    <linearGradient id=\"omasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#e0f2fe\"/>\n      <stop offset=\"100%\" stop-color=\"#7dd3fc\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fee2e2\"/>\n      <stop offset=\"100%\" stop-color=\"#f87171\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"740\" height=\"420\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF THE FOUR-CHAMBERED RUMINANT STOMACH</text>\n  <text x=\"370\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Functional Flow: Esophagus → Rumen &amp; Reticulum → Omasum → Abomasum (True Stomach) → Duodenum</text>\n  <g id=\"organ_tract\">\n    <path d=\"M 520 280 Q 560 270 590 300 T 660 300 T 710 280\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"12\" stroke-linecap=\"round\"/>\n    <path d=\"M 430 190 C 470 190 530 210 520 280 C 510 320 440 330 380 300 C 350 285 360 230 400 200 Z\" fill=\"url(#abomasumGrad)\" stroke=\"#dc2626\" stroke-width=\"2\"/>\n    <path d=\"M 170 120 C 190 70 340 60 390 110 C 430 150 420 250 360 290 C 290 320 180 310 150 250 C 140 220 145 150 170 120 Z\" fill=\"url(#rumenGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 160 140 C 170 130 200 140 200 170 C 200 220 150 250 110 230 C 80 210 85 170 110 145 C 125 135 145 135 160 140 Z\" fill=\"url(#reticGrad)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n    <path d=\"M 115 165 L 125 160 L 135 165 L 135 175 L 125 180 L 115 175 Z M 135 165 L 145 160 L 155 165 L 155 175 L 145 180 L 135 175 Z M 125 180 L 135 175 L 145 180 L 145 190 L 135 195 L 125 190 Z\" fill=\"none\" stroke=\"#b45309\" stroke-width=\"1\" opacity=\"0.6\"/>\n    <circle cx=\"410\" cy=\"165\" r=\"42\" fill=\"url(#omasumGrad)\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <path d=\"M 395 135 Q 410 165 395 195 M 410 125 Q 425 165 410 205 M 425 135 Q 435 165 425 195\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\" opacity=\"0.7\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"14\" stroke-linecap=\"round\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#cbd5e1\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"75\" y1=\"80\" x2=\"75\" y2=\"45\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"75\" cy=\"80\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"75\" y=\"38\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Esophagus (Gullet)</text>\n    <line x1=\"140\" y1=\"210\" x2=\"100\" y2=\"285\" stroke=\"#b45309\" stroke-width=\"1.2\"/>\n    <circle cx=\"140\" cy=\"210\" r=\"2.5\" fill=\"#b45309\"/>\n    <rect x=\"15\" y=\"290\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fcd34d\"/>\n    <text x=\"97\" y=\"306\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">2. Reticulum (\"Honeycomb\")</text>\n    <text x=\"97\" y=\"322\" font-size=\"10\" fill=\"#78350f\" text-anchor=\"middle\">Cud formation &amp; sorting</text>\n    <line x1=\"280\" y1=\"180\" x2=\"280\" y2=\"345\" stroke=\"#c2410c\" stroke-width=\"1.2\"/>\n    <circle cx=\"280\" cy=\"180\" r=\"2.5\" fill=\"#c2410c\"/>\n    <rect x=\"195\" y=\"350\" width=\"170\" height=\"44\" rx=\"4\" fill=\"#fff7ed\" stroke=\"#fdba74\"/>\n    <text x=\"280\" y=\"367\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">1. Rumen (\"Paunch\")</text>\n    <text x=\"280\" y=\"383\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Primary fermentation vat (~80%)</text>\n    <line x1=\"410\" y1=\"123\" x2=\"410\" y2=\"80\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <circle cx=\"410\" cy=\"123\" r=\"2.5\" fill=\"#0284c7\"/>\n    <rect x=\"330\" y=\"65\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/>\n    <text x=\"412\" y=\"81\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. Omasum (\"Manyplies\")</text>\n    <text x=\"412\" y=\"96\" font-size=\"10\" fill=\"#0284c7\" text-anchor=\"middle\">Water &amp; VFA absorption</text>\n    <line x1=\"460\" y1=\"280\" x2=\"460\" y2=\"345\" stroke=\"#dc2626\" stroke-width=\"1.2\"/>\n    <circle cx=\"460\" cy=\"280\" r=\"2.5\" fill=\"#dc2626\"/>\n    <rect x=\"380\" y=\"350\" width=\"165\" height=\"44\" rx=\"4\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/>\n    <text x=\"462\" y=\"367\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4. Abomasum (\"True Stomach\")</text>\n    <text x=\"462\" y=\"383\" font-size=\"10\" fill=\"#7f1d1d\" text-anchor=\"middle\">Gastric juices &amp; protein enzymes</text>\n    <line x1=\"620\" y1=\"300\" x2=\"620\" y2=\"345\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"620\" cy=\"300\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"620\" y=\"364\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Small Intestine</text>\n    <text x=\"620\" y=\"378\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">(Duodenum)</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"520\" viewBox=\"0 0 680 520\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cropGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#fb923c\"/>\n    </linearGradient>\n    <linearGradient id=\"gizzardGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fca5a5\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"520\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ALIMENTARY CANAL OF THE DOMESTIC FOWL</text>\n  <text x=\"340\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Pathway: Beak → Esophagus → Crop → Proventriculus → Gizzard → Intestine &amp; Caeca → Cloaca</text>\n  <g transform=\"translate(140, 20)\">\n    <path d=\"M 120 45 L 120 100\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M 124 85 C 155 80 185 95 185 120 C 185 145 150 155 124 140 Z\" fill=\"url(#cropGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 120 135 L 120 165\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\"/>\n    <path d=\"M 112 165 C 105 175 105 195 112 205 L 128 205 C 135 195 135 175 128 165 Z\" fill=\"#fbcfe8\" stroke=\"#db2777\" stroke-width=\"2\"/>\n    <circle cx=\"117\" cy=\"180\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"123\" cy=\"188\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"118\" cy=\"195\" r=\"1.5\" fill=\"#be185d\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"30\" ry=\"24\" fill=\"url(#gizzardGrad)\" stroke=\"#9f1239\" stroke-width=\"2\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"14\" ry=\"11\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/>\n    <circle cx=\"142\" cy=\"223\" r=\"1.5\" fill=\"#475569\"/>\n    <circle cx=\"147\" cy=\"227\" r=\"1.2\" fill=\"#475569\"/>\n    <circle cx=\"148\" cy=\"222\" r=\"1.4\" fill=\"#475569\"/>\n    <path d=\"M 130 245 C 110 270 95 300 120 315 C 145 325 155 295 140 270\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <path d=\"M 140 270 C 130 250 80 320 110 345 C 140 370 170 340 140 380 C 120 405 135 425 135 435\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n    <path d=\"M 135 435 C 115 425 90 390 85 365 C 80 345 92 345 96 355 C 105 380 125 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <path d=\"M 135 435 C 145 420 175 385 180 365 C 185 345 174 345 170 355 C 160 380 142 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <line x1=\"135\" y1=\"435\" x2=\"135\" y2=\"455\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n    <ellipse cx=\"135\" cy=\"470\" rx=\"16\" ry=\"14\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/>\n    <line x1=\"126\" y1=\"482\" x2=\"144\" y2=\"482\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"260\" y1=\"85\" x2=\"360\" y2=\"85\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"260\" cy=\"85\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"370\" y=\"88\" font-weight=\"bold\" fill=\"#334155\">Esophagus (Gullet)</text>\n    <line x1=\"310\" y1=\"135\" x2=\"360\" y2=\"120\" stroke=\"#ea580c\" stroke-width=\"1.2\"/>\n    <circle cx=\"310\" cy=\"135\" r=\"2.5\" fill=\"#ea580c\"/>\n    <text x=\"370\" y=\"117\" font-weight=\"bold\" fill=\"#c2410c\">Crop</text>\n    <text x=\"370\" y=\"132\" font-size=\"10\" fill=\"#7c2d12\">Temporary storage &amp; moistening of grains</text>\n    <line x1=\"265\" y1=\"200\" x2=\"360\" y2=\"175\" stroke=\"#db2777\" stroke-width=\"1.2\"/>\n    <circle cx=\"265\" cy=\"200\" r=\"2.5\" fill=\"#db2777\"/>\n    <text x=\"370\" y=\"172\" font-weight=\"bold\" fill=\"#be185d\">Proventriculus (Glandular Stomach)</text>\n    <text x=\"370\" y=\"187\" font-size=\"10\" fill=\"#831843\">Secretes gastric acid &amp; pepsin</text>\n    <line x1=\"305\" y1=\"245\" x2=\"360\" y2=\"230\" stroke=\"#9f1239\" stroke-width=\"1.2\"/>\n    <circle cx=\"305\" cy=\"245\" r=\"2.5\" fill=\"#9f1239\"/>\n    <text x=\"370\" y=\"227\" font-weight=\"bold\" fill=\"#9f1239\">Gizzard (Ventriculus)</text>\n    <text x=\"370\" y=\"242\" font-size=\"10\" fill=\"#881337\">Dense muscular organ; grinds with grit</text>\n    <line x1=\"290\" y1=\"330\" x2=\"360\" y2=\"300\" stroke=\"#e11d48\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"330\" r=\"2.5\" fill=\"#e11d48\"/>\n    <text x=\"370\" y=\"297\" font-weight=\"bold\" fill=\"#be123c\">Small Intestine (Duodenum &amp; Ileum)</text>\n    <text x=\"370\" y=\"312\" font-size=\"10\" fill=\"#475569\">Enzymatic digestion &amp; nutrient absorption</text>\n    <line x1=\"225\" y1=\"400\" x2=\"120\" y2=\"400\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"225\" cy=\"400\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"110\" y=\"396\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Paired Caeca</text>\n    <text x=\"110\" y=\"411\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Bacterial fiber fermentation</text>\n    <line x1=\"275\" y1=\"465\" x2=\"360\" y2=\"440\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"275\" cy=\"465\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"370\" y=\"437\" font-weight=\"bold\" fill=\"#334155\">Large Intestine (Colon)</text>\n    <text x=\"370\" y=\"451\" font-size=\"10\" fill=\"#64748b\">Water reabsorption</text>\n    <line x1=\"290\" y1=\"490\" x2=\"360\" y2=\"485\" stroke=\"#0f172a\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"490\" r=\"2.5\" fill=\"#0f172a\"/>\n    <text x=\"370\" y=\"482\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca &amp; Vent</text>\n    <text x=\"370\" y=\"497\" font-size=\"10\" fill=\"#475569\">Common chamber for feces, uric acid &amp; eggs</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous Breeds:**\n  * West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge)\n  * Nungua Blackhead\n  * Ouda / Quda Fulani (long-legged savanna breed)\n  * Yankasa\n* **Exotic Breeds:**\n  * Australian Merino\n  * Spanish Merino (fine wool)\n  * Finnish Landrace\n\n##### Morphological Differences: Goat vs. Sheep\n\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards | Longer tail hanging limply downwards |\n| **Beard Presence** | Present in both mature bucks (males) and does | Present only on mature rams (males) |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks | Lacks specialized rubbery friction pads |\n| **Body Odor** | Mature bucks emit an intense, musky odor | Rams lack an offensive musky odor |\n| **Interdigital Glands** | Glands between toes are absent | Specialized sweat/scent glands present between toes |\n| **Feeding Behavior** | Agile browsers; prefer shrubs, tree leaves, and twigs | Ground grazers; prefer low-growing grass and clovers |\n\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:**\n  * Friesian / Holstein (highest milk volume, black-and-white markings)\n  * Jersey (high butterfat content, golden-fawn color)\n  * Ayrshire\n  * White Fulani (dual-purpose zebu)\n* **Beef Breeds:**\n  * Aberdeen Angus (solid black, compact, high marbling)\n  * Hereford\n  * West African Shorthorn (WAS)\n  * N'Dama (humpless, trypano-tolerant forest cattle)\n  * Muturu\n  * Sokoto Gudali\n\n##### Conformation Contrast: Dairy vs. Beef Cattle\n\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct wedge-shaped (triangular) frame | Rectangular, blocky, square-shaped body frame |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones | Deep, heavily fleshed thighs, loin, and rounded rump |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder | Small, tight, poorly developed udder |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck | Short, stout, thickset muscular legs and short neck |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n\n##### Comparative Performance: Exotic vs. Local Fowl\n\n| Trait | Exotic (Commercial) Breeds | Local (Indigenous) Breeds |\n| :--- | :--- | :--- |\n| **Growth Rate** | Fast growers | Slow growers |\n| **Body & Egg Size** | Large body frame; lay larger eggs | Small body frame; lay smaller eggs |\n| **Broodiness** | Non-broody (rarely sit on eggs) | Strongly broody with maternal care |\n| **Hardiness** | Sensitive to heat stress and diseases | Hardy; resistant to heat and local diseases |\n\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n\n##### Characteristics of Commercial Turkey Breeds\n\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
         "workedExamples": [
           {
             "id": "ex_b7_s2_anim_01",
@@ -11692,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -11705,20 +14170,20 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Explore human anatomy and internal physiology through virtual human dissection and diagnostic monitors. Tracks systemic interdependence across mastication, enzymatic gastrointestinal digestion, alveoli gas exchange, and pulmonary-systemic blood circulation.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b8_strand3_dentition"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Human Dentition, Tooth Anatomy & Oral Hygiene",
-        "summary": "Analyze the human dental formula, microscopic tooth anatomy, dental caries pathology, and oral hygiene preservation.",
-        "notes": "### Human Dentition: Tooth Structure, Dental Formulas & Oral Health\n* **NaCCA Curriculum Code:** `B7.3.1.1`\n* **Core Competency:** Identify human tooth types, relate anatomy to function, analyze tooth decay, and demonstrate oral hygiene.\n\n#### 1. Human Dental Architecture\nHumans are heterodonts (possessing different types of teeth) and diphyodonts (developing two sets of teeth in a lifetime):\n* **Deciduous (Milk) Teeth:** 20 teeth in children; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, m\\frac{2}{2} = 10 \\times 2 = 20$.\n* **Permanent Teeth:** 32 teeth in adults; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, pm\\frac{2}{2}, m\\frac{3}{3} = 16 \\times 2 = 32$.\n\n#### 2. Tooth Types & Functions\n* **Incisors (8):** Chisel-shaped with sharp cutting edges; biting and cutting food chunks.\n* **Canines (4):** Conical, pointed, dagger-like crowns; piercing, gripping, and tearing fibrous meat.\n* **Premolars (8):** Broad crowns with two pointed projections (cusps); crushing and grinding food.\n* **Molars (12):** Broad, flat occlusal surface with 4-5 cusps; heavy mastication and pulverizing.\n\n#### 3. Microscopic Anatomy of a Tooth\n* **Crown:** Visible portion projecting above the gum.\n  * *Enamel:* The hardest biological substance in the human body ($96\\%$ calcium hydroxyapatite crystals); shields against mechanical wear and acid erosion.\n  * *Dentine:* Hard bone-like living tissue beneath enamel containing microscopic fluid-filled tubules.\n  * *Pulp Cavity:* Living central core containing blood capillaries (nourishment) and sensory nerve fibers (pain reception).\n* **Neck:** Constricted boundary region surrounded by the gum (gingiva).\n* **Root:** Anchored in the alveolar bone socket of the jaw by the periodontal ligament and coated with cementum.\n\n#### 4. Pathology of Dental Caries (Tooth Decay)\n1. Food residues rich in refined sucrose adhere to tooth surfaces.\n2. Oral bacteria (*Streptococcus mutans*) ferment sugars within the sticky biofilm (plaque), producing lactic acid.\n3. When plaque pH drops below 5.5, organic acids demineralize calcium phosphate in the enamel.\n4. Erosion penetrates dentine into the pulp cavity, exposing sensory nerves and causing excruciating toothache and abscesses.",
+        "levelTitle": "Basic 7 (JHS 1) • The Human Body: Food Nutrients, Digestive System Anatomy & Enzymes",
+        "summary": "Master human nutrition, chemical food tests (starch, sugars, proteins, lipids), alimentary canal anatomy, digestive enzymes (ptyalin, pepsin, rennin, amylase, trypsin, lipase), and gastrointestinal disorders under NaCCA B7 standards.",
+        "notes": "# The Human Body System: Human Nutrition, Digestive Anatomy, Enzymes & Disorders\n\n**Curriculum Indicator:** `B7.3.1.1.1` & `B7.3.1.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 1:** The Human Body System (Nutrition & Digestion)\n\n---\n\n## 1. Human Nutrition: Classes of Food & Biochemical Reagent Tests\n\n### Definition & Physiological Necessity\n**Food** is any organic or inorganic substance, solid or liquid, consumed to provide the human body with metabolic energy, support cellular repair and tissue growth, and regulate vital physiological processes. Without adequate nutrition, biochemical homeostasis breaks down, resulting in metabolic failure and chronic deficiency syndromes.\n\n### Classes of Dietary Nutrients\n1. **Carbohydrates (Starches & Sugars):**\n   * *Primary Function:* Act as the primary and fastest source of chemical energy (glucose) for cellular respiration and ATP synthesis.\n   * *Common Sources:* Cassava, yam, plantain, bread, maize, and rice.\n2. **Proteins:**\n   * *Primary Function:* Supply essential building blocks (amino acids) to construct new body tissues, repair worn-out cells, and synthesize vital metabolic enzymes, peptide hormones, and immune antibodies.\n   * *Classification:*\n     - **First-class proteins:** Primarily animal sources (eggs, fish, beef, milk, poultry) containing all essential amino acids that the human body cannot synthesize internally.\n     - **Second-class proteins:** Plant sources (beans, groundnuts, cowpeas, soybeans) lacking one or more essential amino acids.\n   * *Deficiency Pathologies:* Kwashiorkor (distended abdomen, edema, thinning hair), marasmus (severe muscle wasting, skin-and-bone appearance), and nutritional cachexia in growing children.\n3. **Lipids (Fats & Oils):**\n   * *Primary Function:* High-density secondary energy reserves (providing more than double the energy per gram of carbohydrates), subcutaneous thermal insulation against cold, physical shock-absorbing cushions around vital organs (heart, kidneys), and biological carrier solvents for fat-soluble vitamins (A, D, E, K).\n   * *Common Sources:* Palm oil, shea butter, groundnut oil, fatty fish, avocado, and coconut.\n4. **Vitamins & Mineral Salts:**\n   * *Primary Function:* Protective micronutrients that strengthen immune resistance, catalyze enzyme reactions, and maintain skeletal integrity and fluid balance (e.g., Vitamin C for connective tissue, Vitamin D and Calcium for bone mineral density, Iron for hemoglobin formation).\n   * *Common Sources:* Fresh fruits, citrus, pawpaw, mangoes, and leafy green vegetables like cocoyam leaves (*kontomire*).\n5. **Dietary Fiber (Roughage) & Water:**\n   * *Roughage:* Indigestible plant cellulose that provides mechanical bulk to stimulate regular intestinal peristalsis and prevent constipation.\n   * *Water:* Universal physiological solvent, transport medium for blood plasma, thermoregulator (via perspiration), and reactant in hydrolytic digestion.\n\n---\n\n### Standard Laboratory Reagent Tests for Food Nutrients\n\nThe presence of specific nutrients in food samples is confirmed through standard diagnostic colorimetric chemical reactions.\n\n| Target Nutrient | Diagnostic Test Reagents | Experimental Procedure | Observed Positive Color Reaction |\n| :--- | :--- | :--- | :--- |\n| **Starch** | Iodine solution | Add a few drops of yellow-brown iodine solution directly to the food sample. | Color shifts to deep **blue-black**. |\n| **Reducing Sugars (e.g. Glucose, Maltose)** | Benedict's or Fehling's reagent | Add reagent to liquid food filtrate and heat in a boiling water bath for 2–3 minutes. | Color transitions: Green &rarr; Yellow &rarr; **Brick-red / Orange-red** precipitate. |\n| **Non-Reducing Sugars (e.g. Sucrose / Cane Sugar)** | Dilute Hydrochloric acid, Sodium hydroxide, & Benedict's solution | Boil sample with dilute $\\\text{HCl}$ to hydrolyze disaccharides, neutralize with $\\\text{NaOH}$, then boil with Benedict's. | Color turns to **orange / brick-red** precipitate. |\n| **Protein** | Biuret Reagent ($\\\text{CuSO}_4 + \\\text{NaOH}$) | Add dilute sodium hydroxide followed by drops of 1% copper (II) sulfate solution; shake gently. | Formation of a distinct **violet / purple** ring or solution. |\n| **Protein (Alternative)** | Millon's reagent | Add Millon's reagent (mercuric nitrate mixture) to sample and heat gently. | White precipitate turns to **reddish-brown / deep red** upon heating. |\n| **Fats & Oils (Lipids)** | Ethanol Emulsion / Spot test | Shake sample with pure ethanol, then pour into cold water; or rub on filter paper. | Formation of a milky white emulsion; or a permanent **translucent grease spot** on paper. |\n\n### Specific Diagnostic Tests for Fats and Oils (Lipids)\n* **Grease Spot Test:**\n  - Small amount of the food substance containing fat is placed on a filter paper.\n  - In case of grains and seeds, they are crushed and rubbed on the paper after removing their skin.\n  - A permanent translucent stain on the paper indicates the presence of fats and oils (unlike water stains, grease stains do not evaporate when held to light).\n* **Sudan III Test:**\n  - Some amount of Sudan III dye solution is added to the liquid specimen.\n  - A distinct red colour / red stained surface ring shows that fat is present.\n* **Ethanol Emulsion Test:**\n  - Shake the crushed food sample vigorously with absolute ethanol in a test tube.\n  - Decant the clear liquid into a test tube containing cold water.\n  - A turbid, milky-white cloud (emulsion) confirms lipids are suspended in the aqueous phase.\n\n---\n\n## 2. Anatomy & Physiology of the Human Digestive System\n\nThe human digestive system consists of a continuous muscular tube extending from the mouth to the anus called the **alimentary canal** (gastrointestinal tract), supported by vital accessory organs: the teeth, salivary glands, liver, gallbladder, and pancreas.\n\n### Sequential Stages of Mechanical & Chemical Digestion\n1. **Mouth (Buccal Cavity):**\n   * *Ingestion & Mechanical Breakdown:* Food is taken into the mouth where teeth grind and masticate it.\n   * *Bolus Formation:* The tongue manipulates crushed food with saliva into a slippery, lubricated ball called a **bolus**.\n   * *Chemical Digestion:* Salivary glands secrete saliva containing mucus and the enzyme **ptyalin** (salivary amylase), which begins converting cooked starch into the disaccharide **maltose** in a neutral to slightly alkaline medium.\n2. **Pharynx & Oesophagus (Gullet):**\n   * *Swallowing Reflex:* Swallowing pushes the bolus past the pharynx while the reflex flap called the **epiglottis** closes over the trachea (windpipe) to prevent choking.\n   * *Peristalsis:* Rhythmic, involuntary wave-like muscular contractions and relaxations of circular and longitudinal muscles push the bolus down through the oesophagus into the stomach without relying on gravity.\n3. **Stomach:**\n   * *Mechanical Churning:* A distensible J-shaped muscular sac whose three muscle layers vigorously churn the bolus into a semi-liquid, acidic paste called **chyme**.\n   * *Gastric Secretions:* Gastric pits secrete gastric juice containing:\n     - **Hydrochloric Acid (HCl):** Destroys ingested food-borne bacteria and creates an intensely acidic medium ($\\text{pH } 1.5 - 2.5$) required to activate gastric enzymes.\n     - **Pepsin:** Cleaves complex dietary proteins into smaller polypeptide chains called **peptones**.\n     - **Rennin (Chymosin):** Coagulates and curdles soluble liquid milk protein (*caseinogen* into insoluble *casein*), retaining milk proteins in the stomach so pepsin can digest them.\n4. **Duodenum (First Loop of Small Intestine):**\n   * *Entry of Chyme:* Acidic chyme exits the pyloric sphincter into the duodenum and encounters two secretions:\n     - **Bile:** Synthesized continuously by the liver and stored/concentrated in the gallbladder. Bile contains alkaline sodium salts that neutralize acidic gastric chyme and **emulsify** large fat droplets into micro-droplets, vastly increasing surface area for lipase attack. Bile contains no enzymes.\n     - **Pancreatic Juice:** Secreted by the exocrine pancreas into the duodenum, delivering three primary enzymes operating in an alkaline pH ($7.5 - 8.2$):\n       - *Pancreatic Amylase:* Converts remaining starch into maltose.\n       - *Trypsin:* Hydrolyzes proteins and peptones into peptides.\n       - *Pancreatic Lipase:* Hydrolyzes emulsified fats into fatty acids and glycerol.\n5. **Ileum (Lower Small Intestine):**\n   * *Final Chemical Breakdown:* Intestinal glands in the Crypts of Lieberkühn secrete intestinal juice (*succus entericus*), containing maltase, sucrase, lactase, and peptidases (erepsin) to finalize digestion into diffusible monomers:\n     - $\\text{Carbohydrates} \to \\text{Glucose, Fructose, Galactose}$\n     - $\\text{Proteins} \to \\text{Amino acids}$\n     - $\\text{Lipids} \to \\text{Fatty acids and Glycerol}$\n   * *Nutrient Absorption:* The inner ileum wall is lined with millions of microscopic, finger-like projections called **villi** (singular: *villus*), which maximize internal surface area.\n     - *Blood Capillaries:* Rapidly absorb soluble glucose, amino acids, vitamins, and mineral ions, conveying them to the liver via the **hepatic portal vein**.\n     - *Central Lacteals:* Specialized lymphatic vessels that absorb fatty acids and glycerol, packaging them into chylomicrons for delivery into the lymphatic bloodstream.\n6. **Large Intestine (Colon, Caecum, Rectum & Anus):**\n   * *Colon:* Absorbs water, mineral salts, and dissolved vitamins from the remaining indigestible fibrous residue, consolidating it into solid or semi-solid feces.\n   * *Caecum & Appendix:* Vestigial blind sac at the ileocecal junction.\n   * *Rectum:* Stores compacted faecal waste temporarily until distension triggers defecation.\n   * *Anus:* Controlled by internal involuntary and external voluntary sphincter muscles for the expulsion of waste (**egestion**).\n\n---\n\n### Figure 7.1: Anatomical Architecture of the Human Digestive System\n\nBelow is the complete, high-resolution anatomical pathway illustrating the continuous alimentary canal from the buccal cavity down to the anal sphincter, alongside all major accessory glands:\n\n<svg width=\"760\" height=\"780\" viewBox=\"0 0 760 780\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"bodyOutline\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f1f5f9\"/><stop offset=\"100%\" stop-color=\"#e2e8f0\"/></linearGradient><linearGradient id=\"liverGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#991b1b\"/><stop offset=\"100%\" stop-color=\"#581c1c\"/></linearGradient><linearGradient id=\"stomachGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"100%\" stop-color=\"#ef4444\"/></linearGradient><linearGradient id=\"pancreasGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"100%\" stop-color=\"#eab308\"/></linearGradient><linearGradient id=\"largeIntGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#64748b\"/></linearGradient><linearGradient id=\"smallIntGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fed7aa\"/><stop offset=\"100%\" stop-color=\"#f97316\"/></linearGradient></defs><rect width=\"760\" height=\"780\" rx=\"16\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE HUMAN DIGESTIVE SYSTEM (ALIMENTARY CANAL &amp; ACCESSORY ORGANS)</text><text x=\"380\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Anatomical Transit: Mouth → Pharynx → Oesophagus → Stomach → Small Intestine → Large Intestine → Rectum → Anus</text><g id=\"human_torso_silhouette\" opacity=\"0.45\"><path d=\"M 320 65 C 300 70 280 85 275 110 C 270 135 285 155 305 165 C 270 180 240 215 225 260 C 215 300 215 480 220 540 C 225 610 240 730 240 750 L 520 750 C 520 730 535 610 540 540 C 545 480 545 300 535 260 C 520 215 490 180 455 165 C 475 155 490 135 485 110 C 480 85 460 70 440 65 Z\" fill=\"url(#bodyOutline)\" stroke=\"#94a3b8\" stroke-width=\"2\"/></g><g id=\"alimentary_canal\"><ellipse cx=\"365\" cy=\"102\" rx=\"14\" ry=\"8\" fill=\"#f43f5e\" opacity=\"0.8\"/><ellipse cx=\"385\" cy=\"82\" rx=\"10\" ry=\"7\" fill=\"#f59e0b\"/><ellipse cx=\"365\" cy=\"118\" rx=\"12\" ry=\"6\" fill=\"#f59e0b\"/><path d=\"M 375 105 L 385 130 L 385 270\" fill=\"none\" stroke=\"#fda4af\" stroke-width=\"12\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 375 105 L 385 130 L 385 270\" fill=\"none\" stroke=\"#e11d48\" stroke-width=\"2\" stroke-dasharray=\"3 3\"/><path d=\"M 385 270 C 385 240 455 240 465 285 C 475 330 425 365 375 355 C 345 350 340 325 355 305 C 365 290 385 285 385 270 Z\" fill=\"url(#stomachGrad)\" stroke=\"#b91c1c\" stroke-width=\"2\"/><path d=\"M 385 270 C 330 260 270 270 265 315 C 260 350 335 370 375 355 Z\" fill=\"url(#liverGrad)\" stroke=\"#450a0a\" stroke-width=\"2\"/><ellipse cx=\"335\" cy=\"350\" rx=\"11\" ry=\"16\" transform=\"rotate(25 335 350)\" fill=\"#16a34a\" stroke=\"#14532d\" stroke-width=\"1.5\"/><path d=\"M 375 345 Q 395 380 435 365\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"2.5\"/><path d=\"M 375 345 C 400 340 450 340 460 355 C 470 370 430 380 385 365 Z\" fill=\"url(#pancreasGrad)\" stroke=\"#ca8a04\" stroke-width=\"1.8\"/><path d=\"M 375 355 C 345 360 335 385 345 405 L 375 415\" fill=\"none\" stroke=\"#fb923c\" stroke-width=\"9\" stroke-linecap=\"round\"/><rect x=\"270\" y=\"410\" width=\"220\" height=\"160\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fed7aa\" stroke-width=\"1\"/><path d=\"M 365 420 Q 320 435 365 450 T 425 465 T 335 480 T 435 495 T 325 510 T 435 525 T 345 540 T 425 555 L 440 560\" fill=\"none\" stroke=\"url(#smallIntGrad)\" stroke-width=\"12\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 450 565 L 450 420 C 450 395 440 385 410 385 L 310 385 C 280 385 270 395 270 420 L 270 565\" fill=\"none\" stroke=\"url(#largeIntGrad)\" stroke-width=\"20\" stroke-linecap=\"square\" stroke-linejoin=\"round\"/><path d=\"M 450 565 L 450 420 C 450 395 440 385 410 385 L 310 385 C 280 385 270 395 270 420 L 270 565\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.5\" stroke-dasharray=\"4 8\" stroke-linecap=\"square\" stroke-linejoin=\"round\"/><path d=\"M 270 575 C 265 595 250 600 245 615\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M 310 565 C 310 600 355 600 355 635 L 355 690\" fill=\"none\" stroke=\"url(#largeIntGrad)\" stroke-width=\"18\" stroke-linecap=\"round\"/><ellipse cx=\"355\" cy=\"715\" rx=\"10\" ry=\"14\" fill=\"#475569\" stroke=\"#1e293b\" stroke-width=\"2\"/><line x1=\"346\" y1=\"732\" x2=\"364\" y2=\"732\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/></g><g font-family=\"sans-serif\" font-size=\"11\"><line x1=\"345\" y1=\"98\" x2=\"180\" y2=\"98\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><circle cx=\"345\" cy=\"98\" r=\"2.5\" fill=\"#0f172a\"/><text x=\"170\" y=\"94\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"end\">Mouth (Buccal Cavity)</text><text x=\"170\" y=\"109\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Mastication &amp; bolus formation</text><line x1=\"395\" y1=\"85\" x2=\"560\" y2=\"85\" stroke=\"#b45309\" stroke-width=\"1.2\"/><circle cx=\"395\" cy=\"85\" r=\"2.5\" fill=\"#b45309\"/><text x=\"570\" y=\"81\" font-weight=\"bold\" fill=\"#b45309\">Salivary Glands</text><text x=\"570\" y=\"96\" font-size=\"10\" fill=\"#78350f\">Secretes ptyalin (starch → maltose)</text><line x1=\"385\" y1=\"190\" x2=\"560\" y2=\"190\" stroke=\"#e11d48\" stroke-width=\"1.2\"/><circle cx=\"385\" cy=\"190\" r=\"2.5\" fill=\"#e11d48\"/><text x=\"570\" y=\"186\" font-weight=\"bold\" fill=\"#be123c\">Oesophagus (Gullet)</text><text x=\"570\" y=\"201\" font-size=\"10\" fill=\"#881337\">Peristaltic muscular transfer</text><line x1=\"290\" y1=\"300\" x2=\"180\" y2=\"270\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><circle cx=\"290\" cy=\"300\" r=\"2.5\" fill=\"#991b1b\"/><text x=\"170\" y=\"266\" font-weight=\"bold\" fill=\"#7f1d1d\" text-anchor=\"end\">Liver (Accessory Organ)</text><text x=\"170\" y=\"281\" font-size=\"10\" fill=\"#991b1b\" text-anchor=\"end\">Synthesizes alkaline bile salts</text><line x1=\"325\" y1=\"355\" x2=\"180\" y2=\"355\" stroke=\"#15803d\" stroke-width=\"1.2\"/><circle cx=\"325\" cy=\"355\" r=\"2.5\" fill=\"#15803d\"/><text x=\"170\" y=\"351\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"end\">Gallbladder</text><text x=\"170\" y=\"366\" font-size=\"10\" fill=\"#15803d\" text-anchor=\"end\">Stores &amp; concentrates bile</text><line x1=\"435\" y1=\"290\" x2=\"560\" y2=\"270\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><circle cx=\"435\" cy=\"290\" r=\"2.5\" fill=\"#dc2626\"/><text x=\"570\" y=\"266\" font-weight=\"bold\" fill=\"#b91c1c\">Stomach</text><text x=\"570\" y=\"281\" font-size=\"10\" fill=\"#7f1d1d\">HCl (pH 2) + Pepsin &amp; Rennin</text><line x1=\"445\" y1=\"360\" x2=\"560\" y2=\"345\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"445\" cy=\"360\" r=\"2.5\" fill=\"#ca8a04\"/><text x=\"570\" y=\"341\" font-weight=\"bold\" fill=\"#854d0e\">Pancreas</text><text x=\"570\" y=\"356\" font-size=\"10\" fill=\"#a16207\">Amylase, Trypsin, Lipase &amp; Insulin</text><line x1=\"345\" y1=\"380\" x2=\"180\" y2=\"410\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"345\" cy=\"380\" r=\"2.5\" fill=\"#ea580c\"/><text x=\"170\" y=\"406\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"end\">Duodenum</text><text x=\"170\" y=\"421\" font-size=\"10\" fill=\"#c2410c\" text-anchor=\"end\">Emulsification &amp; neutralisation</text><line x1=\"380\" y1=\"490\" x2=\"560\" y2=\"450\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"380\" cy=\"490\" r=\"2.5\" fill=\"#ea580c\"/><text x=\"570\" y=\"446\" font-weight=\"bold\" fill=\"#c2410c\">Small Intestine (Ileum)</text><text x=\"570\" y=\"461\" font-size=\"10\" fill=\"#9a3412\">Final chemical digestion &amp; villi absorption</text><line x1=\"270\" y1=\"470\" x2=\"180\" y2=\"470\" stroke=\"#475569\" stroke-width=\"1.2\"/><circle cx=\"270\" cy=\"470\" r=\"2.5\" fill=\"#475569\"/><text x=\"170\" y=\"466\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Large Intestine (Colon)</text><text x=\"170\" y=\"481\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Water reabsorption &amp; faecal packing</text><line x1=\"250\" y1=\"610\" x2=\"180\" y2=\"610\" stroke=\"#64748b\" stroke-width=\"1.2\"/><circle cx=\"250\" cy=\"610\" r=\"2.5\" fill=\"#64748b\"/><text x=\"170\" y=\"606\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"end\">Appendix (Caecum)</text><text x=\"170\" y=\"621\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Vestigial blind pouch</text><line x1=\"355\" y1=\"650\" x2=\"560\" y2=\"650\" stroke=\"#334155\" stroke-width=\"1.2\"/><circle cx=\"355\" cy=\"650\" r=\"2.5\" fill=\"#334155\"/><text x=\"570\" y=\"646\" font-weight=\"bold\" fill=\"#1e293b\">Rectum</text><text x=\"570\" y=\"661\" font-size=\"10\" fill=\"#475569\">Temporary faecal retention</text><line x1=\"355\" y1=\"715\" x2=\"560\" y2=\"715\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><circle cx=\"355\" cy=\"715\" r=\"2.5\" fill=\"#0f172a\"/><text x=\"570\" y=\"711\" font-weight=\"bold\" fill=\"#0f172a\">Anus &amp; Anal Sphincter</text><text x=\"570\" y=\"726\" font-size=\"10\" fill=\"#475569\">Terminal egestion of undigested waste</text></g></svg>\n\n---\n\n## 3. Digestive Biochemistry: Catalytic Enzymes & End Products\n\n### General Characteristics of Digestive Enzymes\n* **Biological Catalysts:** Enzymes are specialized globular proteins that accelerate biochemical hydrolysis reactions without being consumed or altered in the process.\n* **Thermolability (Heat Sensitivity):** Optimal catalytic activity occurs around human body temperature ($37^circ\\text{C}$). Boiling or excessive temperatures above $45^circ - 50^circ\\text{C}$ denature enzyme proteins, irreversibly destroying their three-dimensional active sites.\n* **pH Specificity:** Each digestive enzyme possesses a specific optimum pH window:\n  - *Gastric Pepsin:* Thrives strictly in strong acidic media ($\\text{pH } 1.5 - 2.5$).\n  - *Salivary Ptyalin:* Requires neutral to slightly alkaline media ($\\text{pH } 6.8 - 7.2$).\n  - *Trypsin & Pancreatic Lipase:* Require distinctly alkaline conditions ($\\text{pH } 7.5 - 8.5$).\n* **Substrate Specificity:** Enzymes follow a 'lock-and-key' active site mechanism, reacting only with specific substrate molecules.\n\n---\n\n### Comprehensive Digestive Enzyme Matrix\n\n| Digestive Secretion | Secretory Source | Active Enzyme(s) | Optimum pH Medium | Substrate Target | Primary End Products Formed |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Saliva** | Salivary Glands | Ptyalin (Salivary amylase) | Slightly Alkaline / Neutral (&approx; 6.8 &ndash; 7.2) | Cooked Starch | Maltose (Disaccharide) |\n| **Gastric Juice** | Gastric Glands in Stomach Wall | Pepsin<br>Rennin (Chymosin) | Highly Acidic ($\\text{pH } 1.5 - 2.5$, via HCl) | Complex Proteins<br>Soluble Milk Caseinogen | Peptones & Short Peptides<br>Insoluble Curdled Casein |\n| **Bile (Non-enzymatic)** | Liver (Stored in Gallbladder) | Bile Salts (Sodium glycocholate/taurocholate) | Alkaline ($\\text{pH } 7.5 - 8.5$) | Large Fat Globules | Emulsified Droplets (Physical breakdown) |\n| **Pancreatic Juice** | Exocrine Pancreas | Pancreatic Amylase<br>Trypsin (Protease)<br>Pancreatic Lipase | Alkaline ($\\text{pH } 7.5 - 8.2$) | Starch<br>Proteins & Peptones<br>Emulsified Lipids | Maltose<br>Polypeptides & Peptides<br>Fatty Acids & Glycerol |\n| **Intestinal Juice (Succus Entericus)** | Crypts of Lieberkühn (Ileum) | Maltase<br>Sucrase (Invertase)<br>Peptidases (Erepsin)<br>Intestinal Lipase | Alkaline ($\\text{pH } 7.5 - 8.5$) | Maltose<br>Sucrose (Cane sugar)<br>Peptides<br>Triglycerides | Glucose<br>Glucose + Fructose<br>Individual Amino Acids<br>Fatty Acids + Glycerol |\n\n---\n\n## 4. Gastrointestinal Disorders & Preventive Lifestyle Habits\n\nImbalances in dietary composition, meal regularity, and digestive organ function cause significant physiological disorders:\n\n1. **Indigestion (Dyspepsia):**\n   * *Aetiology & Causes:* Eating too rapidly without proper chewing, erratic meal timing, consuming excessively greasy or highly spiced food, severe emotional stress, heavy smoking, or drinking large amounts of water during heavy meals.\n   * *Symptoms:* Epigastric fullness, abdominal bloating, heartburn, nausea, and flatulence.\n   * *Preventive Regimen:* Chew food thoroughly to aid mechanical digestion, eat balanced meals at consistent schedules, avoid heavy meals late at night right before sleep, and moderate chili and oily food intake.\n2. **Constipation:**\n   * *Aetiology & Causes:* Diets deficient in dietary fiber (roughage) and fruits/vegetables, inadequate daily water and fluid intake, physical inactivity, or repeatedly ignoring the urge to defecate.\n   * *Symptoms:* Infrequent, difficult, painful defecation of dry, compacted stool, often causing anal fissures or haemorrhoids (piles).\n   * *Preventive Regimen:* Increase daily intake of dietary fiber (whole grains, oats, leafy vegetables, fruits like pawpaw and oranges), drink at least 2–3 liters of potable water daily, exercise regularly, and respond promptly to the defecation reflex.\n3. **Peptic Ulcers (Gastric & Duodenal):**\n   * *Aetiology & Causes:* Erosion of the protective mucous lining of the stomach or duodenum by concentrated hydrochloric acid and pepsin, commonly triggered by *Helicobacter pylori* bacterial colonization, chronic stress, smoking, heavy alcohol use, and regular ingestion of non-steroidal anti-inflammatory drugs (NSAIDs like aspirin/ibuprofen).\n   * *Symptoms:* Burning or gnawing abdominal pain between meals or at night, relieved temporarily by food or antacids, nausea, vomiting, and internal bleeding (melena).\n   * *Preventive Regimen:* Maintain regular meal timings to avoid prolonged periods of empty stomach acid exposure, avoid smoking and excessive alcohol, limit NSAID abuse, and complete prescribed antibiotic eradication therapy.\n4. **Hepatic & Biliary Disorders (Jaundice, Gallstones, Hepatitis, Cirrhosis):**\n   * *Aetiology & Causes:* Obstruction of the bile duct by cholesterol gallstones, viral infections (Hepatitis B & C viruses), toxic alcohol abuse causing hepatic fibrosis and cirrhosis (hardening and functional destruction of liver tissue), or schistosomiasis.\n   * *Effects:* Inability of the damaged liver to conjugate and excrete bilirubin, causing accumulation of bile pigments in the blood that produces characteristic yellowing of the skin and eye sclera (**jaundice**), pale clay-colored stool, dark urine, impaired lipid emulsification, and severe abdominal edema.\n   * *Preventive Regimen:* Immunization against Hepatitis B virus, practicing safe hygiene, avoiding unsterilized sharp instruments, eliminating excessive alcohol consumption, and adopting low-cholesterol dietary practices.\n5. **Cardiovascular & Metabolic Consequences of Dietary Excess:**\n   * *Sodium Chloride (Salt) Excess:* High dietary salt elevates blood plasma osmolarity, triggering water retention (edema) and chronic arterial hypertension (high blood pressure), multiplying the risk of strokes and heart failure.\n   * *Chronic Caloric Excess:* Diets heavy in refined sugars and saturated animal fats promote obesity, arterial atherosclerosis, cardiovascular coronary disease, and adult-onset Type 2 diabetes mellitus.",
         "workedExamples": [
           {
             "id": "ex_b7_s7_1",
-            "title": "Worked Example: Decoding the Adult Human Dental Formula",
+            "title": "Worked Example 1: Decoding the Adult Human Dental Formula",
             "problem": "The adult human dental formula is written as i: 2/2, c: 1/1, pm: 2/2, m: 3/3. Calculate the total number of teeth in the adult human mouth and determine the total number of grinding teeth.",
             "steps": [
               "Step 1: Understand formula structure — The dental formula represents the count of teeth in one quadrant of the upper jaw over one quadrant of the lower jaw (half of the mouth).",
@@ -11727,23 +14192,868 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "Step 4: Calculate total grinding teeth (premolars + molars): Premolars = (2 + 2) x 2 = 8. Molars = (3 + 3) x 2 = 12. Total grinding teeth = 8 + 12 = 20 teeth."
             ],
             "finalAnswer": "Examiner Tip: Always remember to multiply the total dental formula count by 2 to account for both left and right sides of the jaw."
+          },
+          {
+            "id": "ex_b7_s7_2",
+            "title": "Worked Example 2: Differentiating Food Nutrients Using Reagent Tests",
+            "problem": "A student tests three unknown food extracts X, Y, and Z. Extract X turns deep blue-black with iodine solution. Extract Y forms a brick-red precipitate when boiled with Benedict's solution. Extract Z produces a violet ring with Biuret reagent. Identify the major organic nutrients present in X, Y, and Z.",
+            "steps": [
+              "Step 1: Analyze Extract X: Iodine solution shifting from yellow-brown to deep blue-black is the specific diagnostic confirmation for starch (complex carbohydrate).",
+              "Step 2: Analyze Extract Y: Heating with Benedict's reagent in a boiling water bath yielding a brick-red precipitate confirms the presence of reducing sugars (such as glucose or maltose).",
+              "Step 3: Analyze Extract Z: The Biuret test (dilute NaOH followed by 1% CuSO4 solution) producing a distinct violet/purple coloration confirms the presence of peptide bonds in proteins.",
+              "Step 4: Synthesize conclusions: Extract X is starch, Extract Y is reducing sugar, and Extract Z is protein."
+            ],
+            "finalAnswer": "Examiner Tip: If non-reducing sugar (sucrose) is suspected, the sample must first be hydrolyzed with dilute HCl and neutralized before testing with Benedict's solution."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s7_1",
+              "id": "B7_DIG_F01",
               "difficulty": "low",
-              "prompt": "The hardest biological substance in the human body, covering the crown of the tooth, is the:",
+              "prompt": "Which class of food is the body's primary and most immediate source of energy?",
               "options": [
-                "Dentine",
-                "Enamel",
-                "Cementum",
-                "Alveolar bone"
+                "A. Carbohydrates",
+                "B. Proteins",
+                "C. Mineral salts",
+                "D. Roughage"
               ],
-              "correctAnswer": "Enamel",
-              "hint": "It is the non-living outer calcified layer.",
-              "workedSolution": "Enamel is the highly mineralized, hardest substance in the human body, protecting the underlying dentine and pulp from physical mastication wear and chemical attack.",
+              "correctAnswer": "A. Carbohydrates",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Carbohydrates are broken down into glucose to provide immediate chemical energy for cellular activities.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F02",
+              "difficulty": "low",
+              "prompt": "Which food nutrient is primarily responsible for the growth and repair of worn-out body tissues?",
+              "options": [
+                "A. Fats and oils",
+                "B. Proteins",
+                "C. Starches",
+                "D. Simple sugars"
+              ],
+              "correctAnswer": "B. Proteins",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Proteins supply the essential amino acids required to synthesize new cells and repair damaged tissues.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F03",
+              "difficulty": "low",
+              "prompt": "The continuous muscular tube running from the mouth down to the anus is called the:",
+              "options": [
+                "A. Respiratory tract",
+                "B. Alimentary canal",
+                "C. Circulatory circuit",
+                "D. Spinal canal"
+              ],
+              "correctAnswer": "B. Alimentary canal",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The digestive tract or alimentary canal is the continuous muscular passage through which food travels from mouth to anus.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F04",
+              "difficulty": "low",
+              "prompt": "Which diagnostic chemical reagent turns from yellow-brown to blue-black in the presence of starch?",
+              "options": [
+                "A. Benedict's solution",
+                "B. Biuret reagent",
+                "C. Iodine solution",
+                "D. Sudan III solution"
+              ],
+              "correctAnswer": "C. Iodine solution",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Iodine solution reacts specifically with starch molecules to produce a characteristic deep blue-black color.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F05",
+              "difficulty": "low",
+              "prompt": "Which reagent produces a brick-red or orange-red precipitate when boiled with a reducing sugar like glucose?",
+              "options": [
+                "A. Benedict's solution",
+                "B. Iodine solution",
+                "C. Millon's reagent",
+                "D. Ethanol"
+              ],
+              "correctAnswer": "A. Benedict's solution",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Boiling Benedict's solution with a reducing sugar reduces copper ions, forming a brick-red copper(I) oxide precipitate.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F06",
+              "difficulty": "low",
+              "prompt": "In the grease spot test, crushing an oil seed against filter paper produces a:",
+              "options": [
+                "A. Permanent translucent spot",
+                "B. Dark blue-black ring",
+                "C. Bright green powdery layer",
+                "D. White crystalline crust"
+              ],
+              "correctAnswer": "A. Permanent translucent spot",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Lipids leave a characteristic permanent translucent grease spot on absorbent filter paper.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F07",
+              "difficulty": "low",
+              "prompt": "When Sudan III solution is added to a food sample containing oil, what color confirms the presence of fat?",
+              "options": [
+                "A. Blue-black",
+                "B. Bright red",
+                "C. Deep violet",
+                "D. Pitch black"
+              ],
+              "correctAnswer": "B. Bright red",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Sudan III is a fat-soluble dye that stains lipid globules a distinct red color.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F08",
+              "difficulty": "low",
+              "prompt": "Which chemical test uses a mixture of sodium hydroxide and copper(II) sulfate to detect proteins?",
+              "options": [
+                "A. Biuret test",
+                "B. Iodine test",
+                "C. Sudan III test",
+                "D. Spot test"
+              ],
+              "correctAnswer": "A. Biuret test",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The Biuret test uses dilute sodium hydroxide and copper(II) sulfate solutions to detect peptide bonds in proteins.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F09",
+              "difficulty": "low",
+              "prompt": "What color indicates a positive result for protein when using the Biuret reagent?",
+              "options": [
+                "A. Brick-red",
+                "B. Violet or purple",
+                "C. Blue-black",
+                "D. Translucent yellow"
+              ],
+              "correctAnswer": "B. Violet or purple",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "A violet or purple coloration confirms the presence of protein in the tested specimen.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F10",
+              "difficulty": "low",
+              "prompt": "Proteins that contain all the essential amino acids needed by the human body are called:",
+              "options": [
+                "A. First-class proteins",
+                "B. Second-class proteins",
+                "C. Incomplete proteins",
+                "D. Synthetic proteins"
+              ],
+              "correctAnswer": "A. First-class proteins",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "First-class proteins (mostly of animal origin like meat, fish, and milk) contain all essential amino acids.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F11",
+              "difficulty": "low",
+              "prompt": "Which of the following is a major protein deficiency disease in young children?",
+              "options": [
+                "A. Scurvy",
+                "B. Kwashiorkor",
+                "C. Rickets",
+                "D. Goiter"
+              ],
+              "correctAnswer": "B. Kwashiorkor",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Kwashiorkor is caused by severe protein deficiency in diets that may otherwise supply carbohydrates.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F12",
+              "difficulty": "low",
+              "prompt": "What is the ball of chewed food mixed with saliva formed in the mouth called?",
+              "options": [
+                "A. Chyme",
+                "B. Bolus",
+                "C. Faeces",
+                "D. Peptone"
+              ],
+              "correctAnswer": "B. Bolus",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Food chewed and shaped by the tongue into a soft, slippery sphere for swallowing is a bolus.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F13",
+              "difficulty": "low",
+              "prompt": "The wave-like muscular contraction that pushes food along the oesophagus into the stomach is termed:",
+              "options": [
+                "A. Absorption",
+                "B. Peristalsis",
+                "C. Emulsification",
+                "D. Assimilation"
+              ],
+              "correctAnswer": "B. Peristalsis",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Peristalsis is the rhythmic involuntary muscular contraction that moves food down the alimentary canal.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F14",
+              "difficulty": "low",
+              "prompt": "Which enzyme present in human saliva begins the chemical digestion of cooked starch?",
+              "options": [
+                "A. Pepsin",
+                "B. Ptyalin (salivary amylase)",
+                "C. Lipase",
+                "D. Rennin"
+              ],
+              "correctAnswer": "B. Ptyalin (salivary amylase)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Salivary glands secrete ptyalin, which hydrolyzes cooked starch into maltose in the mouth.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F15",
+              "difficulty": "low",
+              "prompt": "What acid is secreted by gastric glands in the human stomach?",
+              "options": [
+                "A. Sulfuric acid",
+                "B. Hydrochloric acid",
+                "C. Acetic acid",
+                "D. Nitric acid"
+              ],
+              "correctAnswer": "B. Hydrochloric acid",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The stomach lining secretes hydrochloric acid (HCl) to destroy pathogens and activate gastric enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F16",
+              "difficulty": "low",
+              "prompt": "Which enzyme in gastric juice digests proteins into smaller peptones in an acidic medium?",
+              "options": [
+                "A. Pepsin",
+                "B. Ptyalin",
+                "C. Lipase",
+                "D. Maltase"
+              ],
+              "correctAnswer": "A. Pepsin",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Pepsin operates in the acidic gastric environment to break down dietary proteins into peptones.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F17",
+              "difficulty": "low",
+              "prompt": "What is the function of rennin in the stomach of human infants?",
+              "options": [
+                "A. Digesting cooking oil",
+                "B. Clotting or curdling liquid milk proteins",
+                "C. Breaking down starch to glucose",
+                "D. Neutralizing stomach acid"
+              ],
+              "correctAnswer": "B. Clotting or curdling liquid milk proteins",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Rennin coagulates soluble milk caseinogen into insoluble casein so that pepsin can digest it.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F18",
+              "difficulty": "low",
+              "prompt": "The acidic, creamy semi-fluid pulp produced by the stomach's churning action is called:",
+              "options": [
+                "A. Bolus",
+                "B. Chyme",
+                "C. Bile",
+                "D. Saliva"
+              ],
+              "correctAnswer": "B. Chyme",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Food partially digested and mixed with acidic gastric secretions in the stomach is called chyme.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F19",
+              "difficulty": "low",
+              "prompt": "Which organ in the human body synthesizes bile?",
+              "options": [
+                "A. Gallbladder",
+                "B. Liver",
+                "C. Pancreas",
+                "D. Spleen"
+              ],
+              "correctAnswer": "B. Liver",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Bile is manufactured and secreted by liver hepatocytes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F20",
+              "difficulty": "low",
+              "prompt": "Where is bile temporarily stored and concentrated before entering the duodenum?",
+              "options": [
+                "A. Gallbladder",
+                "B. Stomach",
+                "C. Pancreas",
+                "D. Caecum"
+              ],
+              "correctAnswer": "A. Gallbladder",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Bile produced by the liver is stored and concentrated in the gallbladder.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F21",
+              "difficulty": "low",
+              "prompt": "What is the primary role of bile in the digestion of dietary fats?",
+              "options": [
+                "A. Breaking down proteins chemically",
+                "B. Emulsifying large fat globules into tiny droplets",
+                "C. Producing stomach acid",
+                "D. Turning oil into starch"
+              ],
+              "correctAnswer": "B. Emulsifying large fat globules into tiny droplets",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Bile salts physically break down large lipid masses into small droplets, increasing surface area for lipase action.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F22",
+              "difficulty": "low",
+              "prompt": "Which enzyme converts emulsified fats into fatty acids and glycerol?",
+              "options": [
+                "A. Amylase",
+                "B. Lipase",
+                "C. Pepsin",
+                "D. Trypsin"
+              ],
+              "correctAnswer": "B. Lipase",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Lipase catalyzes the hydrolysis of emulsified fats into fatty acids and glycerol.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F23",
+              "difficulty": "low",
+              "prompt": "In which section of the human alimentary canal does the greatest amount of nutrient absorption occur?",
+              "options": [
+                "A. Stomach",
+                "B. Small intestine (ileum)",
+                "C. Oesophagus",
+                "D. Large intestine"
+              ],
+              "correctAnswer": "B. Small intestine (ileum)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The ileum of the small intestine is the main site for nutrient absorption into the bloodstream.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F24",
+              "difficulty": "low",
+              "prompt": "The tiny, finger-like projections lining the wall of the small intestine that increase surface area for absorption are:",
+              "options": [
+                "A. Villi",
+                "B. Cilia",
+                "C. Flagella",
+                "D. Spiracles"
+              ],
+              "correctAnswer": "A. Villi",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Villi are finger-like mucosal projections that multiply the internal absorptive surface area of the ileum.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F25",
+              "difficulty": "low",
+              "prompt": "What is the primary function of the colon (large intestine) in human digestion?",
+              "options": [
+                "A. Digesting starches into sugars",
+                "B. Reabsorbing water and mineral salts into the bloodstream",
+                "C. Producing hydrochloric acid",
+                "D. Emulsifying fats"
+              ],
+              "correctAnswer": "B. Reabsorbing water and mineral salts into the bloodstream",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The colon absorbs water and electrolytes from remaining undigested matter, forming semi-solid faeces.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F26",
+              "difficulty": "low",
+              "prompt": "The process of discharging undigested food residue from the body through the anus is called:",
+              "options": [
+                "A. Ingestion",
+                "B. Assimilation",
+                "C. Egestion",
+                "D. Transpiration"
+              ],
+              "correctAnswer": "C. Egestion",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Egestion is the voiding of undigested, unabsorbed food material (faeces) via the anus.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F27",
+              "difficulty": "low",
+              "prompt": "What is the final digestive end product of dietary carbohydrates?",
+              "options": [
+                "A. Amino acids",
+                "B. Glucose",
+                "C. Fatty acids",
+                "D. Peptones"
+              ],
+              "correctAnswer": "B. Glucose",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Carbohydrates are fully hydrolyzed into simple monosaccharides, predominantly glucose.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F28",
+              "difficulty": "low",
+              "prompt": "What is the final digestive end product of dietary proteins?",
+              "options": [
+                "A. Glucose",
+                "B. Glycerol",
+                "C. Amino acids",
+                "D. Maltose"
+              ],
+              "correctAnswer": "C. Amino acids",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Proteins are completely digested into individual amino acids before absorption.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F29",
+              "difficulty": "low",
+              "prompt": "Which of the following are the end products of fat and oil digestion?",
+              "options": [
+                "A. Glucose and galactose",
+                "B. Fatty acids and glycerol",
+                "C. Peptones and amino acids",
+                "D. Starch and maltose"
+              ],
+              "correctAnswer": "B. Fatty acids and glycerol",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Lipase breaks down dietary lipids into fatty acids and glycerol molecules.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F30",
+              "difficulty": "low",
+              "prompt": "Biological catalysts produced by living cells that accelerate chemical breakdown without being consumed are:",
+              "options": [
+                "A. Hormones",
+                "B. Enzymes",
+                "C. Vitamins",
+                "D. Antibiotics"
+              ],
+              "correctAnswer": "B. Enzymes",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Digestive enzymes are biological catalysts that speed up metabolic reactions.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F31",
+              "difficulty": "low",
+              "prompt": "Which reagent produces a reddish-brown or deep red color when heated with protein in a test tube?",
+              "options": [
+                "A. Millon's reagent",
+                "B. Iodine solution",
+                "C. Benedict's reagent",
+                "D. Sudan III"
+              ],
+              "correctAnswer": "A. Millon's reagent",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Millon's reagent turns from white to deep red upon gentle heating in the presence of proteins.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F32",
+              "difficulty": "low",
+              "prompt": "What happens to digestive enzymes when exposed to excessive heat or boiling temperatures?",
+              "options": [
+                "A. They work twice as fast",
+                "B. They are denatured and permanently lose their catalytic activity",
+                "C. They transform into vitamins",
+                "D. They turn into carbohydrates"
+              ],
+              "correctAnswer": "B. They are denatured and permanently lose their catalytic activity",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "High temperatures alter the tertiary protein structure of enzymes (denaturation), destroying their active sites.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F33",
+              "difficulty": "low",
+              "prompt": "Which organ secretes both digestive enzymes (amylase, trypsin, lipase) and the hormone insulin?",
+              "options": [
+                "A. Liver",
+                "B. Spleen",
+                "C. Pancreas",
+                "D. Gallbladder"
+              ],
+              "correctAnswer": "C. Pancreas",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The pancreas has exocrine functions (secreting pancreatic juice) and endocrine functions (secreting insulin).",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F34",
+              "difficulty": "low",
+              "prompt": "Difficulty in passing dry, hardened faeces due to lack of dietary fiber and water is termed:",
+              "options": [
+                "A. Indigestion",
+                "B. Diarrhea",
+                "C. Constipation",
+                "D. Jaundice"
+              ],
+              "correctAnswer": "C. Constipation",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Constipation is a condition characterized by infrequent, difficult bowel movements often linked to low fiber intake.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F35",
+              "difficulty": "low",
+              "prompt": "Which component of our diet adds bulk to stools and stimulates peristalsis even though humans cannot digest it?",
+              "options": [
+                "A. Roughage (dietary fiber)",
+                "B. Animal fat",
+                "C. Table salt",
+                "D. Pure sugar"
+              ],
+              "correctAnswer": "A. Roughage (dietary fiber)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Indigestible plant fiber (cellulose) provides bulk that stimulates regular bowel contractions.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F36",
+              "difficulty": "low",
+              "prompt": "An open sore on the mucosal inner lining of the stomach or duodenum is known as a:",
+              "options": [
+                "A. Gallstone",
+                "B. Peptic ulcer",
+                "C. Cataract",
+                "D. Goiter"
+              ],
+              "correctAnswer": "B. Peptic ulcer",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Peptic ulcers are painful sores produced when digestive acid and pepsin erode the protective gastrointestinal lining.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F37",
+              "difficulty": "low",
+              "prompt": "Yellowing of the skin and whites of the eyes caused by a buildup of bile pigments in the blood is called:",
+              "options": [
+                "A. Cirrhosis",
+                "B. Jaundice",
+                "C. Constipation",
+                "D. Kwashiorkor"
+              ],
+              "correctAnswer": "B. Jaundice",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Jaundice is the yellow discoloration of tissues caused by elevated bilirubin levels when bile excretion is impaired.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F38",
+              "difficulty": "low",
+              "prompt": "Which accessory organ lies directly beneath the liver and releases stored bile into the duodenum?",
+              "options": [
+                "A. Appendix",
+                "B. Gallbladder",
+                "C. Pancreas",
+                "D. Spleen"
+              ],
+              "correctAnswer": "B. Gallbladder",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The gallbladder is attached beneath the liver and concentrates and ejects stored bile.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F39",
+              "difficulty": "low",
+              "prompt": "What is the small, finger-like vestigial pouch attached near the junction of the small and large intestines?",
+              "options": [
+                "A. Appendix",
+                "B. Gallbladder",
+                "C. Rectum",
+                "D. Spleen"
+              ],
+              "correctAnswer": "A. Appendix",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The vermiform appendix is a narrow, blind-ended pouch projecting from the caecum.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F40",
+              "difficulty": "low",
+              "prompt": "What is the optimal pH environment required for the enzyme pepsin to function efficiently?",
+              "options": [
+                "A. Strongly alkaline (pH 12)",
+                "B. Strongly acidic (pH 1.5 - 2.5)",
+                "C. Neutral (pH 7)",
+                "D. Completely dry"
+              ],
+              "correctAnswer": "B. Strongly acidic (pH 1.5 - 2.5)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Pepsin operates best in the strongly acidic environment created by gastric hydrochloric acid.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F41",
+              "difficulty": "low",
+              "prompt": "The incorporation and utilization of absorbed nutrient molecules by body cells for energy and growth is called:",
+              "options": [
+                "A. Ingestion",
+                "B. Assimilation",
+                "C. Egestion",
+                "D. Mastication"
+              ],
+              "correctAnswer": "B. Assimilation",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Assimilation is the movement and biological use of absorbed food molecules inside cells.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F42",
+              "difficulty": "low",
+              "prompt": "Into which structures inside the intestinal villi are digested fatty acids and glycerol primarily absorbed?",
+              "options": [
+                "A. Blood capillaries",
+                "B. Lacteals (lymphatic vessels)",
+                "C. Bile ducts",
+                "D. Nerve endings"
+              ],
+              "correctAnswer": "B. Lacteals (lymphatic vessels)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Lipid digestion products pass into central lacteal vessels before entering the bloodstream.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F43",
+              "difficulty": "low",
+              "prompt": "Which of the following habits helps prevent indigestion (dyspepsia)?",
+              "options": [
+                "A. Swallowing large chunks of unchewed food quickly",
+                "B. Chewing food thoroughly and eating balanced meals at regular intervals",
+                "C. Eating heavy, oily foods right before sleeping",
+                "D. Smoking heavily before meals"
+              ],
+              "correctAnswer": "B. Chewing food thoroughly and eating balanced meals at regular intervals",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Chewing well and having regular meal schedules reduce strain on digestive organs.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F44",
+              "difficulty": "low",
+              "prompt": "What is the medical consequence of consuming excessive dietary salt over long periods?",
+              "options": [
+                "A. Severe tooth decay",
+                "B. Fluid retention (oedema) and high blood pressure (hypertension)",
+                "C. Immediate weight loss",
+                "D. Kwashiorkor"
+              ],
+              "correctAnswer": "B. Fluid retention (oedema) and high blood pressure (hypertension)",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Excess sodium draws water into blood vessels, elevating blood pressure and causing tissue fluid retention.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F45",
+              "difficulty": "low",
+              "prompt": "A chronic condition where healthy liver tissue is replaced by hardened, non-functional scar tissue is:",
+              "options": [
+                "A. Cirrhosis",
+                "B. Dyspepsia",
+                "C. Ulcer",
+                "D. Constipation"
+              ],
+              "correctAnswer": "A. Cirrhosis",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Cirrhosis is progressive fibrosis and scarring of the liver often triggered by chronic alcohol use or viral hepatitis.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F46",
+              "difficulty": "low",
+              "prompt": "Which component of saliva provides lubrication to make swallowing smooth and easy?",
+              "options": [
+                "A. Mucus",
+                "B. Hydrochloric acid",
+                "C. Pepsin",
+                "D. Bile"
+              ],
+              "correctAnswer": "A. Mucus",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Mucus in saliva binds food particles together into a lubricated bolus for easy swallowing.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F47",
+              "difficulty": "low",
+              "prompt": "Which enzyme found in pancreatic juice breaks down proteins and polypeptides in an alkaline environment?",
+              "options": [
+                "A. Trypsin",
+                "B. Ptyalin",
+                "C. Rennin",
+                "D. Maltase"
+              ],
+              "correctAnswer": "A. Trypsin",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Pancreatic trypsin digests proteins and peptones into smaller peptides in the duodenum.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F48",
+              "difficulty": "low",
+              "prompt": "What happens when non-reducing sugars like sucrose are boiled directly with Benedict's solution without acid treatment?",
+              "options": [
+                "A. The solution remains clear blue with no color change",
+                "B. It turns brick-red instantly",
+                "C. It turns violet-purple",
+                "D. It produces a translucent spot"
+              ],
+              "correctAnswer": "A. The solution remains clear blue with no color change",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Non-reducing disaccharides cannot reduce copper ions directly, leaving the reagent's blue color unchanged.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F49",
+              "difficulty": "low",
+              "prompt": "Where are faeces stored temporarily in the human body before defecation?",
+              "options": [
+                "A. Small intestine",
+                "B. Rectum",
+                "C. Gallbladder",
+                "D. Stomach"
+              ],
+              "correctAnswer": "B. Rectum",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "The rectum acts as a temporary holding chamber for formed faeces prior to egestion.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_F50",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a second-class protein source?",
+              "options": [
+                "A. Boiled egg",
+                "B. Fresh cow milk",
+                "C. Roasted groundnuts",
+                "D. Grilled beef"
+              ],
+              "correctAnswer": "C. Roasted groundnuts",
+              "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+              "workedSolution": "Groundnuts are plant proteins that lack certain essential amino acids, making them second-class proteins.",
               "points": 1,
               "learningCompetency": "B7.3.1.1",
               "type": "objective"
@@ -11751,24 +15061,1708 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "q_b7_s7_2",
+              "id": "B7_DIG_I01",
               "difficulty": "medium",
-              "prompt": "Dental caries (tooth decay) is initiated chemically when mouth bacteria:",
+              "prompt": "Why does a piece of plain bread taste slightly sweet if it is chewed thoroughly in the mouth for two minutes?",
               "options": [
-                "Release basic ammonia that burns the gums",
-                "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
-                "Drink all water from the salivary glands",
-                "Inject poisonous enzymes into the dentine"
+                "A. Teeth release natural sugars when chewing",
+                "B. Salivary ptyalin hydrolyzes tasteless cooked starch into sweet-tasting maltose disaccharides",
+                "C. Stomach acid rises into the mouth to sweeten food",
+                "D. Taste buds produce glucose molecules"
               ],
-              "correctAnswer": "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
-              "hint": "Plaque bacteria produce acid from sugary foods.",
-              "workedSolution": "Oral plaque bacteria metabolize residual sucrose sugars to synthesize lactic acid, which drops oral pH below the critical threshold (5.5), dissolving hydroxyapatite mineral crystals in the tooth enamel.",
+              "correctAnswer": "B. Salivary ptyalin hydrolyzes tasteless cooked starch into sweet-tasting maltose disaccharides",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Chewing gives ptyalin time to convert insoluble starch into sweet maltose sugars in the mouth.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I02",
+              "difficulty": "medium",
+              "prompt": "Why does the action of salivary ptyalin cease once food enters the stomach cavity?",
+              "options": [
+                "A. Ptyalin dissolves in drinking water",
+                "B. The strongly acidic gastric juice (pH 1.5–2.5) denatures ptyalin, which requires a near-neutral pH",
+                "C. Stomach muscles physically crush the enzyme",
+                "D. Bile neutralizes ptyalin in the stomach"
+              ],
+              "correctAnswer": "B. The strongly acidic gastric juice (pH 1.5–2.5) denatures ptyalin, which requires a near-neutral pH",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Ptyalin is inactivated and denatured by the low pH of gastric hydrochloric acid.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I03",
+              "difficulty": "medium",
+              "prompt": "What is the biochemical purpose of boiling a non-reducing sugar with dilute hydrochloric acid before adding Benedict's reagent?",
+              "options": [
+                "A. To dye the sugar blue",
+                "B. To acid-hydrolyze the complex non-reducing disaccharide into reducing monosaccharide units",
+                "C. To kill all digestive enzymes",
+                "D. To turn the sugar into a protein"
+              ],
+              "correctAnswer": "B. To acid-hydrolyze the complex non-reducing disaccharide into reducing monosaccharide units",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Acid hydrolysis breaks glycosidic bonds in non-reducing sugars like sucrose, releasing reducing monosaccharides.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I04",
+              "difficulty": "medium",
+              "prompt": "Why must sodium hydroxide or sodium bicarbonate be added after acid-hydrolyzing a non-reducing sugar?",
+              "options": [
+                "A. To make the mixture smell sweet",
+                "B. To neutralize excess acid, because Benedict's reagent only functions in an alkaline medium",
+                "C. To turn the sugar into starch",
+                "D. To produce a grease spot"
+              ],
+              "correctAnswer": "B. To neutralize excess acid, because Benedict's reagent only functions in an alkaline medium",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Benedict's reduction reaction requires an alkaline environment to produce the copper oxide precipitate.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I05",
+              "difficulty": "medium",
+              "prompt": "How does the structural design of intestinal villi maximize nutrient absorption in the ileum?",
+              "options": [
+                "A. By forming a flat, impermeable leather-like barrier",
+                "B. By providing a huge surface area, thin single-cell epithelium, and dense networks of blood capillaries and lacteals",
+                "C. By blocking all liquids from passing",
+                "D. By producing hydrochloric acid"
+              ],
+              "correctAnswer": "B. By providing a huge surface area, thin single-cell epithelium, and dense networks of blood capillaries and lacteals",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Villi provide a vast surface area, thin diffusion barriers, and rich vascular beds for efficient uptake.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I06",
+              "difficulty": "medium",
+              "prompt": "Why does a patient with an inflamed or blocked bile duct pass pale, clay-colored stools and suffer from indigestion of fatty foods?",
+              "options": [
+                "A. The stomach produces too much pepsin",
+                "B. Bile pigments fail to reach the intestine to color faeces, and lack of bile salts impairs lipid emulsification",
+                "C. Pancreatic lipase is destroyed by water",
+                "D. The patient lacks saliva"
+              ],
+              "correctAnswer": "B. Bile pigments fail to reach the intestine to color faeces, and lack of bile salts impairs lipid emulsification",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Bile pigments provide the brown color of normal stools, while bile salts are essential for emulsifying fats.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I07",
+              "difficulty": "medium",
+              "prompt": "How do fats and oils provide essential thermal insulation in the human body?",
+              "options": [
+                "A. They burn constantly like wood fires",
+                "B. Subcutaneous adipose tissue under the skin conducts heat poorly, slowing internal heat loss to the outside",
+                "C. They absorb sunlight through the skin",
+                "D. They convert sweat into steam"
+              ],
+              "correctAnswer": "B. Subcutaneous adipose tissue under the skin conducts heat poorly, slowing internal heat loss to the outside",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Adipose tissue is a poor conductor of heat, forming a subcutaneous layer that reduces heat loss.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I08",
+              "difficulty": "medium",
+              "prompt": "What is the key functional difference between physical digestion and chemical digestion?",
+              "options": [
+                "A. Physical digestion changes the chemical bonds; chemical digestion only breaks food into small pieces",
+                "B. Physical digestion breaks food mechanically into smaller fragments without altering chemical identity; chemical digestion uses enzymes to break covalent bonds",
+                "C. Chemical digestion happens only in the mouth; physical digestion happens only in the colon",
+                "D. Physical digestion requires bacteria; chemical digestion does not"
+              ],
+              "correctAnswer": "B. Physical digestion breaks food mechanically into smaller fragments without altering chemical identity; chemical digestion uses enzymes to break covalent bonds",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Physical digestion reduces particle size, while chemical digestion cleaves molecular bonds using enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I09",
+              "difficulty": "medium",
+              "prompt": "Why does unbuffered gastric juice not normally digest the muscular wall of the stomach itself?",
+              "options": [
+                "A. The stomach is made of bone",
+                "B. A thick layer of alkaline mucus continuously coats and shields the gastric lining from acid and pepsin",
+                "C. Pepsin is only active when touching air",
+                "D. The stomach is empty of blood"
+              ],
+              "correctAnswer": "B. A thick layer of alkaline mucus continuously coats and shields the gastric lining from acid and pepsin",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Epithelial goblet cells secrete protective mucus containing bicarbonate that buffers the stomach lining against acid.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I10",
+              "difficulty": "medium",
+              "prompt": "What role does pancreatic amylase play in the duodenum?",
+              "options": [
+                "A. Converting proteins to amino acids",
+                "B. Hydrolyzing remaining undigested starches into maltose in an alkaline medium",
+                "C. Emulsifying animal fats",
+                "D. Clotting liquid milk"
+              ],
+              "correctAnswer": "B. Hydrolyzing remaining undigested starches into maltose in an alkaline medium",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Pancreatic amylase continues carbohydrate digestion in the alkaline environment of the duodenum.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I11",
+              "difficulty": "medium",
+              "prompt": "Why is regular consumption of leafy vegetables like cocoyam leaves ('kontomire') effective in relieving constipation?",
+              "options": [
+                "A. They digest all intestinal proteins immediately",
+                "B. Their indigestible cellulose fibers retain water, creating soft, bulky stools that stimulate peristalsis",
+                "C. They stop the liver from making bile",
+                "D. They kill all intestinal bacteria"
+              ],
+              "correctAnswer": "B. Their indigestible cellulose fibers retain water, creating soft, bulky stools that stimulate peristalsis",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Vegetable roughage holds moisture and adds physical bulk, triggering regular bowel contractions.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I12",
+              "difficulty": "medium",
+              "prompt": "How does emotional stress contribute to the development or worsening of peptic ulcers?",
+              "options": [
+                "A. Stress causes people to chew too much food",
+                "B. Prolonged stress triggers excess gastric acid secretion while reducing blood flow and mucus production in the stomach wall",
+                "C. Stress dissolves the liver",
+                "D. Stress turns starch into acid"
+              ],
+              "correctAnswer": "B. Prolonged stress triggers excess gastric acid secretion while reducing blood flow and mucus production in the stomach wall",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Chronic sympathetic stress increases acid output and compromises protective mucosal blood flow.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I13",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the Sudan III test procedure for fats?",
+              "options": [
+                "A. Boiling the food with dilute acid in a water bath",
+                "B. Adding drops of Sudan III dye to the sample and observing a characteristic red-stained lipid layer",
+                "C. Adding iodine until a blue-black precipitate settles",
+                "D. Adding copper sulfate and sodium hydroxide until violet appears"
+              ],
+              "correctAnswer": "B. Adding drops of Sudan III dye to the sample and observing a characteristic red-stained lipid layer",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Sudan III dissolves preferentially in lipids, staining fat globules a distinct red color.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I14",
+              "difficulty": "medium",
+              "prompt": "Why are lipids regarded as a more concentrated energy source than carbohydrates?",
+              "options": [
+                "A. Lipids contain less carbon",
+                "B. Lipids have a higher proportion of carbon-hydrogen bonds and yield more than double the energy per gram compared to carbohydrates",
+                "C. Lipids dissolve faster in water",
+                "D. Lipids are absorbed in the mouth"
+              ],
+              "correctAnswer": "B. Lipids have a higher proportion of carbon-hydrogen bonds and yield more than double the energy per gram compared to carbohydrates",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Due to their reduced chemical state, lipids supply roughly 9 kcal/g compared to 4 kcal/g from carbohydrates.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I15",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger of severe prolonged diarrhea in infants?",
+              "options": [
+                "A. Excessive growth of body hair",
+                "B. Rapid dehydration and loss of vital electrolytes, which can lead to hypovolemic shock",
+                "C. Hardening of the bones",
+                "D. Excess production of bile"
+              ],
+              "correctAnswer": "B. Rapid dehydration and loss of vital electrolytes, which can lead to hypovolemic shock",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Severe diarrhea depletes body water and essential electrolytes rapidly, leading to life-threatening dehydration.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I16",
+              "difficulty": "medium",
+              "prompt": "Which enzyme completes the conversion of maltose into individual glucose units in the small intestine?",
+              "options": [
+                "A. Ptyalin",
+                "B. Maltase",
+                "C. Pepsin",
+                "D. Lipase"
+              ],
+              "correctAnswer": "B. Maltase",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Maltase in intestinal juice splits the disaccharide maltose into two glucose molecules.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I17",
+              "difficulty": "medium",
+              "prompt": "Why is the liver considered an accessory digestive organ rather than part of the alimentary canal?",
+              "options": [
+                "A. Food passes through the liver before reaching the stomach",
+                "B. Food never enters the liver; it contributes digestive secretions (bile) to the tract through a duct",
+                "C. The liver is located outside the human body",
+                "D. The liver only functions during sleep"
+              ],
+              "correctAnswer": "B. Food never enters the liver; it contributes digestive secretions (bile) to the tract through a duct",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Accessory organs produce secretions but do not form part of the continuous tube through which food travels.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I18",
+              "difficulty": "medium",
+              "prompt": "What happens if a grease spot on filter paper is warmed gently over a heat source?",
+              "options": [
+                "A. A true fat spot remains permanently translucent, whereas a simple water spot evaporates and disappears",
+                "B. The paper turns blue-black",
+                "C. The paper turns into sugar",
+                "D. The spot dissolves into gas completely"
+              ],
+              "correctAnswer": "A. A true fat spot remains permanently translucent, whereas a simple water spot evaporates and disappears",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Unlike volatile water spots, non-volatile lipids leave a permanent translucent stain even after warming.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I19",
+              "difficulty": "medium",
+              "prompt": "Why do humans need diverse mineral salts like iron and calcium in their daily diet?",
+              "options": [
+                "A. They provide caloric energy like starches",
+                "B. Iron forms the oxygen-carrying core of hemoglobin, while calcium builds bones and enables muscle contractions",
+                "C. They replace all bodily water",
+                "D. They produce saliva"
+              ],
+              "correctAnswer": "B. Iron forms the oxygen-carrying core of hemoglobin, while calcium builds bones and enables muscle contractions",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Minerals serve structural and regulatory roles: iron forms hemoglobin and calcium mineralizes skeletal tissue.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I20",
+              "difficulty": "medium",
+              "prompt": "What is the function of the enzyme sucrase (invertase) in the human ileum?",
+              "options": [
+                "A. Digesting cooked starch to maltose",
+                "B. Hydrolyzing table sugar (sucrose) into glucose and fructose",
+                "C. Clotting milk proteins",
+                "D. Converting fats into glycerol"
+              ],
+              "correctAnswer": "B. Hydrolyzing table sugar (sucrose) into glucose and fructose",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Sucrase breaks down dietary sucrose into its constituent monosaccharides, glucose and fructose.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I21",
+              "difficulty": "medium",
+              "prompt": "What physical change occurs when fats are emulsified by bile salts in the duodenum?",
+              "options": [
+                "A. They are broken down into amino acids",
+                "B. Large, cohesive lipid droplets are dispersed into tiny suspended globules, increasing the surface area for lipase",
+                "C. They solidify into hard stones",
+                "D. They turn into water-soluble glucose"
+              ],
+              "correctAnswer": "B. Large, cohesive lipid droplets are dispersed into tiny suspended globules, increasing the surface area for lipase",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Emulsification lowers surface tension, breaking fat masses into droplets for faster enzymatic digestion.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I22",
+              "difficulty": "medium",
+              "prompt": "Which of the following conditions is caused by severe caloric starvation alongside protein deficiency?",
+              "options": [
+                "A. Marasmus",
+                "B. Scurvy",
+                "C. Jaundice",
+                "D. Gallstones"
+              ],
+              "correctAnswer": "A. Marasmus",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Marasmus results from total nutritional starvation (energy and protein deficiency), causing severe tissue wasting.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I23",
+              "difficulty": "medium",
+              "prompt": "Why does human stomach acid not burn through the lining of the small intestine?",
+              "options": [
+                "A. The small intestine is lined with bone",
+                "B. Alkaline bile and pancreatic bicarbonate secretions neutralize acidic chyme as it enters the duodenum",
+                "C. The stomach absorbs all acid before emptying",
+                "D. Intestinal enzymes destroy acid"
+              ],
+              "correctAnswer": "B. Alkaline bile and pancreatic bicarbonate secretions neutralize acidic chyme as it enters the duodenum",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Bicarbonate ions in pancreatic juice and bile neutralize incoming stomach acid, raising pH to around 7–8.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I24",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of the lacteal inside an intestinal villus?",
+              "options": [
+                "A. Absorbing water-soluble vitamins",
+                "B. Absorbing digested fatty acids and glycerol into the lymphatic system",
+                "C. Carrying red blood cells to the stomach",
+                "D. Secreting hydrochloric acid"
+              ],
+              "correctAnswer": "B. Absorbing digested fatty acids and glycerol into the lymphatic system",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Lacteals absorb dietary lipid products into the lymph before releasing them into the systemic circulation.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I25",
+              "difficulty": "medium",
+              "prompt": "Why does eating meals late at night right before sleeping increase the risk of acid reflux and indigestion?",
+              "options": [
+                "A. The stomach produces no enzymes at night",
+                "B. A horizontal sleeping posture allows acidic stomach contents to escape backward through the relaxed lower oesophageal sphincter",
+                "C. Food freezes in the stomach during sleep",
+                "D. Night air neutralizes saliva"
+              ],
+              "correctAnswer": "B. A horizontal sleeping posture allows acidic stomach contents to escape backward through the relaxed lower oesophageal sphincter",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Lying down removes the gravitational advantage, allowing acidic chyme to reflux upward into the gullet.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I26",
+              "difficulty": "medium",
+              "prompt": "How does the structure of a first-class protein differ biologically from a second-class protein?",
+              "options": [
+                "A. First-class proteins contain heavy metals",
+                "B. First-class proteins supply all essential amino acids that the human body cannot synthesize internally",
+                "C. Second-class proteins are derived solely from animals",
+                "D. First-class proteins do not contain nitrogen"
+              ],
+              "correctAnswer": "B. First-class proteins supply all essential amino acids that the human body cannot synthesize internally",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "First-class proteins contain all essential amino acids in balanced proportions for human protein synthesis.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I27",
+              "difficulty": "medium",
+              "prompt": "What occurs when a food sample containing oil is tested using ethanol?",
+              "options": [
+                "A. The oil dissolves in ethanol, and pouring this into water yields a cloudy, milky-white emulsion",
+                "B. The mixture turns pitch black",
+                "C. The mixture solidifies into a plastic block",
+                "D. It produces sweet-tasting glucose"
+              ],
+              "correctAnswer": "A. The oil dissolves in ethanol, and pouring this into water yields a cloudy, milky-white emulsion",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Lipids dissolve in ethanol but precipitate out into an emulsion of tiny reflective droplets in water.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I28",
+              "difficulty": "medium",
+              "prompt": "Which of the following best describes the chemical action of erepsin (peptidase) in the ileum?",
+              "options": [
+                "A. Converting starch to maltose",
+                "B. Splitting remaining peptides into individual absorbable amino acids",
+                "C. Emulsifying animal fats",
+                "D. Clotting milk"
+              ],
+              "correctAnswer": "B. Splitting remaining peptides into individual absorbable amino acids",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Peptidases (erepsin) complete protein digestion by cleaving short peptides into free amino acids.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I29",
+              "difficulty": "medium",
+              "prompt": "Why does a diet lacking fruits and vegetables frequently cause constipation?",
+              "options": [
+                "A. Fruits produce too much hydrochloric acid",
+                "B. Fruits and vegetables are rich in roughage that provides bulk and stimulates regular peristaltic contractions",
+                "C. Stems absorb bile from the liver",
+                "D. Vegetables stop the pancreas from working"
+              ],
+              "correctAnswer": "B. Fruits and vegetables are rich in roughage that provides bulk and stimulates regular peristaltic contractions",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Insoluble fiber retains water in the intestinal lumen, keeping waste pliable and stimulating bowel movements.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I30",
+              "difficulty": "medium",
+              "prompt": "What is the primary physiological consequence of drinking insufficient water on bowel movements?",
+              "options": [
+                "A. The stomach produces too much bile",
+                "B. The colon reabsorbs more water from residual waste, making faeces hard, dry, and painful to pass",
+                "C. Digestion stops completely in the mouth",
+                "D. The small intestine dissolves"
+              ],
+              "correctAnswer": "B. The colon reabsorbs more water from residual waste, making faeces hard, dry, and painful to pass",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Dehydration prompts the colon to extract maximum water from digestive waste, leading to hardened stools.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I31",
+              "difficulty": "medium",
+              "prompt": "Which digestive organ possesses both endocrine tissues that secrete hormones and exocrine tissues that produce enzymes?",
+              "options": [
+                "A. Pancreas",
+                "B. Liver",
+                "C. Gallbladder",
+                "D. Appendix"
+              ],
+              "correctAnswer": "A. Pancreas",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "The pancreas produces pancreatic enzymes (exocrine) and secretes insulin and glucagon (endocrine).",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I32",
+              "difficulty": "medium",
+              "prompt": "How does chewing food thoroughly into a fine paste aid the chemical action of digestive enzymes?",
+              "options": [
+                "A. It reduces the mass of the food",
+                "B. It increases the accessible surface area on which digestive enzymes can attach and react",
+                "C. It prevents food from reaching the stomach",
+                "D. It removes all bacteria"
+              ],
+              "correctAnswer": "B. It increases the accessible surface area on which digestive enzymes can attach and react",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Mastication breaks food into smaller pieces, increasing surface area for enzymatic hydrolysis.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I33",
+              "difficulty": "medium",
+              "prompt": "What is the function of the epiglottis during swallowing?",
+              "options": [
+                "A. Secreting digestive saliva",
+                "B. Folding over the trachea (windpipe) to prevent food from entering the respiratory airways",
+                "C. Pushing food into the stomach",
+                "D. Grinding food with teeth"
+              ],
+              "correctAnswer": "B. Folding over the trachea (windpipe) to prevent food from entering the respiratory airways",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "The cartilaginous epiglottis covers the glottis during swallowing, directing the bolus into the oesophagus.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I34",
+              "difficulty": "medium",
+              "prompt": "Why is the liver vulnerable to damage from heavy, chronic alcohol consumption?",
+              "options": [
+                "A. Alcohol turns into starch in the liver",
+                "B. The liver metabolizes and detoxifies alcohol; toxic intermediate byproducts cause fat accumulation, inflammation, and scarring (cirrhosis)",
+                "C. Alcohol freezes the bile duct",
+                "D. Alcohol forms gallstones instantly"
+              ],
+              "correctAnswer": "B. The liver metabolizes and detoxifies alcohol; toxic intermediate byproducts cause fat accumulation, inflammation, and scarring (cirrhosis)",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Alcohol oxidation generates acetaldehyde, which damages hepatocytes and promotes liver scarring.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I35",
+              "difficulty": "medium",
+              "prompt": "What are gallstones primarily composed of in humans?",
+              "options": [
+                "A. Pure iron metal",
+                "B. Hardened, crystallized deposits of cholesterol and bile pigments in the gallbladder",
+                "C. Swallowed grit from food",
+                "D. Undigested starch grains"
+              ],
+              "correctAnswer": "B. Hardened, crystallized deposits of cholesterol and bile pigments in the gallbladder",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Gallstones form when bile contains excess cholesterol or bilirubin that crystallizes into solid stones.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I36",
+              "difficulty": "medium",
+              "prompt": "How do fatty acids and glycerol travel through the human body after being absorbed into lacteals?",
+              "options": [
+                "A. They are pumped directly into the brain",
+                "B. They travel through the lymphatic vessel system before being discharged into the bloodstream near the heart",
+                "C. They are excreted directly into the lungs",
+                "D. They turn into urine in the kidneys"
+              ],
+              "correctAnswer": "B. They travel through the lymphatic vessel system before being discharged into the bloodstream near the heart",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Lacteals transport chylomicrons through the lymphatic system, draining into veins near the thoracic duct.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I37",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of vitamin C (ascorbic acid) in human health?",
+              "options": [
+                "A. Maintaining healthy gums, skin, and connective tissues, and preventing scurvy",
+                "B. Producing digestive hydrochloric acid",
+                "C. Supplying quick energy like starch",
+                "D. Clotting milk in the stomach"
+              ],
+              "correctAnswer": "A. Maintaining healthy gums, skin, and connective tissues, and preventing scurvy",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Vitamin C is essential for collagen synthesis, gum health, and wound healing.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I38",
+              "difficulty": "medium",
+              "prompt": "Why is vitamin D essential for proper human skeletal development?",
+              "options": [
+                "A. It acts as an enzyme that digests bone",
+                "B. It facilitates the absorption of dietary calcium and phosphorus across the intestinal wall",
+                "C. It turns starch into bone",
+                "D. It replaces water in the joints"
+              ],
+              "correctAnswer": "B. It facilitates the absorption of dietary calcium and phosphorus across the intestinal wall",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Vitamin D regulates intestinal calcium absorption, preventing rickets in children and osteomalacia in adults.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I39",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the correct procedure for testing an oilseed like groundnut for lipids using filter paper?",
+              "options": [
+                "A. Boil the seed in acid, then drop on paper",
+                "B. Remove the skin, crush the seed, rub it firmly against filter paper, and inspect for a permanent translucent stain",
+                "C. Soak the paper in iodine solution, then touch the seed",
+                "D. Burn the seed and sprinkle ash on paper"
+              ],
+              "correctAnswer": "B. Remove the skin, crush the seed, rub it firmly against filter paper, and inspect for a permanent translucent stain",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Crushing seed cotyledons releases plant oils directly onto paper fibers, leaving a translucent grease spot.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I40",
+              "difficulty": "medium",
+              "prompt": "What causes the medical condition known as oedema in people who consume excess table salt?",
+              "options": [
+                "A. Salt destroys all body fat",
+                "B. High sodium concentrations prompt the kidneys to retain water, causing fluid accumulation and swelling in bodily tissues",
+                "C. Salt dissolves muscle fibers",
+                "D. Salt turns blood into solid crystals"
+              ],
+              "correctAnswer": "B. High sodium concentrations prompt the kidneys to retain water, causing fluid accumulation and swelling in bodily tissues",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Excess sodium increases osmotic retention of water in extracellular spaces, producing tissue swelling (oedema).",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I41",
+              "difficulty": "medium",
+              "prompt": "Why is the small intestine much longer (about 6 meters) than the large intestine (about 1.5 meters)?",
+              "options": [
+                "A. To store undigested food for years",
+                "B. To provide extended contact time and surface area for complete chemical digestion and nutrient absorption",
+                "C. To prevent water from entering the body",
+                "D. To produce bile"
+              ],
+              "correctAnswer": "B. To provide extended contact time and surface area for complete chemical digestion and nutrient absorption",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Its extensive length ensures prolonged exposure of digested chyme to intestinal enzymes and absorptive villi.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I42",
+              "difficulty": "medium",
+              "prompt": "Which of the following enzymes hydrolyzes milk sugar (lactose) into glucose and galactose?",
+              "options": [
+                "A. Lactase",
+                "B. Maltase",
+                "C. Sucrase",
+                "D. Pepsin"
+              ],
+              "correctAnswer": "A. Lactase",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Lactase is the brush-border enzyme that breaks down lactose into glucose and galactose.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I43",
+              "difficulty": "medium",
+              "prompt": "What is the primary health benefit of regular physical exercise for the digestive system?",
+              "options": [
+                "A. It stops the body from needing food",
+                "B. It strengthens abdominal muscles, stimulates intestinal peristalsis, and prevents constipation",
+                "C. It destroys all stomach acid",
+                "D. It removes the need for liver enzymes"
+              ],
+              "correctAnswer": "B. It strengthens abdominal muscles, stimulates intestinal peristalsis, and prevents constipation",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Physical exercise stimulates intestinal muscle tone and regular peristalsis, preventing constipation.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I44",
+              "difficulty": "medium",
+              "prompt": "Why is the inner mucosal lining of the ileum folded into circular folds (plicae circulares)?",
+              "options": [
+                "A. To slow down chyme movement and multiply the surface area available for nutrient absorption",
+                "B. To make the intestine heavy",
+                "C. To prevent blood from reaching the stomach",
+                "D. To grind bones like a gizzard"
+              ],
+              "correctAnswer": "A. To slow down chyme movement and multiply the surface area available for nutrient absorption",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Circular mucosal folds slow the passage of digesta and expand the absorptive surface area.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I45",
+              "difficulty": "medium",
+              "prompt": "What occurs when the body absorbs more caloric energy from food than it expends through metabolic activity?",
+              "options": [
+                "A. Surplus energy is converted into triglycerides and stored in adipose tissues, leading to overweight or obesity",
+                "B. The person grows taller indefinitely",
+                "C. The digestive system stops working",
+                "D. Excess food turns directly into bone"
+              ],
+              "correctAnswer": "A. Surplus energy is converted into triglycerides and stored in adipose tissues, leading to overweight or obesity",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Surplus dietary calories are converted into fats and stored in adipose tissue, predisposing to obesity.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I46",
+              "difficulty": "medium",
+              "prompt": "How does chronic hepatitis B viral infection damage the human liver?",
+              "options": [
+                "A. It turns liver tissue into bone",
+                "B. It causes persistent hepatic inflammation, leading to cell death, fibrosis, and increased risk of cirrhosis or liver cancer",
+                "C. It prevents the stomach from making acid",
+                "D. It stops saliva production"
+              ],
+              "correctAnswer": "B. It causes persistent hepatic inflammation, leading to cell death, fibrosis, and increased risk of cirrhosis or liver cancer",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Chronic viral hepatitis inflames liver tissue, which can progress to cirrhosis and hepatocellular carcinoma.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I47",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the function of the cardiac sphincter muscle?",
+              "options": [
+                "A. Allowing bile to enter the mouth",
+                "B. Regulating the passage of food from the oesophagus into the stomach and preventing acid reflux",
+                "C. Pumping blood to the lungs",
+                "D. Opening the anus"
+              ],
+              "correctAnswer": "B. Regulating the passage of food from the oesophagus into the stomach and preventing acid reflux",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "The lower oesophageal (cardiac) sphincter prevents acidic gastric contents from refluxing into the oesophagus.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I48",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of the pyloric sphincter at the junction of the stomach and duodenum?",
+              "options": [
+                "A. Allowing small squirts of acidic chyme into the duodenum at a controlled rate",
+                "B. Preventing food from entering the stomach",
+                "C. Producing pancreatic enzymes",
+                "D. Holding faeces before defecation"
+              ],
+              "correctAnswer": "A. Allowing small squirts of acidic chyme into the duodenum at a controlled rate",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "The pyloric sphincter meters chyme release into the duodenum, ensuring digestion is not overwhelmed.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I49",
+              "difficulty": "medium",
+              "prompt": "Why does a positive Biuret test show a violet ring or color rather than blue?",
+              "options": [
+                "A. Copper ions react with starch",
+                "B. Cupric ions (Cu²⁺) form a coordination complex with peptide bonds (-CONH-) under alkaline conditions",
+                "C. The sodium hydroxide boils into gas",
+                "D. The protein turns into alcohol"
+              ],
+              "correctAnswer": "B. Cupric ions (Cu²⁺) form a coordination complex with peptide bonds (-CONH-) under alkaline conditions",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Copper(II) ions chelate with nitrogen atoms in peptide bonds in an alkaline medium, producing the violet color.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_I50",
+              "difficulty": "medium",
+              "prompt": "What is the biological significance of mutualistic bacteria residing inside the human colon?",
+              "options": [
+                "A. They produce hydrochloric acid",
+                "B. They ferment undigested fiber, synthesize vitamin K and certain B vitamins, and inhibit pathogenic invaders",
+                "C. They eat all the absorbed nutrients",
+                "D. They digest bones"
+              ],
+              "correctAnswer": "B. They ferment undigested fiber, synthesize vitamin K and certain B vitamins, and inhibit pathogenic invaders",
+              "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+              "workedSolution": "Commensal colon bacteria ferment residual fiber, produce essential vitamin K, and support gut health.",
               "points": 1,
               "learningCompetency": "B7.3.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_DIG_A01",
+              "difficulty": "hard",
+              "prompt": "A student tests a clear liquid food sample with Benedict's reagent and observes no color change upon boiling. Another portion is boiled with dilute HCl, neutralized with NaOH, and then boiled with Benedict's, yielding an orange-red precipitate. What was in the food?",
+              "options": [
+                "A. Glucose",
+                "B. Sucrose (a non-reducing disaccharide)",
+                "C. Starch only",
+                "D. Animal fat"
+              ],
+              "correctAnswer": "B. Sucrose (a non-reducing disaccharide)",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Sucrose gives a negative initial Benedict's test, but acid hydrolysis breaks it into reducing sugars (glucose and fructose).",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A02",
+              "difficulty": "hard",
+              "prompt": "Why do patients who have undergone surgical removal of the gallbladder (cholecystectomy) need to avoid large, fatty meals?",
+              "options": [
+                "A. They can no longer synthesize bile in their liver",
+                "B. Without a storage reservoir, bile drips into the duodenum continuously in dilute amounts, providing insufficient bile salts to emulsify sudden fat loads",
+                "C. Lipase enzyme production ceases permanently",
+                "D. Fat turns into poisonous acid in the stomach"
+              ],
+              "correctAnswer": "B. Without a storage reservoir, bile drips into the duodenum continuously in dilute amounts, providing insufficient bile salts to emulsify sudden fat loads",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The liver continues to produce bile, but lacking a storage pouch, concentrated bile boluses cannot be delivered for heavy fat loads.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A03",
+              "difficulty": "hard",
+              "prompt": "How does the microvillus brush border on intestinal epithelial cells optimize absorption kinetics?",
+              "options": [
+                "A. By forming an impermeable barrier",
+                "B. By expanding the luminal absorptive surface area hundreds of times and embedding membrane-bound digestive enzymes directly at transport sites",
+                "C. By producing gastric acid",
+                "D. By moving chyme backwards into the stomach"
+              ],
+              "correctAnswer": "B. By expanding the luminal absorptive surface area hundreds of times and embedding membrane-bound digestive enzymes directly at transport sites",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Microvilli expand the functional surface area of the intestinal mucosa and anchor terminal brush-border enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A04",
+              "difficulty": "hard",
+              "prompt": "Why does severe, long-term protein deficiency (kwashiorkor) cause a swollen abdomen (ascites/edema) in children?",
+              "options": [
+                "A. The stomach produces too much food",
+                "B. Lack of dietary amino acids reduces plasma albumin synthesis by the liver, lowering oncotic pressure and causing fluid to leak into abdominal tissues",
+                "C. The child drinks too much oil",
+                "D. Intestinal parasites produce water"
+              ],
+              "correctAnswer": "B. Lack of dietary amino acids reduces plasma albumin synthesis by the liver, lowering oncotic pressure and causing fluid to leak into abdominal tissues",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Hypoalbuminemia lowers plasma oncotic pressure, allowing fluid to leak from blood vessels into peritoneal spaces.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A05",
+              "difficulty": "hard",
+              "prompt": "An enzyme extracted from the human digestive tract functions optimally at pH 2.0 but becomes denatured at pH 7.5. What is this enzyme and where is it active?",
+              "options": [
+                "A. Ptyalin in the mouth",
+                "B. Pepsin in the stomach",
+                "C. Trypsin in the duodenum",
+                "D. Pancreatic lipase in the ileum"
+              ],
+              "correctAnswer": "B. Pepsin in the stomach",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Pepsin operates specifically in the acidic pH (1.5–2.5) of gastric juice and is denatured at alkaline pH.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A06",
+              "difficulty": "hard",
+              "prompt": "Why is the enzyme trypsin secreted into the pancreatic duct as an inactive precursor (trypsinogen) rather than as active trypsin?",
+              "options": [
+                "A. To prevent the active protease from autodigesting and destroying the cellular proteins of the pancreas",
+                "B. Because inactive enzymes are lighter to transport",
+                "C. Trypsinogen absorbs water in the duct",
+                "D. Active trypsin evaporates in air"
+              ],
+              "correctAnswer": "A. To prevent the active protease from autodigesting and destroying the cellular proteins of the pancreas",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Proteolytic enzymes are synthesized as zymogens to prevent enzymatic autodigestion of pancreatic tissues.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A07",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical role of enterokinase (enteropeptidase) in the duodenum?",
+              "options": [
+                "A. Digesting starches into glucose",
+                "B. Cleaving inactive pancreatic trypsinogen into active trypsin, which then activates other pancreatic zymogens",
+                "C. Emulsifying lipids",
+                "D. Neutralizing stomach acid"
+              ],
+              "correctAnswer": "B. Cleaving inactive pancreatic trypsinogen into active trypsin, which then activates other pancreatic zymogens",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Duodenal enterokinase converts trypsinogen to active trypsin, triggering the cascade of pancreatic protein-digesting enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A08",
+              "difficulty": "hard",
+              "prompt": "How does the bacterium Helicobacter pylori survive the harsh hydrochloric acid environment of the human stomach to cause peptic ulcers?",
+              "options": [
+                "A. It lives inside bone tissue",
+                "B. It secretes urease, which hydrolyzes urea into ammonia, creating a neutralizing alkaline micro-environment that protects the bacterium as it burrows into mucus",
+                "C. It freezes the stomach acid",
+                "D. It eats pepsin molecules"
+              ],
+              "correctAnswer": "B. It secretes urease, which hydrolyzes urea into ammonia, creating a neutralizing alkaline micro-environment that protects the bacterium as it burrows into mucus",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Bacterial urease produces ammonia, buffering stomach acid locally and allowing the microbe to colonize mucosal folds.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A09",
+              "difficulty": "hard",
+              "prompt": "A food sample rubbed on filter paper leaves a translucent spot that does not disappear with warming. Adding Sudan III turns the sample red. What does this confirm?",
+              "options": [
+                "A. Reducing sugars are present",
+                "B. Lipids (fats or oils) are present",
+                "C. Complex proteins are present",
+                "D. Starch granules are present"
+              ],
+              "correctAnswer": "B. Lipids (fats or oils) are present",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "A permanent translucent spot and positive red Sudan III staining confirm the presence of fats and oils.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A10",
+              "difficulty": "hard",
+              "prompt": "Why does a diet high in refined carbohydrates and low in fiber increase the risk of developing gallstones?",
+              "options": [
+                "A. Sugar turns into sand in the gallbladder",
+                "B. It alters hepatic cholesterol metabolism, leading to cholesterol supersaturation in bile, which precipitates into gallstones",
+                "C. Refined sugar destroys all bile salts",
+                "D. It increases stomach acidity"
+              ],
+              "correctAnswer": "B. It alters hepatic cholesterol metabolism, leading to cholesterol supersaturation in bile, which precipitates into gallstones",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Refined carbohydrates and low fiber promote biliary cholesterol supersaturation, favoring gallstone formation.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A11",
+              "difficulty": "hard",
+              "prompt": "How does chronic excess dietary sodium intake contribute to the development of hypertension and stroke?",
+              "options": [
+                "A. Salt forms solid rocks inside brain arteries",
+                "B. Elevated extracellular sodium increases blood volume through fluid retention and increases arterial vascular resistance, raising systemic blood pressure",
+                "C. Salt destroys red blood cells",
+                "D. Salt stops heart muscle contractions"
+              ],
+              "correctAnswer": "B. Elevated extracellular sodium increases blood volume through fluid retention and increases arterial vascular resistance, raising systemic blood pressure",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "High sodium increases extracellular volume and peripheral vascular resistance, raising blood pressure and stroke risk.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A12",
+              "difficulty": "hard",
+              "prompt": "Why does testing for starch with iodine solution fail if the starch sample is boiled in strong sodium hydroxide before adding iodine?",
+              "options": [
+                "A. Sodium hydroxide destroys all starch molecules",
+                "B. Alkaline conditions disrupt the helical structure of amylose, preventing iodine molecules from lodging inside the helix to produce the blue-black color",
+                "C. Iodine turns into gas in alkali",
+                "D. Starch turns into protein"
+              ],
+              "correctAnswer": "B. Alkaline conditions disrupt the helical structure of amylose, preventing iodine molecules from lodging inside the helix to produce the blue-black color",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The blue-black color requires polyiodide ions trapped within helical amylose chains, which alkaline solutions disrupt.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A13",
+              "difficulty": "hard",
+              "prompt": "How do absorbed amino acids and glucose reach the liver from the small intestine?",
+              "options": [
+                "A. Through the lymphatic thoracic duct",
+                "B. Directly via the hepatic portal vein",
+                "C. Through the bile duct",
+                "D. By diffusion across the abdominal cavity"
+              ],
+              "correctAnswer": "B. Directly via the hepatic portal vein",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The hepatic portal vein routes water-soluble nutrients from the intestines directly to the liver for metabolic processing.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A14",
+              "difficulty": "hard",
+              "prompt": "Why does complete obstruction of the common bile duct lead to dark amber urine and pale stools?",
+              "options": [
+                "A. The kidneys synthesize bile",
+                "B. Bile pigments cannot reach the intestine to form stercobilin (pale stools), accumulating in blood and being filtered into urine as bilirubin",
+                "C. Stomach acid leaks into the bladder",
+                "D. Intestinal villi stop absorbing water"
+              ],
+              "correctAnswer": "B. Bile pigments cannot reach the intestine to form stercobilin (pale stools), accumulating in blood and being filtered into urine as bilirubin",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Conjugated bilirubin backs up into the circulation and is excreted by the kidneys, darkening urine while stools lose color.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A15",
+              "difficulty": "hard",
+              "prompt": "What is the physiological role of the sodium-glucose cotransporter (SGLT-1) on the luminal surface of enterocytes in the ileum?",
+              "options": [
+                "A. Transporting fats into lacteals",
+                "B. Transporting glucose against its concentration gradient coupled with the inward flow of sodium ions driven by the Na+/K+ ATPase pump",
+                "C. Breaking down proteins into amino acids",
+                "D. Pumping hydrochloric acid into the lumen"
+              ],
+              "correctAnswer": "B. Transporting glucose against its concentration gradient coupled with the inward flow of sodium ions driven by the Na+/K+ ATPase pump",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Secondary active transport uses sodium electrochemical gradients to pull glucose into intestinal absorptive cells.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A16",
+              "difficulty": "hard",
+              "prompt": "Why do patients suffering from advanced liver cirrhosis exhibit bleeding tendencies (e.g. easy bruising and nosebleeds)?",
+              "options": [
+                "A. The liver stops making bile",
+                "B. Damaged hepatocytes cannot synthesize essential plasma clotting factors (like prothrombin and fibrinogen)",
+                "C. Stomach acid destroys red blood cells",
+                "D. The spleen absorbs all platelets"
+              ],
+              "correctAnswer": "B. Damaged hepatocytes cannot synthesize essential plasma clotting factors (like prothrombin and fibrinogen)",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The liver synthesizes critical blood coagulation factors; cirrhotic liver failure impairs clotting protein production.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A17",
+              "difficulty": "hard",
+              "prompt": "How does the chemical structure of animal fats differ from plant oils at room temperature?",
+              "options": [
+                "A. Animal fats are made of protein",
+                "B. Animal fats consist mostly of saturated fatty acids with straight chains that pack closely into solids, whereas plant oils have unsaturated kinks that remain liquid",
+                "C. Plant oils have no hydrogen atoms",
+                "D. Animal fats dissolve in water"
+              ],
+              "correctAnswer": "B. Animal fats consist mostly of saturated fatty acids with straight chains that pack closely into solids, whereas plant oils have unsaturated kinks that remain liquid",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Saturated fatty acid chains pack closely to form solid fats, whereas unsaturated cis-double bonds keep plant oils fluid.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A18",
+              "difficulty": "hard",
+              "prompt": "Why is the Biuret test ineffective for measuring single, free amino acids in a solution?",
+              "options": [
+                "A. Amino acids destroy copper sulfate",
+                "B. The Biuret reaction requires at least two peptide bonds (-CONH-) to form the purple coordination complex with copper ions",
+                "C. Free amino acids are always basic",
+                "D. Amino acids are insoluble in water"
+              ],
+              "correctAnswer": "B. The Biuret reaction requires at least two peptide bonds (-CONH-) to form the purple coordination complex with copper ions",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The Biuret reaction detects repeating peptide backbones; free, individual amino acids do not form the complex.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A19",
+              "difficulty": "hard",
+              "prompt": "What happens to excess dietary amino acids that are absorbed into the body but not needed for protein synthesis?",
+              "options": [
+                "A. They are stored as whole proteins in bones",
+                "B. They cannot be stored; they are deaminated in the liver, where the amino group is converted to urea and the carbon skeleton is used for energy",
+                "C. They are breathed out through the lungs",
+                "D. They turn into bile"
+              ],
+              "correctAnswer": "B. They cannot be stored; they are deaminated in the liver, where the amino group is converted to urea and the carbon skeleton is used for energy",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Excess amino acids are deaminated by the liver, producing urea for urinary excretion and carbon residues for energy.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A20",
+              "difficulty": "hard",
+              "prompt": "Why does severe, untreated celiac disease result in generalized malnutrition even when a person eats adequate food?",
+              "options": [
+                "A. The stomach stops churning food",
+                "B. Autoimmune inflammation triggered by gluten blunts and flattens intestinal villi, severely reducing the surface area for nutrient absorption",
+                "C. The gallbladder bursts",
+                "D. Salivary glands stop producing enzymes"
+              ],
+              "correctAnswer": "B. Autoimmune inflammation triggered by gluten blunts and flattens intestinal villi, severely reducing the surface area for nutrient absorption",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Villous atrophy in the small intestine flattens the mucosal lining, causing malabsorption across nutrient classes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A21",
+              "difficulty": "hard",
+              "prompt": "What is the primary diagnostic observation when using Millon's reagent on an egg white solution?",
+              "options": [
+                "A. An immediate blue-black color",
+                "B. Formation of a white precipitate that turns reddish-brown upon gentle heating",
+                "C. Formation of a permanent grease spot",
+                "D. Complete disappearance of the liquid"
+              ],
+              "correctAnswer": "B. Formation of a white precipitate that turns reddish-brown upon gentle heating",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Millon's reagent reacts with phenolic groups in proteins, producing a white precipitate that turns red on heating.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A22",
+              "difficulty": "hard",
+              "prompt": "How does the consumption of soluble dietary fiber (like pectins and beta-glucans) help lower blood cholesterol levels?",
+              "options": [
+                "A. Fiber dissolves cholesterol directly in the stomach",
+                "B. Soluble fiber binds bile acids in the gut and promotes their excretion, forcing the liver to consume blood cholesterol to synthesize new bile",
+                "C. Fiber stops the pancreas from working",
+                "D. Fiber converts cholesterol into starch"
+              ],
+              "correctAnswer": "B. Soluble fiber binds bile acids in the gut and promotes their excretion, forcing the liver to consume blood cholesterol to synthesize new bile",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Binding bile acids in the intestinal lumen increases their fecal elimination, driving hepatic uptake of cholesterol to replenish bile reserves.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A23",
+              "difficulty": "hard",
+              "prompt": "Why does a competitive enzyme inhibitor decrease the rate of substrate breakdown in the human digestive system?",
+              "options": [
+                "A. It boils the enzyme",
+                "B. It closely resembles the natural substrate and binds reversibly to the active site, blocking substrate entry",
+                "C. It changes the food into a gas",
+                "D. It destroys all bodily water"
+              ],
+              "correctAnswer": "B. It closely resembles the natural substrate and binds reversibly to the active site, blocking substrate entry",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Competitive inhibitors share structural similarity with substrates, competing for binding access to enzyme active sites.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A24",
+              "difficulty": "hard",
+              "prompt": "What is the physiological mechanism responsible for hunger contractions in an empty stomach?",
+              "options": [
+                "A. Strong, peristaltic contractions of the muscular stomach wall triggered by the release of the hormone ghrelin and low blood glucose",
+                "B. Bile leaking into the mouth",
+                "C. The stomach digesting its own walls",
+                "D. Lack of saliva in the oesophagus"
+              ],
+              "correctAnswer": "A. Strong, peristaltic contractions of the muscular stomach wall triggered by the release of the hormone ghrelin and low blood glucose",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Prolonged fasting elevates ghrelin and triggers rhythmic peristaltic contractions of the empty gastric body.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A25",
+              "difficulty": "hard",
+              "prompt": "Why does the removal of the terminal ileum in surgical bowel resection lead to vitamin B12 deficiency (pernicious anemia)?",
+              "options": [
+                "A. Vitamin B12 is synthesized only in the mouth",
+                "B. The terminal ileum possesses specific receptor sites required to absorb the intrinsic factor-vitamin B12 complex",
+                "C. The stomach stops secreting acid",
+                "D. The colon destroys all vitamins"
+              ],
+              "correctAnswer": "B. The terminal ileum possesses specific receptor sites required to absorb the intrinsic factor-vitamin B12 complex",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Specialized receptors in the distal ileum mediate endocytosis of the intrinsic factor-B12 complex.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A26",
+              "difficulty": "hard",
+              "prompt": "How does cholecystokinin (CCK), released by duodenal cells, regulate the digestion of fats?",
+              "options": [
+                "A. It stops saliva production",
+                "B. It triggers gallbladder contraction to release bile and stimulates the exocrine pancreas to secrete digestive enzymes",
+                "C. It turns fatty acids into starch",
+                "D. It prevents the stomach from emptying"
+              ],
+              "correctAnswer": "B. It triggers gallbladder contraction to release bile and stimulates the exocrine pancreas to secrete digestive enzymes",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Luminal lipids stimulate duodenal endocrine cells to release CCK, triggering gallbladder contraction and pancreatic enzyme secretion.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A27",
+              "difficulty": "hard",
+              "prompt": "Why is the test for non-reducing sugars called an indirect reduction test?",
+              "options": [
+                "A. It tests for proteins indirectly",
+                "B. Non-reducing sugars do not react directly; they must first be cleaved into reducing monosaccharides before Benedict's reduction can occur",
+                "C. It uses light rather than chemicals",
+                "D. It measures food weight"
+              ],
+              "correctAnswer": "B. Non-reducing sugars do not react directly; they must first be cleaved into reducing monosaccharides before Benedict's reduction can occur",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The test requires preliminary chemical cleavage of the glycosidic linkage into free reducing hemiacetal groups.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A28",
+              "difficulty": "hard",
+              "prompt": "What is the biological consequence of a genetic absence of the lactase enzyme in adult humans (lactose intolerance)?",
+              "options": [
+                "A. Milk protein turns into poison in the stomach",
+                "B. Undigested lactose remains in the intestinal lumen, drawing water osmotically and undergoing bacterial fermentation into gas and acids, causing bloating and diarrhea",
+                "C. The person cannot digest fats",
+                "D. Teeth fall out immediately"
+              ],
+              "correctAnswer": "B. Undigested lactose remains in the intestinal lumen, drawing water osmotically and undergoing bacterial fermentation into gas and acids, causing bloating and diarrhea",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Unabsorbed lactose exerts an osmotic draw and undergoes colonic bacterial fermentation, producing gas and loose stools.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A29",
+              "difficulty": "hard",
+              "prompt": "How does the liver maintain stable blood glucose levels between meals (fasting state)?",
+              "options": [
+                "A. By drinking water",
+                "B. By breaking down stored glycogen into free glucose (glycogenolysis) and synthesizing glucose from amino acids (gluconeogenesis)",
+                "C. By absorbing starch directly through the skin",
+                "D. By stopping all respiration"
+              ],
+              "correctAnswer": "B. By breaking down stored glycogen into free glucose (glycogenolysis) and synthesizing glucose from amino acids (gluconeogenesis)",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Hepatocytes hydrolyze glycogen reserves and run gluconeogenic pathways to buffer blood glucose during fasting.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A30",
+              "difficulty": "hard",
+              "prompt": "Why does adding excess concentrated acid to an enzyme solution permanently destroy its catalytic function?",
+              "options": [
+                "A. The acid freezes the substrate",
+                "B. Hydrogen ions alter the electrical charges on amino acid side-chains, disrupting ionic and hydrogen bonds that maintain the active site shape",
+                "C. The enzyme turns into a fat globule",
+                "D. The acid evaporates the enzyme"
+              ],
+              "correctAnswer": "B. Hydrogen ions alter the electrical charges on amino acid side-chains, disrupting ionic and hydrogen bonds that maintain the active site shape",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Extreme pH changes alter electrostatic interactions, denaturing the enzyme's three-dimensional active site configuration.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A31",
+              "difficulty": "hard",
+              "prompt": "What causes the development of cachexia in chronic, severe digestive and systemic illnesses?",
+              "options": [
+                "A. Excessive consumption of vitamins",
+                "B. Systemic inflammation and metabolic derangement that cause accelerated muscle and fat wasting despite food intake",
+                "C. Overgrowth of teeth",
+                "D. Drinking too much clean water"
+              ],
+              "correctAnswer": "B. Systemic inflammation and metabolic derangement that cause accelerated muscle and fat wasting despite food intake",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Pro-inflammatory cytokines in chronic illness accelerate systemic catabolism, driving skeletal muscle and adipose wasting.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A32",
+              "difficulty": "hard",
+              "prompt": "Why is the presence of an alkaline mucus layer in the duodenum essential upon the entry of gastric chyme?",
+              "options": [
+                "A. To freeze the incoming food",
+                "B. To protect the duodenal mucosa from acid erosion and establish the optimal alkaline pH required by pancreatic enzymes",
+                "C. To turn carbohydrates into proteins",
+                "D. To absorb all dietary water instantly"
+              ],
+              "correctAnswer": "B. To protect the duodenal mucosa from acid erosion and establish the optimal alkaline pH required by pancreatic enzymes",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Duodenal Brunner's glands secrete alkaline mucus to buffer gastric acid and establish suitable pH for intestinal enzymes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A33",
+              "difficulty": "hard",
+              "prompt": "What distinguishes the absorption pathway of short-chain fatty acids from long-chain fatty acids in the ileum?",
+              "options": [
+                "A. Short-chain fatty acids enter blood capillaries directly, whereas long-chain fatty acids are re-esterified into chylomicrons and enter lacteals",
+                "B. Short-chain fatty acids are never absorbed",
+                "C. Long-chain fatty acids are exhaled through the lungs",
+                "D. Both follow identical paths through lacteals"
+              ],
+              "correctAnswer": "A. Short-chain fatty acids enter blood capillaries directly, whereas long-chain fatty acids are re-esterified into chylomicrons and enter lacteals",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Water-soluble short-chain fatty acids diffuse directly into capillary blood, while larger lipids enter the lymphatic lacteals.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A34",
+              "difficulty": "hard",
+              "prompt": "Why is a stool test for occult blood used in early screening for colorectal cancer?",
+              "options": [
+                "A. Cancer tumors produce bile",
+                "B. Fragile, ulcerated vascular networks on intestinal polyps or tumors bleed microscopic amounts into passing faecal matter",
+                "C. Cancer cells turn stools bright yellow",
+                "D. Stools become completely dry"
+              ],
+              "correctAnswer": "B. Fragile, ulcerated vascular networks on intestinal polyps or tumors bleed microscopic amounts into passing faecal matter",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Early intestinal malignancies are vascular and shed small amounts of occult blood into the digestive lumen.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A35",
+              "difficulty": "hard",
+              "prompt": "How does the hormone secretin regulate digestive physiology in response to gastric chyme?",
+              "options": [
+                "A. It stimulates the pancreas to release bicarbonate-rich fluid to neutralize acid in the duodenum",
+                "B. It causes the stomach to secrete more hydrochloric acid",
+                "C. It stops all intestinal peristalsis",
+                "D. It breaks down lipids into fatty acids"
+              ],
+              "correctAnswer": "A. It stimulates the pancreas to release bicarbonate-rich fluid to neutralize acid in the duodenum",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Low duodenal pH triggers secretin release, which stimulates pancreatic duct cells to secrete neutralizing bicarbonate.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A36",
+              "difficulty": "hard",
+              "prompt": "Why does severe, chronic vomiting cause metabolic alkalosis in the human body?",
+              "options": [
+                "A. Vomiting removes all calcium from bones",
+                "B. Significant loss of acidic gastric juice (HCl) depletes hydrogen and chloride ions, shifting blood pH upward",
+                "C. The liver produces twice as much bile",
+                "D. Saliva production stops"
+              ],
+              "correctAnswer": "B. Significant loss of acidic gastric juice (HCl) depletes hydrogen and chloride ions, shifting blood pH upward",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Vomiting expels hydrochloric acid, causing a net loss of hydrogen ions that shifts systemic acid-base balance toward alkalosis.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A37",
+              "difficulty": "hard",
+              "prompt": "What is the structural consequence if the basement membrane of the intestinal mucosa is breached by invasive pathogenic amoebae (Entamoeba histolytica)?",
+              "options": [
+                "A. Digestion speeds up",
+                "B. Deep flask-shaped ulcerations form, causing bloody dysentery and allowing parasites to enter the portal bloodstream to the liver",
+                "C. The appendix falls off",
+                "D. The intestine produces more villi"
+              ],
+              "correctAnswer": "B. Deep flask-shaped ulcerations form, causing bloody dysentery and allowing parasites to enter the portal bloodstream to the liver",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Amoebic trophozoites secrete proteases that erode mucosal barriers, forming bleeding ulcers and hepatic abscesses.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A38",
+              "difficulty": "hard",
+              "prompt": "Why is fat digestion slower and more complex than carbohydrate digestion in humans?",
+              "options": [
+                "A. Fats contain no chemical energy",
+                "B. Lipids are insoluble in water, requiring mechanical churning, bile salt emulsification, and micellar packaging before enzymatic hydrolysis",
+                "C. Lipase works only in the mouth",
+                "D. Fats are absorbed through the stomach wall"
+              ],
+              "correctAnswer": "B. Lipids are insoluble in water, requiring mechanical churning, bile salt emulsification, and micellar packaging before enzymatic hydrolysis",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Insoluble fats must undergo emulsification and micelle formation before lipases can access substrate bonds.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A39",
+              "difficulty": "hard",
+              "prompt": "How does chronic portal hypertension in cirrhotic liver disease cause life-threatening oesophageal varices?",
+              "options": [
+                "A. The stomach produces too much pepsin",
+                "B. Fibrotic liver tissue obstructs portal blood flow, elevating venous pressure and causing fragile collateral veins in the lower oesophagus to engorge and rupture",
+                "C. The gullet shrinks",
+                "D. Bile dissolves the oesophagus"
+              ],
+              "correctAnswer": "B. Fibrotic liver tissue obstructs portal blood flow, elevating venous pressure and causing fragile collateral veins in the lower oesophagus to engorge and rupture",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Fibrotic resistance in cirrhotic livers diverts portal blood into fragile collateral oesophageal veins that can rupture.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A40",
+              "difficulty": "hard",
+              "prompt": "Why does a solution of pure egg albumin turn white and cloudy before heating when Millon's reagent is first added?",
+              "options": [
+                "A. It turns into starch",
+                "B. Mercury salts in the reagent precipitate soluble proteins out of colloidal suspension by denaturing tertiary structures",
+                "C. The albumin dissolves completely",
+                "D. It produces glucose gas"
+              ],
+              "correctAnswer": "B. Mercury salts in the reagent precipitate soluble proteins out of colloidal suspension by denaturing tertiary structures",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Heavy metal ions in Millon's reagent precipitate soluble proteins before heat drives the secondary red color reaction.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A41",
+              "difficulty": "hard",
+              "prompt": "What is the primary physiological function of the ileocaecal valve?",
+              "options": [
+                "A. Regulating the movement of digesta from the ileum into the caecum while preventing backflow of bacteria-laden colonic contents into the small intestine",
+                "B. Secreting pancreatic juice",
+                "C. Producing gastric acid",
+                "D. Grinding whole maize"
+              ],
+              "correctAnswer": "A. Regulating the movement of digesta from the ileum into the caecum while preventing backflow of bacteria-laden colonic contents into the small intestine",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "The ileocaecal sphincter permits one-way transit into the caecum and prevents retrograde reflux of colonic bacteria.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A42",
+              "difficulty": "hard",
+              "prompt": "Why does chronic alcohol abuse lead to fatty liver disease (hepatic steatosis) before progressing to cirrhosis?",
+              "options": [
+                "A. Alcohol turns into bone",
+                "B. Alcohol metabolism generates excess NADH, inhibiting mitochondrial beta-oxidation and shunting fatty acids into triglyceride synthesis inside hepatocytes",
+                "C. Alcohol destroys all lipase enzymes",
+                "D. The stomach stops digesting protein"
+              ],
+              "correctAnswer": "B. Alcohol metabolism generates excess NADH, inhibiting mitochondrial beta-oxidation and shunting fatty acids into triglyceride synthesis inside hepatocytes",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "High NADH/NAD+ ratios during ethanol metabolism suppress fatty acid oxidation, causing triglyceride accumulation in liver cells.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A43",
+              "difficulty": "hard",
+              "prompt": "What is the diagnostic significance of testing for fecal fat (steatorrhea) in patients with chronic pancreatitis?",
+              "options": [
+                "A. It shows the patient is eating too much sugar",
+                "B. Deficient exocrine secretion of pancreatic lipase prevents lipid digestion, causing unabsorbed fats to be excreted in stool",
+                "C. It confirms the presence of gastric ulcers",
+                "D. It measures saliva production"
+              ],
+              "correctAnswer": "B. Deficient exocrine secretion of pancreatic lipase prevents lipid digestion, causing unabsorbed fats to be excreted in stool",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Exocrine pancreatic insufficiency impairs lipase delivery, leading to undigested fat excretion in faeces (steatorrhea).",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A44",
+              "difficulty": "hard",
+              "prompt": "How do non-steroidal anti-inflammatory drugs (NSAIDs like ibuprofen) increase the risk of gastric peptic ulcers?",
+              "options": [
+                "A. They produce sulfuric acid in the mouth",
+                "B. They inhibit cyclooxygenase (COX) enzymes, suppressing mucosal prostaglandins that stimulate protective mucus and bicarbonate secretion",
+                "C. They convert proteins to bile",
+                "D. They block the oesophagus"
+              ],
+              "correctAnswer": "B. They inhibit cyclooxygenase (COX) enzymes, suppressing mucosal prostaglandins that stimulate protective mucus and bicarbonate secretion",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "NSAIDs inhibit protective mucosal prostaglandin synthesis, leaving gastric epithelial cells vulnerable to acid erosion.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A45",
+              "difficulty": "hard",
+              "prompt": "Why is the Sudan III test preferred over the filter paper spot test when confirming lipids in liquid biological suspensions?",
+              "options": [
+                "A. Sudan III turns proteins red",
+                "B. In dilute liquid suspensions, water spreads on filter paper, whereas Sudan III stains microscopic lipid droplets selectively regardless of aqueous dilution",
+                "C. Paper spots explode when wet",
+                "D. Sudan III tests for starch"
+              ],
+              "correctAnswer": "B. In dilute liquid suspensions, water spreads on filter paper, whereas Sudan III stains microscopic lipid droplets selectively regardless of aqueous dilution",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Sudan III partitions specifically into hydrophobic lipid droplets, allowing microscopic or colorimetric detection in aqueous mixes.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A46",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical fate of glycerol absorbed into enterocytes following triglyceride hydrolysis?",
+              "options": [
+                "A. It is exhaled as nitrogen gas",
+                "B. It is phosphorylated into glycerol-3-phosphate and recombined with fatty acids to form new triglycerides for chylomicron packaging",
+                "C. It turns into hydrochloric acid",
+                "D. It is stored as bone"
+              ],
+              "correctAnswer": "B. It is phosphorylated into glycerol-3-phosphate and recombined with fatty acids to form new triglycerides for chylomicron packaging",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Enterocytes re-esterify absorbed glycerol and fatty acids into triglycerides, packaging them into chylomicrons for lacteal transport.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A47",
+              "difficulty": "hard",
+              "prompt": "Why does severe, untreated celiac disease often cause secondary nutritional anemia?",
+              "options": [
+                "A. The stomach produces too much bile",
+                "B. Atrophy of duodenal and jejunal villi impairs the mucosal absorption of iron, folate, and other essential hematinic nutrients",
+                "C. Red blood cells are destroyed in the mouth",
+                "D. The colon stops reabsorbing water"
+              ],
+              "correctAnswer": "B. Atrophy of duodenal and jejunal villi impairs the mucosal absorption of iron, folate, and other essential hematinic nutrients",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Mucosal damage in proximal intestinal segments reduces uptake of dietary iron and folates, producing anemia.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A48",
+              "difficulty": "hard",
+              "prompt": "What distinguishes the chemical action of rennin from that of pepsin in the stomach?",
+              "options": [
+                "A. Rennin breaks down carbohydrates, while pepsin digests fats",
+                "B. Rennin causes physical precipitation of soluble milk protein, whereas pepsin hydrolyzes peptide bonds to yield peptones",
+                "C. Pepsin is an acid, while rennin is a base",
+                "D. Both perform identical reactions"
+              ],
+              "correctAnswer": "B. Rennin causes physical precipitation of soluble milk protein, whereas pepsin hydrolyzes peptide bonds to yield peptones",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Rennin acts specifically on caseinogen to curdle milk, whereas pepsin cleaves broad internal peptide linkages.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A49",
+              "difficulty": "hard",
+              "prompt": "How does the autonomic nervous system regulate peristalsis and gastrointestinal secretions during acute stress ('fight or flight')?",
+              "options": [
+                "A. It speeds up all digestive actions",
+                "B. Sympathetic stimulation constricts splanchnic arterioles, reducing gastrointestinal blood flow, motility, and enzyme secretion",
+                "C. It increases saliva output",
+                "D. It causes immediate hunger"
+              ],
+              "correctAnswer": "B. Sympathetic stimulation constricts splanchnic arterioles, reducing gastrointestinal blood flow, motility, and enzyme secretion",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Sympathetic activation diverts blood to skeletal muscles, inhibiting gastrointestinal secretions and motility.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_DIG_A50",
+              "difficulty": "hard",
+              "prompt": "Which combination of observations confirms that a food sample contains both starch and reducing sugar?",
+              "options": [
+                "A. A positive blue-black result with Iodine solution, and a brick-red precipitate when another portion is boiled with Benedict's solution",
+                "B. A violet Biuret test and a permanent grease spot",
+                "C. A red Sudan III reaction and a white Millon's precipitate",
+                "D. A negative Iodine test and no color change with Benedict's"
+              ],
+              "correctAnswer": "A. A positive blue-black result with Iodine solution, and a brick-red precipitate when another portion is boiled with Benedict's solution",
+              "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+              "workedSolution": "Iodine turning blue-black confirms starch, while boiling Benedict's producing a brick-red precipitate confirms reducing sugar.",
+              "points": 1,
+              "learningCompetency": "B7.3.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -11889,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -12086,7 +17080,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -12281,7 +17275,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.562Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -12477,7 +17471,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -12673,7 +17667,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -12870,7 +17864,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -13068,7 +18062,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -13266,7 +18260,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -13459,7 +18453,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -13654,7 +18648,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -13849,7 +18843,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -14045,7 +19039,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -14242,7 +19236,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:13:26.563Z"
+    "updatedAt": "2026-10-02T20:58:46.037Z"
   }
 ];
 
@@ -22306,83 +27300,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "B7_CROP_MCQ_01",
+        "id": "B7_CROP_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following groups consists exclusively of major plant macro-nutrients?",
+        "prompt": "Mineral elements absorbed by plants from the soil to support growth and reproduction are called:",
         "options": [
-          "A. Nitrogen, Phosphorus, Potassium",
-          "B. Iron, Zinc, Manganese",
-          "C. Boron, Copper, Chlorine",
-          "D. Molybdenum, Nitrogen, Sulfur"
+          "A. Soil pollutants",
+          "B. Plant nutrients",
+          "C. Soil pathogens",
+          "D. Weeds"
         ],
-        "correctAnswer": "A. Nitrogen, Phosphorus, Potassium",
-        "hint": "Macro-nutrients are required in large quantities; recall the standard N-P-K classification.",
-        "workedSolution": "Nitrogen, Phosphorus, and Potassium are primary macro-nutrients required in large quantities by growing crops for vegetative growth, root establishment, and yield formation.",
+        "correctAnswer": "B. Plant nutrients",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Plant nutrients are essential chemical elements absorbed by plants from the soil to grow, develop, and thrive.",
         "points": 1
       },
       {
-        "id": "B7_CROP_MCQ_02",
+        "id": "B7_CROP_F02",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "A maize plant in a school farm exhibits generalized yellowing (chlorosis) starting on its older bottom leaves, alongside stunted growth. Which mineral nutrient is most likely deficient?",
+        "prompt": "Nutrients required by crops in relatively large quantities for proper growth are termed:",
         "options": [
-          "A. Potassium",
-          "B. Nitrogen",
-          "C. Phosphorus",
-          "D. Iron"
+          "A. Micro-nutrients",
+          "B. Trace nutrients",
+          "C. Macro-nutrients",
+          "D. Rare elements"
         ],
-        "correctAnswer": "B. Nitrogen",
-        "hint": "This element is essential for chlorophyll and protein synthesis; deficiency causes chlorosis on older leaves.",
-        "workedSolution": "Nitrogen deficiency leads to chlorosis (loss of green chlorophyll), appearing first on older leaves as mobile nitrogen is translocated to younger growth.",
+        "correctAnswer": "C. Macro-nutrients",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Macro or major nutrients are elements that plants require in large quantities for efficient growth and development.",
         "points": 1
       },
       {
-        "id": "B7_CROP_MCQ_03",
-        "difficulty": "medium",
+        "id": "B7_CROP_F03",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the primary advantage of incorporating organic compost into sandy soils over using chemical fertilizers exclusively?",
+        "prompt": "Which of the following is a primary macro-nutrient for plants?",
         "options": [
-          "A. It dissolves instantly in rainwater",
-          "B. It improves soil structure and increases the soil's water-holding capacity",
-          "C. It eliminates the need for weeding entirely",
-          "D. It makes the soil acidic"
+          "A. Zinc",
+          "B. Iron",
+          "C. Nitrogen",
+          "D. Copper"
         ],
-        "correctAnswer": "B. It improves soil structure and increases the soil's water-holding capacity",
-        "hint": "Organic matter supplies decomposed humus that binds loose sandy soil particles.",
-        "workedSolution": "Organic compost provides decomposed humus that binds loose sandy soil particles together, improving both crumb structure and moisture retention capacity.",
+        "correctAnswer": "C. Nitrogen",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Nitrogen is one of the three primary macro-nutrients (N, P, K) required in large quantities by crops.",
         "points": 1
       },
       {
-        "id": "B7_CROP_MCQ_04",
-        "difficulty": "medium",
+        "id": "B7_CROP_F04",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "A commercial fertilizer labeled NPK 15:15:15 is classified scientifically as a:",
+        "prompt": "What are micro-nutrients in crop science?",
+        "options": [
+          "A. Nutrients that plants do not need at all",
+          "B. Nutrients required by plants in small or trace amounts",
+          "C. Nutrients that only poisonous plants absorb",
+          "D. Nutrients that turn into water"
+        ],
+        "correctAnswer": "B. Nutrients required by plants in small or trace amounts",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Micro or minor nutrients are elements required by plants in small or trace quantities.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following elements is classified as a micro-nutrient?",
+        "options": [
+          "A. Phosphorus",
+          "B. Potassium",
+          "C. Iron",
+          "D. Calcium"
+        ],
+        "correctAnswer": "C. Iron",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Iron is a micro-nutrient required in minute amounts, whereas phosphorus, potassium, and calcium are macro-nutrients.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which primary nutrient promotes lush vegetative leaf and stem development in crops?",
+        "options": [
+          "A. Nitrogen",
+          "B. Potassium",
+          "C. Zinc",
+          "D. Boron"
+        ],
+        "correctAnswer": "A. Nitrogen",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Nitrogen is essential for vegetative growth and is a main component of chlorophyll, proteins, and enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The general yellowing of older leaves due to a lack of chlorophyll is known as:",
+        "options": [
+          "A. Necrosis",
+          "B. Chlorosis",
+          "C. Osmosis",
+          "D. Plasmolysis"
+        ],
+        "correctAnswer": "B. Chlorosis",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Chlorosis is the loss of green coloration in plant tissues, causing leaves to turn yellowish.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which plant nutrient is primarily responsible for strong root development and early fruit ripening?",
+        "options": [
+          "A. Nitrogen",
+          "B. Phosphorus",
+          "C. Chlorine",
+          "D. Molybdenum"
+        ],
+        "correctAnswer": "B. Phosphorus",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Phosphorus is involved in cellular energy transfer, root/tuber growth, flowering, and early maturity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A deficiency of phosphorus in maize plants typically causes older leaves to turn:",
+        "options": [
+          "A. Purple or reddish-purple",
+          "B. Pure white",
+          "C. Bright yellow",
+          "D. Pitch black"
+        ],
+        "correctAnswer": "A. Purple or reddish-purple",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Phosphorus deficiency leads to stunted green growth and characteristic purple or reddish discoloration on older leaves.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which macro-nutrient plays a major role in regulating stomata opening and enzyme activation in plants?",
+        "options": [
+          "A. Iron",
+          "B. Potassium",
+          "C. Copper",
+          "D. Manganese"
+        ],
+        "correctAnswer": "B. Potassium",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Potassium (K) regulates water uptake, activates cellular enzymes, and aids sugar and starch transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Fertilizers derived from decomposed plant matter and animal wastes are known as:",
+        "options": [
+          "A. Inorganic fertilizers",
+          "B. Organic fertilizers (manures)",
+          "C. Chemical salts",
+          "D. Synthetic granules"
+        ],
+        "correctAnswer": "B. Organic fertilizers (manures)",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Organic fertilizers or manures are prepared from plant remains and animal wastes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an organic fertilizer?",
+        "options": [
+          "A. NPK 15:15:15",
+          "B. Farmyard manure",
+          "C. Urea",
+          "D. Sulfate of ammonia"
+        ],
+        "correctAnswer": "B. Farmyard manure",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Farmyard manure is an organic fertilizer composed of animal excreta and bedding materials.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Green manure is produced by:",
+        "options": [
+          "A. Mixing cow dung with green paint",
+          "B. Growing leafy crops (often legumes) and ploughing them into the soil while green",
+          "C. Collecting dry maize stalks from a grain store",
+          "D. Spraying green chemicals on weeds"
+        ],
+        "correctAnswer": "B. Growing leafy crops (often legumes) and ploughing them into the soil while green",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Green manure consists of fresh leguminous or leafy crops ploughed directly into the soil while still growing.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Compost is formed through the biological decomposition of organic wastes by:",
+        "options": [
+          "A. Heat engines",
+          "B. Microorganisms (bacteria and fungi)",
+          "C. Chemical sprays",
+          "D. Direct sunlight alone"
+        ],
+        "correctAnswer": "B. Microorganisms (bacteria and fungi)",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Composting is a natural process where soil microorganisms break down organic materials into rich humus.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following materials can be safely added to a school garden compost pile?",
+        "options": [
+          "A. Broken glass bottles",
+          "B. Plastic shopping bags",
+          "C. Dry leaves and vegetable scraps",
+          "D. Rusty iron nails"
+        ],
+        "correctAnswer": "C. Dry leaves and vegetable scraps",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Biodegradable organic matter such as dry leaves, vegetable scraps, and grass cuttings are suitable compost inputs.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the purpose of adding 'starters' to a newly built compost pile?",
+        "options": [
+          "A. To stop decomposition completely",
+          "B. To introduce beneficial microorganisms and nutrients that kickstart decomposition",
+          "C. To attract insect pests",
+          "D. To turn the compost into stone"
+        ],
+        "correctAnswer": "B. To introduce beneficial microorganisms and nutrients that kickstart decomposition",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Starters (like animal manure, coffee grounds, and fertile topsoil) provide the microorganisms and nutrients needed to initiate composting.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which composting method involves digging a trench 1 to 2 feet deep into the ground?",
+        "options": [
+          "A. Heap method",
+          "B. Pit method",
+          "C. Broadcasting method",
+          "D. Foliar method"
+        ],
+        "correctAnswer": "B. Pit method",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Pit composting involves excavating a hole or trench in the ground to hold and decompose organic matter.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which composting method involves stacking organic materials into a mound above ground level?",
+        "options": [
+          "A. Pit method",
+          "B. Heap (Stack) method",
+          "C. Drilling method",
+          "D. Fertigation"
+        ],
+        "correctAnswer": "B. Heap (Stack) method",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "The stack or heap method builds organic materials into a raised pile on the soil surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A chemical substance synthesized in factories to release nutrients for plant growth is called an:",
+        "options": [
+          "A. Organic manure",
+          "B. Inorganic (chemical) fertilizer",
+          "C. Earthworm casting",
+          "D. Mulch layer"
+        ],
+        "correctAnswer": "B. Inorganic (chemical) fertilizer",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Inorganic fertilizers are manufactured chemical substances formulated to supply specific plant nutrients.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An inorganic fertilizer that supplies only ONE major plant nutrient is called a:",
+        "options": [
+          "A. Compound fertilizer",
+          "B. Mixed fertilizer",
+          "C. Straight (simple) fertilizer",
+          "D. Complete fertilizer"
+        ],
+        "correctAnswer": "C. Straight (simple) fertilizer",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Straight or simple fertilizers contain only one of the major plant nutrients (N, P, or K).",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a straight nitrogen fertilizer?",
+        "options": [
+          "A. Muriate of potash",
+          "B. Urea",
+          "C. Rock phosphate",
+          "D. NPK 15:15:15"
+        ],
+        "correctAnswer": "B. Urea",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Urea is a straight fertilizer that supplies only nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A fertilizer that contains two or more major plant nutrients combined in a set ratio is a:",
         "options": [
           "A. Straight fertilizer",
-          "B. Single fertilizer",
-          "C. Compound fertilizer",
-          "D. Green manure"
+          "B. Compound (mixed) fertilizer",
+          "C. Micro-fertilizer",
+          "D. Single fertilizer"
         ],
-        "correctAnswer": "C. Compound fertilizer",
-        "hint": "It contains multiple major plant nutrients blended in a defined percentage ratio.",
-        "workedSolution": "NPK 15:15:15 is a compound (mixed) fertilizer because it contains three primary nutrients (Nitrogen, Phosphorus, Potassium) blended in a defined ratio.",
+        "correctAnswer": "B. Compound (mixed) fertilizer",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Compound or mixed fertilizers contain two or more major nutrients in suitable percentage combinations.",
         "points": 1
       },
       {
-        "id": "B7_CROP_MCQ_05",
+        "id": "B7_CROP_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What nutrients do the letters 'N-P-K' on a commercial fertilizer bag stand for?",
+        "options": [
+          "A. Nickel, Phosphorus, Krypton",
+          "B. Nitrogen, Phosphorus, Potassium",
+          "C. Sodium, Lead, Calcium",
+          "D. Nitrogen, Protein, Kalium"
+        ],
+        "correctAnswer": "B. Nitrogen, Phosphorus, Potassium",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "N stands for Nitrogen, P for Phosphorus, and K for Potassium (Kalium).",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In an NPK 15:15:15 fertilizer bag, what is the percentage of nitrogen present?",
+        "options": [
+          "A. 5%",
+          "B. 15%",
+          "C. 30%",
+          "D. 45%"
+        ],
+        "correctAnswer": "B. 15%",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "The numbers indicate the percentage of available N, P2O5, and K2O respectively; here, nitrogen constitutes 15%.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The method of scattering fertilizer evenly across the entire surface of a cleared farm plot is:",
+        "options": [
+          "A. Side dressing",
+          "B. Ring method",
+          "C. Broadcasting",
+          "D. Fertigation"
+        ],
+        "correctAnswer": "C. Broadcasting",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Broadcasting is the uniform distribution of fertilizer over the entire surface of a field.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The method of applying fertilizer in a circular shallow ditch around a growing plant is the:",
+        "options": [
+          "A. Ring method",
+          "B. Broadcasting method",
+          "C. Foliar spray",
+          "D. Plough-sole method"
+        ],
+        "correctAnswer": "A. Ring method",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "In the ring method, fertilizer is applied in a circular furrow equidistant around the base of the plant.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why should fertilizer applied by the ring method NOT touch the plant stem directly?",
+        "options": [
+          "A. It will freeze the stem",
+          "B. The concentrated chemical salts can scorch or burn plant tissues",
+          "C. It will turn the fertilizer into stone",
+          "D. The stem will eat the fertilizer too fast"
+        ],
+        "correctAnswer": "B. The concentrated chemical salts can scorch or burn plant tissues",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Direct contact between concentrated fertilizer salts and vegetative stems can cause tissue scorching and chemical damage.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Applying fertilizer along the side of a line of growing crops in the field is called:",
+        "options": [
+          "A. Foliar spraying",
+          "B. Side dressing",
+          "C. Broadcasting",
+          "D. Sowing"
+        ],
+        "correctAnswer": "B. Side dressing",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Side dressing involves applying fertilizer in bands to the side of established crop rows.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Applying liquid fertilizer directly to plant leaves as a fine spray is termed the:",
+        "options": [
+          "A. Foliar method",
+          "B. Ring method",
+          "C. Drilling method",
+          "D. Plough-sole method"
+        ],
+        "correctAnswer": "A. Foliar method",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "The foliar method applies diluted liquid fertilizers directly onto crop foliage.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Supplying fertilizer to crops through an agricultural irrigation system is called:",
+        "options": [
+          "A. Broadcasting",
+          "B. Fertigation",
+          "C. Ring placement",
+          "D. Drilling"
+        ],
+        "correctAnswer": "B. Fertigation",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Fertigation is the application of water-soluble fertilizers through irrigation lines.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an advantage of organic fertilizers over chemical fertilizers?",
+        "options": [
+          "A. They leach easily through soil",
+          "B. They improve soil structure and water-holding capacity",
+          "C. They always burn plant roots",
+          "D. They are very difficult to decompose"
+        ],
+        "correctAnswer": "B. They improve soil structure and water-holding capacity",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Organic fertilizers add humus, improving soil physical structure and increasing water retention.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The downward washing of dissolved plant nutrients below the root zone by heavy rain is called:",
+        "options": [
+          "A. Leaching",
+          "B. Aeration",
+          "C. Respiration",
+          "D. Transpiration"
+        ],
+        "correctAnswer": "A. Leaching",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Leaching occurs when excess water drains dissolved soluble minerals deep into the soil beyond root reach.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following inorganic fertilizers supplies potassium to crops?",
+        "options": [
+          "A. Muriate of potash",
+          "B. Urea",
+          "C. Single superphosphate",
+          "D. Calcium nitrate"
+        ],
+        "correctAnswer": "A. Muriate of potash",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Muriate of potash (potassium chloride) is a straight fertilizer supplying potassium.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which secondary macro-nutrient is essential for cell wall structure and root tip growth?",
+        "options": [
+          "A. Calcium",
+          "B. Iron",
+          "C. Zinc",
+          "D. Chlorine"
+        ],
+        "correctAnswer": "A. Calcium",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Calcium is a macro-nutrient required for stabilizing cell walls and supporting apical growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Manganese in plant nutrition functions as a:",
+        "options": [
+          "A. Component of wood",
+          "B. Catalyst in chlorophyll activity and regulator of oxidation-reduction reactions",
+          "C. Major structural element of the cell wall",
+          "D. Primary source of starch"
+        ],
+        "correctAnswer": "B. Catalyst in chlorophyll activity and regulator of oxidation-reduction reactions",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Manganese regulates oxidation-reduction reactions and assists chlorophyll activity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary danger of applying chemical fertilizers right before a heavy storm?",
+        "options": [
+          "A. The plants will freeze",
+          "B. Nutrients will be washed away into nearby streams, causing runoff pollution and wasting fertilizer",
+          "C. The fertilizer will turn into weed seeds",
+          "D. The soil will turn into sand"
+        ],
+        "correctAnswer": "B. Nutrients will be washed away into nearby streams, causing runoff pollution and wasting fertilizer",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Heavy downpours wash away surface fertilizer into local water bodies, causing chemical runoff and eutrophication.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which component in compost provides organic carbon (brown material)?",
+        "options": [
+          "A. Dry maize stalks and dry straw",
+          "B. Fresh wet cow dung",
+          "C. Pure tap water",
+          "D. Green grass trimmings"
+        ],
+        "correctAnswer": "A. Dry maize stalks and dry straw",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Dry maize stalks, straw, and dead leaves are carbon-rich 'brown' materials in composting.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which component in compost supplies nitrogen (green material)?",
+        "options": [
+          "A. Fresh poultry droppings and fresh green leaves",
+          "B. Sawdust",
+          "C. Dry cardboard",
+          "D. Polythene"
+        ],
+        "correctAnswer": "A. Fresh poultry droppings and fresh green leaves",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Fresh green trimmings and animal droppings provide the nitrogen required by decomposing microbes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why should weeds be cleared around crops before applying fertilizer?",
+        "options": [
+          "A. Weeds make the farm look too green",
+          "B. Weeds will aggressively absorb the added nutrients, starving the cultivated crops",
+          "C. Fertilizer only dissolves when touching weeds",
+          "D. Weeds turn fertilizer into rock"
+        ],
+        "correctAnswer": "B. Weeds will aggressively absorb the added nutrients, starving the cultivated crops",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Weeds compete for applied nutrients, which reduces fertilizer use efficiency for the target crop.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the effect of repeated, excessive use of ammonium-based chemical fertilizers on soil pH?",
+        "options": [
+          "A. It increases soil acidity",
+          "B. It makes the soil alkaline",
+          "C. It neutralizes all salts",
+          "D. It has no effect"
+        ],
+        "correctAnswer": "A. It increases soil acidity",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Continuous, unbuffered use of ammonium-based fertilizers can gradually increase soil acidity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following organic manures is formed from decomposed animal bedding mixed with dung and urine?",
+        "options": [
+          "A. Green manure",
+          "B. Farmyard manure",
+          "C. Rock phosphate",
+          "D. Urea"
+        ],
+        "correctAnswer": "B. Farmyard manure",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Farmyard manure is a decomposed mix of livestock bedding, animal dung, and urine.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which plant nutrient functions as a structural building block of plant proteins and amino acids?",
+        "options": [
+          "A. Nitrogen",
+          "B. Chlorine",
+          "C. Boron",
+          "D. Copper"
+        ],
+        "correctAnswer": "A. Nitrogen",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Nitrogen is a constituent of amino acids, proteins, and nucleic acids in plant tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In band placement (drilling), where is fertilizer placed relative to the seed?",
+        "options": [
+          "A. On the top of the leaves",
+          "B. In narrow furrows below and to the side of the seed line at planting",
+          "C. Far away outside the farm",
+          "D. Directly inside the seed embryo"
+        ],
+        "correctAnswer": "B. In narrow furrows below and to the side of the seed line at planting",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Drilling places fertilizer in a band slightly below and to the side of the seed furrow to avoid seedling burn.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a symptom of nitrogen deficiency in growing plants?",
+        "options": [
+          "A. Rapid growth and dark green leaves",
+          "B. Stunted growth and yellowing (chlorosis) of older leaves",
+          "C. Purple streaks on stems",
+          "D. Swollen root tips"
+        ],
+        "correctAnswer": "B. Stunted growth and yellowing (chlorosis) of older leaves",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Nitrogen deficiency causes general chlorosis and stunted shoot growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is compost considered environmentally friendly?",
+        "options": [
+          "A. It releases harmful greenhouse gases rapidly",
+          "B. It recycles organic waste safely into the soil without toxic chemical residues",
+          "C. It kills all soil bacteria",
+          "D. It replaces soil with plastic"
+        ],
+        "correctAnswer": "B. It recycles organic waste safely into the soil without toxic chemical residues",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Composting recycles organic farm and kitchen residues into beneficial soil humus naturally.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is 'necrosis' in plant pathology?",
+        "options": [
+          "A. Rapid formation of flowers",
+          "B. The death and browning of plant tissues or leaf patches",
+          "C. The absorption of water by root hairs",
+          "D. The creation of green chlorophyll"
+        ],
+        "correctAnswer": "B. The death and browning of plant tissues or leaf patches",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Necrosis is the browning and localized death of plant tissues caused by severe nutrient deficiency or disease.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following fertilizers is applied in a continuous line at the bottom of a plough furrow?",
+        "options": [
+          "A. Ring method",
+          "B. Foliar spray",
+          "C. Plough-sole method",
+          "D. Fertigation"
+        ],
+        "correctAnswer": "C. Plough-sole method",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "The plough-sole method places fertilizer in a continuous band along the bottom of an open furrow as the field is ploughed.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which element acts as a catalyst in chlorophyll formation, with deficiency causing interveinal leaf yellowing?",
+        "options": [
+          "A. Iron (Fe)",
+          "B. Phosphorus (P)",
+          "C. Potassium (K)",
+          "D. Calcium (Ca)"
+        ],
+        "correctAnswer": "A. Iron (Fe)",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Iron is required for chlorophyll synthesis, and its deficiency causes distinct leaf chlorosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do organic fertilizers have a longer-lasting effect in the soil than chemical fertilizers?",
+        "options": [
+          "A. They are made of solid rock",
+          "B. Their nutrients are released gradually as soil microorganisms decompose the organic matter",
+          "C. They never dissolve in water",
+          "D. They remain dry forever"
+        ],
+        "correctAnswer": "B. Their nutrients are released gradually as soil microorganisms decompose the organic matter",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Organic nutrients are released slowly as microbes mineralize organic matter over extended periods.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is NOT an organic fertilizer?",
+        "options": [
+          "A. Poultry droppings",
+          "B. Ammonium nitrate",
+          "C. Compost",
+          "D. Cow dung"
+        ],
+        "correctAnswer": "B. Ammonium nitrate",
+        "hint": "Review the basic functions and classifications of macro-nutrients (N, P, K, Ca) and micro-nutrients (Fe, Mn, Zn), as well as organic and inorganic fertilizer concepts.",
+        "workedSolution": "Ammonium nitrate is a synthetic inorganic chemical fertilizer.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I01",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does chlorosis caused by nitrogen deficiency show up on older bottom leaves first rather than young top leaves?",
+        "options": [
+          "A. Older leaves do not receive rainfall",
+          "B. Nitrogen is mobile within the plant and is mobilized from older foliage to young, active tissues",
+          "C. Older leaves have thicker cell walls that repel nitrogen",
+          "D. Insects only suck nitrogen from older leaves"
+        ],
+        "correctAnswer": "B. Nitrogen is mobile within the plant and is mobilized from older foliage to young, active tissues",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Because nitrogen is mobile within plant tissues, plants translocate it from older leaves to growing tips during deficiencies.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does potassium deficiency produce the condition known as 'hidden hunger' in crops?",
+        "options": [
+          "A. The plant stops absorbing water completely",
+          "B. Crop yield and internal health decline before visible visual symptoms like leaf scorch appear",
+          "C. The roots turn into leaves",
+          "D. The leaves turn pitch black immediately"
+        ],
+        "correctAnswer": "B. Crop yield and internal health decline before visible visual symptoms like leaf scorch appear",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Hidden hunger describes a state where metabolic efficiency and yield decrease without immediate visible foliar symptoms.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary agronomic advantage of ploughing leguminous green manures into a farm plot?",
+        "options": [
+          "A. They absorb all the soil moisture to dry out the field",
+          "B. Legumes fix atmospheric nitrogen via symbiotic root bacteria, enriching the soil with organic nitrogen upon decomposition",
+          "C. They attract weed seeds to the plot",
+          "D. They prevent earthworms from entering"
+        ],
+        "correctAnswer": "B. Legumes fix atmospheric nitrogen via symbiotic root bacteria, enriching the soil with organic nitrogen upon decomposition",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Leguminous green manures fix atmospheric nitrogen through Rhizobium bacteria, supplying natural nitrogen to subsequent crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is regular aeration (turning) critical during heap composting?",
+        "options": [
+          "A. To cool the heap to zero degrees",
+          "B. To provide oxygen for aerobic decomposing bacteria and prevent foul odors from anaerobic decomposition",
+          "C. To allow earthworms to escape the pile",
+          "D. Dry out the compost completely"
+        ],
+        "correctAnswer": "B. To provide oxygen for aerobic decomposing bacteria and prevent foul odors from anaerobic decomposition",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Turning introduces oxygen, maintaining aerobic respiration and preventing foul-smelling anaerobic conditions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A farmer intends to stimulate strong root anchorage and early seed production in cereal crops. Which fertilizer should be selected?",
+        "options": [
+          "A. A high-phosphorus formulation (such as single superphosphate or NPK 10:20:10)",
+          "B. Pure urea (46% N)",
+          "C. Muriate of potash",
+          "D. Lime only"
+        ],
+        "correctAnswer": "A. A high-phosphorus formulation (such as single superphosphate or NPK 10:20:10)",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Phosphorus is the primary nutrient that supports root branching, early stalk development, and seed setting.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are sandy soils far more prone to nutrient leaching than clayey soils?",
+        "options": [
+          "A. Sandy soils have large pore spaces and low cation exchange capacity, allowing water to carry dissolved ions away easily",
+          "B. Sandy soils contain too many earthworms",
+          "C. Sand dissolves in water",
+          "D. Clay soils repel chemical fertilizers"
+        ],
+        "correctAnswer": "A. Sandy soils have large pore spaces and low cation exchange capacity, allowing water to carry dissolved ions away easily",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Coarse sand particles have larger macropores and low binding capacity, allowing dissolved fertilizer salts to leach rapidly.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens when synthetic chemical fertilizer is applied in direct contact with germinating seeds?",
+        "options": [
+          "A. The seeds germinate in 1 hour",
+          "B. High osmotic salt concentrations draw water out of the seed embryo, causing dehydration and germination failure (seed burn)",
+          "C. The seeds turn into compost",
+          "D. The seeds produce double root systems"
+        ],
+        "correctAnswer": "B. High osmotic salt concentrations draw water out of the seed embryo, causing dehydration and germination failure (seed burn)",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "High salt concentrations around the seed embryo draw water out osmotically, injuring or killing the seedling.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the cation buffering capacity of organic manures help stabilize soil quality?",
+        "options": [
+          "A. It keeps the soil permanently frozen",
+          "B. Humus buffers against rapid pH shifts, mitigating extreme soil acidity or alkalinity",
+          "C. It turns clay into sand",
+          "D. It removes air from the soil"
+        ],
+        "correctAnswer": "B. Humus buffers against rapid pH shifts, mitigating extreme soil acidity or alkalinity",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Organic humus provides buffering capacity through ion exchange, stabilizing soil pH against sharp swings.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Under which conditions is the foliar application of fertilizer most recommended?",
+        "options": [
+          "A. When heavy rain is falling directly on the leaves",
+          "B. During acute micro-nutrient deficiencies, or when dry soils limit nutrient uptake through the root system",
+          "C. When the plant is completely leafless in the dark",
+          "D. When the field is completely flooded"
+        ],
+        "correctAnswer": "B. During acute micro-nutrient deficiencies, or when dry soils limit nutrient uptake through the root system",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Foliar feeding bypasses soil limitations to correct micronutrient deficiencies rapidly through leaf absorption.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary environmental impact when agricultural fertilizer runoff drains into freshwater lakes?",
+        "options": [
+          "A. The water becomes completely clear",
+          "B. High nitrogen and phosphorus trigger excessive algae blooms, which deplete dissolved oxygen upon dying (eutrophication)",
+          "C. The lake turns into dry soil",
+          "D. Water salinity decreases to zero"
+        ],
+        "correctAnswer": "B. High nitrogen and phosphorus trigger excessive algae blooms, which deplete dissolved oxygen upon dying (eutrophication)",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Nitrate and phosphate runoff fuels rapid algae growth, depleting dissolved oxygen and harming aquatic life.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the pit method of composting preferred in arid or semi-arid zones over the heap method?",
+        "options": [
+          "A. Pits trap and conserve moisture better, preventing the composting mass from drying out in hot, dry winds",
+          "B. Pits do not require organic waste",
+          "C. Pits require no manual labor to prepare",
+          "D. Heaps attract more rainfall"
+        ],
+        "correctAnswer": "A. Pits trap and conserve moisture better, preventing the composting mass from drying out in hot, dry winds",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Excavated pits shield the composting mass from dry surface winds, retaining moisture needed for microbial breakdown.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A soil test indicates a pH of 4.2 (highly acidic). What is a likely consequence of this soil condition on added phosphorus fertilizer?",
+        "options": [
+          "A. Phosphorus becomes fixed by iron and aluminium oxides into insoluble compounds, making it unavailable to plants",
+          "B. Phosphorus evaporates as gas",
+          "C. Phosphorus turns into nitrogen",
+          "D. Phosphorus doubles in solubility"
+        ],
+        "correctAnswer": "A. Phosphorus becomes fixed by iron and aluminium oxides into insoluble compounds, making it unavailable to plants",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "At low pH, soluble phosphate binds with iron and aluminium ions, forming insoluble precipitates that plants cannot absorb.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following fertilizers is best suited as a fast-acting vegetative top-dressing for leafy vegetables like cabbage?",
+        "options": [
+          "A. Rock phosphate",
+          "B. Urea or Sulfate of Ammonia",
+          "C. Muriate of potash",
+          "D. Agricultural limestone"
+        ],
+        "correctAnswer": "B. Urea or Sulfate of Ammonia",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Soluble nitrogenous fertilizers (such as urea or sulfate of ammonia) deliver quick nitrogen to drive leafy growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the application of farmyard manure benefit beneficial soil organisms like earthworms?",
+        "options": [
+          "A. It poisons their eggs",
+          "B. It provides organic carbon and nutrients as food sources while improving moisture and aeration in their habitat",
+          "C. It suffocates them by compacting the soil",
+          "D. It turns them into insects"
+        ],
+        "correctAnswer": "B. It provides organic carbon and nutrients as food sources while improving moisture and aeration in their habitat",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Manure feeds saprophytic microbes and earthworms, fostering soil biological activity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main drawback of applying un-decomposed, fresh straw or sawdust directly to growing crops?",
+        "options": [
+          "A. It causes immediate nitrogen immobilization ('nitrogen tie-up') as soil microbes consume available nitrogen to break down the carbon",
+          "B. It causes plants to produce flowers overnight",
+          "C. It floods the soil with toxic phosphorus",
+          "D. It hardens into rock"
+        ],
+        "correctAnswer": "A. It causes immediate nitrogen immobilization ('nitrogen tie-up') as soil microbes consume available nitrogen to break down the carbon",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Decomposers consume soil nitrogen to break down high-carbon sawdust, causing temporary nitrogen deficiency in crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is side-dressing considered more resource-efficient than broadcasting for widely spaced crops like maize?",
+        "options": [
+          "A. Broadcasting takes more rainfall",
+          "B. Side-dressing concentrates nutrients near the crop root zone rather than fertilizing the open spaces between rows",
+          "C. Side-dressing turns all fertilizers into liquids",
+          "D. Broadcasting requires airplanes only"
+        ],
+        "correctAnswer": "B. Side-dressing concentrates nutrients near the crop root zone rather than fertilizing the open spaces between rows",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Side-dressing places nutrients adjacent to the crop rows, reducing nutrient uptake by weeds in the inter-row spaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements is a component of plant cell membranes and functions as a secondary messenger in biochemical signaling?",
+        "options": [
+          "A. Calcium (Ca)",
+          "B. Molybdenum (Mo)",
+          "C. Chlorine (Cl)",
+          "D. Nitrogen (N)"
+        ],
+        "correctAnswer": "A. Calcium (Ca)",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Calcium stabilizes cell walls and membranes while acting as an intracellular signaling messenger.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A tomato grower observes 'leaf burn' along the margins of older leaves, while fruit stalks remain weak. Which deficiency does this suggest?",
+        "options": [
+          "A. Nitrogen",
+          "B. Potassium",
+          "C. Zinc",
+          "D. Iron"
+        ],
+        "correctAnswer": "B. Potassium",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Marginal chlorosis and necrotic scorch along leaf edges are diagnostic indicators of potassium deficiency.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is it important to consider the soil's moisture content before applying chemical fertilizers?",
+        "options": [
+          "A. Fertilizers require moisture to dissolve into ionic forms for root absorption; applying salts to bone-dry soil risks root burn",
+          "B. Moisture stops fertilizers from dissolving",
+          "C. Dry soil causes fertilizers to evaporate as clouds",
+          "D. Fertilizer only works in ice"
+        ],
+        "correctAnswer": "A. Fertilizers require moisture to dissolve into ionic forms for root absorption; applying salts to bone-dry soil risks root burn",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Nutrient ions require soil water to dissociate into absorbable solutions; dry conditions concentrate salts, injuring roots.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the layer of straw or native soil placed on top of a finished compost heap?",
+        "options": [
+          "A. To prevent rainwater and heat from leaving the pile, and protect it from wind erosion and scavenger birds",
+          "B. To make the compost cold",
+          "C. To prevent air from ever entering",
+          "D. To turn the heap into charcoal"
+        ],
+        "correctAnswer": "A. To prevent rainwater and heat from leaving the pile, and protect it from wind erosion and scavenger birds",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "A top mulch cap insulates the compost mass, maintains internal moisture, and protects it from weather extremes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which inorganic fertilizer contains sulfur in addition to nitrogen?",
+        "options": [
+          "A. Muriate of potash",
+          "B. Sulfate of ammonia",
+          "C. Urea",
+          "D. Triple superphosphate"
+        ],
+        "correctAnswer": "B. Sulfate of ammonia",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Sulfate of ammonia, (NH4)2SO4, delivers both nitrogen and sulfur to growing crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does organic manure reduce the risk of topsoil erosion by surface water?",
+        "options": [
+          "A. It acts as a hard sheet of glass",
+          "B. Organic humus binds soil particles into stable aggregates that improve infiltration and resist detachment by raindrops",
+          "C. It kills all grass",
+          "D. It turns soil into river water"
+        ],
+        "correctAnswer": "B. Organic humus binds soil particles into stable aggregates that improve infiltration and resist detachment by raindrops",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Humus binds loose soil into stable aggregates, increasing infiltration and resisting water erosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are compound fertilizers like NPK 20:20:20 widely utilized by commercial vegetable farmers?",
+        "options": [
+          "A. They are completely free to buy",
+          "B. They deliver a balanced, concentrated ratio of the three primary nutrients in a single field application",
+          "C. They replace the need for water",
+          "D. They keep plants from blooming"
+        ],
+        "correctAnswer": "B. They deliver a balanced, concentrated ratio of the three primary nutrients in a single field application",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Balanced NPK fertilizers supply all three primary macro-nutrients in uniform granules, streamlining application.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does fertigation improve nutrient use efficiency compared to manual broadcasting?",
+        "options": [
+          "A. Nutrients are dissolved in irrigation water and delivered directly to the root zone with minimal volatilization or waste",
+          "B. It burns weeds using hot water",
+          "C. It requires no pipes or pumps",
+          "D. It eliminates the need for sunlight"
+        ],
+        "correctAnswer": "A. Nutrients are dissolved in irrigation water and delivered directly to the root zone with minimal volatilization or waste",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Fertigation places dissolved, bioavailable nutrients directly at the active root zone through the irrigation system.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological role of zinc in crop development?",
+        "options": [
+          "A. Making wood hard",
+          "B. Synthesis of growth hormones (like auxin) and activation of specific plant enzyme systems",
+          "C. Creating soil earthworms",
+          "D. Turning fruits red"
+        ],
+        "correctAnswer": "B. Synthesis of growth hormones (like auxin) and activation of specific plant enzyme systems",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Zinc acts as an essential cofactor for enzyme systems and regulates auxin synthesis for stem elongation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should poultry manure be allowed to cure and decompose before being applied directly to tender seedlings?",
+        "options": [
+          "A. It is too cold when fresh",
+          "B. Fresh poultry manure has a high ammonium content and salt concentration that can scorch delicate roots",
+          "C. It dissolves immediately into gas",
+          "D. Seedlings prefer stones"
+        ],
+        "correctAnswer": "B. Fresh poultry manure has a high ammonium content and salt concentration that can scorch delicate roots",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Fresh poultry droppings are rich in uric acid and soluble salts, which can burn plant roots if not cured.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the correct technique for ring placement on tree crops?",
+        "options": [
+          "A. Pouring fertilizer onto the tree trunk",
+          "B. Digging a circular trench matching the drip line of the leaf canopy where active feeder roots are concentrated",
+          "C. Throwing fertilizer on the upper branches",
+          "D. Scattering granules in neighboring properties"
+        ],
+        "correctAnswer": "B. Digging a circular trench matching the drip line of the leaf canopy where active feeder roots are concentrated",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "The canopy drip line corresponds to the concentration of active feeder root tips, making it the ideal placement zone.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the consequence of applying excessive nitrogen to cereal crops like rice and wheat?",
+        "options": [
+          "A. Immediate death of the seeds",
+          "B. Excessive, weak vegetative growth that causes plants to fall over (lodging) and delays maturity",
+          "C. Rapid formation of deep roots",
+          "D. The soil becomes pure rock"
+        ],
+        "correctAnswer": "B. Excessive, weak vegetative growth that causes plants to fall over (lodging) and delays maturity",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Excessive nitrogen stimulates rapid vegetative growth with weak stems, predisposing cereals to lodging.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which diagnostic symptom distinguishes iron deficiency from nitrogen deficiency?",
+        "options": [
+          "A. Iron deficiency causes chlorosis on younger top leaves first, whereas nitrogen deficiency shows on older bottom leaves first",
+          "B. Iron turns leaves black",
+          "C. Nitrogen turns stems red",
+          "D. Iron only affects roots"
+        ],
+        "correctAnswer": "A. Iron deficiency causes chlorosis on younger top leaves first, whereas nitrogen deficiency shows on older bottom leaves first",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Iron is immobile and shows symptoms on young leaves, while mobile nitrogen is scavenged from older leaves first.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the application of agricultural limestone (calcium carbonate) help acidic soils?",
+        "options": [
+          "A. It neutralizes soil acidity, raising the pH to a range where nutrients become more soluble and available",
+          "B. It turns the soil into pure sand",
+          "C. It stops water from draining",
+          "D. It destroys all nutrients"
+        ],
+        "correctAnswer": "A. It neutralizes soil acidity, raising the pH to a range where nutrients become more soluble and available",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Liming neutralizes soil acidity, creating a favorable pH that improves nutrient availability and microbial activity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of molybdenum as a micro-nutrient in leguminous crops?",
+        "options": [
+          "A. Coloring flower petals",
+          "B. Serving as an essential component of the nitrogenase enzyme used by root bacteria to fix atmospheric nitrogen",
+          "C. Making seeds soft",
+          "D. Pumping water into leaves"
+        ],
+        "correctAnswer": "B. Serving as an essential component of the nitrogenase enzyme used by root bacteria to fix atmospheric nitrogen",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Molybdenum is a core cofactor of the nitrogenase enzyme, which Rhizobium bacteria use to fix nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is broadcasting considered unsuitable for high-value vegetable crops in weed-infested soils?",
+        "options": [
+          "A. Vegetables cannot absorb chemical fertilizers",
+          "B. Broadcasting feeds inter-row weeds equally, increasing weed competition and wasting fertilizer",
+          "C. Broadcasting freezes the soil",
+          "D. The fertilizer will turn into poison"
+        ],
+        "correctAnswer": "B. Broadcasting feeds inter-row weeds equally, increasing weed competition and wasting fertilizer",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Broadcasting scatters nutrients over the entire field, feeding weeds between rows as well as the crop.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which nutrient deficiency causes poor bark development and slender stems in grass crops?",
+        "options": [
+          "A. Nitrogen",
+          "B. Phosphorus",
+          "C. Chlorine",
+          "D. Iron"
+        ],
+        "correctAnswer": "B. Phosphorus",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Phosphorus deficiency produces slender, weak stems, poor root architecture, and reduced bark development.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main benefit of mixing diverse organic residues (greens and browns) in a compost pile?",
+        "options": [
+          "A. To provide a balanced carbon-to-nitrogen (C:N) ratio that sustains rapid microbial decomposition",
+          "B. To make the pile look colorful",
+          "C. To prevent the pile from absorbing water",
+          "D. To turn the compost into sand"
+        ],
+        "correctAnswer": "A. To provide a balanced carbon-to-nitrogen (C:N) ratio that sustains rapid microbial decomposition",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Balancing carbon-rich browns with nitrogen-rich greens maintains an optimal C:N ratio for decomposer microbes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must single superphosphate be applied close to plant roots during planting?",
+        "options": [
+          "A. Phosphorus moves very slowly in the soil and does not leach rapidly like nitrogen",
+          "B. Phosphorus evaporates within 5 minutes",
+          "C. Roots run away from phosphorus",
+          "D. It dissolves only in air"
+        ],
+        "correctAnswer": "A. Phosphorus moves very slowly in the soil and does not leach rapidly like nitrogen",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Phosphate ions bind readily to soil particles, making localized placement near root tips necessary for uptake.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary indicator that an aerobic compost heap has successfully broken down and finished curing?",
+        "options": [
+          "A. It smells like rotten eggs and is boiling hot",
+          "B. It has cooled down to ambient temperature, smells earthy, and looks like a dark crumbly humus",
+          "C. The materials remain completely green and dry",
+          "D. It turns into liquid water"
+        ],
+        "correctAnswer": "B. It has cooled down to ambient temperature, smells earthy, and looks like a dark crumbly humus",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Finished compost stabilizes into a cool, dark, crumbly material with a pleasant, earthy odor.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does chemical fertilizer runoff harm local drinking water quality?",
+        "options": [
+          "A. It turns water into solid ice",
+          "B. High nitrate concentrations in drinking water can cause methemoglobinemia (blue baby syndrome) in infants",
+          "C. It makes water taste like sugar",
+          "D. It removes all minerals from water"
+        ],
+        "correctAnswer": "B. High nitrate concentrations in drinking water can cause methemoglobinemia (blue baby syndrome) in infants",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Nitrate contamination from agricultural runoff poses serious health risks in drinking water, including methemoglobinemia.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which plant nutrient assists in root nodule formation and disease resistance in leguminous crops?",
+        "options": [
+          "A. Phosphorus",
+          "B. Lead",
+          "C. Mercury",
+          "D. Cadmium"
+        ],
+        "correctAnswer": "A. Phosphorus",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Phosphorus supports root growth and provides the ATP needed for symbiotic root nodule development.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are compound fertilizers often coated with specialized polymers by manufacturers?",
+        "options": [
+          "A. To make them look bright",
+          "B. To slow down nutrient release, reducing leaching losses and extending feeding duration",
+          "C. To prevent farmers from handling them",
+          "D. To turn them into plastic"
+        ],
+        "correctAnswer": "B. To slow down nutrient release, reducing leaching losses and extending feeding duration",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Polymer coatings create controlled-release granules that meter out nutrients slowly, minimizing leaching.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary biological role of boron in flowering crops?",
+        "options": [
+          "A. Making leaves blue",
+          "B. Pollen tube germination, sugar translocation, and cell wall formation",
+          "C. Creating seeds without flowers",
+          "D. Repelling insects"
+        ],
+        "correctAnswer": "B. Pollen tube germination, sugar translocation, and cell wall formation",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Boron is a micro-nutrient required for pollen tube growth, successful fertilization, and carbohydrate transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the application of farmyard manure affect compacted heavy clay soils?",
+        "options": [
+          "A. It turns clay into concrete",
+          "B. It loosens clay particles, improving internal drainage, porosity, and aeration",
+          "C. It prevents roots from penetrating",
+          "D. It removes all air"
+        ],
+        "correctAnswer": "B. It loosens clay particles, improving internal drainage, porosity, and aeration",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Organic matter opens up dense clay soils, improving structure, permeability, and root aeration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following practices is recommended when applying urea to a maize field?",
+        "options": [
+          "A. Leaving it exposed on dry soil on a hot windy afternoon",
+          "B. Incorporating it into moist soil or covering it with soil immediately to minimize ammonia gas volatilization",
+          "C. Mixing it with engine oil",
+          "D. Dissolving it in kerosene"
+        ],
+        "correctAnswer": "B. Incorporating it into moist soil or covering it with soil immediately to minimize ammonia gas volatilization",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Covering urea incorporates it into the soil, preventing surface enzymes from converting it to volatile ammonia gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What symptom on growing crops indicates severe sulfur deficiency?",
+        "options": [
+          "A. Uniform pale yellowing on younger leaves, as sulfur is relatively immobile in plant tissues",
+          "B. Leaves turning dark purple",
+          "C. Roots growing above the ground",
+          "D. Black spots on stems"
+        ],
+        "correctAnswer": "A. Uniform pale yellowing on younger leaves, as sulfur is relatively immobile in plant tissues",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Because sulfur is relatively immobile, deficiency symptoms appear first as chlorosis on younger leaves.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does excessive reliance on chemical fertilizers degrade natural soil fertility over time?",
+        "options": [
+          "A. They provide mineral nutrients without returning organic carbon, starving soil microbes and breaking down crumb structure",
+          "B. They turn the soil into water",
+          "C. They cause crops to produce wood only",
+          "D. They attract birds"
+        ],
+        "correctAnswer": "A. They provide mineral nutrients without returning organic carbon, starving soil microbes and breaking down crumb structure",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Continuous mineral fertilization without organic additions depletes humus, degrading soil structure and microbial life.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Under what circumstance is band placement preferred over broadcasting at planting?",
+        "options": [
+          "A. When establishing widely spaced row crops in soils with moderate to low fertility",
+          "B. When planting flooded paddy rice",
+          "C. When planting dense pasture grasses",
+          "D. When no crop has been planted"
+        ],
+        "correctAnswer": "A. When establishing widely spaced row crops in soils with moderate to low fertility",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Band placement concentrates fertilizer near emerging seedlings, improving early uptake in row crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of copper as a trace element in crops?",
+        "options": [
+          "A. Photosynthetic electron transport and enzymatic activation for lignin synthesis in cell walls",
+          "B. Creating copper metal inside seeds",
+          "C. Replacing water in stems",
+          "D. Turning plants brown"
+        ],
+        "correctAnswer": "A. Photosynthetic electron transport and enzymatic activation for lignin synthesis in cell walls",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Copper participates in photosynthetic electron transport and activates enzymes involved in lignin production.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should compost heaps be kept moist (like a wrung-out sponge) throughout decomposition?",
+        "options": [
+          "A. To drown pests",
+          "B. Decomposing bacteria and fungi require moisture to survive and metabolize organic substrates",
+          "C. To prevent the pile from producing fertilizer",
+          "D. To turn the pile into ice"
+        ],
+        "correctAnswer": "B. Decomposing bacteria and fungi require moisture to survive and metabolize organic substrates",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Adequate moisture is required for microbial metabolism and enzymatic activity within the compost pile.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary visual symptom of magnesium deficiency in broadleaf plants?",
+        "options": [
+          "A. Interveinal chlorosis on older leaves, because magnesium is mobile and forms the central atom of the chlorophyll molecule",
+          "B. Leaves turning solid black",
+          "C. Instant loss of all roots",
+          "D. Production of red flowers"
+        ],
+        "correctAnswer": "A. Interveinal chlorosis on older leaves, because magnesium is mobile and forms the central atom of the chlorophyll molecule",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Magnesium is the central atom in chlorophyll; its deficiency causes interveinal chlorosis on older leaves.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the plough-sole method beneficial for deep-rooted perennial crops?",
+        "options": [
+          "A. It places fertilizer deep in the subsoil where deep roots forage and moisture persists during dry periods",
+          "B. It burns surface weeds",
+          "C. It prevents plants from growing tall",
+          "D. It dissolves the plough"
+        ],
+        "correctAnswer": "A. It places fertilizer deep in the subsoil where deep roots forage and moisture persists during dry periods",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Depositing fertilizer at the furrow bottom places nutrients in deeper, moisture-retentive root zones.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the benefit of using both organic manure and inorganic fertilizer together (Integrated Nutrient Management)?",
+        "options": [
+          "A. Chemical fertilizer provides immediate nutrients, while manure improves soil physical structure, moisture retention, and long-term fertility",
+          "B. They cancel each other out completely",
+          "C. It saves money by avoiding planting crops",
+          "D. It turns crops into wild trees"
+        ],
+        "correctAnswer": "A. Chemical fertilizer provides immediate nutrients, while manure improves soil physical structure, moisture retention, and long-term fertility",
+        "hint": "Consider nutrient mobility, diagnostic chlorosis patterns, composting dynamics (aerobic vs. anaerobic, C:N ratio), and appropriate application methods (ring, foliar, fertigation).",
+        "workedSolution": "Combining both sources pairs rapid nutrient availability with improvements in soil structure and microbial health.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A01",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which method of fertilizer application involves injecting water-soluble fertilizers directly through an agricultural irrigation system?",
+        "prompt": "A school farm soil test reveals high total phosphorus, yet maize plants display purple older leaves and stunted roots. What soil condition explains this paradox?",
         "options": [
-          "A. Side-dressing",
-          "B. Broadcasting",
-          "C. Fertigation",
-          "D. Plough-sole placement"
+          "A. The soil is too wet for roots",
+          "B. Soil acidity (pH below 5.0) causes phosphorus fixation by soluble aluminium and iron cations, rendering it insoluble and unassimilable",
+          "C. The maize plants are absorbing too much nitrogen",
+          "D. Earthworms have consumed all the phosphorus"
         ],
-        "correctAnswer": "C. Fertigation",
-        "hint": "The term combines \"fertilizer\" and \"irrigation\".",
-        "workedSolution": "Fertigation is the modern agronomic practice of dissolving and supplying water-soluble fertilizers directly through irrigation lines (drip or sprinkler).",
+        "correctAnswer": "B. Soil acidity (pH below 5.0) causes phosphorus fixation by soluble aluminium and iron cations, rendering it insoluble and unassimilable",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "In acidic soils, phosphate forms insoluble precipitates with iron and aluminium ions, preventing root absorption despite high soil totals.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does adding high-carbon sawdust (C:N ratio 400:1) to a garden soil cause crop plants to turn yellow and stop growing?",
+        "options": [
+          "A. The sawdust produces poisonous acids",
+          "B. Decomposing microorganisms consume all available soil mineral nitrogen to build their own biomass, causing temporary nitrogen immobilization",
+          "C. The sawdust reflects all incoming sunlight",
+          "D. Wood particles absorb all water permanently"
+        ],
+        "correctAnswer": "B. Decomposing microorganisms consume all available soil mineral nitrogen to build their own biomass, causing temporary nitrogen immobilization",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Microbes decompose carbon-rich material by scavenging inorganic soil nitrogen, temporarily starving crops of nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Calculate the mass of pure nitrogen contained in a 50 kg bag of commercial NPK 20:10:10 fertilizer.",
+        "options": [
+          "A. 5 kg",
+          "B. 10 kg",
+          "C. 20 kg",
+          "D. 25 kg"
+        ],
+        "correctAnswer": "B. 10 kg",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "The formulation is 20% nitrogen by weight: 20% of 50 kg = 0.20 * 50 kg = 10 kg of pure nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does potassium (K) regulate water conservation in crops during sudden seasonal dry spells?",
+        "options": [
+          "A. It forms a plastic wax on leaf surfaces",
+          "B. It acts as an osmotic solute; pumping K+ out of guard cells causes stomatal closure, reducing transpirational water loss",
+          "C. It changes liquid water into solid ice inside the roots",
+          "D. It prevents the roots from taking in soil water"
+        ],
+        "correctAnswer": "B. It acts as an osmotic solute; pumping K+ out of guard cells causes stomatal closure, reducing transpirational water loss",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Potassium fluxes control guard cell turgor, closing stomatal pores to conserve internal moisture under water stress.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does applying chemical fertilizers to a waterlogged, flooded soil often result in significant nitrogen loss to the atmosphere?",
+        "options": [
+          "A. Nitrogen turns into solid rock",
+          "B. Anaerobic conditions foster denitrifying bacteria that convert soil nitrates into volatile nitrous oxide and dinitrogen gas",
+          "C. Water destroys the nitrogen nucleus",
+          "D. Flooding freezes the fertilizer salts"
+        ],
+        "correctAnswer": "B. Anaerobic conditions foster denitrifying bacteria that convert soil nitrates into volatile nitrous oxide and dinitrogen gas",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Anaerobic conditions in waterlogged soils drive microbial denitrification, releasing nitrogen gas into the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the high cation exchange capacity (CEC) of organic humus prevent fertilizer leaching in sandy topsoils?",
+        "options": [
+          "A. Humus particles carry negative electrical charges that hold positively charged nutrient ions (K+, Ca2+, Mg2+, NH4+), preventing wash-out",
+          "B. Humus freezes rainwater on contact",
+          "C. Humus turns all nutrients into non-polar gases",
+          "D. It turns sand into glass"
+        ],
+        "correctAnswer": "A. Humus particles carry negative electrical charges that hold positively charged nutrient ions (K+, Ca2+, Mg2+, NH4+), preventing wash-out",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Negatively charged humus colloids hold nutrient cations electrostatically, reducing leaching losses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A tomato grower notices blossom-end rot (dark, leathery, sunken patches on fruit bases) during rapid fruit expansion. What nutritional factor is responsible?",
+        "options": [
+          "A. Calcium deficiency caused by erratic water transport, as calcium moves primarily through transpirational water flow",
+          "B. Excessive iron intake",
+          "C. Lack of atmospheric nitrogen",
+          "D. Over-application of compost"
+        ],
+        "correctAnswer": "A. Calcium deficiency caused by erratic water transport, as calcium moves primarily through transpirational water flow",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Blossom-end rot is caused by localized calcium deficiency in expanding fruit tissues, often worsened by uneven transpiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does compost pile temperature rise naturally to 55°C–65°C during active decomposition?",
+        "options": [
+          "A. Chemical fertilizers ignite inside the pile",
+          "B. Exothermic cellular respiration by billions of active thermophilic microorganisms releases heat energy as they break down organic carbon",
+          "C. The compost attracts solar rays like a mirror",
+          "D. Spontaneous nuclear decay occurs in organic matter"
+        ],
+        "correctAnswer": "B. Exothermic cellular respiration by billions of active thermophilic microorganisms releases heat energy as they break down organic carbon",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Microbial metabolism of organic carbon is exothermic, heating the core of well-insulated aerobic piles.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological benefit of maintaining compost temperatures above 55°C for several consecutive days?",
+        "options": [
+          "A. It kills weed seeds and pathogenic bacteria or insect larvae, pasteurizing the finished organic manure",
+          "B. It turns the pile into charcoal",
+          "C. It prevents any further microbial activity",
+          "D. It dissolves all mineral elements"
+        ],
+        "correctAnswer": "A. It kills weed seeds and pathogenic bacteria or insect larvae, pasteurizing the finished organic manure",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Thermophilic temperatures destroy weed seeds, insect eggs, and human or plant pathogens in the pile.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chemical fertilizer runoff into a slow-moving river trigger massive fish mortality?",
+        "options": [
+          "A. The fertilizer poisons the fish directly on contact",
+          "B. Nitrogen and phosphorus drive an algal bloom; when algae die, aerobic decomposers multiply and consume dissolved oxygen, suffocating the fish",
+          "C. The fertilizer turns the river water into solid salt",
+          "D. Fertilizer blocks fish vision"
+        ],
+        "correctAnswer": "B. Nitrogen and phosphorus drive an algal bloom; when algae die, aerobic decomposers multiply and consume dissolved oxygen, suffocating the fish",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Runoff causes eutrophication: dying algal blooms fuel bacterial decomposition, which strips dissolved oxygen from the water.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A 50 kg bag of NPK 15:15:15 is compared with a 50 kg bag of NPK 20:10:10. How do they differ in total nutrient content?",
+        "options": [
+          "A. NPK 15:15:15 contains 22.5 kg of total nutrients (N+P+K), while NPK 20:10:10 contains 20 kg of total nutrients",
+          "B. Both bags contain exactly 50 kg of pure active nutrients",
+          "C. NPK 20:10:10 has zero nitrogen",
+          "D. NPK 15:15:15 contains no phosphorus"
+        ],
+        "correctAnswer": "A. NPK 15:15:15 contains 22.5 kg of total nutrients (N+P+K), while NPK 20:10:10 contains 20 kg of total nutrients",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "NPK 15:15:15 has 45% active nutrients (0.45 * 50 = 22.5 kg); NPK 20:10:10 has 40% active nutrients (0.40 * 50 = 20 kg).",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does continuous application of sulfate of ammonia, (NH4)2SO4, acidify soil faster than urea application?",
+        "options": [
+          "A. Sulfate of ammonia contains pure battery acid",
+          "B. Microbial nitrification of ammonium (NH4+) releases two hydrogen ions (H+) for every ammonium ion oxidized to nitrate",
+          "C. Sulfate evaporates soil water",
+          "D. Urea contains calcium carbonate"
+        ],
+        "correctAnswer": "B. Microbial nitrification of ammonium (NH4+) releases two hydrogen ions (H+) for every ammonium ion oxidized to nitrate",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Bacterial nitrification of ammonium releases free hydrogen ions into the soil solution, lowering pH over time.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does foliar fertilization bypass root uptake barriers in alkaline soils with a pH above 8.0?",
+        "options": [
+          "A. It forces the soil to become acidic",
+          "B. Nutrients are absorbed directly through the leaf cuticle and stomatal pores, bypassing soil precipitation reactions",
+          "C. It turns the roots into leaves",
+          "D. It removes the leaves entirely"
+        ],
+        "correctAnswer": "B. Nutrients are absorbed directly through the leaf cuticle and stomatal pores, bypassing soil precipitation reactions",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Nutrients applied to foliage enter directly through stomata and cuticular pores, avoiding soil fixation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do organic farming advocates recommend incorporating crop residues back into topsoil rather than burning them (slash-and-burn)?",
+        "options": [
+          "A. Burning makes the soil cold",
+          "B. Burning volatilizes carbon, nitrogen, and sulfur into the atmosphere as polluting gases, destroying organic matter and soil structure",
+          "C. Burning creates too much water",
+          "D. Crop residues are poisonous to fire"
+        ],
+        "correctAnswer": "B. Burning volatilizes carbon, nitrogen, and sulfur into the atmosphere as polluting gases, destroying organic matter and soil structure",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Burning drives off nitrogen and carbon into the atmosphere, destroying organic matter and soil aggregation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological role of molybdenum in non-legume crops like cauliflower?",
+        "options": [
+          "A. Synthesis of wood fibers",
+          "B. Serving as an essential component of the nitrate reductase enzyme, which converts absorbed nitrate into amino acids",
+          "C. Producing fruit sugars directly",
+          "D. Suppressing leaf diseases"
+        ],
+        "correctAnswer": "B. Serving as an essential component of the nitrate reductase enzyme, which converts absorbed nitrate into amino acids",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Molybdenum is a cofactor in nitrate reductase, which reduces nitrate into forms usable for protein synthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why must single superphosphate granules be placed in bands rather than mixed through the entire soil profile?",
+        "options": [
+          "A. Broadcasting exposes phosphate ions to more soil minerals, increasing fixation into insoluble forms and lowering uptake",
+          "B. Phosphate dissolves into gas when broadcast",
+          "C. Phosphate attracts birds that eat the fertilizer",
+          "D. Phosphate causes immediate soil freezing"
+        ],
+        "correctAnswer": "A. Broadcasting exposes phosphate ions to more soil minerals, increasing fixation into insoluble forms and lowering uptake",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Band placement limits soil contact, reducing fixation by iron and aluminium oxides and keeping phosphorus available to roots.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe iron deficiency cause younger leaves to turn yellow while their leaf veins stay green (interveinal chlorosis)?",
+        "options": [
+          "A. Iron is mobile and leaves the veins last",
+          "B. Iron is immobile in plant tissues; expanding leaf cells cannot synthesize chlorophyll, but structural vascular veins retain initial iron",
+          "C. Veins do not contain chlorophyll",
+          "D. Iron only flows through the air"
+        ],
+        "correctAnswer": "B. Iron is immobile in plant tissues; expanding leaf cells cannot synthesize chlorophyll, but structural vascular veins retain initial iron",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Because iron is immobile, developing interveinal leaf tissue lacks iron for chlorophyll synthesis, while veins retain baseline amounts.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What soil condition creates a high risk of fertilizer salt injury (root plasmolysis) in school gardens?",
+        "options": [
+          "A. Applying high doses of chemical fertilizer to dry soils under intense midday heat",
+          "B. Applying cured compost during steady drizzle",
+          "C. Mulching with dry grass",
+          "D. Ploughing under green manure crops"
+        ],
+        "correctAnswer": "A. Applying high doses of chemical fertilizer to dry soils under intense midday heat",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Applying soluble salts to dry soil sharply lowers soil water potential, drawing water out of roots osmotically.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does adding wood ash to a compost pile increase its potassium content while raising its pH?",
+        "options": [
+          "A. Wood ash contains potassium carbonate (potash) and basic oxides that neutralize acids and contribute potassium",
+          "B. Wood ash is made of pure nitrogen",
+          "C. Wood ash acts as an organic weed killer",
+          "D. Wood ash turns water into salt"
+        ],
+        "correctAnswer": "A. Wood ash contains potassium carbonate (potash) and basic oxides that neutralize acids and contribute potassium",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Wood ash is rich in potassium carbonate and alkaline earth oxides, which add potassium and raise pH.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chlorine act as a beneficial micro-nutrient in crops?",
+        "options": [
+          "A. It acts as an osmotic balancing solute in cell vacuoles and plays an essential role in the photosynthetic splitting of water (photolysis)",
+          "B. It bleaches the leaves to keep them white",
+          "C. It turns roots into wood",
+          "D. It destroys all insects automatically"
+        ],
+        "correctAnswer": "A. It acts as an osmotic balancing solute in cell vacuoles and plays an essential role in the photosynthetic splitting of water (photolysis)",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Chloride functions as an osmotic solute, helps maintain cell turgor, and participates in water-splitting during photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological difference between 'mineralization' and 'immobilization' in soil nitrogen cycling?",
+        "options": [
+          "A. Mineralization converts organic nitrogen into plant-absorbable inorganic ions; immobilization ties up inorganic ions into microbial biomass",
+          "B. Mineralization destroys nitrogen; immobilization creates new nitrogen",
+          "C. Mineralization happens only in rocks; immobilization occurs only in air",
+          "D. Both terms describe identical chemical pathways"
+        ],
+        "correctAnswer": "A. Mineralization converts organic nitrogen into plant-absorbable inorganic ions; immobilization ties up inorganic ions into microbial biomass",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Mineralization releases inorganic ammonium from organic matter; immobilization occurs when microbes incorporate mineral nitrogen into their own cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is side-dressing with urea recommended at the knee-high growth stage in maize rather than applying all nitrogen at sowing?",
+        "options": [
+          "A. Maize plants cannot absorb nutrients when young",
+          "B. Split application aligns nitrogen availability with the rapid vegetative uptake phase, reducing early leaching losses",
+          "C. Urea evaporates if applied after flowering",
+          "D. Sowing requires no fertilizer"
+        ],
+        "correctAnswer": "B. Split application aligns nitrogen availability with the rapid vegetative uptake phase, reducing early leaching losses",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Split applications match nutrient delivery to periods of peak plant demand, minimizing leaching losses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A farmer mixes diammonium phosphate (DAP) with unslaked lime (calcium oxide) in a bucket before field application. Why is this considered an agronomic mistake?",
+        "options": [
+          "A. The mixture turns into solid rock instantly",
+          "B. The strong alkali triggers a chemical reaction that converts ammonium into ammonia gas, causing significant gaseous nitrogen loss",
+          "C. Lime destroys the phosphorus atom",
+          "D. It makes the fertilizer explode"
+        ],
+        "correctAnswer": "B. The strong alkali triggers a chemical reaction that converts ammonium into ammonia gas, causing significant gaseous nitrogen loss",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Mixing ammonium fertilizers with alkaline lime converts ammonium into volatile ammonia gas, wasting nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the application of well-rotted farmyard manure improve root penetration in compacted subsoils?",
+        "options": [
+          "A. It dissolves all soil minerals",
+          "B. Humic substances stimulate root elongation and encourage burrowing soil fauna, which create continuous biopores",
+          "C. It hardens the soil",
+          "D. It removes the need for roots"
+        ],
+        "correctAnswer": "B. Humic substances stimulate root elongation and encourage burrowing soil fauna, which create continuous biopores",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Humic substances improve crumb structure and stimulate earthworm activity, opening macro-pores for root growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does manganese deficiency in crops occur more frequently on calcareous, alkaline soils (pH above 7.5)?",
+        "options": [
+          "A. High pH oxidizes manganese into insoluble, oxidized forms that plant roots cannot absorb",
+          "B. Alkaline soils contain no manganese",
+          "C. Calcium eats manganese",
+          "D. High pH turns manganese into a gas"
+        ],
+        "correctAnswer": "A. High pH oxidizes manganese into insoluble, oxidized forms that plant roots cannot absorb",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "At alkaline pH, manganese is oxidized into insoluble forms, causing deficiencies despite total soil presence.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a compost pile with too much nitrogenous waste (like fresh poultry manure) produce a strong, unpleasant ammonia smell?",
+        "options": [
+          "A. The pile is too dry",
+          "B. The C:N ratio is too low; decomposers have excess nitrogen relative to carbon, releasing surplus nitrogen as volatile ammonia gas",
+          "C. Microorganisms have died",
+          "D. The compost is turning into plastic"
+        ],
+        "correctAnswer": "B. The C:N ratio is too low; decomposers have excess nitrogen relative to carbon, releasing surplus nitrogen as volatile ammonia gas",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "An oversupply of nitrogen relative to available carbon causes decomposing microbes to vent excess nitrogen as ammonia gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is drip fertigation considered the most water- and nutrient-efficient method for commercial vegetable production?",
+        "options": [
+          "A. It operates without human supervision",
+          "B. It applies measured, dissolved nutrient doses directly to the active root zone, virtually eliminating evaporation, runoff, and deep percolation",
+          "C. It requires no fertilizers",
+          "D. It turns crops into perennials"
+        ],
+        "correctAnswer": "B. It applies measured, dissolved nutrient doses directly to the active root zone, virtually eliminating evaporation, runoff, and deep percolation",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Drip fertigation delivers targeted water and dissolved nutrients directly to root zones, maximizing efficiency.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does sulfur deficiency impair the nutritional quality of harvestable grain in cereal crops?",
+        "options": [
+          "A. It prevents crops from absorbing water",
+          "B. Sulfur is required to synthesize essential amino acids (methionine and cysteine); its absence halts complete protein formation",
+          "C. It turns the grain purple",
+          "D. It causes roots to die"
+        ],
+        "correctAnswer": "B. Sulfur is required to synthesize essential amino acids (methionine and cysteine); its absence halts complete protein formation",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Sulfur is a structural component of essential amino acids (cysteine, methionine) required for grain protein assembly.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do organic fertilizers have lower, unstandardized percentage nutrient guarantees compared to synthetic fertilizers?",
+        "options": [
+          "A. Chemical factories intentionally make manures poor",
+          "B. Manures are derived from variable biological feedstocks whose composition fluctuates based on diet, bedding, and decomposition conditions",
+          "C. Organic matter contains no real nutrients",
+          "D. Manures are completely synthetic"
+        ],
+        "correctAnswer": "B. Manures are derived from variable biological feedstocks whose composition fluctuates based on diet, bedding, and decomposition conditions",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Organic manures derive from diverse biological wastes, resulting in variable nutrient concentrations compared to formulated synthetic fertilizers.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary agronomic danger of applying chemical nitrogen fertilizer at rates far exceeding soil test recommendations?",
+        "options": [
+          "A. Crops grow too slowly",
+          "B. Excessive shoot growth with thin cell walls increases susceptibility to insect pests, fungal diseases, and lodging, while contaminating aquifers",
+          "C. The soil becomes completely alkaline",
+          "D. The plants lose their green chlorophyll"
+        ],
+        "correctAnswer": "B. Excessive shoot growth with thin cell walls increases susceptibility to insect pests, fungal diseases, and lodging, while contaminating aquifers",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Excess nitrogen promotes soft, succulent vegetative growth vulnerable to pests and diseases, and increases nitrate leaching into groundwater.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does mycorrhizal fungal colonization enhance phosphorus absorption in crop plants?",
+        "options": [
+          "A. Fungi produce green leaves for the plant",
+          "B. Fungal hyphae extend beyond the root depletion zone, solubilizing fixed mineral phosphorus and funneling it back to the host roots",
+          "C. Fungi convert soil into water",
+          "D. Fungi destroy excess nitrogen"
+        ],
+        "correctAnswer": "B. Fungal hyphae extend beyond the root depletion zone, solubilizing fixed mineral phosphorus and funneling it back to the host roots",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Mycorrhizal hyphae extend past the root depletion zone, exuding organic acids that solubilize fixed phosphate for uptake.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is rock phosphate unsuited as a fast-acting top-dressing fertilizer for annual vegetables?",
+        "options": [
+          "A. It dissolves too rapidly in rainwater",
+          "B. It has very low water solubility and requires acidic soil conditions and time to break down into plant-available orthophosphate",
+          "C. It contains toxic concentrations of nitrogen",
+          "D. It evaporates on exposure to sunlight"
+        ],
+        "correctAnswer": "B. It has very low water solubility and requires acidic soil conditions and time to break down into plant-available orthophosphate",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Rock phosphate is an insoluble raw mineral that releases plant-available phosphorus very slowly, making it unsuitable for quick seasonal boosts.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical cause of mottled chlorosis on older leaves during severe magnesium deficiency?",
+        "options": [
+          "A. Magnesium is translocated from older foliage to young expanding tissues to maintain chlorophyll production at the growing tips",
+          "B. Magnesium breaks down into iron",
+          "C. The cell wall collapses",
+          "D. Starch turns into nitrogen"
+        ],
+        "correctAnswer": "A. Magnesium is translocated from older foliage to young expanding tissues to maintain chlorophyll production at the growing tips",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Because magnesium is mobile, plants remobilize it from older leaves to support growing tips during deficiencies, producing older leaf chlorosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does adding fresh wood chips directly to an agricultural field without nitrogen supplementation cause temporary crop stunting?",
+        "options": [
+          "A. Wood chips absorb all sunlight",
+          "B. The wide C:N ratio causes soil bacteria to immobilize available mineral nitrogen, starving the crop until the wood decomposes",
+          "C. Wood chips release harmful herbicide chemicals",
+          "D. Wood chips prevent roots from breathing"
+        ],
+        "correctAnswer": "B. The wide C:N ratio causes soil bacteria to immobilize available mineral nitrogen, starving the crop until the wood decomposes",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "High-carbon materials trigger microbial nitrogen immobilization, which depletes plant-available nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does incorporating organic manures help neutralize the adverse effects of excessive chemical fertilizer applications?",
+        "options": [
+          "A. It cools the soil to freezing point",
+          "B. Organic colloids increase soil cation exchange capacity, buffering salt concentrations and binding excess ions in the soil solution",
+          "C. Manure destroys all chemical elements",
+          "D. It turns fertilizers into water"
+        ],
+        "correctAnswer": "B. Organic colloids increase soil cation exchange capacity, buffering salt concentrations and binding excess ions in the soil solution",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Humus provides a high buffering capacity that adsorbs excess fertilizer salts, moderating salinity stress in the root zone.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary chemical difference between straight single superphosphate (SSP) and triple superphosphate (TSP)?",
+        "options": [
+          "A. SSP contains gypsum (calcium sulfate) delivering sulfur, while TSP is a more concentrated phosphorus source with minimal sulfur",
+          "B. TSP contains 50% nitrogen",
+          "C. SSP is an organic fertilizer",
+          "D. TSP cannot dissolve in water"
+        ],
+        "correctAnswer": "A. SSP contains gypsum (calcium sulfate) delivering sulfur, while TSP is a more concentrated phosphorus source with minimal sulfur",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Single superphosphate contains calcium sulfate (supplying sulfur), while triple superphosphate is a more concentrated, low-sulfur phosphorus fertilizer.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are foliar micro-nutrient sprays more effective than soil applications in highly alkaline soils?",
+        "options": [
+          "A. Foliar feeding directly enters leaf tissues, bypassing soil chemical reactions that precipitate micro-nutrients into insoluble oxides",
+          "B. Alkaline soils absorb foliar sprays from the air",
+          "C. Leaves do not need micro-nutrients",
+          "D. Soil micro-nutrients only work in darkness"
+        ],
+        "correctAnswer": "A. Foliar feeding directly enters leaf tissues, bypassing soil chemical reactions that precipitate micro-nutrients into insoluble oxides",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Foliar sprays deliver micronutrients directly to leaf tissues, bypassing the alkaline soil conditions that lock them up.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the application of well-aerated compost suppress common soil-borne fungal pathogens?",
+        "options": [
+          "A. It acts as an inorganic poison",
+          "B. It introduces diverse beneficial microorganisms that outcompete, parasitize, or inhibit soil-borne plant pathogens",
+          "C. It heats the soil to 100°C permanently",
+          "D. It removes all water from the root zone"
+        ],
+        "correctAnswer": "B. It introduces diverse beneficial microorganisms that outcompete, parasitize, or inhibit soil-borne plant pathogens",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Diverse communities of beneficial microbes in mature compost outcompete and suppress harmful soil-borne fungi.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the metabolic fate of nitrate (NO3-) ions absorbed by plant roots from inorganic fertilizer?",
+        "options": [
+          "A. They are stored as rocks inside the nucleus",
+          "B. They are enzymatically reduced to ammonium and incorporated into amino acids to synthesize plant proteins and enzymes",
+          "C. They are exhaled directly through stomata as gas",
+          "D. They are turned into starch"
+        ],
+        "correctAnswer": "B. They are enzymatically reduced to ammonium and incorporated into amino acids to synthesize plant proteins and enzymes",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Nitrate reductase reduces absorbed nitrate to ammonium, which is then incorporated into amino acids and proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the placement of starter fertilizer bands 5 cm to the side and 5 cm below the seed line (2x2 rule) standard in mechanized planting?",
+        "options": [
+          "A. To hide the fertilizer from birds",
+          "B. It places nutrients within reach of developing roots while avoiding osmotic salt injury to the emerging seedling",
+          "C. It prevents weeds from growing anywhere on the farm",
+          "D. It makes seeds germinate without water"
+        ],
+        "correctAnswer": "B. It places nutrients within reach of developing roots while avoiding osmotic salt injury to the emerging seedling",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "The 2x2 band placement positions starter nutrients near expanding roots while protecting delicate seeds from salt burn.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe boron deficiency lead to cracked stems and hollow hearts in root and tuber crops?",
+        "options": [
+          "A. Boron is required for calcium utilization and cell wall cross-linking; its absence causes structural collapse in expanding tissues",
+          "B. Boron attracts stem-boring caterpillars",
+          "C. Boron stops water absorption",
+          "D. Boron makes stems turn into leaves"
+        ],
+        "correctAnswer": "A. Boron is required for calcium utilization and cell wall cross-linking; its absence causes structural collapse in expanding tissues",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Boron crosslinks cell wall pectins; a deficiency causes cell wall breakdown, resulting in cracked stems and hollow tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does applying farmyard manure help reclaim saline-sodic soils?",
+        "options": [
+          "A. It dissolves all salts into clean air",
+          "B. Decomposition produces organic acids and carbon dioxide that help solubilize native calcium, displacing harmful sodium ions from clay sites",
+          "C. It turns sodium into potassium",
+          "D. It stops water from moving"
+        ],
+        "correctAnswer": "B. Decomposition produces organic acids and carbon dioxide that help solubilize native calcium, displacing harmful sodium ions from clay sites",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Organic acids released during manure decomposition help mobilize calcium, displacing sodium from soil exchange complexes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is ammonium nitrate preferred over urea for cold, wet spring plantings in temperate regions?",
+        "options": [
+          "A. Ammonium nitrate supplies pre-formed nitrate that plants absorb immediately, whereas urea requires microbial enzymatic conversion that slows in cold soils",
+          "B. Urea freezes at room temperature",
+          "C. Ammonium nitrate is completely non-chemical",
+          "D. Urea kills cold-weather crops"
+        ],
+        "correctAnswer": "A. Ammonium nitrate supplies pre-formed nitrate that plants absorb immediately, whereas urea requires microbial enzymatic conversion that slows in cold soils",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Urea requires warm, microbial urease activity to release plant-available ions, whereas nitrate is immediately absorbable in cool soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary agronomic objective of testing soil samples before purchasing and applying commercial fertilizers?",
+        "options": [
+          "A. To ensure the soil is dark in color",
+          "B. To quantify existing nutrient reserves and pH, enabling tailored fertilizer application that prevents both nutrient deficiencies and wasteful over-application",
+          "C. To kill existing weed seeds in the laboratory",
+          "D. To determine if the soil contains earthworms only"
+        ],
+        "correctAnswer": "B. To quantify existing nutrient reserves and pH, enabling tailored fertilizer application that prevents both nutrient deficiencies and wasteful over-application",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Soil testing measures residual nutrients and pH, guiding balanced, cost-effective fertilizer applications.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does over-liming an acidic soil (raising pH above 7.0) inadvertently trigger micronutrient deficiencies in crops?",
+        "options": [
+          "A. High pH precipitates micronutrients (iron, manganese, zinc, copper) into insoluble hydroxides that root hairs cannot absorb",
+          "B. Lime destroys all micronutrient atoms",
+          "C. Micronutrients evaporate into clouds at neutral pH",
+          "D. Over-liming turns soil into rock"
+        ],
+        "correctAnswer": "A. High pH precipitates micronutrients (iron, manganese, zinc, copper) into insoluble hydroxides that root hairs cannot absorb",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Over-liming raises soil pH too high, precipitating metallic micronutrients into insoluble forms unavailable to roots.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does applying organic mulch to an established crop field conserve both soil water and applied nutrients?",
+        "options": [
+          "A. Mulch reflects sunlight, reduces surface evaporation, checks weed competition, and slowly adds humus to the soil profile",
+          "B. Mulch prevents rain from entering the ground",
+          "C. Mulch turns all fertilizers into liquids",
+          "D. Mulch eliminates the need for plant roots"
+        ],
+        "correctAnswer": "A. Mulch reflects sunlight, reduces surface evaporation, checks weed competition, and slowly adds humus to the soil profile",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Organic mulch buffers soil temperatures, limits evaporative water loss, suppresses weeds, and breaks down into humus.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does potassium deficiency cause lodging (falling over) in cereal crops like maize and sorghum?",
+        "options": [
+          "A. Potassium gives leaves a blue color",
+          "B. Potassium maintains cell turgor and strengthens structural stalk tissues; deficient stalks become thin, brittle, and easily break in wind",
+          "C. Potassium makes plants too light",
+          "D. Potassium produces root nodules"
+        ],
+        "correctAnswer": "B. Potassium maintains cell turgor and strengthens structural stalk tissues; deficient stalks become thin, brittle, and easily break in wind",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Potassium supports cell turgor and stalk strength; low potassium produces weak, brittle stems prone to lodging.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the main physiological mechanism that allows green manure to improve subsoil nutrient availability for shallow-rooted crops?",
+        "options": [
+          "A. Green manures destroy all subsoil rocks",
+          "B. Deep-rooting green manure crops absorb nutrients from deep subsoil layers and deposit them in the topsoil when ploughed under and decomposed",
+          "C. Green manures freeze the subsoil",
+          "D. Green manures prevent roots from growing"
+        ],
+        "correctAnswer": "B. Deep-rooting green manure crops absorb nutrients from deep subsoil layers and deposit them in the topsoil when ploughed under and decomposed",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Deep-rooted green manures scavenge subsoil nutrients and recycle them into the topsoil when incorporated and decomposed.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does excessive chemical fertilizer use accelerate atmospheric global warming?",
+        "options": [
+          "A. Fertilizer granules produce fire on the soil",
+          "B. Excess nitrogen fertilizer stimulates soil microbes to emit nitrous oxide (N2O), a potent greenhouse gas with high global warming potential",
+          "C. Fertilizers reflect cold air into outer space",
+          "D. Fertilizer stops clouds from forming"
+        ],
+        "correctAnswer": "B. Excess nitrogen fertilizer stimulates soil microbes to emit nitrous oxide (N2O), a potent greenhouse gas with high global warming potential",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Surplus agricultural nitrogen drives microbial nitrification and denitrification, releasing nitrous oxide, a potent greenhouse gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CROP_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following scenarios best demonstrates balanced, sustainable Integrated Plant Nutrient Management on a school farm?",
+        "options": [
+          "A. Applying maximum doses of synthetic urea every week without testing the soil",
+          "B. Using compost to build soil structure and water-holding capacity, supplemented with targeted, soil-test-based compound fertilizer doses during rapid growth",
+          "C. Never applying any nutrients and relying on native soil fertility indefinitely",
+          "D. Burning all crop residues after harvest and using only wood ash"
+        ],
+        "correctAnswer": "B. Using compost to build soil structure and water-holding capacity, supplemented with targeted, soil-test-based compound fertilizer doses during rapid growth",
+        "hint": "Apply principles of soil chemistry (pH fixation, leaching, C:N immobilization, CEC buffering), physiological nutrient roles, and sustainable Integrated Nutrient Management.",
+        "workedSolution": "Combining organic compost with targeted, test-based mineral fertilization sustains soil health, optimizes crop yield, and protects the environment.",
         "points": 1
       }
     ]
@@ -22503,7 +29817,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
     "order": 16,
     "notes": {
-      "summaryMarkdown": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"740\" height=\"420\" viewBox=\"0 0 740 420\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#ffedd5\"/>\n      <stop offset=\"100%\" stop-color=\"#fdba74\"/>\n    </linearGradient>\n    <linearGradient id=\"reticGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fcd34d\"/>\n    </linearGradient>\n    <linearGradient id=\"omasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#e0f2fe\"/>\n      <stop offset=\"100%\" stop-color=\"#7dd3fc\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fee2e2\"/>\n      <stop offset=\"100%\" stop-color=\"#f87171\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"740\" height=\"420\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF THE FOUR-CHAMBERED RUMINANT STOMACH</text>\n  <text x=\"370\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Functional Flow: Esophagus → Rumen &amp; Reticulum → Omasum → Abomasum (True Stomach) → Duodenum</text>\n  <g id=\"organ_tract\">\n    <path d=\"M 520 280 Q 560 270 590 300 T 660 300 T 710 280\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"12\" stroke-linecap=\"round\"/>\n    <path d=\"M 430 190 C 470 190 530 210 520 280 C 510 320 440 330 380 300 C 350 285 360 230 400 200 Z\" fill=\"url(#abomasumGrad)\" stroke=\"#dc2626\" stroke-width=\"2\"/>\n    <path d=\"M 170 120 C 190 70 340 60 390 110 C 430 150 420 250 360 290 C 290 320 180 310 150 250 C 140 220 145 150 170 120 Z\" fill=\"url(#rumenGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 160 140 C 170 130 200 140 200 170 C 200 220 150 250 110 230 C 80 210 85 170 110 145 C 125 135 145 135 160 140 Z\" fill=\"url(#reticGrad)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n    <path d=\"M 115 165 L 125 160 L 135 165 L 135 175 L 125 180 L 115 175 Z M 135 165 L 145 160 L 155 165 L 155 175 L 145 180 L 135 175 Z M 125 180 L 135 175 L 145 180 L 145 190 L 135 195 L 125 190 Z\" fill=\"none\" stroke=\"#b45309\" stroke-width=\"1\" opacity=\"0.6\"/>\n    <circle cx=\"410\" cy=\"165\" r=\"42\" fill=\"url(#omasumGrad)\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <path d=\"M 395 135 Q 410 165 395 195 M 410 125 Q 425 165 410 205 M 425 135 Q 435 165 425 195\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\" opacity=\"0.7\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"14\" stroke-linecap=\"round\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#cbd5e1\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"75\" y1=\"80\" x2=\"75\" y2=\"45\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"75\" cy=\"80\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"75\" y=\"38\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Esophagus (Gullet)</text>\n    <line x1=\"140\" y1=\"210\" x2=\"100\" y2=\"285\" stroke=\"#b45309\" stroke-width=\"1.2\"/>\n    <circle cx=\"140\" cy=\"210\" r=\"2.5\" fill=\"#b45309\"/>\n    <rect x=\"15\" y=\"290\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fcd34d\"/>\n    <text x=\"97\" y=\"306\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">2. Reticulum (\"Honeycomb\")</text>\n    <text x=\"97\" y=\"322\" font-size=\"10\" fill=\"#78350f\" text-anchor=\"middle\">Cud formation &amp; sorting</text>\n    <line x1=\"280\" y1=\"180\" x2=\"280\" y2=\"345\" stroke=\"#c2410c\" stroke-width=\"1.2\"/>\n    <circle cx=\"280\" cy=\"180\" r=\"2.5\" fill=\"#c2410c\"/>\n    <rect x=\"195\" y=\"350\" width=\"170\" height=\"44\" rx=\"4\" fill=\"#fff7ed\" stroke=\"#fdba74\"/>\n    <text x=\"280\" y=\"367\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">1. Rumen (\"Paunch\")</text>\n    <text x=\"280\" y=\"383\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Primary fermentation vat (~80%)</text>\n    <line x1=\"410\" y1=\"123\" x2=\"410\" y2=\"80\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <circle cx=\"410\" cy=\"123\" r=\"2.5\" fill=\"#0284c7\"/>\n    <rect x=\"330\" y=\"65\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/>\n    <text x=\"412\" y=\"81\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. Omasum (\"Manyplies\")</text>\n    <text x=\"412\" y=\"96\" font-size=\"10\" fill=\"#0284c7\" text-anchor=\"middle\">Water &amp; VFA absorption</text>\n    <line x1=\"460\" y1=\"280\" x2=\"460\" y2=\"345\" stroke=\"#dc2626\" stroke-width=\"1.2\"/>\n    <circle cx=\"460\" cy=\"280\" r=\"2.5\" fill=\"#dc2626\"/>\n    <rect x=\"380\" y=\"350\" width=\"165\" height=\"44\" rx=\"4\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/>\n    <text x=\"462\" y=\"367\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4. Abomasum (\"True Stomach\")</text>\n    <text x=\"462\" y=\"383\" font-size=\"10\" fill=\"#7f1d1d\" text-anchor=\"middle\">Gastric juices &amp; protein enzymes</text>\n    <line x1=\"620\" y1=\"300\" x2=\"620\" y2=\"345\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"620\" cy=\"300\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"620\" y=\"364\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Small Intestine</text>\n    <text x=\"620\" y=\"378\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">(Duodenum)</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"520\" viewBox=\"0 0 680 520\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cropGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#fb923c\"/>\n    </linearGradient>\n    <linearGradient id=\"gizzardGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fca5a5\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"520\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ALIMENTARY CANAL OF THE DOMESTIC FOWL</text>\n  <text x=\"340\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Pathway: Beak → Esophagus → Crop → Proventriculus → Gizzard → Intestine &amp; Caeca → Cloaca</text>\n  <g transform=\"translate(140, 20)\">\n    <path d=\"M 120 45 L 120 100\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M 124 85 C 155 80 185 95 185 120 C 185 145 150 155 124 140 Z\" fill=\"url(#cropGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 120 135 L 120 165\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\"/>\n    <path d=\"M 112 165 C 105 175 105 195 112 205 L 128 205 C 135 195 135 175 128 165 Z\" fill=\"#fbcfe8\" stroke=\"#db2777\" stroke-width=\"2\"/>\n    <circle cx=\"117\" cy=\"180\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"123\" cy=\"188\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"118\" cy=\"195\" r=\"1.5\" fill=\"#be185d\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"30\" ry=\"24\" fill=\"url(#gizzardGrad)\" stroke=\"#9f1239\" stroke-width=\"2\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"14\" ry=\"11\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/>\n    <circle cx=\"142\" cy=\"223\" r=\"1.5\" fill=\"#475569\"/>\n    <circle cx=\"147\" cy=\"227\" r=\"1.2\" fill=\"#475569\"/>\n    <circle cx=\"148\" cy=\"222\" r=\"1.4\" fill=\"#475569\"/>\n    <path d=\"M 130 245 C 110 270 95 300 120 315 C 145 325 155 295 140 270\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <path d=\"M 140 270 C 130 250 80 320 110 345 C 140 370 170 340 140 380 C 120 405 135 425 135 435\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n    <path d=\"M 135 435 C 115 425 90 390 85 365 C 80 345 92 345 96 355 C 105 380 125 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <path d=\"M 135 435 C 145 420 175 385 180 365 C 185 345 174 345 170 355 C 160 380 142 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <line x1=\"135\" y1=\"435\" x2=\"135\" y2=\"455\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n    <ellipse cx=\"135\" cy=\"470\" rx=\"16\" ry=\"14\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/>\n    <line x1=\"126\" y1=\"482\" x2=\"144\" y2=\"482\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"260\" y1=\"85\" x2=\"360\" y2=\"85\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"260\" cy=\"85\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"370\" y=\"88\" font-weight=\"bold\" fill=\"#334155\">Esophagus (Gullet)</text>\n    <line x1=\"310\" y1=\"135\" x2=\"360\" y2=\"120\" stroke=\"#ea580c\" stroke-width=\"1.2\"/>\n    <circle cx=\"310\" cy=\"135\" r=\"2.5\" fill=\"#ea580c\"/>\n    <text x=\"370\" y=\"117\" font-weight=\"bold\" fill=\"#c2410c\">Crop</text>\n    <text x=\"370\" y=\"132\" font-size=\"10\" fill=\"#7c2d12\">Temporary storage &amp; moistening of grains</text>\n    <line x1=\"265\" y1=\"200\" x2=\"360\" y2=\"175\" stroke=\"#db2777\" stroke-width=\"1.2\"/>\n    <circle cx=\"265\" cy=\"200\" r=\"2.5\" fill=\"#db2777\"/>\n    <text x=\"370\" y=\"172\" font-weight=\"bold\" fill=\"#be185d\">Proventriculus (Glandular Stomach)</text>\n    <text x=\"370\" y=\"187\" font-size=\"10\" fill=\"#831843\">Secretes gastric acid &amp; pepsin</text>\n    <line x1=\"305\" y1=\"245\" x2=\"360\" y2=\"230\" stroke=\"#9f1239\" stroke-width=\"1.2\"/>\n    <circle cx=\"305\" cy=\"245\" r=\"2.5\" fill=\"#9f1239\"/>\n    <text x=\"370\" y=\"227\" font-weight=\"bold\" fill=\"#9f1239\">Gizzard (Ventriculus)</text>\n    <text x=\"370\" y=\"242\" font-size=\"10\" fill=\"#881337\">Dense muscular organ; grinds with grit</text>\n    <line x1=\"290\" y1=\"330\" x2=\"360\" y2=\"300\" stroke=\"#e11d48\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"330\" r=\"2.5\" fill=\"#e11d48\"/>\n    <text x=\"370\" y=\"297\" font-weight=\"bold\" fill=\"#be123c\">Small Intestine (Duodenum &amp; Ileum)</text>\n    <text x=\"370\" y=\"312\" font-size=\"10\" fill=\"#475569\">Enzymatic digestion &amp; nutrient absorption</text>\n    <line x1=\"225\" y1=\"400\" x2=\"120\" y2=\"400\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"225\" cy=\"400\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"110\" y=\"396\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Paired Caeca</text>\n    <text x=\"110\" y=\"411\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Bacterial fiber fermentation</text>\n    <line x1=\"275\" y1=\"465\" x2=\"360\" y2=\"440\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"275\" cy=\"465\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"370\" y=\"437\" font-weight=\"bold\" fill=\"#334155\">Large Intestine (Colon)</text>\n    <text x=\"370\" y=\"451\" font-size=\"10\" fill=\"#64748b\">Water reabsorption</text>\n    <line x1=\"290\" y1=\"490\" x2=\"360\" y2=\"485\" stroke=\"#0f172a\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"490\" r=\"2.5\" fill=\"#0f172a\"/>\n    <text x=\"370\" y=\"482\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca &amp; Vent</text>\n    <text x=\"370\" y=\"497\" font-size=\"10\" fill=\"#475569\">Common chamber for feces, uric acid &amp; eggs</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous & Commercial Sheep Breeds:**\n  * **Indigenous:** West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge), Nungua Blackhead, Ouda Fulani (long-legged savanna breed), and Yankasa.\n  * **Exotic:** Australian Merino, Spanish Merino (fine wool), and Finnish Landrace.\n* **Morphological Differences: Goat vs. Sheep**\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards. | Longer tail hanging limply downwards. |\n| **Beard Presence** | Present in both mature bucks (males) and does. | Present only on mature rams (males). |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks. | Lacks specialized rubbery friction pads. |\n| **Body Odor** | Mature bucks emit an intense, musky odor. | Rams lack an offensive musky odor. |\n| **Interdigital Glands** | Glands between toes are absent. | Specialized sweat/scent glands present between toes. |\n| **Feeding Behavior** | Agile **browsers**; prefer shrubs, tree leaves, and twigs. | Ground **grazers**; prefer low-growing grass and clovers. |\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:** Friesian / Holstein (highest milk volume, black-and-white markings), Jersey (high butterfat content, golden-fawn color), Ayrshire, and White Fulani (dual-purpose zebu).\n* **Beef Breeds:** Aberdeen Angus (solid black, compact, high marbling), Hereford, West African Shorthorn (WAS), N'Dama (humpless, trypano-tolerant forest cattle), Muturu, and Sokoto Gudali.\n* **Conformation Contrast: Dairy vs. Beef Cattle**\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct **wedge-shaped (triangular)** frame. | **Rectangular, blocky, square-shaped** body frame. |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones. | Deep, heavily fleshed thighs, loin, and rounded rump. |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder. | Small, tight, poorly developed udder. |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck. | Short, stout, thickset muscular legs and short neck. |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
+      "summaryMarkdown": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"740\" height=\"420\" viewBox=\"0 0 740 420\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#ffedd5\"/>\n      <stop offset=\"100%\" stop-color=\"#fdba74\"/>\n    </linearGradient>\n    <linearGradient id=\"reticGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fcd34d\"/>\n    </linearGradient>\n    <linearGradient id=\"omasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#e0f2fe\"/>\n      <stop offset=\"100%\" stop-color=\"#7dd3fc\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fee2e2\"/>\n      <stop offset=\"100%\" stop-color=\"#f87171\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"740\" height=\"420\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"32\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF THE FOUR-CHAMBERED RUMINANT STOMACH</text>\n  <text x=\"370\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Functional Flow: Esophagus → Rumen &amp; Reticulum → Omasum → Abomasum (True Stomach) → Duodenum</text>\n  <g id=\"organ_tract\">\n    <path d=\"M 520 280 Q 560 270 590 300 T 660 300 T 710 280\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"12\" stroke-linecap=\"round\"/>\n    <path d=\"M 430 190 C 470 190 530 210 520 280 C 510 320 440 330 380 300 C 350 285 360 230 400 200 Z\" fill=\"url(#abomasumGrad)\" stroke=\"#dc2626\" stroke-width=\"2\"/>\n    <path d=\"M 170 120 C 190 70 340 60 390 110 C 430 150 420 250 360 290 C 290 320 180 310 150 250 C 140 220 145 150 170 120 Z\" fill=\"url(#rumenGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 160 140 C 170 130 200 140 200 170 C 200 220 150 250 110 230 C 80 210 85 170 110 145 C 125 135 145 135 160 140 Z\" fill=\"url(#reticGrad)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n    <path d=\"M 115 165 L 125 160 L 135 165 L 135 175 L 125 180 L 115 175 Z M 135 165 L 145 160 L 155 165 L 155 175 L 145 180 L 135 175 Z M 125 180 L 135 175 L 145 180 L 145 190 L 135 195 L 125 190 Z\" fill=\"none\" stroke=\"#b45309\" stroke-width=\"1\" opacity=\"0.6\"/>\n    <circle cx=\"410\" cy=\"165\" r=\"42\" fill=\"url(#omasumGrad)\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <path d=\"M 395 135 Q 410 165 395 195 M 410 125 Q 425 165 410 205 M 425 135 Q 435 165 425 195\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\" opacity=\"0.7\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"14\" stroke-linecap=\"round\"/>\n    <path d=\"M 30 75 Q 100 85 165 130\" fill=\"none\" stroke=\"#cbd5e1\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"75\" y1=\"80\" x2=\"75\" y2=\"45\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"75\" cy=\"80\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"75\" y=\"38\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Esophagus (Gullet)</text>\n    <line x1=\"140\" y1=\"210\" x2=\"100\" y2=\"285\" stroke=\"#b45309\" stroke-width=\"1.2\"/>\n    <circle cx=\"140\" cy=\"210\" r=\"2.5\" fill=\"#b45309\"/>\n    <rect x=\"15\" y=\"290\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#fffbeb\" stroke=\"#fcd34d\"/>\n    <text x=\"97\" y=\"306\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">2. Reticulum (\"Honeycomb\")</text>\n    <text x=\"97\" y=\"322\" font-size=\"10\" fill=\"#78350f\" text-anchor=\"middle\">Cud formation &amp; sorting</text>\n    <line x1=\"280\" y1=\"180\" x2=\"280\" y2=\"345\" stroke=\"#c2410c\" stroke-width=\"1.2\"/>\n    <circle cx=\"280\" cy=\"180\" r=\"2.5\" fill=\"#c2410c\"/>\n    <rect x=\"195\" y=\"350\" width=\"170\" height=\"44\" rx=\"4\" fill=\"#fff7ed\" stroke=\"#fdba74\"/>\n    <text x=\"280\" y=\"367\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">1. Rumen (\"Paunch\")</text>\n    <text x=\"280\" y=\"383\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Primary fermentation vat (~80%)</text>\n    <line x1=\"410\" y1=\"123\" x2=\"410\" y2=\"80\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <circle cx=\"410\" cy=\"123\" r=\"2.5\" fill=\"#0284c7\"/>\n    <rect x=\"330\" y=\"65\" width=\"165\" height=\"42\" rx=\"4\" fill=\"#f0f9ff\" stroke=\"#7dd3fc\"/>\n    <text x=\"412\" y=\"81\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. Omasum (\"Manyplies\")</text>\n    <text x=\"412\" y=\"96\" font-size=\"10\" fill=\"#0284c7\" text-anchor=\"middle\">Water &amp; VFA absorption</text>\n    <line x1=\"460\" y1=\"280\" x2=\"460\" y2=\"345\" stroke=\"#dc2626\" stroke-width=\"1.2\"/>\n    <circle cx=\"460\" cy=\"280\" r=\"2.5\" fill=\"#dc2626\"/>\n    <rect x=\"380\" y=\"350\" width=\"165\" height=\"44\" rx=\"4\" fill=\"#fef2f2\" stroke=\"#fca5a5\"/>\n    <text x=\"462\" y=\"367\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4. Abomasum (\"True Stomach\")</text>\n    <text x=\"462\" y=\"383\" font-size=\"10\" fill=\"#7f1d1d\" text-anchor=\"middle\">Gastric juices &amp; protein enzymes</text>\n    <line x1=\"620\" y1=\"300\" x2=\"620\" y2=\"345\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"620\" cy=\"300\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"620\" y=\"364\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Small Intestine</text>\n    <text x=\"620\" y=\"378\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">(Duodenum)</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"520\" viewBox=\"0 0 680 520\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cropGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#fb923c\"/>\n    </linearGradient>\n    <linearGradient id=\"gizzardGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fca5a5\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"520\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ALIMENTARY CANAL OF THE DOMESTIC FOWL</text>\n  <text x=\"340\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Pathway: Beak → Esophagus → Crop → Proventriculus → Gizzard → Intestine &amp; Caeca → Cloaca</text>\n  <g transform=\"translate(140, 20)\">\n    <path d=\"M 120 45 L 120 100\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/>\n    <path d=\"M 124 85 C 155 80 185 95 185 120 C 185 145 150 155 124 140 Z\" fill=\"url(#cropGrad)\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <path d=\"M 120 135 L 120 165\" stroke=\"#f472b6\" stroke-width=\"9\" fill=\"none\"/>\n    <path d=\"M 112 165 C 105 175 105 195 112 205 L 128 205 C 135 195 135 175 128 165 Z\" fill=\"#fbcfe8\" stroke=\"#db2777\" stroke-width=\"2\"/>\n    <circle cx=\"117\" cy=\"180\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"123\" cy=\"188\" r=\"1.5\" fill=\"#be185d\"/>\n    <circle cx=\"118\" cy=\"195\" r=\"1.5\" fill=\"#be185d\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"30\" ry=\"24\" fill=\"url(#gizzardGrad)\" stroke=\"#9f1239\" stroke-width=\"2\"/>\n    <ellipse cx=\"145\" cy=\"225\" rx=\"14\" ry=\"11\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/>\n    <circle cx=\"142\" cy=\"223\" r=\"1.5\" fill=\"#475569\"/>\n    <circle cx=\"147\" cy=\"227\" r=\"1.2\" fill=\"#475569\"/>\n    <circle cx=\"148\" cy=\"222\" r=\"1.4\" fill=\"#475569\"/>\n    <path d=\"M 130 245 C 110 270 95 300 120 315 C 145 325 155 295 140 270\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <path d=\"M 140 270 C 130 250 80 320 110 345 C 140 370 170 340 140 380 C 120 405 135 425 135 435\" fill=\"none\" stroke=\"#fb7185\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n    <path d=\"M 135 435 C 115 425 90 390 85 365 C 80 345 92 345 96 355 C 105 380 125 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <path d=\"M 135 435 C 145 420 175 385 180 365 C 185 345 174 345 170 355 C 160 380 142 420 135 435 Z\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.8\"/>\n    <line x1=\"135\" y1=\"435\" x2=\"135\" y2=\"455\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n    <ellipse cx=\"135\" cy=\"470\" rx=\"16\" ry=\"14\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/>\n    <line x1=\"126\" y1=\"482\" x2=\"144\" y2=\"482\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  </g>\n  <g font-family=\"sans-serif\" font-size=\"11\">\n    <line x1=\"260\" y1=\"85\" x2=\"360\" y2=\"85\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"260\" cy=\"85\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"370\" y=\"88\" font-weight=\"bold\" fill=\"#334155\">Esophagus (Gullet)</text>\n    <line x1=\"310\" y1=\"135\" x2=\"360\" y2=\"120\" stroke=\"#ea580c\" stroke-width=\"1.2\"/>\n    <circle cx=\"310\" cy=\"135\" r=\"2.5\" fill=\"#ea580c\"/>\n    <text x=\"370\" y=\"117\" font-weight=\"bold\" fill=\"#c2410c\">Crop</text>\n    <text x=\"370\" y=\"132\" font-size=\"10\" fill=\"#7c2d12\">Temporary storage &amp; moistening of grains</text>\n    <line x1=\"265\" y1=\"200\" x2=\"360\" y2=\"175\" stroke=\"#db2777\" stroke-width=\"1.2\"/>\n    <circle cx=\"265\" cy=\"200\" r=\"2.5\" fill=\"#db2777\"/>\n    <text x=\"370\" y=\"172\" font-weight=\"bold\" fill=\"#be185d\">Proventriculus (Glandular Stomach)</text>\n    <text x=\"370\" y=\"187\" font-size=\"10\" fill=\"#831843\">Secretes gastric acid &amp; pepsin</text>\n    <line x1=\"305\" y1=\"245\" x2=\"360\" y2=\"230\" stroke=\"#9f1239\" stroke-width=\"1.2\"/>\n    <circle cx=\"305\" cy=\"245\" r=\"2.5\" fill=\"#9f1239\"/>\n    <text x=\"370\" y=\"227\" font-weight=\"bold\" fill=\"#9f1239\">Gizzard (Ventriculus)</text>\n    <text x=\"370\" y=\"242\" font-size=\"10\" fill=\"#881337\">Dense muscular organ; grinds with grit</text>\n    <line x1=\"290\" y1=\"330\" x2=\"360\" y2=\"300\" stroke=\"#e11d48\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"330\" r=\"2.5\" fill=\"#e11d48\"/>\n    <text x=\"370\" y=\"297\" font-weight=\"bold\" fill=\"#be123c\">Small Intestine (Duodenum &amp; Ileum)</text>\n    <text x=\"370\" y=\"312\" font-size=\"10\" fill=\"#475569\">Enzymatic digestion &amp; nutrient absorption</text>\n    <line x1=\"225\" y1=\"400\" x2=\"120\" y2=\"400\" stroke=\"#475569\" stroke-width=\"1.2\"/>\n    <circle cx=\"225\" cy=\"400\" r=\"2.5\" fill=\"#475569\"/>\n    <text x=\"110\" y=\"396\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Paired Caeca</text>\n    <text x=\"110\" y=\"411\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Bacterial fiber fermentation</text>\n    <line x1=\"275\" y1=\"465\" x2=\"360\" y2=\"440\" stroke=\"#64748b\" stroke-width=\"1.2\"/>\n    <circle cx=\"275\" cy=\"465\" r=\"2.5\" fill=\"#64748b\"/>\n    <text x=\"370\" y=\"437\" font-weight=\"bold\" fill=\"#334155\">Large Intestine (Colon)</text>\n    <text x=\"370\" y=\"451\" font-size=\"10\" fill=\"#64748b\">Water reabsorption</text>\n    <line x1=\"290\" y1=\"490\" x2=\"360\" y2=\"485\" stroke=\"#0f172a\" stroke-width=\"1.2\"/>\n    <circle cx=\"290\" cy=\"490\" r=\"2.5\" fill=\"#0f172a\"/>\n    <text x=\"370\" y=\"482\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca &amp; Vent</text>\n    <text x=\"370\" y=\"497\" font-size=\"10\" fill=\"#475569\">Common chamber for feces, uric acid &amp; eggs</text>\n  </g>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous Breeds:**\n  * West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge)\n  * Nungua Blackhead\n  * Ouda / Quda Fulani (long-legged savanna breed)\n  * Yankasa\n* **Exotic Breeds:**\n  * Australian Merino\n  * Spanish Merino (fine wool)\n  * Finnish Landrace\n\n##### Morphological Differences: Goat vs. Sheep\n\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards | Longer tail hanging limply downwards |\n| **Beard Presence** | Present in both mature bucks (males) and does | Present only on mature rams (males) |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks | Lacks specialized rubbery friction pads |\n| **Body Odor** | Mature bucks emit an intense, musky odor | Rams lack an offensive musky odor |\n| **Interdigital Glands** | Glands between toes are absent | Specialized sweat/scent glands present between toes |\n| **Feeding Behavior** | Agile browsers; prefer shrubs, tree leaves, and twigs | Ground grazers; prefer low-growing grass and clovers |\n\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:**\n  * Friesian / Holstein (highest milk volume, black-and-white markings)\n  * Jersey (high butterfat content, golden-fawn color)\n  * Ayrshire\n  * White Fulani (dual-purpose zebu)\n* **Beef Breeds:**\n  * Aberdeen Angus (solid black, compact, high marbling)\n  * Hereford\n  * West African Shorthorn (WAS)\n  * N'Dama (humpless, trypano-tolerant forest cattle)\n  * Muturu\n  * Sokoto Gudali\n\n##### Conformation Contrast: Dairy vs. Beef Cattle\n\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct wedge-shaped (triangular) frame | Rectangular, blocky, square-shaped body frame |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones | Deep, heavily fleshed thighs, loin, and rounded rump |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder | Small, tight, poorly developed udder |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck | Short, stout, thickset muscular legs and short neck |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n\n##### Comparative Performance: Exotic vs. Local Fowl\n\n| Trait | Exotic (Commercial) Breeds | Local (Indigenous) Breeds |\n| :--- | :--- | :--- |\n| **Growth Rate** | Fast growers | Slow growers |\n| **Body & Egg Size** | Large body frame; lay larger eggs | Small body frame; lay smaller eggs |\n| **Broodiness** | Non-broody (rarely sit on eggs) | Strongly broody with maternal care |\n| **Hardiness** | Sensitive to heat stress and diseases | Hardy; resistant to heat and local diseases |\n\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n\n##### Characteristics of Commercial Turkey Breeds\n\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -25039,7 +32353,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "The Human Body Systems (Digestion, Dentition, Respiration & Circulation)",
     "order": 19,
     "notes": {
-      "summaryMarkdown": "### Human Dentition: Tooth Structure, Dental Formulas & Oral Health\n* **NaCCA Curriculum Code:** `B7.3.1.1`\n* **Core Competency:** Identify human tooth types, relate anatomy to function, analyze tooth decay, and demonstrate oral hygiene.\n\n#### 1. Human Dental Architecture\nHumans are heterodonts (possessing different types of teeth) and diphyodonts (developing two sets of teeth in a lifetime):\n* **Deciduous (Milk) Teeth:** 20 teeth in children; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, m\\frac{2}{2} = 10 \\times 2 = 20$.\n* **Permanent Teeth:** 32 teeth in adults; dental formula: $i\\frac{2}{2}, c\\frac{1}{1}, pm\\frac{2}{2}, m\\frac{3}{3} = 16 \\times 2 = 32$.\n\n#### 2. Tooth Types & Functions\n* **Incisors (8):** Chisel-shaped with sharp cutting edges; biting and cutting food chunks.\n* **Canines (4):** Conical, pointed, dagger-like crowns; piercing, gripping, and tearing fibrous meat.\n* **Premolars (8):** Broad crowns with two pointed projections (cusps); crushing and grinding food.\n* **Molars (12):** Broad, flat occlusal surface with 4-5 cusps; heavy mastication and pulverizing.\n\n#### 3. Microscopic Anatomy of a Tooth\n* **Crown:** Visible portion projecting above the gum.\n  * *Enamel:* The hardest biological substance in the human body ($96\\%$ calcium hydroxyapatite crystals); shields against mechanical wear and acid erosion.\n  * *Dentine:* Hard bone-like living tissue beneath enamel containing microscopic fluid-filled tubules.\n  * *Pulp Cavity:* Living central core containing blood capillaries (nourishment) and sensory nerve fibers (pain reception).\n* **Neck:** Constricted boundary region surrounded by the gum (gingiva).\n* **Root:** Anchored in the alveolar bone socket of the jaw by the periodontal ligament and coated with cementum.\n\n#### 4. Pathology of Dental Caries (Tooth Decay)\n1. Food residues rich in refined sucrose adhere to tooth surfaces.\n2. Oral bacteria (*Streptococcus mutans*) ferment sugars within the sticky biofilm (plaque), producing lactic acid.\n3. When plaque pH drops below 5.5, organic acids demineralize calcium phosphate in the enamel.\n4. Erosion penetrates dentine into the pulp cavity, exposing sensory nerves and causing excruciating toothache and abscesses.",
+      "summaryMarkdown": "# The Human Body System: Human Nutrition, Digestive Anatomy, Enzymes & Disorders\n\n**Curriculum Indicator:** `B7.3.1.1.1` & `B7.3.1.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 1:** The Human Body System (Nutrition & Digestion)\n\n---\n\n## 1. Human Nutrition: Classes of Food & Biochemical Reagent Tests\n\n### Definition & Physiological Necessity\n**Food** is any organic or inorganic substance, solid or liquid, consumed to provide the human body with metabolic energy, support cellular repair and tissue growth, and regulate vital physiological processes. Without adequate nutrition, biochemical homeostasis breaks down, resulting in metabolic failure and chronic deficiency syndromes.\n\n### Classes of Dietary Nutrients\n1. **Carbohydrates (Starches & Sugars):**\n   * *Primary Function:* Act as the primary and fastest source of chemical energy (glucose) for cellular respiration and ATP synthesis.\n   * *Common Sources:* Cassava, yam, plantain, bread, maize, and rice.\n2. **Proteins:**\n   * *Primary Function:* Supply essential building blocks (amino acids) to construct new body tissues, repair worn-out cells, and synthesize vital metabolic enzymes, peptide hormones, and immune antibodies.\n   * *Classification:*\n     - **First-class proteins:** Primarily animal sources (eggs, fish, beef, milk, poultry) containing all essential amino acids that the human body cannot synthesize internally.\n     - **Second-class proteins:** Plant sources (beans, groundnuts, cowpeas, soybeans) lacking one or more essential amino acids.\n   * *Deficiency Pathologies:* Kwashiorkor (distended abdomen, edema, thinning hair), marasmus (severe muscle wasting, skin-and-bone appearance), and nutritional cachexia in growing children.\n3. **Lipids (Fats & Oils):**\n   * *Primary Function:* High-density secondary energy reserves (providing more than double the energy per gram of carbohydrates), subcutaneous thermal insulation against cold, physical shock-absorbing cushions around vital organs (heart, kidneys), and biological carrier solvents for fat-soluble vitamins (A, D, E, K).\n   * *Common Sources:* Palm oil, shea butter, groundnut oil, fatty fish, avocado, and coconut.\n4. **Vitamins & Mineral Salts:**\n   * *Primary Function:* Protective micronutrients that strengthen immune resistance, catalyze enzyme reactions, and maintain skeletal integrity and fluid balance (e.g., Vitamin C for connective tissue, Vitamin D and Calcium for bone mineral density, Iron for hemoglobin formation).\n   * *Common Sources:* Fresh fruits, citrus, pawpaw, mangoes, and leafy green vegetables like cocoyam leaves (*kontomire*).\n5. **Dietary Fiber (Roughage) & Water:**\n   * *Roughage:* Indigestible plant cellulose that provides mechanical bulk to stimulate regular intestinal peristalsis and prevent constipation.\n   * *Water:* Universal physiological solvent, transport medium for blood plasma, thermoregulator (via perspiration), and reactant in hydrolytic digestion.\n\n---\n\n### Standard Laboratory Reagent Tests for Food Nutrients\n\nThe presence of specific nutrients in food samples is confirmed through standard diagnostic colorimetric chemical reactions.\n\n| Target Nutrient | Diagnostic Test Reagents | Experimental Procedure | Observed Positive Color Reaction |\n| :--- | :--- | :--- | :--- |\n| **Starch** | Iodine solution | Add a few drops of yellow-brown iodine solution directly to the food sample. | Color shifts to deep **blue-black**. |\n| **Reducing Sugars (e.g. Glucose, Maltose)** | Benedict's or Fehling's reagent | Add reagent to liquid food filtrate and heat in a boiling water bath for 2–3 minutes. | Color transitions: Green &rarr; Yellow &rarr; **Brick-red / Orange-red** precipitate. |\n| **Non-Reducing Sugars (e.g. Sucrose / Cane Sugar)** | Dilute Hydrochloric acid, Sodium hydroxide, & Benedict's solution | Boil sample with dilute $\\\text{HCl}$ to hydrolyze disaccharides, neutralize with $\\\text{NaOH}$, then boil with Benedict's. | Color turns to **orange / brick-red** precipitate. |\n| **Protein** | Biuret Reagent ($\\\text{CuSO}_4 + \\\text{NaOH}$) | Add dilute sodium hydroxide followed by drops of 1% copper (II) sulfate solution; shake gently. | Formation of a distinct **violet / purple** ring or solution. |\n| **Protein (Alternative)** | Millon's reagent | Add Millon's reagent (mercuric nitrate mixture) to sample and heat gently. | White precipitate turns to **reddish-brown / deep red** upon heating. |\n| **Fats & Oils (Lipids)** | Ethanol Emulsion / Spot test | Shake sample with pure ethanol, then pour into cold water; or rub on filter paper. | Formation of a milky white emulsion; or a permanent **translucent grease spot** on paper. |\n\n### Specific Diagnostic Tests for Fats and Oils (Lipids)\n* **Grease Spot Test:**\n  - Small amount of the food substance containing fat is placed on a filter paper.\n  - In case of grains and seeds, they are crushed and rubbed on the paper after removing their skin.\n  - A permanent translucent stain on the paper indicates the presence of fats and oils (unlike water stains, grease stains do not evaporate when held to light).\n* **Sudan III Test:**\n  - Some amount of Sudan III dye solution is added to the liquid specimen.\n  - A distinct red colour / red stained surface ring shows that fat is present.\n* **Ethanol Emulsion Test:**\n  - Shake the crushed food sample vigorously with absolute ethanol in a test tube.\n  - Decant the clear liquid into a test tube containing cold water.\n  - A turbid, milky-white cloud (emulsion) confirms lipids are suspended in the aqueous phase.\n\n---\n\n## 2. Anatomy & Physiology of the Human Digestive System\n\nThe human digestive system consists of a continuous muscular tube extending from the mouth to the anus called the **alimentary canal** (gastrointestinal tract), supported by vital accessory organs: the teeth, salivary glands, liver, gallbladder, and pancreas.\n\n### Sequential Stages of Mechanical & Chemical Digestion\n1. **Mouth (Buccal Cavity):**\n   * *Ingestion & Mechanical Breakdown:* Food is taken into the mouth where teeth grind and masticate it.\n   * *Bolus Formation:* The tongue manipulates crushed food with saliva into a slippery, lubricated ball called a **bolus**.\n   * *Chemical Digestion:* Salivary glands secrete saliva containing mucus and the enzyme **ptyalin** (salivary amylase), which begins converting cooked starch into the disaccharide **maltose** in a neutral to slightly alkaline medium.\n2. **Pharynx & Oesophagus (Gullet):**\n   * *Swallowing Reflex:* Swallowing pushes the bolus past the pharynx while the reflex flap called the **epiglottis** closes over the trachea (windpipe) to prevent choking.\n   * *Peristalsis:* Rhythmic, involuntary wave-like muscular contractions and relaxations of circular and longitudinal muscles push the bolus down through the oesophagus into the stomach without relying on gravity.\n3. **Stomach:**\n   * *Mechanical Churning:* A distensible J-shaped muscular sac whose three muscle layers vigorously churn the bolus into a semi-liquid, acidic paste called **chyme**.\n   * *Gastric Secretions:* Gastric pits secrete gastric juice containing:\n     - **Hydrochloric Acid (HCl):** Destroys ingested food-borne bacteria and creates an intensely acidic medium ($\\text{pH } 1.5 - 2.5$) required to activate gastric enzymes.\n     - **Pepsin:** Cleaves complex dietary proteins into smaller polypeptide chains called **peptones**.\n     - **Rennin (Chymosin):** Coagulates and curdles soluble liquid milk protein (*caseinogen* into insoluble *casein*), retaining milk proteins in the stomach so pepsin can digest them.\n4. **Duodenum (First Loop of Small Intestine):**\n   * *Entry of Chyme:* Acidic chyme exits the pyloric sphincter into the duodenum and encounters two secretions:\n     - **Bile:** Synthesized continuously by the liver and stored/concentrated in the gallbladder. Bile contains alkaline sodium salts that neutralize acidic gastric chyme and **emulsify** large fat droplets into micro-droplets, vastly increasing surface area for lipase attack. Bile contains no enzymes.\n     - **Pancreatic Juice:** Secreted by the exocrine pancreas into the duodenum, delivering three primary enzymes operating in an alkaline pH ($7.5 - 8.2$):\n       - *Pancreatic Amylase:* Converts remaining starch into maltose.\n       - *Trypsin:* Hydrolyzes proteins and peptones into peptides.\n       - *Pancreatic Lipase:* Hydrolyzes emulsified fats into fatty acids and glycerol.\n5. **Ileum (Lower Small Intestine):**\n   * *Final Chemical Breakdown:* Intestinal glands in the Crypts of Lieberkühn secrete intestinal juice (*succus entericus*), containing maltase, sucrase, lactase, and peptidases (erepsin) to finalize digestion into diffusible monomers:\n     - $\\text{Carbohydrates} \to \\text{Glucose, Fructose, Galactose}$\n     - $\\text{Proteins} \to \\text{Amino acids}$\n     - $\\text{Lipids} \to \\text{Fatty acids and Glycerol}$\n   * *Nutrient Absorption:* The inner ileum wall is lined with millions of microscopic, finger-like projections called **villi** (singular: *villus*), which maximize internal surface area.\n     - *Blood Capillaries:* Rapidly absorb soluble glucose, amino acids, vitamins, and mineral ions, conveying them to the liver via the **hepatic portal vein**.\n     - *Central Lacteals:* Specialized lymphatic vessels that absorb fatty acids and glycerol, packaging them into chylomicrons for delivery into the lymphatic bloodstream.\n6. **Large Intestine (Colon, Caecum, Rectum & Anus):**\n   * *Colon:* Absorbs water, mineral salts, and dissolved vitamins from the remaining indigestible fibrous residue, consolidating it into solid or semi-solid feces.\n   * *Caecum & Appendix:* Vestigial blind sac at the ileocecal junction.\n   * *Rectum:* Stores compacted faecal waste temporarily until distension triggers defecation.\n   * *Anus:* Controlled by internal involuntary and external voluntary sphincter muscles for the expulsion of waste (**egestion**).\n\n---\n\n### Figure 7.1: Anatomical Architecture of the Human Digestive System\n\nBelow is the complete, high-resolution anatomical pathway illustrating the continuous alimentary canal from the buccal cavity down to the anal sphincter, alongside all major accessory glands:\n\n<svg width=\"760\" height=\"780\" viewBox=\"0 0 760 780\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"bodyOutline\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f1f5f9\"/><stop offset=\"100%\" stop-color=\"#e2e8f0\"/></linearGradient><linearGradient id=\"liverGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#991b1b\"/><stop offset=\"100%\" stop-color=\"#581c1c\"/></linearGradient><linearGradient id=\"stomachGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"100%\" stop-color=\"#ef4444\"/></linearGradient><linearGradient id=\"pancreasGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"100%\" stop-color=\"#eab308\"/></linearGradient><linearGradient id=\"largeIntGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#64748b\"/></linearGradient><linearGradient id=\"smallIntGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fed7aa\"/><stop offset=\"100%\" stop-color=\"#f97316\"/></linearGradient></defs><rect width=\"760\" height=\"780\" rx=\"16\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE HUMAN DIGESTIVE SYSTEM (ALIMENTARY CANAL &amp; ACCESSORY ORGANS)</text><text x=\"380\" y=\"50\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Anatomical Transit: Mouth → Pharynx → Oesophagus → Stomach → Small Intestine → Large Intestine → Rectum → Anus</text><g id=\"human_torso_silhouette\" opacity=\"0.45\"><path d=\"M 320 65 C 300 70 280 85 275 110 C 270 135 285 155 305 165 C 270 180 240 215 225 260 C 215 300 215 480 220 540 C 225 610 240 730 240 750 L 520 750 C 520 730 535 610 540 540 C 545 480 545 300 535 260 C 520 215 490 180 455 165 C 475 155 490 135 485 110 C 480 85 460 70 440 65 Z\" fill=\"url(#bodyOutline)\" stroke=\"#94a3b8\" stroke-width=\"2\"/></g><g id=\"alimentary_canal\"><ellipse cx=\"365\" cy=\"102\" rx=\"14\" ry=\"8\" fill=\"#f43f5e\" opacity=\"0.8\"/><ellipse cx=\"385\" cy=\"82\" rx=\"10\" ry=\"7\" fill=\"#f59e0b\"/><ellipse cx=\"365\" cy=\"118\" rx=\"12\" ry=\"6\" fill=\"#f59e0b\"/><path d=\"M 375 105 L 385 130 L 385 270\" fill=\"none\" stroke=\"#fda4af\" stroke-width=\"12\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 375 105 L 385 130 L 385 270\" fill=\"none\" stroke=\"#e11d48\" stroke-width=\"2\" stroke-dasharray=\"3 3\"/><path d=\"M 385 270 C 385 240 455 240 465 285 C 475 330 425 365 375 355 C 345 350 340 325 355 305 C 365 290 385 285 385 270 Z\" fill=\"url(#stomachGrad)\" stroke=\"#b91c1c\" stroke-width=\"2\"/><path d=\"M 385 270 C 330 260 270 270 265 315 C 260 350 335 370 375 355 Z\" fill=\"url(#liverGrad)\" stroke=\"#450a0a\" stroke-width=\"2\"/><ellipse cx=\"335\" cy=\"350\" rx=\"11\" ry=\"16\" transform=\"rotate(25 335 350)\" fill=\"#16a34a\" stroke=\"#14532d\" stroke-width=\"1.5\"/><path d=\"M 375 345 Q 395 380 435 365\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"2.5\"/><path d=\"M 375 345 C 400 340 450 340 460 355 C 470 370 430 380 385 365 Z\" fill=\"url(#pancreasGrad)\" stroke=\"#ca8a04\" stroke-width=\"1.8\"/><path d=\"M 375 355 C 345 360 335 385 345 405 L 375 415\" fill=\"none\" stroke=\"#fb923c\" stroke-width=\"9\" stroke-linecap=\"round\"/><rect x=\"270\" y=\"410\" width=\"220\" height=\"160\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#fed7aa\" stroke-width=\"1\"/><path d=\"M 365 420 Q 320 435 365 450 T 425 465 T 335 480 T 435 495 T 325 510 T 435 525 T 345 540 T 425 555 L 440 560\" fill=\"none\" stroke=\"url(#smallIntGrad)\" stroke-width=\"12\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M 450 565 L 450 420 C 450 395 440 385 410 385 L 310 385 C 280 385 270 395 270 420 L 270 565\" fill=\"none\" stroke=\"url(#largeIntGrad)\" stroke-width=\"20\" stroke-linecap=\"square\" stroke-linejoin=\"round\"/><path d=\"M 450 565 L 450 420 C 450 395 440 385 410 385 L 310 385 C 280 385 270 395 270 420 L 270 565\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.5\" stroke-dasharray=\"4 8\" stroke-linecap=\"square\" stroke-linejoin=\"round\"/><path d=\"M 270 575 C 265 595 250 600 245 615\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M 310 565 C 310 600 355 600 355 635 L 355 690\" fill=\"none\" stroke=\"url(#largeIntGrad)\" stroke-width=\"18\" stroke-linecap=\"round\"/><ellipse cx=\"355\" cy=\"715\" rx=\"10\" ry=\"14\" fill=\"#475569\" stroke=\"#1e293b\" stroke-width=\"2\"/><line x1=\"346\" y1=\"732\" x2=\"364\" y2=\"732\" stroke=\"#0f172a\" stroke-width=\"3\" stroke-linecap=\"round\"/></g><g font-family=\"sans-serif\" font-size=\"11\"><line x1=\"345\" y1=\"98\" x2=\"180\" y2=\"98\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><circle cx=\"345\" cy=\"98\" r=\"2.5\" fill=\"#0f172a\"/><text x=\"170\" y=\"94\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"end\">Mouth (Buccal Cavity)</text><text x=\"170\" y=\"109\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Mastication &amp; bolus formation</text><line x1=\"395\" y1=\"85\" x2=\"560\" y2=\"85\" stroke=\"#b45309\" stroke-width=\"1.2\"/><circle cx=\"395\" cy=\"85\" r=\"2.5\" fill=\"#b45309\"/><text x=\"570\" y=\"81\" font-weight=\"bold\" fill=\"#b45309\">Salivary Glands</text><text x=\"570\" y=\"96\" font-size=\"10\" fill=\"#78350f\">Secretes ptyalin (starch → maltose)</text><line x1=\"385\" y1=\"190\" x2=\"560\" y2=\"190\" stroke=\"#e11d48\" stroke-width=\"1.2\"/><circle cx=\"385\" cy=\"190\" r=\"2.5\" fill=\"#e11d48\"/><text x=\"570\" y=\"186\" font-weight=\"bold\" fill=\"#be123c\">Oesophagus (Gullet)</text><text x=\"570\" y=\"201\" font-size=\"10\" fill=\"#881337\">Peristaltic muscular transfer</text><line x1=\"290\" y1=\"300\" x2=\"180\" y2=\"270\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><circle cx=\"290\" cy=\"300\" r=\"2.5\" fill=\"#991b1b\"/><text x=\"170\" y=\"266\" font-weight=\"bold\" fill=\"#7f1d1d\" text-anchor=\"end\">Liver (Accessory Organ)</text><text x=\"170\" y=\"281\" font-size=\"10\" fill=\"#991b1b\" text-anchor=\"end\">Synthesizes alkaline bile salts</text><line x1=\"325\" y1=\"355\" x2=\"180\" y2=\"355\" stroke=\"#15803d\" stroke-width=\"1.2\"/><circle cx=\"325\" cy=\"355\" r=\"2.5\" fill=\"#15803d\"/><text x=\"170\" y=\"351\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"end\">Gallbladder</text><text x=\"170\" y=\"366\" font-size=\"10\" fill=\"#15803d\" text-anchor=\"end\">Stores &amp; concentrates bile</text><line x1=\"435\" y1=\"290\" x2=\"560\" y2=\"270\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><circle cx=\"435\" cy=\"290\" r=\"2.5\" fill=\"#dc2626\"/><text x=\"570\" y=\"266\" font-weight=\"bold\" fill=\"#b91c1c\">Stomach</text><text x=\"570\" y=\"281\" font-size=\"10\" fill=\"#7f1d1d\">HCl (pH 2) + Pepsin &amp; Rennin</text><line x1=\"445\" y1=\"360\" x2=\"560\" y2=\"345\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"445\" cy=\"360\" r=\"2.5\" fill=\"#ca8a04\"/><text x=\"570\" y=\"341\" font-weight=\"bold\" fill=\"#854d0e\">Pancreas</text><text x=\"570\" y=\"356\" font-size=\"10\" fill=\"#a16207\">Amylase, Trypsin, Lipase &amp; Insulin</text><line x1=\"345\" y1=\"380\" x2=\"180\" y2=\"410\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"345\" cy=\"380\" r=\"2.5\" fill=\"#ea580c\"/><text x=\"170\" y=\"406\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"end\">Duodenum</text><text x=\"170\" y=\"421\" font-size=\"10\" fill=\"#c2410c\" text-anchor=\"end\">Emulsification &amp; neutralisation</text><line x1=\"380\" y1=\"490\" x2=\"560\" y2=\"450\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"380\" cy=\"490\" r=\"2.5\" fill=\"#ea580c\"/><text x=\"570\" y=\"446\" font-weight=\"bold\" fill=\"#c2410c\">Small Intestine (Ileum)</text><text x=\"570\" y=\"461\" font-size=\"10\" fill=\"#9a3412\">Final chemical digestion &amp; villi absorption</text><line x1=\"270\" y1=\"470\" x2=\"180\" y2=\"470\" stroke=\"#475569\" stroke-width=\"1.2\"/><circle cx=\"270\" cy=\"470\" r=\"2.5\" fill=\"#475569\"/><text x=\"170\" y=\"466\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"end\">Large Intestine (Colon)</text><text x=\"170\" y=\"481\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Water reabsorption &amp; faecal packing</text><line x1=\"250\" y1=\"610\" x2=\"180\" y2=\"610\" stroke=\"#64748b\" stroke-width=\"1.2\"/><circle cx=\"250\" cy=\"610\" r=\"2.5\" fill=\"#64748b\"/><text x=\"170\" y=\"606\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"end\">Appendix (Caecum)</text><text x=\"170\" y=\"621\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"end\">Vestigial blind pouch</text><line x1=\"355\" y1=\"650\" x2=\"560\" y2=\"650\" stroke=\"#334155\" stroke-width=\"1.2\"/><circle cx=\"355\" cy=\"650\" r=\"2.5\" fill=\"#334155\"/><text x=\"570\" y=\"646\" font-weight=\"bold\" fill=\"#1e293b\">Rectum</text><text x=\"570\" y=\"661\" font-size=\"10\" fill=\"#475569\">Temporary faecal retention</text><line x1=\"355\" y1=\"715\" x2=\"560\" y2=\"715\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><circle cx=\"355\" cy=\"715\" r=\"2.5\" fill=\"#0f172a\"/><text x=\"570\" y=\"711\" font-weight=\"bold\" fill=\"#0f172a\">Anus &amp; Anal Sphincter</text><text x=\"570\" y=\"726\" font-size=\"10\" fill=\"#475569\">Terminal egestion of undigested waste</text></g></svg>\n\n---\n\n## 3. Digestive Biochemistry: Catalytic Enzymes & End Products\n\n### General Characteristics of Digestive Enzymes\n* **Biological Catalysts:** Enzymes are specialized globular proteins that accelerate biochemical hydrolysis reactions without being consumed or altered in the process.\n* **Thermolability (Heat Sensitivity):** Optimal catalytic activity occurs around human body temperature ($37^circ\\text{C}$). Boiling or excessive temperatures above $45^circ - 50^circ\\text{C}$ denature enzyme proteins, irreversibly destroying their three-dimensional active sites.\n* **pH Specificity:** Each digestive enzyme possesses a specific optimum pH window:\n  - *Gastric Pepsin:* Thrives strictly in strong acidic media ($\\text{pH } 1.5 - 2.5$).\n  - *Salivary Ptyalin:* Requires neutral to slightly alkaline media ($\\text{pH } 6.8 - 7.2$).\n  - *Trypsin & Pancreatic Lipase:* Require distinctly alkaline conditions ($\\text{pH } 7.5 - 8.5$).\n* **Substrate Specificity:** Enzymes follow a 'lock-and-key' active site mechanism, reacting only with specific substrate molecules.\n\n---\n\n### Comprehensive Digestive Enzyme Matrix\n\n| Digestive Secretion | Secretory Source | Active Enzyme(s) | Optimum pH Medium | Substrate Target | Primary End Products Formed |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Saliva** | Salivary Glands | Ptyalin (Salivary amylase) | Slightly Alkaline / Neutral (&approx; 6.8 &ndash; 7.2) | Cooked Starch | Maltose (Disaccharide) |\n| **Gastric Juice** | Gastric Glands in Stomach Wall | Pepsin<br>Rennin (Chymosin) | Highly Acidic ($\\text{pH } 1.5 - 2.5$, via HCl) | Complex Proteins<br>Soluble Milk Caseinogen | Peptones & Short Peptides<br>Insoluble Curdled Casein |\n| **Bile (Non-enzymatic)** | Liver (Stored in Gallbladder) | Bile Salts (Sodium glycocholate/taurocholate) | Alkaline ($\\text{pH } 7.5 - 8.5$) | Large Fat Globules | Emulsified Droplets (Physical breakdown) |\n| **Pancreatic Juice** | Exocrine Pancreas | Pancreatic Amylase<br>Trypsin (Protease)<br>Pancreatic Lipase | Alkaline ($\\text{pH } 7.5 - 8.2$) | Starch<br>Proteins & Peptones<br>Emulsified Lipids | Maltose<br>Polypeptides & Peptides<br>Fatty Acids & Glycerol |\n| **Intestinal Juice (Succus Entericus)** | Crypts of Lieberkühn (Ileum) | Maltase<br>Sucrase (Invertase)<br>Peptidases (Erepsin)<br>Intestinal Lipase | Alkaline ($\\text{pH } 7.5 - 8.5$) | Maltose<br>Sucrose (Cane sugar)<br>Peptides<br>Triglycerides | Glucose<br>Glucose + Fructose<br>Individual Amino Acids<br>Fatty Acids + Glycerol |\n\n---\n\n## 4. Gastrointestinal Disorders & Preventive Lifestyle Habits\n\nImbalances in dietary composition, meal regularity, and digestive organ function cause significant physiological disorders:\n\n1. **Indigestion (Dyspepsia):**\n   * *Aetiology & Causes:* Eating too rapidly without proper chewing, erratic meal timing, consuming excessively greasy or highly spiced food, severe emotional stress, heavy smoking, or drinking large amounts of water during heavy meals.\n   * *Symptoms:* Epigastric fullness, abdominal bloating, heartburn, nausea, and flatulence.\n   * *Preventive Regimen:* Chew food thoroughly to aid mechanical digestion, eat balanced meals at consistent schedules, avoid heavy meals late at night right before sleep, and moderate chili and oily food intake.\n2. **Constipation:**\n   * *Aetiology & Causes:* Diets deficient in dietary fiber (roughage) and fruits/vegetables, inadequate daily water and fluid intake, physical inactivity, or repeatedly ignoring the urge to defecate.\n   * *Symptoms:* Infrequent, difficult, painful defecation of dry, compacted stool, often causing anal fissures or haemorrhoids (piles).\n   * *Preventive Regimen:* Increase daily intake of dietary fiber (whole grains, oats, leafy vegetables, fruits like pawpaw and oranges), drink at least 2–3 liters of potable water daily, exercise regularly, and respond promptly to the defecation reflex.\n3. **Peptic Ulcers (Gastric & Duodenal):**\n   * *Aetiology & Causes:* Erosion of the protective mucous lining of the stomach or duodenum by concentrated hydrochloric acid and pepsin, commonly triggered by *Helicobacter pylori* bacterial colonization, chronic stress, smoking, heavy alcohol use, and regular ingestion of non-steroidal anti-inflammatory drugs (NSAIDs like aspirin/ibuprofen).\n   * *Symptoms:* Burning or gnawing abdominal pain between meals or at night, relieved temporarily by food or antacids, nausea, vomiting, and internal bleeding (melena).\n   * *Preventive Regimen:* Maintain regular meal timings to avoid prolonged periods of empty stomach acid exposure, avoid smoking and excessive alcohol, limit NSAID abuse, and complete prescribed antibiotic eradication therapy.\n4. **Hepatic & Biliary Disorders (Jaundice, Gallstones, Hepatitis, Cirrhosis):**\n   * *Aetiology & Causes:* Obstruction of the bile duct by cholesterol gallstones, viral infections (Hepatitis B & C viruses), toxic alcohol abuse causing hepatic fibrosis and cirrhosis (hardening and functional destruction of liver tissue), or schistosomiasis.\n   * *Effects:* Inability of the damaged liver to conjugate and excrete bilirubin, causing accumulation of bile pigments in the blood that produces characteristic yellowing of the skin and eye sclera (**jaundice**), pale clay-colored stool, dark urine, impaired lipid emulsification, and severe abdominal edema.\n   * *Preventive Regimen:* Immunization against Hepatitis B virus, practicing safe hygiene, avoiding unsterilized sharp instruments, eliminating excessive alcohol consumption, and adopting low-cholesterol dietary practices.\n5. **Cardiovascular & Metabolic Consequences of Dietary Excess:**\n   * *Sodium Chloride (Salt) Excess:* High dietary salt elevates blood plasma osmolarity, triggering water retention (edema) and chronic arterial hypertension (high blood pressure), multiplying the risk of strokes and heart failure.\n   * *Chronic Caloric Excess:* Diets heavy in refined sugars and saturated animal fats promote obesity, arterial atherosclerosis, cardiovascular coronary disease, and adult-onset Type 2 diabetes mellitus.",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -25048,39 +32362,2413 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
         "questionPrompt": "The adult human dental formula is written as i: 2/2, c: 1/1, pm: 2/2, m: 3/3. Calculate the total number of teeth in the adult human mouth and determine the total number of grinding teeth.",
         "stepByStepSolution": "Step 1: Understand formula structure — The dental formula represents the count of teeth in one quadrant of the upper jaw over one quadrant of the lower jaw (half of the mouth).\nStep 2: Sum upper and lower jaw counts in one half: Upper half = 2 + 1 + 2 + 3 = 8 teeth. Lower half = 2 + 1 + 2 + 3 = 8 teeth. Total for one side = 16 teeth.\nStep 3: Multiply by 2 for bilateral symmetry: Total teeth in adult mouth = 16 x 2 = 32 teeth.\nStep 4: Calculate total grinding teeth (premolars + molars): Premolars = (2 + 2) x 2 = 8. Molars = (3 + 3) x 2 = 12. Total grinding teeth = 8 + 12 = 20 teeth.",
         "examinerTip": "Examiner Tip: Always remember to multiply the total dental formula count by 2 to account for both left and right sides of the jaw."
+      },
+      {
+        "id": "ex_b7_s7_2",
+        "questionPrompt": "A student tests three unknown food extracts X, Y, and Z. Extract X turns deep blue-black with iodine solution. Extract Y forms a brick-red precipitate when boiled with Benedict's solution. Extract Z produces a violet ring with Biuret reagent. Identify the major organic nutrients present in X, Y, and Z.",
+        "stepByStepSolution": "Step 1: Analyze Extract X: Iodine solution shifting from yellow-brown to deep blue-black is the specific diagnostic confirmation for starch (complex carbohydrate).\nStep 2: Analyze Extract Y: Heating with Benedict's reagent in a boiling water bath yielding a brick-red precipitate confirms the presence of reducing sugars (such as glucose or maltose).\nStep 3: Analyze Extract Z: The Biuret test (dilute NaOH followed by 1% CuSO4 solution) producing a distinct violet/purple coloration confirms the presence of peptide bonds in proteins.\nStep 4: Synthesize conclusions: Extract X is starch, Extract Y is reducing sugar, and Extract Z is protein.",
+        "examinerTip": "Examiner Tip: If non-reducing sugar (sucrose) is suspected, the sample must first be hydrolyzed with dilute HCl and neutralized before testing with Benedict's solution."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s7_1",
+        "id": "B7_DIG_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The hardest biological substance in the human body, covering the crown of the tooth, is the:",
+        "prompt": "Which class of food is the body's primary and most immediate source of energy?",
         "options": [
-          "Dentine",
-          "Enamel",
-          "Cementum",
-          "Alveolar bone"
+          "A. Carbohydrates",
+          "B. Proteins",
+          "C. Mineral salts",
+          "D. Roughage"
         ],
-        "correctAnswer": "Enamel",
-        "hint": "It is the non-living outer calcified layer.",
-        "workedSolution": "Enamel is the highly mineralized, hardest substance in the human body, protecting the underlying dentine and pulp from physical mastication wear and chemical attack.",
+        "correctAnswer": "A. Carbohydrates",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Carbohydrates are broken down into glucose to provide immediate chemical energy for cellular activities.",
         "points": 1
       },
       {
-        "id": "q_b7_s7_2",
+        "id": "B7_DIG_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which food nutrient is primarily responsible for the growth and repair of worn-out body tissues?",
+        "options": [
+          "A. Fats and oils",
+          "B. Proteins",
+          "C. Starches",
+          "D. Simple sugars"
+        ],
+        "correctAnswer": "B. Proteins",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Proteins supply the essential amino acids required to synthesize new cells and repair damaged tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The continuous muscular tube running from the mouth down to the anus is called the:",
+        "options": [
+          "A. Respiratory tract",
+          "B. Alimentary canal",
+          "C. Circulatory circuit",
+          "D. Spinal canal"
+        ],
+        "correctAnswer": "B. Alimentary canal",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The digestive tract or alimentary canal is the continuous muscular passage through which food travels from mouth to anus.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which diagnostic chemical reagent turns from yellow-brown to blue-black in the presence of starch?",
+        "options": [
+          "A. Benedict's solution",
+          "B. Biuret reagent",
+          "C. Iodine solution",
+          "D. Sudan III solution"
+        ],
+        "correctAnswer": "C. Iodine solution",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Iodine solution reacts specifically with starch molecules to produce a characteristic deep blue-black color.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which reagent produces a brick-red or orange-red precipitate when boiled with a reducing sugar like glucose?",
+        "options": [
+          "A. Benedict's solution",
+          "B. Iodine solution",
+          "C. Millon's reagent",
+          "D. Ethanol"
+        ],
+        "correctAnswer": "A. Benedict's solution",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Boiling Benedict's solution with a reducing sugar reduces copper ions, forming a brick-red copper(I) oxide precipitate.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In the grease spot test, crushing an oil seed against filter paper produces a:",
+        "options": [
+          "A. Permanent translucent spot",
+          "B. Dark blue-black ring",
+          "C. Bright green powdery layer",
+          "D. White crystalline crust"
+        ],
+        "correctAnswer": "A. Permanent translucent spot",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Lipids leave a characteristic permanent translucent grease spot on absorbent filter paper.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "When Sudan III solution is added to a food sample containing oil, what color confirms the presence of fat?",
+        "options": [
+          "A. Blue-black",
+          "B. Bright red",
+          "C. Deep violet",
+          "D. Pitch black"
+        ],
+        "correctAnswer": "B. Bright red",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Sudan III is a fat-soluble dye that stains lipid globules a distinct red color.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which chemical test uses a mixture of sodium hydroxide and copper(II) sulfate to detect proteins?",
+        "options": [
+          "A. Biuret test",
+          "B. Iodine test",
+          "C. Sudan III test",
+          "D. Spot test"
+        ],
+        "correctAnswer": "A. Biuret test",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The Biuret test uses dilute sodium hydroxide and copper(II) sulfate solutions to detect peptide bonds in proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What color indicates a positive result for protein when using the Biuret reagent?",
+        "options": [
+          "A. Brick-red",
+          "B. Violet or purple",
+          "C. Blue-black",
+          "D. Translucent yellow"
+        ],
+        "correctAnswer": "B. Violet or purple",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "A violet or purple coloration confirms the presence of protein in the tested specimen.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Proteins that contain all the essential amino acids needed by the human body are called:",
+        "options": [
+          "A. First-class proteins",
+          "B. Second-class proteins",
+          "C. Incomplete proteins",
+          "D. Synthetic proteins"
+        ],
+        "correctAnswer": "A. First-class proteins",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "First-class proteins (mostly of animal origin like meat, fish, and milk) contain all essential amino acids.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a major protein deficiency disease in young children?",
+        "options": [
+          "A. Scurvy",
+          "B. Kwashiorkor",
+          "C. Rickets",
+          "D. Goiter"
+        ],
+        "correctAnswer": "B. Kwashiorkor",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Kwashiorkor is caused by severe protein deficiency in diets that may otherwise supply carbohydrates.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the ball of chewed food mixed with saliva formed in the mouth called?",
+        "options": [
+          "A. Chyme",
+          "B. Bolus",
+          "C. Faeces",
+          "D. Peptone"
+        ],
+        "correctAnswer": "B. Bolus",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Food chewed and shaped by the tongue into a soft, slippery sphere for swallowing is a bolus.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The wave-like muscular contraction that pushes food along the oesophagus into the stomach is termed:",
+        "options": [
+          "A. Absorption",
+          "B. Peristalsis",
+          "C. Emulsification",
+          "D. Assimilation"
+        ],
+        "correctAnswer": "B. Peristalsis",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Peristalsis is the rhythmic involuntary muscular contraction that moves food down the alimentary canal.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which enzyme present in human saliva begins the chemical digestion of cooked starch?",
+        "options": [
+          "A. Pepsin",
+          "B. Ptyalin (salivary amylase)",
+          "C. Lipase",
+          "D. Rennin"
+        ],
+        "correctAnswer": "B. Ptyalin (salivary amylase)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Salivary glands secrete ptyalin, which hydrolyzes cooked starch into maltose in the mouth.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What acid is secreted by gastric glands in the human stomach?",
+        "options": [
+          "A. Sulfuric acid",
+          "B. Hydrochloric acid",
+          "C. Acetic acid",
+          "D. Nitric acid"
+        ],
+        "correctAnswer": "B. Hydrochloric acid",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The stomach lining secretes hydrochloric acid (HCl) to destroy pathogens and activate gastric enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which enzyme in gastric juice digests proteins into smaller peptones in an acidic medium?",
+        "options": [
+          "A. Pepsin",
+          "B. Ptyalin",
+          "C. Lipase",
+          "D. Maltase"
+        ],
+        "correctAnswer": "A. Pepsin",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Pepsin operates in the acidic gastric environment to break down dietary proteins into peptones.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the function of rennin in the stomach of human infants?",
+        "options": [
+          "A. Digesting cooking oil",
+          "B. Clotting or curdling liquid milk proteins",
+          "C. Breaking down starch to glucose",
+          "D. Neutralizing stomach acid"
+        ],
+        "correctAnswer": "B. Clotting or curdling liquid milk proteins",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Rennin coagulates soluble milk caseinogen into insoluble casein so that pepsin can digest it.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The acidic, creamy semi-fluid pulp produced by the stomach's churning action is called:",
+        "options": [
+          "A. Bolus",
+          "B. Chyme",
+          "C. Bile",
+          "D. Saliva"
+        ],
+        "correctAnswer": "B. Chyme",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Food partially digested and mixed with acidic gastric secretions in the stomach is called chyme.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organ in the human body synthesizes bile?",
+        "options": [
+          "A. Gallbladder",
+          "B. Liver",
+          "C. Pancreas",
+          "D. Spleen"
+        ],
+        "correctAnswer": "B. Liver",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Bile is manufactured and secreted by liver hepatocytes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where is bile temporarily stored and concentrated before entering the duodenum?",
+        "options": [
+          "A. Gallbladder",
+          "B. Stomach",
+          "C. Pancreas",
+          "D. Caecum"
+        ],
+        "correctAnswer": "A. Gallbladder",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Bile produced by the liver is stored and concentrated in the gallbladder.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of bile in the digestion of dietary fats?",
+        "options": [
+          "A. Breaking down proteins chemically",
+          "B. Emulsifying large fat globules into tiny droplets",
+          "C. Producing stomach acid",
+          "D. Turning oil into starch"
+        ],
+        "correctAnswer": "B. Emulsifying large fat globules into tiny droplets",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Bile salts physically break down large lipid masses into small droplets, increasing surface area for lipase action.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which enzyme converts emulsified fats into fatty acids and glycerol?",
+        "options": [
+          "A. Amylase",
+          "B. Lipase",
+          "C. Pepsin",
+          "D. Trypsin"
+        ],
+        "correctAnswer": "B. Lipase",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Lipase catalyzes the hydrolysis of emulsified fats into fatty acids and glycerol.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In which section of the human alimentary canal does the greatest amount of nutrient absorption occur?",
+        "options": [
+          "A. Stomach",
+          "B. Small intestine (ileum)",
+          "C. Oesophagus",
+          "D. Large intestine"
+        ],
+        "correctAnswer": "B. Small intestine (ileum)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The ileum of the small intestine is the main site for nutrient absorption into the bloodstream.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The tiny, finger-like projections lining the wall of the small intestine that increase surface area for absorption are:",
+        "options": [
+          "A. Villi",
+          "B. Cilia",
+          "C. Flagella",
+          "D. Spiracles"
+        ],
+        "correctAnswer": "A. Villi",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Villi are finger-like mucosal projections that multiply the internal absorptive surface area of the ileum.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of the colon (large intestine) in human digestion?",
+        "options": [
+          "A. Digesting starches into sugars",
+          "B. Reabsorbing water and mineral salts into the bloodstream",
+          "C. Producing hydrochloric acid",
+          "D. Emulsifying fats"
+        ],
+        "correctAnswer": "B. Reabsorbing water and mineral salts into the bloodstream",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The colon absorbs water and electrolytes from remaining undigested matter, forming semi-solid faeces.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The process of discharging undigested food residue from the body through the anus is called:",
+        "options": [
+          "A. Ingestion",
+          "B. Assimilation",
+          "C. Egestion",
+          "D. Transpiration"
+        ],
+        "correctAnswer": "C. Egestion",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Egestion is the voiding of undigested, unabsorbed food material (faeces) via the anus.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the final digestive end product of dietary carbohydrates?",
+        "options": [
+          "A. Amino acids",
+          "B. Glucose",
+          "C. Fatty acids",
+          "D. Peptones"
+        ],
+        "correctAnswer": "B. Glucose",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Carbohydrates are fully hydrolyzed into simple monosaccharides, predominantly glucose.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the final digestive end product of dietary proteins?",
+        "options": [
+          "A. Glucose",
+          "B. Glycerol",
+          "C. Amino acids",
+          "D. Maltose"
+        ],
+        "correctAnswer": "C. Amino acids",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Proteins are completely digested into individual amino acids before absorption.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following are the end products of fat and oil digestion?",
+        "options": [
+          "A. Glucose and galactose",
+          "B. Fatty acids and glycerol",
+          "C. Peptones and amino acids",
+          "D. Starch and maltose"
+        ],
+        "correctAnswer": "B. Fatty acids and glycerol",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Lipase breaks down dietary lipids into fatty acids and glycerol molecules.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Biological catalysts produced by living cells that accelerate chemical breakdown without being consumed are:",
+        "options": [
+          "A. Hormones",
+          "B. Enzymes",
+          "C. Vitamins",
+          "D. Antibiotics"
+        ],
+        "correctAnswer": "B. Enzymes",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Digestive enzymes are biological catalysts that speed up metabolic reactions.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which reagent produces a reddish-brown or deep red color when heated with protein in a test tube?",
+        "options": [
+          "A. Millon's reagent",
+          "B. Iodine solution",
+          "C. Benedict's reagent",
+          "D. Sudan III"
+        ],
+        "correctAnswer": "A. Millon's reagent",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Millon's reagent turns from white to deep red upon gentle heating in the presence of proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to digestive enzymes when exposed to excessive heat or boiling temperatures?",
+        "options": [
+          "A. They work twice as fast",
+          "B. They are denatured and permanently lose their catalytic activity",
+          "C. They transform into vitamins",
+          "D. They turn into carbohydrates"
+        ],
+        "correctAnswer": "B. They are denatured and permanently lose their catalytic activity",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "High temperatures alter the tertiary protein structure of enzymes (denaturation), destroying their active sites.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organ secretes both digestive enzymes (amylase, trypsin, lipase) and the hormone insulin?",
+        "options": [
+          "A. Liver",
+          "B. Spleen",
+          "C. Pancreas",
+          "D. Gallbladder"
+        ],
+        "correctAnswer": "C. Pancreas",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The pancreas has exocrine functions (secreting pancreatic juice) and endocrine functions (secreting insulin).",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Difficulty in passing dry, hardened faeces due to lack of dietary fiber and water is termed:",
+        "options": [
+          "A. Indigestion",
+          "B. Diarrhea",
+          "C. Constipation",
+          "D. Jaundice"
+        ],
+        "correctAnswer": "C. Constipation",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Constipation is a condition characterized by infrequent, difficult bowel movements often linked to low fiber intake.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which component of our diet adds bulk to stools and stimulates peristalsis even though humans cannot digest it?",
+        "options": [
+          "A. Roughage (dietary fiber)",
+          "B. Animal fat",
+          "C. Table salt",
+          "D. Pure sugar"
+        ],
+        "correctAnswer": "A. Roughage (dietary fiber)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Indigestible plant fiber (cellulose) provides bulk that stimulates regular bowel contractions.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An open sore on the mucosal inner lining of the stomach or duodenum is known as a:",
+        "options": [
+          "A. Gallstone",
+          "B. Peptic ulcer",
+          "C. Cataract",
+          "D. Goiter"
+        ],
+        "correctAnswer": "B. Peptic ulcer",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Peptic ulcers are painful sores produced when digestive acid and pepsin erode the protective gastrointestinal lining.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Yellowing of the skin and whites of the eyes caused by a buildup of bile pigments in the blood is called:",
+        "options": [
+          "A. Cirrhosis",
+          "B. Jaundice",
+          "C. Constipation",
+          "D. Kwashiorkor"
+        ],
+        "correctAnswer": "B. Jaundice",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Jaundice is the yellow discoloration of tissues caused by elevated bilirubin levels when bile excretion is impaired.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which accessory organ lies directly beneath the liver and releases stored bile into the duodenum?",
+        "options": [
+          "A. Appendix",
+          "B. Gallbladder",
+          "C. Pancreas",
+          "D. Spleen"
+        ],
+        "correctAnswer": "B. Gallbladder",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The gallbladder is attached beneath the liver and concentrates and ejects stored bile.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the small, finger-like vestigial pouch attached near the junction of the small and large intestines?",
+        "options": [
+          "A. Appendix",
+          "B. Gallbladder",
+          "C. Rectum",
+          "D. Spleen"
+        ],
+        "correctAnswer": "A. Appendix",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The vermiform appendix is a narrow, blind-ended pouch projecting from the caecum.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the optimal pH environment required for the enzyme pepsin to function efficiently?",
+        "options": [
+          "A. Strongly alkaline (pH 12)",
+          "B. Strongly acidic (pH 1.5 - 2.5)",
+          "C. Neutral (pH 7)",
+          "D. Completely dry"
+        ],
+        "correctAnswer": "B. Strongly acidic (pH 1.5 - 2.5)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Pepsin operates best in the strongly acidic environment created by gastric hydrochloric acid.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The incorporation and utilization of absorbed nutrient molecules by body cells for energy and growth is called:",
+        "options": [
+          "A. Ingestion",
+          "B. Assimilation",
+          "C. Egestion",
+          "D. Mastication"
+        ],
+        "correctAnswer": "B. Assimilation",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Assimilation is the movement and biological use of absorbed food molecules inside cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Into which structures inside the intestinal villi are digested fatty acids and glycerol primarily absorbed?",
+        "options": [
+          "A. Blood capillaries",
+          "B. Lacteals (lymphatic vessels)",
+          "C. Bile ducts",
+          "D. Nerve endings"
+        ],
+        "correctAnswer": "B. Lacteals (lymphatic vessels)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Lipid digestion products pass into central lacteal vessels before entering the bloodstream.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following habits helps prevent indigestion (dyspepsia)?",
+        "options": [
+          "A. Swallowing large chunks of unchewed food quickly",
+          "B. Chewing food thoroughly and eating balanced meals at regular intervals",
+          "C. Eating heavy, oily foods right before sleeping",
+          "D. Smoking heavily before meals"
+        ],
+        "correctAnswer": "B. Chewing food thoroughly and eating balanced meals at regular intervals",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Chewing well and having regular meal schedules reduce strain on digestive organs.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the medical consequence of consuming excessive dietary salt over long periods?",
+        "options": [
+          "A. Severe tooth decay",
+          "B. Fluid retention (oedema) and high blood pressure (hypertension)",
+          "C. Immediate weight loss",
+          "D. Kwashiorkor"
+        ],
+        "correctAnswer": "B. Fluid retention (oedema) and high blood pressure (hypertension)",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Excess sodium draws water into blood vessels, elevating blood pressure and causing tissue fluid retention.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A chronic condition where healthy liver tissue is replaced by hardened, non-functional scar tissue is:",
+        "options": [
+          "A. Cirrhosis",
+          "B. Dyspepsia",
+          "C. Ulcer",
+          "D. Constipation"
+        ],
+        "correctAnswer": "A. Cirrhosis",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Cirrhosis is progressive fibrosis and scarring of the liver often triggered by chronic alcohol use or viral hepatitis.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which component of saliva provides lubrication to make swallowing smooth and easy?",
+        "options": [
+          "A. Mucus",
+          "B. Hydrochloric acid",
+          "C. Pepsin",
+          "D. Bile"
+        ],
+        "correctAnswer": "A. Mucus",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Mucus in saliva binds food particles together into a lubricated bolus for easy swallowing.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which enzyme found in pancreatic juice breaks down proteins and polypeptides in an alkaline environment?",
+        "options": [
+          "A. Trypsin",
+          "B. Ptyalin",
+          "C. Rennin",
+          "D. Maltase"
+        ],
+        "correctAnswer": "A. Trypsin",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Pancreatic trypsin digests proteins and peptones into smaller peptides in the duodenum.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens when non-reducing sugars like sucrose are boiled directly with Benedict's solution without acid treatment?",
+        "options": [
+          "A. The solution remains clear blue with no color change",
+          "B. It turns brick-red instantly",
+          "C. It turns violet-purple",
+          "D. It produces a translucent spot"
+        ],
+        "correctAnswer": "A. The solution remains clear blue with no color change",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Non-reducing disaccharides cannot reduce copper ions directly, leaving the reagent's blue color unchanged.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where are faeces stored temporarily in the human body before defecation?",
+        "options": [
+          "A. Small intestine",
+          "B. Rectum",
+          "C. Gallbladder",
+          "D. Stomach"
+        ],
+        "correctAnswer": "B. Rectum",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "The rectum acts as a temporary holding chamber for formed faeces prior to egestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a second-class protein source?",
+        "options": [
+          "A. Boiled egg",
+          "B. Fresh cow milk",
+          "C. Roasted groundnuts",
+          "D. Grilled beef"
+        ],
+        "correctAnswer": "C. Roasted groundnuts",
+        "hint": "Recall the fundamental food nutrient classes (carbohydrates, proteins, fats, vitamins, minerals, water, roughage), standard colorimetric reagent tests (Iodine, Benedict's, Biuret, Sudan III), and core organs of the alimentary canal.",
+        "workedSolution": "Groundnuts are plant proteins that lack certain essential amino acids, making them second-class proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Dental caries (tooth decay) is initiated chemically when mouth bacteria:",
+        "prompt": "Why does a piece of plain bread taste slightly sweet if it is chewed thoroughly in the mouth for two minutes?",
         "options": [
-          "Release basic ammonia that burns the gums",
-          "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
-          "Drink all water from the salivary glands",
-          "Inject poisonous enzymes into the dentine"
+          "A. Teeth release natural sugars when chewing",
+          "B. Salivary ptyalin hydrolyzes tasteless cooked starch into sweet-tasting maltose disaccharides",
+          "C. Stomach acid rises into the mouth to sweeten food",
+          "D. Taste buds produce glucose molecules"
         ],
-        "correctAnswer": "Ferment dietary sugars into lactic acid that dissolves calcium minerals in enamel",
-        "hint": "Plaque bacteria produce acid from sugary foods.",
-        "workedSolution": "Oral plaque bacteria metabolize residual sucrose sugars to synthesize lactic acid, which drops oral pH below the critical threshold (5.5), dissolving hydroxyapatite mineral crystals in the tooth enamel.",
+        "correctAnswer": "B. Salivary ptyalin hydrolyzes tasteless cooked starch into sweet-tasting maltose disaccharides",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Chewing gives ptyalin time to convert insoluble starch into sweet maltose sugars in the mouth.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does the action of salivary ptyalin cease once food enters the stomach cavity?",
+        "options": [
+          "A. Ptyalin dissolves in drinking water",
+          "B. The strongly acidic gastric juice (pH 1.5–2.5) denatures ptyalin, which requires a near-neutral pH",
+          "C. Stomach muscles physically crush the enzyme",
+          "D. Bile neutralizes ptyalin in the stomach"
+        ],
+        "correctAnswer": "B. The strongly acidic gastric juice (pH 1.5–2.5) denatures ptyalin, which requires a near-neutral pH",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Ptyalin is inactivated and denatured by the low pH of gastric hydrochloric acid.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biochemical purpose of boiling a non-reducing sugar with dilute hydrochloric acid before adding Benedict's reagent?",
+        "options": [
+          "A. To dye the sugar blue",
+          "B. To acid-hydrolyze the complex non-reducing disaccharide into reducing monosaccharide units",
+          "C. To kill all digestive enzymes",
+          "D. To turn the sugar into a protein"
+        ],
+        "correctAnswer": "B. To acid-hydrolyze the complex non-reducing disaccharide into reducing monosaccharide units",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Acid hydrolysis breaks glycosidic bonds in non-reducing sugars like sucrose, releasing reducing monosaccharides.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must sodium hydroxide or sodium bicarbonate be added after acid-hydrolyzing a non-reducing sugar?",
+        "options": [
+          "A. To make the mixture smell sweet",
+          "B. To neutralize excess acid, because Benedict's reagent only functions in an alkaline medium",
+          "C. To turn the sugar into starch",
+          "D. To produce a grease spot"
+        ],
+        "correctAnswer": "B. To neutralize excess acid, because Benedict's reagent only functions in an alkaline medium",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Benedict's reduction reaction requires an alkaline environment to produce the copper oxide precipitate.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the structural design of intestinal villi maximize nutrient absorption in the ileum?",
+        "options": [
+          "A. By forming a flat, impermeable leather-like barrier",
+          "B. By providing a huge surface area, thin single-cell epithelium, and dense networks of blood capillaries and lacteals",
+          "C. By blocking all liquids from passing",
+          "D. By producing hydrochloric acid"
+        ],
+        "correctAnswer": "B. By providing a huge surface area, thin single-cell epithelium, and dense networks of blood capillaries and lacteals",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Villi provide a vast surface area, thin diffusion barriers, and rich vascular beds for efficient uptake.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a patient with an inflamed or blocked bile duct pass pale, clay-colored stools and suffer from indigestion of fatty foods?",
+        "options": [
+          "A. The stomach produces too much pepsin",
+          "B. Bile pigments fail to reach the intestine to color faeces, and lack of bile salts impairs lipid emulsification",
+          "C. Pancreatic lipase is destroyed by water",
+          "D. The patient lacks saliva"
+        ],
+        "correctAnswer": "B. Bile pigments fail to reach the intestine to color faeces, and lack of bile salts impairs lipid emulsification",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Bile pigments provide the brown color of normal stools, while bile salts are essential for emulsifying fats.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do fats and oils provide essential thermal insulation in the human body?",
+        "options": [
+          "A. They burn constantly like wood fires",
+          "B. Subcutaneous adipose tissue under the skin conducts heat poorly, slowing internal heat loss to the outside",
+          "C. They absorb sunlight through the skin",
+          "D. They convert sweat into steam"
+        ],
+        "correctAnswer": "B. Subcutaneous adipose tissue under the skin conducts heat poorly, slowing internal heat loss to the outside",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Adipose tissue is a poor conductor of heat, forming a subcutaneous layer that reduces heat loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the key functional difference between physical digestion and chemical digestion?",
+        "options": [
+          "A. Physical digestion changes the chemical bonds; chemical digestion only breaks food into small pieces",
+          "B. Physical digestion breaks food mechanically into smaller fragments without altering chemical identity; chemical digestion uses enzymes to break covalent bonds",
+          "C. Chemical digestion happens only in the mouth; physical digestion happens only in the colon",
+          "D. Physical digestion requires bacteria; chemical digestion does not"
+        ],
+        "correctAnswer": "B. Physical digestion breaks food mechanically into smaller fragments without altering chemical identity; chemical digestion uses enzymes to break covalent bonds",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Physical digestion reduces particle size, while chemical digestion cleaves molecular bonds using enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does unbuffered gastric juice not normally digest the muscular wall of the stomach itself?",
+        "options": [
+          "A. The stomach is made of bone",
+          "B. A thick layer of alkaline mucus continuously coats and shields the gastric lining from acid and pepsin",
+          "C. Pepsin is only active when touching air",
+          "D. The stomach is empty of blood"
+        ],
+        "correctAnswer": "B. A thick layer of alkaline mucus continuously coats and shields the gastric lining from acid and pepsin",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Epithelial goblet cells secrete protective mucus containing bicarbonate that buffers the stomach lining against acid.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role does pancreatic amylase play in the duodenum?",
+        "options": [
+          "A. Converting proteins to amino acids",
+          "B. Hydrolyzing remaining undigested starches into maltose in an alkaline medium",
+          "C. Emulsifying animal fats",
+          "D. Clotting liquid milk"
+        ],
+        "correctAnswer": "B. Hydrolyzing remaining undigested starches into maltose in an alkaline medium",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Pancreatic amylase continues carbohydrate digestion in the alkaline environment of the duodenum.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is regular consumption of leafy vegetables like cocoyam leaves ('kontomire') effective in relieving constipation?",
+        "options": [
+          "A. They digest all intestinal proteins immediately",
+          "B. Their indigestible cellulose fibers retain water, creating soft, bulky stools that stimulate peristalsis",
+          "C. They stop the liver from making bile",
+          "D. They kill all intestinal bacteria"
+        ],
+        "correctAnswer": "B. Their indigestible cellulose fibers retain water, creating soft, bulky stools that stimulate peristalsis",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Vegetable roughage holds moisture and adds physical bulk, triggering regular bowel contractions.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does emotional stress contribute to the development or worsening of peptic ulcers?",
+        "options": [
+          "A. Stress causes people to chew too much food",
+          "B. Prolonged stress triggers excess gastric acid secretion while reducing blood flow and mucus production in the stomach wall",
+          "C. Stress dissolves the liver",
+          "D. Stress turns starch into acid"
+        ],
+        "correctAnswer": "B. Prolonged stress triggers excess gastric acid secretion while reducing blood flow and mucus production in the stomach wall",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Chronic sympathetic stress increases acid output and compromises protective mucosal blood flow.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the Sudan III test procedure for fats?",
+        "options": [
+          "A. Boiling the food with dilute acid in a water bath",
+          "B. Adding drops of Sudan III dye to the sample and observing a characteristic red-stained lipid layer",
+          "C. Adding iodine until a blue-black precipitate settles",
+          "D. Adding copper sulfate and sodium hydroxide until violet appears"
+        ],
+        "correctAnswer": "B. Adding drops of Sudan III dye to the sample and observing a characteristic red-stained lipid layer",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Sudan III dissolves preferentially in lipids, staining fat globules a distinct red color.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are lipids regarded as a more concentrated energy source than carbohydrates?",
+        "options": [
+          "A. Lipids contain less carbon",
+          "B. Lipids have a higher proportion of carbon-hydrogen bonds and yield more than double the energy per gram compared to carbohydrates",
+          "C. Lipids dissolve faster in water",
+          "D. Lipids are absorbed in the mouth"
+        ],
+        "correctAnswer": "B. Lipids have a higher proportion of carbon-hydrogen bonds and yield more than double the energy per gram compared to carbohydrates",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Due to their reduced chemical state, lipids supply roughly 9 kcal/g compared to 4 kcal/g from carbohydrates.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger of severe prolonged diarrhea in infants?",
+        "options": [
+          "A. Excessive growth of body hair",
+          "B. Rapid dehydration and loss of vital electrolytes, which can lead to hypovolemic shock",
+          "C. Hardening of the bones",
+          "D. Excess production of bile"
+        ],
+        "correctAnswer": "B. Rapid dehydration and loss of vital electrolytes, which can lead to hypovolemic shock",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Severe diarrhea depletes body water and essential electrolytes rapidly, leading to life-threatening dehydration.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which enzyme completes the conversion of maltose into individual glucose units in the small intestine?",
+        "options": [
+          "A. Ptyalin",
+          "B. Maltase",
+          "C. Pepsin",
+          "D. Lipase"
+        ],
+        "correctAnswer": "B. Maltase",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Maltase in intestinal juice splits the disaccharide maltose into two glucose molecules.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the liver considered an accessory digestive organ rather than part of the alimentary canal?",
+        "options": [
+          "A. Food passes through the liver before reaching the stomach",
+          "B. Food never enters the liver; it contributes digestive secretions (bile) to the tract through a duct",
+          "C. The liver is located outside the human body",
+          "D. The liver only functions during sleep"
+        ],
+        "correctAnswer": "B. Food never enters the liver; it contributes digestive secretions (bile) to the tract through a duct",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Accessory organs produce secretions but do not form part of the continuous tube through which food travels.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens if a grease spot on filter paper is warmed gently over a heat source?",
+        "options": [
+          "A. A true fat spot remains permanently translucent, whereas a simple water spot evaporates and disappears",
+          "B. The paper turns blue-black",
+          "C. The paper turns into sugar",
+          "D. The spot dissolves into gas completely"
+        ],
+        "correctAnswer": "A. A true fat spot remains permanently translucent, whereas a simple water spot evaporates and disappears",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Unlike volatile water spots, non-volatile lipids leave a permanent translucent stain even after warming.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do humans need diverse mineral salts like iron and calcium in their daily diet?",
+        "options": [
+          "A. They provide caloric energy like starches",
+          "B. Iron forms the oxygen-carrying core of hemoglobin, while calcium builds bones and enables muscle contractions",
+          "C. They replace all bodily water",
+          "D. They produce saliva"
+        ],
+        "correctAnswer": "B. Iron forms the oxygen-carrying core of hemoglobin, while calcium builds bones and enables muscle contractions",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Minerals serve structural and regulatory roles: iron forms hemoglobin and calcium mineralizes skeletal tissue.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the enzyme sucrase (invertase) in the human ileum?",
+        "options": [
+          "A. Digesting cooked starch to maltose",
+          "B. Hydrolyzing table sugar (sucrose) into glucose and fructose",
+          "C. Clotting milk proteins",
+          "D. Converting fats into glycerol"
+        ],
+        "correctAnswer": "B. Hydrolyzing table sugar (sucrose) into glucose and fructose",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Sucrase breaks down dietary sucrose into its constituent monosaccharides, glucose and fructose.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What physical change occurs when fats are emulsified by bile salts in the duodenum?",
+        "options": [
+          "A. They are broken down into amino acids",
+          "B. Large, cohesive lipid droplets are dispersed into tiny suspended globules, increasing the surface area for lipase",
+          "C. They solidify into hard stones",
+          "D. They turn into water-soluble glucose"
+        ],
+        "correctAnswer": "B. Large, cohesive lipid droplets are dispersed into tiny suspended globules, increasing the surface area for lipase",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Emulsification lowers surface tension, breaking fat masses into droplets for faster enzymatic digestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following conditions is caused by severe caloric starvation alongside protein deficiency?",
+        "options": [
+          "A. Marasmus",
+          "B. Scurvy",
+          "C. Jaundice",
+          "D. Gallstones"
+        ],
+        "correctAnswer": "A. Marasmus",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Marasmus results from total nutritional starvation (energy and protein deficiency), causing severe tissue wasting.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does human stomach acid not burn through the lining of the small intestine?",
+        "options": [
+          "A. The small intestine is lined with bone",
+          "B. Alkaline bile and pancreatic bicarbonate secretions neutralize acidic chyme as it enters the duodenum",
+          "C. The stomach absorbs all acid before emptying",
+          "D. Intestinal enzymes destroy acid"
+        ],
+        "correctAnswer": "B. Alkaline bile and pancreatic bicarbonate secretions neutralize acidic chyme as it enters the duodenum",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Bicarbonate ions in pancreatic juice and bile neutralize incoming stomach acid, raising pH to around 7–8.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of the lacteal inside an intestinal villus?",
+        "options": [
+          "A. Absorbing water-soluble vitamins",
+          "B. Absorbing digested fatty acids and glycerol into the lymphatic system",
+          "C. Carrying red blood cells to the stomach",
+          "D. Secreting hydrochloric acid"
+        ],
+        "correctAnswer": "B. Absorbing digested fatty acids and glycerol into the lymphatic system",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Lacteals absorb dietary lipid products into the lymph before releasing them into the systemic circulation.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does eating meals late at night right before sleeping increase the risk of acid reflux and indigestion?",
+        "options": [
+          "A. The stomach produces no enzymes at night",
+          "B. A horizontal sleeping posture allows acidic stomach contents to escape backward through the relaxed lower oesophageal sphincter",
+          "C. Food freezes in the stomach during sleep",
+          "D. Night air neutralizes saliva"
+        ],
+        "correctAnswer": "B. A horizontal sleeping posture allows acidic stomach contents to escape backward through the relaxed lower oesophageal sphincter",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Lying down removes the gravitational advantage, allowing acidic chyme to reflux upward into the gullet.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the structure of a first-class protein differ biologically from a second-class protein?",
+        "options": [
+          "A. First-class proteins contain heavy metals",
+          "B. First-class proteins supply all essential amino acids that the human body cannot synthesize internally",
+          "C. Second-class proteins are derived solely from animals",
+          "D. First-class proteins do not contain nitrogen"
+        ],
+        "correctAnswer": "B. First-class proteins supply all essential amino acids that the human body cannot synthesize internally",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "First-class proteins contain all essential amino acids in balanced proportions for human protein synthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What occurs when a food sample containing oil is tested using ethanol?",
+        "options": [
+          "A. The oil dissolves in ethanol, and pouring this into water yields a cloudy, milky-white emulsion",
+          "B. The mixture turns pitch black",
+          "C. The mixture solidifies into a plastic block",
+          "D. It produces sweet-tasting glucose"
+        ],
+        "correctAnswer": "A. The oil dissolves in ethanol, and pouring this into water yields a cloudy, milky-white emulsion",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Lipids dissolve in ethanol but precipitate out into an emulsion of tiny reflective droplets in water.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following best describes the chemical action of erepsin (peptidase) in the ileum?",
+        "options": [
+          "A. Converting starch to maltose",
+          "B. Splitting remaining peptides into individual absorbable amino acids",
+          "C. Emulsifying animal fats",
+          "D. Clotting milk"
+        ],
+        "correctAnswer": "B. Splitting remaining peptides into individual absorbable amino acids",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Peptidases (erepsin) complete protein digestion by cleaving short peptides into free amino acids.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a diet lacking fruits and vegetables frequently cause constipation?",
+        "options": [
+          "A. Fruits produce too much hydrochloric acid",
+          "B. Fruits and vegetables are rich in roughage that provides bulk and stimulates regular peristaltic contractions",
+          "C. Stems absorb bile from the liver",
+          "D. Vegetables stop the pancreas from working"
+        ],
+        "correctAnswer": "B. Fruits and vegetables are rich in roughage that provides bulk and stimulates regular peristaltic contractions",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Insoluble fiber retains water in the intestinal lumen, keeping waste pliable and stimulating bowel movements.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary physiological consequence of drinking insufficient water on bowel movements?",
+        "options": [
+          "A. The stomach produces too much bile",
+          "B. The colon reabsorbs more water from residual waste, making faeces hard, dry, and painful to pass",
+          "C. Digestion stops completely in the mouth",
+          "D. The small intestine dissolves"
+        ],
+        "correctAnswer": "B. The colon reabsorbs more water from residual waste, making faeces hard, dry, and painful to pass",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Dehydration prompts the colon to extract maximum water from digestive waste, leading to hardened stools.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which digestive organ possesses both endocrine tissues that secrete hormones and exocrine tissues that produce enzymes?",
+        "options": [
+          "A. Pancreas",
+          "B. Liver",
+          "C. Gallbladder",
+          "D. Appendix"
+        ],
+        "correctAnswer": "A. Pancreas",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "The pancreas produces pancreatic enzymes (exocrine) and secretes insulin and glucagon (endocrine).",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does chewing food thoroughly into a fine paste aid the chemical action of digestive enzymes?",
+        "options": [
+          "A. It reduces the mass of the food",
+          "B. It increases the accessible surface area on which digestive enzymes can attach and react",
+          "C. It prevents food from reaching the stomach",
+          "D. It removes all bacteria"
+        ],
+        "correctAnswer": "B. It increases the accessible surface area on which digestive enzymes can attach and react",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Mastication breaks food into smaller pieces, increasing surface area for enzymatic hydrolysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the epiglottis during swallowing?",
+        "options": [
+          "A. Secreting digestive saliva",
+          "B. Folding over the trachea (windpipe) to prevent food from entering the respiratory airways",
+          "C. Pushing food into the stomach",
+          "D. Grinding food with teeth"
+        ],
+        "correctAnswer": "B. Folding over the trachea (windpipe) to prevent food from entering the respiratory airways",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "The cartilaginous epiglottis covers the glottis during swallowing, directing the bolus into the oesophagus.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the liver vulnerable to damage from heavy, chronic alcohol consumption?",
+        "options": [
+          "A. Alcohol turns into starch in the liver",
+          "B. The liver metabolizes and detoxifies alcohol; toxic intermediate byproducts cause fat accumulation, inflammation, and scarring (cirrhosis)",
+          "C. Alcohol freezes the bile duct",
+          "D. Alcohol forms gallstones instantly"
+        ],
+        "correctAnswer": "B. The liver metabolizes and detoxifies alcohol; toxic intermediate byproducts cause fat accumulation, inflammation, and scarring (cirrhosis)",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Alcohol oxidation generates acetaldehyde, which damages hepatocytes and promotes liver scarring.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What are gallstones primarily composed of in humans?",
+        "options": [
+          "A. Pure iron metal",
+          "B. Hardened, crystallized deposits of cholesterol and bile pigments in the gallbladder",
+          "C. Swallowed grit from food",
+          "D. Undigested starch grains"
+        ],
+        "correctAnswer": "B. Hardened, crystallized deposits of cholesterol and bile pigments in the gallbladder",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Gallstones form when bile contains excess cholesterol or bilirubin that crystallizes into solid stones.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do fatty acids and glycerol travel through the human body after being absorbed into lacteals?",
+        "options": [
+          "A. They are pumped directly into the brain",
+          "B. They travel through the lymphatic vessel system before being discharged into the bloodstream near the heart",
+          "C. They are excreted directly into the lungs",
+          "D. They turn into urine in the kidneys"
+        ],
+        "correctAnswer": "B. They travel through the lymphatic vessel system before being discharged into the bloodstream near the heart",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Lacteals transport chylomicrons through the lymphatic system, draining into veins near the thoracic duct.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of vitamin C (ascorbic acid) in human health?",
+        "options": [
+          "A. Maintaining healthy gums, skin, and connective tissues, and preventing scurvy",
+          "B. Producing digestive hydrochloric acid",
+          "C. Supplying quick energy like starch",
+          "D. Clotting milk in the stomach"
+        ],
+        "correctAnswer": "A. Maintaining healthy gums, skin, and connective tissues, and preventing scurvy",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Vitamin C is essential for collagen synthesis, gum health, and wound healing.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is vitamin D essential for proper human skeletal development?",
+        "options": [
+          "A. It acts as an enzyme that digests bone",
+          "B. It facilitates the absorption of dietary calcium and phosphorus across the intestinal wall",
+          "C. It turns starch into bone",
+          "D. It replaces water in the joints"
+        ],
+        "correctAnswer": "B. It facilitates the absorption of dietary calcium and phosphorus across the intestinal wall",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Vitamin D regulates intestinal calcium absorption, preventing rickets in children and osteomalacia in adults.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the correct procedure for testing an oilseed like groundnut for lipids using filter paper?",
+        "options": [
+          "A. Boil the seed in acid, then drop on paper",
+          "B. Remove the skin, crush the seed, rub it firmly against filter paper, and inspect for a permanent translucent stain",
+          "C. Soak the paper in iodine solution, then touch the seed",
+          "D. Burn the seed and sprinkle ash on paper"
+        ],
+        "correctAnswer": "B. Remove the skin, crush the seed, rub it firmly against filter paper, and inspect for a permanent translucent stain",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Crushing seed cotyledons releases plant oils directly onto paper fibers, leaving a translucent grease spot.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the medical condition known as oedema in people who consume excess table salt?",
+        "options": [
+          "A. Salt destroys all body fat",
+          "B. High sodium concentrations prompt the kidneys to retain water, causing fluid accumulation and swelling in bodily tissues",
+          "C. Salt dissolves muscle fibers",
+          "D. Salt turns blood into solid crystals"
+        ],
+        "correctAnswer": "B. High sodium concentrations prompt the kidneys to retain water, causing fluid accumulation and swelling in bodily tissues",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Excess sodium increases osmotic retention of water in extracellular spaces, producing tissue swelling (oedema).",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the small intestine much longer (about 6 meters) than the large intestine (about 1.5 meters)?",
+        "options": [
+          "A. To store undigested food for years",
+          "B. To provide extended contact time and surface area for complete chemical digestion and nutrient absorption",
+          "C. To prevent water from entering the body",
+          "D. To produce bile"
+        ],
+        "correctAnswer": "B. To provide extended contact time and surface area for complete chemical digestion and nutrient absorption",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Its extensive length ensures prolonged exposure of digested chyme to intestinal enzymes and absorptive villi.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following enzymes hydrolyzes milk sugar (lactose) into glucose and galactose?",
+        "options": [
+          "A. Lactase",
+          "B. Maltase",
+          "C. Sucrase",
+          "D. Pepsin"
+        ],
+        "correctAnswer": "A. Lactase",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Lactase is the brush-border enzyme that breaks down lactose into glucose and galactose.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary health benefit of regular physical exercise for the digestive system?",
+        "options": [
+          "A. It stops the body from needing food",
+          "B. It strengthens abdominal muscles, stimulates intestinal peristalsis, and prevents constipation",
+          "C. It destroys all stomach acid",
+          "D. It removes the need for liver enzymes"
+        ],
+        "correctAnswer": "B. It strengthens abdominal muscles, stimulates intestinal peristalsis, and prevents constipation",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Physical exercise stimulates intestinal muscle tone and regular peristalsis, preventing constipation.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the inner mucosal lining of the ileum folded into circular folds (plicae circulares)?",
+        "options": [
+          "A. To slow down chyme movement and multiply the surface area available for nutrient absorption",
+          "B. To make the intestine heavy",
+          "C. To prevent blood from reaching the stomach",
+          "D. To grind bones like a gizzard"
+        ],
+        "correctAnswer": "A. To slow down chyme movement and multiply the surface area available for nutrient absorption",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Circular mucosal folds slow the passage of digesta and expand the absorptive surface area.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What occurs when the body absorbs more caloric energy from food than it expends through metabolic activity?",
+        "options": [
+          "A. Surplus energy is converted into triglycerides and stored in adipose tissues, leading to overweight or obesity",
+          "B. The person grows taller indefinitely",
+          "C. The digestive system stops working",
+          "D. Excess food turns directly into bone"
+        ],
+        "correctAnswer": "A. Surplus energy is converted into triglycerides and stored in adipose tissues, leading to overweight or obesity",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Surplus dietary calories are converted into fats and stored in adipose tissue, predisposing to obesity.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does chronic hepatitis B viral infection damage the human liver?",
+        "options": [
+          "A. It turns liver tissue into bone",
+          "B. It causes persistent hepatic inflammation, leading to cell death, fibrosis, and increased risk of cirrhosis or liver cancer",
+          "C. It prevents the stomach from making acid",
+          "D. It stops saliva production"
+        ],
+        "correctAnswer": "B. It causes persistent hepatic inflammation, leading to cell death, fibrosis, and increased risk of cirrhosis or liver cancer",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Chronic viral hepatitis inflames liver tissue, which can progress to cirrhosis and hepatocellular carcinoma.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the function of the cardiac sphincter muscle?",
+        "options": [
+          "A. Allowing bile to enter the mouth",
+          "B. Regulating the passage of food from the oesophagus into the stomach and preventing acid reflux",
+          "C. Pumping blood to the lungs",
+          "D. Opening the anus"
+        ],
+        "correctAnswer": "B. Regulating the passage of food from the oesophagus into the stomach and preventing acid reflux",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "The lower oesophageal (cardiac) sphincter prevents acidic gastric contents from refluxing into the oesophagus.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of the pyloric sphincter at the junction of the stomach and duodenum?",
+        "options": [
+          "A. Allowing small squirts of acidic chyme into the duodenum at a controlled rate",
+          "B. Preventing food from entering the stomach",
+          "C. Producing pancreatic enzymes",
+          "D. Holding faeces before defecation"
+        ],
+        "correctAnswer": "A. Allowing small squirts of acidic chyme into the duodenum at a controlled rate",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "The pyloric sphincter meters chyme release into the duodenum, ensuring digestion is not overwhelmed.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a positive Biuret test show a violet ring or color rather than blue?",
+        "options": [
+          "A. Copper ions react with starch",
+          "B. Cupric ions (Cu²⁺) form a coordination complex with peptide bonds (-CONH-) under alkaline conditions",
+          "C. The sodium hydroxide boils into gas",
+          "D. The protein turns into alcohol"
+        ],
+        "correctAnswer": "B. Cupric ions (Cu²⁺) form a coordination complex with peptide bonds (-CONH-) under alkaline conditions",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Copper(II) ions chelate with nitrogen atoms in peptide bonds in an alkaline medium, producing the violet color.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological significance of mutualistic bacteria residing inside the human colon?",
+        "options": [
+          "A. They produce hydrochloric acid",
+          "B. They ferment undigested fiber, synthesize vitamin K and certain B vitamins, and inhibit pathogenic invaders",
+          "C. They eat all the absorbed nutrients",
+          "D. They digest bones"
+        ],
+        "correctAnswer": "B. They ferment undigested fiber, synthesize vitamin K and certain B vitamins, and inhibit pathogenic invaders",
+        "hint": "Consider digestive secretions and enzymes (ptyalin, pepsin, rennin, pancreatic juice, bile), pH transitions across the tract, physical vs chemical digestion, villus absorption, and common gastrointestinal disorders.",
+        "workedSolution": "Commensal colon bacteria ferment residual fiber, produce essential vitamin K, and support gut health.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A student tests a clear liquid food sample with Benedict's reagent and observes no color change upon boiling. Another portion is boiled with dilute HCl, neutralized with NaOH, and then boiled with Benedict's, yielding an orange-red precipitate. What was in the food?",
+        "options": [
+          "A. Glucose",
+          "B. Sucrose (a non-reducing disaccharide)",
+          "C. Starch only",
+          "D. Animal fat"
+        ],
+        "correctAnswer": "B. Sucrose (a non-reducing disaccharide)",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Sucrose gives a negative initial Benedict's test, but acid hydrolysis breaks it into reducing sugars (glucose and fructose).",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do patients who have undergone surgical removal of the gallbladder (cholecystectomy) need to avoid large, fatty meals?",
+        "options": [
+          "A. They can no longer synthesize bile in their liver",
+          "B. Without a storage reservoir, bile drips into the duodenum continuously in dilute amounts, providing insufficient bile salts to emulsify sudden fat loads",
+          "C. Lipase enzyme production ceases permanently",
+          "D. Fat turns into poisonous acid in the stomach"
+        ],
+        "correctAnswer": "B. Without a storage reservoir, bile drips into the duodenum continuously in dilute amounts, providing insufficient bile salts to emulsify sudden fat loads",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The liver continues to produce bile, but lacking a storage pouch, concentrated bile boluses cannot be delivered for heavy fat loads.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the microvillus brush border on intestinal epithelial cells optimize absorption kinetics?",
+        "options": [
+          "A. By forming an impermeable barrier",
+          "B. By expanding the luminal absorptive surface area hundreds of times and embedding membrane-bound digestive enzymes directly at transport sites",
+          "C. By producing gastric acid",
+          "D. By moving chyme backwards into the stomach"
+        ],
+        "correctAnswer": "B. By expanding the luminal absorptive surface area hundreds of times and embedding membrane-bound digestive enzymes directly at transport sites",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Microvilli expand the functional surface area of the intestinal mucosa and anchor terminal brush-border enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe, long-term protein deficiency (kwashiorkor) cause a swollen abdomen (ascites/edema) in children?",
+        "options": [
+          "A. The stomach produces too much food",
+          "B. Lack of dietary amino acids reduces plasma albumin synthesis by the liver, lowering oncotic pressure and causing fluid to leak into abdominal tissues",
+          "C. The child drinks too much oil",
+          "D. Intestinal parasites produce water"
+        ],
+        "correctAnswer": "B. Lack of dietary amino acids reduces plasma albumin synthesis by the liver, lowering oncotic pressure and causing fluid to leak into abdominal tissues",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Hypoalbuminemia lowers plasma oncotic pressure, allowing fluid to leak from blood vessels into peritoneal spaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An enzyme extracted from the human digestive tract functions optimally at pH 2.0 but becomes denatured at pH 7.5. What is this enzyme and where is it active?",
+        "options": [
+          "A. Ptyalin in the mouth",
+          "B. Pepsin in the stomach",
+          "C. Trypsin in the duodenum",
+          "D. Pancreatic lipase in the ileum"
+        ],
+        "correctAnswer": "B. Pepsin in the stomach",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Pepsin operates specifically in the acidic pH (1.5–2.5) of gastric juice and is denatured at alkaline pH.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the enzyme trypsin secreted into the pancreatic duct as an inactive precursor (trypsinogen) rather than as active trypsin?",
+        "options": [
+          "A. To prevent the active protease from autodigesting and destroying the cellular proteins of the pancreas",
+          "B. Because inactive enzymes are lighter to transport",
+          "C. Trypsinogen absorbs water in the duct",
+          "D. Active trypsin evaporates in air"
+        ],
+        "correctAnswer": "A. To prevent the active protease from autodigesting and destroying the cellular proteins of the pancreas",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Proteolytic enzymes are synthesized as zymogens to prevent enzymatic autodigestion of pancreatic tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical role of enterokinase (enteropeptidase) in the duodenum?",
+        "options": [
+          "A. Digesting starches into glucose",
+          "B. Cleaving inactive pancreatic trypsinogen into active trypsin, which then activates other pancreatic zymogens",
+          "C. Emulsifying lipids",
+          "D. Neutralizing stomach acid"
+        ],
+        "correctAnswer": "B. Cleaving inactive pancreatic trypsinogen into active trypsin, which then activates other pancreatic zymogens",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Duodenal enterokinase converts trypsinogen to active trypsin, triggering the cascade of pancreatic protein-digesting enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the bacterium Helicobacter pylori survive the harsh hydrochloric acid environment of the human stomach to cause peptic ulcers?",
+        "options": [
+          "A. It lives inside bone tissue",
+          "B. It secretes urease, which hydrolyzes urea into ammonia, creating a neutralizing alkaline micro-environment that protects the bacterium as it burrows into mucus",
+          "C. It freezes the stomach acid",
+          "D. It eats pepsin molecules"
+        ],
+        "correctAnswer": "B. It secretes urease, which hydrolyzes urea into ammonia, creating a neutralizing alkaline micro-environment that protects the bacterium as it burrows into mucus",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Bacterial urease produces ammonia, buffering stomach acid locally and allowing the microbe to colonize mucosal folds.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A food sample rubbed on filter paper leaves a translucent spot that does not disappear with warming. Adding Sudan III turns the sample red. What does this confirm?",
+        "options": [
+          "A. Reducing sugars are present",
+          "B. Lipids (fats or oils) are present",
+          "C. Complex proteins are present",
+          "D. Starch granules are present"
+        ],
+        "correctAnswer": "B. Lipids (fats or oils) are present",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "A permanent translucent spot and positive red Sudan III staining confirm the presence of fats and oils.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a diet high in refined carbohydrates and low in fiber increase the risk of developing gallstones?",
+        "options": [
+          "A. Sugar turns into sand in the gallbladder",
+          "B. It alters hepatic cholesterol metabolism, leading to cholesterol supersaturation in bile, which precipitates into gallstones",
+          "C. Refined sugar destroys all bile salts",
+          "D. It increases stomach acidity"
+        ],
+        "correctAnswer": "B. It alters hepatic cholesterol metabolism, leading to cholesterol supersaturation in bile, which precipitates into gallstones",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Refined carbohydrates and low fiber promote biliary cholesterol supersaturation, favoring gallstone formation.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chronic excess dietary sodium intake contribute to the development of hypertension and stroke?",
+        "options": [
+          "A. Salt forms solid rocks inside brain arteries",
+          "B. Elevated extracellular sodium increases blood volume through fluid retention and increases arterial vascular resistance, raising systemic blood pressure",
+          "C. Salt destroys red blood cells",
+          "D. Salt stops heart muscle contractions"
+        ],
+        "correctAnswer": "B. Elevated extracellular sodium increases blood volume through fluid retention and increases arterial vascular resistance, raising systemic blood pressure",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "High sodium increases extracellular volume and peripheral vascular resistance, raising blood pressure and stroke risk.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does testing for starch with iodine solution fail if the starch sample is boiled in strong sodium hydroxide before adding iodine?",
+        "options": [
+          "A. Sodium hydroxide destroys all starch molecules",
+          "B. Alkaline conditions disrupt the helical structure of amylose, preventing iodine molecules from lodging inside the helix to produce the blue-black color",
+          "C. Iodine turns into gas in alkali",
+          "D. Starch turns into protein"
+        ],
+        "correctAnswer": "B. Alkaline conditions disrupt the helical structure of amylose, preventing iodine molecules from lodging inside the helix to produce the blue-black color",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The blue-black color requires polyiodide ions trapped within helical amylose chains, which alkaline solutions disrupt.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do absorbed amino acids and glucose reach the liver from the small intestine?",
+        "options": [
+          "A. Through the lymphatic thoracic duct",
+          "B. Directly via the hepatic portal vein",
+          "C. Through the bile duct",
+          "D. By diffusion across the abdominal cavity"
+        ],
+        "correctAnswer": "B. Directly via the hepatic portal vein",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The hepatic portal vein routes water-soluble nutrients from the intestines directly to the liver for metabolic processing.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does complete obstruction of the common bile duct lead to dark amber urine and pale stools?",
+        "options": [
+          "A. The kidneys synthesize bile",
+          "B. Bile pigments cannot reach the intestine to form stercobilin (pale stools), accumulating in blood and being filtered into urine as bilirubin",
+          "C. Stomach acid leaks into the bladder",
+          "D. Intestinal villi stop absorbing water"
+        ],
+        "correctAnswer": "B. Bile pigments cannot reach the intestine to form stercobilin (pale stools), accumulating in blood and being filtered into urine as bilirubin",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Conjugated bilirubin backs up into the circulation and is excreted by the kidneys, darkening urine while stools lose color.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological role of the sodium-glucose cotransporter (SGLT-1) on the luminal surface of enterocytes in the ileum?",
+        "options": [
+          "A. Transporting fats into lacteals",
+          "B. Transporting glucose against its concentration gradient coupled with the inward flow of sodium ions driven by the Na+/K+ ATPase pump",
+          "C. Breaking down proteins into amino acids",
+          "D. Pumping hydrochloric acid into the lumen"
+        ],
+        "correctAnswer": "B. Transporting glucose against its concentration gradient coupled with the inward flow of sodium ions driven by the Na+/K+ ATPase pump",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Secondary active transport uses sodium electrochemical gradients to pull glucose into intestinal absorptive cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do patients suffering from advanced liver cirrhosis exhibit bleeding tendencies (e.g. easy bruising and nosebleeds)?",
+        "options": [
+          "A. The liver stops making bile",
+          "B. Damaged hepatocytes cannot synthesize essential plasma clotting factors (like prothrombin and fibrinogen)",
+          "C. Stomach acid destroys red blood cells",
+          "D. The spleen absorbs all platelets"
+        ],
+        "correctAnswer": "B. Damaged hepatocytes cannot synthesize essential plasma clotting factors (like prothrombin and fibrinogen)",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The liver synthesizes critical blood coagulation factors; cirrhotic liver failure impairs clotting protein production.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the chemical structure of animal fats differ from plant oils at room temperature?",
+        "options": [
+          "A. Animal fats are made of protein",
+          "B. Animal fats consist mostly of saturated fatty acids with straight chains that pack closely into solids, whereas plant oils have unsaturated kinks that remain liquid",
+          "C. Plant oils have no hydrogen atoms",
+          "D. Animal fats dissolve in water"
+        ],
+        "correctAnswer": "B. Animal fats consist mostly of saturated fatty acids with straight chains that pack closely into solids, whereas plant oils have unsaturated kinks that remain liquid",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Saturated fatty acid chains pack closely to form solid fats, whereas unsaturated cis-double bonds keep plant oils fluid.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the Biuret test ineffective for measuring single, free amino acids in a solution?",
+        "options": [
+          "A. Amino acids destroy copper sulfate",
+          "B. The Biuret reaction requires at least two peptide bonds (-CONH-) to form the purple coordination complex with copper ions",
+          "C. Free amino acids are always basic",
+          "D. Amino acids are insoluble in water"
+        ],
+        "correctAnswer": "B. The Biuret reaction requires at least two peptide bonds (-CONH-) to form the purple coordination complex with copper ions",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The Biuret reaction detects repeating peptide backbones; free, individual amino acids do not form the complex.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What happens to excess dietary amino acids that are absorbed into the body but not needed for protein synthesis?",
+        "options": [
+          "A. They are stored as whole proteins in bones",
+          "B. They cannot be stored; they are deaminated in the liver, where the amino group is converted to urea and the carbon skeleton is used for energy",
+          "C. They are breathed out through the lungs",
+          "D. They turn into bile"
+        ],
+        "correctAnswer": "B. They cannot be stored; they are deaminated in the liver, where the amino group is converted to urea and the carbon skeleton is used for energy",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Excess amino acids are deaminated by the liver, producing urea for urinary excretion and carbon residues for energy.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe, untreated celiac disease result in generalized malnutrition even when a person eats adequate food?",
+        "options": [
+          "A. The stomach stops churning food",
+          "B. Autoimmune inflammation triggered by gluten blunts and flattens intestinal villi, severely reducing the surface area for nutrient absorption",
+          "C. The gallbladder bursts",
+          "D. Salivary glands stop producing enzymes"
+        ],
+        "correctAnswer": "B. Autoimmune inflammation triggered by gluten blunts and flattens intestinal villi, severely reducing the surface area for nutrient absorption",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Villous atrophy in the small intestine flattens the mucosal lining, causing malabsorption across nutrient classes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary diagnostic observation when using Millon's reagent on an egg white solution?",
+        "options": [
+          "A. An immediate blue-black color",
+          "B. Formation of a white precipitate that turns reddish-brown upon gentle heating",
+          "C. Formation of a permanent grease spot",
+          "D. Complete disappearance of the liquid"
+        ],
+        "correctAnswer": "B. Formation of a white precipitate that turns reddish-brown upon gentle heating",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Millon's reagent reacts with phenolic groups in proteins, producing a white precipitate that turns red on heating.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the consumption of soluble dietary fiber (like pectins and beta-glucans) help lower blood cholesterol levels?",
+        "options": [
+          "A. Fiber dissolves cholesterol directly in the stomach",
+          "B. Soluble fiber binds bile acids in the gut and promotes their excretion, forcing the liver to consume blood cholesterol to synthesize new bile",
+          "C. Fiber stops the pancreas from working",
+          "D. Fiber converts cholesterol into starch"
+        ],
+        "correctAnswer": "B. Soluble fiber binds bile acids in the gut and promotes their excretion, forcing the liver to consume blood cholesterol to synthesize new bile",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Binding bile acids in the intestinal lumen increases their fecal elimination, driving hepatic uptake of cholesterol to replenish bile reserves.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a competitive enzyme inhibitor decrease the rate of substrate breakdown in the human digestive system?",
+        "options": [
+          "A. It boils the enzyme",
+          "B. It closely resembles the natural substrate and binds reversibly to the active site, blocking substrate entry",
+          "C. It changes the food into a gas",
+          "D. It destroys all bodily water"
+        ],
+        "correctAnswer": "B. It closely resembles the natural substrate and binds reversibly to the active site, blocking substrate entry",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Competitive inhibitors share structural similarity with substrates, competing for binding access to enzyme active sites.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological mechanism responsible for hunger contractions in an empty stomach?",
+        "options": [
+          "A. Strong, peristaltic contractions of the muscular stomach wall triggered by the release of the hormone ghrelin and low blood glucose",
+          "B. Bile leaking into the mouth",
+          "C. The stomach digesting its own walls",
+          "D. Lack of saliva in the oesophagus"
+        ],
+        "correctAnswer": "A. Strong, peristaltic contractions of the muscular stomach wall triggered by the release of the hormone ghrelin and low blood glucose",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Prolonged fasting elevates ghrelin and triggers rhythmic peristaltic contractions of the empty gastric body.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the removal of the terminal ileum in surgical bowel resection lead to vitamin B12 deficiency (pernicious anemia)?",
+        "options": [
+          "A. Vitamin B12 is synthesized only in the mouth",
+          "B. The terminal ileum possesses specific receptor sites required to absorb the intrinsic factor-vitamin B12 complex",
+          "C. The stomach stops secreting acid",
+          "D. The colon destroys all vitamins"
+        ],
+        "correctAnswer": "B. The terminal ileum possesses specific receptor sites required to absorb the intrinsic factor-vitamin B12 complex",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Specialized receptors in the distal ileum mediate endocytosis of the intrinsic factor-B12 complex.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does cholecystokinin (CCK), released by duodenal cells, regulate the digestion of fats?",
+        "options": [
+          "A. It stops saliva production",
+          "B. It triggers gallbladder contraction to release bile and stimulates the exocrine pancreas to secrete digestive enzymes",
+          "C. It turns fatty acids into starch",
+          "D. It prevents the stomach from emptying"
+        ],
+        "correctAnswer": "B. It triggers gallbladder contraction to release bile and stimulates the exocrine pancreas to secrete digestive enzymes",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Luminal lipids stimulate duodenal endocrine cells to release CCK, triggering gallbladder contraction and pancreatic enzyme secretion.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the test for non-reducing sugars called an indirect reduction test?",
+        "options": [
+          "A. It tests for proteins indirectly",
+          "B. Non-reducing sugars do not react directly; they must first be cleaved into reducing monosaccharides before Benedict's reduction can occur",
+          "C. It uses light rather than chemicals",
+          "D. It measures food weight"
+        ],
+        "correctAnswer": "B. Non-reducing sugars do not react directly; they must first be cleaved into reducing monosaccharides before Benedict's reduction can occur",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The test requires preliminary chemical cleavage of the glycosidic linkage into free reducing hemiacetal groups.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological consequence of a genetic absence of the lactase enzyme in adult humans (lactose intolerance)?",
+        "options": [
+          "A. Milk protein turns into poison in the stomach",
+          "B. Undigested lactose remains in the intestinal lumen, drawing water osmotically and undergoing bacterial fermentation into gas and acids, causing bloating and diarrhea",
+          "C. The person cannot digest fats",
+          "D. Teeth fall out immediately"
+        ],
+        "correctAnswer": "B. Undigested lactose remains in the intestinal lumen, drawing water osmotically and undergoing bacterial fermentation into gas and acids, causing bloating and diarrhea",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Unabsorbed lactose exerts an osmotic draw and undergoes colonic bacterial fermentation, producing gas and loose stools.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the liver maintain stable blood glucose levels between meals (fasting state)?",
+        "options": [
+          "A. By drinking water",
+          "B. By breaking down stored glycogen into free glucose (glycogenolysis) and synthesizing glucose from amino acids (gluconeogenesis)",
+          "C. By absorbing starch directly through the skin",
+          "D. By stopping all respiration"
+        ],
+        "correctAnswer": "B. By breaking down stored glycogen into free glucose (glycogenolysis) and synthesizing glucose from amino acids (gluconeogenesis)",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Hepatocytes hydrolyze glycogen reserves and run gluconeogenic pathways to buffer blood glucose during fasting.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does adding excess concentrated acid to an enzyme solution permanently destroy its catalytic function?",
+        "options": [
+          "A. The acid freezes the substrate",
+          "B. Hydrogen ions alter the electrical charges on amino acid side-chains, disrupting ionic and hydrogen bonds that maintain the active site shape",
+          "C. The enzyme turns into a fat globule",
+          "D. The acid evaporates the enzyme"
+        ],
+        "correctAnswer": "B. Hydrogen ions alter the electrical charges on amino acid side-chains, disrupting ionic and hydrogen bonds that maintain the active site shape",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Extreme pH changes alter electrostatic interactions, denaturing the enzyme's three-dimensional active site configuration.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the development of cachexia in chronic, severe digestive and systemic illnesses?",
+        "options": [
+          "A. Excessive consumption of vitamins",
+          "B. Systemic inflammation and metabolic derangement that cause accelerated muscle and fat wasting despite food intake",
+          "C. Overgrowth of teeth",
+          "D. Drinking too much clean water"
+        ],
+        "correctAnswer": "B. Systemic inflammation and metabolic derangement that cause accelerated muscle and fat wasting despite food intake",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Pro-inflammatory cytokines in chronic illness accelerate systemic catabolism, driving skeletal muscle and adipose wasting.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the presence of an alkaline mucus layer in the duodenum essential upon the entry of gastric chyme?",
+        "options": [
+          "A. To freeze the incoming food",
+          "B. To protect the duodenal mucosa from acid erosion and establish the optimal alkaline pH required by pancreatic enzymes",
+          "C. To turn carbohydrates into proteins",
+          "D. To absorb all dietary water instantly"
+        ],
+        "correctAnswer": "B. To protect the duodenal mucosa from acid erosion and establish the optimal alkaline pH required by pancreatic enzymes",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Duodenal Brunner's glands secrete alkaline mucus to buffer gastric acid and establish suitable pH for intestinal enzymes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What distinguishes the absorption pathway of short-chain fatty acids from long-chain fatty acids in the ileum?",
+        "options": [
+          "A. Short-chain fatty acids enter blood capillaries directly, whereas long-chain fatty acids are re-esterified into chylomicrons and enter lacteals",
+          "B. Short-chain fatty acids are never absorbed",
+          "C. Long-chain fatty acids are exhaled through the lungs",
+          "D. Both follow identical paths through lacteals"
+        ],
+        "correctAnswer": "A. Short-chain fatty acids enter blood capillaries directly, whereas long-chain fatty acids are re-esterified into chylomicrons and enter lacteals",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Water-soluble short-chain fatty acids diffuse directly into capillary blood, while larger lipids enter the lymphatic lacteals.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is a stool test for occult blood used in early screening for colorectal cancer?",
+        "options": [
+          "A. Cancer tumors produce bile",
+          "B. Fragile, ulcerated vascular networks on intestinal polyps or tumors bleed microscopic amounts into passing faecal matter",
+          "C. Cancer cells turn stools bright yellow",
+          "D. Stools become completely dry"
+        ],
+        "correctAnswer": "B. Fragile, ulcerated vascular networks on intestinal polyps or tumors bleed microscopic amounts into passing faecal matter",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Early intestinal malignancies are vascular and shed small amounts of occult blood into the digestive lumen.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the hormone secretin regulate digestive physiology in response to gastric chyme?",
+        "options": [
+          "A. It stimulates the pancreas to release bicarbonate-rich fluid to neutralize acid in the duodenum",
+          "B. It causes the stomach to secrete more hydrochloric acid",
+          "C. It stops all intestinal peristalsis",
+          "D. It breaks down lipids into fatty acids"
+        ],
+        "correctAnswer": "A. It stimulates the pancreas to release bicarbonate-rich fluid to neutralize acid in the duodenum",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Low duodenal pH triggers secretin release, which stimulates pancreatic duct cells to secrete neutralizing bicarbonate.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe, chronic vomiting cause metabolic alkalosis in the human body?",
+        "options": [
+          "A. Vomiting removes all calcium from bones",
+          "B. Significant loss of acidic gastric juice (HCl) depletes hydrogen and chloride ions, shifting blood pH upward",
+          "C. The liver produces twice as much bile",
+          "D. Saliva production stops"
+        ],
+        "correctAnswer": "B. Significant loss of acidic gastric juice (HCl) depletes hydrogen and chloride ions, shifting blood pH upward",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Vomiting expels hydrochloric acid, causing a net loss of hydrogen ions that shifts systemic acid-base balance toward alkalosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural consequence if the basement membrane of the intestinal mucosa is breached by invasive pathogenic amoebae (Entamoeba histolytica)?",
+        "options": [
+          "A. Digestion speeds up",
+          "B. Deep flask-shaped ulcerations form, causing bloody dysentery and allowing parasites to enter the portal bloodstream to the liver",
+          "C. The appendix falls off",
+          "D. The intestine produces more villi"
+        ],
+        "correctAnswer": "B. Deep flask-shaped ulcerations form, causing bloody dysentery and allowing parasites to enter the portal bloodstream to the liver",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Amoebic trophozoites secrete proteases that erode mucosal barriers, forming bleeding ulcers and hepatic abscesses.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is fat digestion slower and more complex than carbohydrate digestion in humans?",
+        "options": [
+          "A. Fats contain no chemical energy",
+          "B. Lipids are insoluble in water, requiring mechanical churning, bile salt emulsification, and micellar packaging before enzymatic hydrolysis",
+          "C. Lipase works only in the mouth",
+          "D. Fats are absorbed through the stomach wall"
+        ],
+        "correctAnswer": "B. Lipids are insoluble in water, requiring mechanical churning, bile salt emulsification, and micellar packaging before enzymatic hydrolysis",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Insoluble fats must undergo emulsification and micelle formation before lipases can access substrate bonds.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chronic portal hypertension in cirrhotic liver disease cause life-threatening oesophageal varices?",
+        "options": [
+          "A. The stomach produces too much pepsin",
+          "B. Fibrotic liver tissue obstructs portal blood flow, elevating venous pressure and causing fragile collateral veins in the lower oesophagus to engorge and rupture",
+          "C. The gullet shrinks",
+          "D. Bile dissolves the oesophagus"
+        ],
+        "correctAnswer": "B. Fibrotic liver tissue obstructs portal blood flow, elevating venous pressure and causing fragile collateral veins in the lower oesophagus to engorge and rupture",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Fibrotic resistance in cirrhotic livers diverts portal blood into fragile collateral oesophageal veins that can rupture.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a solution of pure egg albumin turn white and cloudy before heating when Millon's reagent is first added?",
+        "options": [
+          "A. It turns into starch",
+          "B. Mercury salts in the reagent precipitate soluble proteins out of colloidal suspension by denaturing tertiary structures",
+          "C. The albumin dissolves completely",
+          "D. It produces glucose gas"
+        ],
+        "correctAnswer": "B. Mercury salts in the reagent precipitate soluble proteins out of colloidal suspension by denaturing tertiary structures",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Heavy metal ions in Millon's reagent precipitate soluble proteins before heat drives the secondary red color reaction.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary physiological function of the ileocaecal valve?",
+        "options": [
+          "A. Regulating the movement of digesta from the ileum into the caecum while preventing backflow of bacteria-laden colonic contents into the small intestine",
+          "B. Secreting pancreatic juice",
+          "C. Producing gastric acid",
+          "D. Grinding whole maize"
+        ],
+        "correctAnswer": "A. Regulating the movement of digesta from the ileum into the caecum while preventing backflow of bacteria-laden colonic contents into the small intestine",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "The ileocaecal sphincter permits one-way transit into the caecum and prevents retrograde reflux of colonic bacteria.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does chronic alcohol abuse lead to fatty liver disease (hepatic steatosis) before progressing to cirrhosis?",
+        "options": [
+          "A. Alcohol turns into bone",
+          "B. Alcohol metabolism generates excess NADH, inhibiting mitochondrial beta-oxidation and shunting fatty acids into triglyceride synthesis inside hepatocytes",
+          "C. Alcohol destroys all lipase enzymes",
+          "D. The stomach stops digesting protein"
+        ],
+        "correctAnswer": "B. Alcohol metabolism generates excess NADH, inhibiting mitochondrial beta-oxidation and shunting fatty acids into triglyceride synthesis inside hepatocytes",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "High NADH/NAD+ ratios during ethanol metabolism suppress fatty acid oxidation, causing triglyceride accumulation in liver cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the diagnostic significance of testing for fecal fat (steatorrhea) in patients with chronic pancreatitis?",
+        "options": [
+          "A. It shows the patient is eating too much sugar",
+          "B. Deficient exocrine secretion of pancreatic lipase prevents lipid digestion, causing unabsorbed fats to be excreted in stool",
+          "C. It confirms the presence of gastric ulcers",
+          "D. It measures saliva production"
+        ],
+        "correctAnswer": "B. Deficient exocrine secretion of pancreatic lipase prevents lipid digestion, causing unabsorbed fats to be excreted in stool",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Exocrine pancreatic insufficiency impairs lipase delivery, leading to undigested fat excretion in faeces (steatorrhea).",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do non-steroidal anti-inflammatory drugs (NSAIDs like ibuprofen) increase the risk of gastric peptic ulcers?",
+        "options": [
+          "A. They produce sulfuric acid in the mouth",
+          "B. They inhibit cyclooxygenase (COX) enzymes, suppressing mucosal prostaglandins that stimulate protective mucus and bicarbonate secretion",
+          "C. They convert proteins to bile",
+          "D. They block the oesophagus"
+        ],
+        "correctAnswer": "B. They inhibit cyclooxygenase (COX) enzymes, suppressing mucosal prostaglandins that stimulate protective mucus and bicarbonate secretion",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "NSAIDs inhibit protective mucosal prostaglandin synthesis, leaving gastric epithelial cells vulnerable to acid erosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the Sudan III test preferred over the filter paper spot test when confirming lipids in liquid biological suspensions?",
+        "options": [
+          "A. Sudan III turns proteins red",
+          "B. In dilute liquid suspensions, water spreads on filter paper, whereas Sudan III stains microscopic lipid droplets selectively regardless of aqueous dilution",
+          "C. Paper spots explode when wet",
+          "D. Sudan III tests for starch"
+        ],
+        "correctAnswer": "B. In dilute liquid suspensions, water spreads on filter paper, whereas Sudan III stains microscopic lipid droplets selectively regardless of aqueous dilution",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Sudan III partitions specifically into hydrophobic lipid droplets, allowing microscopic or colorimetric detection in aqueous mixes.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical fate of glycerol absorbed into enterocytes following triglyceride hydrolysis?",
+        "options": [
+          "A. It is exhaled as nitrogen gas",
+          "B. It is phosphorylated into glycerol-3-phosphate and recombined with fatty acids to form new triglycerides for chylomicron packaging",
+          "C. It turns into hydrochloric acid",
+          "D. It is stored as bone"
+        ],
+        "correctAnswer": "B. It is phosphorylated into glycerol-3-phosphate and recombined with fatty acids to form new triglycerides for chylomicron packaging",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Enterocytes re-esterify absorbed glycerol and fatty acids into triglycerides, packaging them into chylomicrons for lacteal transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does severe, untreated celiac disease often cause secondary nutritional anemia?",
+        "options": [
+          "A. The stomach produces too much bile",
+          "B. Atrophy of duodenal and jejunal villi impairs the mucosal absorption of iron, folate, and other essential hematinic nutrients",
+          "C. Red blood cells are destroyed in the mouth",
+          "D. The colon stops reabsorbing water"
+        ],
+        "correctAnswer": "B. Atrophy of duodenal and jejunal villi impairs the mucosal absorption of iron, folate, and other essential hematinic nutrients",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Mucosal damage in proximal intestinal segments reduces uptake of dietary iron and folates, producing anemia.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What distinguishes the chemical action of rennin from that of pepsin in the stomach?",
+        "options": [
+          "A. Rennin breaks down carbohydrates, while pepsin digests fats",
+          "B. Rennin causes physical precipitation of soluble milk protein, whereas pepsin hydrolyzes peptide bonds to yield peptones",
+          "C. Pepsin is an acid, while rennin is a base",
+          "D. Both perform identical reactions"
+        ],
+        "correctAnswer": "B. Rennin causes physical precipitation of soluble milk protein, whereas pepsin hydrolyzes peptide bonds to yield peptones",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Rennin acts specifically on caseinogen to curdle milk, whereas pepsin cleaves broad internal peptide linkages.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the autonomic nervous system regulate peristalsis and gastrointestinal secretions during acute stress ('fight or flight')?",
+        "options": [
+          "A. It speeds up all digestive actions",
+          "B. Sympathetic stimulation constricts splanchnic arterioles, reducing gastrointestinal blood flow, motility, and enzyme secretion",
+          "C. It increases saliva output",
+          "D. It causes immediate hunger"
+        ],
+        "correctAnswer": "B. Sympathetic stimulation constricts splanchnic arterioles, reducing gastrointestinal blood flow, motility, and enzyme secretion",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Sympathetic activation diverts blood to skeletal muscles, inhibiting gastrointestinal secretions and motility.",
+        "points": 1
+      },
+      {
+        "id": "B7_DIG_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which combination of observations confirms that a food sample contains both starch and reducing sugar?",
+        "options": [
+          "A. A positive blue-black result with Iodine solution, and a brick-red precipitate when another portion is boiled with Benedict's solution",
+          "B. A violet Biuret test and a permanent grease spot",
+          "C. A red Sudan III reaction and a white Millon's precipitate",
+          "D. A negative Iodine test and no color change with Benedict's"
+        ],
+        "correctAnswer": "A. A positive blue-black result with Iodine solution, and a brick-red precipitate when another portion is boiled with Benedict's solution",
+        "hint": "Apply principles of digestive biochemistry (zymogens, brush-border enzymes, acid-base balance), lipid micellar transport into lacteals, hepatic portal circulation, and systemic pathophysiology (cirrhosis, peptic ulcers, celiac disease).",
+        "workedSolution": "Iodine turning blue-black confirms starch, while boiling Benedict's producing a brick-red precipitate confirms reducing sugar.",
         "points": 1
       }
     ]

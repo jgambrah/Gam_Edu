@@ -8990,11 +8990,11 @@ if (
                     studentId={studentId}
                     tenantId={tenantId}
                     initialLevel={
-                        activeTopicalLab.levels?.b9 && ((activeTopicalLab.levels.b9 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b9 as any)?.practicePool?.low?.length ?? 0) > 0)
-                            ? 'b9'
+                        activeTopicalLab.levels?.b7 && ((activeTopicalLab.levels.b7 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b7 as any)?.practicePool?.low?.length ?? 0) > 0)
+                            ? 'b7'
                             : activeTopicalLab.levels?.b8 && ((activeTopicalLab.levels.b8 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b8 as any)?.practicePool?.low?.length ?? 0) > 0)
                             ? 'b8'
-                            : 'b7'
+                            : 'b9'
                     }
                     onBack={() => setActiveTopicalLab(null)}
                     onNavigateToSet={(targetSetId) => {
