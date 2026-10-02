@@ -6,12 +6,36 @@ import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
+import { visit } from 'unist-util-visit';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
 interface MathRendererProps {
   content: string;
   className?: string;
+}
+
+/**
+ * Rehype plugin to strip foster-parented or redundant whitespace text nodes
+ * between block elements (e.g. between lists/headings and tables).
+ * This prevents HTML5 table foster-parented newlines from creating blank vertical gaps.
+ */
+function rehypeCleanWhitespace() {
+  return (tree: any) => {
+    visit(tree, 'text', (node: any, index: number | undefined, parent: any) => {
+      if (parent && Array.isArray(parent.children) && typeof index === 'number' && /^\s+$/.test(node.value)) {
+        const next = parent.children[index + 1];
+        const prev = parent.children[index - 1];
+        const isBlock = (n: any) =>
+          n &&
+          n.type === 'element' &&
+          ['table', 'div', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'details'].includes(n.tagName);
+        if (isBlock(next) || isBlock(prev)) {
+          node.value = '';
+        }
+      }
+    });
+  };
 }
 
 /**
@@ -50,10 +74,10 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
   if (!processed) return null;
 
   return (
-    <div className={`prose prose-invert max-w-none text-sm leading-relaxed whitespace-pre-line ${className}`}>
+    <div className={`prose prose-invert max-w-none text-sm leading-relaxed ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkMath, remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeKatex]}
+        rehypePlugins={[rehypeRaw, rehypeCleanWhitespace, rehypeKatex]}
         components={{
           details: ({ node, ...props }) => (
             <details
@@ -68,7 +92,7 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
             />
           ),
           p: ({ children }) => (
-            <p className="mb-2 last:mb-0 leading-relaxed whitespace-pre-line text-slate-200">
+            <p className="mb-2 last:mb-0 leading-relaxed text-slate-200">
               {children}
             </p>
           ),
@@ -77,8 +101,8 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
           ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1 text-slate-200">{children}</ul>,
           ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1 text-slate-200">{children}</ol>,
           li: ({ children }) => <li className="text-slate-200 leading-relaxed">{children}</li>,
-                    table: ({ children }) => (
-            <div className="overflow-x-auto my-4 rounded-2xl border border-slate-800 bg-slate-950/60 shadow-lg">
+          table: ({ children }) => (
+            <div className="overflow-x-auto mt-4 mb-6 rounded-2xl border border-slate-800 bg-slate-950/60 shadow-lg">
               <table className="w-full text-left text-xs text-slate-200 border-collapse">
                 {children}
               </table>
