@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.303Z"
+    "updatedAt": "2026-10-02T19:45:56.523Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.304Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.304Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.304Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -8968,7 +8968,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.304Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -8981,7 +8981,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Apply zoological principles to domestic livestock management through interactive feed formulation and housing simulation modules. Explores monogastric versus ruminant physiology, nutritional balancing, modern pen construction, and herd prophylactic biosecurity.",
-    "totalPracticeQuestions": 13,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
@@ -9017,52 +9017,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "B7_ANIM_MCQ_01",
+              "id": "B7_ANIM_F01",
               "difficulty": "low",
-              "prompt": "Which of the following farm animals is classified scientifically as a polygastric (ruminant) animal?",
+              "prompt": "Animals that have been tamed and reared by humans for food, work, or economic value are called:",
               "options": [
-                "A. Domestic pig",
-                "B. Sheep",
-                "C. Rabbit",
-                "D. Domestic fowl"
+                "A. Wild animals",
+                "B. Domestic animals",
+                "C. Nocturnal animals",
+                "D. Aquatic pests"
               ],
-              "correctAnswer": "B. Sheep",
-              "hint": "Ruminants possess a four-chambered stomach and chew the cud.",
-              "workedSolution": "Sheep are polygastric ruminants equipped with a four-chambered stomach (rumen, reticulum, omasum, abomasum) for fermenting plant cellulose.",
+              "correctAnswer": "B. Domestic animals",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Domestic animals are species that have been tamed, adapted, and raised by humans for food, clothing, or labor.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_ANIM_MCQ_02",
+              "id": "B7_ANIM_F02",
               "difficulty": "low",
-              "prompt": "In the domestic fowl, mechanical grinding of tough grains and whole seeds is performed by the:",
+              "prompt": "Which of the following is an example of a domestic farm animal?",
+              "options": [
+                "A. Hyena",
+                "B. Goat",
+                "C. Lion",
+                "D. Vulture"
+              ],
+              "correctAnswer": "B. Goat",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Goats are common domestic livestock reared for meat and milk in communities.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F03",
+              "difficulty": "low",
+              "prompt": "An animal with a simple, single-chambered stomach is described as:",
+              "options": [
+                "A. Ruminant",
+                "B. Monogastric",
+                "C. Polygastric",
+                "D. Amphibian"
+              ],
+              "correctAnswer": "B. Monogastric",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Monogastric organisms possess a simple, single-compartmented stomach.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F04",
+              "difficulty": "low",
+              "prompt": "Which of the following animals is a monogastric farm animal?",
+              "options": [
+                "A. Pig",
+                "B. Sheep",
+                "C. Cow",
+                "D. Goat"
+              ],
+              "correctAnswer": "A. Pig",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Pigs have a simple, single-chambered stomach and are classified as monogastrics.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F05",
+              "difficulty": "low",
+              "prompt": "Hoofed mammals with a complex four-chambered stomach that chew the cud are called:",
+              "options": [
+                "A. Carnivores",
+                "B. Ruminants",
+                "C. Monogastrics",
+                "D. Rodents"
+              ],
+              "correctAnswer": "B. Ruminants",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Ruminants have a complex stomach divided into four chambers and chew the cud.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F06",
+              "difficulty": "low",
+              "prompt": "Which of the following is a ruminant animal?",
+              "options": [
+                "A. Rabbit",
+                "B. Horse",
+                "C. Cow",
+                "D. Domestic fowl"
+              ],
+              "correctAnswer": "C. Cow",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Cattle are typical ruminants with a four-chambered stomach.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F07",
+              "difficulty": "low",
+              "prompt": "How many chambers make up the stomach of a ruminant?",
+              "options": [
+                "A. One",
+                "B. Two",
+                "C. Three",
+                "D. Four"
+              ],
+              "correctAnswer": "D. Four",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The ruminant stomach is divided into four compartments: rumen, reticulum, omasum, and abomasum.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F08",
+              "difficulty": "low",
+              "prompt": "The first and largest chamber of the ruminant stomach is the:",
+              "options": [
+                "A. Reticulum",
+                "B. Rumen",
+                "C. Omasum",
+                "D. Abomasum"
+              ],
+              "correctAnswer": "B. Rumen",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The rumen is the initial and largest compartment of the ruminant stomach.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F09",
+              "difficulty": "low",
+              "prompt": "Which compartment of the ruminant stomach secretes gastric juices and is known as the 'true stomach'?",
+              "options": [
+                "A. Rumen",
+                "B. Reticulum",
+                "C. Omasum",
+                "D. Abomasum"
+              ],
+              "correctAnswer": "D. Abomasum",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The abomasum is the true glandular stomach where gastric juice is secreted for chemical digestion.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F10",
+              "difficulty": "low",
+              "prompt": "The habit where ruminants bring up swallowed food from the stomach to chew it thoroughly while resting is called:",
+              "options": [
+                "A. Rumination (chewing the cud)",
+                "B. Moulting",
+                "C. Hibernation",
+                "D. Fermentation"
+              ],
+              "correctAnswer": "A. Rumination (chewing the cud)",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Cud-chewing or rumination is an adaptation where food is regurgitated and re-chewed.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F11",
+              "difficulty": "low",
+              "prompt": "In the domestic fowl, which organ stores food temporarily and moistens it?",
+              "options": [
+                "A. Gizzard",
+                "B. Crop",
+                "C. Caecum",
+                "D. Cloaca"
+              ],
+              "correctAnswer": "B. Crop",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The crop is an expanded muscular pouch in birds that stores and softens food.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F12",
+              "difficulty": "low",
+              "prompt": "Which organ in the domestic fowl grinds whole grains and tough feed using swallowed grit?",
               "options": [
                 "A. Crop",
                 "B. Proventriculus",
-                "C. Gizzard (Ventriculus)",
-                "D. Caeca"
+                "C. Gizzard (ventriculus)",
+                "D. Cloaca"
               ],
-              "correctAnswer": "C. Gizzard (Ventriculus)",
-              "hint": "This organ is thick, muscular, and contains swallowed small stones and grit.",
-              "workedSolution": "The gizzard (ventriculus) has thick muscular walls and grit that churn together to pulverize hard seeds and grains mechanically.",
+              "correctAnswer": "C. Gizzard (ventriculus)",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The muscular gizzard (ventriculus) grinds food mechanically with the help of ingested grit.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_TURK_01",
+              "id": "B7_ANIM_F13",
               "difficulty": "low",
-              "prompt": "Which of the following is a heavy commercial breed of turkey characterized by metallic brown feathers and greenish-grey shanks?",
+              "prompt": "The common exit chamber in birds for digestive waste, urine, and eggs is the:",
               "options": [
-                "A. Beltsville Small White",
-                "B. Broad-Breasted Bronze",
-                "C. Rhode Island Red",
+                "A. Ventriculus",
+                "B. Cloaca",
+                "C. Caecum",
+                "D. Crop"
+              ],
+              "correctAnswer": "B. Cloaca",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The cloaca serves as the terminal exit for excretory and digestive wastes as well as eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F14",
+              "difficulty": "low",
+              "prompt": "Which of the following is a recognized domestic rabbit breed?",
+              "options": [
+                "A. Friesian",
+                "B. California White",
+                "C. N'Dama",
                 "D. White Leghorn"
               ],
-              "correctAnswer": "B. Broad-Breasted Bronze",
-              "hint": "The breed name contains the color \"Bronze\".",
-              "workedSolution": "The Broad-Breasted Bronze is a heavy commercial meat turkey recognized by its metallic bronze plumage and greenish-grey shanks.",
+              "correctAnswer": "B. California White",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "California White is a commercial domestic breed of rabbit.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F15",
+              "difficulty": "low",
+              "prompt": "Flemish Giant is an established breed of:",
+              "options": [
+                "A. Cattle",
+                "B. Sheep",
+                "C. Rabbit",
+                "D. Chicken"
+              ],
+              "correctAnswer": "C. Rabbit",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "The Flemish Giant is a heavy breed of domestic rabbit.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F16",
+              "difficulty": "low",
+              "prompt": "What is the typical tail orientation of a domestic goat compared to a sheep?",
+              "options": [
+                "A. Goats hold their tail erect; sheep have longer, hanging tails",
+                "B. Goats have hanging tails; sheep hold tails erect",
+                "C. Both animals have tails held erect",
+                "D. Both animals have hanging tails"
+              ],
+              "correctAnswer": "A. Goats hold their tail erect; sheep have longer, hanging tails",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Goats generally have short, erect tails, whereas sheep have longer tails that hang downward.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F17",
+              "difficulty": "low",
+              "prompt": "Which domestic ruminant has glands located between the toes?",
+              "options": [
+                "A. Goat",
+                "B. Sheep",
+                "C. Pig",
+                "D. Horse"
+              ],
+              "correctAnswer": "B. Sheep",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Sheep possess interdigital glands between their toes, which are absent in goats.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F18",
+              "difficulty": "low",
+              "prompt": "Which indigenous sheep breed in West Africa is small, compact, and tolerant to trypanosomiasis?",
+              "options": [
+                "A. Australian Merino",
+                "B. West African Dwarf Sheep",
+                "C. Flemish Giant",
+                "D. Jersey"
+              ],
+              "correctAnswer": "B. West African Dwarf Sheep",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "West African Dwarf Sheep are small, compact, and tolerant to trypanosomiasis.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F19",
+              "difficulty": "low",
+              "prompt": "Cattle raised purposely for milk production are classified as:",
+              "options": [
+                "A. Beef cattle",
+                "B. Dairy cattle",
+                "C. Draft animals",
+                "D. Broilers"
+              ],
+              "correctAnswer": "B. Dairy cattle",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Dairy cattle are cows reared specifically for milk production.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F20",
+              "difficulty": "low",
+              "prompt": "Cattle raised primarily for meat production are termed:",
+              "options": [
+                "A. Dairy cattle",
+                "B. Beef cattle",
+                "C. Layers",
+                "D. Capons"
+              ],
+              "correctAnswer": "B. Beef cattle",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Beef cattle are raised primarily to produce meat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F21",
+              "difficulty": "low",
+              "prompt": "Which of the following is a recognized dairy cattle breed?",
+              "options": [
+                "A. Aberdeen Angus",
+                "B. Friesian",
+                "C. West African Shorthorn",
+                "D. Muturu"
+              ],
+              "correctAnswer": "B. Friesian",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Friesian (Holstein) is a high-yielding dairy cattle breed.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F22",
+              "difficulty": "low",
+              "prompt": "What is the general body conformation of a dairy cow?",
+              "options": [
+                "A. Blocky or square-shaped",
+                "B. Wedge-shaped or triangular",
+                "C. Round and compact",
+                "D. Flat and short"
+              ],
+              "correctAnswer": "B. Wedge-shaped or triangular",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Dairy cows have a wedge-shaped or triangular body conformation with large body capacity.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F23",
+              "difficulty": "low",
+              "prompt": "What is the typical body conformation of beef cattle?",
+              "options": [
+                "A. Triangular",
+                "B. Wedge-shaped",
+                "C. Blocky or square-shaped",
+                "D. Slender and thin"
+              ],
+              "correctAnswer": "C. Blocky or square-shaped",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Beef cattle possess a blocky, square-shaped, stocky body well filled with flesh.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F24",
+              "difficulty": "low",
+              "prompt": "Domestic chickens reared primarily for egg production are called:",
+              "options": [
+                "A. Broilers",
+                "B. Layers",
+                "C. Cockerels",
+                "D. Roosters"
+              ],
+              "correctAnswer": "B. Layers",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Layers are domestic fowls kept for the purpose of producing eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F25",
+              "difficulty": "low",
+              "prompt": "Domestic chickens reared specifically for meat production are called:",
+              "options": [
+                "A. Layers",
+                "B. Broilers",
+                "C. Pullets",
+                "D. Drakes"
+              ],
+              "correctAnswer": "B. Broilers",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Broilers are domestic fowls reared specifically for meat production.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F26",
+              "difficulty": "low",
+              "prompt": "A chicken breed kept for both meat and egg production is described as:",
+              "options": [
+                "A. Single-purpose breed",
+                "B. Dual-purpose breed",
+                "C. Broiler only",
+                "D. Layer only"
+              ],
+              "correctAnswer": "B. Dual-purpose breed",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Dual-purpose breeds are fowls kept to produce both eggs and meat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F27",
+              "difficulty": "low",
+              "prompt": "Which of the following is an egg-producing (layer) breed of chicken?",
+              "options": [
+                "A. Single Comb White Leghorn",
+                "B. Dark Cornish",
+                "C. Flemish Giant",
+                "D. West African Dwarf"
+              ],
+              "correctAnswer": "A. Single Comb White Leghorn",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Single Comb White Leghorn is an egg-laying chicken breed.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F28",
+              "difficulty": "low",
+              "prompt": "Which of the following is a meat-producing (broiler) breed of chicken?",
+              "options": [
+                "A. Minorca",
+                "B. Dark Cornish",
+                "C. ISA Brown",
+                "D. White Leghorn"
+              ],
+              "correctAnswer": "B. Dark Cornish",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Dark Cornish is a recognized meat-producing broiler breed.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F29",
+              "difficulty": "low",
+              "prompt": "Which protozoan disease affects the intestines of rabbits and poultry?",
+              "options": [
+                "A. Coccidiosis",
+                "B. Rinderpest",
+                "C. Anthrax",
+                "D. Mastitis"
+              ],
+              "correctAnswer": "A. Coccidiosis",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Coccidiosis is a common parasitic intestinal disease affecting rabbits and poultry.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F30",
+              "difficulty": "low",
+              "prompt": "Which chamber of the ruminant stomach has strong muscular walls that squeeze water out of food?",
+              "options": [
+                "A. Rumen",
+                "B. Omasum",
+                "C. Reticulum",
+                "D. Abomasum"
+              ],
+              "correctAnswer": "B. Omasum",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The omasum has muscular leaves that squeeze water from the food mash before it enters the abomasum.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F31",
+              "difficulty": "low",
+              "prompt": "Which of the following is an exotic wool-producing sheep breed?",
+              "options": [
+                "A. Australian Merino",
+                "B. Nungua Black Head",
+                "C. Yankasa",
+                "D. West African Dwarf"
+              ],
+              "correctAnswer": "A. Australian Merino",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Australian Merino is an exotic sheep breed renowned for fine wool.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F32",
+              "difficulty": "low",
+              "prompt": "The glandular stomach of domestic fowl that secretes gastric juice is the:",
+              "options": [
+                "A. Gizzard",
+                "B. Crop",
+                "C. Proventriculus",
+                "D. Caecum"
+              ],
+              "correctAnswer": "C. Proventriculus",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The proventriculus is the true glandular stomach in birds where digestive enzymes are secreted.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F33",
+              "difficulty": "low",
+              "prompt": "Which cattle disease causes acute inflammation and swelling of the udder in dairy cows?",
+              "options": [
+                "A. Anthrax",
+                "B. Mastitis",
+                "C. Bloat",
+                "D. Rinderpest"
+              ],
+              "correctAnswer": "B. Mastitis",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Mastitis is an infection and inflammation of the mammary glands (udder) in cattle.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F34",
+              "difficulty": "low",
+              "prompt": "What feature do goats have on their heels that assists them in climbing steep slopes?",
+              "options": [
+                "A. Rubbery-like friction pads",
+                "B. Scent glands",
+                "C. Interdigital hair",
+                "D. Webbing"
+              ],
+              "correctAnswer": "A. Rubbery-like friction pads",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Goats have rubber-like pads on their heels that provide traction on rocks.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F35",
+              "difficulty": "low",
+              "prompt": "The Nungua Black Head sheep is a hybrid developed from which two breeds?",
+              "options": [
+                "A. Merino and Yankasa",
+                "B. Blackhead Persian and West African Dwarf",
+                "C. Friesian and Zebu",
+                "D. Jersey and N'Dama"
+              ],
+              "correctAnswer": "B. Blackhead Persian and West African Dwarf",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "The Nungua Black Head is a hybrid cross between Blackhead Persian and West African Dwarf sheep.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F36",
+              "difficulty": "low",
+              "prompt": "Why should commercial poultry farms be sited at a distance from residential areas?",
+              "options": [
+                "A. To allow fowls to fly around the forest",
+                "B. To prevent offensive ammonia odors and noise from disturbing residents",
+                "C. To prevent rain from wetting the birds",
+                "D. To keep eggs cool"
+              ],
+              "correctAnswer": "B. To prevent offensive ammonia odors and noise from disturbing residents",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Siting poultry houses away from homes prevents noise, dust, and ammonia gas from entering human dwellings.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F37",
+              "difficulty": "low",
+              "prompt": "Which of the following is a viral disease that attacks cattle?",
+              "options": [
+                "A. Anthrax",
+                "B. Rinderpest",
+                "C. Coccidiosis",
+                "D. Mange"
+              ],
+              "correctAnswer": "B. Rinderpest",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Rinderpest is a contagious viral disease affecting cattle.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F38",
+              "difficulty": "low",
+              "prompt": "The paired blind sacs located between the small and large intestines in domestic fowl are called:",
+              "options": [
+                "A. Crops",
+                "B. Caeca",
+                "C. Gizzards",
+                "D. Vents"
+              ],
+              "correctAnswer": "B. Caeca",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The caeca are paired blind pouches where bacterial fermentation of residual fiber occurs in birds.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F39",
+              "difficulty": "low",
+              "prompt": "What is the physical appearance of the vent in a healthy, active laying hen?",
+              "options": [
+                "A. Dry, small, and tight",
+                "B. Oval, moist, and warm",
+                "C. Hard, pale, and bleeding",
+                "D. Rigid and triangular"
+              ],
+              "correctAnswer": "B. Oval, moist, and warm",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "An active layer has a moist, warm, pliable, and oval vent.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F40",
+              "difficulty": "low",
+              "prompt": "Which of the following is an indigenous West African beef cattle breed?",
+              "options": [
+                "A. Friesian",
+                "B. West African Shorthorn",
+                "C. Jersey",
+                "D. Ayrshire"
+              ],
+              "correctAnswer": "B. West African Shorthorn",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "The West African Shorthorn is a native humpless beef cattle breed of West Africa.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F41",
+              "difficulty": "low",
+              "prompt": "Which domestic farm animal is an omnivorous monogastric?",
+              "options": [
+                "A. Pig",
+                "B. Sheep",
+                "C. Cow",
+                "D. Goat"
+              ],
+              "correctAnswer": "A. Pig",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Pigs possess a simple single-chambered stomach and consume both plant and animal foods.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F42",
+              "difficulty": "low",
+              "prompt": "What is an adult female rabbit called?",
+              "options": [
+                "A. Buck",
+                "B. Doe",
+                "C. Ewe",
+                "D. Hen"
+              ],
+              "correctAnswer": "B. Doe",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "An adult female rabbit is called a doe.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F43",
+              "difficulty": "low",
+              "prompt": "Which of the following is a dual-purpose breed of domestic chicken?",
+              "options": [
+                "A. Rhode Island Red",
+                "B. White Leghorn",
+                "C. Minorca",
+                "D. Dark Cornish"
+              ],
+              "correctAnswer": "A. Rhode Island Red",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Rhode Island Red is a dual-purpose breed reared for both meat and egg production.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F44",
+              "difficulty": "low",
+              "prompt": "Which industrial product is derived from cattle hooves and horns?",
+              "options": [
+                "A. Leather hide",
+                "B. Glue",
+                "C. Yoghurt",
+                "D. Butter"
+              ],
+              "correctAnswer": "B. Glue",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Glue is manufactured as a byproduct from cattle hooves and horns.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F45",
+              "difficulty": "low",
+              "prompt": "What parasitic disease is transmitted to cattle by the bite of tsetse flies?",
+              "options": [
+                "A. Anthrax",
+                "B. Trypanosomiasis (sleeping sickness)",
+                "C. Newcastle disease",
+                "D. Gumboro"
+              ],
+              "correctAnswer": "B. Trypanosomiasis (sleeping sickness)",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Trypanosomiasis is caused by blood parasites transmitted by tsetse flies.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F46",
+              "difficulty": "low",
+              "prompt": "Which part of the domestic fowl digestive tract reabsorbs water before waste excretion?",
+              "options": [
+                "A. Colon (large intestine)",
+                "B. Gizzard",
+                "C. Crop",
+                "D. Proventriculus"
+              ],
+              "correctAnswer": "A. Colon (large intestine)",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The colon or large intestine in fowl functions primarily in reabsorbing water.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F47",
+              "difficulty": "low",
+              "prompt": "Compared to exotic commercial fowls, indigenous local chickens are generally:",
+              "options": [
+                "A. Hardier and more resistant to local heat and diseases",
+                "B. Faster growers that lay larger eggs",
+                "C. Unable to sit on eggs",
+                "D. Non-broody"
+              ],
+              "correctAnswer": "A. Hardier and more resistant to local heat and diseases",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Local breeds are hardier, exhibiting greater resistance to disease and heat stress.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F48",
+              "difficulty": "low",
+              "prompt": "The instinct of a hen to sit on a clutch of eggs to incubate and hatch them is known as:",
+              "options": [
+                "A. Rumination",
+                "B. Broodiness",
+                "C. Lactation",
+                "D. Moulting"
+              ],
+              "correctAnswer": "B. Broodiness",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Broodiness is the maternal behavior of hens sitting on eggs to incubate them.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F49",
+              "difficulty": "low",
+              "prompt": "Which of the following is a viral disease of poultry?",
+              "options": [
+                "A. Newcastle disease",
+                "B. Coccidiosis",
+                "C. Anthrax",
+                "D. Mastitis"
+              ],
+              "correctAnswer": "A. Newcastle disease",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Newcastle disease is an acute, contagious viral disease of domestic birds.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_F50",
+              "difficulty": "low",
+              "prompt": "Which breed of rabbit is reared primarily for its fine wool?",
+              "options": [
+                "A. Angora",
+                "B. New Zealand Red",
+                "C. California White",
+                "D. Flemish Giant"
+              ],
+              "correctAnswer": "A. Angora",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Angora rabbits are selectively bred for their soft wool fur.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
@@ -9070,52 +9869,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "B7_ANIM_MCQ_03",
+              "id": "B7_ANIM_I01",
               "difficulty": "medium",
-              "prompt": "Which of the following morphological characteristics distinguishes a dairy cow from a beef cow?",
+              "prompt": "Why are ruminants able to utilize fibrous grasses efficiently while monogastric animals cannot?",
               "options": [
-                "A. Rectangular blocky body with heavy muscle fleshing",
-                "B. Wedge-shaped triangular body with a large, capacious udder",
-                "C. Short stout legs with a thick neck",
-                "D. Absence of an abomasum"
+                "A. Ruminants have very sharp incisors on their upper jaws",
+                "B. Symbiotic microorganisms in the rumen produce cellulase enzymes that digest cellulose",
+                "C. The abomasum grinds plant fibers mechanically",
+                "D. Ruminants secrete bile directly into the mouth"
               ],
-              "correctAnswer": "B. Wedge-shaped triangular body with a large, capacious udder",
-              "hint": "Dairy cattle channel energy into milk synthesis rather than body fat and meat.",
-              "workedSolution": "Dairy cattle exhibit a lean, angular, wedge-shaped body silhouette with a well-developed udder, whereas beef cattle possess a blocky, rectangular meat frame.",
+              "correctAnswer": "B. Symbiotic microorganisms in the rumen produce cellulase enzymes that digest cellulose",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Ruminants host symbiotic microbes in the rumen that break down tough cellulose cell walls.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_ANIM_MCQ_04",
+              "id": "B7_ANIM_I02",
               "difficulty": "medium",
-              "prompt": "A practical anatomical difference between domestic goats and domestic sheep is that:",
+              "prompt": "What is the function of the honeycomb compartment (reticulum) in the ruminant stomach?",
               "options": [
-                "A. Sheep tails point erect while goat tails hang downwards",
-                "B. Goat tails point erect while sheep tails hang downwards",
-                "C. Goats chew the cud but sheep do not",
-                "D. Sheep have single stomachs while goats have four-chambered stomachs"
+                "A. Secreting concentrated hydrochloric acid",
+                "B. Trapping foreign hardware and coordinating the regurgitation of cud",
+                "C. Absorbing all water from digested feed",
+                "D. Grinding food with swallowed stones"
               ],
-              "correctAnswer": "B. Goat tails point erect while sheep tails hang downwards",
-              "hint": "Look closely at tail orientation and behavioral browsing habits.",
-              "workedSolution": "Domestic goats carry their short tails erect (pointing upwards), whereas domestic sheep have longer tails that hang limply downwards.",
+              "correctAnswer": "B. Trapping foreign hardware and coordinating the regurgitation of cud",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The reticulum traps foreign items and coordinates muscle contractions to regurgitate cud.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_TURK_03",
+              "id": "B7_ANIM_I03",
               "difficulty": "medium",
-              "prompt": "Which avian viral disease produces nodular, wart-like crusty scabs on the unfeathered skin of the head, comb, and snood?",
+              "prompt": "Why are domestic goats typically not reared under the intensive housing system?",
               "options": [
-                "A. Coccidiosis",
-                "B. Fowl Pox (Avian Pox)",
-                "C. Gumboro disease",
-                "D. Anthrax"
+                "A. They sleep all day and produce no meat",
+                "B. They are active, selective browsers whose growth rate drops when strictly confined",
+                "C. They cannot digest leaves from trees",
+                "D. They do not drink piped water"
               ],
-              "correctAnswer": "B. Fowl Pox (Avian Pox)",
-              "hint": "It is caused by an Avipoxvirus and spread by biting mosquitoes.",
-              "workedSolution": "Fowl pox is a contagious viral disease caused by an Avipoxvirus that manifests as wart-like nodular scabs on unfeathered facial and head areas.",
+              "correctAnswer": "B. They are active, selective browsers whose growth rate drops when strictly confined",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Goats are active, selective browsers; close confinement reduces their feed intake and growth rate.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I04",
+              "difficulty": "medium",
+              "prompt": "How does swallowed grit assist the digestive process inside the gizzard of a chicken?",
+              "options": [
+                "A. It provides calcium for eggshell formation",
+                "B. It acts as an abrasive surface that grinds tough whole grains mechanically",
+                "C. It neutralizes gastric acid from the proventriculus",
+                "D. It breaks down protein chemically"
+              ],
+              "correctAnswer": "B. It acts as an abrasive surface that grinds tough whole grains mechanically",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Muscular contractions rub swallowed grit against grain, grinding it into a fine mash.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I05",
+              "difficulty": "medium",
+              "prompt": "Which of the following physical characteristics indicates that a hen is an active egg layer?",
+              "options": [
+                "A. A dry, shriveled, yellow vent",
+                "B. A wide span (3 to 4 fingers) between the pelvic and breast bones",
+                "C. A dull, pale, small comb and wattle",
+                "D. Inactive, lethargic behavior"
+              ],
+              "correctAnswer": "B. A wide span (3 to 4 fingers) between the pelvic and breast bones",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "A wide distance between the pelvic bones and keel accommodates an active oviduct.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I06",
+              "difficulty": "medium",
+              "prompt": "Why are commercial exotic broilers preferred over local fowls for large-scale meat production?",
+              "options": [
+                "A. Exotic broilers grow much faster and produce a larger, more tender carcass",
+                "B. Exotic broilers can incubate their own eggs naturally",
+                "C. Exotic broilers are completely resistant to all diseases",
+                "D. Exotic broilers lay more eggs than commercial layers"
+              ],
+              "correctAnswer": "A. Exotic broilers grow much faster and produce a larger, more tender carcass",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Exotic broilers have been bred for rapid growth, heavy muscle development, and tender meat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I07",
+              "difficulty": "medium",
+              "prompt": "What is a distinguishing characteristic of an adult male goat (buck) compared to an adult ram?",
+              "options": [
+                "A. Mature bucks possess a strong musky odor; mature rams lack this odor",
+                "B. Bucks have glands between their toes",
+                "C. Bucks lack beards entirely",
+                "D. Rams hold their tails erect"
+              ],
+              "correctAnswer": "A. Mature bucks possess a strong musky odor; mature rams lack this odor",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Mature bucks emit a strong musk scent, while male sheep (rams) do not produce this odor.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I08",
+              "difficulty": "medium",
+              "prompt": "What digestive process occurs in the abomasum of cattle?",
+              "options": [
+                "A. Squeezing water from coarse food",
+                "B. Secretion of gastric juices to digest protein chemically",
+                "C. Regurgitation of cud to the mouth",
+                "D. Mechanical grinding of grains using stones"
+              ],
+              "correctAnswer": "B. Secretion of gastric juices to digest protein chemically",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The abomasum is the true stomach where hydrochloric acid and gastric enzymes digest protein.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I09",
+              "difficulty": "medium",
+              "prompt": "Why is the N'Dama cattle breed valued in humid forest zones of West Africa?",
+              "options": [
+                "A. It produces more milk than the Friesian",
+                "B. It possesses natural tolerance to trypanosomiasis",
+                "C. It has the longest horns of all breeds",
+                "D. It grows to the largest adult body weight"
+              ],
+              "correctAnswer": "B. It possesses natural tolerance to trypanosomiasis",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "N'Dama cattle are trypanotolerant, surviving and producing in tsetse-fly-infested areas.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I10",
+              "difficulty": "medium",
+              "prompt": "What causes ear canker in domestic rabbits?",
+              "options": [
+                "A. Bacterial infection of the udder",
+                "B. Infestation of the inner ear canal by parasitic mange mites",
+                "C. Feeding on dry hay",
+                "D. Drinking cold water"
+              ],
+              "correctAnswer": "B. Infestation of the inner ear canal by parasitic mange mites",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Ear canker in rabbits is caused by mange mites that create crusts and lesions in the ear.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I11",
+              "difficulty": "medium",
+              "prompt": "What is the agricultural benefit of maternal broodiness in indigenous local hens?",
+              "options": [
+                "A. They lay eggs without requiring feed",
+                "B. They can naturally incubate and hatch their eggs and brood their chicks without an electric incubator",
+                "C. They produce broiler-sized carcasses in four weeks",
+                "D. They never stop laying eggs"
+              ],
+              "correctAnswer": "B. They can naturally incubate and hatch their eggs and brood their chicks without an electric incubator",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Broodiness allows local hens to sit on, hatch, and mother chicks naturally.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I12",
+              "difficulty": "medium",
+              "prompt": "Why has broody behavior been selectively bred out of modern commercial layer strains?",
+              "options": [
+                "A. Broodiness causes fowls to lose feathers",
+                "B. When a hen goes broody, egg-laying stops, lowering commercial egg output",
+                "C. Broody hens lay soft-shelled eggs",
+                "D. Broodiness makes hens aggressive to farmers"
+              ],
+              "correctAnswer": "B. When a hen goes broody, egg-laying stops, lowering commercial egg output",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Broodiness pauses egg production; eliminating it keeps hens in continuous production.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I13",
+              "difficulty": "medium",
+              "prompt": "Which cattle breed is adapted to dry northern savannah conditions for beef and draught power?",
+              "options": [
+                "A. Jersey",
+                "B. Zebu (White Fulani)",
+                "C. Guernsey",
+                "D. Flemish Giant"
+              ],
+              "correctAnswer": "B. Zebu (White Fulani)",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Zebu (White Fulani) cattle are adapted to semi-arid tropical climates for beef and work.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I14",
+              "difficulty": "medium",
+              "prompt": "How does the omasum prepare food before it enters the abomasum in ruminants?",
+              "options": [
+                "A. It ferments large cellulose pieces",
+                "B. It absorbs excess water and volatile fatty acids through its muscular leaves",
+                "C. It crushes bones mechanically",
+                "D. It mixes feed with bile"
+              ],
+              "correctAnswer": "B. It absorbs excess water and volatile fatty acids through its muscular leaves",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The manyplies of the omasum squeeze and absorb water from digesta before chemical digestion.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I15",
+              "difficulty": "medium",
+              "prompt": "A dual-purpose breed of livestock is one that is maintained to produce:",
+              "options": [
+                "A. Both milk and meat, or both meat and eggs",
+                "B. Wool and leather only",
+                "C. Fertilizer and manure only",
+                "D. Feed and seeds"
+              ],
+              "correctAnswer": "A. Both milk and meat, or both meat and eggs",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Dual-purpose breeds produce two major products, such as meat and milk or meat and eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I16",
+              "difficulty": "medium",
+              "prompt": "What is the health risk of feeding rabbits exclusively on fresh, wet, succulent greens?",
+              "options": [
+                "A. Severe bloat and watery diarrhea",
+                "B. Instant tooth decay",
+                "C. Loss of fur color",
+                "D. Broken legs"
+              ],
+              "correctAnswer": "A. Severe bloat and watery diarrhea",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Excessive wet greens ferment rapidly in the rabbit gut, causing bloat and diarrhea.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I17",
+              "difficulty": "medium",
+              "prompt": "Which clinical symptom is characteristic of coccidiosis in young chicks?",
+              "options": [
+                "A. Bloody diarrhea, drooping wings, and ruffled feathers",
+                "B. Sudden loss of tail feathers",
+                "C. Rapid weight gain",
+                "D. Hardening of the comb"
+              ],
+              "correctAnswer": "A. Bloody diarrhea, drooping wings, and ruffled feathers",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Coccidiosis causes bloody droppings, lethargy, and ruffled feathers.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I18",
+              "difficulty": "medium",
+              "prompt": "Why is rotational grazing practiced when pasturing sheep and goats?",
+              "options": [
+                "A. To allow weeds to outgrow pasture grass",
+                "B. To interrupt the life cycles of internal parasites and prevent pasture overgrazing",
+                "C. To prevent animals from drinking water",
+                "D. To keep sheep awake"
+              ],
+              "correctAnswer": "B. To interrupt the life cycles of internal parasites and prevent pasture overgrazing",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Rotating pastures reduces pasture contamination by breaking internal parasite lifecycles.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I19",
+              "difficulty": "medium",
+              "prompt": "What happens in the paired caeca during digestion in domestic fowl?",
+              "options": [
+                "A. Stones grind whole grains",
+                "B. Beneficial bacteria ferment small amounts of remaining plant fiber",
+                "C. Gastric acid breaks down proteins",
+                "D. Eggshells are formed"
+              ],
+              "correctAnswer": "B. Beneficial bacteria ferment small amounts of remaining plant fiber",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The caeca host bacteria that ferment fine residual fiber.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I20",
+              "difficulty": "medium",
+              "prompt": "Which breed of goat is indigenous to southern Ghana and adapted to humid conditions?",
+              "options": [
+                "A. West African Dwarf Goat",
+                "B. Saanen",
+                "C. Toggenburg",
+                "D. Angora"
+              ],
+              "correctAnswer": "A. West African Dwarf Goat",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "The West African Dwarf goat is an indigenous, hardy breed adapted to the humid south.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I21",
+              "difficulty": "medium",
+              "prompt": "Why must high-producing dairy cows receive energy-dense concentrates in addition to pasture forage?",
+              "options": [
+                "A. Grazed forage alone cannot meet the energy and nutrient demands of high milk production",
+                "B. Dairy cattle are unable to digest grasses",
+                "C. Forage damages the mammary glands",
+                "D. Concentrates prevent horn growth"
+              ],
+              "correctAnswer": "A. Grazed forage alone cannot meet the energy and nutrient demands of high milk production",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "High milk synthesis requires more nutrients and energy than roughage alone can supply.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I22",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of the vascular comb and wattles in domestic fowl?",
+              "options": [
+                "A. Digesting grain proteins",
+                "B. Radiating excess body heat to regulate body temperature",
+                "C. Storing water reserves",
+                "D. Balancing during flight"
+              ],
+              "correctAnswer": "B. Radiating excess body heat to regulate body temperature",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Combs and wattles are vascular surfaces that help fowls dissipate excess heat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I23",
+              "difficulty": "medium",
+              "prompt": "Why does bloat occur in ruminants fed heavily on young, lush leguminous pasture?",
+              "options": [
+                "A. Soluble plant proteins create a stable foam in the rumen that traps gas, preventing belching",
+                "B. The omasum freezes solid",
+                "C. Feed blocks the gizzard",
+                "D. The cow drinks mud"
+              ],
+              "correctAnswer": "A. Soluble plant proteins create a stable foam in the rumen that traps gas, preventing belching",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Proteins in lush legumes form viscous foam that traps fermentation gases, causing bloat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I24",
+              "difficulty": "medium",
+              "prompt": "How do the feeding behaviors of sheep and goats differ?",
+              "options": [
+                "A. Goats are selective browsers that feed on shrubs; sheep are grazers that crop short grasses",
+                "B. Goats only eat grains; sheep only eat meat",
+                "C. Sheep browse tree leaves; goats only graze flat pastures",
+                "D. There is no difference in their feeding behavior"
+              ],
+              "correctAnswer": "A. Goats are selective browsers that feed on shrubs; sheep are grazers that crop short grasses",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Goats browse leaves and woody shrubs, whereas sheep graze grasses close to the ground.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I25",
+              "difficulty": "medium",
+              "prompt": "Which sheep breed has a distinctive black neck and head with a white body?",
+              "options": [
+                "A. Nungua Black Head",
+                "B. Australian Merino",
+                "C. Ouda Fulani",
+                "D. Yankasa"
+              ],
+              "correctAnswer": "A. Nungua Black Head",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "The Nungua Black Head is recognized by its solid black head and white body.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I26",
+              "difficulty": "medium",
+              "prompt": "Why is foot rot common among sheep kept in poorly drained, swampy paddocks?",
+              "options": [
+                "A. Wet ground softens the hoof horn, allowing bacteria to invade the interdigital tissue",
+                "B. Sheep hooves dissolve in water",
+                "C. Sheep absorb water through their toes",
+                "D. Mud stops blood flow"
+              ],
+              "correctAnswer": "A. Wet ground softens the hoof horn, allowing bacteria to invade the interdigital tissue",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Waterlogged soil softens hooves and fosters bacterial infections in interdigital tissues.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I27",
+              "difficulty": "medium",
+              "prompt": "What is the role of the proventriculus in a bird's digestive tract?",
+              "options": [
+                "A. Grinding grains mechanically",
+                "B. Secreting hydrochloric acid and pepsin to start protein digestion before food enters the gizzard",
+                "C. Excreting uric acid crystals",
+                "D. Absorbing water"
+              ],
+              "correctAnswer": "B. Secreting hydrochloric acid and pepsin to start protein digestion before food enters the gizzard",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "The proventriculus is the chemical stomach that adds gastric enzymes before the gizzard.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I28",
+              "difficulty": "medium",
+              "prompt": "Which bacterial disease of cattle causes contagious abortion in pregnant cows?",
+              "options": [
+                "A. Brucellosis",
+                "B. Bloat",
+                "C. Rinderpest",
+                "D. Foot-and-mouth disease"
+              ],
+              "correctAnswer": "A. Brucellosis",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Brucellosis causes late-term abortion and reproductive failure in cattle.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I29",
+              "difficulty": "medium",
+              "prompt": "How does the body conformation of a beef animal support its production purpose?",
+              "options": [
+                "A. A blocky, heavily fleshed carcass yields a higher proportion of meat cuts",
+                "B. Thin, long legs help it evade predators",
+                "C. A large udder stores surplus milk",
+                "D. A wedge shape improves grazing speed"
+              ],
+              "correctAnswer": "A. A blocky, heavily fleshed carcass yields a higher proportion of meat cuts",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "A deep, rectangular conformation yields a higher ratio of muscle and beef cuts.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I30",
+              "difficulty": "medium",
+              "prompt": "What are warbles in cattle?",
+              "options": [
+                "A. Subcutaneous swellings along the back caused by parasitic fly larvae",
+                "B. Tumors in the udder",
+                "C. Fractures in hoof bones",
+                "D. Infections in the crop"
+              ],
+              "correctAnswer": "A. Subcutaneous swellings along the back caused by parasitic fly larvae",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Warbles are lumps on the back of cattle caused by developing botfly larvae.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I31",
+              "difficulty": "medium",
+              "prompt": "Why are rabbit cages elevated off the ground with wire-mesh floors?",
+              "options": [
+                "A. To allow urine and feces to fall through, keeping the housing clean and dry",
+                "B. To prevent rabbits from breathing fresh air",
+                "C. To prevent rabbits from sleeping",
+                "D. To make rabbits run faster"
+              ],
+              "correctAnswer": "A. To allow urine and feces to fall through, keeping the housing clean and dry",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Raised wire floors allow droppings to pass through, reducing disease risks like coccidiosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I32",
+              "difficulty": "medium",
+              "prompt": "Which of the following is an exotic beef cattle breed?",
+              "options": [
+                "A. Aberdeen Angus",
+                "B. West African Shorthorn",
+                "C. Muturu",
+                "D. N'Dama"
+              ],
+              "correctAnswer": "A. Aberdeen Angus",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Aberdeen Angus is an exotic beef breed noted for high-quality meat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I33",
+              "difficulty": "medium",
+              "prompt": "Why do herbivorous ruminants have a longer digestive tract than carnivorous mammals?",
+              "options": [
+                "A. Plant material contains cellulose, requiring prolonged microbial fermentation and absorption",
+                "B. Meat takes longer to digest than grass",
+                "C. Ruminants do not drink water",
+                "D. Carnivores have four stomachs"
+              ],
+              "correctAnswer": "A. Plant material contains cellulose, requiring prolonged microbial fermentation and absorption",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Fibrous plant matter requires long transit times to break down cellulose and absorb nutrients.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I34",
+              "difficulty": "medium",
+              "prompt": "Which of the following signs indicates a healthy rabbit suitable for breeding?",
+              "options": [
+                "A. Watery nasal discharge and sneezing",
+                "B. Bright eyes, an alert demeanor, clean ears, and a smooth fur coat",
+                "C. Crusty scabs inside the ear flap",
+                "D. A swollen, fluid-filled abdomen"
+              ],
+              "correctAnswer": "B. Bright eyes, an alert demeanor, clean ears, and a smooth fur coat",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Clear eyes, clean ears, and a shiny coat are indicators of a healthy breeding rabbit.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I35",
+              "difficulty": "medium",
+              "prompt": "Why is dry wood shaving litter spread across the floor of a poultry pen?",
+              "options": [
+                "A. To absorb moisture from droppings and provide insulation and bedding",
+                "B. To serve as the primary source of food",
+                "C. To prevent chickens from laying eggs",
+                "D. To make the pen completely dark"
+              ],
+              "correctAnswer": "A. To absorb moisture from droppings and provide insulation and bedding",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Dry litter absorbs droppings, keeps birds warm, and reduces ammonia buildup.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I36",
+              "difficulty": "medium",
+              "prompt": "Which dairy cattle breed produces milk with the highest butterfat percentage?",
+              "options": [
+                "A. Jersey",
+                "B. Aberdeen Angus",
+                "C. Muturu",
+                "D. N'Dama"
+              ],
+              "correctAnswer": "A. Jersey",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Jersey cows produce rich milk with a high butterfat content.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I37",
+              "difficulty": "medium",
+              "prompt": "What morphological adaptation enables sheep to graze pasture grasses closer to the ground than cattle?",
+              "options": [
+                "A. A split upper lip and narrow muzzle",
+                "B. Sharp upper canine teeth",
+                "C. A larger rumen",
+                "D. Shorter legs"
+              ],
+              "correctAnswer": "A. A split upper lip and narrow muzzle",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "A cleft upper lip and pointed muzzle allow sheep to graze grass close to the root crowns.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I38",
+              "difficulty": "medium",
+              "prompt": "What causes Gumboro disease in young domestic chickens?",
+              "options": [
+                "A. An infectious virus that attacks the bursa of Fabricius, weakening immunity",
+                "B. A lack of grit in the gizzard",
+                "C. High protein in broiler feed",
+                "D. Mange mites on the legs"
+              ],
+              "correctAnswer": "A. An infectious virus that attacks the bursa of Fabricius, weakening immunity",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Gumboro (infectious bursal disease) is a viral illness that damages the immune organs of young fowls.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I39",
+              "difficulty": "medium",
+              "prompt": "Why do livestock farmers dock the tails of wool sheep?",
+              "options": [
+                "A. To prevent fecal contamination of the fleece around the rear, reducing fly-strike",
+                "B. To make sheep run faster",
+                "C. To improve milk production",
+                "D. To identify animal age"
+              ],
+              "correctAnswer": "A. To prevent fecal contamination of the fleece around the rear, reducing fly-strike",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Docking tails prevents dung accumulation on the wool, reducing fly infestation.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I40",
+              "difficulty": "medium",
+              "prompt": "What is the function of the reticulum during the process of rumination?",
+              "options": [
+                "A. Secreting pepsin",
+                "B. Compacting fermented forage into a bolus and pushing it upward into the esophagus",
+                "C. Grinding corn with stones",
+                "D. Absorbing all digested carbohydrates"
+              ],
+              "correctAnswer": "B. Compacting fermented forage into a bolus and pushing it upward into the esophagus",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Reticular contractions form and propel cud back up to the mouth for re-chewing.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I41",
+              "difficulty": "medium",
+              "prompt": "Which rabbit breed has a reddish-brown coat and is reared for meat?",
+              "options": [
+                "A. New Zealand Red",
+                "B. California White",
+                "C. Flemish Giant",
+                "D. Angora"
+              ],
+              "correctAnswer": "A. New Zealand Red",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "New Zealand Red is a meat breed known for its reddish fur.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I42",
+              "difficulty": "medium",
+              "prompt": "How does adequate cross-ventilation in a poultry pen protect bird health?",
+              "options": [
+                "A. It removes ammonia, moisture, and dust while bringing in oxygen",
+                "B. It keeps the pen cold",
+                "C. It prevents birds from making noise",
+                "D. It eliminates the need for vaccines"
+              ],
+              "correctAnswer": "A. It removes ammonia, moisture, and dust while bringing in oxygen",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Cross-ventilation removes harmful ammonia and moisture, reducing respiratory problems.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I43",
+              "difficulty": "medium",
+              "prompt": "What is the biological role of rumen ciliate protozoa in cattle?",
+              "options": [
+                "A. Breaking down starch and cellulose and serving as digestible protein downstream",
+                "B. Producing milk in the udder",
+                "C. Secreting bile into the reticulum",
+                "D. Digesting grain in the mouth"
+              ],
+              "correctAnswer": "A. Breaking down starch and cellulose and serving as digestible protein downstream",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Ciliate protozoa ferment plant carbohydrates and are digested in the abomasum as protein.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I44",
+              "difficulty": "medium",
+              "prompt": "Which acute, spore-forming bacterial disease of cattle can also infect humans?",
+              "options": [
+                "A. Anthrax",
+                "B. Mastitis",
+                "C. Coccidiosis",
+                "D. Mange"
+              ],
+              "correctAnswer": "A. Anthrax",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Anthrax is a severe, zoonotic bacterial disease caused by *Bacillus anthracis*.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I45",
+              "difficulty": "medium",
+              "prompt": "Why are indigenous local chickens often raised on free range in villages?",
+              "options": [
+                "A. They forage for food and possess natural resistance to local pests and weather",
+                "B. They cannot digest commercial poultry mash",
+                "C. They lay eggs only in tall trees",
+                "D. They die when placed in poultry coops"
+              ],
+              "correctAnswer": "A. They forage for food and possess natural resistance to local pests and weather",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Local fowls forage effectively and are well adapted to survive in backyard environments.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I46",
+              "difficulty": "medium",
+              "prompt": "What is the purpose of roosting perches inside a poultry laying house?",
+              "options": [
+                "A. To allow fowls to roost off the ground according to their natural behavior",
+                "B. To feed birds in the air",
+                "C. To prevent hens from laying eggs",
+                "D. To keep eggs warm"
+              ],
+              "correctAnswer": "A. To allow fowls to roost off the ground according to their natural behavior",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Perches provide elevated roosting spots, reducing stress and floor crowding.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I47",
+              "difficulty": "medium",
+              "prompt": "How do rabbits digest plant fiber despite being monogastric animals?",
+              "options": [
+                "A. They possess an enlarged functional caecum where bacterial fermentation occurs",
+                "B. They have four stomachs",
+                "C. They grind grass with their gizzard",
+                "D. They regurgitate cud"
+              ],
+              "correctAnswer": "A. They possess an enlarged functional caecum where bacterial fermentation occurs",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Rabbits are hindgut fermenters, relying on an enlarged caecum to break down fiber.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I48",
+              "difficulty": "medium",
+              "prompt": "Which commercial layer breed produces white-shelled table eggs?",
+              "options": [
+                "A. Single Comb White Leghorn",
+                "B. Rhode Island Red",
+                "C. ISA Brown",
+                "D. Australorp"
+              ],
+              "correctAnswer": "A. Single Comb White Leghorn",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Single Comb White Leghorns are standard producers of white-shelled eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I49",
+              "difficulty": "medium",
+              "prompt": "What does 'culling' mean in poultry production?",
+              "options": [
+                "A. Removing unproductive, diseased, or defective birds from the flock",
+                "B. Feeding chicks with starter mash",
+                "C. Incubating eggs artificially",
+                "D. Collecting eggs from nest boxes"
+              ],
+              "correctAnswer": "A. Removing unproductive, diseased, or defective birds from the flock",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Culling is the removal of sick or non-laying birds to maintain flock productivity.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_I50",
+              "difficulty": "medium",
+              "prompt": "Why do ruminants produce large amounts of saliva while chewing the cud?",
+              "options": [
+                "A. Saliva contains bicarbonates that buffer rumen acids to keep microflora healthy",
+                "B. Saliva cools the cow's horns",
+                "C. Saliva digests proteins chemically in the mouth",
+                "D. Saliva turns cud into stone"
+              ],
+              "correctAnswer": "A. Saliva contains bicarbonates that buffer rumen acids to keep microflora healthy",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Saliva contains bicarbonate buffers that help stabilize pH in the fermentation vat of the rumen.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
@@ -9123,18 +10721,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "hard": [
             {
-              "id": "B7_TURK_02",
+              "id": "B7_ANIM_A01",
               "difficulty": "hard",
-              "prompt": "A major commercial breeding challenge common to both Broad-Breasted Bronze and Broad-Breasted White turkeys is their:",
+              "prompt": "Sheep can maintain growth on low-protein straw supplemented with urea, while pigs lose weight on the same diet. What explains this difference?",
               "options": [
-                "A. High susceptibility to bovine trypanosomiasis",
-                "B. Poor natural mating performance due to heavy chest muscling and weight",
-                "C. Inability to synthesize digestive pepsin",
-                "D. Complete absence of feathers at maturity"
+                "A. Rumen microbes use urea to synthesize microbial protein, which is digested downstream in the abomasum",
+                "B. Sheep absorb urea directly through their skin",
+                "C. Pigs are unable to drink water",
+                "D. Sheep possess two abomasums"
               ],
-              "correctAnswer": "B. Poor natural mating performance due to heavy chest muscling and weight",
-              "hint": "Extreme breast muscling prevents toms from mounting hens naturally without injury.",
-              "workedSolution": "Due to extreme body mass and heavy breast muscling, giant broad-breasted turkeys experience poor natural mating rates and require artificial insemination.",
+              "correctAnswer": "A. Rumen microbes use urea to synthesize microbial protein, which is digested downstream in the abomasum",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Rumen microflora use non-protein nitrogen to build microbial amino acids that the animal digests in the abomasum.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A02",
+              "difficulty": "hard",
+              "prompt": "Why does feeding finely ground, pelleted roughage to a dairy cow lower the butterfat content of its milk?",
+              "options": [
+                "A. It reduces cud chewing, lowering the production of acetate needed for milk fat synthesis",
+                "B. Pelleted feed destroys the udder tissues directly",
+                "C. It blocks the cow's omasum",
+                "D. It prevents the animal from swallowing water"
+              ],
+              "correctAnswer": "A. It reduces cud chewing, lowering the production of acetate needed for milk fat synthesis",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Fine grinding reduces rumen stimulation, shifting fermentation away from acetate, which is needed to synthesize milk fat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A03",
+              "difficulty": "hard",
+              "prompt": "Why is coccidiosis more severe in poultry reared on damp deep litter than on wire-mesh floors?",
+              "options": [
+                "A. Moisture and warmth in damp litter allow dropped coccidial oocysts to sporulate into infective stages",
+                "B. Wire floors make birds immune to parasites",
+                "C. Damp litter dissolves grit inside the gizzard",
+                "D. Wet shavings generate coccidia through spontaneous generation"
+              ],
+              "correctAnswer": "A. Moisture and warmth in damp litter allow dropped coccidial oocysts to sporulate into infective stages",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Coccidial oocysts require moisture and warmth in litter to sporulate and become infective.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A04",
+              "difficulty": "hard",
+              "prompt": "How does the reticular groove (esophageal groove) adaptation benefit newborn calves?",
+              "options": [
+                "A. It diverts swallowed milk past the undeveloped rumen directly into the abomasum",
+                "B. It grinds grain with stones",
+                "C. It channels liquid milk into the lungs",
+                "D. It turns milk into cud"
+              ],
+              "correctAnswer": "A. It diverts swallowed milk past the undeveloped rumen directly into the abomasum",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "The muscular reticular groove closes during suckling, directing milk straight to the abomasum to prevent rumen fermentation.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A05",
+              "difficulty": "hard",
+              "prompt": "Why does a sudden shift to high-grain diets in cattle cause acute rumen acidosis?",
+              "options": [
+                "A. Rapid starch fermentation by *Streptococcus bovis* produces excess lactic acid, dropping rumen pH and killing useful flora",
+                "B. Grain breaks cattle teeth",
+                "C. Grain dissolves the omasum",
+                "D. Grain stops the flow of saliva"
+              ],
+              "correctAnswer": "A. Rapid starch fermentation by *Streptococcus bovis* produces excess lactic acid, dropping rumen pH and killing useful flora",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Starch promotes lactic-acid-producing bacteria, lowering rumen pH and damaging the stomach lining.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A06",
+              "difficulty": "hard",
+              "prompt": "A flock of laying hens shows a drop in egg production with pale, shriveled combs and a narrow pelvic bone span. What does this indicate?",
+              "options": [
+                "A. The hens have gone out of lay and should be evaluated for culling",
+                "B. The flock has become broilers",
+                "C. The birds are preparing to mate",
+                "D. The hens have eaten too much grit"
+              ],
+              "correctAnswer": "A. The hens have gone out of lay and should be evaluated for culling",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Pale, shrunken combs and narrow pelvic spreads are physical signs that hens have ceased egg production.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A07",
+              "difficulty": "hard",
+              "prompt": "Why are commercial broilers susceptible to heat prostration in hot, humid weather?",
+              "options": [
+                "A. Dense feathering, fast metabolic heat production, and lack of sweat glands make heat dissipation difficult",
+                "B. Broilers have larger lungs that overheat",
+                "C. The crop boils drinking water",
+                "D. Broilers lack a liver"
+              ],
+              "correctAnswer": "A. Dense feathering, fast metabolic heat production, and lack of sweat glands make heat dissipation difficult",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Lacking sweat glands, broilers rely on panting; high humidity reduces evaporative cooling from the respiratory tract.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A08",
+              "difficulty": "hard",
+              "prompt": "Why do domestic rabbits eat soft fecal pellets (cecotrophes) directly from the anus?",
+              "options": [
+                "A. To recover microbial protein and B-vitamins produced during caecal fermentation",
+                "B. Because they have no access to clean forage",
+                "C. To wear down their front incisors",
+                "D. To treat ear mange"
+              ],
+              "correctAnswer": "A. To recover microbial protein and B-vitamins produced during caecal fermentation",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Cecotrophy allows rabbits to absorb vitamins and microbial proteins produced in the caecum.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A09",
+              "difficulty": "hard",
+              "prompt": "What causes hardware disease (traumatic reticuloperitonitis) in cattle?",
+              "options": [
+                "A. Heavy metallic objects trapped in the reticulum pierce through the stomach wall toward the heart",
+                "B. Walking on sharp gravel",
+                "C. Udder infection by bacteria",
+                "D. Lack of phosphorus in forage"
+              ],
+              "correctAnswer": "A. Heavy metallic objects trapped in the reticulum pierce through the stomach wall toward the heart",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Metal objects settle in the reticulum and can puncture through the stomach and diaphragm into the pericardium.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A10",
+              "difficulty": "hard",
+              "prompt": "Why is purebred Holstein-Friesian cattle farming difficult in open humid zones of southern Ghana?",
+              "options": [
+                "A. High susceptibility to tick-borne diseases, trypanosomiasis, and thermal heat stress reduces their productivity",
+                "B. They cannot eat tropical pasture grass",
+                "C. They produce no milk in warm weather",
+                "D. They cannot walk on humid soil"
+              ],
+              "correctAnswer": "A. High susceptibility to tick-borne diseases, trypanosomiasis, and thermal heat stress reduces their productivity",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Unadapted temperate dairy breeds face severe heat stress and disease challenges in humid tropical climates.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A11",
+              "difficulty": "hard",
+              "prompt": "Which combination of characteristics distinguishes an active laying hen from a non-layer?",
+              "options": [
+                "A. Moist, pliable, oval vent with wide pubic bone spacing (3–4 fingers) and an enlarged, waxy red comb",
+                "B. Dry, yellow, round vent with narrow pubic bones (1 finger) and a small comb",
+                "C. A hard, pale comb with feathers missing on the head",
+                "D. An aggressive demeanor and small body size"
+              ],
+              "correctAnswer": "A. Moist, pliable, oval vent with wide pubic bone spacing (3–4 fingers) and an enlarged, waxy red comb",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "An active layer shows a pliable, moist vent, wide pubic bone separation, and a warm, bright comb.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A12",
+              "difficulty": "hard",
+              "prompt": "Why do sheep require dietary sulfur supplementation when non-protein nitrogen (urea) is fed?",
+              "options": [
+                "A. Rumen microbes require sulfur to synthesize the essential amino acids methionine and cysteine",
+                "B. Sulfur keeps wool from growing too fast",
+                "C. Sulfur neutralizes gizzard acid",
+                "D. Sulfur makes urea taste better"
+              ],
+              "correctAnswer": "A. Rumen microbes require sulfur to synthesize the essential amino acids methionine and cysteine",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Microorganisms need a source of sulfur to assemble sulfur-containing amino acids from urea nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A13",
+              "difficulty": "hard",
+              "prompt": "How does high ammonia gas concentration in a poultry pen predispose fowls to respiratory infections?",
+              "options": [
+                "A. Ammonia gas damages and paralyzes the protective cilia of the respiratory tract, allowing pathogens to penetrate",
+                "B. Ammonia turns into dust that blocks the gizzard",
+                "C. Ammonia cools the lungs to freezing",
+                "D. Ammonia stops birds from drinking water"
+              ],
+              "correctAnswer": "A. Ammonia gas damages and paralyzes the protective cilia of the respiratory tract, allowing pathogens to penetrate",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Ammonia vapor irritates respiratory linings and paralyzes cilia, predisposing fowls to secondary bacterial infections.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A14",
+              "difficulty": "hard",
+              "prompt": "Why is the meat of the West African Dwarf goat valued in local culinary dishes?",
+              "options": [
+                "A. It has low carcass fat, fine-textured muscle fibers, and a distinctive flavor",
+                "B. The meat contains no bones",
+                "C. It is green in color",
+                "D. It requires no cooking"
+              ],
+              "correctAnswer": "A. It has low carcass fat, fine-textured muscle fibers, and a distinctive flavor",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "West African Dwarf goat meat is lean, tender, and favored for local stews and soups.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A15",
+              "difficulty": "hard",
+              "prompt": "Why must high-yielding dairy cows undergo a 60-day dry period prior to calving?",
+              "options": [
+                "A. To allow mammary tissue to regenerate and prepare for colostrum synthesis",
+                "B. To stop cows from eating pasture grass",
+                "C. To prevent cows from giving birth to twins",
+                "D. To prevent horns from growing"
+              ],
+              "correctAnswer": "A. To allow mammary tissue to regenerate and prepare for colostrum synthesis",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "A dry period allows the mammary gland to rest and involute before the next lactation cycle.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A16",
+              "difficulty": "hard",
+              "prompt": "What is the nature of 'crop milk' produced by pigeons to feed their young?",
+              "options": [
+                "A. Sloughed, lipid- and protein-rich epithelial cells from the crop lining stimulated by prolactin",
+                "B. Liquid milk secreted by mammary glands",
+                "C. Regurgitated water mixed with bile",
+                "D. Gastric acid from the proventriculus"
+              ],
+              "correctAnswer": "A. Sloughed, lipid- and protein-rich epithelial cells from the crop lining stimulated by prolactin",
+              "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+              "workedSolution": "Crop milk consists of sloughed, nutrient-rich epithelial cells from the crop wall.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A17",
+              "difficulty": "hard",
+              "prompt": "What causes pasture bloat when cattle graze rapidly on lush alfalfa or clover?",
+              "options": [
+                "A. Soluble leaf proteins form a viscous foam that traps fermentation gases, blocking eructation",
+                "B. Water blocks the omasum",
+                "C. Stones block the gizzard",
+                "D. Cattle swallow air bubbles"
+              ],
+              "correctAnswer": "A. Soluble leaf proteins form a viscous foam that traps fermentation gases, blocking eructation",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Soluble proteins in young legumes generate viscous foam that prevents the natural belching of rumen gases.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A18",
+              "difficulty": "hard",
+              "prompt": "Why is artificial insemination (AI) practiced on commercial dairy cattle farms?",
+              "options": [
+                "A. It allows the widespread use of superior, proven genetics while reducing venereal disease risks",
+                "B. It makes cows give birth to twins every time",
+                "C. It eliminates the need to milk cows",
+                "D. It turns beef cattle into dairy cows"
+              ],
+              "correctAnswer": "A. It allows the widespread use of superior, proven genetics while reducing venereal disease risks",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "AI broadens access to elite sire genetics, improves biosecurity, and removes the hazards of maintaining bulls.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A19",
+              "difficulty": "hard",
+              "prompt": "What happens if laying hens are fed diets deficient in calcium and vitamin D3?",
+              "options": [
+                "A. Hens resorb bone calcium, leading to cage layer fatigue and soft-shelled eggs",
+                "B. Hens turn into broilers",
+                "C. Feathers turn green",
+                "D. Gizzards stop grinding"
+              ],
+              "correctAnswer": "A. Hens resorb bone calcium, leading to cage layer fatigue and soft-shelled eggs",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Deficiencies cause hens to deplete skeletal calcium, resulting in thin shells and bone weakness.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A20",
+              "difficulty": "hard",
+              "prompt": "How do goats browse bitter shrubs containing tannins without suffering poisoning?",
+              "options": [
+                "A. Mobile lips select tender parts, while proline-rich salivary proteins bind and neutralize tannins",
+                "B. Goats have three abomasums",
+                "C. Goats do not have digestive enzymes",
+                "D. Tannins turn into sugar in the mouth"
+              ],
+              "correctAnswer": "A. Mobile lips select tender parts, while proline-rich salivary proteins bind and neutralize tannins",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Salivary proline-rich proteins bind tannins, protecting dietary enzymes and proteins from inhibition.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A21",
+              "difficulty": "hard",
+              "prompt": "Why is adequate coarse fiber in the diet of a dairy cow necessary to maintain milk butterfat?",
+              "options": [
+                "A. Effective fiber stimulates cud-chewing and acetate production, the precursor for milk fat synthesis",
+                "B. Fiber stops milk from souring",
+                "C. Fiber poisons rumen bacteria",
+                "D. Fiber destroys the omasum"
+              ],
+              "correctAnswer": "A. Effective fiber stimulates cud-chewing and acetate production, the precursor for milk fat synthesis",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "Coarse fiber stimulates rumination and saliva flow, promoting acetate production needed for butterfat.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A22",
+              "difficulty": "hard",
+              "prompt": "Why are day-old commercial chicks vaccinated against Marek's disease at the hatchery?",
+              "options": [
+                "A. Marek's is an airborne virus that causes nerve lesions and tumors before natural immunity develops",
+                "B. To make chicks grow feathers immediately",
+                "C. To prevent egg breakage",
+                "D. To stop them from drinking water"
+              ],
+              "correctAnswer": "A. Marek's is an airborne virus that causes nerve lesions and tumors before natural immunity develops",
+              "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+              "workedSolution": "Vaccinating day-old chicks prevents tumor formation and paralysis caused by Marek's virus.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A23",
+              "difficulty": "hard",
+              "prompt": "What is the biological importance of volatile fatty acids (VFAs) in ruminant nutrition?",
+              "options": [
+                "A. They are absorbed through the rumen wall and provide up to 70–80% of the animal's metabolic energy",
+                "B. They are waste products passed out in feces",
+                "C. They make cud taste bitter",
+                "D. They poison harmful protozoa"
+              ],
+              "correctAnswer": "A. They are absorbed through the rumen wall and provide up to 70–80% of the animal's metabolic energy",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "VFAs (acetate, propionate, butyrate) from fermentation serve as the primary energy source for ruminants.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A24",
+              "difficulty": "hard",
+              "prompt": "Why does an egg-bound hen adopt a penguin-like posture?",
+              "options": [
+                "A. An egg is stuck in the lower oviduct or cloaca, causing pain, straining, and nerve pressure",
+                "B. She is trying to fly out of the pen",
+                "C. Her gizzard has dissolved",
+                "D. She is showing broody behavior"
+              ],
+              "correctAnswer": "A. An egg is stuck in the lower oviduct or cloaca, causing pain, straining, and nerve pressure",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Egg binding obstructs the vent and puts pressure on pelvic nerves, causing an upright, strained stance.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A25",
+              "difficulty": "hard",
+              "prompt": "Why is crossbreeding native West African cattle with exotic breeds managed carefully?",
+              "options": [
+                "A. Indiscriminate crossing can dilute native trypanotolerance and heat adaptation",
+                "B. Crossbred animals are always sterile",
+                "C. Crossbred calves cannot nurse milk",
+                "D. Crossbreeding causes cattle to lose hooves"
+              ],
+              "correctAnswer": "A. Indiscriminate crossing can dilute native trypanotolerance and heat adaptation",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Unplanned crossbreeding can erode valuable indigenous traits like disease resistance and heat tolerance.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A26",
+              "difficulty": "hard",
+              "prompt": "What causes ascites (water-belly) in fast-growing commercial broilers?",
+              "options": [
+                "A. High metabolic oxygen demand outpaces cardiopulmonary capacity, causing pulmonary hypertension and fluid leaks into the abdomen",
+                "B. The crop bursts from excess feed",
+                "C. Drinking cold water",
+                "D. Lack of sand in the gizzard"
+              ],
+              "correctAnswer": "A. High metabolic oxygen demand outpaces cardiopulmonary capacity, causing pulmonary hypertension and fluid leaks into the abdomen",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Rapid growth strains the heart and lungs, leading to hypertension and abdominal fluid accumulation.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A27",
+              "difficulty": "hard",
+              "prompt": "Why are sheep less prone to pasture bloat than cattle grazing the same field?",
+              "options": [
+                "A. Sheep graze selectively with narrow muzzles, taking small bites rather than gulping large amounts of legume mass",
+                "B. Sheep produce no fermentation gas",
+                "C. Sheep possess an extra abomasum",
+                "D. Sheep have no rumen microbes"
+              ],
+              "correctAnswer": "A. Sheep graze selectively with narrow muzzles, taking small bites rather than gulping large amounts of legume mass",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Selective grazing and smaller bite sizes prevent the sudden intake of bloat-inducing proteins.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A28",
+              "difficulty": "hard",
+              "prompt": "What is the biological function of the bursa of Fabricius in young chickens?",
+              "options": [
+                "A. It serves as the primary lymphoid organ for the maturation of B-lymphocytes",
+                "B. It grinds grain with stones",
+                "C. It stores water for the kidneys",
+                "D. It forms eggshells"
+              ],
+              "correctAnswer": "A. It serves as the primary lymphoid organ for the maturation of B-lymphocytes",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "The bursa of Fabricius is the avian organ responsible for developing B-cell immunity in young fowls.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A29",
+              "difficulty": "hard",
+              "prompt": "Why can drinking milk from open buckets cause nutritional scours in young calves?",
+              "options": [
+                "A. Fast gulping fails to trigger closure of the reticular groove, allowing milk to ferment in the rumen",
+                "B. Milk is too hot for the calf",
+                "C. Calves lack an abomasum",
+                "D. Milk dissolves the reticulum"
+              ],
+              "correctAnswer": "A. Fast gulping fails to trigger closure of the reticular groove, allowing milk to ferment in the rumen",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Without suckling reflexes, the groove fails to close, letting milk spoil in the immature rumen.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A30",
+              "difficulty": "hard",
+              "prompt": "How can moderate levels of condensed tannins in forage benefit ruminant protein nutrition?",
+              "options": [
+                "A. They bind dietary protein in the rumen, allowing it to bypass to the abomasum for direct absorption",
+                "B. They kill all rumen bacteria",
+                "C. They convert grass into milk fat",
+                "D. They eliminate the need for water"
+              ],
+              "correctAnswer": "A. They bind dietary protein in the rumen, allowing it to bypass to the abomasum for direct absorption",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "Tannins can protect proteins from excessive microbial degradation, increasing bypass protein to the true stomach.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A31",
+              "difficulty": "hard",
+              "prompt": "Why should open-sided poultry pens in the tropics be built along an East-West orientation?",
+              "options": [
+                "A. To minimize direct sun penetration through the open side walls during the day",
+                "B. To face traditional shrines",
+                "C. To prevent air from flowing through",
+                "D. To make fowls face the sunrise"
+              ],
+              "correctAnswer": "A. To minimize direct sun penetration through the open side walls during the day",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "An East-West orientation keeps the hot midday sun off the open sidewalls, reducing thermal stress.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A32",
+              "difficulty": "hard",
+              "prompt": "What is the primary sign of infectious coryza in domestic chickens?",
+              "options": [
+                "A. Acute facial swelling, foul-smelling nasal discharge, and sneezing",
+                "B. Loss of claws on feet",
+                "C. Production of green eggs",
+                "D. Rapid weight gain"
+              ],
+              "correctAnswer": "A. Acute facial swelling, foul-smelling nasal discharge, and sneezing",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Infectious coryza is a bacterial illness causing facial edema and foul nasal exudate.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A33",
+              "difficulty": "hard",
+              "prompt": "Why is commercial broiler feed unsuitable for growing rabbits?",
+              "options": [
+                "A. Broiler feed lacks indigestible fiber needed for caecal motility and may contain additives harmful to rabbits",
+                "B. Broiler feed is too wet",
+                "C. Rabbits have gizzards that reject chicken feed",
+                "D. Broiler feed turns fur green"
+              ],
+              "correctAnswer": "A. Broiler feed lacks indigestible fiber needed for caecal motility and may contain additives harmful to rabbits",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Rabbits require indigestible fiber to prevent gut stasis, and poultry feed additives can be toxic.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A34",
+              "difficulty": "hard",
+              "prompt": "What causes milk fever (hypocalcemia) in high-producing dairy cows shortly after calving?",
+              "options": [
+                "A. A rapid drain of blood calcium into colostrum and milk outpaces bone calcium mobilization",
+                "B. The cow drinks too much water",
+                "C. The rumen microbes die suddenly",
+                "D. Infection of the udder by fly maggots"
+              ],
+              "correctAnswer": "A. A rapid drain of blood calcium into colostrum and milk outpaces bone calcium mobilization",
+              "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+              "workedSolution": "The sudden demand for calcium during early lactation causes blood calcium levels to drop, leading to milk fever.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A35",
+              "difficulty": "hard",
+              "prompt": "Why do browsing goats usually carry lower internal parasite loads than grazing sheep?",
+              "options": [
+                "A. Goats feed on elevated browse well above the ground level where parasite larvae concentrate",
+                "B. Goats produce venom that kills roundworms",
+                "C. Sheep have no immune response",
+                "D. Goats do not excrete feces"
+              ],
+              "correctAnswer": "A. Goats feed on elevated browse well above the ground level where parasite larvae concentrate",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Feeding on shrubs and tree leaves keeps goats away from the ground-level pasture where parasite larvae live.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A36",
+              "difficulty": "hard",
+              "prompt": "Why is insoluble granite grit provided to free-range poultry flocks?",
+              "options": [
+                "A. It remains in the gizzard to maintain mechanical grinding efficiency for whole grains",
+                "B. It provides dietary phosphorus",
+                "C. It prevents broodiness",
+                "D. It makes feathers shiny"
+              ],
+              "correctAnswer": "A. It remains in the gizzard to maintain mechanical grinding efficiency for whole grains",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Insoluble grit stays in the gizzard, acting as grinding stones to crush whole seeds.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A37",
+              "difficulty": "hard",
+              "prompt": "What advantage does crossing indigenous Zebu cattle with exotic European breeds offer?",
+              "options": [
+                "A. Offspring combine higher milk or meat potential with native heat and tick tolerance",
+                "B. Crossbred cows stop eating grass",
+                "C. Crossbred cows produce twins exclusively",
+                "D. It makes cattle naturally hornless"
+              ],
+              "correctAnswer": "A. Offspring combine higher milk or meat potential with native heat and tick tolerance",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Heterosis combines the productivity of exotic lines with the environmental hardiness of local Zebu cattle.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A38",
+              "difficulty": "hard",
+              "prompt": "How does the vascular network of a rooster's comb assist in cooling?",
+              "options": [
+                "A. Warm blood is directed through the unfeathered comb and wattles to radiate heat into the air",
+                "B. It digests feed proteins",
+                "C. It secretes sweat",
+                "D. It stores calcium"
+              ],
+              "correctAnswer": "A. Warm blood is directed through the unfeathered comb and wattles to radiate heat into the air",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Blood flow to the comb increases during heat stress, radiating heat into the surrounding air.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A39",
+              "difficulty": "hard",
+              "prompt": "Why should adult male rabbits (bucks) be housed individually in separate hutches?",
+              "options": [
+                "A. To control mating schedules, avoid inbreeding, and prevent territorial fighting",
+                "B. Bucks eat young rabbits",
+                "C. Rabbits are wild carnivores",
+                "D. Does do not eat near bucks"
+              ],
+              "correctAnswer": "A. To control mating schedules, avoid inbreeding, and prevent territorial fighting",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Individual housing prevents fighting, manages breeding records, and prevents unwanted matings.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A40",
+              "difficulty": "hard",
+              "prompt": "What is the danger of feeding mouldy groundnut cake containing aflatoxin to laying hens?",
+              "options": [
+                "A. Aflatoxins cause liver damage, suppress immunity, and leave residues in table eggs",
+                "B. The eggs turn bright blue",
+                "C. The crop turns into stone",
+                "D. Birds stop drinking water"
+              ],
+              "correctAnswer": "A. Aflatoxins cause liver damage, suppress immunity, and leave residues in table eggs",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Aflatoxins are toxic mycotoxins that damage liver tissue and lower egg quality.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A41",
+              "difficulty": "hard",
+              "prompt": "What is the function of the leaf-like folds (laminae) inside the omasum?",
+              "options": [
+                "A. Providing a large surface area to absorb water and volatile fatty acids from food",
+                "B. Storing whole grains",
+                "C. Secreting pepsin enzymes",
+                "D. Trapping foreign metal wires"
+              ],
+              "correctAnswer": "A. Providing a large surface area to absorb water and volatile fatty acids from food",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The muscular folds maximize mucosal surface area to absorb water and fatty acids.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A42",
+              "difficulty": "hard",
+              "prompt": "Why is the use of battery cages for laying hens being reduced in modern poultry production?",
+              "options": [
+                "A. Severe movement restriction and inability to express natural behaviors raise animal welfare concerns",
+                "B. Cages cause eggs to be soft-shelled",
+                "C. Birds eat twice as much feed in cages",
+                "D. Cages stop hens from drinking water"
+              ],
+              "correctAnswer": "A. Severe movement restriction and inability to express natural behaviors raise animal welfare concerns",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Battery cages restrict natural behaviors like perching and dust bathing, raising welfare issues.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A43",
+              "difficulty": "hard",
+              "prompt": "What causes black quarter (blackleg) in cattle?",
+              "options": [
+                "A. *Clostridium chauvoei* spores in soil entering muscle tissues and producing gas-forming toxins",
+                "B. Walking on hot asphalt",
+                "C. Mosquito bites on the tail",
+                "D. Drinking water from boreholes"
+              ],
+              "correctAnswer": "A. *Clostridium chauvoei* spores in soil entering muscle tissues and producing gas-forming toxins",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "*Clostridium chauvoei* produces severe toxins in deep muscle tissue, causing gas gangrene.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A44",
+              "difficulty": "hard",
+              "prompt": "Why do ruminants have a fibrous dental pad instead of upper incisors?",
+              "options": [
+                "A. Lower incisors press grass against the tough dental pad to grip and tear forage",
+                "B. Upper teeth were lost due to cud chewing",
+                "C. Ruminants only consume liquids",
+                "D. Upper incisors would block cud regurgitation"
+              ],
+              "correctAnswer": "A. Lower incisors press grass against the tough dental pad to grip and tear forage",
+              "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+              "workedSolution": "The tough dental pad provides a firm surface for the lower incisors to grip and tear grass.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A45",
+              "difficulty": "hard",
+              "prompt": "What deficiency causes rickets in growing broiler chickens?",
+              "options": [
+                "A. Insufficient dietary calcium, phosphorus, or vitamin D3, leading to soft, rubbery bones",
+                "B. Drinking too much water",
+                "C. Overfeeding on green grass",
+                "D. Lack of wood shavings on the floor"
+              ],
+              "correctAnswer": "A. Insufficient dietary calcium, phosphorus, or vitamin D3, leading to soft, rubbery bones",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Rickets results from inadequate bone mineralization due to lack of calcium, phosphorus, or vitamin D3.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A46",
+              "difficulty": "hard",
+              "prompt": "Why do local free-range hens hide their nests in bush thickets?",
+              "options": [
+                "A. A natural maternal instinct to conceal eggs and chicks from predators",
+                "B. To keep their feathers clean",
+                "C. They dislike natural light",
+                "D. The coop is too cold"
+              ],
+              "correctAnswer": "A. A natural maternal instinct to conceal eggs and chicks from predators",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Concealing nests is an antipredator adaptation that protects eggs and brooding hens.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A47",
+              "difficulty": "hard",
+              "prompt": "Why are calves fed dry starter pellets from two weeks of age?",
+              "options": [
+                "A. Microbial fermentation of grain starch produces butyrate, which stimulates rumen papillae development",
+                "B. To make horns grow early",
+                "C. To replace the abomasum",
+                "D. To stop them from drinking water"
+              ],
+              "correctAnswer": "A. Microbial fermentation of grain starch produces butyrate, which stimulates rumen papillae development",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "Fermentation of dry calf starter produces volatile fatty acids that stimulate rumen wall development.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A48",
+              "difficulty": "hard",
+              "prompt": "What triggers vent pecking and cannibalism in commercial laying flocks?",
+              "options": [
+                "A. Overcrowding, intense light, dietary nutrient imbalances, and boredom",
+                "B. Fowls are wild carnivores",
+                "C. Lack of gizzards",
+                "D. Hens mating with each other"
+              ],
+              "correctAnswer": "A. Overcrowding, intense light, dietary nutrient imbalances, and boredom",
+              "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+              "workedSolution": "High stocking densities, stress, bright lighting, and nutrient deficits can trigger feather and vent pecking.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A49",
+              "difficulty": "hard",
+              "prompt": "Why must mineral supplements formulated for cattle NOT be fed to sheep?",
+              "options": [
+                "A. Sheep accumulate copper in their liver, and cattle mineral levels can cause fatal copper poisoning",
+                "B. Sheep have no liver",
+                "C. Copper dissolves wool fibers",
+                "D. Cattle minerals contain too much sugar"
+              ],
+              "correctAnswer": "A. Sheep accumulate copper in their liver, and cattle mineral levels can cause fatal copper poisoning",
+              "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+              "workedSolution": "Sheep are sensitive to copper and can suffer toxic hemolytic crises if fed cattle mineral mixes.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_A50",
+              "difficulty": "hard",
+              "prompt": "Which combination of practices represents sound farm biosecurity against poultry diseases?",
+              "options": [
+                "A. Restricting farm visitors, using disinfectant footbaths, screening wild birds out, and following vaccination schedules",
+                "B. Spraying insecticides into water troughs",
+                "C. Feeding chickens on dead carcasses",
+                "D. Keeping poultry in bedrooms"
+              ],
+              "correctAnswer": "A. Restricting farm visitors, using disinfectant footbaths, screening wild birds out, and following vaccination schedules",
+              "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+              "workedSolution": "Strict sanitation, vector exclusion, footbaths, and timely vaccinations form the basis of poultry biosecurity.",
               "points": 1,
               "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
@@ -9261,7 +11692,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -9458,7 +11889,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -9655,7 +12086,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -9850,7 +12281,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -10046,7 +12477,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -10242,7 +12673,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -10439,7 +12870,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -10637,7 +13068,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -10835,7 +13266,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -11028,7 +13459,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -11223,7 +13654,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -11418,7 +13849,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -11614,7 +14045,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -11811,7 +14242,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:41:43.305Z"
+    "updatedAt": "2026-10-02T19:45:56.524Z"
   }
 ];
 
@@ -20091,115 +22522,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "B7_ANIM_MCQ_01",
+        "id": "B7_ANIM_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following farm animals is classified scientifically as a polygastric (ruminant) animal?",
+        "prompt": "Animals that have been tamed and reared by humans for food, work, or economic value are called:",
         "options": [
-          "A. Domestic pig",
-          "B. Sheep",
-          "C. Rabbit",
-          "D. Domestic fowl"
+          "A. Wild animals",
+          "B. Domestic animals",
+          "C. Nocturnal animals",
+          "D. Aquatic pests"
         ],
-        "correctAnswer": "B. Sheep",
-        "hint": "Ruminants possess a four-chambered stomach and chew the cud.",
-        "workedSolution": "Sheep are polygastric ruminants equipped with a four-chambered stomach (rumen, reticulum, omasum, abomasum) for fermenting plant cellulose.",
+        "correctAnswer": "B. Domestic animals",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Domestic animals are species that have been tamed, adapted, and raised by humans for food, clothing, or labor.",
         "points": 1
       },
       {
-        "id": "B7_ANIM_MCQ_02",
+        "id": "B7_ANIM_F02",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "In the domestic fowl, mechanical grinding of tough grains and whole seeds is performed by the:",
+        "prompt": "Which of the following is an example of a domestic farm animal?",
+        "options": [
+          "A. Hyena",
+          "B. Goat",
+          "C. Lion",
+          "D. Vulture"
+        ],
+        "correctAnswer": "B. Goat",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Goats are common domestic livestock reared for meat and milk in communities.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An animal with a simple, single-chambered stomach is described as:",
+        "options": [
+          "A. Ruminant",
+          "B. Monogastric",
+          "C. Polygastric",
+          "D. Amphibian"
+        ],
+        "correctAnswer": "B. Monogastric",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Monogastric organisms possess a simple, single-compartmented stomach.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following animals is a monogastric farm animal?",
+        "options": [
+          "A. Pig",
+          "B. Sheep",
+          "C. Cow",
+          "D. Goat"
+        ],
+        "correctAnswer": "A. Pig",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Pigs have a simple, single-chambered stomach and are classified as monogastrics.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Hoofed mammals with a complex four-chambered stomach that chew the cud are called:",
+        "options": [
+          "A. Carnivores",
+          "B. Ruminants",
+          "C. Monogastrics",
+          "D. Rodents"
+        ],
+        "correctAnswer": "B. Ruminants",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Ruminants have a complex stomach divided into four chambers and chew the cud.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a ruminant animal?",
+        "options": [
+          "A. Rabbit",
+          "B. Horse",
+          "C. Cow",
+          "D. Domestic fowl"
+        ],
+        "correctAnswer": "C. Cow",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Cattle are typical ruminants with a four-chambered stomach.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many chambers make up the stomach of a ruminant?",
+        "options": [
+          "A. One",
+          "B. Two",
+          "C. Three",
+          "D. Four"
+        ],
+        "correctAnswer": "D. Four",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The ruminant stomach is divided into four compartments: rumen, reticulum, omasum, and abomasum.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The first and largest chamber of the ruminant stomach is the:",
+        "options": [
+          "A. Reticulum",
+          "B. Rumen",
+          "C. Omasum",
+          "D. Abomasum"
+        ],
+        "correctAnswer": "B. Rumen",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The rumen is the initial and largest compartment of the ruminant stomach.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which compartment of the ruminant stomach secretes gastric juices and is known as the 'true stomach'?",
+        "options": [
+          "A. Rumen",
+          "B. Reticulum",
+          "C. Omasum",
+          "D. Abomasum"
+        ],
+        "correctAnswer": "D. Abomasum",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The abomasum is the true glandular stomach where gastric juice is secreted for chemical digestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The habit where ruminants bring up swallowed food from the stomach to chew it thoroughly while resting is called:",
+        "options": [
+          "A. Rumination (chewing the cud)",
+          "B. Moulting",
+          "C. Hibernation",
+          "D. Fermentation"
+        ],
+        "correctAnswer": "A. Rumination (chewing the cud)",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Cud-chewing or rumination is an adaptation where food is regurgitated and re-chewed.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In the domestic fowl, which organ stores food temporarily and moistens it?",
+        "options": [
+          "A. Gizzard",
+          "B. Crop",
+          "C. Caecum",
+          "D. Cloaca"
+        ],
+        "correctAnswer": "B. Crop",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The crop is an expanded muscular pouch in birds that stores and softens food.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organ in the domestic fowl grinds whole grains and tough feed using swallowed grit?",
         "options": [
           "A. Crop",
           "B. Proventriculus",
-          "C. Gizzard (Ventriculus)",
-          "D. Caeca"
+          "C. Gizzard (ventriculus)",
+          "D. Cloaca"
         ],
-        "correctAnswer": "C. Gizzard (Ventriculus)",
-        "hint": "This organ is thick, muscular, and contains swallowed small stones and grit.",
-        "workedSolution": "The gizzard (ventriculus) has thick muscular walls and grit that churn together to pulverize hard seeds and grains mechanically.",
+        "correctAnswer": "C. Gizzard (ventriculus)",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The muscular gizzard (ventriculus) grinds food mechanically with the help of ingested grit.",
         "points": 1
       },
       {
-        "id": "B7_TURK_01",
+        "id": "B7_ANIM_F13",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is a heavy commercial breed of turkey characterized by metallic brown feathers and greenish-grey shanks?",
+        "prompt": "The common exit chamber in birds for digestive waste, urine, and eggs is the:",
         "options": [
-          "A. Beltsville Small White",
-          "B. Broad-Breasted Bronze",
-          "C. Rhode Island Red",
+          "A. Ventriculus",
+          "B. Cloaca",
+          "C. Caecum",
+          "D. Crop"
+        ],
+        "correctAnswer": "B. Cloaca",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The cloaca serves as the terminal exit for excretory and digestive wastes as well as eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a recognized domestic rabbit breed?",
+        "options": [
+          "A. Friesian",
+          "B. California White",
+          "C. N'Dama",
           "D. White Leghorn"
         ],
-        "correctAnswer": "B. Broad-Breasted Bronze",
-        "hint": "The breed name contains the color \"Bronze\".",
-        "workedSolution": "The Broad-Breasted Bronze is a heavy commercial meat turkey recognized by its metallic bronze plumage and greenish-grey shanks.",
+        "correctAnswer": "B. California White",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "California White is a commercial domestic breed of rabbit.",
         "points": 1
       },
       {
-        "id": "B7_ANIM_MCQ_03",
-        "difficulty": "medium",
+        "id": "B7_ANIM_F15",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following morphological characteristics distinguishes a dairy cow from a beef cow?",
+        "prompt": "Flemish Giant is an established breed of:",
         "options": [
-          "A. Rectangular blocky body with heavy muscle fleshing",
-          "B. Wedge-shaped triangular body with a large, capacious udder",
-          "C. Short stout legs with a thick neck",
-          "D. Absence of an abomasum"
+          "A. Cattle",
+          "B. Sheep",
+          "C. Rabbit",
+          "D. Chicken"
         ],
-        "correctAnswer": "B. Wedge-shaped triangular body with a large, capacious udder",
-        "hint": "Dairy cattle channel energy into milk synthesis rather than body fat and meat.",
-        "workedSolution": "Dairy cattle exhibit a lean, angular, wedge-shaped body silhouette with a well-developed udder, whereas beef cattle possess a blocky, rectangular meat frame.",
+        "correctAnswer": "C. Rabbit",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "The Flemish Giant is a heavy breed of domestic rabbit.",
         "points": 1
       },
       {
-        "id": "B7_ANIM_MCQ_04",
-        "difficulty": "medium",
+        "id": "B7_ANIM_F16",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "A practical anatomical difference between domestic goats and domestic sheep is that:",
+        "prompt": "What is the typical tail orientation of a domestic goat compared to a sheep?",
         "options": [
-          "A. Sheep tails point erect while goat tails hang downwards",
-          "B. Goat tails point erect while sheep tails hang downwards",
-          "C. Goats chew the cud but sheep do not",
-          "D. Sheep have single stomachs while goats have four-chambered stomachs"
+          "A. Goats hold their tail erect; sheep have longer, hanging tails",
+          "B. Goats have hanging tails; sheep hold tails erect",
+          "C. Both animals have tails held erect",
+          "D. Both animals have hanging tails"
         ],
-        "correctAnswer": "B. Goat tails point erect while sheep tails hang downwards",
-        "hint": "Look closely at tail orientation and behavioral browsing habits.",
-        "workedSolution": "Domestic goats carry their short tails erect (pointing upwards), whereas domestic sheep have longer tails that hang limply downwards.",
+        "correctAnswer": "A. Goats hold their tail erect; sheep have longer, hanging tails",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Goats generally have short, erect tails, whereas sheep have longer tails that hang downward.",
         "points": 1
       },
       {
-        "id": "B7_TURK_03",
-        "difficulty": "medium",
+        "id": "B7_ANIM_F17",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "Which avian viral disease produces nodular, wart-like crusty scabs on the unfeathered skin of the head, comb, and snood?",
+        "prompt": "Which domestic ruminant has glands located between the toes?",
+        "options": [
+          "A. Goat",
+          "B. Sheep",
+          "C. Pig",
+          "D. Horse"
+        ],
+        "correctAnswer": "B. Sheep",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Sheep possess interdigital glands between their toes, which are absent in goats.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which indigenous sheep breed in West Africa is small, compact, and tolerant to trypanosomiasis?",
+        "options": [
+          "A. Australian Merino",
+          "B. West African Dwarf Sheep",
+          "C. Flemish Giant",
+          "D. Jersey"
+        ],
+        "correctAnswer": "B. West African Dwarf Sheep",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "West African Dwarf Sheep are small, compact, and tolerant to trypanosomiasis.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Cattle raised purposely for milk production are classified as:",
+        "options": [
+          "A. Beef cattle",
+          "B. Dairy cattle",
+          "C. Draft animals",
+          "D. Broilers"
+        ],
+        "correctAnswer": "B. Dairy cattle",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Dairy cattle are cows reared specifically for milk production.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Cattle raised primarily for meat production are termed:",
+        "options": [
+          "A. Dairy cattle",
+          "B. Beef cattle",
+          "C. Layers",
+          "D. Capons"
+        ],
+        "correctAnswer": "B. Beef cattle",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Beef cattle are raised primarily to produce meat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a recognized dairy cattle breed?",
+        "options": [
+          "A. Aberdeen Angus",
+          "B. Friesian",
+          "C. West African Shorthorn",
+          "D. Muturu"
+        ],
+        "correctAnswer": "B. Friesian",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Friesian (Holstein) is a high-yielding dairy cattle breed.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the general body conformation of a dairy cow?",
+        "options": [
+          "A. Blocky or square-shaped",
+          "B. Wedge-shaped or triangular",
+          "C. Round and compact",
+          "D. Flat and short"
+        ],
+        "correctAnswer": "B. Wedge-shaped or triangular",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Dairy cows have a wedge-shaped or triangular body conformation with large body capacity.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the typical body conformation of beef cattle?",
+        "options": [
+          "A. Triangular",
+          "B. Wedge-shaped",
+          "C. Blocky or square-shaped",
+          "D. Slender and thin"
+        ],
+        "correctAnswer": "C. Blocky or square-shaped",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Beef cattle possess a blocky, square-shaped, stocky body well filled with flesh.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Domestic chickens reared primarily for egg production are called:",
+        "options": [
+          "A. Broilers",
+          "B. Layers",
+          "C. Cockerels",
+          "D. Roosters"
+        ],
+        "correctAnswer": "B. Layers",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Layers are domestic fowls kept for the purpose of producing eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Domestic chickens reared specifically for meat production are called:",
+        "options": [
+          "A. Layers",
+          "B. Broilers",
+          "C. Pullets",
+          "D. Drakes"
+        ],
+        "correctAnswer": "B. Broilers",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Broilers are domestic fowls reared specifically for meat production.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A chicken breed kept for both meat and egg production is described as:",
+        "options": [
+          "A. Single-purpose breed",
+          "B. Dual-purpose breed",
+          "C. Broiler only",
+          "D. Layer only"
+        ],
+        "correctAnswer": "B. Dual-purpose breed",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Dual-purpose breeds are fowls kept to produce both eggs and meat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an egg-producing (layer) breed of chicken?",
+        "options": [
+          "A. Single Comb White Leghorn",
+          "B. Dark Cornish",
+          "C. Flemish Giant",
+          "D. West African Dwarf"
+        ],
+        "correctAnswer": "A. Single Comb White Leghorn",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Single Comb White Leghorn is an egg-laying chicken breed.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a meat-producing (broiler) breed of chicken?",
+        "options": [
+          "A. Minorca",
+          "B. Dark Cornish",
+          "C. ISA Brown",
+          "D. White Leghorn"
+        ],
+        "correctAnswer": "B. Dark Cornish",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Dark Cornish is a recognized meat-producing broiler breed.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which protozoan disease affects the intestines of rabbits and poultry?",
         "options": [
           "A. Coccidiosis",
-          "B. Fowl Pox (Avian Pox)",
-          "C. Gumboro disease",
-          "D. Anthrax"
+          "B. Rinderpest",
+          "C. Anthrax",
+          "D. Mastitis"
         ],
-        "correctAnswer": "B. Fowl Pox (Avian Pox)",
-        "hint": "It is caused by an Avipoxvirus and spread by biting mosquitoes.",
-        "workedSolution": "Fowl pox is a contagious viral disease caused by an Avipoxvirus that manifests as wart-like nodular scabs on unfeathered facial and head areas.",
+        "correctAnswer": "A. Coccidiosis",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Coccidiosis is a common parasitic intestinal disease affecting rabbits and poultry.",
         "points": 1
       },
       {
-        "id": "B7_TURK_02",
+        "id": "B7_ANIM_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which chamber of the ruminant stomach has strong muscular walls that squeeze water out of food?",
+        "options": [
+          "A. Rumen",
+          "B. Omasum",
+          "C. Reticulum",
+          "D. Abomasum"
+        ],
+        "correctAnswer": "B. Omasum",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The omasum has muscular leaves that squeeze water from the food mash before it enters the abomasum.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an exotic wool-producing sheep breed?",
+        "options": [
+          "A. Australian Merino",
+          "B. Nungua Black Head",
+          "C. Yankasa",
+          "D. West African Dwarf"
+        ],
+        "correctAnswer": "A. Australian Merino",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Australian Merino is an exotic sheep breed renowned for fine wool.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The glandular stomach of domestic fowl that secretes gastric juice is the:",
+        "options": [
+          "A. Gizzard",
+          "B. Crop",
+          "C. Proventriculus",
+          "D. Caecum"
+        ],
+        "correctAnswer": "C. Proventriculus",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The proventriculus is the true glandular stomach in birds where digestive enzymes are secreted.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which cattle disease causes acute inflammation and swelling of the udder in dairy cows?",
+        "options": [
+          "A. Anthrax",
+          "B. Mastitis",
+          "C. Bloat",
+          "D. Rinderpest"
+        ],
+        "correctAnswer": "B. Mastitis",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Mastitis is an infection and inflammation of the mammary glands (udder) in cattle.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What feature do goats have on their heels that assists them in climbing steep slopes?",
+        "options": [
+          "A. Rubbery-like friction pads",
+          "B. Scent glands",
+          "C. Interdigital hair",
+          "D. Webbing"
+        ],
+        "correctAnswer": "A. Rubbery-like friction pads",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Goats have rubber-like pads on their heels that provide traction on rocks.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The Nungua Black Head sheep is a hybrid developed from which two breeds?",
+        "options": [
+          "A. Merino and Yankasa",
+          "B. Blackhead Persian and West African Dwarf",
+          "C. Friesian and Zebu",
+          "D. Jersey and N'Dama"
+        ],
+        "correctAnswer": "B. Blackhead Persian and West African Dwarf",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "The Nungua Black Head is a hybrid cross between Blackhead Persian and West African Dwarf sheep.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why should commercial poultry farms be sited at a distance from residential areas?",
+        "options": [
+          "A. To allow fowls to fly around the forest",
+          "B. To prevent offensive ammonia odors and noise from disturbing residents",
+          "C. To prevent rain from wetting the birds",
+          "D. To keep eggs cool"
+        ],
+        "correctAnswer": "B. To prevent offensive ammonia odors and noise from disturbing residents",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Siting poultry houses away from homes prevents noise, dust, and ammonia gas from entering human dwellings.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a viral disease that attacks cattle?",
+        "options": [
+          "A. Anthrax",
+          "B. Rinderpest",
+          "C. Coccidiosis",
+          "D. Mange"
+        ],
+        "correctAnswer": "B. Rinderpest",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Rinderpest is a contagious viral disease affecting cattle.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The paired blind sacs located between the small and large intestines in domestic fowl are called:",
+        "options": [
+          "A. Crops",
+          "B. Caeca",
+          "C. Gizzards",
+          "D. Vents"
+        ],
+        "correctAnswer": "B. Caeca",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The caeca are paired blind pouches where bacterial fermentation of residual fiber occurs in birds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the physical appearance of the vent in a healthy, active laying hen?",
+        "options": [
+          "A. Dry, small, and tight",
+          "B. Oval, moist, and warm",
+          "C. Hard, pale, and bleeding",
+          "D. Rigid and triangular"
+        ],
+        "correctAnswer": "B. Oval, moist, and warm",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "An active layer has a moist, warm, pliable, and oval vent.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an indigenous West African beef cattle breed?",
+        "options": [
+          "A. Friesian",
+          "B. West African Shorthorn",
+          "C. Jersey",
+          "D. Ayrshire"
+        ],
+        "correctAnswer": "B. West African Shorthorn",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "The West African Shorthorn is a native humpless beef cattle breed of West Africa.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which domestic farm animal is an omnivorous monogastric?",
+        "options": [
+          "A. Pig",
+          "B. Sheep",
+          "C. Cow",
+          "D. Goat"
+        ],
+        "correctAnswer": "A. Pig",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Pigs possess a simple single-chambered stomach and consume both plant and animal foods.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an adult female rabbit called?",
+        "options": [
+          "A. Buck",
+          "B. Doe",
+          "C. Ewe",
+          "D. Hen"
+        ],
+        "correctAnswer": "B. Doe",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "An adult female rabbit is called a doe.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a dual-purpose breed of domestic chicken?",
+        "options": [
+          "A. Rhode Island Red",
+          "B. White Leghorn",
+          "C. Minorca",
+          "D. Dark Cornish"
+        ],
+        "correctAnswer": "A. Rhode Island Red",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Rhode Island Red is a dual-purpose breed reared for both meat and egg production.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which industrial product is derived from cattle hooves and horns?",
+        "options": [
+          "A. Leather hide",
+          "B. Glue",
+          "C. Yoghurt",
+          "D. Butter"
+        ],
+        "correctAnswer": "B. Glue",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Glue is manufactured as a byproduct from cattle hooves and horns.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What parasitic disease is transmitted to cattle by the bite of tsetse flies?",
+        "options": [
+          "A. Anthrax",
+          "B. Trypanosomiasis (sleeping sickness)",
+          "C. Newcastle disease",
+          "D. Gumboro"
+        ],
+        "correctAnswer": "B. Trypanosomiasis (sleeping sickness)",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Trypanosomiasis is caused by blood parasites transmitted by tsetse flies.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which part of the domestic fowl digestive tract reabsorbs water before waste excretion?",
+        "options": [
+          "A. Colon (large intestine)",
+          "B. Gizzard",
+          "C. Crop",
+          "D. Proventriculus"
+        ],
+        "correctAnswer": "A. Colon (large intestine)",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The colon or large intestine in fowl functions primarily in reabsorbing water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Compared to exotic commercial fowls, indigenous local chickens are generally:",
+        "options": [
+          "A. Hardier and more resistant to local heat and diseases",
+          "B. Faster growers that lay larger eggs",
+          "C. Unable to sit on eggs",
+          "D. Non-broody"
+        ],
+        "correctAnswer": "A. Hardier and more resistant to local heat and diseases",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Local breeds are hardier, exhibiting greater resistance to disease and heat stress.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The instinct of a hen to sit on a clutch of eggs to incubate and hatch them is known as:",
+        "options": [
+          "A. Rumination",
+          "B. Broodiness",
+          "C. Lactation",
+          "D. Moulting"
+        ],
+        "correctAnswer": "B. Broodiness",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Broodiness is the maternal behavior of hens sitting on eggs to incubate them.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a viral disease of poultry?",
+        "options": [
+          "A. Newcastle disease",
+          "B. Coccidiosis",
+          "C. Anthrax",
+          "D. Mastitis"
+        ],
+        "correctAnswer": "A. Newcastle disease",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Newcastle disease is an acute, contagious viral disease of domestic birds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which breed of rabbit is reared primarily for its fine wool?",
+        "options": [
+          "A. Angora",
+          "B. New Zealand Red",
+          "C. California White",
+          "D. Flemish Giant"
+        ],
+        "correctAnswer": "A. Angora",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Angora rabbits are selectively bred for their soft wool fur.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I01",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are ruminants able to utilize fibrous grasses efficiently while monogastric animals cannot?",
+        "options": [
+          "A. Ruminants have very sharp incisors on their upper jaws",
+          "B. Symbiotic microorganisms in the rumen produce cellulase enzymes that digest cellulose",
+          "C. The abomasum grinds plant fibers mechanically",
+          "D. Ruminants secrete bile directly into the mouth"
+        ],
+        "correctAnswer": "B. Symbiotic microorganisms in the rumen produce cellulase enzymes that digest cellulose",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Ruminants host symbiotic microbes in the rumen that break down tough cellulose cell walls.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the honeycomb compartment (reticulum) in the ruminant stomach?",
+        "options": [
+          "A. Secreting concentrated hydrochloric acid",
+          "B. Trapping foreign hardware and coordinating the regurgitation of cud",
+          "C. Absorbing all water from digested feed",
+          "D. Grinding food with swallowed stones"
+        ],
+        "correctAnswer": "B. Trapping foreign hardware and coordinating the regurgitation of cud",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The reticulum traps foreign items and coordinates muscle contractions to regurgitate cud.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are domestic goats typically not reared under the intensive housing system?",
+        "options": [
+          "A. They sleep all day and produce no meat",
+          "B. They are active, selective browsers whose growth rate drops when strictly confined",
+          "C. They cannot digest leaves from trees",
+          "D. They do not drink piped water"
+        ],
+        "correctAnswer": "B. They are active, selective browsers whose growth rate drops when strictly confined",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Goats are active, selective browsers; close confinement reduces their feed intake and growth rate.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does swallowed grit assist the digestive process inside the gizzard of a chicken?",
+        "options": [
+          "A. It provides calcium for eggshell formation",
+          "B. It acts as an abrasive surface that grinds tough whole grains mechanically",
+          "C. It neutralizes gastric acid from the proventriculus",
+          "D. It breaks down protein chemically"
+        ],
+        "correctAnswer": "B. It acts as an abrasive surface that grinds tough whole grains mechanically",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Muscular contractions rub swallowed grit against grain, grinding it into a fine mash.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following physical characteristics indicates that a hen is an active egg layer?",
+        "options": [
+          "A. A dry, shriveled, yellow vent",
+          "B. A wide span (3 to 4 fingers) between the pelvic and breast bones",
+          "C. A dull, pale, small comb and wattle",
+          "D. Inactive, lethargic behavior"
+        ],
+        "correctAnswer": "B. A wide span (3 to 4 fingers) between the pelvic and breast bones",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "A wide distance between the pelvic bones and keel accommodates an active oviduct.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are commercial exotic broilers preferred over local fowls for large-scale meat production?",
+        "options": [
+          "A. Exotic broilers grow much faster and produce a larger, more tender carcass",
+          "B. Exotic broilers can incubate their own eggs naturally",
+          "C. Exotic broilers are completely resistant to all diseases",
+          "D. Exotic broilers lay more eggs than commercial layers"
+        ],
+        "correctAnswer": "A. Exotic broilers grow much faster and produce a larger, more tender carcass",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Exotic broilers have been bred for rapid growth, heavy muscle development, and tender meat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is a distinguishing characteristic of an adult male goat (buck) compared to an adult ram?",
+        "options": [
+          "A. Mature bucks possess a strong musky odor; mature rams lack this odor",
+          "B. Bucks have glands between their toes",
+          "C. Bucks lack beards entirely",
+          "D. Rams hold their tails erect"
+        ],
+        "correctAnswer": "A. Mature bucks possess a strong musky odor; mature rams lack this odor",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Mature bucks emit a strong musk scent, while male sheep (rams) do not produce this odor.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What digestive process occurs in the abomasum of cattle?",
+        "options": [
+          "A. Squeezing water from coarse food",
+          "B. Secretion of gastric juices to digest protein chemically",
+          "C. Regurgitation of cud to the mouth",
+          "D. Mechanical grinding of grains using stones"
+        ],
+        "correctAnswer": "B. Secretion of gastric juices to digest protein chemically",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The abomasum is the true stomach where hydrochloric acid and gastric enzymes digest protein.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the N'Dama cattle breed valued in humid forest zones of West Africa?",
+        "options": [
+          "A. It produces more milk than the Friesian",
+          "B. It possesses natural tolerance to trypanosomiasis",
+          "C. It has the longest horns of all breeds",
+          "D. It grows to the largest adult body weight"
+        ],
+        "correctAnswer": "B. It possesses natural tolerance to trypanosomiasis",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "N'Dama cattle are trypanotolerant, surviving and producing in tsetse-fly-infested areas.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes ear canker in domestic rabbits?",
+        "options": [
+          "A. Bacterial infection of the udder",
+          "B. Infestation of the inner ear canal by parasitic mange mites",
+          "C. Feeding on dry hay",
+          "D. Drinking cold water"
+        ],
+        "correctAnswer": "B. Infestation of the inner ear canal by parasitic mange mites",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Ear canker in rabbits is caused by mange mites that create crusts and lesions in the ear.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the agricultural benefit of maternal broodiness in indigenous local hens?",
+        "options": [
+          "A. They lay eggs without requiring feed",
+          "B. They can naturally incubate and hatch their eggs and brood their chicks without an electric incubator",
+          "C. They produce broiler-sized carcasses in four weeks",
+          "D. They never stop laying eggs"
+        ],
+        "correctAnswer": "B. They can naturally incubate and hatch their eggs and brood their chicks without an electric incubator",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Broodiness allows local hens to sit on, hatch, and mother chicks naturally.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why has broody behavior been selectively bred out of modern commercial layer strains?",
+        "options": [
+          "A. Broodiness causes fowls to lose feathers",
+          "B. When a hen goes broody, egg-laying stops, lowering commercial egg output",
+          "C. Broody hens lay soft-shelled eggs",
+          "D. Broodiness makes hens aggressive to farmers"
+        ],
+        "correctAnswer": "B. When a hen goes broody, egg-laying stops, lowering commercial egg output",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Broodiness pauses egg production; eliminating it keeps hens in continuous production.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which cattle breed is adapted to dry northern savannah conditions for beef and draught power?",
+        "options": [
+          "A. Jersey",
+          "B. Zebu (White Fulani)",
+          "C. Guernsey",
+          "D. Flemish Giant"
+        ],
+        "correctAnswer": "B. Zebu (White Fulani)",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Zebu (White Fulani) cattle are adapted to semi-arid tropical climates for beef and work.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the omasum prepare food before it enters the abomasum in ruminants?",
+        "options": [
+          "A. It ferments large cellulose pieces",
+          "B. It absorbs excess water and volatile fatty acids through its muscular leaves",
+          "C. It crushes bones mechanically",
+          "D. It mixes feed with bile"
+        ],
+        "correctAnswer": "B. It absorbs excess water and volatile fatty acids through its muscular leaves",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The manyplies of the omasum squeeze and absorb water from digesta before chemical digestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A dual-purpose breed of livestock is one that is maintained to produce:",
+        "options": [
+          "A. Both milk and meat, or both meat and eggs",
+          "B. Wool and leather only",
+          "C. Fertilizer and manure only",
+          "D. Feed and seeds"
+        ],
+        "correctAnswer": "A. Both milk and meat, or both meat and eggs",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Dual-purpose breeds produce two major products, such as meat and milk or meat and eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the health risk of feeding rabbits exclusively on fresh, wet, succulent greens?",
+        "options": [
+          "A. Severe bloat and watery diarrhea",
+          "B. Instant tooth decay",
+          "C. Loss of fur color",
+          "D. Broken legs"
+        ],
+        "correctAnswer": "A. Severe bloat and watery diarrhea",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Excessive wet greens ferment rapidly in the rabbit gut, causing bloat and diarrhea.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which clinical symptom is characteristic of coccidiosis in young chicks?",
+        "options": [
+          "A. Bloody diarrhea, drooping wings, and ruffled feathers",
+          "B. Sudden loss of tail feathers",
+          "C. Rapid weight gain",
+          "D. Hardening of the comb"
+        ],
+        "correctAnswer": "A. Bloody diarrhea, drooping wings, and ruffled feathers",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Coccidiosis causes bloody droppings, lethargy, and ruffled feathers.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is rotational grazing practiced when pasturing sheep and goats?",
+        "options": [
+          "A. To allow weeds to outgrow pasture grass",
+          "B. To interrupt the life cycles of internal parasites and prevent pasture overgrazing",
+          "C. To prevent animals from drinking water",
+          "D. To keep sheep awake"
+        ],
+        "correctAnswer": "B. To interrupt the life cycles of internal parasites and prevent pasture overgrazing",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Rotating pastures reduces pasture contamination by breaking internal parasite lifecycles.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens in the paired caeca during digestion in domestic fowl?",
+        "options": [
+          "A. Stones grind whole grains",
+          "B. Beneficial bacteria ferment small amounts of remaining plant fiber",
+          "C. Gastric acid breaks down proteins",
+          "D. Eggshells are formed"
+        ],
+        "correctAnswer": "B. Beneficial bacteria ferment small amounts of remaining plant fiber",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The caeca host bacteria that ferment fine residual fiber.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which breed of goat is indigenous to southern Ghana and adapted to humid conditions?",
+        "options": [
+          "A. West African Dwarf Goat",
+          "B. Saanen",
+          "C. Toggenburg",
+          "D. Angora"
+        ],
+        "correctAnswer": "A. West African Dwarf Goat",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "The West African Dwarf goat is an indigenous, hardy breed adapted to the humid south.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must high-producing dairy cows receive energy-dense concentrates in addition to pasture forage?",
+        "options": [
+          "A. Grazed forage alone cannot meet the energy and nutrient demands of high milk production",
+          "B. Dairy cattle are unable to digest grasses",
+          "C. Forage damages the mammary glands",
+          "D. Concentrates prevent horn growth"
+        ],
+        "correctAnswer": "A. Grazed forage alone cannot meet the energy and nutrient demands of high milk production",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "High milk synthesis requires more nutrients and energy than roughage alone can supply.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of the vascular comb and wattles in domestic fowl?",
+        "options": [
+          "A. Digesting grain proteins",
+          "B. Radiating excess body heat to regulate body temperature",
+          "C. Storing water reserves",
+          "D. Balancing during flight"
+        ],
+        "correctAnswer": "B. Radiating excess body heat to regulate body temperature",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Combs and wattles are vascular surfaces that help fowls dissipate excess heat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does bloat occur in ruminants fed heavily on young, lush leguminous pasture?",
+        "options": [
+          "A. Soluble plant proteins create a stable foam in the rumen that traps gas, preventing belching",
+          "B. The omasum freezes solid",
+          "C. Feed blocks the gizzard",
+          "D. The cow drinks mud"
+        ],
+        "correctAnswer": "A. Soluble plant proteins create a stable foam in the rumen that traps gas, preventing belching",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Proteins in lush legumes form viscous foam that traps fermentation gases, causing bloat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do the feeding behaviors of sheep and goats differ?",
+        "options": [
+          "A. Goats are selective browsers that feed on shrubs; sheep are grazers that crop short grasses",
+          "B. Goats only eat grains; sheep only eat meat",
+          "C. Sheep browse tree leaves; goats only graze flat pastures",
+          "D. There is no difference in their feeding behavior"
+        ],
+        "correctAnswer": "A. Goats are selective browsers that feed on shrubs; sheep are grazers that crop short grasses",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Goats browse leaves and woody shrubs, whereas sheep graze grasses close to the ground.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which sheep breed has a distinctive black neck and head with a white body?",
+        "options": [
+          "A. Nungua Black Head",
+          "B. Australian Merino",
+          "C. Ouda Fulani",
+          "D. Yankasa"
+        ],
+        "correctAnswer": "A. Nungua Black Head",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "The Nungua Black Head is recognized by its solid black head and white body.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is foot rot common among sheep kept in poorly drained, swampy paddocks?",
+        "options": [
+          "A. Wet ground softens the hoof horn, allowing bacteria to invade the interdigital tissue",
+          "B. Sheep hooves dissolve in water",
+          "C. Sheep absorb water through their toes",
+          "D. Mud stops blood flow"
+        ],
+        "correctAnswer": "A. Wet ground softens the hoof horn, allowing bacteria to invade the interdigital tissue",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Waterlogged soil softens hooves and fosters bacterial infections in interdigital tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of the proventriculus in a bird's digestive tract?",
+        "options": [
+          "A. Grinding grains mechanically",
+          "B. Secreting hydrochloric acid and pepsin to start protein digestion before food enters the gizzard",
+          "C. Excreting uric acid crystals",
+          "D. Absorbing water"
+        ],
+        "correctAnswer": "B. Secreting hydrochloric acid and pepsin to start protein digestion before food enters the gizzard",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "The proventriculus is the chemical stomach that adds gastric enzymes before the gizzard.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which bacterial disease of cattle causes contagious abortion in pregnant cows?",
+        "options": [
+          "A. Brucellosis",
+          "B. Bloat",
+          "C. Rinderpest",
+          "D. Foot-and-mouth disease"
+        ],
+        "correctAnswer": "A. Brucellosis",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Brucellosis causes late-term abortion and reproductive failure in cattle.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the body conformation of a beef animal support its production purpose?",
+        "options": [
+          "A. A blocky, heavily fleshed carcass yields a higher proportion of meat cuts",
+          "B. Thin, long legs help it evade predators",
+          "C. A large udder stores surplus milk",
+          "D. A wedge shape improves grazing speed"
+        ],
+        "correctAnswer": "A. A blocky, heavily fleshed carcass yields a higher proportion of meat cuts",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "A deep, rectangular conformation yields a higher ratio of muscle and beef cuts.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What are warbles in cattle?",
+        "options": [
+          "A. Subcutaneous swellings along the back caused by parasitic fly larvae",
+          "B. Tumors in the udder",
+          "C. Fractures in hoof bones",
+          "D. Infections in the crop"
+        ],
+        "correctAnswer": "A. Subcutaneous swellings along the back caused by parasitic fly larvae",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Warbles are lumps on the back of cattle caused by developing botfly larvae.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are rabbit cages elevated off the ground with wire-mesh floors?",
+        "options": [
+          "A. To allow urine and feces to fall through, keeping the housing clean and dry",
+          "B. To prevent rabbits from breathing fresh air",
+          "C. To prevent rabbits from sleeping",
+          "D. To make rabbits run faster"
+        ],
+        "correctAnswer": "A. To allow urine and feces to fall through, keeping the housing clean and dry",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Raised wire floors allow droppings to pass through, reducing disease risks like coccidiosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is an exotic beef cattle breed?",
+        "options": [
+          "A. Aberdeen Angus",
+          "B. West African Shorthorn",
+          "C. Muturu",
+          "D. N'Dama"
+        ],
+        "correctAnswer": "A. Aberdeen Angus",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Aberdeen Angus is an exotic beef breed noted for high-quality meat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do herbivorous ruminants have a longer digestive tract than carnivorous mammals?",
+        "options": [
+          "A. Plant material contains cellulose, requiring prolonged microbial fermentation and absorption",
+          "B. Meat takes longer to digest than grass",
+          "C. Ruminants do not drink water",
+          "D. Carnivores have four stomachs"
+        ],
+        "correctAnswer": "A. Plant material contains cellulose, requiring prolonged microbial fermentation and absorption",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Fibrous plant matter requires long transit times to break down cellulose and absorb nutrients.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following signs indicates a healthy rabbit suitable for breeding?",
+        "options": [
+          "A. Watery nasal discharge and sneezing",
+          "B. Bright eyes, an alert demeanor, clean ears, and a smooth fur coat",
+          "C. Crusty scabs inside the ear flap",
+          "D. A swollen, fluid-filled abdomen"
+        ],
+        "correctAnswer": "B. Bright eyes, an alert demeanor, clean ears, and a smooth fur coat",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Clear eyes, clean ears, and a shiny coat are indicators of a healthy breeding rabbit.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is dry wood shaving litter spread across the floor of a poultry pen?",
+        "options": [
+          "A. To absorb moisture from droppings and provide insulation and bedding",
+          "B. To serve as the primary source of food",
+          "C. To prevent chickens from laying eggs",
+          "D. To make the pen completely dark"
+        ],
+        "correctAnswer": "A. To absorb moisture from droppings and provide insulation and bedding",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Dry litter absorbs droppings, keeps birds warm, and reduces ammonia buildup.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which dairy cattle breed produces milk with the highest butterfat percentage?",
+        "options": [
+          "A. Jersey",
+          "B. Aberdeen Angus",
+          "C. Muturu",
+          "D. N'Dama"
+        ],
+        "correctAnswer": "A. Jersey",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Jersey cows produce rich milk with a high butterfat content.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What morphological adaptation enables sheep to graze pasture grasses closer to the ground than cattle?",
+        "options": [
+          "A. A split upper lip and narrow muzzle",
+          "B. Sharp upper canine teeth",
+          "C. A larger rumen",
+          "D. Shorter legs"
+        ],
+        "correctAnswer": "A. A split upper lip and narrow muzzle",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "A cleft upper lip and pointed muzzle allow sheep to graze grass close to the root crowns.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes Gumboro disease in young domestic chickens?",
+        "options": [
+          "A. An infectious virus that attacks the bursa of Fabricius, weakening immunity",
+          "B. A lack of grit in the gizzard",
+          "C. High protein in broiler feed",
+          "D. Mange mites on the legs"
+        ],
+        "correctAnswer": "A. An infectious virus that attacks the bursa of Fabricius, weakening immunity",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Gumboro (infectious bursal disease) is a viral illness that damages the immune organs of young fowls.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do livestock farmers dock the tails of wool sheep?",
+        "options": [
+          "A. To prevent fecal contamination of the fleece around the rear, reducing fly-strike",
+          "B. To make sheep run faster",
+          "C. To improve milk production",
+          "D. To identify animal age"
+        ],
+        "correctAnswer": "A. To prevent fecal contamination of the fleece around the rear, reducing fly-strike",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Docking tails prevents dung accumulation on the wool, reducing fly infestation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the reticulum during the process of rumination?",
+        "options": [
+          "A. Secreting pepsin",
+          "B. Compacting fermented forage into a bolus and pushing it upward into the esophagus",
+          "C. Grinding corn with stones",
+          "D. Absorbing all digested carbohydrates"
+        ],
+        "correctAnswer": "B. Compacting fermented forage into a bolus and pushing it upward into the esophagus",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Reticular contractions form and propel cud back up to the mouth for re-chewing.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which rabbit breed has a reddish-brown coat and is reared for meat?",
+        "options": [
+          "A. New Zealand Red",
+          "B. California White",
+          "C. Flemish Giant",
+          "D. Angora"
+        ],
+        "correctAnswer": "A. New Zealand Red",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "New Zealand Red is a meat breed known for its reddish fur.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does adequate cross-ventilation in a poultry pen protect bird health?",
+        "options": [
+          "A. It removes ammonia, moisture, and dust while bringing in oxygen",
+          "B. It keeps the pen cold",
+          "C. It prevents birds from making noise",
+          "D. It eliminates the need for vaccines"
+        ],
+        "correctAnswer": "A. It removes ammonia, moisture, and dust while bringing in oxygen",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Cross-ventilation removes harmful ammonia and moisture, reducing respiratory problems.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological role of rumen ciliate protozoa in cattle?",
+        "options": [
+          "A. Breaking down starch and cellulose and serving as digestible protein downstream",
+          "B. Producing milk in the udder",
+          "C. Secreting bile into the reticulum",
+          "D. Digesting grain in the mouth"
+        ],
+        "correctAnswer": "A. Breaking down starch and cellulose and serving as digestible protein downstream",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Ciliate protozoa ferment plant carbohydrates and are digested in the abomasum as protein.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which acute, spore-forming bacterial disease of cattle can also infect humans?",
+        "options": [
+          "A. Anthrax",
+          "B. Mastitis",
+          "C. Coccidiosis",
+          "D. Mange"
+        ],
+        "correctAnswer": "A. Anthrax",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Anthrax is a severe, zoonotic bacterial disease caused by *Bacillus anthracis*.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are indigenous local chickens often raised on free range in villages?",
+        "options": [
+          "A. They forage for food and possess natural resistance to local pests and weather",
+          "B. They cannot digest commercial poultry mash",
+          "C. They lay eggs only in tall trees",
+          "D. They die when placed in poultry coops"
+        ],
+        "correctAnswer": "A. They forage for food and possess natural resistance to local pests and weather",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Local fowls forage effectively and are well adapted to survive in backyard environments.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the purpose of roosting perches inside a poultry laying house?",
+        "options": [
+          "A. To allow fowls to roost off the ground according to their natural behavior",
+          "B. To feed birds in the air",
+          "C. To prevent hens from laying eggs",
+          "D. To keep eggs warm"
+        ],
+        "correctAnswer": "A. To allow fowls to roost off the ground according to their natural behavior",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Perches provide elevated roosting spots, reducing stress and floor crowding.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do rabbits digest plant fiber despite being monogastric animals?",
+        "options": [
+          "A. They possess an enlarged functional caecum where bacterial fermentation occurs",
+          "B. They have four stomachs",
+          "C. They grind grass with their gizzard",
+          "D. They regurgitate cud"
+        ],
+        "correctAnswer": "A. They possess an enlarged functional caecum where bacterial fermentation occurs",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Rabbits are hindgut fermenters, relying on an enlarged caecum to break down fiber.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which commercial layer breed produces white-shelled table eggs?",
+        "options": [
+          "A. Single Comb White Leghorn",
+          "B. Rhode Island Red",
+          "C. ISA Brown",
+          "D. Australorp"
+        ],
+        "correctAnswer": "A. Single Comb White Leghorn",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Single Comb White Leghorns are standard producers of white-shelled eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What does 'culling' mean in poultry production?",
+        "options": [
+          "A. Removing unproductive, diseased, or defective birds from the flock",
+          "B. Feeding chicks with starter mash",
+          "C. Incubating eggs artificially",
+          "D. Collecting eggs from nest boxes"
+        ],
+        "correctAnswer": "A. Removing unproductive, diseased, or defective birds from the flock",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Culling is the removal of sick or non-laying birds to maintain flock productivity.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do ruminants produce large amounts of saliva while chewing the cud?",
+        "options": [
+          "A. Saliva contains bicarbonates that buffer rumen acids to keep microflora healthy",
+          "B. Saliva cools the cow's horns",
+          "C. Saliva digests proteins chemically in the mouth",
+          "D. Saliva turns cud into stone"
+        ],
+        "correctAnswer": "A. Saliva contains bicarbonates that buffer rumen acids to keep microflora healthy",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Saliva contains bicarbonate buffers that help stabilize pH in the fermentation vat of the rumen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A01",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "A major commercial breeding challenge common to both Broad-Breasted Bronze and Broad-Breasted White turkeys is their:",
+        "prompt": "Sheep can maintain growth on low-protein straw supplemented with urea, while pigs lose weight on the same diet. What explains this difference?",
         "options": [
-          "A. High susceptibility to bovine trypanosomiasis",
-          "B. Poor natural mating performance due to heavy chest muscling and weight",
-          "C. Inability to synthesize digestive pepsin",
-          "D. Complete absence of feathers at maturity"
+          "A. Rumen microbes use urea to synthesize microbial protein, which is digested downstream in the abomasum",
+          "B. Sheep absorb urea directly through their skin",
+          "C. Pigs are unable to drink water",
+          "D. Sheep possess two abomasums"
         ],
-        "correctAnswer": "B. Poor natural mating performance due to heavy chest muscling and weight",
-        "hint": "Extreme breast muscling prevents toms from mounting hens naturally without injury.",
-        "workedSolution": "Due to extreme body mass and heavy breast muscling, giant broad-breasted turkeys experience poor natural mating rates and require artificial insemination.",
+        "correctAnswer": "A. Rumen microbes use urea to synthesize microbial protein, which is digested downstream in the abomasum",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Rumen microflora use non-protein nitrogen to build microbial amino acids that the animal digests in the abomasum.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does feeding finely ground, pelleted roughage to a dairy cow lower the butterfat content of its milk?",
+        "options": [
+          "A. It reduces cud chewing, lowering the production of acetate needed for milk fat synthesis",
+          "B. Pelleted feed destroys the udder tissues directly",
+          "C. It blocks the cow's omasum",
+          "D. It prevents the animal from swallowing water"
+        ],
+        "correctAnswer": "A. It reduces cud chewing, lowering the production of acetate needed for milk fat synthesis",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Fine grinding reduces rumen stimulation, shifting fermentation away from acetate, which is needed to synthesize milk fat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is coccidiosis more severe in poultry reared on damp deep litter than on wire-mesh floors?",
+        "options": [
+          "A. Moisture and warmth in damp litter allow dropped coccidial oocysts to sporulate into infective stages",
+          "B. Wire floors make birds immune to parasites",
+          "C. Damp litter dissolves grit inside the gizzard",
+          "D. Wet shavings generate coccidia through spontaneous generation"
+        ],
+        "correctAnswer": "A. Moisture and warmth in damp litter allow dropped coccidial oocysts to sporulate into infective stages",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Coccidial oocysts require moisture and warmth in litter to sporulate and become infective.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the reticular groove (esophageal groove) adaptation benefit newborn calves?",
+        "options": [
+          "A. It diverts swallowed milk past the undeveloped rumen directly into the abomasum",
+          "B. It grinds grain with stones",
+          "C. It channels liquid milk into the lungs",
+          "D. It turns milk into cud"
+        ],
+        "correctAnswer": "A. It diverts swallowed milk past the undeveloped rumen directly into the abomasum",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "The muscular reticular groove closes during suckling, directing milk straight to the abomasum to prevent rumen fermentation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a sudden shift to high-grain diets in cattle cause acute rumen acidosis?",
+        "options": [
+          "A. Rapid starch fermentation by *Streptococcus bovis* produces excess lactic acid, dropping rumen pH and killing useful flora",
+          "B. Grain breaks cattle teeth",
+          "C. Grain dissolves the omasum",
+          "D. Grain stops the flow of saliva"
+        ],
+        "correctAnswer": "A. Rapid starch fermentation by *Streptococcus bovis* produces excess lactic acid, dropping rumen pH and killing useful flora",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Starch promotes lactic-acid-producing bacteria, lowering rumen pH and damaging the stomach lining.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A flock of laying hens shows a drop in egg production with pale, shriveled combs and a narrow pelvic bone span. What does this indicate?",
+        "options": [
+          "A. The hens have gone out of lay and should be evaluated for culling",
+          "B. The flock has become broilers",
+          "C. The birds are preparing to mate",
+          "D. The hens have eaten too much grit"
+        ],
+        "correctAnswer": "A. The hens have gone out of lay and should be evaluated for culling",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Pale, shrunken combs and narrow pelvic spreads are physical signs that hens have ceased egg production.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are commercial broilers susceptible to heat prostration in hot, humid weather?",
+        "options": [
+          "A. Dense feathering, fast metabolic heat production, and lack of sweat glands make heat dissipation difficult",
+          "B. Broilers have larger lungs that overheat",
+          "C. The crop boils drinking water",
+          "D. Broilers lack a liver"
+        ],
+        "correctAnswer": "A. Dense feathering, fast metabolic heat production, and lack of sweat glands make heat dissipation difficult",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Lacking sweat glands, broilers rely on panting; high humidity reduces evaporative cooling from the respiratory tract.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do domestic rabbits eat soft fecal pellets (cecotrophes) directly from the anus?",
+        "options": [
+          "A. To recover microbial protein and B-vitamins produced during caecal fermentation",
+          "B. Because they have no access to clean forage",
+          "C. To wear down their front incisors",
+          "D. To treat ear mange"
+        ],
+        "correctAnswer": "A. To recover microbial protein and B-vitamins produced during caecal fermentation",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Cecotrophy allows rabbits to absorb vitamins and microbial proteins produced in the caecum.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes hardware disease (traumatic reticuloperitonitis) in cattle?",
+        "options": [
+          "A. Heavy metallic objects trapped in the reticulum pierce through the stomach wall toward the heart",
+          "B. Walking on sharp gravel",
+          "C. Udder infection by bacteria",
+          "D. Lack of phosphorus in forage"
+        ],
+        "correctAnswer": "A. Heavy metallic objects trapped in the reticulum pierce through the stomach wall toward the heart",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Metal objects settle in the reticulum and can puncture through the stomach and diaphragm into the pericardium.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is purebred Holstein-Friesian cattle farming difficult in open humid zones of southern Ghana?",
+        "options": [
+          "A. High susceptibility to tick-borne diseases, trypanosomiasis, and thermal heat stress reduces their productivity",
+          "B. They cannot eat tropical pasture grass",
+          "C. They produce no milk in warm weather",
+          "D. They cannot walk on humid soil"
+        ],
+        "correctAnswer": "A. High susceptibility to tick-borne diseases, trypanosomiasis, and thermal heat stress reduces their productivity",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Unadapted temperate dairy breeds face severe heat stress and disease challenges in humid tropical climates.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which combination of characteristics distinguishes an active laying hen from a non-layer?",
+        "options": [
+          "A. Moist, pliable, oval vent with wide pubic bone spacing (3–4 fingers) and an enlarged, waxy red comb",
+          "B. Dry, yellow, round vent with narrow pubic bones (1 finger) and a small comb",
+          "C. A hard, pale comb with feathers missing on the head",
+          "D. An aggressive demeanor and small body size"
+        ],
+        "correctAnswer": "A. Moist, pliable, oval vent with wide pubic bone spacing (3–4 fingers) and an enlarged, waxy red comb",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "An active layer shows a pliable, moist vent, wide pubic bone separation, and a warm, bright comb.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do sheep require dietary sulfur supplementation when non-protein nitrogen (urea) is fed?",
+        "options": [
+          "A. Rumen microbes require sulfur to synthesize the essential amino acids methionine and cysteine",
+          "B. Sulfur keeps wool from growing too fast",
+          "C. Sulfur neutralizes gizzard acid",
+          "D. Sulfur makes urea taste better"
+        ],
+        "correctAnswer": "A. Rumen microbes require sulfur to synthesize the essential amino acids methionine and cysteine",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Microorganisms need a source of sulfur to assemble sulfur-containing amino acids from urea nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does high ammonia gas concentration in a poultry pen predispose fowls to respiratory infections?",
+        "options": [
+          "A. Ammonia gas damages and paralyzes the protective cilia of the respiratory tract, allowing pathogens to penetrate",
+          "B. Ammonia turns into dust that blocks the gizzard",
+          "C. Ammonia cools the lungs to freezing",
+          "D. Ammonia stops birds from drinking water"
+        ],
+        "correctAnswer": "A. Ammonia gas damages and paralyzes the protective cilia of the respiratory tract, allowing pathogens to penetrate",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Ammonia vapor irritates respiratory linings and paralyzes cilia, predisposing fowls to secondary bacterial infections.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the meat of the West African Dwarf goat valued in local culinary dishes?",
+        "options": [
+          "A. It has low carcass fat, fine-textured muscle fibers, and a distinctive flavor",
+          "B. The meat contains no bones",
+          "C. It is green in color",
+          "D. It requires no cooking"
+        ],
+        "correctAnswer": "A. It has low carcass fat, fine-textured muscle fibers, and a distinctive flavor",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "West African Dwarf goat meat is lean, tender, and favored for local stews and soups.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why must high-yielding dairy cows undergo a 60-day dry period prior to calving?",
+        "options": [
+          "A. To allow mammary tissue to regenerate and prepare for colostrum synthesis",
+          "B. To stop cows from eating pasture grass",
+          "C. To prevent cows from giving birth to twins",
+          "D. To prevent horns from growing"
+        ],
+        "correctAnswer": "A. To allow mammary tissue to regenerate and prepare for colostrum synthesis",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "A dry period allows the mammary gland to rest and involute before the next lactation cycle.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the nature of 'crop milk' produced by pigeons to feed their young?",
+        "options": [
+          "A. Sloughed, lipid- and protein-rich epithelial cells from the crop lining stimulated by prolactin",
+          "B. Liquid milk secreted by mammary glands",
+          "C. Regurgitated water mixed with bile",
+          "D. Gastric acid from the proventriculus"
+        ],
+        "correctAnswer": "A. Sloughed, lipid- and protein-rich epithelial cells from the crop lining stimulated by prolactin",
+        "hint": "Recall avian digestive anatomy: crop stores/softens, proventriculus secretes gastric juices, gizzard grinds mechanically with grit, and cloaca is the common exit vent.",
+        "workedSolution": "Crop milk consists of sloughed, nutrient-rich epithelial cells from the crop wall.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes pasture bloat when cattle graze rapidly on lush alfalfa or clover?",
+        "options": [
+          "A. Soluble leaf proteins form a viscous foam that traps fermentation gases, blocking eructation",
+          "B. Water blocks the omasum",
+          "C. Stones block the gizzard",
+          "D. Cattle swallow air bubbles"
+        ],
+        "correctAnswer": "A. Soluble leaf proteins form a viscous foam that traps fermentation gases, blocking eructation",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Soluble proteins in young legumes generate viscous foam that prevents the natural belching of rumen gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is artificial insemination (AI) practiced on commercial dairy cattle farms?",
+        "options": [
+          "A. It allows the widespread use of superior, proven genetics while reducing venereal disease risks",
+          "B. It makes cows give birth to twins every time",
+          "C. It eliminates the need to milk cows",
+          "D. It turns beef cattle into dairy cows"
+        ],
+        "correctAnswer": "A. It allows the widespread use of superior, proven genetics while reducing venereal disease risks",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "AI broadens access to elite sire genetics, improves biosecurity, and removes the hazards of maintaining bulls.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What happens if laying hens are fed diets deficient in calcium and vitamin D3?",
+        "options": [
+          "A. Hens resorb bone calcium, leading to cage layer fatigue and soft-shelled eggs",
+          "B. Hens turn into broilers",
+          "C. Feathers turn green",
+          "D. Gizzards stop grinding"
+        ],
+        "correctAnswer": "A. Hens resorb bone calcium, leading to cage layer fatigue and soft-shelled eggs",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Deficiencies cause hens to deplete skeletal calcium, resulting in thin shells and bone weakness.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do goats browse bitter shrubs containing tannins without suffering poisoning?",
+        "options": [
+          "A. Mobile lips select tender parts, while proline-rich salivary proteins bind and neutralize tannins",
+          "B. Goats have three abomasums",
+          "C. Goats do not have digestive enzymes",
+          "D. Tannins turn into sugar in the mouth"
+        ],
+        "correctAnswer": "A. Mobile lips select tender parts, while proline-rich salivary proteins bind and neutralize tannins",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Salivary proline-rich proteins bind tannins, protecting dietary enzymes and proteins from inhibition.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is adequate coarse fiber in the diet of a dairy cow necessary to maintain milk butterfat?",
+        "options": [
+          "A. Effective fiber stimulates cud-chewing and acetate production, the precursor for milk fat synthesis",
+          "B. Fiber stops milk from souring",
+          "C. Fiber poisons rumen bacteria",
+          "D. Fiber destroys the omasum"
+        ],
+        "correctAnswer": "A. Effective fiber stimulates cud-chewing and acetate production, the precursor for milk fat synthesis",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "Coarse fiber stimulates rumination and saliva flow, promoting acetate production needed for butterfat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are day-old commercial chicks vaccinated against Marek's disease at the hatchery?",
+        "options": [
+          "A. Marek's is an airborne virus that causes nerve lesions and tumors before natural immunity develops",
+          "B. To make chicks grow feathers immediately",
+          "C. To prevent egg breakage",
+          "D. To stop them from drinking water"
+        ],
+        "correctAnswer": "A. Marek's is an airborne virus that causes nerve lesions and tumors before natural immunity develops",
+        "hint": "Focus on livestock health, causative agents (protozoa, bacteria, viruses), characteristic symptoms, and sound farm biosecurity.",
+        "workedSolution": "Vaccinating day-old chicks prevents tumor formation and paralysis caused by Marek's virus.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological importance of volatile fatty acids (VFAs) in ruminant nutrition?",
+        "options": [
+          "A. They are absorbed through the rumen wall and provide up to 70–80% of the animal's metabolic energy",
+          "B. They are waste products passed out in feces",
+          "C. They make cud taste bitter",
+          "D. They poison harmful protozoa"
+        ],
+        "correctAnswer": "A. They are absorbed through the rumen wall and provide up to 70–80% of the animal's metabolic energy",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "VFAs (acetate, propionate, butyrate) from fermentation serve as the primary energy source for ruminants.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an egg-bound hen adopt a penguin-like posture?",
+        "options": [
+          "A. An egg is stuck in the lower oviduct or cloaca, causing pain, straining, and nerve pressure",
+          "B. She is trying to fly out of the pen",
+          "C. Her gizzard has dissolved",
+          "D. She is showing broody behavior"
+        ],
+        "correctAnswer": "A. An egg is stuck in the lower oviduct or cloaca, causing pain, straining, and nerve pressure",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Egg binding obstructs the vent and puts pressure on pelvic nerves, causing an upright, strained stance.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is crossbreeding native West African cattle with exotic breeds managed carefully?",
+        "options": [
+          "A. Indiscriminate crossing can dilute native trypanotolerance and heat adaptation",
+          "B. Crossbred animals are always sterile",
+          "C. Crossbred calves cannot nurse milk",
+          "D. Crossbreeding causes cattle to lose hooves"
+        ],
+        "correctAnswer": "A. Indiscriminate crossing can dilute native trypanotolerance and heat adaptation",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Unplanned crossbreeding can erode valuable indigenous traits like disease resistance and heat tolerance.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes ascites (water-belly) in fast-growing commercial broilers?",
+        "options": [
+          "A. High metabolic oxygen demand outpaces cardiopulmonary capacity, causing pulmonary hypertension and fluid leaks into the abdomen",
+          "B. The crop bursts from excess feed",
+          "C. Drinking cold water",
+          "D. Lack of sand in the gizzard"
+        ],
+        "correctAnswer": "A. High metabolic oxygen demand outpaces cardiopulmonary capacity, causing pulmonary hypertension and fluid leaks into the abdomen",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Rapid growth strains the heart and lungs, leading to hypertension and abdominal fluid accumulation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are sheep less prone to pasture bloat than cattle grazing the same field?",
+        "options": [
+          "A. Sheep graze selectively with narrow muzzles, taking small bites rather than gulping large amounts of legume mass",
+          "B. Sheep produce no fermentation gas",
+          "C. Sheep possess an extra abomasum",
+          "D. Sheep have no rumen microbes"
+        ],
+        "correctAnswer": "A. Sheep graze selectively with narrow muzzles, taking small bites rather than gulping large amounts of legume mass",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Selective grazing and smaller bite sizes prevent the sudden intake of bloat-inducing proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological function of the bursa of Fabricius in young chickens?",
+        "options": [
+          "A. It serves as the primary lymphoid organ for the maturation of B-lymphocytes",
+          "B. It grinds grain with stones",
+          "C. It stores water for the kidneys",
+          "D. It forms eggshells"
+        ],
+        "correctAnswer": "A. It serves as the primary lymphoid organ for the maturation of B-lymphocytes",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "The bursa of Fabricius is the avian organ responsible for developing B-cell immunity in young fowls.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why can drinking milk from open buckets cause nutritional scours in young calves?",
+        "options": [
+          "A. Fast gulping fails to trigger closure of the reticular groove, allowing milk to ferment in the rumen",
+          "B. Milk is too hot for the calf",
+          "C. Calves lack an abomasum",
+          "D. Milk dissolves the reticulum"
+        ],
+        "correctAnswer": "A. Fast gulping fails to trigger closure of the reticular groove, allowing milk to ferment in the rumen",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Without suckling reflexes, the groove fails to close, letting milk spoil in the immature rumen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How can moderate levels of condensed tannins in forage benefit ruminant protein nutrition?",
+        "options": [
+          "A. They bind dietary protein in the rumen, allowing it to bypass to the abomasum for direct absorption",
+          "B. They kill all rumen bacteria",
+          "C. They convert grass into milk fat",
+          "D. They eliminate the need for water"
+        ],
+        "correctAnswer": "A. They bind dietary protein in the rumen, allowing it to bypass to the abomasum for direct absorption",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "Tannins can protect proteins from excessive microbial degradation, increasing bypass protein to the true stomach.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why should open-sided poultry pens in the tropics be built along an East-West orientation?",
+        "options": [
+          "A. To minimize direct sun penetration through the open side walls during the day",
+          "B. To face traditional shrines",
+          "C. To prevent air from flowing through",
+          "D. To make fowls face the sunrise"
+        ],
+        "correctAnswer": "A. To minimize direct sun penetration through the open side walls during the day",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "An East-West orientation keeps the hot midday sun off the open sidewalls, reducing thermal stress.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary sign of infectious coryza in domestic chickens?",
+        "options": [
+          "A. Acute facial swelling, foul-smelling nasal discharge, and sneezing",
+          "B. Loss of claws on feet",
+          "C. Production of green eggs",
+          "D. Rapid weight gain"
+        ],
+        "correctAnswer": "A. Acute facial swelling, foul-smelling nasal discharge, and sneezing",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Infectious coryza is a bacterial illness causing facial edema and foul nasal exudate.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is commercial broiler feed unsuitable for growing rabbits?",
+        "options": [
+          "A. Broiler feed lacks indigestible fiber needed for caecal motility and may contain additives harmful to rabbits",
+          "B. Broiler feed is too wet",
+          "C. Rabbits have gizzards that reject chicken feed",
+          "D. Broiler feed turns fur green"
+        ],
+        "correctAnswer": "A. Broiler feed lacks indigestible fiber needed for caecal motility and may contain additives harmful to rabbits",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Rabbits require indigestible fiber to prevent gut stasis, and poultry feed additives can be toxic.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes milk fever (hypocalcemia) in high-producing dairy cows shortly after calving?",
+        "options": [
+          "A. A rapid drain of blood calcium into colostrum and milk outpaces bone calcium mobilization",
+          "B. The cow drinks too much water",
+          "C. The rumen microbes die suddenly",
+          "D. Infection of the udder by fly maggots"
+        ],
+        "correctAnswer": "A. A rapid drain of blood calcium into colostrum and milk outpaces bone calcium mobilization",
+        "hint": "Recall conformation differences: dairy cows have an angular wedge-shaped frame with a large udder; beef cattle have a blocky, square, heavily fleshed carcass.",
+        "workedSolution": "The sudden demand for calcium during early lactation causes blood calcium levels to drop, leading to milk fever.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do browsing goats usually carry lower internal parasite loads than grazing sheep?",
+        "options": [
+          "A. Goats feed on elevated browse well above the ground level where parasite larvae concentrate",
+          "B. Goats produce venom that kills roundworms",
+          "C. Sheep have no immune response",
+          "D. Goats do not excrete feces"
+        ],
+        "correctAnswer": "A. Goats feed on elevated browse well above the ground level where parasite larvae concentrate",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Feeding on shrubs and tree leaves keeps goats away from the ground-level pasture where parasite larvae live.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is insoluble granite grit provided to free-range poultry flocks?",
+        "options": [
+          "A. It remains in the gizzard to maintain mechanical grinding efficiency for whole grains",
+          "B. It provides dietary phosphorus",
+          "C. It prevents broodiness",
+          "D. It makes feathers shiny"
+        ],
+        "correctAnswer": "A. It remains in the gizzard to maintain mechanical grinding efficiency for whole grains",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Insoluble grit stays in the gizzard, acting as grinding stones to crush whole seeds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What advantage does crossing indigenous Zebu cattle with exotic European breeds offer?",
+        "options": [
+          "A. Offspring combine higher milk or meat potential with native heat and tick tolerance",
+          "B. Crossbred cows stop eating grass",
+          "C. Crossbred cows produce twins exclusively",
+          "D. It makes cattle naturally hornless"
+        ],
+        "correctAnswer": "A. Offspring combine higher milk or meat potential with native heat and tick tolerance",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Heterosis combines the productivity of exotic lines with the environmental hardiness of local Zebu cattle.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the vascular network of a rooster's comb assist in cooling?",
+        "options": [
+          "A. Warm blood is directed through the unfeathered comb and wattles to radiate heat into the air",
+          "B. It digests feed proteins",
+          "C. It secretes sweat",
+          "D. It stores calcium"
+        ],
+        "correctAnswer": "A. Warm blood is directed through the unfeathered comb and wattles to radiate heat into the air",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Blood flow to the comb increases during heat stress, radiating heat into the surrounding air.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why should adult male rabbits (bucks) be housed individually in separate hutches?",
+        "options": [
+          "A. To control mating schedules, avoid inbreeding, and prevent territorial fighting",
+          "B. Bucks eat young rabbits",
+          "C. Rabbits are wild carnivores",
+          "D. Does do not eat near bucks"
+        ],
+        "correctAnswer": "A. To control mating schedules, avoid inbreeding, and prevent territorial fighting",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Individual housing prevents fighting, manages breeding records, and prevents unwanted matings.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the danger of feeding mouldy groundnut cake containing aflatoxin to laying hens?",
+        "options": [
+          "A. Aflatoxins cause liver damage, suppress immunity, and leave residues in table eggs",
+          "B. The eggs turn bright blue",
+          "C. The crop turns into stone",
+          "D. Birds stop drinking water"
+        ],
+        "correctAnswer": "A. Aflatoxins cause liver damage, suppress immunity, and leave residues in table eggs",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Aflatoxins are toxic mycotoxins that damage liver tissue and lower egg quality.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the function of the leaf-like folds (laminae) inside the omasum?",
+        "options": [
+          "A. Providing a large surface area to absorb water and volatile fatty acids from food",
+          "B. Storing whole grains",
+          "C. Secreting pepsin enzymes",
+          "D. Trapping foreign metal wires"
+        ],
+        "correctAnswer": "A. Providing a large surface area to absorb water and volatile fatty acids from food",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The muscular folds maximize mucosal surface area to absorb water and fatty acids.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the use of battery cages for laying hens being reduced in modern poultry production?",
+        "options": [
+          "A. Severe movement restriction and inability to express natural behaviors raise animal welfare concerns",
+          "B. Cages cause eggs to be soft-shelled",
+          "C. Birds eat twice as much feed in cages",
+          "D. Cages stop hens from drinking water"
+        ],
+        "correctAnswer": "A. Severe movement restriction and inability to express natural behaviors raise animal welfare concerns",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Battery cages restrict natural behaviors like perching and dust bathing, raising welfare issues.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes black quarter (blackleg) in cattle?",
+        "options": [
+          "A. *Clostridium chauvoei* spores in soil entering muscle tissues and producing gas-forming toxins",
+          "B. Walking on hot asphalt",
+          "C. Mosquito bites on the tail",
+          "D. Drinking water from boreholes"
+        ],
+        "correctAnswer": "A. *Clostridium chauvoei* spores in soil entering muscle tissues and producing gas-forming toxins",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "*Clostridium chauvoei* produces severe toxins in deep muscle tissue, causing gas gangrene.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do ruminants have a fibrous dental pad instead of upper incisors?",
+        "options": [
+          "A. Lower incisors press grass against the tough dental pad to grip and tear forage",
+          "B. Upper teeth were lost due to cud chewing",
+          "C. Ruminants only consume liquids",
+          "D. Upper incisors would block cud regurgitation"
+        ],
+        "correctAnswer": "A. Lower incisors press grass against the tough dental pad to grip and tear forage",
+        "hint": "Consider the four-chambered ruminant stomach: rumen (fermentation), reticulum (cud regurgitation), omasum (water absorption), and abomasum (enzymatic true stomach).",
+        "workedSolution": "The tough dental pad provides a firm surface for the lower incisors to grip and tear grass.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What deficiency causes rickets in growing broiler chickens?",
+        "options": [
+          "A. Insufficient dietary calcium, phosphorus, or vitamin D3, leading to soft, rubbery bones",
+          "B. Drinking too much water",
+          "C. Overfeeding on green grass",
+          "D. Lack of wood shavings on the floor"
+        ],
+        "correctAnswer": "A. Insufficient dietary calcium, phosphorus, or vitamin D3, leading to soft, rubbery bones",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Rickets results from inadequate bone mineralization due to lack of calcium, phosphorus, or vitamin D3.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do local free-range hens hide their nests in bush thickets?",
+        "options": [
+          "A. A natural maternal instinct to conceal eggs and chicks from predators",
+          "B. To keep their feathers clean",
+          "C. They dislike natural light",
+          "D. The coop is too cold"
+        ],
+        "correctAnswer": "A. A natural maternal instinct to conceal eggs and chicks from predators",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Concealing nests is an antipredator adaptation that protects eggs and brooding hens.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are calves fed dry starter pellets from two weeks of age?",
+        "options": [
+          "A. Microbial fermentation of grain starch produces butyrate, which stimulates rumen papillae development",
+          "B. To make horns grow early",
+          "C. To replace the abomasum",
+          "D. To stop them from drinking water"
+        ],
+        "correctAnswer": "A. Microbial fermentation of grain starch produces butyrate, which stimulates rumen papillae development",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "Fermentation of dry calf starter produces volatile fatty acids that stimulate rumen wall development.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What triggers vent pecking and cannibalism in commercial laying flocks?",
+        "options": [
+          "A. Overcrowding, intense light, dietary nutrient imbalances, and boredom",
+          "B. Fowls are wild carnivores",
+          "C. Lack of gizzards",
+          "D. Hens mating with each other"
+        ],
+        "correctAnswer": "A. Overcrowding, intense light, dietary nutrient imbalances, and boredom",
+        "hint": "Recall domestic animal classification, digestive anatomy, and livestock husbandry principles under NaCCA B7 standards.",
+        "workedSolution": "High stocking densities, stress, bright lighting, and nutrient deficits can trigger feather and vent pecking.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why must mineral supplements formulated for cattle NOT be fed to sheep?",
+        "options": [
+          "A. Sheep accumulate copper in their liver, and cattle mineral levels can cause fatal copper poisoning",
+          "B. Sheep have no liver",
+          "C. Copper dissolves wool fibers",
+          "D. Cattle minerals contain too much sugar"
+        ],
+        "correctAnswer": "A. Sheep accumulate copper in their liver, and cattle mineral levels can cause fatal copper poisoning",
+        "hint": "Compare sheep and goats: goat tails point erect and they are browsers; sheep tails hang downwards and possess interdigital scent glands.",
+        "workedSolution": "Sheep are sensitive to copper and can suffer toxic hemolytic crises if fed cattle mineral mixes.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which combination of practices represents sound farm biosecurity against poultry diseases?",
+        "options": [
+          "A. Restricting farm visitors, using disinfectant footbaths, screening wild birds out, and following vaccination schedules",
+          "B. Spraying insecticides into water troughs",
+          "C. Feeding chickens on dead carcasses",
+          "D. Keeping poultry in bedrooms"
+        ],
+        "correctAnswer": "A. Restricting farm visitors, using disinfectant footbaths, screening wild birds out, and following vaccination schedules",
+        "hint": "Active layers have wide pelvic bone spacing (3-4 fingers), moist pliable vents, and bright red waxy combs; non-layers (culls) have narrow pelvic spans.",
+        "workedSolution": "Strict sanitation, vector exclusion, footbaths, and timely vaccinations form the basis of poultry biosecurity.",
         "points": 1
       }
     ]
