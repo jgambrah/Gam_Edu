@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.852Z"
+    "updatedAt": "2026-10-02T18:36:25.273Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -2786,7 +2786,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. Students trace life from fundamental cell theory and plant vs. animal ultrastructure to multicellular differentiation and organ-system hierarchies.",
-    "totalPracticeQuestions": 159,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b7_strand1_cells"
@@ -2826,69 +2826,18 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "B7_CELL_MCQ_01",
-              "difficulty": "low",
-              "prompt": "Which of the following describes the correct order of biological organization in a multicellular organism, starting from the smallest unit?",
-              "options": [
-                "A. Organism → Tissue → Organ → Cell → Organ System",
-                "B. Cell → Tissue → Organ → Organ System → Organism",
-                "C. Organ → Cell → Tissue → Organ System → Organism",
-                "D. Tissue → Cell → Organ System → Organ → Organism"
-              ],
-              "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
-              "hint": "Think from microscopic building block to the whole living creature.",
-              "workedSolution": "Life is built systematically: individual Cells group into Tissues, tissues form functional Organs, organs coordinate into Organ Systems, which together form the complete Organism.",
-              "points": 1,
-              "learningCompetency": "B7.1.2.1.1",
-              "type": "objective"
-            },
-            {
-              "id": "B7_CELL_MCQ_02",
-              "difficulty": "low",
-              "prompt": "An organelle found inside a plant leaf cell that absorbs solar energy to manufacture carbohydrates is the:",
-              "options": [
-                "A. Mitochondrion",
-                "B. Cell membrane",
-                "C. Chloroplast",
-                "D. Nucleus"
-              ],
-              "correctAnswer": "C. Chloroplast",
-              "hint": "This organelle contains green chlorophyll pigments.",
-              "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb sunlight to carry out photosynthesis.",
-              "points": 1,
-              "learningCompetency": "B7.1.2.1.1",
-              "type": "objective"
-            },
-            {
-              "id": "B7_CELL_MCQ_03",
-              "difficulty": "low",
-              "prompt": "A key difference between plant and animal cells is that plant cells:",
-              "options": [
-                "A. Lack a nucleus",
-                "B. Possess a rigid outer cellulose cell wall",
-                "C. Have small, temporary vacuoles",
-                "D. Store carbohydrates as glycogen"
-              ],
-              "correctAnswer": "B. Possess a rigid outer cellulose cell wall",
-              "hint": "Consider the rigid outer encasement that maintains definite shape.",
-              "workedSolution": "Plant cells have an outer cellulose cell wall that gives them structural support and a definite shape. Animal cells lack a cell wall.",
-              "points": 1,
-              "learningCompetency": "B7.1.2.1.1",
-              "type": "objective"
-            },
-            {
               "id": "B7_CELL_F01",
               "difficulty": "low",
-              "prompt": "The basic structural and functional unit of all living organisms is the:",
+              "prompt": "What is the basic microscopic structural and functional building block of all living organisms?",
               "options": [
-                "A. Organ",
-                "B. Tissue",
-                "C. Cell",
-                "D. System"
+                "A. Atom",
+                "B. Cell",
+                "C. Tissue",
+                "D. Organ"
               ],
-              "correctAnswer": "C. Cell",
-              "hint": "Recall the core tenet of the classical cell theory.",
-              "workedSolution": "The cell is scientifically defined as the fundamental structural and functional unit of all biological organisms.",
+              "correctAnswer": "B. Cell",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "A cell is defined as the fundamental unit of structure and function in all living things.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2896,16 +2845,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F02",
               "difficulty": "low",
-              "prompt": "Which of the following scientists was NOT one of the primary contributors to the classical cell theory?",
+              "prompt": "Which of the following describes a group of similar cells working together to perform a specific function?",
               "options": [
-                "A. Matthias Schleiden",
-                "B. Theodor Schwann",
-                "C. Rudolf Virchow",
-                "D. Isaac Newton"
+                "A. Organ",
+                "B. System",
+                "C. Tissue",
+                "D. Organelle"
               ],
-              "correctAnswer": "D. Isaac Newton",
-              "hint": "Newton was a physicist who formulated the laws of universal gravitation and motion.",
-              "workedSolution": "Schleiden, Schwann, and Virchow formulated the biological cell theory, whereas Isaac Newton was a physicist.",
+              "correctAnswer": "C. Tissue",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "A tissue is a collection of cells that have similar shape and size and perform a dedicated function.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2913,16 +2862,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F03",
               "difficulty": "low",
-              "prompt": "Which part of the optical microscope is placed closest to the observer's eye?",
+              "prompt": "Which of the following is an example of an organ in the human body?",
               "options": [
-                "A. Objective lens",
-                "B. Eyepiece (ocular lens)",
-                "C. Diaphragm",
-                "D. Condenser"
+                "A. Red blood cell",
+                "B. Muscle tissue",
+                "C. Stomach",
+                "D. Circulatory system"
               ],
-              "correctAnswer": "B. Eyepiece (ocular lens)",
-              "hint": "Also called the ocular lens, it is situated at the top of the body tube.",
-              "workedSolution": "The eyepiece (or ocular lens) is positioned at the top of the body tube through which the observer directly views the magnified image.",
+              "correctAnswer": "C. Stomach",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The stomach is an organ composed of various tissues working together to carry out digestion.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2930,16 +2879,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F04",
               "difficulty": "low",
-              "prompt": "Which organelle is universally referred to as the 'powerhouse of the cell'?",
+              "prompt": "Which organelle acts as the control centre of the cell and houses its genetic material?",
               "options": [
-                "A. Ribosome",
-                "B. Chloroplast",
-                "C. Mitochondrion",
-                "D. Vacuole"
+                "A. Mitochondrion",
+                "B. Nucleus",
+                "C. Vacuole",
+                "D. Chloroplast"
               ],
-              "correctAnswer": "C. Mitochondrion",
-              "hint": "This organelle produces adenosine triphosphate (ATP) during aerobic cellular respiration.",
-              "workedSolution": "Mitochondria are known as the powerhouses of the cell because they synthesize ATP through cellular respiration.",
+              "correctAnswer": "B. Nucleus",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The nucleus controls all vital cellular activities and contains the genetic information (DNA) of the cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2947,16 +2896,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F05",
               "difficulty": "low",
-              "prompt": "Which of the following structures is found in plant cells but completely absent in animal cells?",
+              "prompt": "The jelly-like fluid that fills the cell and provides a site for chemical reactions is called the:",
               "options": [
-                "A. Cell membrane",
-                "B. Cellulose cell wall",
+                "A. Cell wall",
+                "B. Chloroplast",
                 "C. Cytoplasm",
-                "D. Mitochondria"
+                "D. Nucleolus"
               ],
-              "correctAnswer": "B. Cellulose cell wall",
-              "hint": "It gives plants their rigid polygonal structure and is made of cellulose.",
-              "workedSolution": "The rigid cellulose cell wall is found exclusively in plant cells and provides external structural support.",
+              "correctAnswer": "C. Cytoplasm",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cytoplasm is the cellular matrix where internal organelles are suspended and metabolic reactions occur.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2964,16 +2913,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F06",
               "difficulty": "low",
-              "prompt": "Which organelle contains the green pigment chlorophyll responsible for capturing sunlight?",
+              "prompt": "Which cell structure is described as the 'powerhouse of the cell' because it produces energy via cellular respiration?",
               "options": [
-                "A. Nucleus",
+                "A. Mitochondrion",
                 "B. Chloroplast",
-                "C. Centrosome",
-                "D. Tonoplast"
+                "C. Nucleus",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. Chloroplast",
-              "hint": "It is the site of carbohydrate synthesis in photosynthetic plant cells.",
-              "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb light energy to drive the chemical reactions of photosynthesis.",
+              "correctAnswer": "A. Mitochondrion",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Mitochondria produce cellular energy through cellular respiration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2981,16 +2930,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F07",
               "difficulty": "low",
-              "prompt": "What is the primary role of the cell nucleus?",
+              "prompt": "Which of the following structures is found ONLY in plant cells?",
               "options": [
-                "A. Pumping water into the vacuole",
-                "B. Controlling all cellular activities and housing genetic material (DNA)",
-                "C. Digesting extracellular bacteria",
-                "D. Producing chlorophyll pigments"
+                "A. Cell membrane",
+                "B. Cellulose cell wall",
+                "C. Mitochondrion",
+                "D. Nucleus"
               ],
-              "correctAnswer": "B. Controlling all cellular activities and housing genetic material (DNA)",
-              "hint": "It acts as the executive control headquarters of the cell.",
-              "workedSolution": "The nucleus contains genetic material (DNA/chromosomes) and directs all cellular activities, including protein synthesis and cell division.",
+              "correctAnswer": "B. Cellulose cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "A rigid cellulose cell wall is characteristic of plant cells and is absent in animal cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -2998,16 +2947,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F08",
               "difficulty": "low",
-              "prompt": "Which chemical solution is commonly used to stain onion epidermal cells during wet mount preparation?",
+              "prompt": "What is the green pigment found inside chloroplasts that traps sunlight for photosynthesis?",
               "options": [
-                "A. Concentrated sulfuric acid",
-                "B. Dilute iodine solution",
-                "C. Cooking oil",
-                "D. Distilled water"
+                "A. Cytoplasm",
+                "B. Cellulose",
+                "C. Chlorophyll",
+                "D. Glycogen"
               ],
-              "correctAnswer": "B. Dilute iodine solution",
-              "hint": "It stains starch and cell structures brown/yellow to enhance optical contrast.",
-              "workedSolution": "Dilute iodine solution stains nuclei and cell walls, creating visual contrast under optical light microscopy.",
+              "correctAnswer": "C. Chlorophyll",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Chlorophyll is the green pigment in chloroplasts that absorbs sunlight for food production.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3015,16 +2964,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F09",
               "difficulty": "low",
-              "prompt": "Which microscope knob should be used FIRST to locate the specimen under low-power magnification?",
+              "prompt": "Which structure controls the movement of materials into and out of the cell?",
               "options": [
-                "A. Fine adjustment knob",
-                "B. Coarse adjustment knob",
-                "C. Diaphragm lever",
-                "D. Revolving nosepiece"
+                "A. Cell wall",
+                "B. Cell membrane",
+                "C. Vacuole",
+                "D. Chloroplast"
               ],
-              "correctAnswer": "B. Coarse adjustment knob",
-              "hint": "It moves the stage rapidly to establish the initial approximate focal plane.",
-              "workedSolution": "The coarse adjustment knob moves the stage in large increments to quickly bring the specimen into initial focus under low power.",
+              "correctAnswer": "B. Cell membrane",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cell membrane acts as a semi-permeable barrier controlling what enters and leaves the cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3032,16 +2981,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F10",
               "difficulty": "low",
-              "prompt": "What is the jelly-like fluid that fills the interior of the cell outside the nucleus?",
+              "prompt": "In what form do plant cells store excess carbohydrates?",
               "options": [
-                "A. Cytoplasm",
-                "B. Cell sap",
-                "C. Nucleoplasm",
-                "D. Synovial fluid"
+                "A. Glycogen",
+                "B. Starch",
+                "C. Fat",
+                "D. Glucose"
               ],
-              "correctAnswer": "A. Cytoplasm",
-              "hint": "It provides an aqueous medium for cellular organelles and metabolic reactions.",
-              "workedSolution": "The cytoplasm is the gelatinous fluid comprising water, dissolved solutes, and suspended organelles within the cell membrane.",
+              "correctAnswer": "B. Starch",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plant cells store reserve carbohydrates in the form of starch granules.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3049,16 +2998,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F11",
               "difficulty": "low",
-              "prompt": "If a microscope has a 10× eyepiece and a 10× objective lens, the total magnification is:",
+              "prompt": "In what form do animal cells store reserve carbohydrates?",
               "options": [
-                "A. 20×",
-                "B. 100×",
-                "C. 10×",
-                "D. 1000×"
+                "A. Cellulose",
+                "B. Starch",
+                "C. Glycogen",
+                "D. Sucrose"
               ],
-              "correctAnswer": "B. 100×",
-              "hint": "Multiply eyepiece magnification by objective magnification (10 × 10).",
-              "workedSolution": "Total magnification = Eyepiece (10×) × Objective (10×) = 100×.",
+              "correctAnswer": "C. Glycogen",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Animal cells store excess carbohydrates as glycogen.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3066,16 +3015,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F12",
               "difficulty": "low",
-              "prompt": "Which boundary regulates the entry and exit of substances in and out of an animal cell?",
+              "prompt": "What gives plant cells their regular and fixed geometric shape?",
               "options": [
-                "A. Cellulose cell wall",
-                "B. Cell membrane (plasma membrane)",
-                "C. Nuclear pore",
-                "D. Tonoplast"
+                "A. The cell membrane",
+                "B. The rigid cellulose cell wall",
+                "C. The cytoplasm",
+                "D. The chloroplasts"
               ],
-              "correctAnswer": "B. Cell membrane (plasma membrane)",
-              "hint": "It is a selectively permeable phospholipid bilayer.",
-              "workedSolution": "The cell membrane (plasma membrane) is selectively permeable, regulating the passage of solutes and water into and out of animal cells.",
+              "correctAnswer": "B. The rigid cellulose cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The rigid cell wall encloses plant cells, giving them a definite, regular shape.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3083,16 +3032,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F13",
               "difficulty": "low",
-              "prompt": "What is the shape of a typical mature plant cell compared to an animal cell?",
+              "prompt": "Which of the following correctly describes the shape of typical animal cells?",
               "options": [
-                "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
-                "B. Plant cells are completely circular and animal cells are square",
-                "C. Both plant and animal cells are strictly triangular",
-                "D. Animal cells are always larger than plant cells"
+                "A. Fixed and rectangular",
+                "B. Definite hexagonal",
+                "C. Irregular and flexible",
+                "D. Rigid crystalline"
               ],
-              "correctAnswer": "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
-              "hint": "The rigid cell wall restricts plant cells into angular polygonal contours.",
-              "workedSolution": "Because of the rigid cellulose cell wall, plant cells possess a definite regular polygonal geometry, whereas animal cells have flexible, variable contours.",
+              "correctAnswer": "C. Irregular and flexible",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Because they lack a rigid cell wall, animal cells have an irregular or flexible shape.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3100,16 +3049,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F14",
               "difficulty": "low",
-              "prompt": "A group of similar cells working together to perform a specific biological task is called a(n):",
+              "prompt": "Which organelle occupies a large, central, and permanent space in a mature plant cell?",
               "options": [
-                "A. Organ",
-                "B. Organelle",
-                "C. Tissue",
-                "D. Organism"
+                "A. Mitochondrion",
+                "B. Nucleus",
+                "C. Vacuole",
+                "D. Ribosome"
               ],
-              "correctAnswer": "C. Tissue",
-              "hint": "Examples include muscle tissue and vascular xylem tissue.",
-              "workedSolution": "A tissue is defined as a cluster of specialized cells having similar structure and collaborating to execute a specific function.",
+              "correctAnswer": "C. Vacuole",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Plant cells possess one or a few large, central, permanent vacuoles filled with cell sap.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3117,16 +3066,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F15",
               "difficulty": "low",
-              "prompt": "Which of the following is an example of an organ in the human body?",
+              "prompt": "How are vacuoles described in animal cells compared to plant cells?",
               "options": [
-                "A. Red blood cell",
-                "B. Heart",
-                "C. Nucleus",
-                "D. Epithelial tissue"
+                "A. Large and permanent",
+                "B. Small, numerous, and temporary",
+                "C. Completely absent in all animals",
+                "D. Filled with chlorophyll"
               ],
-              "correctAnswer": "B. Heart",
-              "hint": "It is composed of muscle, nervous, and connective tissues working together.",
-              "workedSolution": "The heart is an organ composed of multiple coordinated tissues (cardiac muscle, nerve, epithelial, and connective tissues).",
+              "correctAnswer": "B. Small, numerous, and temporary",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Animal cells feature small, scattered, and temporary vacuoles.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3134,16 +3083,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F16",
               "difficulty": "low",
-              "prompt": "Which specialized human cell has a biconcave disc shape and lacks a nucleus at maturity?",
+              "prompt": "Which of the following is the correct order of organization from simplest to most complex?",
               "options": [
-                "A. White blood cell",
-                "B. Red blood cell (erythrocyte)",
-                "C. Sperm cell",
-                "D. Nerve cell"
+                "A. Organism → System → Organ → Tissue → Cell",
+                "B. Cell → Tissue → Organ → Organ System → Organism",
+                "C. Tissue → Cell → Organ → Organism → System",
+                "D. Cell → Organ → Tissue → Organ System → Organism"
               ],
-              "correctAnswer": "B. Red blood cell (erythrocyte)",
-              "hint": "It is filled with haemoglobin to transport respiratory oxygen.",
-              "workedSolution": "Mature mammalian red blood cells are enucleated biconcave discs designed to pack maximum haemoglobin for oxygen transport.",
+              "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The hierarchy of biological organization proceeds from Cell to Tissue, Organ, Organ System, and Organism.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3151,16 +3100,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F17",
               "difficulty": "low",
-              "prompt": "The long whip-like tail that propels a sperm cell forward during swimming is called a:",
+              "prompt": "What is the primary substance used to construct a plant cell wall?",
               "options": [
-                "A. Cilium",
-                "B. Flagellum",
-                "C. Pseudopodium",
-                "D. Dendrite"
+                "A. Protein",
+                "B. Cellulose",
+                "C. Glycogen",
+                "D. Lipid"
               ],
-              "correctAnswer": "B. Flagellum",
-              "hint": "It uses ATP energy to lash from side to side.",
-              "workedSolution": "The flagellum is the elongated motility apparatus that propels the sperm cell through fluid media toward the ovum.",
+              "correctAnswer": "B. Cellulose",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plant cell walls are made predominantly of strong cellulose fibers.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3168,16 +3117,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F18",
               "difficulty": "low",
-              "prompt": "What is the primary function of a plant root hair cell?",
+              "prompt": "Which organelle contains liquid cell sap composed of water, dissolved sugars, and mineral salts?",
               "options": [
-                "A. Photosynthesis to make sugars",
-                "B. Absorption of water and mineral salts from the soil",
-                "C. Transport of pollen grains",
-                "D. Protection against herbivores"
+                "A. Vacuole",
+                "B. Nucleus",
+                "C. Chloroplast",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. Absorption of water and mineral salts from the soil",
-              "hint": "Its long projection extends directly into interstitial soil water.",
-              "workedSolution": "Root hair cells have long cytoplasmic extensions that increase the surface area for absorbing soil moisture and dissolved mineral ions.",
+              "correctAnswer": "A. Vacuole",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The vacuole functions as a reservoir storing water, mineral salts, and organic compounds.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3185,16 +3134,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F19",
               "difficulty": "low",
-              "prompt": "Which plant cells are packed with chloroplasts and arranged vertically beneath the upper leaf surface?",
+              "prompt": "A group of different organs working together to perform a broad physiological function is an:",
               "options": [
-                "A. Spongy mesophyll cells",
-                "B. Palisade mesophyll cells",
-                "C. Epidermal cells",
-                "D. Root cells"
+                "A. Organelle",
+                "B. Organ System",
+                "C. Organism",
+                "D. Tissue"
               ],
-              "correctAnswer": "B. Palisade mesophyll cells",
-              "hint": "They are the primary sites of photosynthetic carbohydrate manufacture.",
-              "workedSolution": "Palisade mesophyll cells are columnar cells densely packed with chloroplasts to maximize sunlight absorption for photosynthesis.",
+              "correctAnswer": "B. Organ System",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "An organ system is an interrelated group of organs working collectively to accomplish life processes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3202,16 +3151,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F20",
               "difficulty": "low",
-              "prompt": "What structure on the microscope supports the glass slide directly under the objective lens?",
+              "prompt": "Which of the following is considered an individual living organism?",
               "options": [
-                "A. Mirror",
-                "B. Stage",
-                "C. Base",
-                "D. Arm"
+                "A. A leaf epidermal layer",
+                "B. A human white blood cell",
+                "C. A single tilapia fish",
+                "D. The heart muscle"
               ],
-              "correctAnswer": "B. Stage",
-              "hint": "It has a central aperture allowing light to pass through the specimen.",
-              "workedSolution": "The stage is the flat platform fitted with metal clips where the specimen glass slide is positioned for viewing.",
+              "correctAnswer": "C. A single tilapia fish",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "A fish is an autonomous, complete individual living being (an organism).",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3219,16 +3168,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F21",
               "difficulty": "low",
-              "prompt": "In a plant cell, the large central vacuole is filled with a watery solution known as:",
+              "prompt": "Which of the following structures is common to BOTH plant and animal cells?",
               "options": [
-                "A. Cytosol",
-                "B. Cell sap",
-                "C. Blood plasma",
-                "D. Bile"
+                "A. Chloroplast",
+                "B. Cellulose cell wall",
+                "C. Cell membrane",
+                "D. Large permanent vacuole"
               ],
-              "correctAnswer": "B. Cell sap",
-              "hint": "It contains dissolved sugars, mineral salts, and organic acids.",
-              "workedSolution": "The fluid inside a plant's central vacuole is cell sap, which maintains cellular turgor and stores metabolic reserves.",
+              "correctAnswer": "C. Cell membrane",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Both plant and animal cells are bounded by a functional cell membrane.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3236,16 +3185,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F22",
               "difficulty": "low",
-              "prompt": "Which pair of specialized cells on a plant leaf opens and closes the stomatal pores?",
+              "prompt": "Where does photosynthesis take place inside a plant cell?",
               "options": [
-                "A. Guard cells",
-                "B. Root hair cells",
-                "C. Xylem cells",
-                "D. Sieve tube elements"
+                "A. Nucleus",
+                "B. Chloroplast",
+                "C. Mitochondrion",
+                "D. Vacuole"
               ],
-              "correctAnswer": "A. Guard cells",
-              "hint": "They are kidney-shaped cells surrounding each stomatal aperture.",
-              "workedSolution": "Paired guard cells regulate stomatal opening and closing to balance transpirational water loss and gaseous exchange.",
+              "correctAnswer": "B. Chloroplast",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Photosynthesis occurs inside chloroplasts using trapped solar energy.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3253,16 +3202,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F23",
               "difficulty": "low",
-              "prompt": "Which cell organelle is responsible for synthesizing proteins?",
+              "prompt": "Which cell structure protects plant cells from bursting when taking in water?",
               "options": [
-                "A. Ribosome",
-                "B. Lysosome",
-                "C. Chloroplast",
-                "D. Vacuole"
+                "A. Cell wall",
+                "B. Cell membrane",
+                "C. Nucleus",
+                "D. Cytoplasm"
               ],
-              "correctAnswer": "A. Ribosome",
-              "hint": "They can be found free in the cytoplasm or attached to the rough endoplasmic reticulum.",
-              "workedSolution": "Ribosomes are granular ribonucleoprotein complexes that assemble amino acids into polypeptide chains (proteins).",
+              "correctAnswer": "A. Cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The tough cellulose cell wall provides structural support and resists internal hydrostatic pressure.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3270,16 +3219,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F24",
               "difficulty": "low",
-              "prompt": "Why should a glass coverslip be lowered onto a wet mount at an angle of 45°?",
+              "prompt": "Which of the following is an example of human tissue?",
               "options": [
-                "A. To break the glass slide",
-                "B. To prevent the formation of trapped air bubbles",
-                "C. To evaporate the liquid stain",
-                "D. To kill any living bacteria"
+                "A. Blood cell",
+                "B. Muscle tissue",
+                "C. Kidney",
+                "D. Brain"
               ],
-              "correctAnswer": "B. To prevent the formation of trapped air bubbles",
-              "hint": "Air bubbles appear as black rings under the microscope and obstruct specimen visibility.",
-              "workedSolution": "Lowering the coverslip gently at 45° pushes out air pockets, preventing trapped bubbles that interfere with observation.",
+              "correctAnswer": "B. Muscle tissue",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Muscle tissue consists of a cooperative sheet of specialized contractile muscle cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3287,16 +3236,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F25",
               "difficulty": "low",
-              "prompt": "Which microscope component controls the amount of light passing through the stage aperture?",
+              "prompt": "Which of the following is an example of a plant organ?",
               "options": [
-                "A. Eyepiece",
-                "B. Iris diaphragm",
-                "C. Revolving nosepiece",
-                "D. Body tube"
+                "A. Chloroplast",
+                "B. Leaf",
+                "C. Guard cell",
+                "D. Root hair cell"
               ],
-              "correctAnswer": "B. Iris diaphragm",
-              "hint": "Adjusting its opening brightens or dims the illuminated field of view.",
-              "workedSolution": "The iris diaphragm regulates the diameter of the light cone passing through the specimen to optimize image contrast.",
+              "correctAnswer": "B. Leaf",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "A leaf is a plant organ composed of vascular, epidermal, and photosynthetic tissues.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3304,16 +3253,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F26",
               "difficulty": "low",
-              "prompt": "What carbohydrate compound forms the structural fibers of a plant cell wall?",
+              "prompt": "Why are animal cells unable to produce their own food?",
               "options": [
-                "A. Starch",
-                "B. Glycogen",
-                "C. Cellulose",
-                "D. Glucose"
+                "A. They lack a nucleus",
+                "B. They lack chloroplasts containing chlorophyll",
+                "C. They do not have mitochondria",
+                "D. They have an irregular shape"
               ],
-              "correctAnswer": "C. Cellulose",
-              "hint": "A tough, insoluble structural polysaccharide.",
-              "workedSolution": "Cellulose microfibrils provide the tensile strength and rigidity characteristic of plant cell walls.",
+              "correctAnswer": "B. They lack chloroplasts containing chlorophyll",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Animal cells lack chloroplasts and chlorophyll, meaning they cannot undergo photosynthesis.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3321,16 +3270,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F27",
               "difficulty": "low",
-              "prompt": "Which of the following is an example of an organ system?",
+              "prompt": "Internal compartments within a eukaryotic cell that carry out distinct roles are called:",
               "options": [
-                "A. Stomach",
-                "B. Digestive system",
-                "C. Epithelial lining",
-                "D. Smooth muscle cell"
+                "A. Organelles",
+                "B. Organ systems",
+                "C. Tissues",
+                "D. Microbes"
               ],
-              "correctAnswer": "B. Digestive system",
-              "hint": "It includes the mouth, esophagus, stomach, liver, pancreas, and intestines.",
-              "workedSolution": "An organ system is an integrated network of organs working symbiotically to achieve a major physiological life process.",
+              "correctAnswer": "A. Organelles",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Organelles are specialized, membrane-bound internal subunits within eukaryotic cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3338,16 +3287,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F28",
               "difficulty": "low",
-              "prompt": "In which form do animal cells store excess glucose carbohydrates?",
+              "prompt": "Which part of the cell holds the genetic instructions that are passed on to offspring?",
               "options": [
-                "A. Starch",
-                "B. Glycogen",
-                "C. Cellulose",
-                "D. Sucrose"
+                "A. Cytoplasm",
+                "B. Vacuole",
+                "C. Nucleus",
+                "D. Cell wall"
               ],
-              "correctAnswer": "B. Glycogen",
-              "hint": "Often called 'animal starch', stored predominantly in the liver and skeletal muscles.",
-              "workedSolution": "Animal cells store excess carbohydrates as branched glycogen granules, whereas plant cells store starch.",
+              "correctAnswer": "C. Nucleus",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The nucleus houses the genetic material (DNA) that carries inheritable instructions.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3355,16 +3304,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F29",
               "difficulty": "low",
-              "prompt": "Which of the following organisms is unicellular (made of only one cell)?",
+              "prompt": "The circulatory system consists of organs such as the heart and blood vessels working together. This is an example of an:",
               "options": [
-                "A. Amoeba",
-                "B. Earthworm",
-                "C. Mango tree",
-                "D. Housefly"
+                "A. Organelle",
+                "B. Organ system",
+                "C. Organism",
+                "D. Individual cell"
               ],
-              "correctAnswer": "A. Amoeba",
-              "hint": "A single-celled protozoan that moves using pseudopodia.",
-              "workedSolution": "Amoeba is a single-celled microscopic organism capable of executing all vital life functions within a single cell.",
+              "correctAnswer": "B. Organ system",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "A coordinated collective of interrelated organs forms an organ system.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3372,16 +3321,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F30",
               "difficulty": "low",
-              "prompt": "Why do plant cells lack centrioles but still divide successfully?",
+              "prompt": "What is the primary function of the mitochondrion?",
               "options": [
-                "A. Plant cells do not divide",
-                "B. Plant cells organize their spindle fibers without centrioles",
-                "C. Plant cells only divide by budding",
-                "D. Centrioles are only needed for feeding"
+                "A. Photosynthesis",
+                "B. Cellular respiration to produce energy",
+                "C. Storing sap",
+                "D. Making the cell wall"
               ],
-              "correctAnswer": "B. Plant cells organize their spindle fibers without centrioles",
-              "hint": "Higher plant cells possess microtubule organizing centers instead of centrioles.",
-              "workedSolution": "Higher plant cells lack centrioles, organizing their mitotic spindles through specialized cytoplasm regions without centrosomes.",
+              "correctAnswer": "B. Cellular respiration to produce energy",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria are the sites of cellular respiration where energy is produced for cell functions.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3389,16 +3338,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F31",
               "difficulty": "low",
-              "prompt": "Which specialized human cell has long branching extensions called dendrites and an axon?",
+              "prompt": "What type of lipid storage is most typical in animal cells?",
               "options": [
-                "A. Red blood cell",
-                "B. Nerve cell (neuron)",
-                "C. Muscle cell",
-                "D. White blood cell"
+                "A. Starch",
+                "B. Fats",
+                "C. Oils",
+                "D. Waxes"
               ],
-              "correctAnswer": "B. Nerve cell (neuron)",
-              "hint": "It transmits electrical impulses throughout the nervous system.",
-              "workedSolution": "Nerve cells (neurons) feature elongated axons and branched dendrites for conducting electro-chemical impulses.",
+              "correctAnswer": "B. Fats",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Animal cells primarily store lipids as solid adipose fats, whereas plant cells tend to store oils.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3406,16 +3355,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F32",
               "difficulty": "low",
-              "prompt": "What is the function of the revolving nosepiece on an optical microscope?",
+              "prompt": "Which of the following is true about the cell membrane?",
               "options": [
-                "A. Adjusts illumination brightness",
-                "B. Rotates to select different objective lenses",
-                "C. Holds the glass slide in place",
-                "D. Raises the eyepiece"
+                "A. It is rigid and completely impermeable",
+                "B. It is flexible and selectively permeable",
+                "C. It is only found in plant cells",
+                "D. It produces chlorophyll"
               ],
-              "correctAnswer": "B. Rotates to select different objective lenses",
-              "hint": "It clicks into position when shifting between 4×, 10×, and 40× lenses.",
-              "workedSolution": "The revolving nosepiece is the circular rotating turret that permits rapid selection of different objective lenses.",
+              "correctAnswer": "B. It is flexible and selectively permeable",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cell membrane is flexible and controls the selective passage of substances in and out of the cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3423,16 +3372,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F33",
               "difficulty": "low",
-              "prompt": "Which term describes a cell membrane that permits only certain molecules to pass through while blocking others?",
+              "prompt": "Which structure gives mechanical support and firmness to non-woody plant stems?",
               "options": [
-                "A. Fully permeable",
-                "B. Selectively (semi-) permeable",
-                "C. Impermeable",
-                "D. Solid"
+                "A. Small vacuoles",
+                "B. Turgid central vacuole and cell wall",
+                "C. Red blood cells",
+                "D. Mitochondria"
               ],
-              "correctAnswer": "B. Selectively (semi-) permeable",
-              "hint": "It acts like a security filter guarding cell entry.",
-              "workedSolution": "A selectively (or semi-) permeable membrane regulates the passage of water and specific solutes while restricting others.",
+              "correctAnswer": "B. Turgid central vacuole and cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "A cell sap-filled central vacuole exerting turgor pressure against a rigid cell wall provides mechanical support.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3440,16 +3389,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F34",
               "difficulty": "low",
-              "prompt": "Where is the genetic code (DNA) located inside a eukaryotic plant or animal cell?",
+              "prompt": "Which of the following is an example of an individual cell in the human body?",
               "options": [
-                "A. In the cell wall",
-                "B. Inside the nucleus",
-                "C. In the vacuole",
-                "D. Inside the cell membrane"
+                "A. Kidney",
+                "B. Skin nerve cell (neuron)",
+                "C. Heart",
+                "D. Lungs"
               ],
-              "correctAnswer": "B. Inside the nucleus",
-              "hint": "Packaged into chromatin threads and chromosomes.",
-              "workedSolution": "DNA is enclosed within the nuclear envelope inside the nucleus in all eukaryotic cells.",
+              "correctAnswer": "B. Skin nerve cell (neuron)",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "A nerve cell (neuron) is an individual cellular unit.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3457,16 +3406,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F35",
               "difficulty": "low",
-              "prompt": "What is the biological term for the net movement of water molecules across a selectively permeable membrane?",
+              "prompt": "What happens when an animal cell is placed in plain water without an outer cell wall to protect it?",
               "options": [
-                "A. Active transport",
-                "B. Osmosis",
-                "C. Transpiration",
-                "D. Evaporation"
+                "A. It stays rigid like wood",
+                "B. It may take in excess water, swell, and burst",
+                "C. It immediately produces chloroplasts",
+                "D. It divides into a plant cell"
               ],
-              "correctAnswer": "B. Osmosis",
-              "hint": "Movement from high water potential (dilute) to low water potential (concentrated).",
-              "workedSolution": "Osmosis is the spontaneous passage of solvent water molecules across a selectively permeable membrane down a water potential gradient.",
+              "correctAnswer": "B. It may take in excess water, swell, and burst",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Without a tough cellulose wall to restrict expansion, excessive water intake causes animal cells to burst.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3474,16 +3423,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F36",
               "difficulty": "low",
-              "prompt": "Which of the following is considered an organ in vascular plants?",
+              "prompt": "What is the main function of the plant cell wall?",
               "options": [
-                "A. Chloroplast",
-                "B. Leaf",
-                "C. Palisade cell",
-                "D. Cellulose"
+                "A. To generate energy through respiration",
+                "B. To provide structural support, shape, and physical protection",
+                "C. To control all biological reproduction",
+                "D. To absorb sunlight"
               ],
-              "correctAnswer": "B. Leaf",
-              "hint": "It is composed of epidermis, vascular bundles, and mesophyll tissues.",
-              "workedSolution": "The leaf is a botanical organ composed of multiple coordinated tissues designed for photosynthesis and gas exchange.",
+              "correctAnswer": "B. To provide structural support, shape, and physical protection",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cell wall provides mechanical strength, supports the cell, and maintains its fixed shape.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3491,16 +3440,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F37",
               "difficulty": "low",
-              "prompt": "Why do red blood cells lack a nucleus when fully mature?",
+              "prompt": "Which of the following organisms is multicellular?",
               "options": [
-                "A. To allow more space for carrying haemoglobin oxygen molecules",
-                "B. Because they do not need proteins",
-                "C. To make them swim faster",
-                "D. Because they are not living cells"
+                "A. Human being",
+                "B. Amoeba",
+                "C. Bacterium",
+                "D. Paramecium"
               ],
-              "correctAnswer": "A. To allow more space for carrying haemoglobin oxygen molecules",
-              "hint": "Enucleation maximizes internal volume for oxygen packaging.",
-              "workedSolution": "Erythrocytes extrude their nuclei during maturation to maximize internal space for haemoglobin, optimizing oxygen transport capacity.",
+              "correctAnswer": "A. Human being",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Humans are multicellular organisms composed of trillions of specialized cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3508,16 +3457,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F38",
               "difficulty": "low",
-              "prompt": "What happens to the field of view when you switch from low power (4×) to high power (40×) objective lens?",
+              "prompt": "Which organelle is considered the chemical factory where glucose is synthesized from carbon dioxide and water?",
               "options": [
-                "A. The field of view becomes wider and brighter",
-                "B. The field of view becomes smaller and darker",
-                "C. The field of view remains exactly unchanged",
-                "D. The specimen disappears completely"
+                "A. Mitochondrion",
+                "B. Chloroplast",
+                "C. Vacuole",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. The field of view becomes smaller and darker",
-              "hint": "Higher magnification focuses on a much smaller physical area of the slide.",
-              "workedSolution": "Increasing magnification narrows the observable area (field of view) and reduces light transmission per unit area, making the image darker.",
+              "correctAnswer": "B. Chloroplast",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Chloroplasts conduct photosynthesis to synthesize simple carbohydrates.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3525,16 +3474,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F39",
               "difficulty": "low",
-              "prompt": "Which of the following is a unicellular green alga that possesses chloroplasts?",
+              "prompt": "Both plant and animal cells carry out cellular respiration. Which organelle facilitates this in both types?",
               "options": [
-                "A. Chlamydomonas",
-                "B. Yeast",
-                "C. Bacterium",
-                "D. Paramecium"
+                "A. Nucleus",
+                "B. Mitochondrion",
+                "C. Cell wall",
+                "D. Chloroplast"
               ],
-              "correctAnswer": "A. Chlamydomonas",
-              "hint": "A photosynthetic single-celled freshwater alga with two flagella.",
-              "workedSolution": "Chlamydomonas is a unicellular green alga containing a cup-shaped chloroplast for autotrophic photosynthesis.",
+              "correctAnswer": "B. Mitochondrion",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria are present in both plant and animal cells to conduct cellular respiration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3542,16 +3491,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F40",
               "difficulty": "low",
-              "prompt": "What is the primary function of cilia found on ciliated epithelial cells lining the human respiratory tract?",
+              "prompt": "Which organelle occupies the largest volume of a mature plant cell's cytoplasm?",
               "options": [
-                "A. Absorbing digested food",
-                "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
-                "C. Producing red blood cells",
-                "D. Generating body heat"
+                "A. Nucleus",
+                "B. Large central vacuole",
+                "C. Single mitochondrion",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
-              "hint": "They act as a microscopic escalator clearing the windpipe.",
-              "workedSolution": "Cilia beat rhythmically to propel mucus, inhaled microbes, and dirt particles out of the trachea towards the throat for expulsion.",
+              "correctAnswer": "B. Large central vacuole",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "A prominent central vacuole often occupies up to 90% of the interior volume of mature plant cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3559,16 +3508,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F41",
               "difficulty": "low",
-              "prompt": "Which optical component gathers and focuses light rays from the mirror onto the microscopic specimen?",
+              "prompt": "Which feature prevents animal cells from forming a rigid rectangular structure?",
               "options": [
-                "A. Condenser",
-                "B. Eyepiece",
-                "C. Stage clip",
-                "D. Arm"
+                "A. Presence of cytoplasm",
+                "B. Absence of a cell wall",
+                "C. Presence of a nucleus",
+                "D. Small vacuoles"
               ],
-              "correctAnswer": "A. Condenser",
-              "hint": "Mounted directly below the stage aperture.",
-              "workedSolution": "The substage condenser focuses light from the illumination source into a concentrated cone on the specimen plane.",
+              "correctAnswer": "B. Absence of a cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Without a rigid cell wall, animal cells are bounded only by a flexible membrane, giving them an irregular shape.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3576,16 +3525,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F42",
               "difficulty": "low",
-              "prompt": "What is the structural term for the membrane surrounding the large central vacuole in plant cells?",
+              "prompt": "What is the liquid inside a plant vacuole called?",
               "options": [
-                "A. Tonoplast",
-                "B. Crista",
-                "C. Nuclear membrane",
-                "D. Plasma membrane"
+                "A. Blood",
+                "B. Cell sap",
+                "C. Pure alcohol",
+                "D. Cytoplasm"
               ],
-              "correctAnswer": "A. Tonoplast",
-              "hint": "It bounds the vacuolar sap and regulates solute movement into the vacuole.",
-              "workedSolution": "The tonoplast is the specialized semi-permeable membrane enclosing the central plant vacuole.",
+              "correctAnswer": "B. Cell sap",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plant vacuoles are filled with cell sap containing dissolved minerals, sugars, and water.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3593,16 +3542,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F43",
               "difficulty": "low",
-              "prompt": "Which level of organization is represented by the human brain?",
+              "prompt": "Which level of organization is represented by the heart pumping blood through arteries and veins?",
               "options": [
-                "A. Tissue",
-                "B. Organ",
-                "C. Organ system",
-                "D. Cellular level"
+                "A. Tissue level",
+                "B. Organ system level",
+                "C. Cellular level",
+                "D. Chemical level"
               ],
-              "correctAnswer": "B. Organ",
-              "hint": "Composed of neurons, neuroglia, and blood vascular tissues.",
-              "workedSolution": "The brain is an anatomical organ executing command and coordination duties within the central nervous system.",
+              "correctAnswer": "B. Organ system level",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The heart operating alongside blood vessels constitutes the circulatory organ system.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3610,16 +3559,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F44",
               "difficulty": "low",
-              "prompt": "What is the magnification of an objective lens if a 15× eyepiece produces a total magnification of 600×?",
+              "prompt": "Which of the following is true concerning the nucleus?",
               "options": [
-                "A. 20×",
-                "B. 40×",
-                "C. 45×",
-                "D. 60×"
+                "A. It is found only in plant cells",
+                "B. It is found in both plant and animal cells",
+                "C. It absorbs sunlight directly",
+                "D. It is a dead structure"
               ],
-              "correctAnswer": "B. 40×",
-              "hint": "Divide total magnification by eyepiece power: 600 / 15.",
-              "workedSolution": "Objective magnification = Total Magnification / Eyepiece = 600 / 15 = 40×.",
+              "correctAnswer": "B. It is found in both plant and animal cells",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Both eukaryotic plant and animal cells contain a membrane-bound nucleus.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3627,16 +3576,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F45",
               "difficulty": "low",
-              "prompt": "Which of the following is NOT present in human cheek epidermal cells?",
+              "prompt": "Plant cells often store lipids in the form of:",
               "options": [
-                "A. Nucleus",
-                "B. Cell membrane",
-                "C. Chloroplast",
-                "D. Cytoplasm"
+                "A. Solid fat",
+                "B. Liquid oils",
+                "C. Starch",
+                "D. Glycogen"
               ],
-              "correctAnswer": "C. Chloroplast",
-              "hint": "Human cells are non-photosynthetic animal cells.",
-              "workedSolution": "Cheek cells are animal cells, meaning they lack chloroplasts and cellulose cell walls.",
+              "correctAnswer": "B. Liquid oils",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plants store lipids predominantly as liquid oils (e.g., groundnut oil, palm oil).",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3644,16 +3593,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F46",
               "difficulty": "low",
-              "prompt": "Which organelle carries digestive enzymes to break down old, worn-out cell parts?",
+              "prompt": "Which of the following is an example of an organ in a plant?",
               "options": [
-                "A. Lysosome",
-                "B. Chloroplast",
-                "C. Ribosome",
-                "D. Endoplasmic reticulum"
+                "A. Root",
+                "B. Xylem cell",
+                "C. Chlorophyll",
+                "D. Cellulose"
               ],
-              "correctAnswer": "A. Lysosome",
-              "hint": "Often nicknamed the 'suicide bags' or recycling units of the cell.",
-              "workedSolution": "Lysosomes contain hydrolytic enzymes that digest cellular debris, foreign pathogens, and damaged organelles.",
+              "correctAnswer": "A. Root",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Roots, stems, leaves, and flowers are distinct plant organs.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3661,16 +3610,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F47",
               "difficulty": "low",
-              "prompt": "Which tissue in flowering plants transports water and dissolved mineral ions upward from roots to leaves?",
+              "prompt": "The cell membrane is described as 'selectively permeable' because it:",
               "options": [
-                "A. Phloem",
-                "B. Xylem",
-                "C. Epidermis",
-                "D. Pith"
+                "A. Lets every substance pass freely without restriction",
+                "B. Blocks all substances from entering or leaving completely",
+                "C. Allows certain substances to pass while restricting others",
+                "D. Can only absorb gases"
               ],
-              "correctAnswer": "B. Xylem",
-              "hint": "Formed of hollow, lignified dead vessel tubes.",
-              "workedSolution": "Xylem tissue consists of hollow, lignified vessels that conduct water and dissolved minerals from roots to the shoot system.",
+              "correctAnswer": "C. Allows certain substances to pass while restricting others",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "A selectively permeable membrane regulates transit, letting useful nutrients enter and wastes exit.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3678,16 +3627,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F48",
               "difficulty": "low",
-              "prompt": "Which tissue in flowering plants transports manufactured sucrose sugars downward from leaves to roots and storage organs?",
+              "prompt": "Which of the following organelles is absent in a human cheek cell?",
               "options": [
-                "A. Phloem",
-                "B. Xylem",
-                "C. Cortex",
-                "D. Cuticle"
+                "A. Nucleus",
+                "B. Cell membrane",
+                "C. Chloroplast",
+                "D. Mitochondrion"
               ],
-              "correctAnswer": "A. Phloem",
-              "hint": "Contains living sieve tube elements and companion cells.",
-              "workedSolution": "Phloem tissue translocates photosynthetic carbohydrates (sucrose) and amino acids throughout the plant.",
+              "correctAnswer": "C. Chloroplast",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Human cheek cells are animal cells and do not contain chloroplasts.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3695,16 +3644,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F49",
               "difficulty": "low",
-              "prompt": "What is the proper way to carry an optical compound microscope across the laboratory?",
+              "prompt": "What is the biological term for a collection of tissues that work together to accomplish a specific function?",
               "options": [
-                "A. By holding only the eyepiece tube",
-                "B. By holding the arm with one hand and supporting the base with the other hand",
-                "C. By carrying it upside down by the stage",
-                "D. By pulling it along the bench by its power cord"
+                "A. Cell",
+                "B. Organ",
+                "C. Organism",
+                "D. Organelle"
               ],
-              "correctAnswer": "B. By holding the arm with one hand and supporting the base with the other hand",
-              "hint": "Two hands ensure balance and prevent dropping optical lenses.",
-              "workedSolution": "Standard laboratory safety mandates gripping the microscope arm firmly with one hand while cupping the heavy base with the other.",
+              "correctAnswer": "B. Organ",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "An organ is built from different types of tissues cooperating to perform specialized tasks.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3712,16 +3661,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_F50",
               "difficulty": "low",
-              "prompt": "Which statement accurately describes a major difference between prokaryotic (bacteria) and eukaryotic cells?",
+              "prompt": "Which organelle carries out metabolic waste storage alongside water retention in plants?",
               "options": [
-                "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
-                "B. Eukaryotic cells have no DNA",
-                "C. Prokaryotic cells are always multi-cellular",
-                "D. Eukaryotic cells have no cell membrane"
+                "A. Nucleus",
+                "B. Large vacuole",
+                "C. Chloroplast",
+                "D. Ribosome"
               ],
-              "correctAnswer": "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
-              "hint": "'Pro' means before; 'karyon' means nucleus.",
-              "workedSolution": "Prokaryotes (like bacteria) lack a true nuclear membrane enclosing their DNA, while eukaryotes (plants, animals, fungi) possess a membrane-bound nucleus.",
+              "correctAnswer": "B. Large vacuole",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The plant vacuole stores water, nutrients, and cellular waste products.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3731,16 +3680,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I01",
               "difficulty": "medium",
-              "prompt": "Why does an animal cell burst (undergo lysis) when placed in pure distilled water, while a plant cell does not?",
+              "prompt": "Why do plant cells maintain a fixed, definite shape under high water absorption, while animal cells tend to swell and potentially burst?",
               "options": [
-                "A. Animal cells have larger vacuoles than plant cells",
-                "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
-                "C. Plant cell membranes do not allow water to enter",
-                "D. Plant cells actively pump water out of their chloroplasts"
+                "A. Plant cells possess an outer rigid cellulose cell wall that exerts wall pressure against turgor",
+                "B. Plant cells do not absorb water",
+                "C. Animal cells have thicker membranes than plant cells",
+                "D. Animal cells have larger vacuoles that push against the boundary"
               ],
-              "correctAnswer": "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
-              "hint": "Consider the mechanical tensile strength of the cellulose outer casing.",
-              "workedSolution": "In hypotonic distilled water, endosmosis forces water into both cells. Plant cells develop turgor pressure resisted by their cellulose cell walls, while animal cells lack cell walls and burst (lysis).",
+              "correctAnswer": "A. Plant cells possess an outer rigid cellulose cell wall that exerts wall pressure against turgor",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "The plant cell wall provides mechanical resistance that withstands internal turgor pressure.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3748,16 +3697,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I02",
               "difficulty": "medium",
-              "prompt": "What happens to the position of the cell nucleus in a mature, fully developed plant cell?",
+              "prompt": "Which of the following correctly pairs an organelle with its primary biochemical role?",
               "options": [
-                "A. It remains positioned precisely in the center",
-                "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
-                "C. It dissolves into the chloroplasts",
-                "D. It migrates into the cell wall"
+                "A. Chloroplast — Cellular respiration",
+                "B. Mitochondrion — Site of cellular respiration and energy production",
+                "C. Cell Wall — Controlling genetic inheritance",
+                "D. Nucleus — Photosynthesis"
               ],
-              "correctAnswer": "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
-              "hint": "The central sap cavity occupies up to 90% of the interior volume.",
-              "workedSolution": "The development of a single immense central vacuole filled with cell sap exerts pressure outward, displacing the nucleus and cytosol to the periphery against the cell wall.",
+              "correctAnswer": "B. Mitochondrion — Site of cellular respiration and energy production",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria synthesize cellular energy by carrying out respiration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3765,16 +3714,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I03",
               "difficulty": "medium",
-              "prompt": "When viewing an epidermal wet mount under high power, the image appears blurred and dark. Which two adjustments should you perform?",
+              "prompt": "How does the storage of carbohydrates differ between plant cells and animal cells?",
               "options": [
-                "A. Turn the coarse focus knob rapidly and switch off the light",
-                "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
-                "C. Remove the coverslip and shake the slide",
-                "D. Wipe the objective lens with a rough paper towel"
+                "A. Plants store carbohydrates as cellulose; animals store carbohydrates as glucose",
+                "B. Plants store carbohydrates as starch; animals store carbohydrates as glycogen",
+                "C. Plants store carbohydrates as glycogen; animals store carbohydrates as starch",
+                "D. Neither plants nor animals can store carbohydrates"
               ],
-              "correctAnswer": "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
-              "hint": "High-power lenses require precise focal adjustment and wider light apertures.",
-              "workedSolution": "High power narrows the depth of field and dims the light. The fine focus knob brings the focal plane into sharp focus, while opening the iris diaphragm restores brightness.",
+              "correctAnswer": "B. Plants store carbohydrates as starch; animals store carbohydrates as glycogen",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Plants store excess carbohydrates as starch, whereas animals store them as glycogen.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3782,16 +3731,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I04",
               "difficulty": "medium",
-              "prompt": "Why are root hair cells unpigmented and completely devoid of chloroplasts?",
+              "prompt": "If a plant's chloroplasts are damaged or destroyed, which essential life process stops immediately?",
               "options": [
-                "A. They are infected with plant viruses",
-                "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
-                "C. Root hair cells are animal cells",
-                "D. The soil acid destroys all chlorophyll molecules immediately"
+                "A. Cellular respiration",
+                "B. Absorption of water by roots",
+                "C. Photosynthesis and food synthesis",
+                "D. Genetic division"
               ],
-              "correctAnswer": "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
-              "hint": "Chloroplast synthesis requires sunlight.",
-              "workedSolution": "Plant roots grow subterraneously in total darkness. Because photosynthesis requires light, subterranean cells do not waste biological resources developing chloroplasts.",
+              "correctAnswer": "C. Photosynthesis and food synthesis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Chloroplasts contain chlorophyll, which traps sunlight for photosynthesis; without them, the plant cannot synthesize food.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3799,16 +3748,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I05",
               "difficulty": "medium",
-              "prompt": "An organelle has folded inner membranes called cristae that host electron transport enzymes. Which metabolic process occurs here?",
+              "prompt": "Which of the following structures is found in plant cells but is COMPLETELY absent in animal cells?",
               "options": [
-                "A. Photosynthesis",
-                "B. Aerobic cellular respiration (ATP synthesis)",
-                "C. Protein translation",
-                "D. Lipid storage"
+                "A. Cytoplasm and nucleus",
+                "B. Cell wall and chloroplast",
+                "C. Mitochondria and vacuole",
+                "D. Cell membrane and ribosomes"
               ],
-              "correctAnswer": "B. Aerobic cellular respiration (ATP synthesis)",
-              "hint": "Cristae vastly expand the surface area for oxidative phosphorylation inside mitochondria.",
-              "workedSolution": "The mitochondrial cristae host ATP synthase and electron transport chain complexes vital for aerobic respiration.",
+              "correctAnswer": "B. Cell wall and chloroplast",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Both the cellulose cell wall and photosynthetic chloroplasts are unique to plant cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3816,16 +3765,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I06",
               "difficulty": "medium",
-              "prompt": "A biological specimen moves towards the top-right corner of the microscope's field of view. In which direction must you move the glass slide to keep it centered?",
+              "prompt": "Why is the nucleus often referred to as the 'brain' of the cell?",
               "options": [
-                "A. Towards the top-right",
-                "B. Towards the bottom-left",
-                "C. Towards the top-left",
-                "D. Slide movement does not affect image direction"
+                "A. It thinks and feels pain",
+                "B. It coordinates, commands, and regulates all the chemical and metabolic activities of the cell",
+                "C. It is the only organelle containing water",
+                "D. It produces all the physical energy for the cell"
               ],
-              "correctAnswer": "A. Towards the top-right",
-              "hint": "The compound microscope inverts images both horizontally and vertically.",
-              "workedSolution": "Because compound microscope lenses produce real, inverted images, you must move the slide in the exact direction the image appears to drift (top-right) to re-center it.",
+              "correctAnswer": "B. It coordinates, commands, and regulates all the chemical and metabolic activities of the cell",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The nucleus controls all life activities in the cell and stores the genetic blueprints.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3833,16 +3782,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I07",
               "difficulty": "medium",
-              "prompt": "What is the physiological consequence when mammalian red blood cells are submerged in a highly concentrated (hypertonic) salt solution?",
+              "prompt": "Which organelle would you expect to find in much higher numbers in active muscle cells compared to skin cells?",
               "options": [
-                "A. They swell up and burst",
-                "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
-                "C. They divide rapidly by mitosis",
-                "D. They turn bright green"
+                "A. Chloroplasts",
+                "B. Mitochondria",
+                "C. Large vacuoles",
+                "D. Cell walls"
               ],
-              "correctAnswer": "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
-              "hint": "Water moves down its water potential gradient out of the cell.",
-              "workedSolution": "In a hypertonic medium, water flows out of erythrocytes by exosmosis, causing them to lose turgidity and develop crinkled edges (crenation).",
+              "correctAnswer": "B. Mitochondria",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Muscle cells have high energy demands for contraction, requiring abundant mitochondria for ATP generation.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3850,16 +3799,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I08",
               "difficulty": "medium",
-              "prompt": "Which structural adaptation enables motor neurons to conduct nerve impulses across distances up to one meter in humans?",
+              "prompt": "What is the biological relationship between tissues and organs?",
               "options": [
-                "A. An enucleated biconcave shape",
-                "B. An elongated axon surrounded by an insulating myelin sheath",
-                "C. Thousands of cilia beating in synchrony",
-                "D. Multiple cellulose walls"
+                "A. Tissues are formed from a combination of different organs",
+                "B. An organ is constructed from different tissues working together to carry out a common task",
+                "C. Organs directly assemble to form tissues",
+                "D. There is no structural connection between them"
               ],
-              "correctAnswer": "B. An elongated axon surrounded by an insulating myelin sheath",
-              "hint": "The myelin sheath prevents ion leakage, allowing saltatory conduction.",
-              "workedSolution": "Neurons feature extended cytoplasmic axons insulated by lipid-rich myelin sheaths that permit rapid, long-distance transmission of action potentials.",
+              "correctAnswer": "B. An organ is constructed from different tissues working together to carry out a common task",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Organs are higher-level structures composed of multiple coordinating tissues.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3867,16 +3816,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I09",
               "difficulty": "medium",
-              "prompt": "What is the function of the acrosome located at the apex of a mature sperm cell?",
+              "prompt": "What would happen to a living cell if its cell membrane were completely destroyed?",
               "options": [
-                "A. Powers the flagellum with ATP",
-                "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
-                "C. Stores sperm DNA",
-                "D. Produces testosterone hormones"
+                "A. The cell would develop a new cell wall immediately",
+                "B. Cellular contents would spill out and uncontrolled entry/exit of substances would cause cell death",
+                "C. The cell would double its energy production",
+                "D. The cell would divide into two identical cells"
               ],
-              "correctAnswer": "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
-              "hint": "It acts as a chemical drill during fertilization.",
-              "workedSolution": "The acrosome is a modified lysosomal cap containing enzymes (like hyaluronidase) that digest the corona radiata and zona pellucida of the egg cell.",
+              "correctAnswer": "B. Cellular contents would spill out and uncontrolled entry/exit of substances would cause cell death",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cell membrane maintains cellular integrity and controls substance transit; destroying it leads to cell lysis and death.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3884,16 +3833,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I10",
               "difficulty": "medium",
-              "prompt": "Which of the following correctly orders biological complexity from simplest to most complex?",
+              "prompt": "Under a light microscope, a student observes a cell with a cell wall, a large central vacuole, and green oval bodies. This cell belongs to a(n):",
               "options": [
-                "A. Cell → Tissue → Organ → Organ System → Organism",
-                "B. Organ → Tissue → Cell → Organelle → Organism",
-                "C. Tissue → Cell → Organ System → Organ → Organism",
-                "D. Organism → Organ System → Organ → Tissue → Cell"
+                "A. Animal",
+                "B. Plant",
+                "C. Fungus",
+                "D. Human"
               ],
-              "correctAnswer": "A. Cell → Tissue → Organ → Organ System → Organism",
-              "hint": "Cells unite into tissues, tissues build organs, and organs form systems.",
-              "workedSolution": "The standard hierarchy ascends from Cells to Tissues, Organs, Organ Systems, and finally the complete Multicellular Organism.",
+              "correctAnswer": "B. Plant",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The combination of a cell wall, a large vacuole, and green chloroplasts identifies a plant cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3901,16 +3850,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I11",
               "difficulty": "medium",
-              "prompt": "Why are mature xylem vessels composed of dead cells with hollow lumina?",
+              "prompt": "Which organelle contains enzymes and metabolic pathways responsible for converting glucose into usable energy?",
               "options": [
-                "A. The plant killed them by lack of water",
-                "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
-                "C. Because plants do not need living roots",
-                "D. To store carbon dioxide"
+                "A. Ribosome",
+                "B. Mitochondrion",
+                "C. Chloroplast",
+                "D. Vacuole"
               ],
-              "correctAnswer": "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
-              "hint": "Cytoplasm and end walls would create hydraulic friction.",
-              "workedSolution": "Xylem vessel elements lose their living end walls and protoplasm upon lignification, forming open, continuous tubes that minimize resistance to transpirational water flow.",
+              "correctAnswer": "B. Mitochondrion",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria metabolize glucose via cellular respiration to yield usable energy.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3918,16 +3867,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I12",
               "difficulty": "medium",
-              "prompt": "A student observes a cell with a diameter of 0.05 mm under a microscope. If the total magnification is 200×, what is the apparent size of the cell in the image?",
+              "prompt": "How do the vacuoles in a leaf cell compare to those in a human white blood cell?",
               "options": [
-                "A. 1 mm",
-                "B. 5 mm",
-                "C. 10 mm",
-                "D. 0.00025 mm"
+                "A. The leaf cell has one large permanent vacuole; the blood cell has small, temporary vacuoles",
+                "B. Both cells contain identical large permanent vacuoles",
+                "C. The leaf cell lacks vacuoles entirely",
+                "D. The blood cell has one large vacuole filled with chlorophyll"
               ],
-              "correctAnswer": "C. 10 mm",
-              "hint": "Image Size = Actual Size × Magnification: 0.05 mm × 200.",
-              "workedSolution": "Image Size = Actual Size × Magnification = 0.05 mm × 200 = 10 mm.",
+              "correctAnswer": "A. The leaf cell has one large permanent vacuole; the blood cell has small, temporary vacuoles",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plant cells have a large central permanent vacuole, whereas animal cells have small, transient vacuoles.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3935,16 +3884,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I13",
               "difficulty": "medium",
-              "prompt": "How does the biconcave shape of an erythrocyte enhance its physiological function?",
+              "prompt": "Which of the following lists consists entirely of biological organs?",
               "options": [
-                "A. It allows the cell to stick to blood vessel walls",
-                "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
-                "C. It prevents the cell from passing through narrow capillaries",
-                "D. It generates electrical impulses"
+                "A. Heart, Liver, Kidney, Leaf",
+                "B. Blood cell, Nerve cell, Muscle fiber",
+                "C. Digestive system, Nervous system, Respiratory system",
+                "D. Cytoplasm, Nucleus, Mitochondrion"
               ],
-              "correctAnswer": "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
-              "hint": "A flattened disc has a shorter diffusion distance to its center than a sphere of equal volume.",
-              "workedSolution": "The biconcave indentation increases surface area relative to volume and minimizes internal diffusion distance, maximizing the rate of gas exchange.",
+              "correctAnswer": "A. Heart, Liver, Kidney, Leaf",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Heart, liver, kidney, and leaf are all organs formed from organized groupings of tissues.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3952,16 +3901,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I14",
               "difficulty": "medium",
-              "prompt": "What is the structural role of the middle lamella found between adjacent plant cells?",
+              "prompt": "Why is the cytoplasm crucial to the survival of both plant and animal cells?",
               "options": [
-                "A. Absorbs sunlight for photosynthesis",
-                "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
-                "C. Synthesizes mitochondrial enzymes",
-                "D. Stores water sap"
+                "A. It acts as an impermeable barrier against all chemicals",
+                "B. It provides a fluid medium that suspends organelles and facilitates chemical reactions",
+                "C. It stores the genetic chromosomes of the cell",
+                "D. It manufactures the outer cellulose wall"
               ],
-              "correctAnswer": "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
-              "hint": "It glues neighbor plant cells together.",
-              "workedSolution": "The middle lamella is an extracellular pectin layer that acts as biological cement adhering neighboring plant cell walls together into rigid tissues.",
+              "correctAnswer": "B. It provides a fluid medium that suspends organelles and facilitates chemical reactions",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "The cytoplasm provides an aqueous environment for organelle transport and biochemical processes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3969,16 +3918,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I15",
               "difficulty": "medium",
-              "prompt": "What biochemical component of plant cell walls makes them rigid and resistant to decay?",
+              "prompt": "What is the structural consequence of removing the cell wall from a plant cell?",
               "options": [
-                "A. Pectin and cellulose reinforced with lignin",
-                "B. Phospholipids only",
-                "C. Glucose and fructose",
-                "D. Hemoglobin"
+                "A. The plant cell loses its fixed, regular shape and becomes more vulnerable to bursting",
+                "B. The plant cell turns into an animal cell permanently",
+                "C. The cell immediately starts running faster",
+                "D. The cell will stop cellular respiration"
               ],
-              "correctAnswer": "A. Pectin and cellulose reinforced with lignin",
-              "hint": "Cellulose polymers form cross-linked microfibrils embedded in matrix polysaccharides.",
-              "workedSolution": "Cellulose microfibrils intertwined with hemicellulose, pectin, and sometimes lignin provide formidable mechanical rigidity and tensile strength.",
+              "correctAnswer": "A. The plant cell loses its fixed, regular shape and becomes more vulnerable to bursting",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Without the rigid cellulose cell wall, a plant cell loses its fixed angular outline and its protection against osmotic lysis.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -3986,16 +3935,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I16",
               "difficulty": "medium",
-              "prompt": "Why does turgor pressure generated by plant vacuoles prevent herbaceous (non-woody) plants from wilting?",
+              "prompt": "Which of the following is considered an organ system in plants?",
               "options": [
-                "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
-                "B. The vacuole produces bone tissue",
-                "C. Vacuoles freeze the plant in position",
-                "D. Vacuoles absorb heat from sunlight"
+                "A. Chloroplast",
+                "B. Vascular transport system (Xylem and Phloem)",
+                "C. Epidermal cell",
+                "D. Guard cell"
               ],
-              "correctAnswer": "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
-              "hint": "Like inflating an air mattress, hydrostatic pressure produces structural rigidity.",
-              "workedSolution": "Water absorption builds hydrostatic pressure within vacuoles that presses the protoplast firmly against cell walls, providing skeletal support to non-woody plants.",
+              "correctAnswer": "B. Vascular transport system (Xylem and Phloem)",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The vascular system functions as an organ system that transports water, minerals, and photosynthates throughout the plant.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4003,16 +3952,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I17",
               "difficulty": "medium",
-              "prompt": "Which stain is best suited for highlighting the nucleus in animal cells, such as human buccal epithelial cells?",
+              "prompt": "An organism composed of only one single cell that performs all life activities independently is known as a(n):",
               "options": [
-                "A. Iodine solution",
-                "B. Methylene blue",
-                "C. Benedict's reagent",
-                "D. Biuret reagent"
+                "A. Multicellular organism",
+                "B. Unicellular organism",
+                "C. Organ system",
+                "D. Tissue complex"
               ],
-              "correctAnswer": "B. Methylene blue",
-              "hint": "It binds strongly to acidic nuclear chromatin, staining the nucleus deep blue.",
-              "workedSolution": "Methylene blue is a cationic dye that selectively binds to nucleic acids (DNA/RNA), sharply staining animal cell nuclei deep blue.",
+              "correctAnswer": "B. Unicellular organism",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Unicellular organisms (e.g., bacteria, amoebae) carry out all essential functions within a single cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4020,16 +3969,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I18",
               "difficulty": "medium",
-              "prompt": "Which of the following cellular structures is non-membranous (lacks a surrounding lipid bilayer)?",
+              "prompt": "Which organelle prevents a plant cell from wilting by creating turgor pressure when filled with water?",
               "options": [
-                "A. Mitochondrion",
-                "B. Ribosome",
-                "C. Chloroplast",
-                "D. Nucleus"
+                "A. Large central vacuole",
+                "B. Nucleus",
+                "C. Mitochondrion",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. Ribosome",
-              "hint": "Consists of protein and rRNA molecules without a lipid envelope.",
-              "workedSolution": "Ribosomes are molecular machines constructed from rRNA and structural proteins, devoid of any enclosing phospholipid membrane.",
+              "correctAnswer": "A. Large central vacuole",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "When filled with sap, the large vacuole exerts outward hydrostatic pressure (turgor) against the wall, keeping the cell firm.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4037,16 +3986,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I19",
               "difficulty": "medium",
-              "prompt": "Why must the coarse adjustment knob NEVER be used under high-power (40× or 100×) magnification?",
+              "prompt": "Which of the following statements about animal cells is correct?",
               "options": [
-                "A. It causes the electric light to burn out",
-                "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
-                "C. It turns the image completely upside down",
-                "D. It removes the stain from the specimen"
+                "A. They possess a large permanent vacuole",
+                "B. They synthesize their own food using sunlight",
+                "C. They have a flexible, irregular shape due to the absence of a cell wall",
+                "D. They store energy primarily as starch granules"
               ],
-              "correctAnswer": "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
-              "hint": "The working distance of a 40× lens is less than 1 mm.",
-              "workedSolution": "Under high power, the objective lens sits fractions of a millimeter from the glass. The rapid travel of coarse focus risks driving the lens into the slide, shattering both.",
+              "correctAnswer": "C. They have a flexible, irregular shape due to the absence of a cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Because animal cells lack a cell wall, they display variable, irregular shapes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4054,16 +4003,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I20",
               "difficulty": "medium",
-              "prompt": "What is the primary function of the rough endoplasmic reticulum (RER)?",
+              "prompt": "What is the biological role of chlorophyll in plant leaves?",
               "options": [
-                "A. Processing and folding proteins synthesized by attached ribosomes",
-                "B. Synthesizing starch grains",
-                "C. Carrying out photosynthesis",
-                "D. Pumping blood"
+                "A. Digesting incoming protein molecules",
+                "B. Trapping solar light energy to synthesize glucose during photosynthesis",
+                "C. Storing water and salts",
+                "D. Pumping blood through vascular tissues"
               ],
-              "correctAnswer": "A. Processing and folding proteins synthesized by attached ribosomes",
-              "hint": "Its surface is studded with ribosomes.",
-              "workedSolution": "The rough ER is studded with ribosomes that synthesize polypeptides directly into its lumen for folding, post-translational modification, and vesicle transport.",
+              "correctAnswer": "B. Trapping solar light energy to synthesize glucose during photosynthesis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Chlorophyll absorbs radiant sunlight energy to drive photosynthetic carbon fixation.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4071,16 +4020,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I21",
               "difficulty": "medium",
-              "prompt": "How does the structure of guard cells cause a stomatal pore to open when they absorb water?",
+              "prompt": "Why are blood cells, nerve cells, and skin cells structurally different from one another?",
               "options": [
-                "A. Their cell walls are uniformly thin and expand equally",
-                "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
-                "C. They shrink and disintegrate",
-                "D. They detach from the leaf epidermis"
+                "A. They are produced by different organisms",
+                "B. They are specialized to carry out different specific physiological functions",
+                "C. Some have no cell membrane",
+                "D. They do not share common ancestors"
               ],
-              "correctAnswer": "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
-              "hint": "Differential wall thickness forces the cells to curve like bananas when inflated.",
-              "workedSolution": "Guard cells have thick, inelastic inner walls and thin, flexible outer walls. When turgid with water, the outer walls bulge outward, pulling the inner pore open.",
+              "correctAnswer": "B. They are specialized to carry out different specific physiological functions",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cell differentiation tailors the structure of each cell type to its specialized function.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4088,16 +4037,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I22",
               "difficulty": "medium",
-              "prompt": "Which organelle is responsible for packaging and modifying proteins into secretory vesicles?",
+              "prompt": "Which of the following components would you find in BOTH an onion bulb cell and a human cheek cell?",
               "options": [
-                "A. Golgi apparatus (Golgi body)",
-                "B. Nucleolus",
-                "C. Chloroplast",
-                "D. Centriole"
+                "A. Chloroplasts and cell wall",
+                "B. Nucleus, cytoplasm, and cell membrane",
+                "C. Large permanent vacuole and chloroplasts",
+                "D. Glycogen granules and cell wall"
               ],
-              "correctAnswer": "A. Golgi apparatus (Golgi body)",
-              "hint": "Consists of flattened membranous cisternae acting as the shipping center of the cell.",
-              "workedSolution": "The Golgi apparatus sorts, glycosylates, and packages proteins and lipids received from the ER into membrane-bound vesicles for secretion.",
+              "correctAnswer": "B. Nucleus, cytoplasm, and cell membrane",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "All eukaryotic plant and animal cells share a nucleus, cytoplasm, cell membrane, and mitochondria.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4105,16 +4054,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I23",
               "difficulty": "medium",
-              "prompt": "What biological phenomenon occurs when plant cells lose excessive water in a hypertonic environment, causing the cytoplasm to pull away from the cell wall?",
+              "prompt": "Why do onion bulb epidermal cells lack chloroplasts even though they are plant cells?",
               "options": [
-                "A. Lysis",
-                "B. Plasmolysis",
-                "C. Turgidity",
-                "D. Diffusion"
+                "A. Onions are not plants",
+                "B. Onion bulbs grow underground where there is no sunlight for photosynthesis",
+                "C. Onion cells lack a nucleus",
+                "D. Onions do not need energy"
               ],
-              "correctAnswer": "B. Plasmolysis",
-              "hint": "The central vacuole shrinks, pulling the protoplast inwards.",
-              "workedSolution": "Plasmolysis is the shrinking of the plant protoplast away from the rigid cell wall due to extreme exosmotic water loss in hypertonic solutions.",
+              "correctAnswer": "B. Onion bulbs grow underground where there is no sunlight for photosynthesis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Because onion bulbs develop underground in the absence of light, their cells do not develop chloroplasts.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4122,16 +4071,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I24",
               "difficulty": "medium",
-              "prompt": "What is the structural advantage of palisade mesophyll cells being elongated vertically rather than horizontally?",
+              "prompt": "Which of the following represents a tissue in plants?",
               "options": [
-                "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
-                "B. Prevents oxygen from escaping",
-                "C. Makes the leaf heavier",
-                "D. Absorbs water directly from the air"
+                "A. Root hair cell",
+                "B. Epidermis",
+                "C. Mango tree",
+                "D. Flower"
               ],
-              "correctAnswer": "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
-              "hint": "Vertical orientation maximizes light path absorption through stacked chloroplasts.",
-              "workedSolution": "Vertical columnar orientation packs more photosynthetic cells per unit leaf area and increases the optical path length for light absorption.",
+              "correctAnswer": "B. Epidermis",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The plant epidermis is a protective tissue layer made of uniform epidermal cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4139,16 +4088,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I25",
               "difficulty": "medium",
-              "prompt": "Which of the following cellular features is unique to eukaryotic cells and completely absent in all bacteria?",
+              "prompt": "Which part of the cell is completely non-living, tough, and permeable to water and dissolved mineral solutes?",
               "options": [
-                "A. Ribosomes",
-                "B. Membrane-bound organelles such as mitochondria and nucleus",
-                "C. Cytoplasm",
-                "D. Cell wall"
+                "A. Cell membrane",
+                "B. Cellulose cell wall",
+                "C. Nucleus",
+                "D. Cytoplasm"
               ],
-              "correctAnswer": "B. Membrane-bound organelles such as mitochondria and nucleus",
-              "hint": "Prokaryotic bacteria do not compartmentalize their interiors with internal membranes.",
-              "workedSolution": "Eukaryotes are characterized by internal compartmentalization with membrane-bound organelles (nucleus, mitochondria, ER, Golgi), which prokaryotes lack.",
+              "correctAnswer": "B. Cellulose cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cellulose cell wall is an extracellular, non-living structural layer that is fully permeable.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4156,16 +4105,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I26",
               "difficulty": "medium",
-              "prompt": "Why does an enucleated red blood cell have a limited lifespan of only approximately 120 days?",
+              "prompt": "Which biological system includes the brain, spinal cord, and sensory nerves working together?",
               "options": [
-                "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
-                "B. It is eaten by bacteria every week",
-                "C. It melts in warm blood",
-                "D. It converts into white blood cells"
+                "A. Digestive system",
+                "B. Nervous system",
+                "C. Circulatory system",
+                "D. Skeletal system"
               ],
-              "correctAnswer": "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
-              "hint": "Without a nucleus, no transcription or protein synthesis can take place.",
-              "workedSolution": "Lacking a nucleus and ribosomes, erythrocytes cannot transcribe genes to repair damaged membrane proteins or enzymes, degrading after ~120 days.",
+              "correctAnswer": "B. Nervous system",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The nervous system coordinates sensory perception and motor responses across the body.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4173,16 +4122,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I27",
               "difficulty": "medium",
-              "prompt": "A student calculates a total magnification of 400× using a 40× objective lens. What is the power of the eyepiece used?",
+              "prompt": "Why do animal cells burst when placed in a hypotonic solution (pure water) for an extended time?",
               "options": [
-                "A. 4×",
-                "B. 10×",
-                "C. 40×",
-                "D. 100×"
+                "A. Water leaves the cell rapidly",
+                "B. Water enters the cell by osmosis and, lacking a cell wall to resist pressure, the membrane ruptures",
+                "C. The mitochondria produce too much heat",
+                "D. The nucleus dissolves"
               ],
-              "correctAnswer": "B. 10×",
-              "hint": "Eyepiece = Total / Objective = 400 / 40.",
-              "workedSolution": "Eyepiece magnification = 400 / 40 = 10×.",
+              "correctAnswer": "B. Water enters the cell by osmosis and, lacking a cell wall to resist pressure, the membrane ruptures",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Without a rigid cell wall, osmotic water intake increases internal pressure until the membrane bursts.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4190,16 +4139,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I28",
               "difficulty": "medium",
-              "prompt": "What is the primary role of companion cells adjacent to phloem sieve tube elements?",
+              "prompt": "What is the primary role of the semi-permeable cell membrane in maintaining internal cellular balance?",
               "options": [
-                "A. Provide mechanical rigidity to the stem",
-                "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
-                "C. Store water for dry seasons",
-                "D. Produce chlorophyll"
+                "A. It maintains homeostatic balance by regulating the transport of ions, nutrients, and wastes",
+                "B. It creates solar energy directly",
+                "C. It prevents the cell from ever dividing",
+                "D. It turns waste products into starch"
               ],
-              "correctAnswer": "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
-              "hint": "Sieve tubes lack nuclei; companion cells have dense mitochondria and nuclei.",
-              "workedSolution": "Companion cells carry out vital metabolic functions and actively pump sucrose into sieve tubes using ATP generated in their abundant mitochondria.",
+              "correctAnswer": "A. It maintains homeostatic balance by regulating the transport of ions, nutrients, and wastes",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Selective permeability regulates internal solute concentrations, maintaining homeostatic equilibrium.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4207,16 +4156,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I29",
               "difficulty": "medium",
-              "prompt": "Which organelle contains its own small circular DNA loop and reproduces independently within eukaryotic cells?",
+              "prompt": "Which organelle would you expect to be most abundant in green leaf palisade cells?",
               "options": [
-                "A. Mitochondrion (and Chloroplast)",
-                "B. Vacuole",
-                "C. Ribosome",
-                "D. Lysosome"
+                "A. Ribosomes",
+                "B. Chloroplasts",
+                "C. Small temporary vacuoles",
+                "D. Nerve endings"
               ],
-              "correctAnswer": "A. Mitochondrion (and Chloroplast)",
-              "hint": "Evidence of endosymbiotic bacterial evolution.",
-              "workedSolution": "Mitochondria and chloroplasts possess their own circular DNA genomes and 70S ribosomes, dividing independently by binary fission.",
+              "correctAnswer": "B. Chloroplasts",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Palisade mesophyll cells are specialized for light capture and are packed with chloroplasts.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4224,16 +4173,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I30",
               "difficulty": "medium",
-              "prompt": "What is the primary function of white blood cells (leukocytes)?",
+              "prompt": "Which statement correctly describes how an organism functions compared to an organ?",
               "options": [
-                "A. Oxygen transport",
-                "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
-                "C. Blood clotting at wound sites",
-                "D. Transport of digested lipids"
+                "A. An organism is an independent living entity made of coordinating organ systems, whereas an organ is just one functional part",
+                "B. Organs can live independently in soil without an organism",
+                "C. An organism is smaller than an individual cell",
+                "D. Tissues assemble directly to form complete organisms without organs"
               ],
-              "correctAnswer": "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
-              "hint": "They are the mobile defensive infantry of the blood vascular system.",
-              "workedSolution": "White blood cells defend against infection through phagocytic ingestion of microbes and antibody secretion by lymphocytes.",
+              "correctAnswer": "A. An organism is an independent living entity made of coordinating organ systems, whereas an organ is just one functional part",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "An organism is a complete, self-sustaining living being comprised of coordinated organ systems.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4241,16 +4190,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I31",
               "difficulty": "medium",
-              "prompt": "Why is water described as the universal solvent in cellular cytoplasm?",
+              "prompt": "Which of the following structures is responsible for storing starch in potato tuber cells?",
               "options": [
-                "A. It dissolves all plastics",
-                "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
-                "C. It never freezes",
-                "D. It generates oxygen spontaneously"
+                "A. Leucoplasts / Amyloplasts (specialized plastids)",
+                "B. Cell wall",
+                "C. Mitochondria",
+                "D. Ribosomes"
               ],
-              "correctAnswer": "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
-              "hint": "Water's dipole moment hydrates both cations and anions.",
-              "workedSolution": "Water's hydrogen-bonding polarity dissolves polar and ionic biochemicals, providing an aqueous medium for enzymatic reactions.",
+              "correctAnswer": "A. Leucoplasts / Amyloplasts (specialized plastids)",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Storage plastids in plant cells store accumulated starch reserves.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4258,16 +4207,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I32",
               "difficulty": "medium",
-              "prompt": "What is the main physiological purpose of mitotic cell division in multicellular organisms?",
+              "prompt": "What happens to the rate of cellular respiration if a cell is deprived of oxygen?",
               "options": [
-                "A. Generating gametes with half the chromosome number",
-                "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
-                "C. Creating new species",
-                "D. Digesting carbohydrates"
+                "A. It increases dramatically",
+                "B. Mitochondrial energy output drops significantly because oxygen is required for aerobic respiration",
+                "C. Chloroplasts start producing oxygen",
+                "D. The cell wall hardens"
               ],
-              "correctAnswer": "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
-              "hint": "Mitosis yields two genetically identical daughter cells.",
-              "workedSolution": "Mitosis produces genetically identical diploid somatic cells required for organismal growth, wound healing, and tissue replacement.",
+              "correctAnswer": "B. Mitochondrial energy output drops significantly because oxygen is required for aerobic respiration",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Mitochondria require oxygen to run efficient aerobic respiration; without it, cellular energy production drops.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4275,16 +4224,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I33",
               "difficulty": "medium",
-              "prompt": "Which of the following organs is shared between the digestive and endocrine systems?",
+              "prompt": "Which sequence correctly represents the organization of human breathing from simple to complex?",
               "options": [
-                "A. Stomach",
-                "B. Pancreas",
-                "C. Gallbladder",
-                "D. Esophagus"
+                "A. Lung epithelial cell → Epithelial tissue → Lung → Respiratory system → Human being",
+                "B. Human being → Respiratory system → Lung → Tissue → Cell",
+                "C. Lung → Tissue → Cell → Respiratory system → Human",
+                "D. Cell → Lung → Tissue → Human → Respiratory system"
               ],
-              "correctAnswer": "B. Pancreas",
-              "hint": "It secretes digestive enzymes into the duodenum and insulin into the bloodstream.",
-              "workedSolution": "The pancreas serves exocrine digestive roles (pancreatic juice) and endocrine hormonal roles (insulin and glucagon regulation).",
+              "correctAnswer": "A. Lung epithelial cell → Epithelial tissue → Lung → Respiratory system → Human being",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "This sequence moves logically up the structural hierarchy: Cell to Tissue, Organ, System, and Organism.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4292,16 +4241,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I34",
               "difficulty": "medium",
-              "prompt": "Why do freshwater protozoa like Amoeba require contractile vacuoles?",
+              "prompt": "How does the location of the nucleus typically differ between mature plant and animal cells?",
               "options": [
-                "A. To store starch",
-                "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
-                "C. To capture prey",
-                "D. To produce light"
+                "A. In plants it is pushed to the periphery by the large central vacuole; in animals it is typically centrally located",
+                "B. Plant cells have no nucleus",
+                "C. In animal cells it floats outside the membrane",
+                "D. In plant cells it is always dead"
               ],
-              "correctAnswer": "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
-              "hint": "Amoebae live in hypotonic ponds and lack cell walls.",
-              "workedSolution": "Surrounded by hypotonic pond water, Amoebae experience continuous influx of water. Contractile vacuoles collect and actively pump this water out (osmoregulation).",
+              "correctAnswer": "A. In plants it is pushed to the periphery by the large central vacuole; in animals it is typically centrally located",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The large central vacuole in mature plant cells displaces the nucleus toward the cell perimeter.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4309,16 +4258,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I35",
               "difficulty": "medium",
-              "prompt": "Which plant tissue covers the outer surfaces of leaves, stems, and roots to prevent desiccating water loss?",
+              "prompt": "What is the primary role of cell sap within the plant vacuole?",
               "options": [
-                "A. Epidermal tissue",
-                "B. Xylem tissue",
-                "C. Phloem tissue",
-                "D. Cambium"
+                "A. To burn glucose",
+                "B. To maintain internal osmotic pressure and store essential minerals, sugars, and water",
+                "C. To capture red light",
+                "D. To produce cellulose fibers"
               ],
-              "correctAnswer": "A. Epidermal tissue",
-              "hint": "Often coated with an external waxy cuticle layer.",
-              "workedSolution": "Epidermal tissue forms a protective outer boundary, often synthesizing a waxy, hydrophobic cuticle to minimize evaporation.",
+              "correctAnswer": "B. To maintain internal osmotic pressure and store essential minerals, sugars, and water",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cell sap maintains osmotic turgor pressure and stores essential water, ions, and nutrients.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4326,16 +4275,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I36",
               "difficulty": "medium",
-              "prompt": "Which organelle within eukaryotic plant cells is responsible for converting fatty acids into sugars in germinating seeds?",
+              "prompt": "Which of the following statements about cell division and genetic inheritance is true?",
               "options": [
-                "A. Glyoxysome (specialized peroxisome)",
-                "B. Centriole",
-                "C. Ribosome",
-                "D. Chloroplast"
+                "A. Genetic traits are carried in the cellulose cell wall",
+                "B. The nucleus houses chromosomes that carry hereditary information from parent cells to offspring",
+                "C. Mitochondria create new genes from water",
+                "D. The vacuole decides which traits are passed on"
               ],
-              "correctAnswer": "A. Glyoxysome (specialized peroxisome)",
-              "hint": "Hosts the glyoxylate cycle before photosynthesis begins.",
-              "workedSolution": "Glyoxysomes are specialized microbodies in oil seeds that convert stored lipids into soluble sucrose to nourish the developing seedling.",
+              "correctAnswer": "B. The nucleus houses chromosomes that carry hereditary information from parent cells to offspring",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The nucleus contains the chromosomes and genes that transmit hereditary traits.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4343,16 +4292,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I37",
               "difficulty": "medium",
-              "prompt": "What does the term 'tissue differentiation' mean in developmental biology?",
+              "prompt": "Why does a wilted plant recover its upright firmness after being watered?",
               "options": [
-                "A. The death of unneeded cells",
-                "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
-                "C. Cells changing into different elements",
-                "D. Cells losing their nucleus"
+                "A. The water hardens the plant's chloroplasts",
+                "B. Water enters the vacuoles by osmosis, creating turgor pressure that pushes the cytoplasm against the cell wall",
+                "C. The roots turn into wood",
+                "D. Respiration stops completely"
               ],
-              "correctAnswer": "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
-              "hint": "From generic embryonic cells into neurons, muscle fibers, or xylem.",
-              "workedSolution": "Cellular differentiation is the developmental process whereby generalized cells undergo selective gene expression to acquire specialized morphological adaptations.",
+              "correctAnswer": "B. Water enters the vacuoles by osmosis, creating turgor pressure that pushes the cytoplasm against the cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Vacuoles take in water and expand, restoring internal turgor pressure against the cell wall.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4360,16 +4309,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I38",
               "difficulty": "medium",
-              "prompt": "How does the resolution of a microscope differ from its magnification?",
+              "prompt": "Which level of organization does blood represent in the human body?",
               "options": [
-                "A. They mean the exact same thing",
-                "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
-                "C. Resolution only applies to electron microscopes",
-                "D. Magnification makes things smaller"
+                "A. Cell",
+                "B. Tissue (fluid connective tissue)",
+                "C. Organ",
+                "D. Organ system"
               ],
-              "correctAnswer": "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
-              "hint": "Enlarging a blurry photo does not reveal extra detail without resolution.",
-              "workedSolution": "Magnification scales up the apparent dimension of an image, while optical resolution is the minimum distance between two points at which they remain distinctly discernible.",
+              "correctAnswer": "B. Tissue (fluid connective tissue)",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Blood is classified biologically as a fluid connective tissue consisting of specialized cells suspended in plasma.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4377,16 +4326,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I39",
               "difficulty": "medium",
-              "prompt": "What is the function of the nucleolus found inside the eukaryotic nucleus?",
+              "prompt": "Which organelle would you expect to be especially active in a plant root hair cell absorbing mineral ions?",
               "options": [
-                "A. Assembles ribosome subunits and synthesizes rRNA",
-                "B. Produces ATP",
-                "C. Destroys bacteria",
-                "D. Pumps sodium ions"
+                "A. Chloroplasts",
+                "B. Mitochondria (providing energy for active transport)",
+                "C. Pigment granules",
+                "D. Ribosomes only"
               ],
-              "correctAnswer": "A. Assembles ribosome subunits and synthesizes rRNA",
-              "hint": "A dense granular region inside the nucleus.",
-              "workedSolution": "The nucleolus is the sub-nuclear factory where ribosomal RNA (rRNA) is transcribed and combined with proteins to produce ribosomal subunits.",
+              "correctAnswer": "B. Mitochondria (providing energy for active transport)",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Active uptake of minerals against a concentration gradient requires energy supplied by mitochondria.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4394,16 +4343,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I40",
               "difficulty": "medium",
-              "prompt": "Which organelle is abundant in mammalian liver cells to detoxify poisons, drugs, and alcohol?",
+              "prompt": "Why do animal cells look irregular or circular under a microscope rather than box-like?",
               "options": [
-                "A. Smooth endoplasmic reticulum (SER)",
-                "B. Chloroplast",
-                "C. Nucleolus",
-                "D. Centrosome"
+                "A. They possess only a flexible cell membrane without a rigid cell wall",
+                "B. They are always dead when viewed",
+                "C. They have too many nuclei",
+                "D. Their cytoplasm is frozen solid"
               ],
-              "correctAnswer": "A. Smooth endoplasmic reticulum (SER)",
-              "hint": "Lacks ribosomes and synthesizes lipids while detoxifying xenobiotics.",
-              "workedSolution": "Smooth ER contains cytochrome P450 and other enzymes that metabolize and detoxify toxic chemicals, drugs, and alcohol in hepatocytes.",
+              "correctAnswer": "A. They possess only a flexible cell membrane without a rigid cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Without a rigid exterior wall, animal cells assume rounded or irregular shapes determined by their cytoskeleton.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4411,16 +4360,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I41",
               "difficulty": "medium",
-              "prompt": "What is the biological function of muscular tissue in animals?",
+              "prompt": "Which of the following is an example of an organ system responsible for gas exchange in humans?",
               "options": [
-                "A. Conducting electrical signals across synapses",
-                "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
-                "C. Secreting waxy cuticles",
-                "D. Photosynthesis"
+                "A. Digestive system",
+                "B. Respiratory system",
+                "C. Excretory system",
+                "D. Skeletal system"
               ],
-              "correctAnswer": "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
-              "hint": "Contains actin and myosin contractile protein filaments.",
-              "workedSolution": "Muscular tissue contains filament proteins (actin and myosin) that slide past one another to generate contractile force for locomotion and internal organ motility.",
+              "correctAnswer": "B. Respiratory system",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The respiratory system (lungs, trachea, bronchi) facilitates oxygen intake and carbon dioxide removal.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4428,16 +4377,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I42",
               "difficulty": "medium",
-              "prompt": "Why is an epidermal peel taken from an onion scale leaf rather than a green onion leaf blade when studying basic plant cells in introductory labs?",
+              "prompt": "Which organelle is responsible for decomposing and breaking down worn-out cellular parts?",
               "options": [
-                "A. Green leaves are poisonous",
-                "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
-                "C. Onion scale cells have no cell walls",
-                "D. Onions do not have DNA"
+                "A. Chloroplast",
+                "B. Lysosome",
+                "C. Cell wall",
+                "D. Starch grain"
               ],
-              "correctAnswer": "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
-              "hint": "A monolayer allows light to pass directly through without optical overlap.",
-              "workedSolution": "The transparent inner membrane of an onion bulb scale is an authentic biological monolayer, providing an unobstructed view of cells without microtome sectioning.",
+              "correctAnswer": "B. Lysosome",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Lysosomes contain digestive enzymes that break down metabolic wastes and cellular debris.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4445,16 +4394,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I43",
               "difficulty": "medium",
-              "prompt": "What is the role of blood platelets (thrombocytes)?",
+              "prompt": "A group of tissues that lines the internal and external surfaces of animal organs is called:",
               "options": [
-                "A. Transporting carbon dioxide",
-                "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
-                "C. Pumping lymph through nodes",
-                "D. Synthesizing insulin"
+                "A. Epithelial tissue",
+                "B. Nervous tissue",
+                "C. Connective tissue",
+                "D. Muscle tissue"
               ],
-              "correctAnswer": "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
-              "hint": "Cell fragments adhering to exposed collagen fibers.",
-              "workedSolution": "Platelets are enucleated cell fragments derived from megakaryocytes that trigger the coagulation cascade and aggregate to form hemostatic plugs.",
+              "correctAnswer": "A. Epithelial tissue",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Epithelial tissue forms protective sheets covering body surfaces and lining internal cavities.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4462,16 +4411,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I44",
               "difficulty": "medium",
-              "prompt": "Which organ system in vertebrates includes the kidneys, ureters, urinary bladder, and urethra?",
+              "prompt": "What is the primary distinguishing feature between eukaryotic cells and prokaryotic cells?",
               "options": [
-                "A. Excretory (urinary) system",
-                "B. Nervous system",
-                "C. Respiratory system",
-                "D. Endocrine system"
+                "A. Eukaryotic cells possess a true membrane-bound nucleus and specialized organelles",
+                "B. Prokaryotic cells have larger vacuoles",
+                "C. Eukaryotic cells lack a cell membrane",
+                "D. Prokaryotes only live in water"
               ],
-              "correctAnswer": "A. Excretory (urinary) system",
-              "hint": "Filters metabolic nitrogenous wastes from the bloodstream.",
-              "workedSolution": "The urinary/excretory system filters blood plasma to remove urea and excess ions, regulating systemic fluid and electrolyte homeostasis.",
+              "correctAnswer": "A. Eukaryotic cells possess a true membrane-bound nucleus and specialized organelles",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Eukaryotic cells (including plant and animal cells) contain membrane-bound organelles and a defined nucleus.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4479,16 +4428,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I45",
               "difficulty": "medium",
-              "prompt": "Why do mature plant cells maintain their shape even after dying, as seen in wood and cork?",
+              "prompt": "Which structure prevents plant stems from collapsing under their own weight?",
               "options": [
-                "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
-                "B. Their vacuoles freeze solid",
-                "C. Their nuclei remain active",
-                "D. Dead cells absorb plastic from soil"
+                "A. Cell membrane",
+                "B. Cellulose cell wall",
+                "C. Mitochondria",
+                "D. Ribosomes"
               ],
-              "correctAnswer": "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
-              "hint": "Robert Hooke's 1665 observation of cork was viewing empty cell wall chambers.",
-              "workedSolution": "Cellulose and lignin cell walls are non-living structural matrices that remain intact and support woody tissues indefinitely after the living cytoplasm dies.",
+              "correctAnswer": "B. Cellulose cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Rigid cellulose walls provide tensile and compressive strength that supports the plant's structure.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4496,16 +4445,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I46",
               "difficulty": "medium",
-              "prompt": "What happens when an optical microscope's mirror is turned away from the light source?",
+              "prompt": "Which of the following represents an organ of the human digestive system?",
               "options": [
-                "A. The magnification increases",
-                "B. The field of view goes completely dark because no light passes through the condenser",
-                "C. The specimen becomes sharp",
-                "D. The slide shatters"
+                "A. Stomach",
+                "B. Salivary gland cell",
+                "C. Red blood cell",
+                "D. Muscle fiber"
               ],
-              "correctAnswer": "B. The field of view goes completely dark because no light passes through the condenser",
-              "hint": "Compound microscopes are transmission light instruments.",
-              "workedSolution": "Light microscopes require an incident beam of light reflected through the condenser lens and specimen slide; diverting the mirror eliminates image visibility.",
+              "correctAnswer": "A. Stomach",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The stomach is an organ that functions as part of the digestive organ system.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4513,16 +4462,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I47",
               "difficulty": "medium",
-              "prompt": "Which organelle within eukaryotic plant cells contains stacks of thylakoids called grana?",
+              "prompt": "Why do mature plant cells not burst when placed in rainwater?",
               "options": [
-                "A. Chloroplast",
-                "B. Mitochondrion",
-                "C. Golgi body",
-                "D. Central vacuole"
+                "A. Water cannot enter plant cells",
+                "B. The inward pressure exerted by the rigid cellulose cell wall balances the osmotic pressure",
+                "C. Their vacuoles pump water out immediately",
+                "D. The cell membrane dissolves"
               ],
-              "correctAnswer": "A. Chloroplast",
-              "hint": "Site of light-dependent photosynthetic reactions.",
-              "workedSolution": "Thylakoid disks organized in grana stacks are located within chloroplast stroma, hosting light-absorbing photosystems and electron transport proteins.",
+              "correctAnswer": "B. The inward pressure exerted by the rigid cellulose cell wall balances the osmotic pressure",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The rigid cell wall exerts wall pressure that counterbalances internal osmotic pressure, preventing lysis.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4530,16 +4479,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I48",
               "difficulty": "medium",
-              "prompt": "Why is the egg cell (ovum) significantly larger than the sperm cell?",
+              "prompt": "What would happen to an animal cell if its mitochondria were completely inhibited?",
               "options": [
-                "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
-                "B. It has ten nuclei",
-                "C. It contains bone fragments",
-                "D. It is an organ rather than a cell"
+                "A. It would synthesize more starch",
+                "B. Energy production (ATP synthesis) would cease, causing cellular death",
+                "C. It would grow a cell wall",
+                "D. It would photosynthesize"
               ],
-              "correctAnswer": "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
-              "hint": "The egg nourishes the zygote before uterine implantation.",
-              "workedSolution": "The ovum accumulates massive cytoplasmic nutrient reserves, maternal mRNAs, and organelles to support cellular cleavage following fertilization.",
+              "correctAnswer": "B. Energy production (ATP synthesis) would cease, causing cellular death",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Inhibiting mitochondria stops aerobic energy production, leading to cell starvation and death.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4547,16 +4496,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I49",
               "difficulty": "medium",
-              "prompt": "What is the function of the stage clips on an optical microscope?",
+              "prompt": "Which of the following structures acts as a skeleton for an individual plant cell?",
               "options": [
-                "A. Magnify the specimen",
-                "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
-                "C. Cool the light bulb",
-                "D. Clean the objective lens"
+                "A. Nucleus",
+                "B. Cell wall",
+                "C. Cytoplasm",
+                "D. Vacuole"
               ],
-              "correctAnswer": "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
-              "hint": "Spring-loaded metal fingers flanking the aperture.",
-              "workedSolution": "Stage clips secure the glass specimen slide against the mechanical stage, preventing slipping during focal adjustments.",
+              "correctAnswer": "B. Cell wall",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The rigid cellulose wall functions as an external skeleton, giving structural support to the cell.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4564,16 +4513,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_I50",
               "difficulty": "medium",
-              "prompt": "Which cell organelle is responsible for maintaining cellular shape and anchoring organelles via a network of microfilaments and microtubules?",
+              "prompt": "How do multiple organ systems work together in a complex organism?",
               "options": [
-                "A. Cytoskeleton",
-                "B. Cell wall",
-                "C. Tonoplast",
-                "D. Nucleolus"
+                "A. They work completely independently without any communication",
+                "B. They coordinate with each other to support the survival and homeostasis of the whole organism",
+                "C. Only one organ system can be active at a time",
+                "D. They compete against each other for survival"
               ],
-              "correctAnswer": "A. Cytoskeleton",
-              "hint": "An internal proteinaceous scaffolding within the cytosol.",
-              "workedSolution": "The cytoskeleton is a dynamic network of actin microfilaments, intermediate filaments, and tubulin microtubules that provides internal structural scaffolding.",
+              "correctAnswer": "B. They coordinate with each other to support the survival and homeostasis of the whole organism",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Organ systems interact cooperatively to maintain homeostatic balance throughout the body.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4583,16 +4532,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A01",
               "difficulty": "hard",
-              "prompt": "A slice of potato tuber weighing 10.0 g is placed in a 20% concentrated sucrose solution. After two hours, its mass decreases to 8.2 g and it becomes limp and flexible. What physiological process accounts for this change?",
+              "prompt": "A biology student placed an elodea plant leaf cell in a concentrated salt solution. Under a microscope, the cytoplasm and cell membrane shrank away from the cell wall. This process is called:",
               "options": [
-                "A. Active uptake of sucrose molecules into potato cells",
-                "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
-                "C. Endosmosis of water into the potato cells causing bursting",
-                "D. Chemical decomposition of potato starch into gaseous carbon dioxide"
+                "A. Lysis",
+                "B. Plasmolysis",
+                "C. Photosynthesis",
+                "D. Mitosis"
               ],
-              "correctAnswer": "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
-              "hint": "The 20% sucrose solution has a lower water potential than the cell sap.",
-              "workedSolution": "Because the external sucrose solution is hypertonic, water leaves the vacuolar sap by exosmosis down the water potential gradient, reducing mass and causing flaccidity.",
+              "correctAnswer": "B. Plasmolysis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plasmolysis occurs when water leaves a plant cell by osmosis in a hypertonic environment, causing the cytoplasm to pull away from the wall.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4600,16 +4549,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A02",
               "difficulty": "hard",
-              "prompt": "How does the fluid mosaic model explain the selective permeability of the plasma membrane?",
+              "prompt": "Why does a multicellular organism require specialized organ systems (such as circulatory and respiratory systems), whereas a single-celled amoeba does not?",
               "options": [
-                "A. The membrane is a solid sheet of impervious wax",
-                "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
-                "C. The membrane has large open holes that allow all molecules through",
-                "D. Carbohydrates form a rigid impenetrable cage around the cell"
+                "A. Single-celled organisms do not need oxygen or nutrients",
+                "B. Multicellular organisms have small surface area-to-volume ratios, making simple diffusion too slow to reach deep internal cells",
+                "C. Amoebae possess cell walls that pump nutrients automatically",
+                "D. Multicellular organisms have no cell membranes"
               ],
-              "correctAnswer": "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
-              "hint": "Hydrophobic fatty acid tails repel polar solutes; channel/carrier proteins regulate specific transport.",
-              "workedSolution": "The hydrophobic core of the phospholipid bilayer repels polar and charged molecules, while specific integral transmembrane channel and carrier proteins selectively transport designated solutes.",
+              "correctAnswer": "B. Multicellular organisms have small surface area-to-volume ratios, making simple diffusion too slow to reach deep internal cells",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "As organisms increase in size, their surface area-to-volume ratio decreases, requiring specialized transport systems.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4617,16 +4566,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A03",
               "difficulty": "hard",
-              "prompt": "Under a light microscope, a plant cell in salt solution exhibits a shrunken protoplast detached from its cell wall. What substance fills the space between the shrunken cell membrane and the cell wall?",
+              "prompt": "Consider the organelle distribution in a plant root cell versus a leaf mesophyll cell. Which organelle will be absent in the root cell, and why?",
               "options": [
-                "A. Pure vacuum",
-                "B. The external salt solution, because the cellulose cell wall is fully permeable",
-                "C. Cytoplasm that leaked out",
-                "D. Pure air gas"
+                "A. Mitochondria, because roots do not respire",
+                "B. Chloroplasts, because root cells are subterranean and not exposed to light for photosynthesis",
+                "C. Nucleus, because root cells do not divide",
+                "D. Cell wall, because roots must absorb water easily"
               ],
-              "correctAnswer": "B. The external salt solution, because the cellulose cell wall is fully permeable",
-              "hint": "The cell wall is freely permeable to small dissolved solutes, while the plasma membrane is semi-permeable.",
-              "workedSolution": "The cellulose cell wall is freely permeable to water and dissolved solutes; when the protoplast contracts during plasmolysis, external salt solution freely passes through the wall to occupy the perimeter space.",
+              "correctAnswer": "B. Chloroplasts, because root cells are subterranean and not exposed to light for photosynthesis",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Underground root cells receive no sunlight, so they do not develop photosynthetic chloroplasts.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4634,16 +4583,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A04",
               "difficulty": "hard",
-              "prompt": "Why can electron microscopes achieve magnifications exceeding 500,000× with 0.2 nm resolution, whereas optical light microscopes are fundamentally limited to ~1,500× and 200 nm?",
+              "prompt": "If all the mitochondria in a human liver cell were selectively destroyed by a toxin, which biochemical process would stop immediately?",
               "options": [
-                "A. Electron microscopes use much thicker glass lenses",
-                "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
-                "C. Light microscopes operate in a vacuum",
-                "D. Electrons are brighter than photons"
+                "A. Simple diffusion of oxygen across the membrane",
+                "B. Aerobic cellular respiration and ATP generation",
+                "C. Synthesis of starch grains",
+                "D. Physical movement of the cell wall"
               ],
-              "correctAnswer": "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
-              "hint": "Diffraction limits resolution to approximately half the wavelength of the illumination source.",
-              "workedSolution": "Resolution is constrained by radiation wavelength. Accelerated electrons have wavelengths ~100,000× shorter than visible light photons (0.005 nm vs 400-700 nm), reducing diffraction limits.",
+              "correctAnswer": "B. Aerobic cellular respiration and ATP generation",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria are the sites of aerobic respiration; destroying them prevents oxidative ATP synthesis.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4651,16 +4600,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A05",
               "difficulty": "hard",
-              "prompt": "A cell biologist treats cultured liver cells with a metabolic poison that specifically inhibits mitochondrial ATP synthase. Which cellular process will halt almost immediately?",
+              "prompt": "An unknown tissue sample is analyzed chemically and found to contain high concentrations of cellulose and starch. What is the biological origin of this tissue?",
               "options": [
-                "A. Passive osmosis of water",
-                "B. Simple diffusion of oxygen",
-                "C. Active transport pumping sodium ions against their electrochemical gradient",
-                "D. Evaporation"
+                "A. Mammalian muscle",
+                "B. Plant tissue",
+                "C. Fungal hyphae",
+                "D. Insect exoskeleton"
               ],
-              "correctAnswer": "C. Active transport pumping sodium ions against their electrochemical gradient",
-              "hint": "Primary active transport is directly coupled to ATP hydrolysis.",
-              "workedSolution": "Active transport requires metabolic energy in the form of ATP. Poisoning ATP synthase depletes cellular energy stores, immediately stopping active ion pumps.",
+              "correctAnswer": "B. Plant tissue",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Cellulose cell walls and starch storage carbohydrates are characteristic markers of plant tissues.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4668,16 +4617,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A06",
               "difficulty": "hard",
-              "prompt": "Which of the following cellular features supports the endosymbiotic theory that mitochondria and chloroplasts originated as free-living prokaryotic endosymbionts?",
+              "prompt": "Why is the cell membrane described as 'fluid mosaic' rather than a rigid static sheet?",
               "options": [
-                "A. They possess linear eukaryotic chromosomes wrapped in histones",
-                "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
-                "C. They are synthesized entirely in the nucleus",
-                "D. They are made of cellulose"
+                "A. It is composed of a flexible lipid bilayer embedded with mobile proteins that move laterally",
+                "B. It is made of solid stone blocks like a floor mosaic",
+                "C. It contains only water droplets",
+                "D. It dissolves and reforms every few seconds"
               ],
-              "correctAnswer": "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
-              "hint": "Shared biochemical traits with modern alpha-proteobacteria and cyanobacteria.",
-              "workedSolution": "Mitochondria and chloroplasts share distinct prokaryotic traits: naked circular DNA genomes, 70S ribosomes, binary fission, and double membranes reflecting ancestral phagocytosis.",
+              "correctAnswer": "A. It is composed of a flexible lipid bilayer embedded with mobile proteins that move laterally",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The cell membrane consists of a dynamic phospholipid bilayer with embedded, laterally mobile proteins.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4685,16 +4634,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A07",
               "difficulty": "hard",
-              "prompt": "Why does boiling an onion epidermal peel in water before preparing a wet mount prevent plasmolysis when placed in concentrated salt solution?",
+              "prompt": "How does the large central vacuole contribute to the structural mechanics of non-woody herbaceous plants?",
               "options": [
-                "A. Boiling turns the salt into sugar",
-                "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
-                "C. Boiling makes the cell wall impermeable",
-                "D. The cells become immortal"
+                "A. It synthesizes wood fibers",
+                "B. It absorbs water by osmosis and exerts hydrostatic turgor pressure against the cellulose cell wall, keeping stems upright",
+                "C. It converts sunlight into solid proteins",
+                "D. It pumps blood to the leaves"
               ],
-              "correctAnswer": "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
-              "hint": "Osmosis requires an intact, selectively permeable living membrane.",
-              "workedSolution": "Thermal heat denatures membrane proteins and disrupts the phospholipid bilayer. Losing semi-permeability makes the membrane freely porous, preventing osmotic gradients.",
+              "correctAnswer": "B. It absorbs water by osmosis and exerts hydrostatic turgor pressure against the cellulose cell wall, keeping stems upright",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Hydrostatic turgor pressure exerted by the central vacuole against the rigid wall provides structural support in herbaceous plants.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4702,16 +4651,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A08",
               "difficulty": "hard",
-              "prompt": "What is the function of plasmodesmata in multicellular plant tissues?",
+              "prompt": "A scientist treats human cheek cells with an iodine solution. Why do they fail to turn blue-black, whereas a scrape of potato tissue turns dark blue-black?",
               "options": [
-                "A. Synthesize photosynthetic pigments",
-                "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
-                "C. Pump water out of stomata",
-                "D. Anchor the root into rock"
+                "A. Cheek cells lack a nucleus",
+                "B. Iodine only works on dead animals",
+                "C. Potato tissue stores carbohydrate as starch (which reacts with iodine), while animal cells store carbohydrate as glycogen",
+                "D. Animal cells destroy iodine on contact"
               ],
-              "correctAnswer": "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
-              "hint": "They interconnect plant protoplasts into a continuous living symplast.",
-              "workedSolution": "Plasmodesmata are trans-wall channels lined by plasma membrane that connect the cytoplasm of adjacent cells, facilitating molecular transport and systemic signaling.",
+              "correctAnswer": "C. Potato tissue stores carbohydrate as starch (which reacts with iodine), while animal cells store carbohydrate as glycogen",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Iodine reacts specifically with starch to form a blue-black complex; animal cells store glycogen, which does not give this reaction.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4719,16 +4668,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A09",
               "difficulty": "hard",
-              "prompt": "If a microscope's field of view has a diameter of 2.0 mm under low power (10× objective), what will be the diameter of the field of view when switched to high power (40× objective)?",
+              "prompt": "Which of the following demonstrates the division of labour at the organ level in a plant?",
               "options": [
-                "A. 8.0 mm",
-                "B. 0.5 mm",
-                "C. 0.2 mm",
-                "D. 0.05 mm"
+                "A. Leaves perform photosynthesis, roots absorb water and minerals, and flowers manage reproduction",
+                "B. All parts of the plant perform exactly the same function",
+                "C. The nucleus manufactures starch while the vacuole divides",
+                "D. Stems absorb sunlight while flowers absorb soil water"
               ],
-              "correctAnswer": "B. 0.5 mm",
-              "hint": "Field Diameter is inversely proportional to magnification: Diameter(high) = Diameter(low) × (Low Mag / High Mag).",
-              "workedSolution": "Diameter(high) = 2.0 mm × (10 / 40) = 2.0 × 0.25 = 0.5 mm (or 500 µm).",
+              "correctAnswer": "A. Leaves perform photosynthesis, roots absorb water and minerals, and flowers manage reproduction",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Division of labour assigns distinct physiological roles to specialized organs across the plant body.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4736,16 +4685,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A10",
               "difficulty": "hard",
-              "prompt": "Why do cells maintain a small microscopic diameter rather than growing to the size of a tennis ball?",
+              "prompt": "Why do red blood cells lack a nucleus at maturity?",
               "options": [
-                "A. Larger cells become too heavy to move",
-                "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
-                "C. Gravity crushes large cells immediately",
-                "D. DNA duplicates continuously until the cell explodes"
+                "A. They are dead cells",
+                "B. To maximize internal cytoplasmic space for packing hemoglobin to transport oxygen",
+                "C. To prevent them from reproducing inside blood vessels",
+                "D. Because they have a thick cell wall instead"
               ],
-              "correctAnswer": "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
-              "hint": "Surface area-to-volume ratio constraint.",
-              "workedSolution": "Volume increases much faster than surface area ($V \\propto r^3$ vs $SA \\propto r^2$). A gigantic cell would have insufficient plasma membrane surface to transport nutrients and remove metabolic wastes.",
+              "correctAnswer": "B. To maximize internal cytoplasmic space for packing hemoglobin to transport oxygen",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mature mammalian red blood cells lose their nucleus to maximize internal space for hemoglobin and oxygen transport.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4753,16 +4702,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A11",
               "difficulty": "hard",
-              "prompt": "How does the distribution of mitochondria correlate with cellular specialization in cardiac muscle cells compared to skin epithelial cells?",
+              "prompt": "What would happen to an animal cell if its cell membrane suddenly became completely permeable to all solutes and water?",
               "options": [
-                "A. Skin cells contain ten times more mitochondria than heart cells",
-                "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
-                "C. Cardiac cells have no mitochondria",
-                "D. Mitochondria are only found in plant cells"
+                "A. The cell would produce more energy",
+                "B. Concentration gradients would collapse, internal metabolites would be lost, and the cell would die",
+                "C. The cell would immediately transform into a plant cell",
+                "D. The cell would form a hard shell"
               ],
-              "correctAnswer": "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
-              "hint": "High metabolic workloads demand massive ATP synthesis.",
-              "workedSolution": "Cardiac myocytes contract non-stop throughout an organism's lifetime without fatigue, requiring enormous mitochondrial density to fuel continuous aerobic respiration.",
+              "correctAnswer": "B. Concentration gradients would collapse, internal metabolites would be lost, and the cell would die",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Uncontrolled permeability eliminates concentration gradients, leading to metabolic collapse and cell death.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4770,16 +4719,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A12",
               "difficulty": "hard",
-              "prompt": "Which organelle is responsible for post-translational modification of proteins, including adding carbohydrate chains to form glycoproteins?",
+              "prompt": "Which of the following best explains why the nucleus is located near the edge (periphery) in mature plant cells but in the center in animal cells?",
               "options": [
-                "A. Golgi apparatus",
-                "B. Nucleolus",
-                "C. Ribosome",
-                "D. Centriole"
+                "A. The plant nucleus is repelled by chloroplasts",
+                "B. The large central vacuole fills most of the internal volume, pushing the cytoplasm and nucleus outward",
+                "C. Animal cells have heavier nuclei that sink to the middle",
+                "D. Plant cells have no cytoplasm in their center"
               ],
-              "correctAnswer": "A. Golgi apparatus",
-              "hint": "Glycosylation takes place within its cisternae.",
-              "workedSolution": "The Golgi apparatus enzymatically attaches oligosaccharides to proteins (glycosylation) and tags them for export or delivery to lysosomes.",
+              "correctAnswer": "B. The large central vacuole fills most of the internal volume, pushing the cytoplasm and nucleus outward",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Development of a large, fluid-filled central vacuole displaces the nucleus and cytoplasm toward the cell wall.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4787,16 +4736,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A13",
               "difficulty": "hard",
-              "prompt": "In an experiment, red blood cells placed in Solution X swell and burst rapidly, while cells placed in Solution Y maintain their normal biconcave shape. What are Solutions X and Y?",
+              "prompt": "In an experiment, red blood cells and onion epidermal cells were placed in distilled water. After 30 minutes, what will be observed under the microscope?",
               "options": [
-                "A. X is 10% salt solution; Y is pure water",
-                "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
-                "C. X is 20% sucrose; Y is 50% salt solution",
-                "D. Both X and Y are concentrated acids"
+                "A. Both types of cells will burst",
+                "B. The red blood cells will swell and burst (lysis), while the onion cells will remain intact and turgid",
+                "C. Both types of cells will shrink",
+                "D. The onion cells will dissolve completely"
               ],
-              "correctAnswer": "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
-              "hint": "0.9% NaCl has the same osmotic potential as human blood plasma.",
-              "workedSolution": "Pure water is strongly hypotonic to erythrocytes, driving massive endosmosis and lysis. 0.9% NaCl is isotonic to human blood, maintaining zero net osmotic flow.",
+              "correctAnswer": "B. The red blood cells will swell and burst (lysis), while the onion cells will remain intact and turgid",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Red blood cells burst because they lack a cell wall, whereas onion cells remain intact due to their rigid wall.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4804,16 +4753,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A14",
               "difficulty": "hard",
-              "prompt": "What is the physiological role of the lignin deposited in the secondary walls of xylem vessels?",
+              "prompt": "What is the primary function of the folds (cristae) found within the inner membrane of a mitochondrion?",
               "options": [
-                "A. Captures sunlight for starch production",
-                "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
-                "C. Pumps glucose into the roots",
-                "D. Absorbs oxygen from atmospheric air"
+                "A. To store starch grains",
+                "B. To increase the available surface area for enzyme-driven cellular respiration",
+                "C. To prevent water from leaving the organelle",
+                "D. To capture green light waves"
               ],
-              "correctAnswer": "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
-              "hint": "Transpirational pull creates powerful negative hydrostatic suction inside the xylem.",
-              "workedSolution": "Lignin is an intricate polymer that waterproofs and reinforces xylem walls, preventing implosion under the high tension forces generated by transpiration.",
+              "correctAnswer": "B. To increase the available surface area for enzyme-driven cellular respiration",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Folded inner membranes (cristae) expand the functional surface area for respiratory electron transport complexes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4821,16 +4770,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A15",
               "difficulty": "hard",
-              "prompt": "What structural mechanism prevents mature sieve tube elements in phloem from being crushed by neighboring plant cells despite having no nucleus?",
+              "prompt": "A sample of human muscle tissue is stained and examined. The cells are observed to have multiple nuclei and abundant mitochondria. What does this suggest about muscle tissue?",
               "options": [
-                "A. Rigid lignified walls like xylem",
-                "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
-                "C. Internal bone structures",
-                "D. Large air chambers"
+                "A. It is inactive and dead",
+                "B. It has high metabolic activity requiring continuous energy production for contraction",
+                "C. It behaves identically to plant leaf tissue",
+                "D. It stores carbohydrates as starch"
               ],
-              "correctAnswer": "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
-              "hint": "Münch pressure flow hypothesis.",
-              "workedSolution": "Active accumulation of sucrose lowers water potential, drawing in water that generates high internal turgor pressure, keeping sieve tubes patent and driving mass flow.",
+              "correctAnswer": "B. It has high metabolic activity requiring continuous energy production for contraction",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "High numbers of mitochondria provide the ATP needed to support continuous muscular contraction.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4838,16 +4787,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A16",
               "difficulty": "hard",
-              "prompt": "Why does the nucleus of a cell contain visible thread-like chromosomes during cell division, but appears as diffuse, indistinct chromatin during interphase?",
+              "prompt": "Why is the cell wall of a plant cell described as fully permeable, while the cell membrane is selectively permeable?",
               "options": [
-                "A. The DNA leaves the cell during interphase",
-                "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
-                "C. Chromosomes are eaten by lysosomes during interphase",
-                "D. The microscope loses magnification during interphase"
+                "A. The cell wall has large pores that allow water and small solutes to pass freely, whereas the membrane regulates transit via transport proteins",
+                "B. The cell wall is alive and the membrane is dead",
+                "C. The cell membrane is made of rigid wood",
+                "D. Solutes cannot touch the cell wall"
               ],
-              "correctAnswer": "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
-              "hint": "Uncoiled DNA permits RNA polymerase access; condensed chromatin prevents mechanical breakage during anaphase.",
-              "workedSolution": "Interphase DNA is uncoiled (euchromatin) to allow enzyme access for gene expression. During mitosis, it supercoils into tight chromosomes to prevent shearing during spindle segregation.",
+              "correctAnswer": "A. The cell wall has large pores that allow water and small solutes to pass freely, whereas the membrane regulates transit via transport proteins",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cellulose cell walls are porous and non-selective, while lipid membranes regulate substance entry through selective mechanisms.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4855,16 +4804,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A17",
               "difficulty": "hard",
-              "prompt": "What is the primary difference between pinocytosis ('cell drinking') and phagocytosis ('cell eating') in animal cells?",
+              "prompt": "Which of the following sequences represents the correct functional hierarchy in the nervous system?",
               "options": [
-                "A. Pinocytosis takes in solid food particles; phagocytosis takes in liquid drops",
-                "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
-                "C. Only plant cells perform phagocytosis",
-                "D. Pinocytosis requires no energy"
+                "A. Nerve cell (Neuron) → Nervous tissue → Brain → Nervous system → Human organism",
+                "B. Brain → Neuron → Nervous system → Nervous tissue → Organism",
+                "C. Organism → Brain → Neuron → Tissue → System",
+                "D. Neuron → Brain → Nervous tissue → Organism → Nervous system"
               ],
-              "correctAnswer": "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
-              "hint": "Both are forms of endocytosis.",
-              "workedSolution": "Phagocytosis involves actin-driven pseudopodial extension around solid targets (e.g. bacteria), whereas pinocytosis invaginates tiny droplets of extracellular fluid.",
+              "correctAnswer": "A. Nerve cell (Neuron) → Nervous tissue → Brain → Nervous system → Human organism",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "This sequence correctly traces the hierarchy: Cell to Tissue, Organ, System, and complete Organism.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4872,16 +4821,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A18",
               "difficulty": "hard",
-              "prompt": "Why is the tonoplast membrane of plant vacuoles capable of accumulating ions at concentrations much higher than the surrounding cytoplasm?",
+              "prompt": "How do chloroplasts and mitochondria work in a complementary manner inside a green plant leaf cell?",
               "options": [
-                "A. The tonoplast is fully permeable",
-                "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
-                "C. Water evaporates from the vacuole",
-                "D. The plant cell wall pushes ions inside"
+                "A. Chloroplasts synthesize glucose and oxygen using light, while mitochondria break down glucose with oxygen to release energy",
+                "B. Chloroplasts break down energy, while mitochondria synthesize starch",
+                "C. Both organelles carry out identical photosynthetic reactions",
+                "D. They destroy each other's products"
               ],
-              "correctAnswer": "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
-              "hint": "Active transport concentrates solutes into the cell sap against steep gradients.",
-              "workedSolution": "Vacuolar $H^+$-ATPases actively pump protons into the vacuole, creating electrochemical gradients that power antiporters and symporters to concentrate minerals and sugars.",
+              "correctAnswer": "A. Chloroplasts synthesize glucose and oxygen using light, while mitochondria break down glucose with oxygen to release energy",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Photosynthesis in chloroplasts produces sugars and oxygen, which mitochondria then oxidize during cellular respiration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4889,16 +4838,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A19",
               "difficulty": "hard",
-              "prompt": "Which of the following cellular structures is responsible for assembling and anchoring the spindle apparatus in dividing animal cells?",
+              "prompt": "What would happen to a plant leaf cell if its vacuolar membrane (tonoplast) became leaky and lost its contents?",
               "options": [
-                "A. Centrosome containing paired centrioles",
-                "B. Nucleolus",
-                "C. Golgi body",
-                "D. Ribosome"
+                "A. The cell would produce more starch",
+                "B. Turgor pressure would drop, causing the cell to become flaccid and the plant to wilt",
+                "C. The cell wall would double in thickness",
+                "D. Photosynthesis would speed up"
               ],
-              "correctAnswer": "A. Centrosome containing paired centrioles",
-              "hint": "Composed of nine triplets of microtubules.",
-              "workedSolution": "The centrosome contains orthogonal centrioles that organize gamma-tubulin ring complexes to nucleate spindle microtubules during mitotic prophase.",
+              "correctAnswer": "B. Turgor pressure would drop, causing the cell to become flaccid and the plant to wilt",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Loss of vacuolar solutes dissipates internal turgor pressure, leading to flaccidity and wilting.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4906,16 +4855,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A20",
               "difficulty": "hard",
-              "prompt": "How does the structure of a fungal cell differ from both typical plant and animal cells?",
+              "prompt": "Why do animal tissues like skeletal muscle require a direct supply of oxygenated blood, while individual amoebae in pond water do not?",
               "options": [
-                "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
-                "B. Fungi have no cell membrane",
-                "C. Fungi are identical to green plants",
-                "D. Fungal cells have no nuclei"
+                "A. Amoebae do not need energy to live",
+                "B. Single-celled amoebae have a large surface area-to-volume ratio allowing sufficient gas exchange by simple diffusion, whereas thick tissues do not",
+                "C. Human muscle cells have cellulose walls that block oxygen",
+                "D. Blood carries only water, not oxygen"
               ],
-              "correctAnswer": "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
-              "hint": "Chitin is a nitrogenous polysaccharide also found in arthropod exoskeletons.",
-              "workedSolution": "Fungi have rigid walls composed of chitin (not cellulose), lack chloroplasts (heterotrophic), and store carbohydrates as glycogen, bridging plant-like and animal-like characteristics.",
+              "correctAnswer": "B. Single-celled amoebae have a large surface area-to-volume ratio allowing sufficient gas exchange by simple diffusion, whereas thick tissues do not",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Large surface area-to-volume ratios allow single-celled organisms to rely on simple diffusion for gas exchange.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4923,16 +4872,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A21",
               "difficulty": "hard",
-              "prompt": "Why are stomata predominantly located on the lower epidermis of dicotyledonous leaves rather than the upper surface?",
+              "prompt": "Which of the following is an example of an organ composed of both muscular and epithelial tissues in humans?",
               "options": [
-                "A. The upper surface has no cells",
-                "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
-                "C. Carbon dioxide only exists below leaves",
-                "D. Rain would drown the stomata"
+                "A. Red blood cell",
+                "B. Stomach",
+                "C. Bone marrow cell",
+                "D. Ribosome"
               ],
-              "correctAnswer": "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
-              "hint": "An adaptation to conserve water in terrestrial environments.",
-              "workedSolution": "Positioning stomata on the cooler, shaded lower leaf surface reduces evaporation and transpirational water deficit while still allowing carbon dioxide intake.",
+              "correctAnswer": "B. Stomach",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The stomach is an organ lined with secretory epithelial tissue and wrapped in smooth muscle tissue.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4940,16 +4889,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A22",
               "difficulty": "hard",
-              "prompt": "A student counts 12 cells laid end-to-end across a 1.2 mm microscope field diameter. What is the average length of a single cell?",
+              "prompt": "A researcher isolates an organelle that contains its own DNA and is actively engaged in consuming oxygen and releasing carbon dioxide. What is this organelle?",
               "options": [
-                "A. 0.1 mm (100 µm)",
-                "B. 1.0 mm",
-                "C. 0.01 mm",
-                "D. 12 mm"
+                "A. Ribosome",
+                "B. Mitochondrion",
+                "C. Vacuole",
+                "D. Cell wall"
               ],
-              "correctAnswer": "A. 0.1 mm (100 µm)",
-              "hint": "Cell length = Field Diameter / Cell count = 1.2 mm / 12.",
-              "workedSolution": "Average length = Field Diameter / Number of cells = 1.2 mm / 12 = 0.1 mm = 100 µm.",
+              "correctAnswer": "B. Mitochondrion",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Mitochondria contain mitochondrial DNA and consume oxygen during aerobic cellular respiration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4957,16 +4906,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A23",
               "difficulty": "hard",
-              "prompt": "Which type of human epithelial tissue consists of a single layer of flattened, scale-like cells adapted for rapid gas and nutrient diffusion?",
+              "prompt": "Why can an unfertilized chicken egg yolk be considered an exceptional cell compared to most cells?",
               "options": [
-                "A. Simple squamous epithelium",
-                "B. Stratified squamous epithelium",
-                "C. Pseudostratified columnar epithelium",
-                "D. Transitional epithelium"
+                "A. It has no cell membrane",
+                "B. It is a single, macroscopic cell visible to the naked eye without a microscope",
+                "C. It contains no cytoplasm or nucleus",
+                "D. It is a complete multicellular tissue"
               ],
-              "correctAnswer": "A. Simple squamous epithelium",
-              "hint": "Forms the walls of pulmonary alveoli and capillary blood vessels.",
-              "workedSolution": "Simple squamous epithelium is a delicate monolayer of flattened cells offering minimal diffusion distance across alveolar and capillary barriers.",
+              "correctAnswer": "B. It is a single, macroscopic cell visible to the naked eye without a microscope",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "An unfertilized egg ovum is a single macroscopic cell packed with nutrient yolk.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4974,16 +4923,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A24",
               "difficulty": "hard",
-              "prompt": "What is the biochemical reason why animal cell membranes freeze and lose fluidity at near-freezing temperatures?",
+              "prompt": "Why do xylem vessels in a plant lose their internal cytoplasm and nuclei upon reaching functional maturity?",
               "options": [
-                "A. Water inside the nucleus boils",
-                "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
-                "C. Cholesterol converts into diamond",
-                "D. The cell wall shatters"
+                "A. They are diseased cells",
+                "B. To form hollow, continuous microscopic tubes for the uninterrupted upward transport of water and mineral salts",
+                "C. To transform into chloroplasts",
+                "D. Because they are animal cells"
               ],
-              "correctAnswer": "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
-              "hint": "Low thermal kinetic energy causes hydrophobic tails to aggregate.",
-              "workedSolution": "At low temperatures, reduced thermal motion causes phospholipid hydrocarbon chains to pack closely into a viscous gel, impeding protein motility and membrane transport.",
+              "correctAnswer": "B. To form hollow, continuous microscopic tubes for the uninterrupted upward transport of water and mineral salts",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Xylem cells undergo programmed cell death to leave hollow, open conduits for low-resistance water conduction.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -4991,16 +4940,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A25",
               "difficulty": "hard",
-              "prompt": "How does the nuclear envelope regulate macromolecular transport between the nucleoplasm and the cytoplasm?",
+              "prompt": "How does the storage of energy as glycogen in animal cells benefit active animals compared to starch in plants?",
               "options": [
-                "A. It dissolves completely every hour",
-                "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
-                "C. It allows all molecules to pass freely without restriction",
-                "D. It is completely impermeable"
+                "A. Glycogen has a more branched structure that allows rapid enzymatic breakdown into glucose for quick energy during movement",
+                "B. Glycogen is a heavy metal that adds body weight",
+                "C. Starch is poisonous to animal cells",
+                "D. Glycogen converts directly into light"
               ],
-              "correctAnswer": "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
-              "hint": "Nuclear pore complexes act as gated molecular checkpoints.",
-              "workedSolution": "Nuclear pore complexes (NPCs) recognize specific nuclear localization signals (NLS) on proteins to mediate selective, energy-dependent bidirectional nucleocytoplasmic transit.",
+              "correctAnswer": "A. Glycogen has a more branched structure that allows rapid enzymatic breakdown into glucose for quick energy during movement",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Highly branched glycogen provides numerous sites for rapid enzymatic cleavage into glucose during exertion.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5008,16 +4957,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A26",
               "difficulty": "hard",
-              "prompt": "Why do plant cells in the deep spongy mesophyll layer possess irregular shapes with large intercellular air spaces?",
+              "prompt": "What would happen to a plant leaf cell if its nucleus were experimentally extracted while leaving all other organelles intact?",
               "options": [
-                "A. To store poisonous gases",
-                "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
-                "C. Because they were damaged during growth",
-                "D. To absorb rain water from the stem"
+                "A. It would immediately grow into a complete tree",
+                "B. It could survive temporarily, but would eventually die because it cannot synthesize new proteins or direct repair without nuclear DNA",
+                "C. It would start photosynthesizing twice as fast",
+                "D. It would immediately turn into an animal cell"
               ],
-              "correctAnswer": "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
-              "hint": "Gases diffuse 10,000 times faster in air spaces than through aqueous cytoplasm.",
-              "workedSolution": "Loose packing and extensive intercellular air voids facilitate rapid internal diffusion of carbon dioxide and oxygen between stomatal cavities and palisade layers.",
+              "correctAnswer": "B. It could survive temporarily, but would eventually die because it cannot synthesize new proteins or direct repair without nuclear DNA",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Without the nucleus to direct protein synthesis and transcription, metabolic processes fail and the cell dies.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5025,16 +4974,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A27",
               "difficulty": "hard",
-              "prompt": "What is the consequence of lysosomal membrane rupture within an animal cell (autolysis)?",
+              "prompt": "Why does a slice of fresh cucumber release water and shrink when sprinkled with table salt?",
               "options": [
-                "A. The cell produces excess ATP",
-                "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
-                "C. The cell immediately divides into four",
-                "D. The cell turns into a plant cell"
+                "A. The salt enters the cucumber and expands",
+                "B. Salt creates a hypertonic external environment, causing water to leave the plant vacuoles by osmosis",
+                "C. The salt dissolves the cell wall instantly",
+                "D. The cucumber cells undergo rapid cell division"
               ],
-              "correctAnswer": "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
-              "hint": "Autolysis or apoptosis.",
-              "workedSolution": "Widespread lysosomal leakage releases hydrolytic enzymes (proteases, nucleases, lipases) that degrade vital macromolecules, triggering autolytic cell death.",
+              "correctAnswer": "B. Salt creates a hypertonic external environment, causing water to leave the plant vacuoles by osmosis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "High external salt concentration draws water out of plant vacuoles via osmosis, causing cell shrinkage.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5042,16 +4991,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A28",
               "difficulty": "hard",
-              "prompt": "Which organelle synthesizes membrane lipids and steroid hormones such as testosterone and estrogen?",
+              "prompt": "Which of the following statements about cell specialization is correct?",
               "options": [
-                "A. Rough endoplasmic reticulum",
-                "B. Smooth endoplasmic reticulum",
-                "C. Ribosome",
-                "D. Chloroplast"
+                "A. Specialized cells discard all their organelles and stop working",
+                "B. Structural modifications allow specialized cells to perform specific physiological duties more efficiently",
+                "C. Only single-celled bacteria undergo cell specialization",
+                "D. Specialized cells can each survive independently as separate organisms"
               ],
-              "correctAnswer": "B. Smooth endoplasmic reticulum",
-              "hint": "Prominent in testicular Leydig cells and adrenal cortex.",
-              "workedSolution": "Smooth ER contains enzymes that catalyze the synthesis of phospholipids, cholesterol, and steroid hormones from acetate and lipid precursors.",
+              "correctAnswer": "B. Structural modifications allow specialized cells to perform specific physiological duties more efficiently",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cell differentiation tailors morphology and organelle distribution to specialized physiological functions.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5059,16 +5008,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A29",
               "difficulty": "hard",
-              "prompt": "How does the cellular architecture of cardiac muscle tissue prevent individual heart cells from pulling apart during vigorous contraction?",
+              "prompt": "Why do animal cells fail to show plasmolysis when placed in a concentrated salt solution?",
               "options": [
-                "A. They are glued together with cellulose",
-                "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
-                "C. They have no cell boundaries",
-                "D. Bones lock each heart cell in place"
+                "A. They have no water in their cytoplasm",
+                "B. They lack a rigid cell wall, so the entire cell simply shrinks and crenates rather than pulling away from an outer shell",
+                "C. They produce starch to block the salt",
+                "D. Their cell membranes are completely impermeable to water"
               ],
-              "correctAnswer": "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
-              "hint": "Intercalated discs provide mechanical bonding and electrical coupling.",
-              "workedSolution": "Intercalated discs feature mechanical desmosomes (fascia adherens) that withstand contractile shear stress and gap junctions that allow rapid ion flux for coordinated contraction.",
+              "correctAnswer": "B. They lack a rigid cell wall, so the entire cell simply shrinks and crenates rather than pulling away from an outer shell",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Plasmolysis requires a rigid outer wall from which the membrane can detach; lacking a wall, animal cells simply shrink (crenate).",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5076,16 +5025,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A30",
               "difficulty": "hard",
-              "prompt": "A microscope ocular lens has a tiny scratch that remains in the exact same position when you rotate the revolving nosepiece and move the slide. Where is the scratch located?",
+              "prompt": "Which organelle is responsible for packaging and modifying proteins before they are transported out of the cell?",
               "options": [
-                "A. On the objective lens",
-                "B. On the glass slide",
-                "C. On the eyepiece (ocular lens)",
-                "D. On the condenser lens"
+                "A. Golgi body (Golgi apparatus)",
+                "B. Chloroplast",
+                "C. Cellulose cell wall",
+                "D. Centrosome"
               ],
-              "correctAnswer": "C. On the eyepiece (ocular lens)",
-              "hint": "If rotating objectives and shifting the slide does not move the artifact, the defect must reside on the remaining optical element.",
-              "workedSolution": "Since rotating the objective turret and moving the stage failed to alter the artifact's orientation, the scratch is situated on the stationary eyepiece lens.",
+              "correctAnswer": "A. Golgi body (Golgi apparatus)",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "The Golgi body modifies, sorts, and packages proteins and lipids for secretion or delivery.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5093,16 +5042,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A31",
               "difficulty": "hard",
-              "prompt": "Why do red blood cells lack mitochondria in addition to lacking a nucleus?",
+              "prompt": "Why are guard cells around a plant leaf stoma unusual compared to surrounding epidermal cells?",
               "options": [
-                "A. Red blood cells do not require any energy",
-                "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
-                "C. Because mitochondria are too large to fit",
-                "D. Red blood cells use photosynthesis"
+                "A. Guard cells contain chloroplasts and change shape to regulate gas exchange, whereas general epidermal cells lack chloroplasts",
+                "B. Guard cells have no cell walls",
+                "C. Guard cells are dead animal cells",
+                "D. Guard cells contain glycogen"
               ],
-              "correctAnswer": "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
-              "hint": "Erythrocytes rely exclusively on anaerobic glycolysis for ATP.",
-              "workedSolution": "Lacking mitochondria, red blood cells generate ATP solely via anaerobic glycolysis, ensuring that 100% of bound oxygen is delivered intact to target tissues.",
+              "correctAnswer": "A. Guard cells contain chloroplasts and change shape to regulate gas exchange, whereas general epidermal cells lack chloroplasts",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Unlike ordinary epidermal cells, guard cells contain chloroplasts and regulate stomatal opening and closing.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5110,16 +5059,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A32",
               "difficulty": "hard",
-              "prompt": "What is the primary role of microvilli found on the apical surface of intestinal epithelial cells?",
+              "prompt": "Which of the following best defines an organ system?",
               "options": [
-                "A. Wave back and forth to push food along the gut",
-                "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
-                "C. Digest dietary cellulose",
-                "D. Filter pathogens from the blood"
+                "A. A group of cells with identical size and shape",
+                "B. A group of interrelated organs that work cooperatively to carry out major bodily functions",
+                "C. A collection of diverse organisms living in a forest",
+                "D. A single microscopic organelle"
               ],
-              "correctAnswer": "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
-              "hint": "Microscopic brush border on enterocytes.",
-              "workedSolution": "Dense microvillar brush borders increase enterocyte surface area by over 20-fold, maximizing the density of nutrient transport proteins.",
+              "correctAnswer": "B. A group of interrelated organs that work cooperatively to carry out major bodily functions",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "An organ system comprises anatomically distinct organs that coordinate to execute major physiological processes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5127,16 +5076,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A33",
               "difficulty": "hard",
-              "prompt": "What chemical property of the phospholipid bilayer prevents glucose from diffusing directly through the cell membrane without a transport protein?",
+              "prompt": "What is the primary role of ribosomes in a living cell?",
               "options": [
-                "A. Glucose is too heavy to move",
-                "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
-                "C. The cell membrane is made of solid stone",
-                "D. Glucose is an insoluble gas"
+                "A. Synthesizing proteins based on genetic instructions",
+                "B. Pumping water into the vacuole",
+                "C. Photosynthesis",
+                "D. Anchoring the cell wall"
               ],
-              "correctAnswer": "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
-              "hint": "Like dissolves like: polar solutes are repelled by hydrocarbon interiors.",
-              "workedSolution": "Multiple polar hydroxyl (-OH) groups make glucose highly hydrophilic, creating a thermodynamic barrier that prevents entry through the non-polar lipid core without GLUT transporters.",
+              "correctAnswer": "A. Synthesizing proteins based on genetic instructions",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Ribosomes are the molecular machines that translate genetic code into polypeptide protein chains.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5144,16 +5093,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A34",
               "difficulty": "hard",
-              "prompt": "Which organelle in plant cells contains hydrolytic enzymes performing duties analogous to animal lysosomes?",
+              "prompt": "Why is the inner membrane of a chloroplast arranged into stacked disc-like thylakoids (grana)?",
               "options": [
-                "A. Chloroplast",
-                "B. The large central vacuole",
-                "C. Mitochondrion",
-                "D. Cell wall"
+                "A. To store starch permanently",
+                "B. To maximize the surface area for embedding chlorophyll pigments that capture sunlight",
+                "C. To keep the leaf heavy",
+                "D. To pump carbon dioxide out of the cell"
               ],
-              "correctAnswer": "B. The large central vacuole",
-              "hint": "The vacuole contains acid hydrolases that degrade cellular waste.",
-              "workedSolution": "In addition to maintaining turgor, plant vacuoles contain acidic hydrolytic enzymes that perform waste degradation analogous to animal lysosomes.",
+              "correctAnswer": "B. To maximize the surface area for embedding chlorophyll pigments that capture sunlight",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Stacked thylakoids maximize the membrane area available for light-harvesting chlorophyll complexes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5161,16 +5110,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A35",
               "difficulty": "hard",
-              "prompt": "How does the chemical composition of bacterial cell walls differ fundamentally from plant cell walls?",
+              "prompt": "What would occur if the mitochondria in a plant cell were inhibited during the night when photosynthesis cannot occur?",
               "options": [
-                "A. Bacteria have walls of pure cellulose",
-                "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
-                "C. Bacteria have no cell walls",
-                "D. Bacterial walls are made of bone"
+                "A. The plant cell would generate energy using sunlight",
+                "B. The plant cell would be unable to produce ATP, leading to metabolic starvation and cellular damage",
+                "C. The cell wall would dissolve",
+                "D. The plant would begin producing oxygen in the dark"
               ],
-              "correctAnswer": "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
-              "hint": "Target of penicillin antibiotic inhibition.",
-              "workedSolution": "Bacterial walls are made of peptidoglycan (alternating NAG-NAM glycan chains cross-linked by amino acids), while plant walls are made of glucose-polymer cellulose.",
+              "correctAnswer": "B. The plant cell would be unable to produce ATP, leading to metabolic starvation and cellular damage",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "At night, plants rely on mitochondrial respiration for ATP; inhibiting it halts energy supply.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5178,16 +5127,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A36",
               "difficulty": "hard",
-              "prompt": "Why does the rate of water absorption by osmosis in plant root hairs increase when the soil is warm and aerated compared to cold, waterlogged soil?",
+              "prompt": "How does cell differentiation support the survival of complex multicellular organisms?",
               "options": [
-                "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
-                "B. Cold soil freezes water solid immediately",
-                "C. Root hairs die when exposed to oxygen",
-                "D. Warm water is lighter than cold water"
+                "A. It allows all cells to perform every task simultaneously",
+                "B. It creates specialized cells that carry out specific tasks with high efficiency",
+                "C. It prevents cells from requiring water",
+                "D. It eliminates the need for organs"
               ],
-              "correctAnswer": "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
-              "hint": "Osmosis is passive, but maintaining the solute gradient requires active transport.",
-              "workedSolution": "Active transport of minerals into root cells requires ATP from aerobic respiration. Oxygenated soil fuels ATP synthesis, creating steep hypertonic gradients that drive rapid osmosis.",
+              "correctAnswer": "B. It creates specialized cells that carry out specific tasks with high efficiency",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Cell differentiation allows cells to specialize, increasing the overall efficiency of life processes in the organism.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5195,16 +5144,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A37",
               "difficulty": "hard",
-              "prompt": "What is the primary function of peroxisomes in eukaryotic cells?",
+              "prompt": "Which of the following cell structures is directly connected to the nuclear envelope and assists in transporting proteins and lipids?",
               "options": [
-                "A. Photosynthesis",
-                "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
-                "C. Storing genetic code",
-                "D. Pumping lymph"
+                "A. Endoplasmic reticulum",
+                "B. Chloroplast",
+                "C. Cell wall",
+                "D. Large vacuole"
               ],
-              "correctAnswer": "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
-              "hint": "Neutralizes reactive oxygen species.",
-              "workedSolution": "Peroxisomes contain catalase and oxidases that oxidize long-chain fatty acids and decompose cytotoxic hydrogen peroxide into benign water and oxygen.",
+              "correctAnswer": "A. Endoplasmic reticulum",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The endoplasmic reticulum is an extensive membrane network continuous with the outer nuclear membrane.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5212,16 +5161,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A38",
               "difficulty": "hard",
-              "prompt": "Which tissue in vertebrate animals forms the endocrine and exocrine glands that synthesize and secrete chemical substances?",
+              "prompt": "Why do animal cells generally contain more lipid reserves as fats, while plant seeds often store oils?",
               "options": [
-                "A. Epithelial tissue (glandular epithelium)",
-                "B. Connective tissue",
-                "C. Nervous tissue",
-                "D. Muscle tissue"
+                "A. Saturated fats provide dense, long-term energy storage and thermal insulation in animals, while plants rely on liquid oils for seed reserves",
+                "B. Animals cannot synthesize carbohydrates",
+                "C. Plants have no enzymes to digest oils",
+                "D. Fats are lighter than water"
               ],
-              "correctAnswer": "A. Epithelial tissue (glandular epithelium)",
-              "hint": "Invaginated epithelial sheets specialized for secretion.",
-              "workedSolution": "Glands (thyroid, salivary, sweat glands) develop from specialized glandular epithelial tissues specialized for protein or steroid secretion.",
+              "correctAnswer": "A. Saturated fats provide dense, long-term energy storage and thermal insulation in animals, while plants rely on liquid oils for seed reserves",
+              "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+              "workedSolution": "Adipose tissue in animals stores dense energy and provides thermal insulation, while plant seeds store compact oils.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5229,16 +5178,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A39",
               "difficulty": "hard",
-              "prompt": "Why do red blood cells crenate when exposed to seawater ($~3.5\\%\\text{ NaCl}$)?",
+              "prompt": "If a plant tissue is boiled in alcohol, it loses its green color and becomes pale white. Why does this happen?",
               "options": [
-                "A. Salt enters the cell and blows it up",
-                "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
-                "C. Seawater dissolves the cell membrane",
-                "D. Red blood cells absorb salt until they freeze"
+                "A. The alcohol destroys the nucleus",
+                "B. The alcohol dissolves and extracts the chlorophyll pigments from the chloroplasts",
+                "C. The cellulose wall dissolves",
+                "D. Starch turns into glucose"
               ],
-              "correctAnswer": "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
-              "hint": "Seawater has an osmolarity four times higher than blood plasma.",
-              "workedSolution": "Seawater (~1000 mOsm/L) is strongly hypertonic to erythrocytes (~300 mOsm/L), pulling water out by exosmosis and causing cell shriveling (crenation).",
+              "correctAnswer": "B. The alcohol dissolves and extracts the chlorophyll pigments from the chloroplasts",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Boiling in ethanol extracts alcohol-soluble chlorophyll pigments, bleaching the leaf for starch testing.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5246,16 +5195,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A40",
               "difficulty": "hard",
-              "prompt": "What is the structural role of cholesterol embedded within mammalian cell membranes?",
+              "prompt": "Which organ in the human body contains specialized filtration tissues called nephrons that filter waste from blood?",
               "options": [
-                "A. Provides fuel for cellular respiration",
-                "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
-                "C. Forms the genetic code",
-                "D. Blocks all water transport"
+                "A. Kidney",
+                "B. Stomach",
+                "C. Heart",
+                "D. Lung"
               ],
-              "correctAnswer": "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
-              "hint": "Intercalates between fatty acid chains to stabilize membrane fluidity.",
-              "workedSolution": "Cholesterol restrains phospholipid movement at warm temperatures to prevent excess fluidity, while disrupting close packing at cold temperatures to prevent solidification.",
+              "correctAnswer": "A. Kidney",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "The kidney is an excretory organ built from functional nephron units that filter metabolic wastes.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5263,16 +5212,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A41",
               "difficulty": "hard",
-              "prompt": "Which organelle is responsible for synthesizing ribosomal RNA (rRNA) and assembling the large and small subunits of ribosomes?",
+              "prompt": "Why is the presence of a cell wall advantageous to terrestrial plants living in unpredictable rainfall conditions?",
               "options": [
-                "A. Nucleolus",
-                "B. Golgi apparatus",
-                "C. Centriole",
-                "D. Peroxisome"
+                "A. It lets the plant move toward water bodies",
+                "B. It prevents cellular lysis when water is plentiful and provides mechanical support to stay upright without an internal skeleton",
+                "C. It allows roots to absorb soil minerals without using energy",
+                "D. It blocks all evaporation permanently"
               ],
-              "correctAnswer": "A. Nucleolus",
-              "hint": "A prominent non-membranous nuclear sub-structure.",
-              "workedSolution": "The nucleolus organizes around chromosomal nucleolar organizer regions (NORs) to transcribe pre-rRNA and assemble ribosomal subunits.",
+              "correctAnswer": "B. It prevents cellular lysis when water is plentiful and provides mechanical support to stay upright without an internal skeleton",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Cell walls provide structural rigidity and protect cells from osmotic bursting during heavy hydration.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5280,16 +5229,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A42",
               "difficulty": "hard",
-              "prompt": "How does the structural organization of compact bone tissue (osteons) combine high mechanical compressive strength with lightweight efficiency?",
+              "prompt": "Which statement correctly describes how single-celled organisms reproduce compared to multicellular organisms?",
               "options": [
-                "A. Bone is solid iron",
-                "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
-                "C. Bones are filled with air only",
-                "D. Bone cells have no extracellular matrix"
+                "A. A single cell divides to form two autonomous new organisms, whereas in multicellular organisms cell division primarily supports growth and tissue repair",
+                "B. Single-celled organisms never divide",
+                "C. Multicellular organisms cannot divide cells",
+                "D. Single-celled organisms use organ systems to reproduce"
               ],
-              "correctAnswer": "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
-              "hint": "The Haversian system / osteon structure.",
-              "workedSolution": "Osteons consist of concentric mineralized lamellae reinforced by helical collagen fibers surrounding vascular Haversian canals, optimizing weight-to-strength ratios.",
+              "correctAnswer": "A. A single cell divides to form two autonomous new organisms, whereas in multicellular organisms cell division primarily supports growth and tissue repair",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "In unicellular organisms, division produces a new individual; in multicellular organisms, it drives growth and repair.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5297,16 +5246,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A43",
               "difficulty": "hard",
-              "prompt": "Why can unicellular Paramecium organisms propel themselves through pond water at speeds exceeding 50 body lengths per second?",
+              "prompt": "What primary adaptation enables root hair cells to absorb large volumes of soil water and dissolved minerals efficiently?",
               "options": [
-                "A. They have rocket engines",
-                "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
-                "C. They have legs",
-                "D. Water pushes them passively"
+                "A. They have multiple nuclei",
+                "B. They feature an elongated tubular projection that significantly increases their surface area-to-volume ratio",
+                "C. They are packed with green chloroplasts",
+                "D. They have an impermeable wax layer"
               ],
-              "correctAnswer": "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
-              "hint": "Metachronal rhythm coordination of cilia.",
-              "workedSolution": "Paramecia are covered with ~4,000 cilia coordinated by subpellicular fiber networks into rhythmic metachronal waves that generate hydrodynamic thrust.",
+              "correctAnswer": "B. They feature an elongated tubular projection that significantly increases their surface area-to-volume ratio",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "The elongated hair-like extension expands the surface area available for osmotic uptake and mineral transport.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5314,16 +5263,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A44",
               "difficulty": "hard",
-              "prompt": "What is the key difference between simple diffusion and facilitated diffusion across biological membranes?",
+              "prompt": "Why do animal cells maintain an active sodium-potassium pump in their cell membranes?",
               "options": [
-                "A. Simple diffusion requires ATP; facilitated does not",
-                "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
-                "C. Simple diffusion only transports ions",
-                "D. Facilitated diffusion moves substances against their gradient"
+                "A. To maintain electrochemical gradients and osmotic equilibrium, preventing cellular swelling and lysis",
+                "B. To turn cytoplasm into a solid",
+                "C. To synthesize cellulose",
+                "D. To pump blood through the cell"
               ],
-              "correctAnswer": "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
-              "hint": "Both are passive, but one requires integral carrier/channel proteins.",
-              "workedSolution": "Simple diffusion occurs directly through the lipid bilayer (e.g. $O_2, CO_2$), while facilitated diffusion requires integral membrane proteins (e.g. glucose, $K^+$) without metabolic energy.",
+              "correctAnswer": "A. To maintain electrochemical gradients and osmotic equilibrium, preventing cellular swelling and lysis",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Active ion pumping maintains osmotic balance and prevents excessive water intake and lysis in animal cells.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5331,16 +5280,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A45",
               "difficulty": "hard",
-              "prompt": "Why do stomata close at night in most $C_3$ and $C_4$ plants?",
+              "prompt": "Which of the following represents an organ system in plants responsible for transporting carbohydrates synthesized in leaves down to the roots?",
               "options": [
-                "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
-                "B. The leaf cells freeze every night",
-                "C. Stomata are closed by gravity",
-                "D. Leaves drop off at night"
+                "A. Stomatal pores",
+                "B. Phloem vascular transport tissue system",
+                "C. Epidermal wax",
+                "D. Root cap"
               ],
-              "correctAnswer": "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
-              "hint": "Darkness halts photosynthetic carbon fixation.",
-              "workedSolution": "Without light, light-dependent proton pumping stops in guard cells, releasing potassium ions and water by exosmosis to render cells flaccid and close stomata.",
+              "correctAnswer": "B. Phloem vascular transport tissue system",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Phloem tissue translocates photosynthesized sugars from source leaves to sink tissues like roots.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5348,16 +5297,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A46",
               "difficulty": "hard",
-              "prompt": "Which organelle is responsible for synthesizing the cell plate during cytokinesis in dividing plant cells?",
+              "prompt": "Why are lysosomes sometimes referred to as 'suicide bags' of the cell?",
               "options": [
-                "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
-                "B. Centrosomes",
-                "C. Mitochondria",
-                "D. Central vacuole"
+                "A. They produce poisonous gases during respiration",
+                "B. If ruptured, their hydrolytic enzymes can digest and destroy the entire cell from the inside",
+                "C. They trap carbon dioxide",
+                "D. They build the cell wall"
               ],
-              "correctAnswer": "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
-              "hint": "Vesicles carry pectin and cellulose precursors to build the new cross wall.",
-              "workedSolution": "During telophase, Golgi-derived phragmoplast vesicles carry pectin and cell wall precursors to the equatorial plane, coalescing into the cell plate and middle lamella.",
+              "correctAnswer": "B. If ruptured, their hydrolytic enzymes can digest and destroy the entire cell from the inside",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Lysosomes contain acidic hydrolases; releasing them into the cytoplasm causes autolysis and cell death.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5365,16 +5314,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A47",
               "difficulty": "hard",
-              "prompt": "How does the myelin sheath produced by Schwann cells around peripheral axons speed up nerve impulse transmission?",
+              "prompt": "What is the biological advantage of having membrane-bound organelles in eukaryotic cells compared to simpler prokaryotic bacteria?",
               "options": [
-                "A. It heats the axon to 100°C",
-                "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
-                "C. It converts nerve signals into sound waves",
-                "D. It generates oxygen"
+                "A. It allows incompatible biochemical reactions to take place simultaneously in separate, optimized compartments",
+                "B. It makes the cell completely invisible",
+                "C. It eliminates the need for a cell membrane",
+                "D. It stops all respiration"
               ],
-              "correctAnswer": "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
-              "hint": "Saltatory conduction across unmyelinated nodes.",
-              "workedSolution": "Myelin's high lipid resistance prevents trans-membrane ion leakage, causing depolarizing currents to jump rapidly between unmyelinated Nodes of Ranvier (saltatory conduction).",
+              "correctAnswer": "A. It allows incompatible biochemical reactions to take place simultaneously in separate, optimized compartments",
+              "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+              "workedSolution": "Compartmentalization isolates specialized biochemical environments (e.g., acid hydrolases in lysosomes, respiration in mitochondria).",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5382,16 +5331,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A48",
               "difficulty": "hard",
-              "prompt": "What is the physiological role of the enzyme catalase abundant in cellular peroxisomes?",
+              "prompt": "Why does a plant stem bend toward a light source (phototropism) at the cellular level?",
               "options": [
-                "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
-                "B. Synthesizes fatty acids",
-                "C. Absorbs light for photosynthesis",
-                "D. Binds oxygen in red blood cells"
+                "A. Cells on the shaded side elongate more than cells on the illuminated side due to auxin accumulation",
+                "B. The illuminated cells turn into wood",
+                "C. Chloroplasts pull the cell wall physically toward the sun",
+                "D. The nucleus divides only toward light"
               ],
-              "correctAnswer": "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
-              "hint": "Protects cells from oxidative radical damage.",
-              "workedSolution": "Catalase has one of the highest enzymatic turnover rates known, converting toxic $H_2O_2$ byproducts of oxidation into benign water and oxygen gas.",
+              "correctAnswer": "A. Cells on the shaded side elongate more than cells on the illuminated side due to auxin accumulation",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Unequal auxin distribution promotes cell elongation on the shaded side, curving the stem toward light.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5399,16 +5348,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A49",
               "difficulty": "hard",
-              "prompt": "What is the structural basis for the high mechanical flexibility of cartilage compared to bone in the human skeleton?",
+              "prompt": "Which structural feature allows muscle cells to contract and generate physical movement?",
               "options": [
-                "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
-                "B. Cartilage is made of water only",
-                "C. Cartilage is an epithelial tissue",
-                "D. Cartilage cells have no cell walls"
+                "A. Presence of large vacuoles filled with starch",
+                "B. Specialized contractile protein filaments (actin and myosin) powered by mitochondrial energy",
+                "C. Thick cellulose walls",
+                "D. High concentrations of chlorophyll"
               ],
-              "correctAnswer": "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
-              "hint": "Non-mineralized extracellular matrix.",
-              "workedSolution": "Cartilage matrix consists of flexible chondroitin sulfate proteoglycans and collagen fibers, lacking the brittle, rigid calcium hydroxyapatite mineralization of bone.",
+              "correctAnswer": "B. Specialized contractile protein filaments (actin and myosin) powered by mitochondrial energy",
+              "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+              "workedSolution": "Interacting actin and myosin filaments slide past each other, powered by mitochondrial ATP, to produce contraction.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5416,16 +5365,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_CELL_A50",
               "difficulty": "hard",
-              "prompt": "Why can the total magnification of an optical light microscope not be increased indefinitely by simply stacking extra glass lenses?",
+              "prompt": "How does the structure of a multicellular organism illustrate division of labour from the cellular to the organismal level?",
               "options": [
-                "A. The microscope would become too heavy to lift",
-                "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
-                "C. The light bulb would explode",
-                "D. Glass lenses melt when stacked"
+                "A. Specialized cells form distinct tissues, which assemble into organs and systems that handle specific tasks, ensuring the survival of the whole organism",
+                "B. Every individual cell independently handles every single biological task without coordination",
+                "C. Only the heart and brain perform work; other cells remain inactive",
+                "D. Organ systems work against each other in internal competition"
               ],
-              "correctAnswer": "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
-              "hint": "Diffraction barrier restricts useful magnification.",
-              "workedSolution": "The wave nature of visible light limits optical resolution to ~200 nm. Magnifying beyond 1,500× enlarges diffraction blurs without resolving finer detail ('empty magnification').",
+              "correctAnswer": "A. Specialized cells form distinct tissues, which assemble into organs and systems that handle specific tasks, ensuring the survival of the whole organism",
+              "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+              "workedSolution": "Division of labour distributes specialized physiological functions across organized cells, tissues, and organ systems to support the organism.",
               "points": 1,
               "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
@@ -5554,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -6034,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -6231,7 +6180,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -6426,7 +6375,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -6623,7 +6572,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -6820,7 +6769,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -7017,7 +6966,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -7212,7 +7161,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -7408,7 +7357,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -7604,7 +7553,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -7801,7 +7750,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -7999,7 +7948,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -8197,7 +8146,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -8390,7 +8339,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -8585,7 +8534,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -8780,7 +8729,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -8976,7 +8925,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -9173,7 +9122,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T17:15:12.853Z"
+    "updatedAt": "2026-10-02T18:36:25.289Z"
   }
 ];
 
@@ -11741,2451 +11690,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "B7_CELL_MCQ_01",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "Which of the following describes the correct order of biological organization in a multicellular organism, starting from the smallest unit?",
-        "options": [
-          "A. Organism → Tissue → Organ → Cell → Organ System",
-          "B. Cell → Tissue → Organ → Organ System → Organism",
-          "C. Organ → Cell → Tissue → Organ System → Organism",
-          "D. Tissue → Cell → Organ System → Organ → Organism"
-        ],
-        "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
-        "hint": "Think from microscopic building block to the whole living creature.",
-        "workedSolution": "Life is built systematically: individual Cells group into Tissues, tissues form functional Organs, organs coordinate into Organ Systems, which together form the complete Organism.",
-        "points": 1
-      },
-      {
-        "id": "B7_CELL_MCQ_02",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "An organelle found inside a plant leaf cell that absorbs solar energy to manufacture carbohydrates is the:",
-        "options": [
-          "A. Mitochondrion",
-          "B. Cell membrane",
-          "C. Chloroplast",
-          "D. Nucleus"
-        ],
-        "correctAnswer": "C. Chloroplast",
-        "hint": "This organelle contains green chlorophyll pigments.",
-        "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb sunlight to carry out photosynthesis.",
-        "points": 1
-      },
-      {
-        "id": "B7_CELL_MCQ_03",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "A key difference between plant and animal cells is that plant cells:",
-        "options": [
-          "A. Lack a nucleus",
-          "B. Possess a rigid outer cellulose cell wall",
-          "C. Have small, temporary vacuoles",
-          "D. Store carbohydrates as glycogen"
-        ],
-        "correctAnswer": "B. Possess a rigid outer cellulose cell wall",
-        "hint": "Consider the rigid outer encasement that maintains definite shape.",
-        "workedSolution": "Plant cells have an outer cellulose cell wall that gives them structural support and a definite shape. Animal cells lack a cell wall.",
-        "points": 1
-      },
-      {
         "id": "B7_CELL_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The basic structural and functional unit of all living organisms is the:",
+        "prompt": "What is the basic microscopic structural and functional building block of all living organisms?",
         "options": [
-          "A. Organ",
-          "B. Tissue",
-          "C. Cell",
-          "D. System"
+          "A. Atom",
+          "B. Cell",
+          "C. Tissue",
+          "D. Organ"
         ],
-        "correctAnswer": "C. Cell",
-        "hint": "Recall the core tenet of the classical cell theory.",
-        "workedSolution": "The cell is scientifically defined as the fundamental structural and functional unit of all biological organisms.",
+        "correctAnswer": "B. Cell",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "A cell is defined as the fundamental unit of structure and function in all living things.",
         "points": 1
       },
       {
         "id": "B7_CELL_F02",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following scientists was NOT one of the primary contributors to the classical cell theory?",
+        "prompt": "Which of the following describes a group of similar cells working together to perform a specific function?",
         "options": [
-          "A. Matthias Schleiden",
-          "B. Theodor Schwann",
-          "C. Rudolf Virchow",
-          "D. Isaac Newton"
+          "A. Organ",
+          "B. System",
+          "C. Tissue",
+          "D. Organelle"
         ],
-        "correctAnswer": "D. Isaac Newton",
-        "hint": "Newton was a physicist who formulated the laws of universal gravitation and motion.",
-        "workedSolution": "Schleiden, Schwann, and Virchow formulated the biological cell theory, whereas Isaac Newton was a physicist.",
+        "correctAnswer": "C. Tissue",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "A tissue is a collection of cells that have similar shape and size and perform a dedicated function.",
         "points": 1
       },
       {
         "id": "B7_CELL_F03",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which part of the optical microscope is placed closest to the observer's eye?",
+        "prompt": "Which of the following is an example of an organ in the human body?",
         "options": [
-          "A. Objective lens",
-          "B. Eyepiece (ocular lens)",
-          "C. Diaphragm",
-          "D. Condenser"
+          "A. Red blood cell",
+          "B. Muscle tissue",
+          "C. Stomach",
+          "D. Circulatory system"
         ],
-        "correctAnswer": "B. Eyepiece (ocular lens)",
-        "hint": "Also called the ocular lens, it is situated at the top of the body tube.",
-        "workedSolution": "The eyepiece (or ocular lens) is positioned at the top of the body tube through which the observer directly views the magnified image.",
+        "correctAnswer": "C. Stomach",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The stomach is an organ composed of various tissues working together to carry out digestion.",
         "points": 1
       },
       {
         "id": "B7_CELL_F04",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which organelle is universally referred to as the 'powerhouse of the cell'?",
+        "prompt": "Which organelle acts as the control centre of the cell and houses its genetic material?",
         "options": [
-          "A. Ribosome",
-          "B. Chloroplast",
-          "C. Mitochondrion",
-          "D. Vacuole"
+          "A. Mitochondrion",
+          "B. Nucleus",
+          "C. Vacuole",
+          "D. Chloroplast"
         ],
-        "correctAnswer": "C. Mitochondrion",
-        "hint": "This organelle produces adenosine triphosphate (ATP) during aerobic cellular respiration.",
-        "workedSolution": "Mitochondria are known as the powerhouses of the cell because they synthesize ATP through cellular respiration.",
+        "correctAnswer": "B. Nucleus",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The nucleus controls all vital cellular activities and contains the genetic information (DNA) of the cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_F05",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following structures is found in plant cells but completely absent in animal cells?",
+        "prompt": "The jelly-like fluid that fills the cell and provides a site for chemical reactions is called the:",
         "options": [
-          "A. Cell membrane",
-          "B. Cellulose cell wall",
+          "A. Cell wall",
+          "B. Chloroplast",
           "C. Cytoplasm",
-          "D. Mitochondria"
+          "D. Nucleolus"
         ],
-        "correctAnswer": "B. Cellulose cell wall",
-        "hint": "It gives plants their rigid polygonal structure and is made of cellulose.",
-        "workedSolution": "The rigid cellulose cell wall is found exclusively in plant cells and provides external structural support.",
+        "correctAnswer": "C. Cytoplasm",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cytoplasm is the cellular matrix where internal organelles are suspended and metabolic reactions occur.",
         "points": 1
       },
       {
         "id": "B7_CELL_F06",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which organelle contains the green pigment chlorophyll responsible for capturing sunlight?",
+        "prompt": "Which cell structure is described as the 'powerhouse of the cell' because it produces energy via cellular respiration?",
         "options": [
-          "A. Nucleus",
+          "A. Mitochondrion",
           "B. Chloroplast",
-          "C. Centrosome",
-          "D. Tonoplast"
+          "C. Nucleus",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. Chloroplast",
-        "hint": "It is the site of carbohydrate synthesis in photosynthetic plant cells.",
-        "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb light energy to drive the chemical reactions of photosynthesis.",
+        "correctAnswer": "A. Mitochondrion",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Mitochondria produce cellular energy through cellular respiration.",
         "points": 1
       },
       {
         "id": "B7_CELL_F07",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the primary role of the cell nucleus?",
+        "prompt": "Which of the following structures is found ONLY in plant cells?",
         "options": [
-          "A. Pumping water into the vacuole",
-          "B. Controlling all cellular activities and housing genetic material (DNA)",
-          "C. Digesting extracellular bacteria",
-          "D. Producing chlorophyll pigments"
+          "A. Cell membrane",
+          "B. Cellulose cell wall",
+          "C. Mitochondrion",
+          "D. Nucleus"
         ],
-        "correctAnswer": "B. Controlling all cellular activities and housing genetic material (DNA)",
-        "hint": "It acts as the executive control headquarters of the cell.",
-        "workedSolution": "The nucleus contains genetic material (DNA/chromosomes) and directs all cellular activities, including protein synthesis and cell division.",
+        "correctAnswer": "B. Cellulose cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "A rigid cellulose cell wall is characteristic of plant cells and is absent in animal cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_F08",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which chemical solution is commonly used to stain onion epidermal cells during wet mount preparation?",
+        "prompt": "What is the green pigment found inside chloroplasts that traps sunlight for photosynthesis?",
         "options": [
-          "A. Concentrated sulfuric acid",
-          "B. Dilute iodine solution",
-          "C. Cooking oil",
-          "D. Distilled water"
+          "A. Cytoplasm",
+          "B. Cellulose",
+          "C. Chlorophyll",
+          "D. Glycogen"
         ],
-        "correctAnswer": "B. Dilute iodine solution",
-        "hint": "It stains starch and cell structures brown/yellow to enhance optical contrast.",
-        "workedSolution": "Dilute iodine solution stains nuclei and cell walls, creating visual contrast under optical light microscopy.",
+        "correctAnswer": "C. Chlorophyll",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Chlorophyll is the green pigment in chloroplasts that absorbs sunlight for food production.",
         "points": 1
       },
       {
         "id": "B7_CELL_F09",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which microscope knob should be used FIRST to locate the specimen under low-power magnification?",
+        "prompt": "Which structure controls the movement of materials into and out of the cell?",
         "options": [
-          "A. Fine adjustment knob",
-          "B. Coarse adjustment knob",
-          "C. Diaphragm lever",
-          "D. Revolving nosepiece"
+          "A. Cell wall",
+          "B. Cell membrane",
+          "C. Vacuole",
+          "D. Chloroplast"
         ],
-        "correctAnswer": "B. Coarse adjustment knob",
-        "hint": "It moves the stage rapidly to establish the initial approximate focal plane.",
-        "workedSolution": "The coarse adjustment knob moves the stage in large increments to quickly bring the specimen into initial focus under low power.",
+        "correctAnswer": "B. Cell membrane",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cell membrane acts as a semi-permeable barrier controlling what enters and leaves the cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_F10",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the jelly-like fluid that fills the interior of the cell outside the nucleus?",
+        "prompt": "In what form do plant cells store excess carbohydrates?",
         "options": [
-          "A. Cytoplasm",
-          "B. Cell sap",
-          "C. Nucleoplasm",
-          "D. Synovial fluid"
+          "A. Glycogen",
+          "B. Starch",
+          "C. Fat",
+          "D. Glucose"
         ],
-        "correctAnswer": "A. Cytoplasm",
-        "hint": "It provides an aqueous medium for cellular organelles and metabolic reactions.",
-        "workedSolution": "The cytoplasm is the gelatinous fluid comprising water, dissolved solutes, and suspended organelles within the cell membrane.",
+        "correctAnswer": "B. Starch",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plant cells store reserve carbohydrates in the form of starch granules.",
         "points": 1
       },
       {
         "id": "B7_CELL_F11",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "If a microscope has a 10× eyepiece and a 10× objective lens, the total magnification is:",
+        "prompt": "In what form do animal cells store reserve carbohydrates?",
         "options": [
-          "A. 20×",
-          "B. 100×",
-          "C. 10×",
-          "D. 1000×"
+          "A. Cellulose",
+          "B. Starch",
+          "C. Glycogen",
+          "D. Sucrose"
         ],
-        "correctAnswer": "B. 100×",
-        "hint": "Multiply eyepiece magnification by objective magnification (10 × 10).",
-        "workedSolution": "Total magnification = Eyepiece (10×) × Objective (10×) = 100×.",
+        "correctAnswer": "C. Glycogen",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Animal cells store excess carbohydrates as glycogen.",
         "points": 1
       },
       {
         "id": "B7_CELL_F12",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which boundary regulates the entry and exit of substances in and out of an animal cell?",
+        "prompt": "What gives plant cells their regular and fixed geometric shape?",
         "options": [
-          "A. Cellulose cell wall",
-          "B. Cell membrane (plasma membrane)",
-          "C. Nuclear pore",
-          "D. Tonoplast"
+          "A. The cell membrane",
+          "B. The rigid cellulose cell wall",
+          "C. The cytoplasm",
+          "D. The chloroplasts"
         ],
-        "correctAnswer": "B. Cell membrane (plasma membrane)",
-        "hint": "It is a selectively permeable phospholipid bilayer.",
-        "workedSolution": "The cell membrane (plasma membrane) is selectively permeable, regulating the passage of solutes and water into and out of animal cells.",
+        "correctAnswer": "B. The rigid cellulose cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The rigid cell wall encloses plant cells, giving them a definite, regular shape.",
         "points": 1
       },
       {
         "id": "B7_CELL_F13",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the shape of a typical mature plant cell compared to an animal cell?",
+        "prompt": "Which of the following correctly describes the shape of typical animal cells?",
         "options": [
-          "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
-          "B. Plant cells are completely circular and animal cells are square",
-          "C. Both plant and animal cells are strictly triangular",
-          "D. Animal cells are always larger than plant cells"
+          "A. Fixed and rectangular",
+          "B. Definite hexagonal",
+          "C. Irregular and flexible",
+          "D. Rigid crystalline"
         ],
-        "correctAnswer": "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
-        "hint": "The rigid cell wall restricts plant cells into angular polygonal contours.",
-        "workedSolution": "Because of the rigid cellulose cell wall, plant cells possess a definite regular polygonal geometry, whereas animal cells have flexible, variable contours.",
+        "correctAnswer": "C. Irregular and flexible",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Because they lack a rigid cell wall, animal cells have an irregular or flexible shape.",
         "points": 1
       },
       {
         "id": "B7_CELL_F14",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "A group of similar cells working together to perform a specific biological task is called a(n):",
+        "prompt": "Which organelle occupies a large, central, and permanent space in a mature plant cell?",
         "options": [
-          "A. Organ",
-          "B. Organelle",
-          "C. Tissue",
-          "D. Organism"
+          "A. Mitochondrion",
+          "B. Nucleus",
+          "C. Vacuole",
+          "D. Ribosome"
         ],
-        "correctAnswer": "C. Tissue",
-        "hint": "Examples include muscle tissue and vascular xylem tissue.",
-        "workedSolution": "A tissue is defined as a cluster of specialized cells having similar structure and collaborating to execute a specific function.",
+        "correctAnswer": "C. Vacuole",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Plant cells possess one or a few large, central, permanent vacuoles filled with cell sap.",
         "points": 1
       },
       {
         "id": "B7_CELL_F15",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is an example of an organ in the human body?",
+        "prompt": "How are vacuoles described in animal cells compared to plant cells?",
         "options": [
-          "A. Red blood cell",
-          "B. Heart",
-          "C. Nucleus",
-          "D. Epithelial tissue"
+          "A. Large and permanent",
+          "B. Small, numerous, and temporary",
+          "C. Completely absent in all animals",
+          "D. Filled with chlorophyll"
         ],
-        "correctAnswer": "B. Heart",
-        "hint": "It is composed of muscle, nervous, and connective tissues working together.",
-        "workedSolution": "The heart is an organ composed of multiple coordinated tissues (cardiac muscle, nerve, epithelial, and connective tissues).",
+        "correctAnswer": "B. Small, numerous, and temporary",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Animal cells feature small, scattered, and temporary vacuoles.",
         "points": 1
       },
       {
         "id": "B7_CELL_F16",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which specialized human cell has a biconcave disc shape and lacks a nucleus at maturity?",
+        "prompt": "Which of the following is the correct order of organization from simplest to most complex?",
         "options": [
-          "A. White blood cell",
-          "B. Red blood cell (erythrocyte)",
-          "C. Sperm cell",
-          "D. Nerve cell"
+          "A. Organism → System → Organ → Tissue → Cell",
+          "B. Cell → Tissue → Organ → Organ System → Organism",
+          "C. Tissue → Cell → Organ → Organism → System",
+          "D. Cell → Organ → Tissue → Organ System → Organism"
         ],
-        "correctAnswer": "B. Red blood cell (erythrocyte)",
-        "hint": "It is filled with haemoglobin to transport respiratory oxygen.",
-        "workedSolution": "Mature mammalian red blood cells are enucleated biconcave discs designed to pack maximum haemoglobin for oxygen transport.",
+        "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The hierarchy of biological organization proceeds from Cell to Tissue, Organ, Organ System, and Organism.",
         "points": 1
       },
       {
         "id": "B7_CELL_F17",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The long whip-like tail that propels a sperm cell forward during swimming is called a:",
+        "prompt": "What is the primary substance used to construct a plant cell wall?",
         "options": [
-          "A. Cilium",
-          "B. Flagellum",
-          "C. Pseudopodium",
-          "D. Dendrite"
+          "A. Protein",
+          "B. Cellulose",
+          "C. Glycogen",
+          "D. Lipid"
         ],
-        "correctAnswer": "B. Flagellum",
-        "hint": "It uses ATP energy to lash from side to side.",
-        "workedSolution": "The flagellum is the elongated motility apparatus that propels the sperm cell through fluid media toward the ovum.",
+        "correctAnswer": "B. Cellulose",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plant cell walls are made predominantly of strong cellulose fibers.",
         "points": 1
       },
       {
         "id": "B7_CELL_F18",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the primary function of a plant root hair cell?",
+        "prompt": "Which organelle contains liquid cell sap composed of water, dissolved sugars, and mineral salts?",
         "options": [
-          "A. Photosynthesis to make sugars",
-          "B. Absorption of water and mineral salts from the soil",
-          "C. Transport of pollen grains",
-          "D. Protection against herbivores"
+          "A. Vacuole",
+          "B. Nucleus",
+          "C. Chloroplast",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. Absorption of water and mineral salts from the soil",
-        "hint": "Its long projection extends directly into interstitial soil water.",
-        "workedSolution": "Root hair cells have long cytoplasmic extensions that increase the surface area for absorbing soil moisture and dissolved mineral ions.",
+        "correctAnswer": "A. Vacuole",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The vacuole functions as a reservoir storing water, mineral salts, and organic compounds.",
         "points": 1
       },
       {
         "id": "B7_CELL_F19",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which plant cells are packed with chloroplasts and arranged vertically beneath the upper leaf surface?",
+        "prompt": "A group of different organs working together to perform a broad physiological function is an:",
         "options": [
-          "A. Spongy mesophyll cells",
-          "B. Palisade mesophyll cells",
-          "C. Epidermal cells",
-          "D. Root cells"
+          "A. Organelle",
+          "B. Organ System",
+          "C. Organism",
+          "D. Tissue"
         ],
-        "correctAnswer": "B. Palisade mesophyll cells",
-        "hint": "They are the primary sites of photosynthetic carbohydrate manufacture.",
-        "workedSolution": "Palisade mesophyll cells are columnar cells densely packed with chloroplasts to maximize sunlight absorption for photosynthesis.",
+        "correctAnswer": "B. Organ System",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "An organ system is an interrelated group of organs working collectively to accomplish life processes.",
         "points": 1
       },
       {
         "id": "B7_CELL_F20",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What structure on the microscope supports the glass slide directly under the objective lens?",
+        "prompt": "Which of the following is considered an individual living organism?",
         "options": [
-          "A. Mirror",
-          "B. Stage",
-          "C. Base",
-          "D. Arm"
+          "A. A leaf epidermal layer",
+          "B. A human white blood cell",
+          "C. A single tilapia fish",
+          "D. The heart muscle"
         ],
-        "correctAnswer": "B. Stage",
-        "hint": "It has a central aperture allowing light to pass through the specimen.",
-        "workedSolution": "The stage is the flat platform fitted with metal clips where the specimen glass slide is positioned for viewing.",
+        "correctAnswer": "C. A single tilapia fish",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "A fish is an autonomous, complete individual living being (an organism).",
         "points": 1
       },
       {
         "id": "B7_CELL_F21",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "In a plant cell, the large central vacuole is filled with a watery solution known as:",
+        "prompt": "Which of the following structures is common to BOTH plant and animal cells?",
         "options": [
-          "A. Cytosol",
-          "B. Cell sap",
-          "C. Blood plasma",
-          "D. Bile"
+          "A. Chloroplast",
+          "B. Cellulose cell wall",
+          "C. Cell membrane",
+          "D. Large permanent vacuole"
         ],
-        "correctAnswer": "B. Cell sap",
-        "hint": "It contains dissolved sugars, mineral salts, and organic acids.",
-        "workedSolution": "The fluid inside a plant's central vacuole is cell sap, which maintains cellular turgor and stores metabolic reserves.",
+        "correctAnswer": "C. Cell membrane",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Both plant and animal cells are bounded by a functional cell membrane.",
         "points": 1
       },
       {
         "id": "B7_CELL_F22",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which pair of specialized cells on a plant leaf opens and closes the stomatal pores?",
+        "prompt": "Where does photosynthesis take place inside a plant cell?",
         "options": [
-          "A. Guard cells",
-          "B. Root hair cells",
-          "C. Xylem cells",
-          "D. Sieve tube elements"
+          "A. Nucleus",
+          "B. Chloroplast",
+          "C. Mitochondrion",
+          "D. Vacuole"
         ],
-        "correctAnswer": "A. Guard cells",
-        "hint": "They are kidney-shaped cells surrounding each stomatal aperture.",
-        "workedSolution": "Paired guard cells regulate stomatal opening and closing to balance transpirational water loss and gaseous exchange.",
+        "correctAnswer": "B. Chloroplast",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Photosynthesis occurs inside chloroplasts using trapped solar energy.",
         "points": 1
       },
       {
         "id": "B7_CELL_F23",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which cell organelle is responsible for synthesizing proteins?",
+        "prompt": "Which cell structure protects plant cells from bursting when taking in water?",
         "options": [
-          "A. Ribosome",
-          "B. Lysosome",
-          "C. Chloroplast",
-          "D. Vacuole"
+          "A. Cell wall",
+          "B. Cell membrane",
+          "C. Nucleus",
+          "D. Cytoplasm"
         ],
-        "correctAnswer": "A. Ribosome",
-        "hint": "They can be found free in the cytoplasm or attached to the rough endoplasmic reticulum.",
-        "workedSolution": "Ribosomes are granular ribonucleoprotein complexes that assemble amino acids into polypeptide chains (proteins).",
+        "correctAnswer": "A. Cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The tough cellulose cell wall provides structural support and resists internal hydrostatic pressure.",
         "points": 1
       },
       {
         "id": "B7_CELL_F24",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Why should a glass coverslip be lowered onto a wet mount at an angle of 45°?",
+        "prompt": "Which of the following is an example of human tissue?",
         "options": [
-          "A. To break the glass slide",
-          "B. To prevent the formation of trapped air bubbles",
-          "C. To evaporate the liquid stain",
-          "D. To kill any living bacteria"
+          "A. Blood cell",
+          "B. Muscle tissue",
+          "C. Kidney",
+          "D. Brain"
         ],
-        "correctAnswer": "B. To prevent the formation of trapped air bubbles",
-        "hint": "Air bubbles appear as black rings under the microscope and obstruct specimen visibility.",
-        "workedSolution": "Lowering the coverslip gently at 45° pushes out air pockets, preventing trapped bubbles that interfere with observation.",
+        "correctAnswer": "B. Muscle tissue",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Muscle tissue consists of a cooperative sheet of specialized contractile muscle cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_F25",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which microscope component controls the amount of light passing through the stage aperture?",
+        "prompt": "Which of the following is an example of a plant organ?",
         "options": [
-          "A. Eyepiece",
-          "B. Iris diaphragm",
-          "C. Revolving nosepiece",
-          "D. Body tube"
+          "A. Chloroplast",
+          "B. Leaf",
+          "C. Guard cell",
+          "D. Root hair cell"
         ],
-        "correctAnswer": "B. Iris diaphragm",
-        "hint": "Adjusting its opening brightens or dims the illuminated field of view.",
-        "workedSolution": "The iris diaphragm regulates the diameter of the light cone passing through the specimen to optimize image contrast.",
+        "correctAnswer": "B. Leaf",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "A leaf is a plant organ composed of vascular, epidermal, and photosynthetic tissues.",
         "points": 1
       },
       {
         "id": "B7_CELL_F26",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What carbohydrate compound forms the structural fibers of a plant cell wall?",
+        "prompt": "Why are animal cells unable to produce their own food?",
         "options": [
-          "A. Starch",
-          "B. Glycogen",
-          "C. Cellulose",
-          "D. Glucose"
+          "A. They lack a nucleus",
+          "B. They lack chloroplasts containing chlorophyll",
+          "C. They do not have mitochondria",
+          "D. They have an irregular shape"
         ],
-        "correctAnswer": "C. Cellulose",
-        "hint": "A tough, insoluble structural polysaccharide.",
-        "workedSolution": "Cellulose microfibrils provide the tensile strength and rigidity characteristic of plant cell walls.",
+        "correctAnswer": "B. They lack chloroplasts containing chlorophyll",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Animal cells lack chloroplasts and chlorophyll, meaning they cannot undergo photosynthesis.",
         "points": 1
       },
       {
         "id": "B7_CELL_F27",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is an example of an organ system?",
+        "prompt": "Internal compartments within a eukaryotic cell that carry out distinct roles are called:",
         "options": [
-          "A. Stomach",
-          "B. Digestive system",
-          "C. Epithelial lining",
-          "D. Smooth muscle cell"
+          "A. Organelles",
+          "B. Organ systems",
+          "C. Tissues",
+          "D. Microbes"
         ],
-        "correctAnswer": "B. Digestive system",
-        "hint": "It includes the mouth, esophagus, stomach, liver, pancreas, and intestines.",
-        "workedSolution": "An organ system is an integrated network of organs working symbiotically to achieve a major physiological life process.",
+        "correctAnswer": "A. Organelles",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Organelles are specialized, membrane-bound internal subunits within eukaryotic cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_F28",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "In which form do animal cells store excess glucose carbohydrates?",
+        "prompt": "Which part of the cell holds the genetic instructions that are passed on to offspring?",
         "options": [
-          "A. Starch",
-          "B. Glycogen",
-          "C. Cellulose",
-          "D. Sucrose"
+          "A. Cytoplasm",
+          "B. Vacuole",
+          "C. Nucleus",
+          "D. Cell wall"
         ],
-        "correctAnswer": "B. Glycogen",
-        "hint": "Often called 'animal starch', stored predominantly in the liver and skeletal muscles.",
-        "workedSolution": "Animal cells store excess carbohydrates as branched glycogen granules, whereas plant cells store starch.",
+        "correctAnswer": "C. Nucleus",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The nucleus houses the genetic material (DNA) that carries inheritable instructions.",
         "points": 1
       },
       {
         "id": "B7_CELL_F29",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following organisms is unicellular (made of only one cell)?",
+        "prompt": "The circulatory system consists of organs such as the heart and blood vessels working together. This is an example of an:",
         "options": [
-          "A. Amoeba",
-          "B. Earthworm",
-          "C. Mango tree",
-          "D. Housefly"
+          "A. Organelle",
+          "B. Organ system",
+          "C. Organism",
+          "D. Individual cell"
         ],
-        "correctAnswer": "A. Amoeba",
-        "hint": "A single-celled protozoan that moves using pseudopodia.",
-        "workedSolution": "Amoeba is a single-celled microscopic organism capable of executing all vital life functions within a single cell.",
+        "correctAnswer": "B. Organ system",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "A coordinated collective of interrelated organs forms an organ system.",
         "points": 1
       },
       {
         "id": "B7_CELL_F30",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Why do plant cells lack centrioles but still divide successfully?",
+        "prompt": "What is the primary function of the mitochondrion?",
         "options": [
-          "A. Plant cells do not divide",
-          "B. Plant cells organize their spindle fibers without centrioles",
-          "C. Plant cells only divide by budding",
-          "D. Centrioles are only needed for feeding"
+          "A. Photosynthesis",
+          "B. Cellular respiration to produce energy",
+          "C. Storing sap",
+          "D. Making the cell wall"
         ],
-        "correctAnswer": "B. Plant cells organize their spindle fibers without centrioles",
-        "hint": "Higher plant cells possess microtubule organizing centers instead of centrioles.",
-        "workedSolution": "Higher plant cells lack centrioles, organizing their mitotic spindles through specialized cytoplasm regions without centrosomes.",
+        "correctAnswer": "B. Cellular respiration to produce energy",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria are the sites of cellular respiration where energy is produced for cell functions.",
         "points": 1
       },
       {
         "id": "B7_CELL_F31",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which specialized human cell has long branching extensions called dendrites and an axon?",
+        "prompt": "What type of lipid storage is most typical in animal cells?",
         "options": [
-          "A. Red blood cell",
-          "B. Nerve cell (neuron)",
-          "C. Muscle cell",
-          "D. White blood cell"
+          "A. Starch",
+          "B. Fats",
+          "C. Oils",
+          "D. Waxes"
         ],
-        "correctAnswer": "B. Nerve cell (neuron)",
-        "hint": "It transmits electrical impulses throughout the nervous system.",
-        "workedSolution": "Nerve cells (neurons) feature elongated axons and branched dendrites for conducting electro-chemical impulses.",
+        "correctAnswer": "B. Fats",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Animal cells primarily store lipids as solid adipose fats, whereas plant cells tend to store oils.",
         "points": 1
       },
       {
         "id": "B7_CELL_F32",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the function of the revolving nosepiece on an optical microscope?",
+        "prompt": "Which of the following is true about the cell membrane?",
         "options": [
-          "A. Adjusts illumination brightness",
-          "B. Rotates to select different objective lenses",
-          "C. Holds the glass slide in place",
-          "D. Raises the eyepiece"
+          "A. It is rigid and completely impermeable",
+          "B. It is flexible and selectively permeable",
+          "C. It is only found in plant cells",
+          "D. It produces chlorophyll"
         ],
-        "correctAnswer": "B. Rotates to select different objective lenses",
-        "hint": "It clicks into position when shifting between 4×, 10×, and 40× lenses.",
-        "workedSolution": "The revolving nosepiece is the circular rotating turret that permits rapid selection of different objective lenses.",
+        "correctAnswer": "B. It is flexible and selectively permeable",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cell membrane is flexible and controls the selective passage of substances in and out of the cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_F33",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which term describes a cell membrane that permits only certain molecules to pass through while blocking others?",
+        "prompt": "Which structure gives mechanical support and firmness to non-woody plant stems?",
         "options": [
-          "A. Fully permeable",
-          "B. Selectively (semi-) permeable",
-          "C. Impermeable",
-          "D. Solid"
+          "A. Small vacuoles",
+          "B. Turgid central vacuole and cell wall",
+          "C. Red blood cells",
+          "D. Mitochondria"
         ],
-        "correctAnswer": "B. Selectively (semi-) permeable",
-        "hint": "It acts like a security filter guarding cell entry.",
-        "workedSolution": "A selectively (or semi-) permeable membrane regulates the passage of water and specific solutes while restricting others.",
+        "correctAnswer": "B. Turgid central vacuole and cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "A cell sap-filled central vacuole exerting turgor pressure against a rigid cell wall provides mechanical support.",
         "points": 1
       },
       {
         "id": "B7_CELL_F34",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Where is the genetic code (DNA) located inside a eukaryotic plant or animal cell?",
+        "prompt": "Which of the following is an example of an individual cell in the human body?",
         "options": [
-          "A. In the cell wall",
-          "B. Inside the nucleus",
-          "C. In the vacuole",
-          "D. Inside the cell membrane"
+          "A. Kidney",
+          "B. Skin nerve cell (neuron)",
+          "C. Heart",
+          "D. Lungs"
         ],
-        "correctAnswer": "B. Inside the nucleus",
-        "hint": "Packaged into chromatin threads and chromosomes.",
-        "workedSolution": "DNA is enclosed within the nuclear envelope inside the nucleus in all eukaryotic cells.",
+        "correctAnswer": "B. Skin nerve cell (neuron)",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "A nerve cell (neuron) is an individual cellular unit.",
         "points": 1
       },
       {
         "id": "B7_CELL_F35",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the biological term for the net movement of water molecules across a selectively permeable membrane?",
+        "prompt": "What happens when an animal cell is placed in plain water without an outer cell wall to protect it?",
         "options": [
-          "A. Active transport",
-          "B. Osmosis",
-          "C. Transpiration",
-          "D. Evaporation"
+          "A. It stays rigid like wood",
+          "B. It may take in excess water, swell, and burst",
+          "C. It immediately produces chloroplasts",
+          "D. It divides into a plant cell"
         ],
-        "correctAnswer": "B. Osmosis",
-        "hint": "Movement from high water potential (dilute) to low water potential (concentrated).",
-        "workedSolution": "Osmosis is the spontaneous passage of solvent water molecules across a selectively permeable membrane down a water potential gradient.",
+        "correctAnswer": "B. It may take in excess water, swell, and burst",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Without a tough cellulose wall to restrict expansion, excessive water intake causes animal cells to burst.",
         "points": 1
       },
       {
         "id": "B7_CELL_F36",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is considered an organ in vascular plants?",
+        "prompt": "What is the main function of the plant cell wall?",
         "options": [
-          "A. Chloroplast",
-          "B. Leaf",
-          "C. Palisade cell",
-          "D. Cellulose"
+          "A. To generate energy through respiration",
+          "B. To provide structural support, shape, and physical protection",
+          "C. To control all biological reproduction",
+          "D. To absorb sunlight"
         ],
-        "correctAnswer": "B. Leaf",
-        "hint": "It is composed of epidermis, vascular bundles, and mesophyll tissues.",
-        "workedSolution": "The leaf is a botanical organ composed of multiple coordinated tissues designed for photosynthesis and gas exchange.",
+        "correctAnswer": "B. To provide structural support, shape, and physical protection",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cell wall provides mechanical strength, supports the cell, and maintains its fixed shape.",
         "points": 1
       },
       {
         "id": "B7_CELL_F37",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Why do red blood cells lack a nucleus when fully mature?",
+        "prompt": "Which of the following organisms is multicellular?",
         "options": [
-          "A. To allow more space for carrying haemoglobin oxygen molecules",
-          "B. Because they do not need proteins",
-          "C. To make them swim faster",
-          "D. Because they are not living cells"
+          "A. Human being",
+          "B. Amoeba",
+          "C. Bacterium",
+          "D. Paramecium"
         ],
-        "correctAnswer": "A. To allow more space for carrying haemoglobin oxygen molecules",
-        "hint": "Enucleation maximizes internal volume for oxygen packaging.",
-        "workedSolution": "Erythrocytes extrude their nuclei during maturation to maximize internal space for haemoglobin, optimizing oxygen transport capacity.",
+        "correctAnswer": "A. Human being",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Humans are multicellular organisms composed of trillions of specialized cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_F38",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What happens to the field of view when you switch from low power (4×) to high power (40×) objective lens?",
+        "prompt": "Which organelle is considered the chemical factory where glucose is synthesized from carbon dioxide and water?",
         "options": [
-          "A. The field of view becomes wider and brighter",
-          "B. The field of view becomes smaller and darker",
-          "C. The field of view remains exactly unchanged",
-          "D. The specimen disappears completely"
+          "A. Mitochondrion",
+          "B. Chloroplast",
+          "C. Vacuole",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. The field of view becomes smaller and darker",
-        "hint": "Higher magnification focuses on a much smaller physical area of the slide.",
-        "workedSolution": "Increasing magnification narrows the observable area (field of view) and reduces light transmission per unit area, making the image darker.",
+        "correctAnswer": "B. Chloroplast",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Chloroplasts conduct photosynthesis to synthesize simple carbohydrates.",
         "points": 1
       },
       {
         "id": "B7_CELL_F39",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is a unicellular green alga that possesses chloroplasts?",
+        "prompt": "Both plant and animal cells carry out cellular respiration. Which organelle facilitates this in both types?",
         "options": [
-          "A. Chlamydomonas",
-          "B. Yeast",
-          "C. Bacterium",
-          "D. Paramecium"
+          "A. Nucleus",
+          "B. Mitochondrion",
+          "C. Cell wall",
+          "D. Chloroplast"
         ],
-        "correctAnswer": "A. Chlamydomonas",
-        "hint": "A photosynthetic single-celled freshwater alga with two flagella.",
-        "workedSolution": "Chlamydomonas is a unicellular green alga containing a cup-shaped chloroplast for autotrophic photosynthesis.",
+        "correctAnswer": "B. Mitochondrion",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria are present in both plant and animal cells to conduct cellular respiration.",
         "points": 1
       },
       {
         "id": "B7_CELL_F40",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the primary function of cilia found on ciliated epithelial cells lining the human respiratory tract?",
+        "prompt": "Which organelle occupies the largest volume of a mature plant cell's cytoplasm?",
         "options": [
-          "A. Absorbing digested food",
-          "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
-          "C. Producing red blood cells",
-          "D. Generating body heat"
+          "A. Nucleus",
+          "B. Large central vacuole",
+          "C. Single mitochondrion",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
-        "hint": "They act as a microscopic escalator clearing the windpipe.",
-        "workedSolution": "Cilia beat rhythmically to propel mucus, inhaled microbes, and dirt particles out of the trachea towards the throat for expulsion.",
+        "correctAnswer": "B. Large central vacuole",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "A prominent central vacuole often occupies up to 90% of the interior volume of mature plant cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_F41",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which optical component gathers and focuses light rays from the mirror onto the microscopic specimen?",
+        "prompt": "Which feature prevents animal cells from forming a rigid rectangular structure?",
         "options": [
-          "A. Condenser",
-          "B. Eyepiece",
-          "C. Stage clip",
-          "D. Arm"
+          "A. Presence of cytoplasm",
+          "B. Absence of a cell wall",
+          "C. Presence of a nucleus",
+          "D. Small vacuoles"
         ],
-        "correctAnswer": "A. Condenser",
-        "hint": "Mounted directly below the stage aperture.",
-        "workedSolution": "The substage condenser focuses light from the illumination source into a concentrated cone on the specimen plane.",
+        "correctAnswer": "B. Absence of a cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Without a rigid cell wall, animal cells are bounded only by a flexible membrane, giving them an irregular shape.",
         "points": 1
       },
       {
         "id": "B7_CELL_F42",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the structural term for the membrane surrounding the large central vacuole in plant cells?",
+        "prompt": "What is the liquid inside a plant vacuole called?",
         "options": [
-          "A. Tonoplast",
-          "B. Crista",
-          "C. Nuclear membrane",
-          "D. Plasma membrane"
+          "A. Blood",
+          "B. Cell sap",
+          "C. Pure alcohol",
+          "D. Cytoplasm"
         ],
-        "correctAnswer": "A. Tonoplast",
-        "hint": "It bounds the vacuolar sap and regulates solute movement into the vacuole.",
-        "workedSolution": "The tonoplast is the specialized semi-permeable membrane enclosing the central plant vacuole.",
+        "correctAnswer": "B. Cell sap",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plant vacuoles are filled with cell sap containing dissolved minerals, sugars, and water.",
         "points": 1
       },
       {
         "id": "B7_CELL_F43",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which level of organization is represented by the human brain?",
+        "prompt": "Which level of organization is represented by the heart pumping blood through arteries and veins?",
         "options": [
-          "A. Tissue",
-          "B. Organ",
-          "C. Organ system",
-          "D. Cellular level"
+          "A. Tissue level",
+          "B. Organ system level",
+          "C. Cellular level",
+          "D. Chemical level"
         ],
-        "correctAnswer": "B. Organ",
-        "hint": "Composed of neurons, neuroglia, and blood vascular tissues.",
-        "workedSolution": "The brain is an anatomical organ executing command and coordination duties within the central nervous system.",
+        "correctAnswer": "B. Organ system level",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The heart operating alongside blood vessels constitutes the circulatory organ system.",
         "points": 1
       },
       {
         "id": "B7_CELL_F44",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the magnification of an objective lens if a 15× eyepiece produces a total magnification of 600×?",
+        "prompt": "Which of the following is true concerning the nucleus?",
         "options": [
-          "A. 20×",
-          "B. 40×",
-          "C. 45×",
-          "D. 60×"
+          "A. It is found only in plant cells",
+          "B. It is found in both plant and animal cells",
+          "C. It absorbs sunlight directly",
+          "D. It is a dead structure"
         ],
-        "correctAnswer": "B. 40×",
-        "hint": "Divide total magnification by eyepiece power: 600 / 15.",
-        "workedSolution": "Objective magnification = Total Magnification / Eyepiece = 600 / 15 = 40×.",
+        "correctAnswer": "B. It is found in both plant and animal cells",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Both eukaryotic plant and animal cells contain a membrane-bound nucleus.",
         "points": 1
       },
       {
         "id": "B7_CELL_F45",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following is NOT present in human cheek epidermal cells?",
+        "prompt": "Plant cells often store lipids in the form of:",
         "options": [
-          "A. Nucleus",
-          "B. Cell membrane",
-          "C. Chloroplast",
-          "D. Cytoplasm"
+          "A. Solid fat",
+          "B. Liquid oils",
+          "C. Starch",
+          "D. Glycogen"
         ],
-        "correctAnswer": "C. Chloroplast",
-        "hint": "Human cells are non-photosynthetic animal cells.",
-        "workedSolution": "Cheek cells are animal cells, meaning they lack chloroplasts and cellulose cell walls.",
+        "correctAnswer": "B. Liquid oils",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plants store lipids predominantly as liquid oils (e.g., groundnut oil, palm oil).",
         "points": 1
       },
       {
         "id": "B7_CELL_F46",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which organelle carries digestive enzymes to break down old, worn-out cell parts?",
+        "prompt": "Which of the following is an example of an organ in a plant?",
         "options": [
-          "A. Lysosome",
-          "B. Chloroplast",
-          "C. Ribosome",
-          "D. Endoplasmic reticulum"
+          "A. Root",
+          "B. Xylem cell",
+          "C. Chlorophyll",
+          "D. Cellulose"
         ],
-        "correctAnswer": "A. Lysosome",
-        "hint": "Often nicknamed the 'suicide bags' or recycling units of the cell.",
-        "workedSolution": "Lysosomes contain hydrolytic enzymes that digest cellular debris, foreign pathogens, and damaged organelles.",
+        "correctAnswer": "A. Root",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Roots, stems, leaves, and flowers are distinct plant organs.",
         "points": 1
       },
       {
         "id": "B7_CELL_F47",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which tissue in flowering plants transports water and dissolved mineral ions upward from roots to leaves?",
+        "prompt": "The cell membrane is described as 'selectively permeable' because it:",
         "options": [
-          "A. Phloem",
-          "B. Xylem",
-          "C. Epidermis",
-          "D. Pith"
+          "A. Lets every substance pass freely without restriction",
+          "B. Blocks all substances from entering or leaving completely",
+          "C. Allows certain substances to pass while restricting others",
+          "D. Can only absorb gases"
         ],
-        "correctAnswer": "B. Xylem",
-        "hint": "Formed of hollow, lignified dead vessel tubes.",
-        "workedSolution": "Xylem tissue consists of hollow, lignified vessels that conduct water and dissolved minerals from roots to the shoot system.",
+        "correctAnswer": "C. Allows certain substances to pass while restricting others",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "A selectively permeable membrane regulates transit, letting useful nutrients enter and wastes exit.",
         "points": 1
       },
       {
         "id": "B7_CELL_F48",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which tissue in flowering plants transports manufactured sucrose sugars downward from leaves to roots and storage organs?",
+        "prompt": "Which of the following organelles is absent in a human cheek cell?",
         "options": [
-          "A. Phloem",
-          "B. Xylem",
-          "C. Cortex",
-          "D. Cuticle"
+          "A. Nucleus",
+          "B. Cell membrane",
+          "C. Chloroplast",
+          "D. Mitochondrion"
         ],
-        "correctAnswer": "A. Phloem",
-        "hint": "Contains living sieve tube elements and companion cells.",
-        "workedSolution": "Phloem tissue translocates photosynthetic carbohydrates (sucrose) and amino acids throughout the plant.",
+        "correctAnswer": "C. Chloroplast",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Human cheek cells are animal cells and do not contain chloroplasts.",
         "points": 1
       },
       {
         "id": "B7_CELL_F49",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the proper way to carry an optical compound microscope across the laboratory?",
+        "prompt": "What is the biological term for a collection of tissues that work together to accomplish a specific function?",
         "options": [
-          "A. By holding only the eyepiece tube",
-          "B. By holding the arm with one hand and supporting the base with the other hand",
-          "C. By carrying it upside down by the stage",
-          "D. By pulling it along the bench by its power cord"
+          "A. Cell",
+          "B. Organ",
+          "C. Organism",
+          "D. Organelle"
         ],
-        "correctAnswer": "B. By holding the arm with one hand and supporting the base with the other hand",
-        "hint": "Two hands ensure balance and prevent dropping optical lenses.",
-        "workedSolution": "Standard laboratory safety mandates gripping the microscope arm firmly with one hand while cupping the heavy base with the other.",
+        "correctAnswer": "B. Organ",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "An organ is built from different types of tissues cooperating to perform specialized tasks.",
         "points": 1
       },
       {
         "id": "B7_CELL_F50",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which statement accurately describes a major difference between prokaryotic (bacteria) and eukaryotic cells?",
+        "prompt": "Which organelle carries out metabolic waste storage alongside water retention in plants?",
         "options": [
-          "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
-          "B. Eukaryotic cells have no DNA",
-          "C. Prokaryotic cells are always multi-cellular",
-          "D. Eukaryotic cells have no cell membrane"
+          "A. Nucleus",
+          "B. Large vacuole",
+          "C. Chloroplast",
+          "D. Ribosome"
         ],
-        "correctAnswer": "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
-        "hint": "'Pro' means before; 'karyon' means nucleus.",
-        "workedSolution": "Prokaryotes (like bacteria) lack a true nuclear membrane enclosing their DNA, while eukaryotes (plants, animals, fungi) possess a membrane-bound nucleus.",
+        "correctAnswer": "B. Large vacuole",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The plant vacuole stores water, nutrients, and cellular waste products.",
         "points": 1
       },
       {
         "id": "B7_CELL_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why does an animal cell burst (undergo lysis) when placed in pure distilled water, while a plant cell does not?",
+        "prompt": "Why do plant cells maintain a fixed, definite shape under high water absorption, while animal cells tend to swell and potentially burst?",
         "options": [
-          "A. Animal cells have larger vacuoles than plant cells",
-          "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
-          "C. Plant cell membranes do not allow water to enter",
-          "D. Plant cells actively pump water out of their chloroplasts"
+          "A. Plant cells possess an outer rigid cellulose cell wall that exerts wall pressure against turgor",
+          "B. Plant cells do not absorb water",
+          "C. Animal cells have thicker membranes than plant cells",
+          "D. Animal cells have larger vacuoles that push against the boundary"
         ],
-        "correctAnswer": "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
-        "hint": "Consider the mechanical tensile strength of the cellulose outer casing.",
-        "workedSolution": "In hypotonic distilled water, endosmosis forces water into both cells. Plant cells develop turgor pressure resisted by their cellulose cell walls, while animal cells lack cell walls and burst (lysis).",
+        "correctAnswer": "A. Plant cells possess an outer rigid cellulose cell wall that exerts wall pressure against turgor",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "The plant cell wall provides mechanical resistance that withstands internal turgor pressure.",
         "points": 1
       },
       {
         "id": "B7_CELL_I02",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What happens to the position of the cell nucleus in a mature, fully developed plant cell?",
+        "prompt": "Which of the following correctly pairs an organelle with its primary biochemical role?",
         "options": [
-          "A. It remains positioned precisely in the center",
-          "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
-          "C. It dissolves into the chloroplasts",
-          "D. It migrates into the cell wall"
+          "A. Chloroplast — Cellular respiration",
+          "B. Mitochondrion — Site of cellular respiration and energy production",
+          "C. Cell Wall — Controlling genetic inheritance",
+          "D. Nucleus — Photosynthesis"
         ],
-        "correctAnswer": "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
-        "hint": "The central sap cavity occupies up to 90% of the interior volume.",
-        "workedSolution": "The development of a single immense central vacuole filled with cell sap exerts pressure outward, displacing the nucleus and cytosol to the periphery against the cell wall.",
+        "correctAnswer": "B. Mitochondrion — Site of cellular respiration and energy production",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria synthesize cellular energy by carrying out respiration.",
         "points": 1
       },
       {
         "id": "B7_CELL_I03",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "When viewing an epidermal wet mount under high power, the image appears blurred and dark. Which two adjustments should you perform?",
+        "prompt": "How does the storage of carbohydrates differ between plant cells and animal cells?",
         "options": [
-          "A. Turn the coarse focus knob rapidly and switch off the light",
-          "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
-          "C. Remove the coverslip and shake the slide",
-          "D. Wipe the objective lens with a rough paper towel"
+          "A. Plants store carbohydrates as cellulose; animals store carbohydrates as glucose",
+          "B. Plants store carbohydrates as starch; animals store carbohydrates as glycogen",
+          "C. Plants store carbohydrates as glycogen; animals store carbohydrates as starch",
+          "D. Neither plants nor animals can store carbohydrates"
         ],
-        "correctAnswer": "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
-        "hint": "High-power lenses require precise focal adjustment and wider light apertures.",
-        "workedSolution": "High power narrows the depth of field and dims the light. The fine focus knob brings the focal plane into sharp focus, while opening the iris diaphragm restores brightness.",
+        "correctAnswer": "B. Plants store carbohydrates as starch; animals store carbohydrates as glycogen",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Plants store excess carbohydrates as starch, whereas animals store them as glycogen.",
         "points": 1
       },
       {
         "id": "B7_CELL_I04",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why are root hair cells unpigmented and completely devoid of chloroplasts?",
+        "prompt": "If a plant's chloroplasts are damaged or destroyed, which essential life process stops immediately?",
         "options": [
-          "A. They are infected with plant viruses",
-          "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
-          "C. Root hair cells are animal cells",
-          "D. The soil acid destroys all chlorophyll molecules immediately"
+          "A. Cellular respiration",
+          "B. Absorption of water by roots",
+          "C. Photosynthesis and food synthesis",
+          "D. Genetic division"
         ],
-        "correctAnswer": "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
-        "hint": "Chloroplast synthesis requires sunlight.",
-        "workedSolution": "Plant roots grow subterraneously in total darkness. Because photosynthesis requires light, subterranean cells do not waste biological resources developing chloroplasts.",
+        "correctAnswer": "C. Photosynthesis and food synthesis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Chloroplasts contain chlorophyll, which traps sunlight for photosynthesis; without them, the plant cannot synthesize food.",
         "points": 1
       },
       {
         "id": "B7_CELL_I05",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "An organelle has folded inner membranes called cristae that host electron transport enzymes. Which metabolic process occurs here?",
+        "prompt": "Which of the following structures is found in plant cells but is COMPLETELY absent in animal cells?",
         "options": [
-          "A. Photosynthesis",
-          "B. Aerobic cellular respiration (ATP synthesis)",
-          "C. Protein translation",
-          "D. Lipid storage"
+          "A. Cytoplasm and nucleus",
+          "B. Cell wall and chloroplast",
+          "C. Mitochondria and vacuole",
+          "D. Cell membrane and ribosomes"
         ],
-        "correctAnswer": "B. Aerobic cellular respiration (ATP synthesis)",
-        "hint": "Cristae vastly expand the surface area for oxidative phosphorylation inside mitochondria.",
-        "workedSolution": "The mitochondrial cristae host ATP synthase and electron transport chain complexes vital for aerobic respiration.",
+        "correctAnswer": "B. Cell wall and chloroplast",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Both the cellulose cell wall and photosynthetic chloroplasts are unique to plant cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_I06",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "A biological specimen moves towards the top-right corner of the microscope's field of view. In which direction must you move the glass slide to keep it centered?",
+        "prompt": "Why is the nucleus often referred to as the 'brain' of the cell?",
         "options": [
-          "A. Towards the top-right",
-          "B. Towards the bottom-left",
-          "C. Towards the top-left",
-          "D. Slide movement does not affect image direction"
+          "A. It thinks and feels pain",
+          "B. It coordinates, commands, and regulates all the chemical and metabolic activities of the cell",
+          "C. It is the only organelle containing water",
+          "D. It produces all the physical energy for the cell"
         ],
-        "correctAnswer": "A. Towards the top-right",
-        "hint": "The compound microscope inverts images both horizontally and vertically.",
-        "workedSolution": "Because compound microscope lenses produce real, inverted images, you must move the slide in the exact direction the image appears to drift (top-right) to re-center it.",
+        "correctAnswer": "B. It coordinates, commands, and regulates all the chemical and metabolic activities of the cell",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The nucleus controls all life activities in the cell and stores the genetic blueprints.",
         "points": 1
       },
       {
         "id": "B7_CELL_I07",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the physiological consequence when mammalian red blood cells are submerged in a highly concentrated (hypertonic) salt solution?",
+        "prompt": "Which organelle would you expect to find in much higher numbers in active muscle cells compared to skin cells?",
         "options": [
-          "A. They swell up and burst",
-          "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
-          "C. They divide rapidly by mitosis",
-          "D. They turn bright green"
+          "A. Chloroplasts",
+          "B. Mitochondria",
+          "C. Large vacuoles",
+          "D. Cell walls"
         ],
-        "correctAnswer": "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
-        "hint": "Water moves down its water potential gradient out of the cell.",
-        "workedSolution": "In a hypertonic medium, water flows out of erythrocytes by exosmosis, causing them to lose turgidity and develop crinkled edges (crenation).",
+        "correctAnswer": "B. Mitochondria",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Muscle cells have high energy demands for contraction, requiring abundant mitochondria for ATP generation.",
         "points": 1
       },
       {
         "id": "B7_CELL_I08",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which structural adaptation enables motor neurons to conduct nerve impulses across distances up to one meter in humans?",
+        "prompt": "What is the biological relationship between tissues and organs?",
         "options": [
-          "A. An enucleated biconcave shape",
-          "B. An elongated axon surrounded by an insulating myelin sheath",
-          "C. Thousands of cilia beating in synchrony",
-          "D. Multiple cellulose walls"
+          "A. Tissues are formed from a combination of different organs",
+          "B. An organ is constructed from different tissues working together to carry out a common task",
+          "C. Organs directly assemble to form tissues",
+          "D. There is no structural connection between them"
         ],
-        "correctAnswer": "B. An elongated axon surrounded by an insulating myelin sheath",
-        "hint": "The myelin sheath prevents ion leakage, allowing saltatory conduction.",
-        "workedSolution": "Neurons feature extended cytoplasmic axons insulated by lipid-rich myelin sheaths that permit rapid, long-distance transmission of action potentials.",
+        "correctAnswer": "B. An organ is constructed from different tissues working together to carry out a common task",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Organs are higher-level structures composed of multiple coordinating tissues.",
         "points": 1
       },
       {
         "id": "B7_CELL_I09",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the function of the acrosome located at the apex of a mature sperm cell?",
+        "prompt": "What would happen to a living cell if its cell membrane were completely destroyed?",
         "options": [
-          "A. Powers the flagellum with ATP",
-          "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
-          "C. Stores sperm DNA",
-          "D. Produces testosterone hormones"
+          "A. The cell would develop a new cell wall immediately",
+          "B. Cellular contents would spill out and uncontrolled entry/exit of substances would cause cell death",
+          "C. The cell would double its energy production",
+          "D. The cell would divide into two identical cells"
         ],
-        "correctAnswer": "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
-        "hint": "It acts as a chemical drill during fertilization.",
-        "workedSolution": "The acrosome is a modified lysosomal cap containing enzymes (like hyaluronidase) that digest the corona radiata and zona pellucida of the egg cell.",
+        "correctAnswer": "B. Cellular contents would spill out and uncontrolled entry/exit of substances would cause cell death",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cell membrane maintains cellular integrity and controls substance transit; destroying it leads to cell lysis and death.",
         "points": 1
       },
       {
         "id": "B7_CELL_I10",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which of the following correctly orders biological complexity from simplest to most complex?",
+        "prompt": "Under a light microscope, a student observes a cell with a cell wall, a large central vacuole, and green oval bodies. This cell belongs to a(n):",
         "options": [
-          "A. Cell → Tissue → Organ → Organ System → Organism",
-          "B. Organ → Tissue → Cell → Organelle → Organism",
-          "C. Tissue → Cell → Organ System → Organ → Organism",
-          "D. Organism → Organ System → Organ → Tissue → Cell"
+          "A. Animal",
+          "B. Plant",
+          "C. Fungus",
+          "D. Human"
         ],
-        "correctAnswer": "A. Cell → Tissue → Organ → Organ System → Organism",
-        "hint": "Cells unite into tissues, tissues build organs, and organs form systems.",
-        "workedSolution": "The standard hierarchy ascends from Cells to Tissues, Organs, Organ Systems, and finally the complete Multicellular Organism.",
+        "correctAnswer": "B. Plant",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The combination of a cell wall, a large vacuole, and green chloroplasts identifies a plant cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_I11",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why are mature xylem vessels composed of dead cells with hollow lumina?",
+        "prompt": "Which organelle contains enzymes and metabolic pathways responsible for converting glucose into usable energy?",
         "options": [
-          "A. The plant killed them by lack of water",
-          "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
-          "C. Because plants do not need living roots",
-          "D. To store carbon dioxide"
+          "A. Ribosome",
+          "B. Mitochondrion",
+          "C. Chloroplast",
+          "D. Vacuole"
         ],
-        "correctAnswer": "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
-        "hint": "Cytoplasm and end walls would create hydraulic friction.",
-        "workedSolution": "Xylem vessel elements lose their living end walls and protoplasm upon lignification, forming open, continuous tubes that minimize resistance to transpirational water flow.",
+        "correctAnswer": "B. Mitochondrion",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria metabolize glucose via cellular respiration to yield usable energy.",
         "points": 1
       },
       {
         "id": "B7_CELL_I12",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "A student observes a cell with a diameter of 0.05 mm under a microscope. If the total magnification is 200×, what is the apparent size of the cell in the image?",
+        "prompt": "How do the vacuoles in a leaf cell compare to those in a human white blood cell?",
         "options": [
-          "A. 1 mm",
-          "B. 5 mm",
-          "C. 10 mm",
-          "D. 0.00025 mm"
+          "A. The leaf cell has one large permanent vacuole; the blood cell has small, temporary vacuoles",
+          "B. Both cells contain identical large permanent vacuoles",
+          "C. The leaf cell lacks vacuoles entirely",
+          "D. The blood cell has one large vacuole filled with chlorophyll"
         ],
-        "correctAnswer": "C. 10 mm",
-        "hint": "Image Size = Actual Size × Magnification: 0.05 mm × 200.",
-        "workedSolution": "Image Size = Actual Size × Magnification = 0.05 mm × 200 = 10 mm.",
+        "correctAnswer": "A. The leaf cell has one large permanent vacuole; the blood cell has small, temporary vacuoles",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plant cells have a large central permanent vacuole, whereas animal cells have small, transient vacuoles.",
         "points": 1
       },
       {
         "id": "B7_CELL_I13",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "How does the biconcave shape of an erythrocyte enhance its physiological function?",
+        "prompt": "Which of the following lists consists entirely of biological organs?",
         "options": [
-          "A. It allows the cell to stick to blood vessel walls",
-          "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
-          "C. It prevents the cell from passing through narrow capillaries",
-          "D. It generates electrical impulses"
+          "A. Heart, Liver, Kidney, Leaf",
+          "B. Blood cell, Nerve cell, Muscle fiber",
+          "C. Digestive system, Nervous system, Respiratory system",
+          "D. Cytoplasm, Nucleus, Mitochondrion"
         ],
-        "correctAnswer": "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
-        "hint": "A flattened disc has a shorter diffusion distance to its center than a sphere of equal volume.",
-        "workedSolution": "The biconcave indentation increases surface area relative to volume and minimizes internal diffusion distance, maximizing the rate of gas exchange.",
+        "correctAnswer": "A. Heart, Liver, Kidney, Leaf",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Heart, liver, kidney, and leaf are all organs formed from organized groupings of tissues.",
         "points": 1
       },
       {
         "id": "B7_CELL_I14",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the structural role of the middle lamella found between adjacent plant cells?",
+        "prompt": "Why is the cytoplasm crucial to the survival of both plant and animal cells?",
         "options": [
-          "A. Absorbs sunlight for photosynthesis",
-          "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
-          "C. Synthesizes mitochondrial enzymes",
-          "D. Stores water sap"
+          "A. It acts as an impermeable barrier against all chemicals",
+          "B. It provides a fluid medium that suspends organelles and facilitates chemical reactions",
+          "C. It stores the genetic chromosomes of the cell",
+          "D. It manufactures the outer cellulose wall"
         ],
-        "correctAnswer": "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
-        "hint": "It glues neighbor plant cells together.",
-        "workedSolution": "The middle lamella is an extracellular pectin layer that acts as biological cement adhering neighboring plant cell walls together into rigid tissues.",
+        "correctAnswer": "B. It provides a fluid medium that suspends organelles and facilitates chemical reactions",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "The cytoplasm provides an aqueous environment for organelle transport and biochemical processes.",
         "points": 1
       },
       {
         "id": "B7_CELL_I15",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What biochemical component of plant cell walls makes them rigid and resistant to decay?",
+        "prompt": "What is the structural consequence of removing the cell wall from a plant cell?",
         "options": [
-          "A. Pectin and cellulose reinforced with lignin",
-          "B. Phospholipids only",
-          "C. Glucose and fructose",
-          "D. Hemoglobin"
+          "A. The plant cell loses its fixed, regular shape and becomes more vulnerable to bursting",
+          "B. The plant cell turns into an animal cell permanently",
+          "C. The cell immediately starts running faster",
+          "D. The cell will stop cellular respiration"
         ],
-        "correctAnswer": "A. Pectin and cellulose reinforced with lignin",
-        "hint": "Cellulose polymers form cross-linked microfibrils embedded in matrix polysaccharides.",
-        "workedSolution": "Cellulose microfibrils intertwined with hemicellulose, pectin, and sometimes lignin provide formidable mechanical rigidity and tensile strength.",
+        "correctAnswer": "A. The plant cell loses its fixed, regular shape and becomes more vulnerable to bursting",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Without the rigid cellulose cell wall, a plant cell loses its fixed angular outline and its protection against osmotic lysis.",
         "points": 1
       },
       {
         "id": "B7_CELL_I16",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why does turgor pressure generated by plant vacuoles prevent herbaceous (non-woody) plants from wilting?",
+        "prompt": "Which of the following is considered an organ system in plants?",
         "options": [
-          "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
-          "B. The vacuole produces bone tissue",
-          "C. Vacuoles freeze the plant in position",
-          "D. Vacuoles absorb heat from sunlight"
+          "A. Chloroplast",
+          "B. Vascular transport system (Xylem and Phloem)",
+          "C. Epidermal cell",
+          "D. Guard cell"
         ],
-        "correctAnswer": "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
-        "hint": "Like inflating an air mattress, hydrostatic pressure produces structural rigidity.",
-        "workedSolution": "Water absorption builds hydrostatic pressure within vacuoles that presses the protoplast firmly against cell walls, providing skeletal support to non-woody plants.",
+        "correctAnswer": "B. Vascular transport system (Xylem and Phloem)",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The vascular system functions as an organ system that transports water, minerals, and photosynthates throughout the plant.",
         "points": 1
       },
       {
         "id": "B7_CELL_I17",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which stain is best suited for highlighting the nucleus in animal cells, such as human buccal epithelial cells?",
+        "prompt": "An organism composed of only one single cell that performs all life activities independently is known as a(n):",
         "options": [
-          "A. Iodine solution",
-          "B. Methylene blue",
-          "C. Benedict's reagent",
-          "D. Biuret reagent"
+          "A. Multicellular organism",
+          "B. Unicellular organism",
+          "C. Organ system",
+          "D. Tissue complex"
         ],
-        "correctAnswer": "B. Methylene blue",
-        "hint": "It binds strongly to acidic nuclear chromatin, staining the nucleus deep blue.",
-        "workedSolution": "Methylene blue is a cationic dye that selectively binds to nucleic acids (DNA/RNA), sharply staining animal cell nuclei deep blue.",
+        "correctAnswer": "B. Unicellular organism",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Unicellular organisms (e.g., bacteria, amoebae) carry out all essential functions within a single cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_I18",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which of the following cellular structures is non-membranous (lacks a surrounding lipid bilayer)?",
+        "prompt": "Which organelle prevents a plant cell from wilting by creating turgor pressure when filled with water?",
         "options": [
-          "A. Mitochondrion",
-          "B. Ribosome",
-          "C. Chloroplast",
-          "D. Nucleus"
+          "A. Large central vacuole",
+          "B. Nucleus",
+          "C. Mitochondrion",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. Ribosome",
-        "hint": "Consists of protein and rRNA molecules without a lipid envelope.",
-        "workedSolution": "Ribosomes are molecular machines constructed from rRNA and structural proteins, devoid of any enclosing phospholipid membrane.",
+        "correctAnswer": "A. Large central vacuole",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "When filled with sap, the large vacuole exerts outward hydrostatic pressure (turgor) against the wall, keeping the cell firm.",
         "points": 1
       },
       {
         "id": "B7_CELL_I19",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why must the coarse adjustment knob NEVER be used under high-power (40× or 100×) magnification?",
+        "prompt": "Which of the following statements about animal cells is correct?",
         "options": [
-          "A. It causes the electric light to burn out",
-          "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
-          "C. It turns the image completely upside down",
-          "D. It removes the stain from the specimen"
+          "A. They possess a large permanent vacuole",
+          "B. They synthesize their own food using sunlight",
+          "C. They have a flexible, irregular shape due to the absence of a cell wall",
+          "D. They store energy primarily as starch granules"
         ],
-        "correctAnswer": "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
-        "hint": "The working distance of a 40× lens is less than 1 mm.",
-        "workedSolution": "Under high power, the objective lens sits fractions of a millimeter from the glass. The rapid travel of coarse focus risks driving the lens into the slide, shattering both.",
+        "correctAnswer": "C. They have a flexible, irregular shape due to the absence of a cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Because animal cells lack a cell wall, they display variable, irregular shapes.",
         "points": 1
       },
       {
         "id": "B7_CELL_I20",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary function of the rough endoplasmic reticulum (RER)?",
+        "prompt": "What is the biological role of chlorophyll in plant leaves?",
         "options": [
-          "A. Processing and folding proteins synthesized by attached ribosomes",
-          "B. Synthesizing starch grains",
-          "C. Carrying out photosynthesis",
-          "D. Pumping blood"
+          "A. Digesting incoming protein molecules",
+          "B. Trapping solar light energy to synthesize glucose during photosynthesis",
+          "C. Storing water and salts",
+          "D. Pumping blood through vascular tissues"
         ],
-        "correctAnswer": "A. Processing and folding proteins synthesized by attached ribosomes",
-        "hint": "Its surface is studded with ribosomes.",
-        "workedSolution": "The rough ER is studded with ribosomes that synthesize polypeptides directly into its lumen for folding, post-translational modification, and vesicle transport.",
+        "correctAnswer": "B. Trapping solar light energy to synthesize glucose during photosynthesis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Chlorophyll absorbs radiant sunlight energy to drive photosynthetic carbon fixation.",
         "points": 1
       },
       {
         "id": "B7_CELL_I21",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "How does the structure of guard cells cause a stomatal pore to open when they absorb water?",
+        "prompt": "Why are blood cells, nerve cells, and skin cells structurally different from one another?",
         "options": [
-          "A. Their cell walls are uniformly thin and expand equally",
-          "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
-          "C. They shrink and disintegrate",
-          "D. They detach from the leaf epidermis"
+          "A. They are produced by different organisms",
+          "B. They are specialized to carry out different specific physiological functions",
+          "C. Some have no cell membrane",
+          "D. They do not share common ancestors"
         ],
-        "correctAnswer": "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
-        "hint": "Differential wall thickness forces the cells to curve like bananas when inflated.",
-        "workedSolution": "Guard cells have thick, inelastic inner walls and thin, flexible outer walls. When turgid with water, the outer walls bulge outward, pulling the inner pore open.",
+        "correctAnswer": "B. They are specialized to carry out different specific physiological functions",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cell differentiation tailors the structure of each cell type to its specialized function.",
         "points": 1
       },
       {
         "id": "B7_CELL_I22",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organelle is responsible for packaging and modifying proteins into secretory vesicles?",
+        "prompt": "Which of the following components would you find in BOTH an onion bulb cell and a human cheek cell?",
         "options": [
-          "A. Golgi apparatus (Golgi body)",
-          "B. Nucleolus",
-          "C. Chloroplast",
-          "D. Centriole"
+          "A. Chloroplasts and cell wall",
+          "B. Nucleus, cytoplasm, and cell membrane",
+          "C. Large permanent vacuole and chloroplasts",
+          "D. Glycogen granules and cell wall"
         ],
-        "correctAnswer": "A. Golgi apparatus (Golgi body)",
-        "hint": "Consists of flattened membranous cisternae acting as the shipping center of the cell.",
-        "workedSolution": "The Golgi apparatus sorts, glycosylates, and packages proteins and lipids received from the ER into membrane-bound vesicles for secretion.",
+        "correctAnswer": "B. Nucleus, cytoplasm, and cell membrane",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "All eukaryotic plant and animal cells share a nucleus, cytoplasm, cell membrane, and mitochondria.",
         "points": 1
       },
       {
         "id": "B7_CELL_I23",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What biological phenomenon occurs when plant cells lose excessive water in a hypertonic environment, causing the cytoplasm to pull away from the cell wall?",
+        "prompt": "Why do onion bulb epidermal cells lack chloroplasts even though they are plant cells?",
         "options": [
-          "A. Lysis",
-          "B. Plasmolysis",
-          "C. Turgidity",
-          "D. Diffusion"
+          "A. Onions are not plants",
+          "B. Onion bulbs grow underground where there is no sunlight for photosynthesis",
+          "C. Onion cells lack a nucleus",
+          "D. Onions do not need energy"
         ],
-        "correctAnswer": "B. Plasmolysis",
-        "hint": "The central vacuole shrinks, pulling the protoplast inwards.",
-        "workedSolution": "Plasmolysis is the shrinking of the plant protoplast away from the rigid cell wall due to extreme exosmotic water loss in hypertonic solutions.",
+        "correctAnswer": "B. Onion bulbs grow underground where there is no sunlight for photosynthesis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Because onion bulbs develop underground in the absence of light, their cells do not develop chloroplasts.",
         "points": 1
       },
       {
         "id": "B7_CELL_I24",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the structural advantage of palisade mesophyll cells being elongated vertically rather than horizontally?",
+        "prompt": "Which of the following represents a tissue in plants?",
         "options": [
-          "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
-          "B. Prevents oxygen from escaping",
-          "C. Makes the leaf heavier",
-          "D. Absorbs water directly from the air"
+          "A. Root hair cell",
+          "B. Epidermis",
+          "C. Mango tree",
+          "D. Flower"
         ],
-        "correctAnswer": "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
-        "hint": "Vertical orientation maximizes light path absorption through stacked chloroplasts.",
-        "workedSolution": "Vertical columnar orientation packs more photosynthetic cells per unit leaf area and increases the optical path length for light absorption.",
+        "correctAnswer": "B. Epidermis",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The plant epidermis is a protective tissue layer made of uniform epidermal cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_I25",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which of the following cellular features is unique to eukaryotic cells and completely absent in all bacteria?",
+        "prompt": "Which part of the cell is completely non-living, tough, and permeable to water and dissolved mineral solutes?",
         "options": [
-          "A. Ribosomes",
-          "B. Membrane-bound organelles such as mitochondria and nucleus",
-          "C. Cytoplasm",
-          "D. Cell wall"
+          "A. Cell membrane",
+          "B. Cellulose cell wall",
+          "C. Nucleus",
+          "D. Cytoplasm"
         ],
-        "correctAnswer": "B. Membrane-bound organelles such as mitochondria and nucleus",
-        "hint": "Prokaryotic bacteria do not compartmentalize their interiors with internal membranes.",
-        "workedSolution": "Eukaryotes are characterized by internal compartmentalization with membrane-bound organelles (nucleus, mitochondria, ER, Golgi), which prokaryotes lack.",
+        "correctAnswer": "B. Cellulose cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cellulose cell wall is an extracellular, non-living structural layer that is fully permeable.",
         "points": 1
       },
       {
         "id": "B7_CELL_I26",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why does an enucleated red blood cell have a limited lifespan of only approximately 120 days?",
+        "prompt": "Which biological system includes the brain, spinal cord, and sensory nerves working together?",
         "options": [
-          "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
-          "B. It is eaten by bacteria every week",
-          "C. It melts in warm blood",
-          "D. It converts into white blood cells"
+          "A. Digestive system",
+          "B. Nervous system",
+          "C. Circulatory system",
+          "D. Skeletal system"
         ],
-        "correctAnswer": "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
-        "hint": "Without a nucleus, no transcription or protein synthesis can take place.",
-        "workedSolution": "Lacking a nucleus and ribosomes, erythrocytes cannot transcribe genes to repair damaged membrane proteins or enzymes, degrading after ~120 days.",
+        "correctAnswer": "B. Nervous system",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The nervous system coordinates sensory perception and motor responses across the body.",
         "points": 1
       },
       {
         "id": "B7_CELL_I27",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "A student calculates a total magnification of 400× using a 40× objective lens. What is the power of the eyepiece used?",
+        "prompt": "Why do animal cells burst when placed in a hypotonic solution (pure water) for an extended time?",
         "options": [
-          "A. 4×",
-          "B. 10×",
-          "C. 40×",
-          "D. 100×"
+          "A. Water leaves the cell rapidly",
+          "B. Water enters the cell by osmosis and, lacking a cell wall to resist pressure, the membrane ruptures",
+          "C. The mitochondria produce too much heat",
+          "D. The nucleus dissolves"
         ],
-        "correctAnswer": "B. 10×",
-        "hint": "Eyepiece = Total / Objective = 400 / 40.",
-        "workedSolution": "Eyepiece magnification = 400 / 40 = 10×.",
+        "correctAnswer": "B. Water enters the cell by osmosis and, lacking a cell wall to resist pressure, the membrane ruptures",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Without a rigid cell wall, osmotic water intake increases internal pressure until the membrane bursts.",
         "points": 1
       },
       {
         "id": "B7_CELL_I28",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary role of companion cells adjacent to phloem sieve tube elements?",
+        "prompt": "What is the primary role of the semi-permeable cell membrane in maintaining internal cellular balance?",
         "options": [
-          "A. Provide mechanical rigidity to the stem",
-          "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
-          "C. Store water for dry seasons",
-          "D. Produce chlorophyll"
+          "A. It maintains homeostatic balance by regulating the transport of ions, nutrients, and wastes",
+          "B. It creates solar energy directly",
+          "C. It prevents the cell from ever dividing",
+          "D. It turns waste products into starch"
         ],
-        "correctAnswer": "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
-        "hint": "Sieve tubes lack nuclei; companion cells have dense mitochondria and nuclei.",
-        "workedSolution": "Companion cells carry out vital metabolic functions and actively pump sucrose into sieve tubes using ATP generated in their abundant mitochondria.",
+        "correctAnswer": "A. It maintains homeostatic balance by regulating the transport of ions, nutrients, and wastes",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Selective permeability regulates internal solute concentrations, maintaining homeostatic equilibrium.",
         "points": 1
       },
       {
         "id": "B7_CELL_I29",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organelle contains its own small circular DNA loop and reproduces independently within eukaryotic cells?",
+        "prompt": "Which organelle would you expect to be most abundant in green leaf palisade cells?",
         "options": [
-          "A. Mitochondrion (and Chloroplast)",
-          "B. Vacuole",
-          "C. Ribosome",
-          "D. Lysosome"
+          "A. Ribosomes",
+          "B. Chloroplasts",
+          "C. Small temporary vacuoles",
+          "D. Nerve endings"
         ],
-        "correctAnswer": "A. Mitochondrion (and Chloroplast)",
-        "hint": "Evidence of endosymbiotic bacterial evolution.",
-        "workedSolution": "Mitochondria and chloroplasts possess their own circular DNA genomes and 70S ribosomes, dividing independently by binary fission.",
+        "correctAnswer": "B. Chloroplasts",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Palisade mesophyll cells are specialized for light capture and are packed with chloroplasts.",
         "points": 1
       },
       {
         "id": "B7_CELL_I30",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary function of white blood cells (leukocytes)?",
+        "prompt": "Which statement correctly describes how an organism functions compared to an organ?",
         "options": [
-          "A. Oxygen transport",
-          "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
-          "C. Blood clotting at wound sites",
-          "D. Transport of digested lipids"
+          "A. An organism is an independent living entity made of coordinating organ systems, whereas an organ is just one functional part",
+          "B. Organs can live independently in soil without an organism",
+          "C. An organism is smaller than an individual cell",
+          "D. Tissues assemble directly to form complete organisms without organs"
         ],
-        "correctAnswer": "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
-        "hint": "They are the mobile defensive infantry of the blood vascular system.",
-        "workedSolution": "White blood cells defend against infection through phagocytic ingestion of microbes and antibody secretion by lymphocytes.",
+        "correctAnswer": "A. An organism is an independent living entity made of coordinating organ systems, whereas an organ is just one functional part",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "An organism is a complete, self-sustaining living being comprised of coordinated organ systems.",
         "points": 1
       },
       {
         "id": "B7_CELL_I31",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why is water described as the universal solvent in cellular cytoplasm?",
+        "prompt": "Which of the following structures is responsible for storing starch in potato tuber cells?",
         "options": [
-          "A. It dissolves all plastics",
-          "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
-          "C. It never freezes",
-          "D. It generates oxygen spontaneously"
+          "A. Leucoplasts / Amyloplasts (specialized plastids)",
+          "B. Cell wall",
+          "C. Mitochondria",
+          "D. Ribosomes"
         ],
-        "correctAnswer": "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
-        "hint": "Water's dipole moment hydrates both cations and anions.",
-        "workedSolution": "Water's hydrogen-bonding polarity dissolves polar and ionic biochemicals, providing an aqueous medium for enzymatic reactions.",
+        "correctAnswer": "A. Leucoplasts / Amyloplasts (specialized plastids)",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Storage plastids in plant cells store accumulated starch reserves.",
         "points": 1
       },
       {
         "id": "B7_CELL_I32",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the main physiological purpose of mitotic cell division in multicellular organisms?",
+        "prompt": "What happens to the rate of cellular respiration if a cell is deprived of oxygen?",
         "options": [
-          "A. Generating gametes with half the chromosome number",
-          "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
-          "C. Creating new species",
-          "D. Digesting carbohydrates"
+          "A. It increases dramatically",
+          "B. Mitochondrial energy output drops significantly because oxygen is required for aerobic respiration",
+          "C. Chloroplasts start producing oxygen",
+          "D. The cell wall hardens"
         ],
-        "correctAnswer": "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
-        "hint": "Mitosis yields two genetically identical daughter cells.",
-        "workedSolution": "Mitosis produces genetically identical diploid somatic cells required for organismal growth, wound healing, and tissue replacement.",
+        "correctAnswer": "B. Mitochondrial energy output drops significantly because oxygen is required for aerobic respiration",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Mitochondria require oxygen to run efficient aerobic respiration; without it, cellular energy production drops.",
         "points": 1
       },
       {
         "id": "B7_CELL_I33",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which of the following organs is shared between the digestive and endocrine systems?",
+        "prompt": "Which sequence correctly represents the organization of human breathing from simple to complex?",
         "options": [
-          "A. Stomach",
-          "B. Pancreas",
-          "C. Gallbladder",
-          "D. Esophagus"
+          "A. Lung epithelial cell → Epithelial tissue → Lung → Respiratory system → Human being",
+          "B. Human being → Respiratory system → Lung → Tissue → Cell",
+          "C. Lung → Tissue → Cell → Respiratory system → Human",
+          "D. Cell → Lung → Tissue → Human → Respiratory system"
         ],
-        "correctAnswer": "B. Pancreas",
-        "hint": "It secretes digestive enzymes into the duodenum and insulin into the bloodstream.",
-        "workedSolution": "The pancreas serves exocrine digestive roles (pancreatic juice) and endocrine hormonal roles (insulin and glucagon regulation).",
+        "correctAnswer": "A. Lung epithelial cell → Epithelial tissue → Lung → Respiratory system → Human being",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "This sequence moves logically up the structural hierarchy: Cell to Tissue, Organ, System, and Organism.",
         "points": 1
       },
       {
         "id": "B7_CELL_I34",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why do freshwater protozoa like Amoeba require contractile vacuoles?",
+        "prompt": "How does the location of the nucleus typically differ between mature plant and animal cells?",
         "options": [
-          "A. To store starch",
-          "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
-          "C. To capture prey",
-          "D. To produce light"
+          "A. In plants it is pushed to the periphery by the large central vacuole; in animals it is typically centrally located",
+          "B. Plant cells have no nucleus",
+          "C. In animal cells it floats outside the membrane",
+          "D. In plant cells it is always dead"
         ],
-        "correctAnswer": "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
-        "hint": "Amoebae live in hypotonic ponds and lack cell walls.",
-        "workedSolution": "Surrounded by hypotonic pond water, Amoebae experience continuous influx of water. Contractile vacuoles collect and actively pump this water out (osmoregulation).",
+        "correctAnswer": "A. In plants it is pushed to the periphery by the large central vacuole; in animals it is typically centrally located",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The large central vacuole in mature plant cells displaces the nucleus toward the cell perimeter.",
         "points": 1
       },
       {
         "id": "B7_CELL_I35",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which plant tissue covers the outer surfaces of leaves, stems, and roots to prevent desiccating water loss?",
+        "prompt": "What is the primary role of cell sap within the plant vacuole?",
         "options": [
-          "A. Epidermal tissue",
-          "B. Xylem tissue",
-          "C. Phloem tissue",
-          "D. Cambium"
+          "A. To burn glucose",
+          "B. To maintain internal osmotic pressure and store essential minerals, sugars, and water",
+          "C. To capture red light",
+          "D. To produce cellulose fibers"
         ],
-        "correctAnswer": "A. Epidermal tissue",
-        "hint": "Often coated with an external waxy cuticle layer.",
-        "workedSolution": "Epidermal tissue forms a protective outer boundary, often synthesizing a waxy, hydrophobic cuticle to minimize evaporation.",
+        "correctAnswer": "B. To maintain internal osmotic pressure and store essential minerals, sugars, and water",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cell sap maintains osmotic turgor pressure and stores essential water, ions, and nutrients.",
         "points": 1
       },
       {
         "id": "B7_CELL_I36",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organelle within eukaryotic plant cells is responsible for converting fatty acids into sugars in germinating seeds?",
+        "prompt": "Which of the following statements about cell division and genetic inheritance is true?",
         "options": [
-          "A. Glyoxysome (specialized peroxisome)",
-          "B. Centriole",
-          "C. Ribosome",
-          "D. Chloroplast"
+          "A. Genetic traits are carried in the cellulose cell wall",
+          "B. The nucleus houses chromosomes that carry hereditary information from parent cells to offspring",
+          "C. Mitochondria create new genes from water",
+          "D. The vacuole decides which traits are passed on"
         ],
-        "correctAnswer": "A. Glyoxysome (specialized peroxisome)",
-        "hint": "Hosts the glyoxylate cycle before photosynthesis begins.",
-        "workedSolution": "Glyoxysomes are specialized microbodies in oil seeds that convert stored lipids into soluble sucrose to nourish the developing seedling.",
+        "correctAnswer": "B. The nucleus houses chromosomes that carry hereditary information from parent cells to offspring",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The nucleus contains the chromosomes and genes that transmit hereditary traits.",
         "points": 1
       },
       {
         "id": "B7_CELL_I37",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What does the term 'tissue differentiation' mean in developmental biology?",
+        "prompt": "Why does a wilted plant recover its upright firmness after being watered?",
         "options": [
-          "A. The death of unneeded cells",
-          "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
-          "C. Cells changing into different elements",
-          "D. Cells losing their nucleus"
+          "A. The water hardens the plant's chloroplasts",
+          "B. Water enters the vacuoles by osmosis, creating turgor pressure that pushes the cytoplasm against the cell wall",
+          "C. The roots turn into wood",
+          "D. Respiration stops completely"
         ],
-        "correctAnswer": "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
-        "hint": "From generic embryonic cells into neurons, muscle fibers, or xylem.",
-        "workedSolution": "Cellular differentiation is the developmental process whereby generalized cells undergo selective gene expression to acquire specialized morphological adaptations.",
+        "correctAnswer": "B. Water enters the vacuoles by osmosis, creating turgor pressure that pushes the cytoplasm against the cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Vacuoles take in water and expand, restoring internal turgor pressure against the cell wall.",
         "points": 1
       },
       {
         "id": "B7_CELL_I38",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "How does the resolution of a microscope differ from its magnification?",
+        "prompt": "Which level of organization does blood represent in the human body?",
         "options": [
-          "A. They mean the exact same thing",
-          "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
-          "C. Resolution only applies to electron microscopes",
-          "D. Magnification makes things smaller"
+          "A. Cell",
+          "B. Tissue (fluid connective tissue)",
+          "C. Organ",
+          "D. Organ system"
         ],
-        "correctAnswer": "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
-        "hint": "Enlarging a blurry photo does not reveal extra detail without resolution.",
-        "workedSolution": "Magnification scales up the apparent dimension of an image, while optical resolution is the minimum distance between two points at which they remain distinctly discernible.",
+        "correctAnswer": "B. Tissue (fluid connective tissue)",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Blood is classified biologically as a fluid connective tissue consisting of specialized cells suspended in plasma.",
         "points": 1
       },
       {
         "id": "B7_CELL_I39",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the function of the nucleolus found inside the eukaryotic nucleus?",
+        "prompt": "Which organelle would you expect to be especially active in a plant root hair cell absorbing mineral ions?",
         "options": [
-          "A. Assembles ribosome subunits and synthesizes rRNA",
-          "B. Produces ATP",
-          "C. Destroys bacteria",
-          "D. Pumps sodium ions"
+          "A. Chloroplasts",
+          "B. Mitochondria (providing energy for active transport)",
+          "C. Pigment granules",
+          "D. Ribosomes only"
         ],
-        "correctAnswer": "A. Assembles ribosome subunits and synthesizes rRNA",
-        "hint": "A dense granular region inside the nucleus.",
-        "workedSolution": "The nucleolus is the sub-nuclear factory where ribosomal RNA (rRNA) is transcribed and combined with proteins to produce ribosomal subunits.",
+        "correctAnswer": "B. Mitochondria (providing energy for active transport)",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Active uptake of minerals against a concentration gradient requires energy supplied by mitochondria.",
         "points": 1
       },
       {
         "id": "B7_CELL_I40",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organelle is abundant in mammalian liver cells to detoxify poisons, drugs, and alcohol?",
+        "prompt": "Why do animal cells look irregular or circular under a microscope rather than box-like?",
         "options": [
-          "A. Smooth endoplasmic reticulum (SER)",
-          "B. Chloroplast",
-          "C. Nucleolus",
-          "D. Centrosome"
+          "A. They possess only a flexible cell membrane without a rigid cell wall",
+          "B. They are always dead when viewed",
+          "C. They have too many nuclei",
+          "D. Their cytoplasm is frozen solid"
         ],
-        "correctAnswer": "A. Smooth endoplasmic reticulum (SER)",
-        "hint": "Lacks ribosomes and synthesizes lipids while detoxifying xenobiotics.",
-        "workedSolution": "Smooth ER contains cytochrome P450 and other enzymes that metabolize and detoxify toxic chemicals, drugs, and alcohol in hepatocytes.",
+        "correctAnswer": "A. They possess only a flexible cell membrane without a rigid cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Without a rigid exterior wall, animal cells assume rounded or irregular shapes determined by their cytoskeleton.",
         "points": 1
       },
       {
         "id": "B7_CELL_I41",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the biological function of muscular tissue in animals?",
+        "prompt": "Which of the following is an example of an organ system responsible for gas exchange in humans?",
         "options": [
-          "A. Conducting electrical signals across synapses",
-          "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
-          "C. Secreting waxy cuticles",
-          "D. Photosynthesis"
+          "A. Digestive system",
+          "B. Respiratory system",
+          "C. Excretory system",
+          "D. Skeletal system"
         ],
-        "correctAnswer": "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
-        "hint": "Contains actin and myosin contractile protein filaments.",
-        "workedSolution": "Muscular tissue contains filament proteins (actin and myosin) that slide past one another to generate contractile force for locomotion and internal organ motility.",
+        "correctAnswer": "B. Respiratory system",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The respiratory system (lungs, trachea, bronchi) facilitates oxygen intake and carbon dioxide removal.",
         "points": 1
       },
       {
         "id": "B7_CELL_I42",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why is an epidermal peel taken from an onion scale leaf rather than a green onion leaf blade when studying basic plant cells in introductory labs?",
+        "prompt": "Which organelle is responsible for decomposing and breaking down worn-out cellular parts?",
         "options": [
-          "A. Green leaves are poisonous",
-          "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
-          "C. Onion scale cells have no cell walls",
-          "D. Onions do not have DNA"
+          "A. Chloroplast",
+          "B. Lysosome",
+          "C. Cell wall",
+          "D. Starch grain"
         ],
-        "correctAnswer": "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
-        "hint": "A monolayer allows light to pass directly through without optical overlap.",
-        "workedSolution": "The transparent inner membrane of an onion bulb scale is an authentic biological monolayer, providing an unobstructed view of cells without microtome sectioning.",
+        "correctAnswer": "B. Lysosome",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Lysosomes contain digestive enzymes that break down metabolic wastes and cellular debris.",
         "points": 1
       },
       {
         "id": "B7_CELL_I43",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the role of blood platelets (thrombocytes)?",
+        "prompt": "A group of tissues that lines the internal and external surfaces of animal organs is called:",
         "options": [
-          "A. Transporting carbon dioxide",
-          "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
-          "C. Pumping lymph through nodes",
-          "D. Synthesizing insulin"
+          "A. Epithelial tissue",
+          "B. Nervous tissue",
+          "C. Connective tissue",
+          "D. Muscle tissue"
         ],
-        "correctAnswer": "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
-        "hint": "Cell fragments adhering to exposed collagen fibers.",
-        "workedSolution": "Platelets are enucleated cell fragments derived from megakaryocytes that trigger the coagulation cascade and aggregate to form hemostatic plugs.",
+        "correctAnswer": "A. Epithelial tissue",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Epithelial tissue forms protective sheets covering body surfaces and lining internal cavities.",
         "points": 1
       },
       {
         "id": "B7_CELL_I44",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organ system in vertebrates includes the kidneys, ureters, urinary bladder, and urethra?",
+        "prompt": "What is the primary distinguishing feature between eukaryotic cells and prokaryotic cells?",
         "options": [
-          "A. Excretory (urinary) system",
-          "B. Nervous system",
-          "C. Respiratory system",
-          "D. Endocrine system"
+          "A. Eukaryotic cells possess a true membrane-bound nucleus and specialized organelles",
+          "B. Prokaryotic cells have larger vacuoles",
+          "C. Eukaryotic cells lack a cell membrane",
+          "D. Prokaryotes only live in water"
         ],
-        "correctAnswer": "A. Excretory (urinary) system",
-        "hint": "Filters metabolic nitrogenous wastes from the bloodstream.",
-        "workedSolution": "The urinary/excretory system filters blood plasma to remove urea and excess ions, regulating systemic fluid and electrolyte homeostasis.",
+        "correctAnswer": "A. Eukaryotic cells possess a true membrane-bound nucleus and specialized organelles",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Eukaryotic cells (including plant and animal cells) contain membrane-bound organelles and a defined nucleus.",
         "points": 1
       },
       {
         "id": "B7_CELL_I45",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why do mature plant cells maintain their shape even after dying, as seen in wood and cork?",
+        "prompt": "Which structure prevents plant stems from collapsing under their own weight?",
         "options": [
-          "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
-          "B. Their vacuoles freeze solid",
-          "C. Their nuclei remain active",
-          "D. Dead cells absorb plastic from soil"
+          "A. Cell membrane",
+          "B. Cellulose cell wall",
+          "C. Mitochondria",
+          "D. Ribosomes"
         ],
-        "correctAnswer": "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
-        "hint": "Robert Hooke's 1665 observation of cork was viewing empty cell wall chambers.",
-        "workedSolution": "Cellulose and lignin cell walls are non-living structural matrices that remain intact and support woody tissues indefinitely after the living cytoplasm dies.",
+        "correctAnswer": "B. Cellulose cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Rigid cellulose walls provide tensile and compressive strength that supports the plant's structure.",
         "points": 1
       },
       {
         "id": "B7_CELL_I46",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What happens when an optical microscope's mirror is turned away from the light source?",
+        "prompt": "Which of the following represents an organ of the human digestive system?",
         "options": [
-          "A. The magnification increases",
-          "B. The field of view goes completely dark because no light passes through the condenser",
-          "C. The specimen becomes sharp",
-          "D. The slide shatters"
+          "A. Stomach",
+          "B. Salivary gland cell",
+          "C. Red blood cell",
+          "D. Muscle fiber"
         ],
-        "correctAnswer": "B. The field of view goes completely dark because no light passes through the condenser",
-        "hint": "Compound microscopes are transmission light instruments.",
-        "workedSolution": "Light microscopes require an incident beam of light reflected through the condenser lens and specimen slide; diverting the mirror eliminates image visibility.",
+        "correctAnswer": "A. Stomach",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The stomach is an organ that functions as part of the digestive organ system.",
         "points": 1
       },
       {
         "id": "B7_CELL_I47",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which organelle within eukaryotic plant cells contains stacks of thylakoids called grana?",
+        "prompt": "Why do mature plant cells not burst when placed in rainwater?",
         "options": [
-          "A. Chloroplast",
-          "B. Mitochondrion",
-          "C. Golgi body",
-          "D. Central vacuole"
+          "A. Water cannot enter plant cells",
+          "B. The inward pressure exerted by the rigid cellulose cell wall balances the osmotic pressure",
+          "C. Their vacuoles pump water out immediately",
+          "D. The cell membrane dissolves"
         ],
-        "correctAnswer": "A. Chloroplast",
-        "hint": "Site of light-dependent photosynthetic reactions.",
-        "workedSolution": "Thylakoid disks organized in grana stacks are located within chloroplast stroma, hosting light-absorbing photosystems and electron transport proteins.",
+        "correctAnswer": "B. The inward pressure exerted by the rigid cellulose cell wall balances the osmotic pressure",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The rigid cell wall exerts wall pressure that counterbalances internal osmotic pressure, preventing lysis.",
         "points": 1
       },
       {
         "id": "B7_CELL_I48",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why is the egg cell (ovum) significantly larger than the sperm cell?",
+        "prompt": "What would happen to an animal cell if its mitochondria were completely inhibited?",
         "options": [
-          "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
-          "B. It has ten nuclei",
-          "C. It contains bone fragments",
-          "D. It is an organ rather than a cell"
+          "A. It would synthesize more starch",
+          "B. Energy production (ATP synthesis) would cease, causing cellular death",
+          "C. It would grow a cell wall",
+          "D. It would photosynthesize"
         ],
-        "correctAnswer": "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
-        "hint": "The egg nourishes the zygote before uterine implantation.",
-        "workedSolution": "The ovum accumulates massive cytoplasmic nutrient reserves, maternal mRNAs, and organelles to support cellular cleavage following fertilization.",
+        "correctAnswer": "B. Energy production (ATP synthesis) would cease, causing cellular death",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Inhibiting mitochondria stops aerobic energy production, leading to cell starvation and death.",
         "points": 1
       },
       {
         "id": "B7_CELL_I49",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the function of the stage clips on an optical microscope?",
+        "prompt": "Which of the following structures acts as a skeleton for an individual plant cell?",
         "options": [
-          "A. Magnify the specimen",
-          "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
-          "C. Cool the light bulb",
-          "D. Clean the objective lens"
+          "A. Nucleus",
+          "B. Cell wall",
+          "C. Cytoplasm",
+          "D. Vacuole"
         ],
-        "correctAnswer": "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
-        "hint": "Spring-loaded metal fingers flanking the aperture.",
-        "workedSolution": "Stage clips secure the glass specimen slide against the mechanical stage, preventing slipping during focal adjustments.",
+        "correctAnswer": "B. Cell wall",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The rigid cellulose wall functions as an external skeleton, giving structural support to the cell.",
         "points": 1
       },
       {
         "id": "B7_CELL_I50",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which cell organelle is responsible for maintaining cellular shape and anchoring organelles via a network of microfilaments and microtubules?",
+        "prompt": "How do multiple organ systems work together in a complex organism?",
         "options": [
-          "A. Cytoskeleton",
-          "B. Cell wall",
-          "C. Tonoplast",
-          "D. Nucleolus"
+          "A. They work completely independently without any communication",
+          "B. They coordinate with each other to support the survival and homeostasis of the whole organism",
+          "C. Only one organ system can be active at a time",
+          "D. They compete against each other for survival"
         ],
-        "correctAnswer": "A. Cytoskeleton",
-        "hint": "An internal proteinaceous scaffolding within the cytosol.",
-        "workedSolution": "The cytoskeleton is a dynamic network of actin microfilaments, intermediate filaments, and tubulin microtubules that provides internal structural scaffolding.",
+        "correctAnswer": "B. They coordinate with each other to support the survival and homeostasis of the whole organism",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Organ systems interact cooperatively to maintain homeostatic balance throughout the body.",
         "points": 1
       },
       {
         "id": "B7_CELL_A01",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "A slice of potato tuber weighing 10.0 g is placed in a 20% concentrated sucrose solution. After two hours, its mass decreases to 8.2 g and it becomes limp and flexible. What physiological process accounts for this change?",
+        "prompt": "A biology student placed an elodea plant leaf cell in a concentrated salt solution. Under a microscope, the cytoplasm and cell membrane shrank away from the cell wall. This process is called:",
         "options": [
-          "A. Active uptake of sucrose molecules into potato cells",
-          "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
-          "C. Endosmosis of water into the potato cells causing bursting",
-          "D. Chemical decomposition of potato starch into gaseous carbon dioxide"
+          "A. Lysis",
+          "B. Plasmolysis",
+          "C. Photosynthesis",
+          "D. Mitosis"
         ],
-        "correctAnswer": "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
-        "hint": "The 20% sucrose solution has a lower water potential than the cell sap.",
-        "workedSolution": "Because the external sucrose solution is hypertonic, water leaves the vacuolar sap by exosmosis down the water potential gradient, reducing mass and causing flaccidity.",
+        "correctAnswer": "B. Plasmolysis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plasmolysis occurs when water leaves a plant cell by osmosis in a hypertonic environment, causing the cytoplasm to pull away from the wall.",
         "points": 1
       },
       {
         "id": "B7_CELL_A02",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the fluid mosaic model explain the selective permeability of the plasma membrane?",
+        "prompt": "Why does a multicellular organism require specialized organ systems (such as circulatory and respiratory systems), whereas a single-celled amoeba does not?",
         "options": [
-          "A. The membrane is a solid sheet of impervious wax",
-          "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
-          "C. The membrane has large open holes that allow all molecules through",
-          "D. Carbohydrates form a rigid impenetrable cage around the cell"
+          "A. Single-celled organisms do not need oxygen or nutrients",
+          "B. Multicellular organisms have small surface area-to-volume ratios, making simple diffusion too slow to reach deep internal cells",
+          "C. Amoebae possess cell walls that pump nutrients automatically",
+          "D. Multicellular organisms have no cell membranes"
         ],
-        "correctAnswer": "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
-        "hint": "Hydrophobic fatty acid tails repel polar solutes; channel/carrier proteins regulate specific transport.",
-        "workedSolution": "The hydrophobic core of the phospholipid bilayer repels polar and charged molecules, while specific integral transmembrane channel and carrier proteins selectively transport designated solutes.",
+        "correctAnswer": "B. Multicellular organisms have small surface area-to-volume ratios, making simple diffusion too slow to reach deep internal cells",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "As organisms increase in size, their surface area-to-volume ratio decreases, requiring specialized transport systems.",
         "points": 1
       },
       {
         "id": "B7_CELL_A03",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Under a light microscope, a plant cell in salt solution exhibits a shrunken protoplast detached from its cell wall. What substance fills the space between the shrunken cell membrane and the cell wall?",
+        "prompt": "Consider the organelle distribution in a plant root cell versus a leaf mesophyll cell. Which organelle will be absent in the root cell, and why?",
         "options": [
-          "A. Pure vacuum",
-          "B. The external salt solution, because the cellulose cell wall is fully permeable",
-          "C. Cytoplasm that leaked out",
-          "D. Pure air gas"
+          "A. Mitochondria, because roots do not respire",
+          "B. Chloroplasts, because root cells are subterranean and not exposed to light for photosynthesis",
+          "C. Nucleus, because root cells do not divide",
+          "D. Cell wall, because roots must absorb water easily"
         ],
-        "correctAnswer": "B. The external salt solution, because the cellulose cell wall is fully permeable",
-        "hint": "The cell wall is freely permeable to small dissolved solutes, while the plasma membrane is semi-permeable.",
-        "workedSolution": "The cellulose cell wall is freely permeable to water and dissolved solutes; when the protoplast contracts during plasmolysis, external salt solution freely passes through the wall to occupy the perimeter space.",
+        "correctAnswer": "B. Chloroplasts, because root cells are subterranean and not exposed to light for photosynthesis",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Underground root cells receive no sunlight, so they do not develop photosynthetic chloroplasts.",
         "points": 1
       },
       {
         "id": "B7_CELL_A04",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why can electron microscopes achieve magnifications exceeding 500,000× with 0.2 nm resolution, whereas optical light microscopes are fundamentally limited to ~1,500× and 200 nm?",
+        "prompt": "If all the mitochondria in a human liver cell were selectively destroyed by a toxin, which biochemical process would stop immediately?",
         "options": [
-          "A. Electron microscopes use much thicker glass lenses",
-          "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
-          "C. Light microscopes operate in a vacuum",
-          "D. Electrons are brighter than photons"
+          "A. Simple diffusion of oxygen across the membrane",
+          "B. Aerobic cellular respiration and ATP generation",
+          "C. Synthesis of starch grains",
+          "D. Physical movement of the cell wall"
         ],
-        "correctAnswer": "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
-        "hint": "Diffraction limits resolution to approximately half the wavelength of the illumination source.",
-        "workedSolution": "Resolution is constrained by radiation wavelength. Accelerated electrons have wavelengths ~100,000× shorter than visible light photons (0.005 nm vs 400-700 nm), reducing diffraction limits.",
+        "correctAnswer": "B. Aerobic cellular respiration and ATP generation",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria are the sites of aerobic respiration; destroying them prevents oxidative ATP synthesis.",
         "points": 1
       },
       {
         "id": "B7_CELL_A05",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "A cell biologist treats cultured liver cells with a metabolic poison that specifically inhibits mitochondrial ATP synthase. Which cellular process will halt almost immediately?",
+        "prompt": "An unknown tissue sample is analyzed chemically and found to contain high concentrations of cellulose and starch. What is the biological origin of this tissue?",
         "options": [
-          "A. Passive osmosis of water",
-          "B. Simple diffusion of oxygen",
-          "C. Active transport pumping sodium ions against their electrochemical gradient",
-          "D. Evaporation"
+          "A. Mammalian muscle",
+          "B. Plant tissue",
+          "C. Fungal hyphae",
+          "D. Insect exoskeleton"
         ],
-        "correctAnswer": "C. Active transport pumping sodium ions against their electrochemical gradient",
-        "hint": "Primary active transport is directly coupled to ATP hydrolysis.",
-        "workedSolution": "Active transport requires metabolic energy in the form of ATP. Poisoning ATP synthase depletes cellular energy stores, immediately stopping active ion pumps.",
+        "correctAnswer": "B. Plant tissue",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Cellulose cell walls and starch storage carbohydrates are characteristic markers of plant tissues.",
         "points": 1
       },
       {
         "id": "B7_CELL_A06",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which of the following cellular features supports the endosymbiotic theory that mitochondria and chloroplasts originated as free-living prokaryotic endosymbionts?",
+        "prompt": "Why is the cell membrane described as 'fluid mosaic' rather than a rigid static sheet?",
         "options": [
-          "A. They possess linear eukaryotic chromosomes wrapped in histones",
-          "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
-          "C. They are synthesized entirely in the nucleus",
-          "D. They are made of cellulose"
+          "A. It is composed of a flexible lipid bilayer embedded with mobile proteins that move laterally",
+          "B. It is made of solid stone blocks like a floor mosaic",
+          "C. It contains only water droplets",
+          "D. It dissolves and reforms every few seconds"
         ],
-        "correctAnswer": "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
-        "hint": "Shared biochemical traits with modern alpha-proteobacteria and cyanobacteria.",
-        "workedSolution": "Mitochondria and chloroplasts share distinct prokaryotic traits: naked circular DNA genomes, 70S ribosomes, binary fission, and double membranes reflecting ancestral phagocytosis.",
+        "correctAnswer": "A. It is composed of a flexible lipid bilayer embedded with mobile proteins that move laterally",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The cell membrane consists of a dynamic phospholipid bilayer with embedded, laterally mobile proteins.",
         "points": 1
       },
       {
         "id": "B7_CELL_A07",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why does boiling an onion epidermal peel in water before preparing a wet mount prevent plasmolysis when placed in concentrated salt solution?",
+        "prompt": "How does the large central vacuole contribute to the structural mechanics of non-woody herbaceous plants?",
         "options": [
-          "A. Boiling turns the salt into sugar",
-          "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
-          "C. Boiling makes the cell wall impermeable",
-          "D. The cells become immortal"
+          "A. It synthesizes wood fibers",
+          "B. It absorbs water by osmosis and exerts hydrostatic turgor pressure against the cellulose cell wall, keeping stems upright",
+          "C. It converts sunlight into solid proteins",
+          "D. It pumps blood to the leaves"
         ],
-        "correctAnswer": "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
-        "hint": "Osmosis requires an intact, selectively permeable living membrane.",
-        "workedSolution": "Thermal heat denatures membrane proteins and disrupts the phospholipid bilayer. Losing semi-permeability makes the membrane freely porous, preventing osmotic gradients.",
+        "correctAnswer": "B. It absorbs water by osmosis and exerts hydrostatic turgor pressure against the cellulose cell wall, keeping stems upright",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Hydrostatic turgor pressure exerted by the central vacuole against the rigid wall provides structural support in herbaceous plants.",
         "points": 1
       },
       {
         "id": "B7_CELL_A08",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the function of plasmodesmata in multicellular plant tissues?",
+        "prompt": "A scientist treats human cheek cells with an iodine solution. Why do they fail to turn blue-black, whereas a scrape of potato tissue turns dark blue-black?",
         "options": [
-          "A. Synthesize photosynthetic pigments",
-          "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
-          "C. Pump water out of stomata",
-          "D. Anchor the root into rock"
+          "A. Cheek cells lack a nucleus",
+          "B. Iodine only works on dead animals",
+          "C. Potato tissue stores carbohydrate as starch (which reacts with iodine), while animal cells store carbohydrate as glycogen",
+          "D. Animal cells destroy iodine on contact"
         ],
-        "correctAnswer": "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
-        "hint": "They interconnect plant protoplasts into a continuous living symplast.",
-        "workedSolution": "Plasmodesmata are trans-wall channels lined by plasma membrane that connect the cytoplasm of adjacent cells, facilitating molecular transport and systemic signaling.",
+        "correctAnswer": "C. Potato tissue stores carbohydrate as starch (which reacts with iodine), while animal cells store carbohydrate as glycogen",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Iodine reacts specifically with starch to form a blue-black complex; animal cells store glycogen, which does not give this reaction.",
         "points": 1
       },
       {
         "id": "B7_CELL_A09",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "If a microscope's field of view has a diameter of 2.0 mm under low power (10× objective), what will be the diameter of the field of view when switched to high power (40× objective)?",
+        "prompt": "Which of the following demonstrates the division of labour at the organ level in a plant?",
         "options": [
-          "A. 8.0 mm",
-          "B. 0.5 mm",
-          "C. 0.2 mm",
-          "D. 0.05 mm"
+          "A. Leaves perform photosynthesis, roots absorb water and minerals, and flowers manage reproduction",
+          "B. All parts of the plant perform exactly the same function",
+          "C. The nucleus manufactures starch while the vacuole divides",
+          "D. Stems absorb sunlight while flowers absorb soil water"
         ],
-        "correctAnswer": "B. 0.5 mm",
-        "hint": "Field Diameter is inversely proportional to magnification: Diameter(high) = Diameter(low) × (Low Mag / High Mag).",
-        "workedSolution": "Diameter(high) = 2.0 mm × (10 / 40) = 2.0 × 0.25 = 0.5 mm (or 500 µm).",
+        "correctAnswer": "A. Leaves perform photosynthesis, roots absorb water and minerals, and flowers manage reproduction",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Division of labour assigns distinct physiological roles to specialized organs across the plant body.",
         "points": 1
       },
       {
         "id": "B7_CELL_A10",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why do cells maintain a small microscopic diameter rather than growing to the size of a tennis ball?",
+        "prompt": "Why do red blood cells lack a nucleus at maturity?",
         "options": [
-          "A. Larger cells become too heavy to move",
-          "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
-          "C. Gravity crushes large cells immediately",
-          "D. DNA duplicates continuously until the cell explodes"
+          "A. They are dead cells",
+          "B. To maximize internal cytoplasmic space for packing hemoglobin to transport oxygen",
+          "C. To prevent them from reproducing inside blood vessels",
+          "D. Because they have a thick cell wall instead"
         ],
-        "correctAnswer": "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
-        "hint": "Surface area-to-volume ratio constraint.",
-        "workedSolution": "Volume increases much faster than surface area ($V \\propto r^3$ vs $SA \\propto r^2$). A gigantic cell would have insufficient plasma membrane surface to transport nutrients and remove metabolic wastes.",
+        "correctAnswer": "B. To maximize internal cytoplasmic space for packing hemoglobin to transport oxygen",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mature mammalian red blood cells lose their nucleus to maximize internal space for hemoglobin and oxygen transport.",
         "points": 1
       },
       {
         "id": "B7_CELL_A11",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the distribution of mitochondria correlate with cellular specialization in cardiac muscle cells compared to skin epithelial cells?",
+        "prompt": "What would happen to an animal cell if its cell membrane suddenly became completely permeable to all solutes and water?",
         "options": [
-          "A. Skin cells contain ten times more mitochondria than heart cells",
-          "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
-          "C. Cardiac cells have no mitochondria",
-          "D. Mitochondria are only found in plant cells"
+          "A. The cell would produce more energy",
+          "B. Concentration gradients would collapse, internal metabolites would be lost, and the cell would die",
+          "C. The cell would immediately transform into a plant cell",
+          "D. The cell would form a hard shell"
         ],
-        "correctAnswer": "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
-        "hint": "High metabolic workloads demand massive ATP synthesis.",
-        "workedSolution": "Cardiac myocytes contract non-stop throughout an organism's lifetime without fatigue, requiring enormous mitochondrial density to fuel continuous aerobic respiration.",
+        "correctAnswer": "B. Concentration gradients would collapse, internal metabolites would be lost, and the cell would die",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Uncontrolled permeability eliminates concentration gradients, leading to metabolic collapse and cell death.",
         "points": 1
       },
       {
         "id": "B7_CELL_A12",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which organelle is responsible for post-translational modification of proteins, including adding carbohydrate chains to form glycoproteins?",
+        "prompt": "Which of the following best explains why the nucleus is located near the edge (periphery) in mature plant cells but in the center in animal cells?",
         "options": [
-          "A. Golgi apparatus",
-          "B. Nucleolus",
-          "C. Ribosome",
-          "D. Centriole"
+          "A. The plant nucleus is repelled by chloroplasts",
+          "B. The large central vacuole fills most of the internal volume, pushing the cytoplasm and nucleus outward",
+          "C. Animal cells have heavier nuclei that sink to the middle",
+          "D. Plant cells have no cytoplasm in their center"
         ],
-        "correctAnswer": "A. Golgi apparatus",
-        "hint": "Glycosylation takes place within its cisternae.",
-        "workedSolution": "The Golgi apparatus enzymatically attaches oligosaccharides to proteins (glycosylation) and tags them for export or delivery to lysosomes.",
+        "correctAnswer": "B. The large central vacuole fills most of the internal volume, pushing the cytoplasm and nucleus outward",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Development of a large, fluid-filled central vacuole displaces the nucleus and cytoplasm toward the cell wall.",
         "points": 1
       },
       {
         "id": "B7_CELL_A13",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "In an experiment, red blood cells placed in Solution X swell and burst rapidly, while cells placed in Solution Y maintain their normal biconcave shape. What are Solutions X and Y?",
+        "prompt": "In an experiment, red blood cells and onion epidermal cells were placed in distilled water. After 30 minutes, what will be observed under the microscope?",
         "options": [
-          "A. X is 10% salt solution; Y is pure water",
-          "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
-          "C. X is 20% sucrose; Y is 50% salt solution",
-          "D. Both X and Y are concentrated acids"
+          "A. Both types of cells will burst",
+          "B. The red blood cells will swell and burst (lysis), while the onion cells will remain intact and turgid",
+          "C. Both types of cells will shrink",
+          "D. The onion cells will dissolve completely"
         ],
-        "correctAnswer": "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
-        "hint": "0.9% NaCl has the same osmotic potential as human blood plasma.",
-        "workedSolution": "Pure water is strongly hypotonic to erythrocytes, driving massive endosmosis and lysis. 0.9% NaCl is isotonic to human blood, maintaining zero net osmotic flow.",
+        "correctAnswer": "B. The red blood cells will swell and burst (lysis), while the onion cells will remain intact and turgid",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Red blood cells burst because they lack a cell wall, whereas onion cells remain intact due to their rigid wall.",
         "points": 1
       },
       {
         "id": "B7_CELL_A14",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the physiological role of the lignin deposited in the secondary walls of xylem vessels?",
+        "prompt": "What is the primary function of the folds (cristae) found within the inner membrane of a mitochondrion?",
         "options": [
-          "A. Captures sunlight for starch production",
-          "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
-          "C. Pumps glucose into the roots",
-          "D. Absorbs oxygen from atmospheric air"
+          "A. To store starch grains",
+          "B. To increase the available surface area for enzyme-driven cellular respiration",
+          "C. To prevent water from leaving the organelle",
+          "D. To capture green light waves"
         ],
-        "correctAnswer": "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
-        "hint": "Transpirational pull creates powerful negative hydrostatic suction inside the xylem.",
-        "workedSolution": "Lignin is an intricate polymer that waterproofs and reinforces xylem walls, preventing implosion under the high tension forces generated by transpiration.",
+        "correctAnswer": "B. To increase the available surface area for enzyme-driven cellular respiration",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Folded inner membranes (cristae) expand the functional surface area for respiratory electron transport complexes.",
         "points": 1
       },
       {
         "id": "B7_CELL_A15",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What structural mechanism prevents mature sieve tube elements in phloem from being crushed by neighboring plant cells despite having no nucleus?",
+        "prompt": "A sample of human muscle tissue is stained and examined. The cells are observed to have multiple nuclei and abundant mitochondria. What does this suggest about muscle tissue?",
         "options": [
-          "A. Rigid lignified walls like xylem",
-          "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
-          "C. Internal bone structures",
-          "D. Large air chambers"
+          "A. It is inactive and dead",
+          "B. It has high metabolic activity requiring continuous energy production for contraction",
+          "C. It behaves identically to plant leaf tissue",
+          "D. It stores carbohydrates as starch"
         ],
-        "correctAnswer": "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
-        "hint": "Münch pressure flow hypothesis.",
-        "workedSolution": "Active accumulation of sucrose lowers water potential, drawing in water that generates high internal turgor pressure, keeping sieve tubes patent and driving mass flow.",
+        "correctAnswer": "B. It has high metabolic activity requiring continuous energy production for contraction",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "High numbers of mitochondria provide the ATP needed to support continuous muscular contraction.",
         "points": 1
       },
       {
         "id": "B7_CELL_A16",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why does the nucleus of a cell contain visible thread-like chromosomes during cell division, but appears as diffuse, indistinct chromatin during interphase?",
+        "prompt": "Why is the cell wall of a plant cell described as fully permeable, while the cell membrane is selectively permeable?",
         "options": [
-          "A. The DNA leaves the cell during interphase",
-          "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
-          "C. Chromosomes are eaten by lysosomes during interphase",
-          "D. The microscope loses magnification during interphase"
+          "A. The cell wall has large pores that allow water and small solutes to pass freely, whereas the membrane regulates transit via transport proteins",
+          "B. The cell wall is alive and the membrane is dead",
+          "C. The cell membrane is made of rigid wood",
+          "D. Solutes cannot touch the cell wall"
         ],
-        "correctAnswer": "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
-        "hint": "Uncoiled DNA permits RNA polymerase access; condensed chromatin prevents mechanical breakage during anaphase.",
-        "workedSolution": "Interphase DNA is uncoiled (euchromatin) to allow enzyme access for gene expression. During mitosis, it supercoils into tight chromosomes to prevent shearing during spindle segregation.",
+        "correctAnswer": "A. The cell wall has large pores that allow water and small solutes to pass freely, whereas the membrane regulates transit via transport proteins",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cellulose cell walls are porous and non-selective, while lipid membranes regulate substance entry through selective mechanisms.",
         "points": 1
       },
       {
         "id": "B7_CELL_A17",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the primary difference between pinocytosis ('cell drinking') and phagocytosis ('cell eating') in animal cells?",
+        "prompt": "Which of the following sequences represents the correct functional hierarchy in the nervous system?",
         "options": [
-          "A. Pinocytosis takes in solid food particles; phagocytosis takes in liquid drops",
-          "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
-          "C. Only plant cells perform phagocytosis",
-          "D. Pinocytosis requires no energy"
+          "A. Nerve cell (Neuron) → Nervous tissue → Brain → Nervous system → Human organism",
+          "B. Brain → Neuron → Nervous system → Nervous tissue → Organism",
+          "C. Organism → Brain → Neuron → Tissue → System",
+          "D. Neuron → Brain → Nervous tissue → Organism → Nervous system"
         ],
-        "correctAnswer": "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
-        "hint": "Both are forms of endocytosis.",
-        "workedSolution": "Phagocytosis involves actin-driven pseudopodial extension around solid targets (e.g. bacteria), whereas pinocytosis invaginates tiny droplets of extracellular fluid.",
+        "correctAnswer": "A. Nerve cell (Neuron) → Nervous tissue → Brain → Nervous system → Human organism",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "This sequence correctly traces the hierarchy: Cell to Tissue, Organ, System, and complete Organism.",
         "points": 1
       },
       {
         "id": "B7_CELL_A18",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why is the tonoplast membrane of plant vacuoles capable of accumulating ions at concentrations much higher than the surrounding cytoplasm?",
+        "prompt": "How do chloroplasts and mitochondria work in a complementary manner inside a green plant leaf cell?",
         "options": [
-          "A. The tonoplast is fully permeable",
-          "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
-          "C. Water evaporates from the vacuole",
-          "D. The plant cell wall pushes ions inside"
+          "A. Chloroplasts synthesize glucose and oxygen using light, while mitochondria break down glucose with oxygen to release energy",
+          "B. Chloroplasts break down energy, while mitochondria synthesize starch",
+          "C. Both organelles carry out identical photosynthetic reactions",
+          "D. They destroy each other's products"
         ],
-        "correctAnswer": "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
-        "hint": "Active transport concentrates solutes into the cell sap against steep gradients.",
-        "workedSolution": "Vacuolar $H^+$-ATPases actively pump protons into the vacuole, creating electrochemical gradients that power antiporters and symporters to concentrate minerals and sugars.",
+        "correctAnswer": "A. Chloroplasts synthesize glucose and oxygen using light, while mitochondria break down glucose with oxygen to release energy",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Photosynthesis in chloroplasts produces sugars and oxygen, which mitochondria then oxidize during cellular respiration.",
         "points": 1
       },
       {
         "id": "B7_CELL_A19",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which of the following cellular structures is responsible for assembling and anchoring the spindle apparatus in dividing animal cells?",
+        "prompt": "What would happen to a plant leaf cell if its vacuolar membrane (tonoplast) became leaky and lost its contents?",
         "options": [
-          "A. Centrosome containing paired centrioles",
-          "B. Nucleolus",
-          "C. Golgi body",
-          "D. Ribosome"
+          "A. The cell would produce more starch",
+          "B. Turgor pressure would drop, causing the cell to become flaccid and the plant to wilt",
+          "C. The cell wall would double in thickness",
+          "D. Photosynthesis would speed up"
         ],
-        "correctAnswer": "A. Centrosome containing paired centrioles",
-        "hint": "Composed of nine triplets of microtubules.",
-        "workedSolution": "The centrosome contains orthogonal centrioles that organize gamma-tubulin ring complexes to nucleate spindle microtubules during mitotic prophase.",
+        "correctAnswer": "B. Turgor pressure would drop, causing the cell to become flaccid and the plant to wilt",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Loss of vacuolar solutes dissipates internal turgor pressure, leading to flaccidity and wilting.",
         "points": 1
       },
       {
         "id": "B7_CELL_A20",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the structure of a fungal cell differ from both typical plant and animal cells?",
+        "prompt": "Why do animal tissues like skeletal muscle require a direct supply of oxygenated blood, while individual amoebae in pond water do not?",
         "options": [
-          "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
-          "B. Fungi have no cell membrane",
-          "C. Fungi are identical to green plants",
-          "D. Fungal cells have no nuclei"
+          "A. Amoebae do not need energy to live",
+          "B. Single-celled amoebae have a large surface area-to-volume ratio allowing sufficient gas exchange by simple diffusion, whereas thick tissues do not",
+          "C. Human muscle cells have cellulose walls that block oxygen",
+          "D. Blood carries only water, not oxygen"
         ],
-        "correctAnswer": "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
-        "hint": "Chitin is a nitrogenous polysaccharide also found in arthropod exoskeletons.",
-        "workedSolution": "Fungi have rigid walls composed of chitin (not cellulose), lack chloroplasts (heterotrophic), and store carbohydrates as glycogen, bridging plant-like and animal-like characteristics.",
+        "correctAnswer": "B. Single-celled amoebae have a large surface area-to-volume ratio allowing sufficient gas exchange by simple diffusion, whereas thick tissues do not",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Large surface area-to-volume ratios allow single-celled organisms to rely on simple diffusion for gas exchange.",
         "points": 1
       },
       {
         "id": "B7_CELL_A21",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why are stomata predominantly located on the lower epidermis of dicotyledonous leaves rather than the upper surface?",
+        "prompt": "Which of the following is an example of an organ composed of both muscular and epithelial tissues in humans?",
         "options": [
-          "A. The upper surface has no cells",
-          "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
-          "C. Carbon dioxide only exists below leaves",
-          "D. Rain would drown the stomata"
+          "A. Red blood cell",
+          "B. Stomach",
+          "C. Bone marrow cell",
+          "D. Ribosome"
         ],
-        "correctAnswer": "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
-        "hint": "An adaptation to conserve water in terrestrial environments.",
-        "workedSolution": "Positioning stomata on the cooler, shaded lower leaf surface reduces evaporation and transpirational water deficit while still allowing carbon dioxide intake.",
+        "correctAnswer": "B. Stomach",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The stomach is an organ lined with secretory epithelial tissue and wrapped in smooth muscle tissue.",
         "points": 1
       },
       {
         "id": "B7_CELL_A22",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "A student counts 12 cells laid end-to-end across a 1.2 mm microscope field diameter. What is the average length of a single cell?",
+        "prompt": "A researcher isolates an organelle that contains its own DNA and is actively engaged in consuming oxygen and releasing carbon dioxide. What is this organelle?",
         "options": [
-          "A. 0.1 mm (100 µm)",
-          "B. 1.0 mm",
-          "C. 0.01 mm",
-          "D. 12 mm"
+          "A. Ribosome",
+          "B. Mitochondrion",
+          "C. Vacuole",
+          "D. Cell wall"
         ],
-        "correctAnswer": "A. 0.1 mm (100 µm)",
-        "hint": "Cell length = Field Diameter / Cell count = 1.2 mm / 12.",
-        "workedSolution": "Average length = Field Diameter / Number of cells = 1.2 mm / 12 = 0.1 mm = 100 µm.",
+        "correctAnswer": "B. Mitochondrion",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Mitochondria contain mitochondrial DNA and consume oxygen during aerobic cellular respiration.",
         "points": 1
       },
       {
         "id": "B7_CELL_A23",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which type of human epithelial tissue consists of a single layer of flattened, scale-like cells adapted for rapid gas and nutrient diffusion?",
+        "prompt": "Why can an unfertilized chicken egg yolk be considered an exceptional cell compared to most cells?",
         "options": [
-          "A. Simple squamous epithelium",
-          "B. Stratified squamous epithelium",
-          "C. Pseudostratified columnar epithelium",
-          "D. Transitional epithelium"
+          "A. It has no cell membrane",
+          "B. It is a single, macroscopic cell visible to the naked eye without a microscope",
+          "C. It contains no cytoplasm or nucleus",
+          "D. It is a complete multicellular tissue"
         ],
-        "correctAnswer": "A. Simple squamous epithelium",
-        "hint": "Forms the walls of pulmonary alveoli and capillary blood vessels.",
-        "workedSolution": "Simple squamous epithelium is a delicate monolayer of flattened cells offering minimal diffusion distance across alveolar and capillary barriers.",
+        "correctAnswer": "B. It is a single, macroscopic cell visible to the naked eye without a microscope",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "An unfertilized egg ovum is a single macroscopic cell packed with nutrient yolk.",
         "points": 1
       },
       {
         "id": "B7_CELL_A24",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the biochemical reason why animal cell membranes freeze and lose fluidity at near-freezing temperatures?",
+        "prompt": "Why do xylem vessels in a plant lose their internal cytoplasm and nuclei upon reaching functional maturity?",
         "options": [
-          "A. Water inside the nucleus boils",
-          "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
-          "C. Cholesterol converts into diamond",
-          "D. The cell wall shatters"
+          "A. They are diseased cells",
+          "B. To form hollow, continuous microscopic tubes for the uninterrupted upward transport of water and mineral salts",
+          "C. To transform into chloroplasts",
+          "D. Because they are animal cells"
         ],
-        "correctAnswer": "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
-        "hint": "Low thermal kinetic energy causes hydrophobic tails to aggregate.",
-        "workedSolution": "At low temperatures, reduced thermal motion causes phospholipid hydrocarbon chains to pack closely into a viscous gel, impeding protein motility and membrane transport.",
+        "correctAnswer": "B. To form hollow, continuous microscopic tubes for the uninterrupted upward transport of water and mineral salts",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Xylem cells undergo programmed cell death to leave hollow, open conduits for low-resistance water conduction.",
         "points": 1
       },
       {
         "id": "B7_CELL_A25",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the nuclear envelope regulate macromolecular transport between the nucleoplasm and the cytoplasm?",
+        "prompt": "How does the storage of energy as glycogen in animal cells benefit active animals compared to starch in plants?",
         "options": [
-          "A. It dissolves completely every hour",
-          "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
-          "C. It allows all molecules to pass freely without restriction",
-          "D. It is completely impermeable"
+          "A. Glycogen has a more branched structure that allows rapid enzymatic breakdown into glucose for quick energy during movement",
+          "B. Glycogen is a heavy metal that adds body weight",
+          "C. Starch is poisonous to animal cells",
+          "D. Glycogen converts directly into light"
         ],
-        "correctAnswer": "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
-        "hint": "Nuclear pore complexes act as gated molecular checkpoints.",
-        "workedSolution": "Nuclear pore complexes (NPCs) recognize specific nuclear localization signals (NLS) on proteins to mediate selective, energy-dependent bidirectional nucleocytoplasmic transit.",
+        "correctAnswer": "A. Glycogen has a more branched structure that allows rapid enzymatic breakdown into glucose for quick energy during movement",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Highly branched glycogen provides numerous sites for rapid enzymatic cleavage into glucose during exertion.",
         "points": 1
       },
       {
         "id": "B7_CELL_A26",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why do plant cells in the deep spongy mesophyll layer possess irregular shapes with large intercellular air spaces?",
+        "prompt": "What would happen to a plant leaf cell if its nucleus were experimentally extracted while leaving all other organelles intact?",
         "options": [
-          "A. To store poisonous gases",
-          "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
-          "C. Because they were damaged during growth",
-          "D. To absorb rain water from the stem"
+          "A. It would immediately grow into a complete tree",
+          "B. It could survive temporarily, but would eventually die because it cannot synthesize new proteins or direct repair without nuclear DNA",
+          "C. It would start photosynthesizing twice as fast",
+          "D. It would immediately turn into an animal cell"
         ],
-        "correctAnswer": "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
-        "hint": "Gases diffuse 10,000 times faster in air spaces than through aqueous cytoplasm.",
-        "workedSolution": "Loose packing and extensive intercellular air voids facilitate rapid internal diffusion of carbon dioxide and oxygen between stomatal cavities and palisade layers.",
+        "correctAnswer": "B. It could survive temporarily, but would eventually die because it cannot synthesize new proteins or direct repair without nuclear DNA",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Without the nucleus to direct protein synthesis and transcription, metabolic processes fail and the cell dies.",
         "points": 1
       },
       {
         "id": "B7_CELL_A27",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the consequence of lysosomal membrane rupture within an animal cell (autolysis)?",
+        "prompt": "Why does a slice of fresh cucumber release water and shrink when sprinkled with table salt?",
         "options": [
-          "A. The cell produces excess ATP",
-          "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
-          "C. The cell immediately divides into four",
-          "D. The cell turns into a plant cell"
+          "A. The salt enters the cucumber and expands",
+          "B. Salt creates a hypertonic external environment, causing water to leave the plant vacuoles by osmosis",
+          "C. The salt dissolves the cell wall instantly",
+          "D. The cucumber cells undergo rapid cell division"
         ],
-        "correctAnswer": "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
-        "hint": "Autolysis or apoptosis.",
-        "workedSolution": "Widespread lysosomal leakage releases hydrolytic enzymes (proteases, nucleases, lipases) that degrade vital macromolecules, triggering autolytic cell death.",
+        "correctAnswer": "B. Salt creates a hypertonic external environment, causing water to leave the plant vacuoles by osmosis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "High external salt concentration draws water out of plant vacuoles via osmosis, causing cell shrinkage.",
         "points": 1
       },
       {
         "id": "B7_CELL_A28",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which organelle synthesizes membrane lipids and steroid hormones such as testosterone and estrogen?",
+        "prompt": "Which of the following statements about cell specialization is correct?",
         "options": [
-          "A. Rough endoplasmic reticulum",
-          "B. Smooth endoplasmic reticulum",
-          "C. Ribosome",
-          "D. Chloroplast"
+          "A. Specialized cells discard all their organelles and stop working",
+          "B. Structural modifications allow specialized cells to perform specific physiological duties more efficiently",
+          "C. Only single-celled bacteria undergo cell specialization",
+          "D. Specialized cells can each survive independently as separate organisms"
         ],
-        "correctAnswer": "B. Smooth endoplasmic reticulum",
-        "hint": "Prominent in testicular Leydig cells and adrenal cortex.",
-        "workedSolution": "Smooth ER contains enzymes that catalyze the synthesis of phospholipids, cholesterol, and steroid hormones from acetate and lipid precursors.",
+        "correctAnswer": "B. Structural modifications allow specialized cells to perform specific physiological duties more efficiently",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cell differentiation tailors morphology and organelle distribution to specialized physiological functions.",
         "points": 1
       },
       {
         "id": "B7_CELL_A29",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the cellular architecture of cardiac muscle tissue prevent individual heart cells from pulling apart during vigorous contraction?",
+        "prompt": "Why do animal cells fail to show plasmolysis when placed in a concentrated salt solution?",
         "options": [
-          "A. They are glued together with cellulose",
-          "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
-          "C. They have no cell boundaries",
-          "D. Bones lock each heart cell in place"
+          "A. They have no water in their cytoplasm",
+          "B. They lack a rigid cell wall, so the entire cell simply shrinks and crenates rather than pulling away from an outer shell",
+          "C. They produce starch to block the salt",
+          "D. Their cell membranes are completely impermeable to water"
         ],
-        "correctAnswer": "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
-        "hint": "Intercalated discs provide mechanical bonding and electrical coupling.",
-        "workedSolution": "Intercalated discs feature mechanical desmosomes (fascia adherens) that withstand contractile shear stress and gap junctions that allow rapid ion flux for coordinated contraction.",
+        "correctAnswer": "B. They lack a rigid cell wall, so the entire cell simply shrinks and crenates rather than pulling away from an outer shell",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Plasmolysis requires a rigid outer wall from which the membrane can detach; lacking a wall, animal cells simply shrink (crenate).",
         "points": 1
       },
       {
         "id": "B7_CELL_A30",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "A microscope ocular lens has a tiny scratch that remains in the exact same position when you rotate the revolving nosepiece and move the slide. Where is the scratch located?",
+        "prompt": "Which organelle is responsible for packaging and modifying proteins before they are transported out of the cell?",
         "options": [
-          "A. On the objective lens",
-          "B. On the glass slide",
-          "C. On the eyepiece (ocular lens)",
-          "D. On the condenser lens"
+          "A. Golgi body (Golgi apparatus)",
+          "B. Chloroplast",
+          "C. Cellulose cell wall",
+          "D. Centrosome"
         ],
-        "correctAnswer": "C. On the eyepiece (ocular lens)",
-        "hint": "If rotating objectives and shifting the slide does not move the artifact, the defect must reside on the remaining optical element.",
-        "workedSolution": "Since rotating the objective turret and moving the stage failed to alter the artifact's orientation, the scratch is situated on the stationary eyepiece lens.",
+        "correctAnswer": "A. Golgi body (Golgi apparatus)",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "The Golgi body modifies, sorts, and packages proteins and lipids for secretion or delivery.",
         "points": 1
       },
       {
         "id": "B7_CELL_A31",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why do red blood cells lack mitochondria in addition to lacking a nucleus?",
+        "prompt": "Why are guard cells around a plant leaf stoma unusual compared to surrounding epidermal cells?",
         "options": [
-          "A. Red blood cells do not require any energy",
-          "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
-          "C. Because mitochondria are too large to fit",
-          "D. Red blood cells use photosynthesis"
+          "A. Guard cells contain chloroplasts and change shape to regulate gas exchange, whereas general epidermal cells lack chloroplasts",
+          "B. Guard cells have no cell walls",
+          "C. Guard cells are dead animal cells",
+          "D. Guard cells contain glycogen"
         ],
-        "correctAnswer": "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
-        "hint": "Erythrocytes rely exclusively on anaerobic glycolysis for ATP.",
-        "workedSolution": "Lacking mitochondria, red blood cells generate ATP solely via anaerobic glycolysis, ensuring that 100% of bound oxygen is delivered intact to target tissues.",
+        "correctAnswer": "A. Guard cells contain chloroplasts and change shape to regulate gas exchange, whereas general epidermal cells lack chloroplasts",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Unlike ordinary epidermal cells, guard cells contain chloroplasts and regulate stomatal opening and closing.",
         "points": 1
       },
       {
         "id": "B7_CELL_A32",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the primary role of microvilli found on the apical surface of intestinal epithelial cells?",
+        "prompt": "Which of the following best defines an organ system?",
         "options": [
-          "A. Wave back and forth to push food along the gut",
-          "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
-          "C. Digest dietary cellulose",
-          "D. Filter pathogens from the blood"
+          "A. A group of cells with identical size and shape",
+          "B. A group of interrelated organs that work cooperatively to carry out major bodily functions",
+          "C. A collection of diverse organisms living in a forest",
+          "D. A single microscopic organelle"
         ],
-        "correctAnswer": "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
-        "hint": "Microscopic brush border on enterocytes.",
-        "workedSolution": "Dense microvillar brush borders increase enterocyte surface area by over 20-fold, maximizing the density of nutrient transport proteins.",
+        "correctAnswer": "B. A group of interrelated organs that work cooperatively to carry out major bodily functions",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "An organ system comprises anatomically distinct organs that coordinate to execute major physiological processes.",
         "points": 1
       },
       {
         "id": "B7_CELL_A33",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What chemical property of the phospholipid bilayer prevents glucose from diffusing directly through the cell membrane without a transport protein?",
+        "prompt": "What is the primary role of ribosomes in a living cell?",
         "options": [
-          "A. Glucose is too heavy to move",
-          "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
-          "C. The cell membrane is made of solid stone",
-          "D. Glucose is an insoluble gas"
+          "A. Synthesizing proteins based on genetic instructions",
+          "B. Pumping water into the vacuole",
+          "C. Photosynthesis",
+          "D. Anchoring the cell wall"
         ],
-        "correctAnswer": "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
-        "hint": "Like dissolves like: polar solutes are repelled by hydrocarbon interiors.",
-        "workedSolution": "Multiple polar hydroxyl (-OH) groups make glucose highly hydrophilic, creating a thermodynamic barrier that prevents entry through the non-polar lipid core without GLUT transporters.",
+        "correctAnswer": "A. Synthesizing proteins based on genetic instructions",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Ribosomes are the molecular machines that translate genetic code into polypeptide protein chains.",
         "points": 1
       },
       {
         "id": "B7_CELL_A34",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which organelle in plant cells contains hydrolytic enzymes performing duties analogous to animal lysosomes?",
+        "prompt": "Why is the inner membrane of a chloroplast arranged into stacked disc-like thylakoids (grana)?",
         "options": [
-          "A. Chloroplast",
-          "B. The large central vacuole",
-          "C. Mitochondrion",
-          "D. Cell wall"
+          "A. To store starch permanently",
+          "B. To maximize the surface area for embedding chlorophyll pigments that capture sunlight",
+          "C. To keep the leaf heavy",
+          "D. To pump carbon dioxide out of the cell"
         ],
-        "correctAnswer": "B. The large central vacuole",
-        "hint": "The vacuole contains acid hydrolases that degrade cellular waste.",
-        "workedSolution": "In addition to maintaining turgor, plant vacuoles contain acidic hydrolytic enzymes that perform waste degradation analogous to animal lysosomes.",
+        "correctAnswer": "B. To maximize the surface area for embedding chlorophyll pigments that capture sunlight",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Stacked thylakoids maximize the membrane area available for light-harvesting chlorophyll complexes.",
         "points": 1
       },
       {
         "id": "B7_CELL_A35",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the chemical composition of bacterial cell walls differ fundamentally from plant cell walls?",
+        "prompt": "What would occur if the mitochondria in a plant cell were inhibited during the night when photosynthesis cannot occur?",
         "options": [
-          "A. Bacteria have walls of pure cellulose",
-          "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
-          "C. Bacteria have no cell walls",
-          "D. Bacterial walls are made of bone"
+          "A. The plant cell would generate energy using sunlight",
+          "B. The plant cell would be unable to produce ATP, leading to metabolic starvation and cellular damage",
+          "C. The cell wall would dissolve",
+          "D. The plant would begin producing oxygen in the dark"
         ],
-        "correctAnswer": "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
-        "hint": "Target of penicillin antibiotic inhibition.",
-        "workedSolution": "Bacterial walls are made of peptidoglycan (alternating NAG-NAM glycan chains cross-linked by amino acids), while plant walls are made of glucose-polymer cellulose.",
+        "correctAnswer": "B. The plant cell would be unable to produce ATP, leading to metabolic starvation and cellular damage",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "At night, plants rely on mitochondrial respiration for ATP; inhibiting it halts energy supply.",
         "points": 1
       },
       {
         "id": "B7_CELL_A36",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why does the rate of water absorption by osmosis in plant root hairs increase when the soil is warm and aerated compared to cold, waterlogged soil?",
+        "prompt": "How does cell differentiation support the survival of complex multicellular organisms?",
         "options": [
-          "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
-          "B. Cold soil freezes water solid immediately",
-          "C. Root hairs die when exposed to oxygen",
-          "D. Warm water is lighter than cold water"
+          "A. It allows all cells to perform every task simultaneously",
+          "B. It creates specialized cells that carry out specific tasks with high efficiency",
+          "C. It prevents cells from requiring water",
+          "D. It eliminates the need for organs"
         ],
-        "correctAnswer": "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
-        "hint": "Osmosis is passive, but maintaining the solute gradient requires active transport.",
-        "workedSolution": "Active transport of minerals into root cells requires ATP from aerobic respiration. Oxygenated soil fuels ATP synthesis, creating steep hypertonic gradients that drive rapid osmosis.",
+        "correctAnswer": "B. It creates specialized cells that carry out specific tasks with high efficiency",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Cell differentiation allows cells to specialize, increasing the overall efficiency of life processes in the organism.",
         "points": 1
       },
       {
         "id": "B7_CELL_A37",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the primary function of peroxisomes in eukaryotic cells?",
+        "prompt": "Which of the following cell structures is directly connected to the nuclear envelope and assists in transporting proteins and lipids?",
         "options": [
-          "A. Photosynthesis",
-          "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
-          "C. Storing genetic code",
-          "D. Pumping lymph"
+          "A. Endoplasmic reticulum",
+          "B. Chloroplast",
+          "C. Cell wall",
+          "D. Large vacuole"
         ],
-        "correctAnswer": "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
-        "hint": "Neutralizes reactive oxygen species.",
-        "workedSolution": "Peroxisomes contain catalase and oxidases that oxidize long-chain fatty acids and decompose cytotoxic hydrogen peroxide into benign water and oxygen.",
+        "correctAnswer": "A. Endoplasmic reticulum",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The endoplasmic reticulum is an extensive membrane network continuous with the outer nuclear membrane.",
         "points": 1
       },
       {
         "id": "B7_CELL_A38",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which tissue in vertebrate animals forms the endocrine and exocrine glands that synthesize and secrete chemical substances?",
+        "prompt": "Why do animal cells generally contain more lipid reserves as fats, while plant seeds often store oils?",
         "options": [
-          "A. Epithelial tissue (glandular epithelium)",
-          "B. Connective tissue",
-          "C. Nervous tissue",
-          "D. Muscle tissue"
+          "A. Saturated fats provide dense, long-term energy storage and thermal insulation in animals, while plants rely on liquid oils for seed reserves",
+          "B. Animals cannot synthesize carbohydrates",
+          "C. Plants have no enzymes to digest oils",
+          "D. Fats are lighter than water"
         ],
-        "correctAnswer": "A. Epithelial tissue (glandular epithelium)",
-        "hint": "Invaginated epithelial sheets specialized for secretion.",
-        "workedSolution": "Glands (thyroid, salivary, sweat glands) develop from specialized glandular epithelial tissues specialized for protein or steroid secretion.",
+        "correctAnswer": "A. Saturated fats provide dense, long-term energy storage and thermal insulation in animals, while plants rely on liquid oils for seed reserves",
+        "hint": "Compare the presence of cell walls, chloroplasts, and vacuole dimensions between plant and animal cells.",
+        "workedSolution": "Adipose tissue in animals stores dense energy and provides thermal insulation, while plant seeds store compact oils.",
         "points": 1
       },
       {
         "id": "B7_CELL_A39",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why do red blood cells crenate when exposed to seawater ($~3.5\\%\\text{ NaCl}$)?",
+        "prompt": "If a plant tissue is boiled in alcohol, it loses its green color and becomes pale white. Why does this happen?",
         "options": [
-          "A. Salt enters the cell and blows it up",
-          "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
-          "C. Seawater dissolves the cell membrane",
-          "D. Red blood cells absorb salt until they freeze"
+          "A. The alcohol destroys the nucleus",
+          "B. The alcohol dissolves and extracts the chlorophyll pigments from the chloroplasts",
+          "C. The cellulose wall dissolves",
+          "D. Starch turns into glucose"
         ],
-        "correctAnswer": "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
-        "hint": "Seawater has an osmolarity four times higher than blood plasma.",
-        "workedSolution": "Seawater (~1000 mOsm/L) is strongly hypertonic to erythrocytes (~300 mOsm/L), pulling water out by exosmosis and causing cell shriveling (crenation).",
+        "correctAnswer": "B. The alcohol dissolves and extracts the chlorophyll pigments from the chloroplasts",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Boiling in ethanol extracts alcohol-soluble chlorophyll pigments, bleaching the leaf for starch testing.",
         "points": 1
       },
       {
         "id": "B7_CELL_A40",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the structural role of cholesterol embedded within mammalian cell membranes?",
+        "prompt": "Which organ in the human body contains specialized filtration tissues called nephrons that filter waste from blood?",
         "options": [
-          "A. Provides fuel for cellular respiration",
-          "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
-          "C. Forms the genetic code",
-          "D. Blocks all water transport"
+          "A. Kidney",
+          "B. Stomach",
+          "C. Heart",
+          "D. Lung"
         ],
-        "correctAnswer": "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
-        "hint": "Intercalates between fatty acid chains to stabilize membrane fluidity.",
-        "workedSolution": "Cholesterol restrains phospholipid movement at warm temperatures to prevent excess fluidity, while disrupting close packing at cold temperatures to prevent solidification.",
+        "correctAnswer": "A. Kidney",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "The kidney is an excretory organ built from functional nephron units that filter metabolic wastes.",
         "points": 1
       },
       {
         "id": "B7_CELL_A41",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which organelle is responsible for synthesizing ribosomal RNA (rRNA) and assembling the large and small subunits of ribosomes?",
+        "prompt": "Why is the presence of a cell wall advantageous to terrestrial plants living in unpredictable rainfall conditions?",
         "options": [
-          "A. Nucleolus",
-          "B. Golgi apparatus",
-          "C. Centriole",
-          "D. Peroxisome"
+          "A. It lets the plant move toward water bodies",
+          "B. It prevents cellular lysis when water is plentiful and provides mechanical support to stay upright without an internal skeleton",
+          "C. It allows roots to absorb soil minerals without using energy",
+          "D. It blocks all evaporation permanently"
         ],
-        "correctAnswer": "A. Nucleolus",
-        "hint": "A prominent non-membranous nuclear sub-structure.",
-        "workedSolution": "The nucleolus organizes around chromosomal nucleolar organizer regions (NORs) to transcribe pre-rRNA and assemble ribosomal subunits.",
+        "correctAnswer": "B. It prevents cellular lysis when water is plentiful and provides mechanical support to stay upright without an internal skeleton",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Cell walls provide structural rigidity and protect cells from osmotic bursting during heavy hydration.",
         "points": 1
       },
       {
         "id": "B7_CELL_A42",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the structural organization of compact bone tissue (osteons) combine high mechanical compressive strength with lightweight efficiency?",
+        "prompt": "Which statement correctly describes how single-celled organisms reproduce compared to multicellular organisms?",
         "options": [
-          "A. Bone is solid iron",
-          "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
-          "C. Bones are filled with air only",
-          "D. Bone cells have no extracellular matrix"
+          "A. A single cell divides to form two autonomous new organisms, whereas in multicellular organisms cell division primarily supports growth and tissue repair",
+          "B. Single-celled organisms never divide",
+          "C. Multicellular organisms cannot divide cells",
+          "D. Single-celled organisms use organ systems to reproduce"
         ],
-        "correctAnswer": "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
-        "hint": "The Haversian system / osteon structure.",
-        "workedSolution": "Osteons consist of concentric mineralized lamellae reinforced by helical collagen fibers surrounding vascular Haversian canals, optimizing weight-to-strength ratios.",
+        "correctAnswer": "A. A single cell divides to form two autonomous new organisms, whereas in multicellular organisms cell division primarily supports growth and tissue repair",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "In unicellular organisms, division produces a new individual; in multicellular organisms, it drives growth and repair.",
         "points": 1
       },
       {
         "id": "B7_CELL_A43",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why can unicellular Paramecium organisms propel themselves through pond water at speeds exceeding 50 body lengths per second?",
+        "prompt": "What primary adaptation enables root hair cells to absorb large volumes of soil water and dissolved minerals efficiently?",
         "options": [
-          "A. They have rocket engines",
-          "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
-          "C. They have legs",
-          "D. Water pushes them passively"
+          "A. They have multiple nuclei",
+          "B. They feature an elongated tubular projection that significantly increases their surface area-to-volume ratio",
+          "C. They are packed with green chloroplasts",
+          "D. They have an impermeable wax layer"
         ],
-        "correctAnswer": "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
-        "hint": "Metachronal rhythm coordination of cilia.",
-        "workedSolution": "Paramecia are covered with ~4,000 cilia coordinated by subpellicular fiber networks into rhythmic metachronal waves that generate hydrodynamic thrust.",
+        "correctAnswer": "B. They feature an elongated tubular projection that significantly increases their surface area-to-volume ratio",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "The elongated hair-like extension expands the surface area available for osmotic uptake and mineral transport.",
         "points": 1
       },
       {
         "id": "B7_CELL_A44",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the key difference between simple diffusion and facilitated diffusion across biological membranes?",
+        "prompt": "Why do animal cells maintain an active sodium-potassium pump in their cell membranes?",
         "options": [
-          "A. Simple diffusion requires ATP; facilitated does not",
-          "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
-          "C. Simple diffusion only transports ions",
-          "D. Facilitated diffusion moves substances against their gradient"
+          "A. To maintain electrochemical gradients and osmotic equilibrium, preventing cellular swelling and lysis",
+          "B. To turn cytoplasm into a solid",
+          "C. To synthesize cellulose",
+          "D. To pump blood through the cell"
         ],
-        "correctAnswer": "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
-        "hint": "Both are passive, but one requires integral carrier/channel proteins.",
-        "workedSolution": "Simple diffusion occurs directly through the lipid bilayer (e.g. $O_2, CO_2$), while facilitated diffusion requires integral membrane proteins (e.g. glucose, $K^+$) without metabolic energy.",
+        "correctAnswer": "A. To maintain electrochemical gradients and osmotic equilibrium, preventing cellular swelling and lysis",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Active ion pumping maintains osmotic balance and prevents excessive water intake and lysis in animal cells.",
         "points": 1
       },
       {
         "id": "B7_CELL_A45",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why do stomata close at night in most $C_3$ and $C_4$ plants?",
+        "prompt": "Which of the following represents an organ system in plants responsible for transporting carbohydrates synthesized in leaves down to the roots?",
         "options": [
-          "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
-          "B. The leaf cells freeze every night",
-          "C. Stomata are closed by gravity",
-          "D. Leaves drop off at night"
+          "A. Stomatal pores",
+          "B. Phloem vascular transport tissue system",
+          "C. Epidermal wax",
+          "D. Root cap"
         ],
-        "correctAnswer": "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
-        "hint": "Darkness halts photosynthetic carbon fixation.",
-        "workedSolution": "Without light, light-dependent proton pumping stops in guard cells, releasing potassium ions and water by exosmosis to render cells flaccid and close stomata.",
+        "correctAnswer": "B. Phloem vascular transport tissue system",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Phloem tissue translocates photosynthesized sugars from source leaves to sink tissues like roots.",
         "points": 1
       },
       {
         "id": "B7_CELL_A46",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Which organelle is responsible for synthesizing the cell plate during cytokinesis in dividing plant cells?",
+        "prompt": "Why are lysosomes sometimes referred to as 'suicide bags' of the cell?",
         "options": [
-          "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
-          "B. Centrosomes",
-          "C. Mitochondria",
-          "D. Central vacuole"
+          "A. They produce poisonous gases during respiration",
+          "B. If ruptured, their hydrolytic enzymes can digest and destroy the entire cell from the inside",
+          "C. They trap carbon dioxide",
+          "D. They build the cell wall"
         ],
-        "correctAnswer": "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
-        "hint": "Vesicles carry pectin and cellulose precursors to build the new cross wall.",
-        "workedSolution": "During telophase, Golgi-derived phragmoplast vesicles carry pectin and cell wall precursors to the equatorial plane, coalescing into the cell plate and middle lamella.",
+        "correctAnswer": "B. If ruptured, their hydrolytic enzymes can digest and destroy the entire cell from the inside",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Lysosomes contain acidic hydrolases; releasing them into the cytoplasm causes autolysis and cell death.",
         "points": 1
       },
       {
         "id": "B7_CELL_A47",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "How does the myelin sheath produced by Schwann cells around peripheral axons speed up nerve impulse transmission?",
+        "prompt": "What is the biological advantage of having membrane-bound organelles in eukaryotic cells compared to simpler prokaryotic bacteria?",
         "options": [
-          "A. It heats the axon to 100°C",
-          "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
-          "C. It converts nerve signals into sound waves",
-          "D. It generates oxygen"
+          "A. It allows incompatible biochemical reactions to take place simultaneously in separate, optimized compartments",
+          "B. It makes the cell completely invisible",
+          "C. It eliminates the need for a cell membrane",
+          "D. It stops all respiration"
         ],
-        "correctAnswer": "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
-        "hint": "Saltatory conduction across unmyelinated nodes.",
-        "workedSolution": "Myelin's high lipid resistance prevents trans-membrane ion leakage, causing depolarizing currents to jump rapidly between unmyelinated Nodes of Ranvier (saltatory conduction).",
+        "correctAnswer": "A. It allows incompatible biochemical reactions to take place simultaneously in separate, optimized compartments",
+        "hint": "Focus on the specific metabolic role and characteristics of this cellular organelle.",
+        "workedSolution": "Compartmentalization isolates specialized biochemical environments (e.g., acid hydrolases in lysosomes, respiration in mitochondria).",
         "points": 1
       },
       {
         "id": "B7_CELL_A48",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the physiological role of the enzyme catalase abundant in cellular peroxisomes?",
+        "prompt": "Why does a plant stem bend toward a light source (phototropism) at the cellular level?",
         "options": [
-          "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
-          "B. Synthesizes fatty acids",
-          "C. Absorbs light for photosynthesis",
-          "D. Binds oxygen in red blood cells"
+          "A. Cells on the shaded side elongate more than cells on the illuminated side due to auxin accumulation",
+          "B. The illuminated cells turn into wood",
+          "C. Chloroplasts pull the cell wall physically toward the sun",
+          "D. The nucleus divides only toward light"
         ],
-        "correctAnswer": "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
-        "hint": "Protects cells from oxidative radical damage.",
-        "workedSolution": "Catalase has one of the highest enzymatic turnover rates known, converting toxic $H_2O_2$ byproducts of oxidation into benign water and oxygen gas.",
+        "correctAnswer": "A. Cells on the shaded side elongate more than cells on the illuminated side due to auxin accumulation",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Unequal auxin distribution promotes cell elongation on the shaded side, curving the stem toward light.",
         "points": 1
       },
       {
         "id": "B7_CELL_A49",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "What is the structural basis for the high mechanical flexibility of cartilage compared to bone in the human skeleton?",
+        "prompt": "Which structural feature allows muscle cells to contract and generate physical movement?",
         "options": [
-          "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
-          "B. Cartilage is made of water only",
-          "C. Cartilage is an epithelial tissue",
-          "D. Cartilage cells have no cell walls"
+          "A. Presence of large vacuoles filled with starch",
+          "B. Specialized contractile protein filaments (actin and myosin) powered by mitochondrial energy",
+          "C. Thick cellulose walls",
+          "D. High concentrations of chlorophyll"
         ],
-        "correctAnswer": "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
-        "hint": "Non-mineralized extracellular matrix.",
-        "workedSolution": "Cartilage matrix consists of flexible chondroitin sulfate proteoglycans and collagen fibers, lacking the brittle, rigid calcium hydroxyapatite mineralization of bone.",
+        "correctAnswer": "B. Specialized contractile protein filaments (actin and myosin) powered by mitochondrial energy",
+        "hint": "Recall the structural and functional adaptations of plant and animal cells under NaCCA B7 standards.",
+        "workedSolution": "Interacting actin and myosin filaments slide past each other, powered by mitochondrial ATP, to produce contraction.",
         "points": 1
       },
       {
         "id": "B7_CELL_A50",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why can the total magnification of an optical light microscope not be increased indefinitely by simply stacking extra glass lenses?",
+        "prompt": "How does the structure of a multicellular organism illustrate division of labour from the cellular to the organismal level?",
         "options": [
-          "A. The microscope would become too heavy to lift",
-          "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
-          "C. The light bulb would explode",
-          "D. Glass lenses melt when stacked"
+          "A. Specialized cells form distinct tissues, which assemble into organs and systems that handle specific tasks, ensuring the survival of the whole organism",
+          "B. Every individual cell independently handles every single biological task without coordination",
+          "C. Only the heart and brain perform work; other cells remain inactive",
+          "D. Organ systems work against each other in internal competition"
         ],
-        "correctAnswer": "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
-        "hint": "Diffraction barrier restricts useful magnification.",
-        "workedSolution": "The wave nature of visible light limits optical resolution to ~200 nm. Magnifying beyond 1,500× enlarges diffraction blurs without resolving finer detail ('empty magnification').",
+        "correctAnswer": "A. Specialized cells form distinct tissues, which assemble into organs and systems that handle specific tasks, ensuring the survival of the whole organism",
+        "hint": "Recall the hierarchical sequence: Cell → Tissue → Organ → Organ System → Organism.",
+        "workedSolution": "Division of labour distributes specialized physiological functions across organized cells, tissues, and organ systems to support the organism.",
         "points": 1
       }
     ]
