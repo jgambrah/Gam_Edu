@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.673Z"
+    "updatedAt": "2026-10-02T19:03:09.105Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.673Z"
+    "updatedAt": "2026-10-02T19:03:09.106Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.673Z"
+    "updatedAt": "2026-10-02T19:03:09.106Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -5996,7 +5996,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Dissect the developmental biology of insects and economic vectors with virtual rearing chambers. Students map instars, identify disease transmission mechanisms, and develop biological and integrated pest management (IPM) interventions.",
-    "totalPracticeQuestions": 24,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b8_strand2_life_cycles"
@@ -6033,60 +6033,43 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "B7_FLY_01",
+              "id": "B7_FLY_F01",
               "difficulty": "low",
-              "prompt": "Which of the following insect pairs both undergo complete metamorphosis?",
+              "prompt": "What is the scientific name for the common housefly?",
               "options": [
-                "A. Housefly and Grasshopper",
-                "B. Housefly and Mosquito",
-                "C. Cockroach and Butterfly",
-                "D. Termite and Honeybee"
+                "A. Anopheles gambiae",
+                "B. Musca domestica",
+                "C. Periplaneta americana",
+                "D. Glossina morsitans"
               ],
-              "correctAnswer": "B. Housefly and Mosquito",
-              "hint": "Recall insects that pass through egg, larva, pupa, and adult stages.",
-              "workedSolution": "Both the housefly and the mosquito undergo complete metamorphosis involving four distinct stages: egg, larva, pupa, and adult.",
+              "correctAnswer": "B. Musca domestica",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "The biological and scientific nomenclature for the common housefly is Musca domestica.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_02",
+              "id": "B7_FLY_F02",
               "difficulty": "low",
-              "prompt": "What is the non-feeding resting stage inside the protective puparium during housefly development?",
+              "prompt": "To which insect order does the housefly belong?",
               "options": [
-                "A. Nymph",
-                "B. Pupa",
-                "C. Maggot",
-                "D. Imago"
+                "A. Diptera",
+                "B. Hymenoptera",
+                "C. Coleoptera",
+                "D. Lepidoptera"
               ],
-              "correctAnswer": "B. Pupa",
-              "hint": "Inside this stage, larval tissues are transformed into adult body structures.",
-              "workedSolution": "The pupa is the non-feeding, stationary stage enclosed within the hardened puparium where the transformation to an adult occurs.",
+              "correctAnswer": "A. Diptera",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Houseflies are two-winged true flies classified scientifically under the insect order Diptera.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_03",
+              "id": "B7_FLY_F03",
               "difficulty": "low",
-              "prompt": "Why is the housefly termed a 'mechanical vector' of enteric diseases like cholera?",
-              "options": [
-                "A. The cholera pathogen must complete its sexual cycle inside the fly's blood",
-                "B. The fly bites people and injects venom directly into their veins",
-                "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
-                "D. The fly builds mechanical nests inside human intestines"
-              ],
-              "correctAnswer": "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
-              "hint": "Think about physical transport of pathogens without developmental multiplication.",
-              "workedSolution": "Houseflies act as mechanical vectors because they transport pathogens on their hairy legs, body, and through regurgitated digestive fluids without the pathogen needing to develop inside them.",
-              "points": 1,
-              "learningCompetency": "B7.2.2.1.1",
-              "type": "objective"
-            },
-            {
-              "id": "B7_FLY_F04",
-              "difficulty": "low",
-              "prompt": "How many developmental stages occur in complete metamorphosis?",
+              "prompt": "How many distinct stages are present in complete metamorphosis?",
               "options": [
                 "A. Two",
                 "B. Three",
@@ -6094,8 +6077,25 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
                 "D. Five"
               ],
               "correctAnswer": "C. Four",
-              "hint": "Count: Egg, Larva, Pupa, Adult.",
-              "workedSolution": "Complete metamorphosis consists of four distinct stages: egg, larva, pupa, and adult.",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Complete metamorphosis consists of four distinct developmental stages: egg, larva, pupa, and adult.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F04",
+              "difficulty": "low",
+              "prompt": "Which of the following outlines the correct sequence of stages in the life cycle of a housefly?",
+              "options": [
+                "A. Egg → Nymph → Adult",
+                "B. Egg → Larva → Pupa → Adult",
+                "C. Adult → Pupa → Larva → Egg",
+                "D. Egg → Pupa → Larva → Adult"
+              ],
+              "correctAnswer": "B. Egg → Larva → Pupa → Adult",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The developmental path follows egg, larva (maggot), pupa, and finally adult fly.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6103,16 +6103,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F05",
               "difficulty": "low",
-              "prompt": "What is the common name for the larva of a housefly?",
+              "prompt": "What is the common name given to the larval stage of a housefly?",
               "options": [
                 "A. Caterpillar",
                 "B. Maggot",
-                "C. Grub",
-                "D. Tadpole"
+                "C. Nymph",
+                "D. Grub"
               ],
               "correctAnswer": "B. Maggot",
-              "hint": "It is a legless, pale worm-like creature.",
-              "workedSolution": "The legless larva that hatches from a housefly egg is called a maggot.",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The worm-like, legless larva that hatches from a housefly egg is commonly called a maggot.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6120,16 +6120,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F06",
               "difficulty": "low",
-              "prompt": "Which of the following insects undergoes INCOMPLETE metamorphosis?",
+              "prompt": "Which of the following insects undergoes incomplete metamorphosis?",
               "options": [
                 "A. Housefly",
                 "B. Mosquito",
-                "C. Butterfly",
-                "D. Cockroach"
+                "C. Grasshopper",
+                "D. Butterfly"
               ],
-              "correctAnswer": "D. Cockroach",
-              "hint": "Its juvenile is called a nymph.",
-              "workedSolution": "Cockroaches undergo incomplete metamorphosis with only three stages: egg, nymph, and adult.",
+              "correctAnswer": "C. Grasshopper",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Grasshoppers develop via incomplete metamorphosis with three stages: egg, nymph, and adult.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6137,16 +6137,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F07",
               "difficulty": "low",
-              "prompt": "Where does a female housefly prefer to lay her eggs?",
+              "prompt": "The young stage of an insect undergoing incomplete metamorphosis that resembles a miniature wingless adult is called a:",
               "options": [
-                "A. On clean drinking water",
-                "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
-                "C. On dry wooden furniture",
-                "D. In deep underground rock caves"
+                "A. Maggot",
+                "B. Nymph",
+                "C. Pupa",
+                "D. Caterpillar"
               ],
-              "correctAnswer": "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
-              "hint": "Maggots need decaying organic matter to feed on.",
-              "workedSolution": "Houseflies lay eggs in warm, moist, decomposing organic materials that provide food for emerging maggots.",
+              "correctAnswer": "B. Nymph",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "In incomplete metamorphosis, the hatched young is known as a nymph.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6154,16 +6154,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F08",
               "difficulty": "low",
-              "prompt": "What type of mouthparts does an adult housefly possess?",
+              "prompt": "What type of mouthparts does an adult housefly have?",
               "options": [
-                "A. Biting and chewing mandibles",
-                "B. Piercing and sucking needle",
-                "C. Sponging and lapping proboscis",
+                "A. Biting and chewing",
+                "B. Piercing and sucking",
+                "C. Sponging and lapping",
                 "D. Siphoning tube"
               ],
-              "correctAnswer": "C. Sponging and lapping proboscis",
-              "hint": "It laps up fluid meals.",
-              "workedSolution": "Adult houseflies have spongy, fleshy proboscis mouthparts adapted for lapping liquids.",
+              "correctAnswer": "C. Sponging and lapping",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Houseflies have a soft, fleshy proboscis adapted for sponging up dissolved liquid foods.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6171,16 +6171,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F09",
               "difficulty": "low",
-              "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+              "prompt": "Where does a female housefly typically deposit her eggs?",
               "options": [
-                "A. Malaria",
-                "B. Cholera",
-                "C. Yellow fever",
-                "D. Sleeping sickness"
+                "A. Clean flowing river water",
+                "B. Moist, decaying organic waste and animal dung",
+                "C. Dry sandy soil",
+                "D. Fresh green tree leaves"
               ],
-              "correctAnswer": "B. Cholera",
-              "hint": "An acute diarrhoeal illness caused by food contamination.",
-              "workedSolution": "Cholera is caused by Vibrio cholerae bacteria mechanically transferred to food by houseflies.",
+              "correctAnswer": "B. Moist, decaying organic waste and animal dung",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Female houseflies lay eggs in warm, moist decaying organic matter, garbage, and manure.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6188,16 +6188,696 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_F10",
               "difficulty": "low",
-              "prompt": "How does an adult housefly break down solid food like bread or yam?",
+              "prompt": "Approximately how long does it take for housefly eggs to hatch under warm tropical conditions?",
               "options": [
-                "A. It crushes the food with strong jaws",
-                "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
-                "C. It pierces the food and injects venom",
-                "D. It drags the food into water"
+                "A. 8 to 24 hours",
+                "B. 5 to 7 days",
+                "C. 2 to 3 weeks",
+                "D. 1 month"
               ],
-              "correctAnswer": "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
-              "hint": "External digestion via regurgitated vomit drops.",
-              "workedSolution": "Lacking chewing jaws, houseflies regurgitate saliva and gastric juice to dissolve solids into a liquid broth.",
+              "correctAnswer": "A. 8 to 24 hours",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Under favorable warmth and moisture, housefly eggs hatch into larvae within 8 to 24 hours (roughly 8 to 20 hours).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F11",
+              "difficulty": "low",
+              "prompt": "Which developmental stage of the housefly is non-feeding and stationary?",
+              "options": [
+                "A. Egg",
+                "B. Larva",
+                "C. Pupa",
+                "D. Adult"
+              ],
+              "correctAnswer": "C. Pupa",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The pupa is an inactive, non-feeding stage enclosed inside a protective barrel-shaped shell.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F12",
+              "difficulty": "low",
+              "prompt": "What is the hardened protective case enclosing the housefly pupa called?",
+              "options": [
+                "A. Cocoon",
+                "B. Puparium",
+                "C. Chrysalis",
+                "D. Shell"
+              ],
+              "correctAnswer": "B. Puparium",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The pupa of a true fly is protected inside the hardened final larval skin termed a puparium.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F13",
+              "difficulty": "low",
+              "prompt": "How many wings does an adult housefly possess?",
+              "options": [
+                "A. One pair (2 wings)",
+                "B. Two pairs (4 wings)",
+                "C. Three pairs (6 wings)",
+                "D. No wings"
+              ],
+              "correctAnswer": "A. One pair (2 wings)",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "As members of order Diptera, houseflies have a single pair of functional flight wings.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F14",
+              "difficulty": "low",
+              "prompt": "What small balancing organs are found behind the wings of a housefly?",
+              "options": [
+                "A. Antennae",
+                "B. Halteres",
+                "C. Cerci",
+                "D. Spiracles"
+              ],
+              "correctAnswer": "B. Halteres",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "The hind wings are modified into tiny club-like structures called halteres that assist with flight balance.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F15",
+              "difficulty": "low",
+              "prompt": "How many dark longitudinal stripes run along the thorax of an adult housefly?",
+              "options": [
+                "A. Two",
+                "B. Three",
+                "C. Four",
+                "D. Six"
+              ],
+              "correctAnswer": "C. Four",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Adult houseflies are recognized by four dark longitudinal stripes across their greyish thorax.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F16",
+              "difficulty": "low",
+              "prompt": "What is the average lifespan of an adult housefly under normal conditions?",
+              "options": [
+                "A. 1 to 2 days",
+                "B. 15 to 30 days",
+                "C. 6 months",
+                "D. 1 year"
+              ],
+              "correctAnswer": "B. 15 to 30 days",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "An adult housefly typically survives for about 15 to 30 days.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F17",
+              "difficulty": "low",
+              "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+              "options": [
+                "A. Malaria",
+                "B. Cholera",
+                "C. Sleeping sickness",
+                "D. Yellow fever"
+              ],
+              "correctAnswer": "B. Cholera",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Cholera is an enteric bacterial infection transmitted mechanically by contaminated houseflies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F18",
+              "difficulty": "low",
+              "prompt": "Why is the housefly categorized as a 'mechanical vector'?",
+              "options": [
+                "A. Pathogens develop and multiply inside its salivary glands",
+                "B. It carries pathogens passively on its hairy legs, body, and mouthparts without the pathogen developing internally",
+                "C. It uses an engine to fly",
+                "D. It injects toxins through a stinger"
+              ],
+              "correctAnswer": "B. It carries pathogens passively on its hairy legs, body, and mouthparts without the pathogen developing internally",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Mechanical vectors transfer pathogens physically from filthy substrates to food without internal biological development.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F19",
+              "difficulty": "low",
+              "prompt": "What is the process of shedding an old skin or cuticle during insect growth called?",
+              "options": [
+                "A. Metamorphosis",
+                "B. Moulting (Ecdysis)",
+                "C. Fermentation",
+                "D. Respiration"
+              ],
+              "correctAnswer": "B. Moulting (Ecdysis)",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Moulting is the periodic shedding of the rigid exoskeleton allowing the insect body to expand.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F20",
+              "difficulty": "low",
+              "prompt": "How many substages (instars) does the housefly maggot pass through before pupating?",
+              "options": [
+                "A. Two",
+                "B. Three",
+                "C. Five",
+                "D. Six"
+              ],
+              "correctAnswer": "B. Three",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Housefly larvae grow through three distinct larval stages or instars.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F21",
+              "difficulty": "low",
+              "prompt": "Which of the following eye infections can be carried to humans by houseflies?",
+              "options": [
+                "A. Cataract",
+                "B. Trachoma",
+                "C. Glaucoma",
+                "D. Astigmatism"
+              ],
+              "correctAnswer": "B. Trachoma",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Trachoma is an infectious bacterial eye disease spread when flies land near the eyes.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F22",
+              "difficulty": "low",
+              "prompt": "In what form do houseflies consume solid human food?",
+              "options": [
+                "A. They chew it into pieces with jaws",
+                "B. They dissolve it into a liquid slush using regurgitated saliva and digestive fluid before sponging it up",
+                "C. They swallow food whole",
+                "D. They tear food with claws"
+              ],
+              "correctAnswer": "B. They dissolve it into a liquid slush using regurgitated saliva and digestive fluid before sponging it up",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Lacking chewing jaws, houseflies vomit digestive saliva onto food to liquefy it before suction.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F23",
+              "difficulty": "low",
+              "prompt": "Which stage in the housefly life cycle is mobile but completely wingless and legless?",
+              "options": [
+                "A. Adult",
+                "B. Larva (Maggot)",
+                "C. Pupa",
+                "D. Imago"
+              ],
+              "correctAnswer": "B. Larva (Maggot)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The maggot is a legless, cylindrical larva that moves by muscular contractions of its segments.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F24",
+              "difficulty": "low",
+              "prompt": "Which of the following is an effective method for controlling houseflies at home?",
+              "options": [
+                "A. Leaving cooked food uncovered on kitchen tables",
+                "B. Keeping dustbins tightly covered and disposing of refuse properly",
+                "C. Dumping animal manure next to bedrooms",
+                "D. Allowing wastewater to pool near the kitchen"
+              ],
+              "correctAnswer": "B. Keeping dustbins tightly covered and disposing of refuse properly",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Covering refuse containers eliminates the primary breeding and feeding sites for adult flies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F25",
+              "difficulty": "low",
+              "prompt": "Which of the following insects also develops via complete metamorphosis like the housefly?",
+              "options": [
+                "A. Cockroach",
+                "B. Butterfly",
+                "C. Termite",
+                "D. Cricket"
+              ],
+              "correctAnswer": "B. Butterfly",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Butterflies exhibit complete metamorphosis (egg, caterpillar/larva, chrysalis/pupa, and adult).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F26",
+              "difficulty": "low",
+              "prompt": "What color are the compound eyes of a common adult housefly?",
+              "options": [
+                "A. Bright green",
+                "B. Reddish-brown",
+                "C. Pure white",
+                "D. Yellow"
+              ],
+              "correctAnswer": "B. Reddish-brown",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Adult houseflies have large reddish-brown compound eyes that provide a wide visual field.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F27",
+              "difficulty": "low",
+              "prompt": "What is the approximate size of a fully grown, mature third-instar housefly maggot?",
+              "options": [
+                "A. 1 mm to 2 mm",
+                "B. 5 mm",
+                "C. 15 mm to 20 mm",
+                "D. 50 mm"
+              ],
+              "correctAnswer": "C. 15 mm to 20 mm",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "By the third instar stage, maggots reach a full length of about 15 mm to 20 mm.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F28",
+              "difficulty": "low",
+              "prompt": "Which of the following gastrointestinal illnesses is spread by houseflies?",
+              "options": [
+                "A. Typhoid fever",
+                "B. Influenza",
+                "C. Measles",
+                "D. Tetanus"
+              ],
+              "correctAnswer": "A. Typhoid fever",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Typhoid fever is an enteric bacterial infection commonly transmitted when flies contaminate food or water.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F29",
+              "difficulty": "low",
+              "prompt": "How do maggots benefit natural ecosystems out in the wild?",
+              "options": [
+                "A. They help decompose dead animal carcasses and organic waste",
+                "B. They build soil mounds",
+                "C. They produce honey",
+                "D. They suck plant sap"
+              ],
+              "correctAnswer": "A. They help decompose dead animal carcasses and organic waste",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Maggots break down organic matter and decaying tissue, aiding nutrient recycling.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F30",
+              "difficulty": "low",
+              "prompt": "What is an adult insect that has emerged from its puparium called?",
+              "options": [
+                "A. Nymph",
+                "B. Imago (Adult)",
+                "C. Maggot",
+                "D. Instar"
+              ],
+              "correctAnswer": "B. Imago (Adult)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The fully formed, sexually mature adult stage of an insect is also referred to as the imago.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F31",
+              "difficulty": "low",
+              "prompt": "Which of the following insect groups is characterized by complete metamorphosis?",
+              "options": [
+                "A. Termites",
+                "B. Beetles",
+                "C. Dragonflies",
+                "D. Mantises"
+              ],
+              "correctAnswer": "B. Beetles",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Beetles (Coleoptera) develop via complete metamorphosis (egg, grub/larva, pupa, adult).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F32",
+              "difficulty": "low",
+              "prompt": "How many eggs can a single female housefly lay in batches over its reproductive life?",
+              "options": [
+                "A. 1 to 5 eggs",
+                "B. 20 eggs",
+                "C. Hundreds (up to 500 or more in batches)",
+                "D. Exactly 10 eggs"
+              ],
+              "correctAnswer": "C. Hundreds (up to 500 or more in batches)",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "A female housefly can lay batches of 100 to 150 eggs, totaling hundreds of eggs across its lifespan.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F33",
+              "difficulty": "low",
+              "prompt": "What type of skin infection can be transferred when houseflies contact open sores?",
+              "options": [
+                "A. Ringworm",
+                "B. Yaws",
+                "C. Scabies",
+                "D. Eczema"
+              ],
+              "correctAnswer": "B. Yaws",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Yaws is a bacterial skin infection that can be spread by flies feeding on exudates from open ulcers.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F34",
+              "difficulty": "low",
+              "prompt": "What happens to the pupa's outer shell as it ages toward emergence?",
+              "options": [
+                "A. It becomes transparent and soft",
+                "B. It hardens and changes from yellow-brown to dark brown or black",
+                "C. It dissolves in water",
+                "D. It turns green"
+              ],
+              "correctAnswer": "B. It hardens and changes from yellow-brown to dark brown or black",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The puparium hardens and darkens progressively into a deep brown or black protective shell.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F35",
+              "difficulty": "low",
+              "prompt": "Which physical barrier prevents houseflies from entering residential kitchens?",
+              "options": [
+                "A. Wire mesh netting on windows",
+                "B. Leaving windows wide open",
+                "C. Painting walls white",
+                "D. Keeping lights off"
+              ],
+              "correctAnswer": "A. Wire mesh netting on windows",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Fine wire or plastic mesh screens block the entry of flying insects while allowing ventilation.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F36",
+              "difficulty": "low",
+              "prompt": "What do housefly maggots feed on most aggressively?",
+              "options": [
+                "A. Fresh green leaves",
+                "B. Decomposing organic matter and filth",
+                "C. Clean tap water",
+                "D. Tree bark"
+              ],
+              "correctAnswer": "B. Decomposing organic matter and filth",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Maggots feed on liquefying, decaying organic substrates and decomposing waste.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F37",
+              "difficulty": "low",
+              "prompt": "Which of the following insects develops by incomplete metamorphosis?",
+              "options": [
+                "A. Housefly",
+                "B. Honeybee",
+                "C. Cockroach",
+                "D. House mosquito"
+              ],
+              "correctAnswer": "C. Cockroach",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Cockroaches pass through three stages: egg, nymph, and adult (incomplete metamorphosis).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F38",
+              "difficulty": "low",
+              "prompt": "How long does the pupal stage of a housefly typically last in warm climates?",
+              "options": [
+                "A. 8 hours",
+                "B. 4 to 6 days",
+                "C. 3 months",
+                "D. 1 year"
+              ],
+              "correctAnswer": "B. 4 to 6 days",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The transformation inside the puparium typically takes 4 to 6 days in warm weather.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F39",
+              "difficulty": "low",
+              "prompt": "Which symptom is associated with food poisoning caused by fly-contaminated food?",
+              "options": [
+                "A. Vomiting and watery diarrhea",
+                "B. Fractured bone",
+                "C. Improved digestion",
+                "D. Hair loss"
+              ],
+              "correctAnswer": "A. Vomiting and watery diarrhea",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Food poisoning typically presents with nausea, vomiting, abdominal cramps, and diarrhea.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F40",
+              "difficulty": "low",
+              "prompt": "What is the primary role of adult houseflies in the natural food chain?",
+              "options": [
+                "A. Apex predators that hunt large animals",
+                "B. A food source for insectivorous birds, lizards, spiders, and frogs",
+                "C. Primary producers of carbohydrates",
+                "D. Decomposers of pure metals"
+              ],
+              "correctAnswer": "B. A food source for insectivorous birds, lizards, spiders, and frogs",
+              "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+              "workedSolution": "Adult flies and larvae are prey for various birds, amphibians, reptiles, and arachnids.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F41",
+              "difficulty": "low",
+              "prompt": "Where does the third-instar maggot move when it is ready to pupate?",
+              "options": [
+                "A. Deep inside boiling water",
+                "B. A cooler, drier, and sheltered location away from excess moisture",
+                "C. The top of tall green trees",
+                "D. Inside human blood"
+              ],
+              "correctAnswer": "B. A cooler, drier, and sheltered location away from excess moisture",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Fully developed larvae leave moist feeding areas to seek drier, cooler soil or crevices to pupate.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F42",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an enteric infection spread by flies?",
+              "options": [
+                "A. Dysentery",
+                "B. Tuberculosis",
+                "C. Measles",
+                "D. Polio"
+              ],
+              "correctAnswer": "A. Dysentery",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Amoebic and bacillary dysentery are intestinal infections spread by contaminated flies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F43",
+              "difficulty": "low",
+              "prompt": "What structure covers the drophole of an improved pit latrine to keep flies out?",
+              "options": [
+                "A. An open grille",
+                "B. A tight-fitting lid",
+                "C. A wet cloth",
+                "D. A heap of sand"
+              ],
+              "correctAnswer": "B. A tight-fitting lid",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Tight-fitting drop-hole lids prevent flies from accessing pit feces for breeding and feeding.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F44",
+              "difficulty": "low",
+              "prompt": "Which of the following pairs of insects both undergo incomplete metamorphosis?",
+              "options": [
+                "A. Housefly and Mosquito",
+                "B. Dragonfly and Termite",
+                "C. Butterfly and Moth",
+                "D. Honeybee and Wasp"
+              ],
+              "correctAnswer": "B. Dragonfly and Termite",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Dragonflies and termites both develop through egg, nymph, and adult stages.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F45",
+              "difficulty": "low",
+              "prompt": "Why do houseflies rub their front legs together when resting?",
+              "options": [
+                "A. To sharpen their claws",
+                "B. To clean debris, dirt, and pathogens off their sensory hairs and footpads",
+                "C. To generate flight heat",
+                "D. To produce mating sounds"
+              ],
+              "correctAnswer": "B. To clean debris, dirt, and pathogens off their sensory hairs and footpads",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Flies clean their sensory receptors and sticky footpads (pulvilli) by grooming with their legs.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F46",
+              "difficulty": "low",
+              "prompt": "Which insect stage is enclosed in a chrysalis or cocoon during complete metamorphosis?",
+              "options": [
+                "A. Egg",
+                "B. Nymph",
+                "C. Pupa",
+                "D. Adult"
+              ],
+              "correctAnswer": "C. Pupa",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The pupal stage is often enclosed in a chrysalis, cocoon, or puparium.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F47",
+              "difficulty": "low",
+              "prompt": "Why are houseflies useful in genetic and biological research?",
+              "options": [
+                "A. They live for 100 years",
+                "B. They have a short life cycle and are easy to breed in large numbers in laboratories",
+                "C. They are very large animals",
+                "D. They do not possess DNA"
+              ],
+              "correctAnswer": "B. They have a short life cycle and are easy to breed in large numbers in laboratories",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Their rapid reproduction and short life cycle make them practical subjects for lab genetics.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F48",
+              "difficulty": "low",
+              "prompt": "Which of the following practices promotes housefly breeding around homes?",
+              "options": [
+                "A. Promptly burying or burning animal waste",
+                "B. Allowing garbage and rotten food to pile up uncovered",
+                "C. Using fly screens on windows",
+                "D. Spraying approved insecticides"
+              ],
+              "correctAnswer": "B. Allowing garbage and rotten food to pile up uncovered",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Exposed garbage and decaying matter provide prime breeding grounds for houseflies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F49",
+              "difficulty": "low",
+              "prompt": "What ecological service do adult houseflies provide when visiting flowers?",
+              "options": [
+                "A. Decomposition",
+                "B. Incidental pollination",
+                "C. Seed storage",
+                "D. Soil aeration"
+              ],
+              "correctAnswer": "B. Incidental pollination",
+              "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+              "workedSolution": "Flies feeding on nectar transfer pollen grains between flowers, aiding in minor pollination.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F50",
+              "difficulty": "low",
+              "prompt": "What is the primary physical characteristic of a newly laid housefly egg?",
+              "options": [
+                "A. Round and black",
+                "B. Elongated, creamy-white, and cylindrical",
+                "C. Large, green, and hairy",
+                "D. Flat and brown"
+              ],
+              "correctAnswer": "B. Elongated, creamy-white, and cylindrical",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Housefly eggs are small, elongated, creamy-white cylinders deposited in clusters.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6205,86 +6885,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "B7_FLY_M01",
+              "id": "B7_FLY_I01",
               "difficulty": "medium",
-              "prompt": "What is the protective brown barrel-shaped capsule that houses the housefly pupa called?",
+              "prompt": "Why is the housefly classified as an insect with complete metamorphosis rather than incomplete metamorphosis?",
               "options": [
-                "A. Cocoon",
-                "B. Puparium",
-                "C. Chrysalis",
-                "D. Ootheca"
+                "A. Its larva hatches with wings and compound eyes",
+                "B. It passes through four distinct stages (egg, larva, pupa, adult), with the larva looking completely different from the adult",
+                "C. It reproduces without laying eggs",
+                "D. It only lives in water"
               ],
-              "correctAnswer": "B. Puparium",
-              "hint": "Formed from the hardened skin of the third instar larva.",
-              "workedSolution": "In true flies (Diptera), the pupa is enclosed within a hardened, barrel-shaped capsule termed the puparium.",
+              "correctAnswer": "B. It passes through four distinct stages (egg, larva, pupa, adult), with the larva looking completely different from the adult",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Complete metamorphosis requires four distinct phases where the larval form differs fundamentally from the adult.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_M02",
+              "id": "B7_FLY_I02",
               "difficulty": "medium",
-              "prompt": "Why is a Ventilated Improved Pit (VIP) latrine effective at controlling housefly populations?",
+              "prompt": "How does the feeding behavior of an adult housefly lead to food contamination?",
               "options": [
-                "A. It poisons flies with cyanide gas",
-                "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
-                "C. It operates without human waste",
-                "D. It freezes the waste into ice"
+                "A. It punctures food with a sharp needle-like beak and injects venom",
+                "B. It deposits digestive vomit and feces onto the food to dissolve solids before sponging",
+                "C. It lays thousands of adult flies into the food",
+                "D. It uses its wings to break food apart"
               ],
-              "correctAnswer": "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
-              "hint": "Flies fly toward the light at the top of the vent pipe and are trapped by the screen.",
-              "workedSolution": "Flies entering the dark pit fly toward the light at the top of the vent pipe, where a gauze mesh traps them until they desiccate and die.",
+              "correctAnswer": "B. It deposits digestive vomit and feces onto the food to dissolve solids before sponging",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Flies vomit enzymatic saliva and frequently defecate while feeding, contaminating food with pathogens.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_M03",
+              "id": "B7_FLY_I03",
               "difficulty": "medium",
-              "prompt": "How do housefly maggots play an ecologically beneficial role in nature?",
+              "prompt": "Why are houseflies more dangerous as disease vectors than crickets or dragonflies?",
               "options": [
-                "A. They sting harmful snakes",
-                "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
-                "C. They prevent soil erosion on steep slopes",
-                "D. They purify underground borehole water"
+                "A. Houseflies are larger in size",
+                "B. Houseflies feed on both decaying filth/excreta and human food, moving between them with hairy, pathogen-carrying bodies",
+                "C. Houseflies have poisonous stingers",
+                "D. Dragonflies cannot fly"
               ],
-              "correctAnswer": "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
-              "hint": "Consider their role in nutrient recycling and decay.",
-              "workedSolution": "Maggots feed on decaying organic debris, accelerating decomposition and returning vital minerals to the soil.",
+              "correctAnswer": "B. Houseflies feed on both decaying filth/excreta and human food, moving between them with hairy, pathogen-carrying bodies",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Houseflies frequent human waste, manure, and exposed human food, carrying pathogens on their bodies.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_M04",
+              "id": "B7_FLY_I04",
               "difficulty": "medium",
-              "prompt": "What is the biological difference between a nymph and a larva?",
+              "prompt": "What morphological adaptation on the legs of a housefly allows it to pick up and transfer millions of bacteria?",
               "options": [
-                "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
-                "B. A nymph has four wings, while a larva has six wings",
-                "C. A larva can reproduce sexually, whereas a nymph cannot",
-                "D. Nymphs only live in water"
+                "A. Smooth metallic skin",
+                "B. Numerous sticky hairs, bristles, and adhesive footpads (pulvilli)",
+                "C. Sharp piercing stingers",
+                "D. Claws that dig burrows"
               ],
-              "correctAnswer": "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
-              "hint": "Compare juvenile appearance to the mature parent.",
-              "workedSolution": "A nymph resembles a miniature wingless adult in incomplete metamorphosis, whereas a larva has distinct anatomy in complete metamorphosis.",
+              "correctAnswer": "B. Numerous sticky hairs, bristles, and adhesive footpads (pulvilli)",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Sticky footpads and setae easily gather bacteria and debris from unhygienic surfaces.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             },
             {
-              "id": "B7_FLY_M05",
+              "id": "B7_FLY_I05",
               "difficulty": "medium",
-              "prompt": "Which eye infection can be transmitted by houseflies landing on human faces to feed on eye secretions?",
+              "prompt": "How does the nymph of a cockroach differ primarily from the maggot of a housefly?",
               "options": [
-                "A. Astigmatism",
-                "B. Trachoma",
-                "C. Glaucoma",
-                "D. Cataract"
+                "A. The cockroach nymph resembles a miniature adult with legs; the maggot is a legless, cylindrical worm",
+                "B. The nymph has full functional wings upon hatching",
+                "C. The maggot has compound eyes and six legs",
+                "D. The cockroach nymph stays inside an egg for five years"
               ],
-              "correctAnswer": "B. Trachoma",
-              "hint": "Caused by Chlamydia trachomatis, leading to preventable blindness.",
-              "workedSolution": "Trachoma and epidemic conjunctivitis are transmitted when flies transfer bacteria from infected ocular discharges.",
+              "correctAnswer": "A. The cockroach nymph resembles a miniature adult with legs; the maggot is a legless, cylindrical worm",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Nymphs look like wingless miniature adults, whereas housefly maggots are worm-like and legless.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I06",
+              "difficulty": "medium",
+              "prompt": "Which of the following represents an environmental control method that targets the larval stage of houseflies?",
+              "options": [
+                "A. Hanging sticky fly tapes from kitchen ceilings",
+                "B. Turning compost heaps regularly so internal microbial heat kills developing maggots",
+                "C. Using fly swatters to hit flying adults",
+                "D. Installing bright light bulbs"
+              ],
+              "correctAnswer": "B. Turning compost heaps regularly so internal microbial heat kills developing maggots",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Turning organic compost generates internal fermentation heat that destroys maggots and eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I07",
+              "difficulty": "medium",
+              "prompt": "Why does a housefly maggot undergo three separate instar stages?",
+              "options": [
+                "A. To change its color from green to red",
+                "B. Because its rigid exoskeleton cannot stretch indefinitely, requiring moulting to accommodate body growth",
+                "C. To develop wings before pupating",
+                "D. To find a mate as a maggot"
+              ],
+              "correctAnswer": "B. Because its rigid exoskeleton cannot stretch indefinitely, requiring moulting to accommodate body growth",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Insects shed their cuticles (moulting) periodically to allow tissue growth across instars.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I08",
+              "difficulty": "medium",
+              "prompt": "What occurs biologically inside the puparium during the pupal stage of a housefly?",
+              "options": [
+                "A. The insect feeds heavily on leaves",
+                "B. Complete histolysis and tissue remodeling transform the larval body into an adult with wings and compound eyes",
+                "C. The pupa lays eggs",
+                "D. The maggot grows larger"
+              ],
+              "correctAnswer": "B. Complete histolysis and tissue remodeling transform the larval body into an adult with wings and compound eyes",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The pupal stage involves major tissue reorganization into adult anatomical structures.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I09",
+              "difficulty": "medium",
+              "prompt": "Which of the following conditions accelerates the rate of development of housefly eggs and larvae?",
+              "options": [
+                "A. Extreme cold and dry conditions",
+                "B. High environmental warmth, moisture, and abundant decaying organic matter",
+                "C. Direct exposure to bright sunlight in clean water",
+                "D. Salty ocean currents"
+              ],
+              "correctAnswer": "B. High environmental warmth, moisture, and abundant decaying organic matter",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Warmth and high moisture accelerate microbial decay and shorten insect development times.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I10",
+              "difficulty": "medium",
+              "prompt": "How does a Ventilated Improved Pit (VIP) latrine prevent the spread of houseflies?",
+              "options": [
+                "A. It produces poisonous smoke",
+                "B. A vent pipe fitted with a fly-screen traps emerging flies attracted to the light, preventing them from escaping",
+                "C. It uses electricity to kill flies",
+                "D. It converts feces into stone instantly"
+              ],
+              "correctAnswer": "B. A vent pipe fitted with a fly-screen traps emerging flies attracted to the light, preventing them from escaping",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "VIP latrines use an odor-clearing vent pipe with a mesh screen to trap flies attempting to exit toward light.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I11",
+              "difficulty": "medium",
+              "prompt": "Which of the following statements about the mouthparts of houseflies versus mosquitoes is accurate?",
+              "options": [
+                "A. Both have chewing mandibles",
+                "B. Houseflies have sponging mouthparts for fluids, while female mosquitoes have piercing-sucking stylets to draw blood",
+                "C. Mosquitoes have sponging mouthparts; houseflies have piercing needles",
+                "D. Houseflies have teeth like mammals"
+              ],
+              "correctAnswer": "B. Houseflies have sponging mouthparts for fluids, while female mosquitoes have piercing-sucking stylets to draw blood",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Houseflies have non-piercing sponging proboscises, while female mosquitoes have piercing-sucking mouthparts.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I12",
+              "difficulty": "medium",
+              "prompt": "What ecological role is played by housefly maggots in agriculture and wildlife?",
+              "options": [
+                "A. They destroy plant roots",
+                "B. They accelerate the decomposition of manure and animal carcasses, returning minerals to the soil",
+                "C. They pollinate cocoa flowers",
+                "D. They kill harmful snakes"
+              ],
+              "correctAnswer": "B. They accelerate the decomposition of manure and animal carcasses, returning minerals to the soil",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Maggots break down organic matter, recycling essential nutrients into the soil.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I13",
+              "difficulty": "medium",
+              "prompt": "Why do adult houseflies defecate frequently while feeding?",
+              "options": [
+                "A. They have very fast metabolisms and short digestive tracts that process fluid meals rapidly",
+                "B. To scare away predators",
+                "C. Defecation produces flight energy",
+                "D. To keep their wings clean"
+              ],
+              "correctAnswer": "A. They have very fast metabolisms and short digestive tracts that process fluid meals rapidly",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Fluid intake triggers rapid digestive processing and frequent excretion during feeding.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I14",
+              "difficulty": "medium",
+              "prompt": "An outbreak of amoebic dysentery in a boarding school was traced to uncovered dining food. Which vector was most likely responsible?",
+              "options": [
+                "A. Tsetse fly",
+                "B. Honeybee",
+                "C. Housefly",
+                "D. Butterfly"
+              ],
+              "correctAnswer": "C. Housefly",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Houseflies carry amoebic cysts and bacteria on their bodies from latrines onto exposed food.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I15",
+              "difficulty": "medium",
+              "prompt": "How does prompt disposal of household refuse disrupt the life cycle of the housefly?",
+              "options": [
+                "A. It breaks the cycle by removing the moist breeding sites required for egg-laying and larval feeding",
+                "B. It prevents adult flies from flying",
+                "C. It turns maggots into pupae immediately",
+                "D. It poisons the air"
+              ],
+              "correctAnswer": "A. It breaks the cycle by removing the moist breeding sites required for egg-laying and larval feeding",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Removing organic refuse denies females suitable egg-laying sites and deprives larvae of food.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I16",
+              "difficulty": "medium",
+              "prompt": "Which of the following insect orders includes butterflies and moths that also undergo complete metamorphosis?",
+              "options": [
+                "A. Diptera",
+                "B. Lepidoptera",
+                "C. Odonata",
+                "D. Orthoptera"
+              ],
+              "correctAnswer": "B. Lepidoptera",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Butterflies and moths belong to Lepidoptera, undergoing four-stage complete metamorphosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I17",
+              "difficulty": "medium",
+              "prompt": "Why does a third-instar maggot migrate away from moist, decaying food before transforming into a pupa?",
+              "options": [
+                "A. To find more food to eat",
+                "B. Excess moisture can rot or drown the pupa; it requires a drier, firmer spot for safe metamorphosis",
+                "C. To learn how to fly",
+                "D. To search for sunlight"
+              ],
+              "correctAnswer": "B. Excess moisture can rot or drown the pupa; it requires a drier, firmer spot for safe metamorphosis",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Excessive moisture can cause fungal decay or drown pupating insects, so they seek drier micro-environments.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I18",
+              "difficulty": "medium",
+              "prompt": "Which of the following actions constitutes an effective biological control method for houseflies?",
+              "options": [
+                "A. Introducing natural predators like parasitic wasps that attack fly pupae, or keeping poultry that eat maggots",
+                "B. Spraying heavy engine oil on dining tables",
+                "C. Burning garbage near residential windows",
+                "D. Boiling all drinking water"
+              ],
+              "correctAnswer": "A. Introducing natural predators like parasitic wasps that attack fly pupae, or keeping poultry that eat maggots",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Biological control uses natural predators or parasites (such as chickens or parasitic wasps) to suppress fly populations.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I19",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger of using chemical insecticide sprays continuously against houseflies?",
+              "options": [
+                "A. Flies become completely immune to all gravity",
+                "B. Flies can develop genetic resistance over generations, rendering the chemical sprays ineffective",
+                "C. Insecticides make flies grow larger",
+                "D. Sprays freeze the house"
+              ],
+              "correctAnswer": "B. Flies can develop genetic resistance over generations, rendering the chemical sprays ineffective",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Overusing chemical sprays can select for insecticide-resistant fly strains over time.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I20",
+              "difficulty": "medium",
+              "prompt": "Why do houseflies lack a nymph stage in their life history?",
+              "options": [
+                "A. They are holometabolous insects that have a larval stage instead of a nymph stage",
+                "B. Nymphs only live in polar ice",
+                "C. They are not insects",
+                "D. Housefly eggs hatch directly into adults"
+              ],
+              "correctAnswer": "A. They are holometabolous insects that have a larval stage instead of a nymph stage",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Holometabolous insects develop through egg, larva, and pupa rather than a nymph stage.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I21",
+              "difficulty": "medium",
+              "prompt": "Which of the following pairs of diseases are both mechanical fly-borne enteric infections?",
+              "options": [
+                "A. Cholera and Typhoid fever",
+                "B. Malaria and Yellow fever",
+                "C. Tetanus and Rabies",
+                "D. Measles and Chickenpox"
+              ],
+              "correctAnswer": "A. Cholera and Typhoid fever",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Cholera and typhoid are bacterial enteric infections spread mechanically by contaminated houseflies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I22",
+              "difficulty": "medium",
+              "prompt": "What structural feature allows a fly to land and walk upside down on ceilings?",
+              "options": [
+                "A. Sharp teeth on its head",
+                "B. Adhesive footpads (pulvilli) that secrete sticky fluids combined with microscopic claws",
+                "C. Magnetic wings",
+                "D. Suction mouthparts"
+              ],
+              "correctAnswer": "B. Adhesive footpads (pulvilli) that secrete sticky fluids combined with microscopic claws",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Pulvilli use glandular secretions and microscopic setae to adhere to smooth and inverted surfaces.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I23",
+              "difficulty": "medium",
+              "prompt": "What role do halteres play during the flight of a housefly?",
+              "options": [
+                "A. They flap to create lift",
+                "B. They act as gyroscopic balancing organs to detect body rotations and stabilize flight",
+                "C. They make buzzing sounds to scare birds",
+                "D. They pump blood to the wings"
+              ],
+              "correctAnswer": "B. They act as gyroscopic balancing organs to detect body rotations and stabilize flight",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Halteres oscillate during flight, functioning as gyroscopes that provide balance control.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I24",
+              "difficulty": "medium",
+              "prompt": "How does covering food with a wire mesh cover prevent disease transmission?",
+              "options": [
+                "A. It cooks the food with infrared waves",
+                "B. It establishes a physical barrier that prevents flies from landing on the food and depositing pathogens",
+                "C. It attracts flies into the food",
+                "D. It removes bacteria chemically"
+              ],
+              "correctAnswer": "B. It establishes a physical barrier that prevents flies from landing on the food and depositing pathogens",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Mesh covers create a physical barrier preventing fly contact and contamination.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I25",
+              "difficulty": "medium",
+              "prompt": "Why do maggots have mouth hooks instead of flat molars?",
+              "options": [
+                "A. To tear and scrape soft, decaying organic tissue and feed on fluids",
+                "B. To catch flying insects",
+                "C. To chew hard wood",
+                "D. To bite humans"
+              ],
+              "correctAnswer": "A. To tear and scrape soft, decaying organic tissue and feed on fluids",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Mouth hooks allow maggots to tear into decomposing substrate to feed on organic liquids.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I26",
+              "difficulty": "medium",
+              "prompt": "What happens if a housefly lands on an open wound on human skin?",
+              "options": [
+                "A. It heals the wound immediately",
+                "B. It may deposit pathogenic bacteria from filth, causing secondary skin infections like yaws",
+                "C. It removes scar tissue",
+                "D. It lays eggs that turn into bees"
+              ],
+              "correctAnswer": "B. It may deposit pathogenic bacteria from filth, causing secondary skin infections like yaws",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Flies feeding on wound exudates can inoculate lesions with pathogenic bacteria.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I27",
+              "difficulty": "medium",
+              "prompt": "In what environment is housefly egg-laying completely inhibited?",
+              "options": [
+                "A. Warm compost",
+                "B. Clean, dry, and cold environments without decaying organic matter",
+                "C. Moist cow dung",
+                "D. Decomposing fish"
+              ],
+              "correctAnswer": "B. Clean, dry, and cold environments without decaying organic matter",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Without moisture, warmth, and decaying organic matter, flies cannot oviposit viable eggs.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I28",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the puparium of a housefly?",
+              "options": [
+                "A. A soft white skin that allows swimming",
+                "B. A rigid, barrel-shaped casing formed from the hardened cuticle of the last larval instar",
+                "C. A leaf-like structure",
+                "D. A silk thread spun like spider webs"
+              ],
+              "correctAnswer": "B. A rigid, barrel-shaped casing formed from the hardened cuticle of the last larval instar",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The puparium is formed when the third-instar cuticle contracts and hardens.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I29",
+              "difficulty": "medium",
+              "prompt": "Which of the following methods of waste management most effectively reduces fly populations in urban areas?",
+              "options": [
+                "A. Open dumping along riverbanks",
+                "B. Timely collection, burial, or incineration of municipal solid waste",
+                "C. Storing waste in open paper boxes",
+                "D. Washing waste into gutters"
+              ],
+              "correctAnswer": "B. Timely collection, burial, or incineration of municipal solid waste",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Proper waste containment and timely disposal prevent fly access and larval development.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I30",
+              "difficulty": "medium",
+              "prompt": "Why is personal hygiene, such as washing hands with soap after defecation, important in breaking the fly transmission cycle?",
+              "options": [
+                "A. Soap attracts flies away from food",
+                "B. It removes trace fecal matter and pathogens that flies might otherwise transfer to food or other people",
+                "C. It changes skin color",
+                "D. It makes the hands completely waterproof"
+              ],
+              "correctAnswer": "B. It removes trace fecal matter and pathogens that flies might otherwise transfer to food or other people",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Washing hands removes fecal contaminants, stopping human-to-human and surface-to-food pathogen spread.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I31",
+              "difficulty": "medium",
+              "prompt": "What is the main function of the large compound eyes of the housefly?",
+              "options": [
+                "A. To focus sharply on distant stars",
+                "B. To provide a wide field of view and detect fast-moving predators or disturbances",
+                "C. To produce light at night",
+                "D. To smell rotting food"
+              ],
+              "correctAnswer": "B. To provide a wide field of view and detect fast-moving predators or disturbances",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Compound eyes provide near-360-degree vision and sensitive motion detection.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I32",
+              "difficulty": "medium",
+              "prompt": "Why are houseflies absent or inactive in cold temperate winters?",
+              "options": [
+                "A. They fly to the moon",
+                "B. As cold-blooded ectotherms, low temperatures slow their metabolic rates and arrest larval development",
+                "C. They turn into butterflies",
+                "D. They drown in snow"
+              ],
+              "correctAnswer": "B. As cold-blooded ectotherms, low temperatures slow their metabolic rates and arrest larval development",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Insect metabolic rates depend on ambient warmth; cold weather slows or pauses their development.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I33",
+              "difficulty": "medium",
+              "prompt": "Which part of the housefly's life cycle is the most mobile and poses the greatest direct threat of spreading disease to food?",
+              "options": [
+                "A. Egg",
+                "B. Maggot",
+                "C. Pupa",
+                "D. Adult fly"
+              ],
+              "correctAnswer": "D. Adult fly",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Adult flies fly between contaminated waste and human food, making them the primary transmission stage.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I34",
+              "difficulty": "medium",
+              "prompt": "How do fly swatters and electric insect traps control houseflies?",
+              "options": [
+                "A. By destroying the fly's eggs",
+                "B. By physically killing adult flies to reduce the breeding population",
+                "C. By repelling flies with sweet smells",
+                "D. By poisoning clean drinking water"
+              ],
+              "correctAnswer": "B. By physically killing adult flies to reduce the breeding population",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Swatters and electrocutors target and kill adult flies, lowering their numbers.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I35",
+              "difficulty": "medium",
+              "prompt": "What type of vision do houseflies possess?",
+              "options": [
+                "A. Binocular vision like humans",
+                "B. Compound vision composed of thousands of ommatidia",
+                "C. Blind vision",
+                "D. Single-lens camera vision"
+              ],
+              "correctAnswer": "B. Compound vision composed of thousands of ommatidia",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Housefly eyes are compound structures made of thousands of individual photoreceptive units (ommatidia).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I36",
+              "difficulty": "medium",
+              "prompt": "Why is regular clearing of domestic animal pens effective in reducing fly infestations?",
+              "options": [
+                "A. Animals eat less when pens are cleaned",
+                "B. It removes accumulating manure and dung, which are preferred media for fly oviposition and larval feeding",
+                "C. Cleaning pens makes flies lose their wings",
+                "D. Flies only live on clean animals"
+              ],
+              "correctAnswer": "B. It removes accumulating manure and dung, which are preferred media for fly oviposition and larval feeding",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Removing manure deprives female flies of their primary breeding sites.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I37",
+              "difficulty": "medium",
+              "prompt": "How does the larva of a housefly breathe underground in moist rotting organic matter?",
+              "options": [
+                "A. Through lungs like humans",
+                "B. Through posterior spiracles (breathing pores) located at the rear of its body",
+                "C. Through its mouth hooks",
+                "D. It does not need oxygen"
+              ],
+              "correctAnswer": "B. Through posterior spiracles (breathing pores) located at the rear of its body",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Spiracles at the rear of the maggot take in air even while its head is buried feeding in waste.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I38",
+              "difficulty": "medium",
+              "prompt": "What happens if food contaminated with fly vomit containing Salmonella is consumed by a person?",
+              "options": [
+                "A. The person experiences food poisoning, fever, and intestinal cramps",
+                "B. The person grows wings",
+                "C. The person gains immediate immunity to all diseases",
+                "D. Nothing happens"
+              ],
+              "correctAnswer": "A. The person experiences food poisoning, fever, and intestinal cramps",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Salmonella causes food poisoning, leading to fever, vomiting, and diarrhea.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I39",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the texture of housefly eggs?",
+              "options": [
+                "A. Covered with a sticky secretion that glues them together in clusters",
+                "B. Hard as stone",
+                "C. Wrapped in silk threads",
+                "D. Floating like dry cork"
+              ],
+              "correctAnswer": "A. Covered with a sticky secretion that glues them together in clusters",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "A sticky maternal secretion glues housefly eggs together into moist clusters.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I40",
+              "difficulty": "medium",
+              "prompt": "Why should pit latrines be constructed far from domestic water boreholes?",
+              "options": [
+                "A. To make latrines easier to find",
+                "B. To prevent underground seepage of fecal microbes and stop flies from transferring pathogens to drinking water sources",
+                "C. Because water attracts flies away from feces",
+                "D. To keep latrines warm"
+              ],
+              "correctAnswer": "B. To prevent underground seepage of fecal microbes and stop flies from transferring pathogens to drinking water sources",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Separation prevents microbial contamination of drinking water by leaching and insect activity.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I41",
+              "difficulty": "medium",
+              "prompt": "How do adult houseflies locate decomposing food from a distance?",
+              "options": [
+                "A. By hearing sounds",
+                "B. Using sensitive chemoreceptors located on their antennae and mouthparts to detect volatile organic odors",
+                "C. By checking maps",
+                "D. Through magnetic waves"
+              ],
+              "correctAnswer": "B. Using sensitive chemoreceptors located on their antennae and mouthparts to detect volatile organic odors",
+              "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+              "workedSolution": "Chemoreceptors on their antennae and mouthparts detect the airborne scents of decay.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I42",
+              "difficulty": "medium",
+              "prompt": "Which of the following is an example of an adult insect that lives only on liquid food?",
+              "options": [
+                "A. Grasshopper",
+                "B. Adult housefly",
+                "C. Termite worker",
+                "D. Praying mantis"
+              ],
+              "correctAnswer": "B. Adult housefly",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Because of its sponging proboscis, the adult housefly can only ingest liquids or liquefied solids.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I43",
+              "difficulty": "medium",
+              "prompt": "Why is the use of sticky fly-paper (sticky ribbons) considered an environmentally safe control method?",
+              "options": [
+                "A. It does not release toxic chemical fumes into living areas or food spaces",
+                "B. It smells like perfume",
+                "C. It feeds the flies",
+                "D. It dissolves refuse"
+              ],
+              "correctAnswer": "A. It does not release toxic chemical fumes into living areas or food spaces",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Sticky fly-papers trap insects mechanically without using airborne pesticides.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I44",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor limiting the survival of housefly eggs in hot, dry weather?",
+              "options": [
+                "A. Desiccation (drying out)",
+                "B. Excessive air movement",
+                "C. Lack of flight wings",
+                "D. Too much oxygen"
+              ],
+              "correctAnswer": "A. Desiccation (drying out)",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Housefly eggs have thin shells and dry out quickly if deprived of moisture.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I45",
+              "difficulty": "medium",
+              "prompt": "Which insect stage is responsible for the rapid consumption of organic matter in a compost heap?",
+              "options": [
+                "A. Adult fly",
+                "B. Maggot (Larva)",
+                "C. Pupa",
+                "D. Egg"
+              ],
+              "correctAnswer": "B. Maggot (Larva)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The maggot feeds heavily and rapidly breaks down organic matter.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I46",
+              "difficulty": "medium",
+              "prompt": "Why do houseflies thrive in slaughterhouses and fish markets?",
+              "options": [
+                "A. Because slaughterhouses are quiet",
+                "B. Abundant offal, animal blood, and moist rotting scraps provide ideal feeding and breeding grounds",
+                "C. Flies prefer clean concrete floors",
+                "D. They like cold water"
+              ],
+              "correctAnswer": "B. Abundant offal, animal blood, and moist rotting scraps provide ideal feeding and breeding grounds",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Abundant blood, offal, and organic waste provide suitable sites for fly feeding and egg-laying.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I47",
+              "difficulty": "medium",
+              "prompt": "What is the biological difference between a biological vector and a mechanical vector?",
+              "options": [
+                "A. A biological vector hosts essential developmental stages of the pathogen; a mechanical vector transfers pathogens passively on its body",
+                "B. Biological vectors are plants; mechanical vectors are animals",
+                "C. Mechanical vectors bite, whereas biological vectors do not",
+                "D. Biological vectors only live in water"
+              ],
+              "correctAnswer": "A. A biological vector hosts essential developmental stages of the pathogen; a mechanical vector transfers pathogens passively on its body",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Biological vectors host pathogen life cycles; mechanical vectors simply transfer pathogens on their exterior.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I48",
+              "difficulty": "medium",
+              "prompt": "Which of the following insect behaviors makes the housefly an effective vector for conjunctivitis?",
+              "options": [
+                "A. Laying eggs in water",
+                "B. Landing near eyes to sponge up lacrimal secretions (tears), transferring bacteria directly to the conjunctiva",
+                "C. Chewing eyelashes",
+                "D. Flying in circles"
+              ],
+              "correctAnswer": "B. Landing near eyes to sponge up lacrimal secretions (tears), transferring bacteria directly to the conjunctiva",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Flies landing to feed on eye secretions can deposit bacteria that cause conjunctivitis and trachoma.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I49",
+              "difficulty": "medium",
+              "prompt": "Why is proper burial of dead animals considered a sanitation measure against houseflies?",
+              "options": [
+                "A. It prevents adult flies from accessing carcasses to feed and lay thousands of eggs",
+                "B. It cools the earth",
+                "C. It improves fly flight",
+                "D. Dead animals produce honey"
+              ],
+              "correctAnswer": "A. It prevents adult flies from accessing carcasses to feed and lay thousands of eggs",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Burying carcasses denies female flies the organic substrate required for larval development.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_I50",
+              "difficulty": "medium",
+              "prompt": "What is the structural role of the chitinous exoskeleton during the adult stage of a housefly?",
+              "options": [
+                "A. To help the fly digest wood",
+                "B. To provide structural support, prevent water loss, and anchor flight muscles",
+                "C. To trap sunlight for photosynthesis",
+                "D. To produce eggs"
+              ],
+              "correctAnswer": "B. To provide structural support, prevent water loss, and anchor flight muscles",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The chitinous exoskeleton provides structural support, prevents desiccation, and anchors muscles.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6294,16 +7739,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_A01",
               "difficulty": "hard",
-              "prompt": "Contrast the disease transmission mode of the female Anopheles mosquito with that of the common housefly:",
+              "prompt": "Under a microscope, an investigator observes that a single housefly carries over 1 million bacteria on its legs and body hairs. Which anatomical adaptation explains this high pathogen capacity?",
               "options": [
-                "A. Mosquito is a mechanical vector; housefly is a biological vector",
-                "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
-                "C. Both insects transmit pathogens exclusively through saliva without biting",
-                "D. Neither insect carries pathogenic micro-organisms"
+                "A. Smooth, polished wings that reflect light",
+                "B. Dense coverings of setae (hairs), micro-bristles, and adhesive pulvilli designed for clinging to surfaces",
+                "C. Large compound eyes that store bacteria",
+                "D. The absence of an exoskeleton"
               ],
-              "correctAnswer": "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
-              "hint": "In biological vectors, the pathogen requires internal incubation.",
-              "workedSolution": "Plasmodium undergoes vital development within mosquitoes (biological vector), whereas houseflies merely transport pathogens externally or in vomit/faeces (mechanical vector).",
+              "correctAnswer": "B. Dense coverings of setae (hairs), micro-bristles, and adhesive pulvilli designed for clinging to surfaces",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Microscopic setae and adhesive footpads create a large, sticky surface area that collects bacteria from contaminated surfaces.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6311,16 +7756,16 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_A02",
               "difficulty": "hard",
-              "prompt": "Why does turning a municipal compost heap regularly control housefly maggot development?",
+              "prompt": "A community health officer notes a surge in cholera cases during the peak of the mango and rainy season in a rural district. How does the housefly population correlate with this epidemic?",
               "options": [
-                "A. It exposes the maggots to moonlight",
-                "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
-                "C. It freezes the organic waste",
-                "D. It converts all nitrogen into rock"
+                "A. Warm, moist weather and rotting dropped mangoes accelerate fly reproduction, leading to high fly densities that spread Vibrio cholerae from open latrines to exposed food",
+                "B. Mango fruits generate cholera bacteria internally",
+                "C. Houseflies become biological vectors during the rain",
+                "D. Cold rain freezes the fly pupae"
               ],
-              "correctAnswer": "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
-              "hint": "Aerobic microbial fermentation produces lethal internal heat.",
-              "workedSolution": "Frequent turning aerates compost, accelerating thermophilic bacterial fermentation that raises core temperatures high enough to destroy eggs and maggots.",
+              "correctAnswer": "A. Warm, moist weather and rotting dropped mangoes accelerate fly reproduction, leading to high fly densities that spread Vibrio cholerae from open latrines to exposed food",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Warm, humid weather combined with rotting fruit and exposed waste accelerates fly breeding, increasing mechanical transmission of cholera.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6328,16 +7773,815 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
             {
               "id": "B7_FLY_A03",
               "difficulty": "hard",
-              "prompt": "Explain how the microscopic structure of the housefly's footpads (pulvilli) enhances its efficiency as a mechanical disease vector:",
+              "prompt": "Why is the pupal stage of Musca domestica described as a phase of profound histolysis and histogenesis?",
               "options": [
-                "A. Pulvilli have sharp claws that inject poison into human skin",
-                "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
-                "C. Pulvilli produce digestive enzymes that absorb carbohydrates directly through the legs",
-                "D. Pulvilli freeze bacteria to keep them alive for years"
+                "A. The pupa feeds on external leaves",
+                "B. Larval tissues break down (histolysis) into an embryonic soup, which is reconstructed (histogenesis) into adult organs like wings and reproductive structures",
+                "C. The pupa lays eggs inside the puparium",
+                "D. The puparium dissolves in rainwater"
               ],
-              "correctAnswer": "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
-              "hint": "Microscopic sticky pads allow the fly to adhere to smooth surfaces and pick up pathogens.",
-              "workedSolution": "Glandular adhesive setae on the fly's pulvilli maximize contact surface area, passively picking up pathogen-laden particulate matter from waste.",
+              "correctAnswer": "B. Larval tissues break down (histolysis) into an embryonic soup, which is reconstructed (histogenesis) into adult organs like wings and reproductive structures",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Inside the puparium, larval tissues break down and remodel into adult structures.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A04",
+              "difficulty": "hard",
+              "prompt": "In what way does the feeding mechanism of the adult housefly make chemical food contamination more dangerous than that caused by biting mosquitoes?",
+              "options": [
+                "A. Mosquitoes cannot fly fast",
+                "B. Flies regurgitate stomach enzymes and fecal drops directly onto human food, inoculating it with bacteria and fungal spores",
+                "C. Flies bite through skin to inject stomach acid",
+                "D. Mosquitoes only land on clean surfaces"
+              ],
+              "correctAnswer": "B. Flies regurgitate stomach enzymes and fecal drops directly onto human food, inoculating it with bacteria and fungal spores",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Regurgitating digestive fluids and defecating during feeding contaminates broad food surfaces directly consumed by humans.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A05",
+              "difficulty": "hard",
+              "prompt": "What is the primary physiological reason housefly larvae (maggots) are photonegative (move away from light)?",
+              "options": [
+                "A. They are blinded by darkness",
+                "B. Sunlight and surface exposure cause fatal dehydration and expose them to predatory birds; burrowing into waste keeps them moist and fed",
+                "C. Light kills their wings",
+                "D. They photosynthesize best in the dark"
+              ],
+              "correctAnswer": "B. Sunlight and surface exposure cause fatal dehydration and expose them to predatory birds; burrowing into waste keeps them moist and fed",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Moving away from light keeps maggots buried in moist, food-rich organic waste, protecting them from desiccation and predators.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A06",
+              "difficulty": "hard",
+              "prompt": "How does the short generational turnover of Musca domestica (8 to 14 days under ideal warmth) influence the rapid development of insecticide resistance?",
+              "options": [
+                "A. Flies learn how to avoid spray cans",
+                "B. Rapid reproduction allows beneficial mutations that confer insecticide resistance to be selected for and spread through the population within months",
+                "C. Insecticides make the larvae grow wings early",
+                "D. Older flies teach younger flies how to metabolize poison"
+              ],
+              "correctAnswer": "B. Rapid reproduction allows beneficial mutations that confer insecticide resistance to be selected for and spread through the population within months",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Short life cycles and high fecundity allow natural selection for resistant mutations to happen rapidly.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A07",
+              "difficulty": "hard",
+              "prompt": "A biology laboratory set up two culture jars with decaying meat. Jar 1 was covered with fine porous gauze; Jar 2 was left open. Maggots developed only in Jar 2. What scientific principle does this demonstrate?",
+              "options": [
+                "A. Spontaneous generation of life from meat",
+                "B. Biogenesis: maggots arise only from eggs laid by visiting adult flies, disproving spontaneous generation (Redi's experiment)",
+                "C. Meat produces larvae automatically when covered",
+                "D. Flies hate open jars"
+              ],
+              "correctAnswer": "B. Biogenesis: maggots arise only from eggs laid by visiting adult flies, disproving spontaneous generation (Redi's experiment)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "This mirrors Francesco Redi's classic experiment proving that maggots hatch from fly eggs rather than arising spontaneously.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A08",
+              "difficulty": "hard",
+              "prompt": "Why is the eradication of houseflies virtually impossible and ecologically inadvisable?",
+              "options": [
+                "A. Houseflies are the largest animals on earth",
+                "B. They occupy critical ecological niches as primary recyclers of decaying organic waste and serve as a baseline food source for birds, amphibians, and reptiles",
+                "C. Houseflies are made of metal",
+                "D. They produce oxygen in the atmosphere"
+              ],
+              "correctAnswer": "B. They occupy critical ecological niches as primary recyclers of decaying organic waste and serve as a baseline food source for birds, amphibians, and reptiles",
+              "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+              "workedSolution": "Flies and maggots play key roles in waste decomposition, nutrient cycling, and serving as food for higher trophic levels.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A09",
+              "difficulty": "hard",
+              "prompt": "How does the anatomical structure of the puparium provide evolutionary survival advantages to the developing imago?",
+              "options": [
+                "A. It allows the pupa to crawl into rivers",
+                "B. The sclerotized, hardened outer casing protects the delicate transforming tissues from desiccation, physical crushing, and soil pathogens",
+                "C. It allows the pupa to breathe underwater without oxygen",
+                "D. It generates solar heat like a greenhouse"
+              ],
+              "correctAnswer": "B. The sclerotized, hardened outer casing protects the delicate transforming tissues from desiccation, physical crushing, and soil pathogens",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The hardened puparium forms a protective barrier against physical damage, soil microbes, and drying out.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A10",
+              "difficulty": "hard",
+              "prompt": "What is the biological role of the ptilinum (an inflatable head sac) when an adult housefly emerges from its puparium?",
+              "options": [
+                "A. It acts as an airbag to absorb flight crashes",
+                "B. It inflates with hemolymph fluid to pop open the circular cap of the puparium and push through surrounding soil",
+                "C. It stores food for the adult fly",
+                "D. It produces mating pheromones"
+              ],
+              "correctAnswer": "B. It inflates with hemolymph fluid to pop open the circular cap of the puparium and push through surrounding soil",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The ptilinum expands using blood pressure to pop off the puparium cap and help the fly tunnel out of soil.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A11",
+              "difficulty": "hard",
+              "prompt": "Why do epidemiological outbreaks of fly-borne diarrhea often peak after flooding events in developing communities?",
+              "options": [
+                "A. Flooding drowns all flies",
+                "B. Floodwaters disrupt sewage containment, spreading human waste across open land and creating vast breeding and feeding media for flies",
+                "C. Water turns into flies",
+                "D. Rain makes flies sterile"
+              ],
+              "correctAnswer": "B. Floodwaters disrupt sewage containment, spreading human waste across open land and creating vast breeding and feeding media for flies",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Flooding breaches latrines and mixes waste with surface water, expanding fly breeding sites and pathogen spread.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A12",
+              "difficulty": "hard",
+              "prompt": "How do maggots of certain blowflies and houseflies contribute to modern forensic science (forensic entomology)?",
+              "options": [
+                "A. They testify in courtrooms",
+                "B. By analyzing the growth stage and age of maggots feeding on a corpse, forensic scientists can accurately estimate the Post-Mortem Interval (time of death)",
+                "C. They revive dead tissues",
+                "D. They change blood groups"
+              ],
+              "correctAnswer": "B. By analyzing the growth stage and age of maggots feeding on a corpse, forensic scientists can accurately estimate the Post-Mortem Interval (time of death)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Because insect development follows a predictable timeline, maggot age can help establish time of death.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A13",
+              "difficulty": "hard",
+              "prompt": "Why is chemical control alone insufficient for long-term housefly management on livestock farms?",
+              "options": [
+                "A. Insecticides make flies lay twice as many eggs",
+                "B. Insecticide sprays only kill exposed adults temporarily, leaving millions of sheltered eggs, larvae, and pupae in manure to emerge continuously",
+                "C. Insecticides cause flies to grow fur",
+                "D. Animals absorb all the insecticide"
+              ],
+              "correctAnswer": "B. Insecticide sprays only kill exposed adults temporarily, leaving millions of sheltered eggs, larvae, and pupae in manure to emerge continuously",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Chemical adulticides do not clear the breeding habitat, allowing new generations to emerge continually from manure.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A14",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical reason fly-regurgitated saliva softens solid foods like bread or dried meat?",
+              "options": [
+                "A. It contains strong hydrolytic digestive enzymes (like amylases and proteases) that break down macromolecules into soluble liquids outside the body",
+                "B. It freezes the food",
+                "C. It adds water with no enzymes",
+                "D. It relies on stomach bacteria only"
+              ],
+              "correctAnswer": "A. It contains strong hydrolytic digestive enzymes (like amylases and proteases) that break down macromolecules into soluble liquids outside the body",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Salivary enzymes digest complex starches and proteins externally so the resulting fluid can be sponged up.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A15",
+              "difficulty": "hard",
+              "prompt": "How does the respiratory system of the larva (tracheal spiracles) restrict its survival in completely submerged aquatic environments?",
+              "options": [
+                "A. It has gills that need warm water",
+                "B. The spiracles take in atmospheric air; complete, prolonged immersion in water deprives the tracheal tubes of oxygen, drowning the larva",
+                "C. Water hardens the maggot's mouth hooks",
+                "D. Submersion causes the maggot to turn into a fish"
+              ],
+              "correctAnswer": "B. The spiracles take in atmospheric air; complete, prolonged immersion in water deprives the tracheal tubes of oxygen, drowning the larva",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Fly larvae rely on spiracles to take in gaseous air; prolonged submersion prevents respiration and drowns them.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A16",
+              "difficulty": "hard",
+              "prompt": "Which of the following describes the compound eye of Musca domestica?",
+              "options": [
+                "A. A single lens that forms inverted pictures",
+                "B. An array of thousands of independent optical units (ommatidia), providing exceptional flicker-fusion frequency and motion sensitivity",
+                "C. A blind sensory pit",
+                "D. A light bulb that glows"
+              ],
+              "correctAnswer": "B. An array of thousands of independent optical units (ommatidia), providing exceptional flicker-fusion frequency and motion sensitivity",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Thousands of ommatidia give houseflies high temporal resolution, allowing them to detect rapid movements.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A17",
+              "difficulty": "hard",
+              "prompt": "Why does covering compost heaps with black plastic sheeting eliminate housefly larvae effectively?",
+              "options": [
+                "A. Plastic makes the compost freeze",
+                "B. It creates a physical barrier that prevents oviposition while trapping metabolic heat, raising temperatures past the thermal tolerance of maggots",
+                "C. It prevents air from entering the compost entirely",
+                "D. It turns the larvae into fertilizers"
+              ],
+              "correctAnswer": "B. It creates a physical barrier that prevents oviposition while trapping metabolic heat, raising temperatures past the thermal tolerance of maggots",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Solarization traps solar and decomposition heat under the sheet, exceeding the lethal thermal threshold for maggots.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A18",
+              "difficulty": "hard",
+              "prompt": "What distinguishes the life cycle of the housefly from that of the dragonfly regarding juvenile habitat?",
+              "options": [
+                "A. The housefly maggot lives in terrestrial decaying organic waste, whereas the dragonfly nymph is an aquatic predator living underwater",
+                "B. Both live in the clouds",
+                "C. Dragonfly nymphs live in animal dung",
+                "D. Housefly larvae live in clean ocean water"
+              ],
+              "correctAnswer": "A. The housefly maggot lives in terrestrial decaying organic waste, whereas the dragonfly nymph is an aquatic predator living underwater",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Housefly maggots develop in decaying terrestrial filth, while dragonfly nymphs are aquatic predators.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A19",
+              "difficulty": "hard",
+              "prompt": "Why are houseflies capable of transmitting trachoma (Chlamydia trachomatis)?",
+              "options": [
+                "A. They bite the cornea with sharp teeth",
+                "B. They land on infected eye discharges and mechanically carry the bacteria to the conjunctiva of healthy eyes",
+                "C. They lay eggs inside the tear ducts",
+                "D. They inject toxins into the optic nerve"
+              ],
+              "correctAnswer": "B. They land on infected eye discharges and mechanically carry the bacteria to the conjunctiva of healthy eyes",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Flies feeding on ocular secretions mechanically transfer Chlamydia bacteria between individuals.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A20",
+              "difficulty": "hard",
+              "prompt": "How does the reproductive biology of Musca domestica allow a small initial population to cause an infestation within weeks?",
+              "options": [
+                "A. Flies lay only 1 egg per year",
+                "B. Females lay up to 500–1000 eggs across their life, and with a life cycle as short as 10 days, numbers multiply exponentially under warm conditions",
+                "C. Adult flies live for 20 years",
+                "D. Larvae reproduce without becoming adults"
+              ],
+              "correctAnswer": "B. Females lay up to 500–1000 eggs across their life, and with a life cycle as short as 10 days, numbers multiply exponentially under warm conditions",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "High egg production paired with a developmental cycle of under two weeks allows rapid population growth.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A21",
+              "difficulty": "hard",
+              "prompt": "What is the function of the pseudotracheae on the labellum of a housefly's proboscis?",
+              "options": [
+                "A. Stinging humans",
+                "B. Microscopic channels that draw up liquefied food by capillary action into the central food canal",
+                "C. Grinding bones",
+                "D. Digging into wood"
+              ],
+              "correctAnswer": "B. Microscopic channels that draw up liquefied food by capillary action into the central food canal",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "Capillary grooves called pseudotracheae channel liquefied food into the central oral canal.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A22",
+              "difficulty": "hard",
+              "prompt": "Which of the following is an example of an integrated pest management (IPM) approach against houseflies in food-processing factories?",
+              "options": [
+                "A. Relying solely on spraying chemical DDT over food",
+                "B. Combining physical exclusion (air curtains, door screens), sanitation (prompt waste clearing), and mechanical sticky traps",
+                "C. Leaving rotting meat outside doors to distract flies",
+                "D. Doing nothing"
+              ],
+              "correctAnswer": "B. Combining physical exclusion (air curtains, door screens), sanitation (prompt waste clearing), and mechanical sticky traps",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Integrated Pest Management combines sanitation, physical barriers, and traps to control pests sustainably.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A23",
+              "difficulty": "hard",
+              "prompt": "Why is the housefly classified as holometabolous, while a termite is hemimetabolous?",
+              "options": [
+                "A. The housefly has an egg, maggot (larva), pupa, and adult; the termite has an egg, nymph, and adult with no pupa",
+                "B. Termites have five wings",
+                "C. Houseflies live in colonies",
+                "D. Termites do not lay eggs"
+              ],
+              "correctAnswer": "A. The housefly has an egg, maggot (larva), pupa, and adult; the termite has an egg, nymph, and adult with no pupa",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Houseflies have a pupal stage (holometabolous); termites transition directly from nymph to adult (hemimetabolous).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A24",
+              "difficulty": "hard",
+              "prompt": "How does the housefly contribute to mechanical food poisoning with Staphylococcus aureus?",
+              "options": [
+                "A. The fly synthesizes toxins inside its wings",
+                "B. The fly transfers staphylococcal bacteria from infected skin ulcers or decaying waste onto cooked meals, where the bacteria multiply and produce enterotoxins",
+                "C. The fly injects poison into clean vegetables",
+                "D. The fly carries venomous stingers"
+              ],
+              "correctAnswer": "B. The fly transfers staphylococcal bacteria from infected skin ulcers or decaying waste onto cooked meals, where the bacteria multiply and produce enterotoxins",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Flies transfer staphylococcal bacteria from lesions onto food, where they can grow and produce heat-stable toxins.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A25",
+              "difficulty": "hard",
+              "prompt": "Why does a puparium turn progressively darker as the pupa matures inside?",
+              "options": [
+                "A. It is getting dirty from soil",
+                "B. Sclerotization and melanization chemically cross-link proteins and pigments, hardening the protective shell",
+                "C. It absorbs light to generate electricity",
+                "D. The pupa inside is burning"
+              ],
+              "correctAnswer": "B. Sclerotization and melanization chemically cross-link proteins and pigments, hardening the protective shell",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Tanning processes (sclerotization and melanization) crosslink proteins to harden and darken the cuticle.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A26",
+              "difficulty": "hard",
+              "prompt": "What is the danger of placing open latrines adjacent to fruit and vegetable markets?",
+              "options": [
+                "A. Flies visit human excreta in latrines, pick up enteric pathogens (e.g., Shigella, Vibrio), and fly directly onto market produce sold for consumption",
+                "B. Vegetables grow too fast",
+                "C. Latrines absorb the scent of fruits",
+                "D. Market sounds kill the flies"
+              ],
+              "correctAnswer": "A. Flies visit human excreta in latrines, pick up enteric pathogens (e.g., Shigella, Vibrio), and fly directly onto market produce sold for consumption",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Close proximity allows flies to move easily between human feces and uncovered fresh food.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A27",
+              "difficulty": "hard",
+              "prompt": "How do maggots move through their environment without jointed walking legs?",
+              "options": [
+                "A. By using small wings inside their body",
+                "B. Through coordinated waves of longitudinal and circular body-wall muscular contractions anchored by tiny spinules (spines)",
+                "C. By rolling like balls",
+                "D. They are blown by the wind"
+              ],
+              "correctAnswer": "B. Through coordinated waves of longitudinal and circular body-wall muscular contractions anchored by tiny spinules (spines)",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Peristaltic muscular contractions work against ventral spine bands to move the maggot forward.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A28",
+              "difficulty": "hard",
+              "prompt": "Why does boiling drinking water protect humans against fly-borne water contamination?",
+              "options": [
+                "A. It removes the water",
+                "B. Thermal heat denatures the proteins and disrupts cell membranes of fly-deposited bacterial pathogens, rendering them harmless",
+                "C. It turns bacteria into fly food",
+                "D. It makes water taste sweeter"
+              ],
+              "correctAnswer": "B. Thermal heat denatures the proteins and disrupts cell membranes of fly-deposited bacterial pathogens, rendering them harmless",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Boiling temperatures pasteurize water by denaturing the proteins of pathogenic bacteria.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A29",
+              "difficulty": "hard",
+              "prompt": "What primary adaptation allows a fly to evade a descending fly swatter so quickly?",
+              "options": [
+                "A. It can predict the future",
+                "B. Giant interneuron pathways allow sensory signals from compound eyes to trigger motor flight muscles within milliseconds",
+                "C. It feels the swatter with ears",
+                "D. Its wings are made of steel"
+              ],
+              "correctAnswer": "B. Giant interneuron pathways allow sensory signals from compound eyes to trigger motor flight muscles within milliseconds",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Compound eyes and specialized giant nerve fibers enable fast, involuntary escape reflexes.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A30",
+              "difficulty": "hard",
+              "prompt": "Why are maggots of certain laboratory-reared fly species used in medical 'maggot debridement therapy'?",
+              "options": [
+                "A. They eat healthy skin cells",
+                "B. Sterile maggots selectively consume dead (necrotic) flesh in infected non-healing wounds while secreting antibacterial fluids",
+                "C. They lay eggs inside the blood vessels",
+                "D. They turn into bone"
+              ],
+              "correctAnswer": "B. Sterile maggots selectively consume dead (necrotic) flesh in infected non-healing wounds while secreting antibacterial fluids",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Sterile medical maggots feed on necrotic tissue and promote wound healing by cleaning ulcers.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A31",
+              "difficulty": "hard",
+              "prompt": "What is the structural role of the halteres during high-speed escape maneuvers of an adult housefly?",
+              "options": [
+                "A. They produce forward propulsion",
+                "B. They vibrate rapidly, measuring Coriolis forces during turns to provide real-time balance feedback to flight muscles",
+                "C. They generate defensive poison",
+                "D. They act as air brakes"
+              ],
+              "correctAnswer": "B. They vibrate rapidly, measuring Coriolis forces during turns to provide real-time balance feedback to flight muscles",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Oscillating halteres detect Coriolis forces, helping stabilize the fly during complex turns.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A32",
+              "difficulty": "hard",
+              "prompt": "Why is the domestic garbage can described as a primary 'fly factory' in urban centers?",
+              "options": [
+                "A. It manufactures metal cans",
+                "B. It contains warm, moist, unsealed food waste that provides ideal nutritional and environmental conditions for egg-laying and larval growth",
+                "C. Flies build nests like birds in dry plastic",
+                "D. It generates insecticides"
+              ],
+              "correctAnswer": "B. It contains warm, moist, unsealed food waste that provides ideal nutritional and environmental conditions for egg-laying and larval growth",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Unsealed trash bins provide ideal moisture and organic matter for fly breeding.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A33",
+              "difficulty": "hard",
+              "prompt": "Which of the following insect mouthparts is anatomically homologous to the sponging labellum of the housefly?",
+              "options": [
+                "A. The biting jaws of a grasshopper",
+                "B. The piercing stylets of a female mosquito",
+                "C. The siphoning coiled proboscis of a butterfly",
+                "D. All of the above (they are all modified insect mouthparts adapted for different feeding strategies)"
+              ],
+              "correctAnswer": "D. All of the above (they are all modified insect mouthparts adapted for different feeding strategies)",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "All insect mouthparts derive from the same basic ancestral structures, modified for different diets.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A34",
+              "difficulty": "hard",
+              "prompt": "How does the application of lime (calcium hydroxide) over pit latrines suppress housefly development?",
+              "options": [
+                "A. It acts as a fertilizer for maggots",
+                "B. It creates an alkaline, desiccating environment that dries out organic matter and destroys fragile fly eggs and larvae",
+                "C. It feeds adult flies sweet nectar",
+                "D. It cools the latrine down to freezing"
+              ],
+              "correctAnswer": "B. It creates an alkaline, desiccating environment that dries out organic matter and destroys fragile fly eggs and larvae",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Lime alters the pH and dries out surface waste, making it inhospitable to eggs and larvae.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A35",
+              "difficulty": "hard",
+              "prompt": "What is the physiological purpose of the extensive crop (food storage pouch) in the digestive tract of the housefly?",
+              "options": [
+                "A. To store solid rocks for grinding",
+                "B. To temporarily hold large volumes of sponged-up liquid food before releasing it slowly into the midgut for digestion",
+                "C. To pump air into the wings",
+                "D. To produce eggs"
+              ],
+              "correctAnswer": "B. To temporarily hold large volumes of sponged-up liquid food before releasing it slowly into the midgut for digestion",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "The crop serves as a storage chamber for fluids before they pass into the digestive midgut.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A36",
+              "difficulty": "hard",
+              "prompt": "Why is the spread of trachoma by flies particularly severe in dry, arid regions with water scarcity?",
+              "options": [
+                "A. Flies die in dry weather",
+                "B. Water scarcity reduces face-washing hygiene, leaving ocular discharges on children's faces that attract thirsty, protein-seeking flies",
+                "C. Arid dust turns into flies",
+                "D. Trachoma only travels in air"
+              ],
+              "correctAnswer": "B. Water scarcity reduces face-washing hygiene, leaving ocular discharges on children's faces that attract thirsty, protein-seeking flies",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Limited water access reduces facial hygiene, attracting flies to feed on ocular moisture and spread Chlamydia.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A37",
+              "difficulty": "hard",
+              "prompt": "How does the rapid development of housefly pupae inside dry soil protect them from standard liquid chemical larvicides applied to manure surfaces?",
+              "options": [
+                "A. The pupae absorb the insecticide as food",
+                "B. Maggots migrate out of wet manure into surrounding dry soil before pupating, avoiding chemicals applied only to the waste surface",
+                "C. The pupa has wings to fly away",
+                "D. The puparium dissolves all chemicals"
+              ],
+              "correctAnswer": "B. Maggots migrate out of wet manure into surrounding dry soil before pupating, avoiding chemicals applied only to the waste surface",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Pupation away from the wet feeding surface protects pupae from surface-applied larvicides.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A38",
+              "difficulty": "hard",
+              "prompt": "What is the biological significance of courtship rituals (such as wing vibrations) performed by male houseflies?",
+              "options": [
+                "A. To cool down the female",
+                "B. To communicate species identity and sexual readiness, ensuring successful mating and fertilization",
+                "C. To intimidate predators",
+                "D. To scare off other maggots"
+              ],
+              "correctAnswer": "B. To communicate species identity and sexual readiness, ensuring successful mating and fertilization",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "Courtship displays communicate species identity and facilitate successful mating.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A39",
+              "difficulty": "hard",
+              "prompt": "Why is the housefly considered an inferior pollinator compared to the European honeybee (Apis mellifera)?",
+              "options": [
+                "A. Houseflies do not visit flowers at all",
+                "B. Flies do not possess specialized pollen baskets (corbiculae) or branched hairs designed to carry large pollen loads systematically",
+                "C. Bees eat all the flowers",
+                "D. Flies destroy all pollen grains"
+              ],
+              "correctAnswer": "B. Flies do not possess specialized pollen baskets (corbiculae) or branched hairs designed to carry large pollen loads systematically",
+              "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+              "workedSolution": "Flies lack specialized pollen-carrying structures, making their pollination incidental rather than systematic.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A40",
+              "difficulty": "hard",
+              "prompt": "What physical process allows a fly to drink liquid food through its proboscis?",
+              "options": [
+                "A. Gravity alone",
+                "B. Muscular pharyngeal pumping creating negative pressure that draws liquid through capillary channels into the esophagus",
+                "C. Surface evaporation",
+                "D. Static electricity"
+              ],
+              "correctAnswer": "B. Muscular pharyngeal pumping creating negative pressure that draws liquid through capillary channels into the esophagus",
+              "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+              "workedSolution": "A muscular pharyngeal pump draws liquid up through the proboscis into the digestive canal.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A41",
+              "difficulty": "hard",
+              "prompt": "Why does a sudden cold snap in late autumn cause a dramatic drop in housefly infestations?",
+              "options": [
+                "A. Cold weather causes all flies to explode",
+                "B. Low temperatures halt ovarian development in females, slow larval feeding, and extend pupal duration, halting population growth",
+                "C. Flies turn into caterpillars in winter",
+                "D. Cold weather makes garbage disappear"
+              ],
+              "correctAnswer": "B. Low temperatures halt ovarian development in females, slow larval feeding, and extend pupal duration, halting population growth",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Low temperatures suppress insect metabolism, reproduction, and larval development rates.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A42",
+              "difficulty": "hard",
+              "prompt": "How does installing ultraviolet (UV) light fly electrocutors in commercial restaurants exploit insect behavior?",
+              "options": [
+                "A. Flies use UV light to warm their bodies",
+                "B. Compound eyes are naturally attracted to UV wavelengths (positive phototaxis); flies fly toward the light grid and are electrocuted",
+                "C. UV light blinds the flies so they starve",
+                "D. UV light smells like rotting meat"
+              ],
+              "correctAnswer": "B. Compound eyes are naturally attracted to UV wavelengths (positive phototaxis); flies fly toward the light grid and are electrocuted",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Flies exhibit positive phototaxis toward UV light, which draws them into the electrified grid.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A43",
+              "difficulty": "hard",
+              "prompt": "What is the connection between unsanitary open defecation in communities and high rates of infant diarrhea?",
+              "options": [
+                "A. Feces pollute the sunlight",
+                "B. Uncontained feces provide breeding and feeding grounds for flies, which then transfer enteric pathogens onto infants' feeding bottles and food",
+                "C. Flies directly bite children to inject bacteria",
+                "D. Children eat the flies"
+              ],
+              "correctAnswer": "B. Uncontained feces provide breeding and feeding grounds for flies, which then transfer enteric pathogens onto infants' feeding bottles and food",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Open defecation exposes fecal pathogens to flies, which then contaminate infant foods and feeding surfaces.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A44",
+              "difficulty": "hard",
+              "prompt": "How does the cuticle of a third-instar maggot transform into the puparium without being cast off?",
+              "options": [
+                "A. It melts into the soil",
+                "B. The larva retains its third-instar skin, which shortens, rounds into a barrel shape, and hardens via sclerotization",
+                "C. It weaves silk like a silkworm",
+                "D. The skin falls off and is eaten"
+              ],
+              "correctAnswer": "B. The larva retains its third-instar skin, which shortens, rounds into a barrel shape, and hardens via sclerotization",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "The puparium is formed from the retained, tanned, and hardened third-instar larval cuticle.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A45",
+              "difficulty": "hard",
+              "prompt": "Why are houseflies capable of carrying pathogens across distances of several kilometers?",
+              "options": [
+                "A. They are carried inside bird stomachs",
+                "B. They are active fliers capable of traveling 2 to 7 kilometers aided by wind currents in search of feeding and oviposition sites",
+                "C. They walk along underground telephone wires",
+                "D. They travel inside car engines only"
+              ],
+              "correctAnswer": "B. They are active fliers capable of traveling 2 to 7 kilometers aided by wind currents in search of feeding and oviposition sites",
+              "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+              "workedSolution": "Adult flies can travel several kilometers, aided by wind, to find food and breeding habitats.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A46",
+              "difficulty": "hard",
+              "prompt": "Which of the following adaptations allows a maggot to survive inside dense, oxygen-poor compost heaps?",
+              "options": [
+                "A. It possesses gills on its head",
+                "B. Its posterior spiracles can remain extended toward surface air pockets while its body is submerged feeding in waste",
+                "C. It holds its breath for three months",
+                "D. It generates oxygen chemically"
+              ],
+              "correctAnswer": "B. Its posterior spiracles can remain extended toward surface air pockets while its body is submerged feeding in waste",
+              "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+              "workedSolution": "Posterior spiracles allow maggots to breathe air while their anterior ends remain buried in decomposing matter.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A47",
+              "difficulty": "hard",
+              "prompt": "What is the primary epidemiological goal of using fly-proof VIP latrines in public schools?",
+              "options": [
+                "A. To make latrines look modern",
+                "B. To break the fecal-oral pathogen transmission route by preventing flies from contacting human excreta",
+                "C. To kill all insects in the surrounding forest",
+                "D. To collect fly eggs for science experiments"
+              ],
+              "correctAnswer": "B. To break the fecal-oral pathogen transmission route by preventing flies from contacting human excreta",
+              "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+              "workedSolution": "Fly-proofing latrines cuts the contact link between human waste and disease-carrying insect vectors.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A48",
+              "difficulty": "hard",
+              "prompt": "Why are housefly eggs laid in clusters rather than individually scattered over miles?",
+              "options": [
+                "A. Female flies cannot move while laying",
+                "B. Clustered eggs maintain humidity and allow hatched larvae to pool digestive secretions, breaking down food faster",
+                "C. Eggs fuse into a single large animal",
+                "D. To make it easier for birds to eat them"
+              ],
+              "correctAnswer": "B. Clustered eggs maintain humidity and allow hatched larvae to pool digestive secretions, breaking down food faster",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Clustered eggs conserve localized humidity and allow groups of larvae to liquefy food collaboratively.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A49",
+              "difficulty": "hard",
+              "prompt": "How does chemical fly bait containing attractants and insecticide work?",
+              "options": [
+                "A. It repels flies into the forest",
+                "B. It mimics natural feeding odors to lure adult flies to feed, delivering a lethal stomach poison",
+                "C. It turns flies into bees",
+                "D. It freezes the surrounding air"
+              ],
+              "correctAnswer": "B. It mimics natural feeding odors to lure adult flies to feed, delivering a lethal stomach poison",
+              "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+              "workedSolution": "Baits use attractants to lure adult flies into ingesting a fast-acting insecticide.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A50",
+              "difficulty": "hard",
+              "prompt": "Which of the following scenarios demonstrates the successful completion of an insect's holometabolous life cycle?",
+              "options": [
+                "A. A housefly egg hatches into a nymph, grows wings, and flies away",
+                "B. A housefly egg hatches into a maggot, feeds through three instars, pupates in a puparium, and emerges as a winged adult that successfully mates",
+                "C. A maggot divides into two maggots",
+                "D. An adult fly sheds its skin to become a pupa"
+              ],
+              "correctAnswer": "B. A housefly egg hatches into a maggot, feeds through three instars, pupates in a puparium, and emerges as a winged adult that successfully mates",
+              "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+              "workedSolution": "A complete holometabolous cycle involves hatching as a larva, pupating, and emerging as a sexually mature adult.",
               "points": 1,
               "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
@@ -6464,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.106Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -6659,7 +8903,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -6856,7 +9100,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -7053,7 +9297,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -7250,7 +9494,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -7445,7 +9689,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -7641,7 +9885,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -7837,7 +10081,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -8034,7 +10278,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -8232,7 +10476,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -8430,7 +10674,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -8623,7 +10867,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -8818,7 +11062,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -9013,7 +11257,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -9209,7 +11453,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -9406,7 +11650,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:46:45.674Z"
+    "updatedAt": "2026-10-02T19:03:09.107Z"
   }
 ];
 
@@ -14934,58 +17178,42 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "B7_FLY_01",
+        "id": "B7_FLY_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following insect pairs both undergo complete metamorphosis?",
+        "prompt": "What is the scientific name for the common housefly?",
         "options": [
-          "A. Housefly and Grasshopper",
-          "B. Housefly and Mosquito",
-          "C. Cockroach and Butterfly",
-          "D. Termite and Honeybee"
+          "A. Anopheles gambiae",
+          "B. Musca domestica",
+          "C. Periplaneta americana",
+          "D. Glossina morsitans"
         ],
-        "correctAnswer": "B. Housefly and Mosquito",
-        "hint": "Recall insects that pass through egg, larva, pupa, and adult stages.",
-        "workedSolution": "Both the housefly and the mosquito undergo complete metamorphosis involving four distinct stages: egg, larva, pupa, and adult.",
+        "correctAnswer": "B. Musca domestica",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "The biological and scientific nomenclature for the common housefly is Musca domestica.",
         "points": 1
       },
       {
-        "id": "B7_FLY_02",
+        "id": "B7_FLY_F02",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the non-feeding resting stage inside the protective puparium during housefly development?",
+        "prompt": "To which insect order does the housefly belong?",
         "options": [
-          "A. Nymph",
-          "B. Pupa",
-          "C. Maggot",
-          "D. Imago"
+          "A. Diptera",
+          "B. Hymenoptera",
+          "C. Coleoptera",
+          "D. Lepidoptera"
         ],
-        "correctAnswer": "B. Pupa",
-        "hint": "Inside this stage, larval tissues are transformed into adult body structures.",
-        "workedSolution": "The pupa is the non-feeding, stationary stage enclosed within the hardened puparium where the transformation to an adult occurs.",
+        "correctAnswer": "A. Diptera",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Houseflies are two-winged true flies classified scientifically under the insect order Diptera.",
         "points": 1
       },
       {
-        "id": "B7_FLY_03",
+        "id": "B7_FLY_F03",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Why is the housefly termed a 'mechanical vector' of enteric diseases like cholera?",
-        "options": [
-          "A. The cholera pathogen must complete its sexual cycle inside the fly's blood",
-          "B. The fly bites people and injects venom directly into their veins",
-          "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
-          "D. The fly builds mechanical nests inside human intestines"
-        ],
-        "correctAnswer": "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
-        "hint": "Think about physical transport of pathogens without developmental multiplication.",
-        "workedSolution": "Houseflies act as mechanical vectors because they transport pathogens on their hairy legs, body, and through regurgitated digestive fluids without the pathogen needing to develop inside them.",
-        "points": 1
-      },
-      {
-        "id": "B7_FLY_F04",
-        "difficulty": "low",
-        "type": "objective",
-        "prompt": "How many developmental stages occur in complete metamorphosis?",
+        "prompt": "How many distinct stages are present in complete metamorphosis?",
         "options": [
           "A. Two",
           "B. Three",
@@ -14993,232 +17221,2360 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
           "D. Five"
         ],
         "correctAnswer": "C. Four",
-        "hint": "Count: Egg, Larva, Pupa, Adult.",
-        "workedSolution": "Complete metamorphosis consists of four distinct stages: egg, larva, pupa, and adult.",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Complete metamorphosis consists of four distinct developmental stages: egg, larva, pupa, and adult.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following outlines the correct sequence of stages in the life cycle of a housefly?",
+        "options": [
+          "A. Egg → Nymph → Adult",
+          "B. Egg → Larva → Pupa → Adult",
+          "C. Adult → Pupa → Larva → Egg",
+          "D. Egg → Pupa → Larva → Adult"
+        ],
+        "correctAnswer": "B. Egg → Larva → Pupa → Adult",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The developmental path follows egg, larva (maggot), pupa, and finally adult fly.",
         "points": 1
       },
       {
         "id": "B7_FLY_F05",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the common name for the larva of a housefly?",
+        "prompt": "What is the common name given to the larval stage of a housefly?",
         "options": [
           "A. Caterpillar",
           "B. Maggot",
-          "C. Grub",
-          "D. Tadpole"
+          "C. Nymph",
+          "D. Grub"
         ],
         "correctAnswer": "B. Maggot",
-        "hint": "It is a legless, pale worm-like creature.",
-        "workedSolution": "The legless larva that hatches from a housefly egg is called a maggot.",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The worm-like, legless larva that hatches from a housefly egg is commonly called a maggot.",
         "points": 1
       },
       {
         "id": "B7_FLY_F06",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following insects undergoes INCOMPLETE metamorphosis?",
+        "prompt": "Which of the following insects undergoes incomplete metamorphosis?",
         "options": [
           "A. Housefly",
           "B. Mosquito",
-          "C. Butterfly",
-          "D. Cockroach"
+          "C. Grasshopper",
+          "D. Butterfly"
         ],
-        "correctAnswer": "D. Cockroach",
-        "hint": "Its juvenile is called a nymph.",
-        "workedSolution": "Cockroaches undergo incomplete metamorphosis with only three stages: egg, nymph, and adult.",
+        "correctAnswer": "C. Grasshopper",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Grasshoppers develop via incomplete metamorphosis with three stages: egg, nymph, and adult.",
         "points": 1
       },
       {
         "id": "B7_FLY_F07",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Where does a female housefly prefer to lay her eggs?",
+        "prompt": "The young stage of an insect undergoing incomplete metamorphosis that resembles a miniature wingless adult is called a:",
         "options": [
-          "A. On clean drinking water",
-          "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
-          "C. On dry wooden furniture",
-          "D. In deep underground rock caves"
+          "A. Maggot",
+          "B. Nymph",
+          "C. Pupa",
+          "D. Caterpillar"
         ],
-        "correctAnswer": "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
-        "hint": "Maggots need decaying organic matter to feed on.",
-        "workedSolution": "Houseflies lay eggs in warm, moist, decomposing organic materials that provide food for emerging maggots.",
+        "correctAnswer": "B. Nymph",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "In incomplete metamorphosis, the hatched young is known as a nymph.",
         "points": 1
       },
       {
         "id": "B7_FLY_F08",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What type of mouthparts does an adult housefly possess?",
+        "prompt": "What type of mouthparts does an adult housefly have?",
         "options": [
-          "A. Biting and chewing mandibles",
-          "B. Piercing and sucking needle",
-          "C. Sponging and lapping proboscis",
+          "A. Biting and chewing",
+          "B. Piercing and sucking",
+          "C. Sponging and lapping",
           "D. Siphoning tube"
         ],
-        "correctAnswer": "C. Sponging and lapping proboscis",
-        "hint": "It laps up fluid meals.",
-        "workedSolution": "Adult houseflies have spongy, fleshy proboscis mouthparts adapted for lapping liquids.",
+        "correctAnswer": "C. Sponging and lapping",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Houseflies have a soft, fleshy proboscis adapted for sponging up dissolved liquid foods.",
         "points": 1
       },
       {
         "id": "B7_FLY_F09",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+        "prompt": "Where does a female housefly typically deposit her eggs?",
         "options": [
-          "A. Malaria",
-          "B. Cholera",
-          "C. Yellow fever",
-          "D. Sleeping sickness"
+          "A. Clean flowing river water",
+          "B. Moist, decaying organic waste and animal dung",
+          "C. Dry sandy soil",
+          "D. Fresh green tree leaves"
         ],
-        "correctAnswer": "B. Cholera",
-        "hint": "An acute diarrhoeal illness caused by food contamination.",
-        "workedSolution": "Cholera is caused by Vibrio cholerae bacteria mechanically transferred to food by houseflies.",
+        "correctAnswer": "B. Moist, decaying organic waste and animal dung",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Female houseflies lay eggs in warm, moist decaying organic matter, garbage, and manure.",
         "points": 1
       },
       {
         "id": "B7_FLY_F10",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "How does an adult housefly break down solid food like bread or yam?",
+        "prompt": "Approximately how long does it take for housefly eggs to hatch under warm tropical conditions?",
         "options": [
-          "A. It crushes the food with strong jaws",
-          "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
-          "C. It pierces the food and injects venom",
-          "D. It drags the food into water"
+          "A. 8 to 24 hours",
+          "B. 5 to 7 days",
+          "C. 2 to 3 weeks",
+          "D. 1 month"
         ],
-        "correctAnswer": "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
-        "hint": "External digestion via regurgitated vomit drops.",
-        "workedSolution": "Lacking chewing jaws, houseflies regurgitate saliva and gastric juice to dissolve solids into a liquid broth.",
+        "correctAnswer": "A. 8 to 24 hours",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Under favorable warmth and moisture, housefly eggs hatch into larvae within 8 to 24 hours (roughly 8 to 20 hours).",
         "points": 1
       },
       {
-        "id": "B7_FLY_M01",
-        "difficulty": "medium",
+        "id": "B7_FLY_F11",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the protective brown barrel-shaped capsule that houses the housefly pupa called?",
+        "prompt": "Which developmental stage of the housefly is non-feeding and stationary?",
+        "options": [
+          "A. Egg",
+          "B. Larva",
+          "C. Pupa",
+          "D. Adult"
+        ],
+        "correctAnswer": "C. Pupa",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The pupa is an inactive, non-feeding stage enclosed inside a protective barrel-shaped shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the hardened protective case enclosing the housefly pupa called?",
         "options": [
           "A. Cocoon",
           "B. Puparium",
           "C. Chrysalis",
-          "D. Ootheca"
+          "D. Shell"
         ],
         "correctAnswer": "B. Puparium",
-        "hint": "Formed from the hardened skin of the third instar larva.",
-        "workedSolution": "In true flies (Diptera), the pupa is enclosed within a hardened, barrel-shaped capsule termed the puparium.",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The pupa of a true fly is protected inside the hardened final larval skin termed a puparium.",
         "points": 1
       },
       {
-        "id": "B7_FLY_M02",
-        "difficulty": "medium",
+        "id": "B7_FLY_F13",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "Why is a Ventilated Improved Pit (VIP) latrine effective at controlling housefly populations?",
+        "prompt": "How many wings does an adult housefly possess?",
         "options": [
-          "A. It poisons flies with cyanide gas",
-          "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
-          "C. It operates without human waste",
-          "D. It freezes the waste into ice"
+          "A. One pair (2 wings)",
+          "B. Two pairs (4 wings)",
+          "C. Three pairs (6 wings)",
+          "D. No wings"
         ],
-        "correctAnswer": "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
-        "hint": "Flies fly toward the light at the top of the vent pipe and are trapped by the screen.",
-        "workedSolution": "Flies entering the dark pit fly toward the light at the top of the vent pipe, where a gauze mesh traps them until they desiccate and die.",
+        "correctAnswer": "A. One pair (2 wings)",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "As members of order Diptera, houseflies have a single pair of functional flight wings.",
         "points": 1
       },
       {
-        "id": "B7_FLY_M03",
-        "difficulty": "medium",
+        "id": "B7_FLY_F14",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "How do housefly maggots play an ecologically beneficial role in nature?",
+        "prompt": "What small balancing organs are found behind the wings of a housefly?",
         "options": [
-          "A. They sting harmful snakes",
-          "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
-          "C. They prevent soil erosion on steep slopes",
-          "D. They purify underground borehole water"
+          "A. Antennae",
+          "B. Halteres",
+          "C. Cerci",
+          "D. Spiracles"
         ],
-        "correctAnswer": "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
-        "hint": "Consider their role in nutrient recycling and decay.",
-        "workedSolution": "Maggots feed on decaying organic debris, accelerating decomposition and returning vital minerals to the soil.",
+        "correctAnswer": "B. Halteres",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "The hind wings are modified into tiny club-like structures called halteres that assist with flight balance.",
         "points": 1
       },
       {
-        "id": "B7_FLY_M04",
-        "difficulty": "medium",
+        "id": "B7_FLY_F15",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the biological difference between a nymph and a larva?",
+        "prompt": "How many dark longitudinal stripes run along the thorax of an adult housefly?",
         "options": [
-          "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
-          "B. A nymph has four wings, while a larva has six wings",
-          "C. A larva can reproduce sexually, whereas a nymph cannot",
-          "D. Nymphs only live in water"
+          "A. Two",
+          "B. Three",
+          "C. Four",
+          "D. Six"
         ],
-        "correctAnswer": "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
-        "hint": "Compare juvenile appearance to the mature parent.",
-        "workedSolution": "A nymph resembles a miniature wingless adult in incomplete metamorphosis, whereas a larva has distinct anatomy in complete metamorphosis.",
+        "correctAnswer": "C. Four",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Adult houseflies are recognized by four dark longitudinal stripes across their greyish thorax.",
         "points": 1
       },
       {
-        "id": "B7_FLY_M05",
-        "difficulty": "medium",
+        "id": "B7_FLY_F16",
+        "difficulty": "low",
         "type": "objective",
-        "prompt": "Which eye infection can be transmitted by houseflies landing on human faces to feed on eye secretions?",
+        "prompt": "What is the average lifespan of an adult housefly under normal conditions?",
         "options": [
-          "A. Astigmatism",
+          "A. 1 to 2 days",
+          "B. 15 to 30 days",
+          "C. 6 months",
+          "D. 1 year"
+        ],
+        "correctAnswer": "B. 15 to 30 days",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "An adult housefly typically survives for about 15 to 30 days.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+        "options": [
+          "A. Malaria",
+          "B. Cholera",
+          "C. Sleeping sickness",
+          "D. Yellow fever"
+        ],
+        "correctAnswer": "B. Cholera",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Cholera is an enteric bacterial infection transmitted mechanically by contaminated houseflies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is the housefly categorized as a 'mechanical vector'?",
+        "options": [
+          "A. Pathogens develop and multiply inside its salivary glands",
+          "B. It carries pathogens passively on its hairy legs, body, and mouthparts without the pathogen developing internally",
+          "C. It uses an engine to fly",
+          "D. It injects toxins through a stinger"
+        ],
+        "correctAnswer": "B. It carries pathogens passively on its hairy legs, body, and mouthparts without the pathogen developing internally",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Mechanical vectors transfer pathogens physically from filthy substrates to food without internal biological development.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the process of shedding an old skin or cuticle during insect growth called?",
+        "options": [
+          "A. Metamorphosis",
+          "B. Moulting (Ecdysis)",
+          "C. Fermentation",
+          "D. Respiration"
+        ],
+        "correctAnswer": "B. Moulting (Ecdysis)",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Moulting is the periodic shedding of the rigid exoskeleton allowing the insect body to expand.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many substages (instars) does the housefly maggot pass through before pupating?",
+        "options": [
+          "A. Two",
+          "B. Three",
+          "C. Five",
+          "D. Six"
+        ],
+        "correctAnswer": "B. Three",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Housefly larvae grow through three distinct larval stages or instars.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following eye infections can be carried to humans by houseflies?",
+        "options": [
+          "A. Cataract",
           "B. Trachoma",
           "C. Glaucoma",
-          "D. Cataract"
+          "D. Astigmatism"
         ],
         "correctAnswer": "B. Trachoma",
-        "hint": "Caused by Chlamydia trachomatis, leading to preventable blindness.",
-        "workedSolution": "Trachoma and epidemic conjunctivitis are transmitted when flies transfer bacteria from infected ocular discharges.",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Trachoma is an infectious bacterial eye disease spread when flies land near the eyes.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what form do houseflies consume solid human food?",
+        "options": [
+          "A. They chew it into pieces with jaws",
+          "B. They dissolve it into a liquid slush using regurgitated saliva and digestive fluid before sponging it up",
+          "C. They swallow food whole",
+          "D. They tear food with claws"
+        ],
+        "correctAnswer": "B. They dissolve it into a liquid slush using regurgitated saliva and digestive fluid before sponging it up",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Lacking chewing jaws, houseflies vomit digestive saliva onto food to liquefy it before suction.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which stage in the housefly life cycle is mobile but completely wingless and legless?",
+        "options": [
+          "A. Adult",
+          "B. Larva (Maggot)",
+          "C. Pupa",
+          "D. Imago"
+        ],
+        "correctAnswer": "B. Larva (Maggot)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The maggot is a legless, cylindrical larva that moves by muscular contractions of its segments.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an effective method for controlling houseflies at home?",
+        "options": [
+          "A. Leaving cooked food uncovered on kitchen tables",
+          "B. Keeping dustbins tightly covered and disposing of refuse properly",
+          "C. Dumping animal manure next to bedrooms",
+          "D. Allowing wastewater to pool near the kitchen"
+        ],
+        "correctAnswer": "B. Keeping dustbins tightly covered and disposing of refuse properly",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Covering refuse containers eliminates the primary breeding and feeding sites for adult flies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following insects also develops via complete metamorphosis like the housefly?",
+        "options": [
+          "A. Cockroach",
+          "B. Butterfly",
+          "C. Termite",
+          "D. Cricket"
+        ],
+        "correctAnswer": "B. Butterfly",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Butterflies exhibit complete metamorphosis (egg, caterpillar/larva, chrysalis/pupa, and adult).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What color are the compound eyes of a common adult housefly?",
+        "options": [
+          "A. Bright green",
+          "B. Reddish-brown",
+          "C. Pure white",
+          "D. Yellow"
+        ],
+        "correctAnswer": "B. Reddish-brown",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Adult houseflies have large reddish-brown compound eyes that provide a wide visual field.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the approximate size of a fully grown, mature third-instar housefly maggot?",
+        "options": [
+          "A. 1 mm to 2 mm",
+          "B. 5 mm",
+          "C. 15 mm to 20 mm",
+          "D. 50 mm"
+        ],
+        "correctAnswer": "C. 15 mm to 20 mm",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "By the third instar stage, maggots reach a full length of about 15 mm to 20 mm.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following gastrointestinal illnesses is spread by houseflies?",
+        "options": [
+          "A. Typhoid fever",
+          "B. Influenza",
+          "C. Measles",
+          "D. Tetanus"
+        ],
+        "correctAnswer": "A. Typhoid fever",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Typhoid fever is an enteric bacterial infection commonly transmitted when flies contaminate food or water.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do maggots benefit natural ecosystems out in the wild?",
+        "options": [
+          "A. They help decompose dead animal carcasses and organic waste",
+          "B. They build soil mounds",
+          "C. They produce honey",
+          "D. They suck plant sap"
+        ],
+        "correctAnswer": "A. They help decompose dead animal carcasses and organic waste",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Maggots break down organic matter and decaying tissue, aiding nutrient recycling.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an adult insect that has emerged from its puparium called?",
+        "options": [
+          "A. Nymph",
+          "B. Imago (Adult)",
+          "C. Maggot",
+          "D. Instar"
+        ],
+        "correctAnswer": "B. Imago (Adult)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The fully formed, sexually mature adult stage of an insect is also referred to as the imago.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following insect groups is characterized by complete metamorphosis?",
+        "options": [
+          "A. Termites",
+          "B. Beetles",
+          "C. Dragonflies",
+          "D. Mantises"
+        ],
+        "correctAnswer": "B. Beetles",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Beetles (Coleoptera) develop via complete metamorphosis (egg, grub/larva, pupa, adult).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many eggs can a single female housefly lay in batches over its reproductive life?",
+        "options": [
+          "A. 1 to 5 eggs",
+          "B. 20 eggs",
+          "C. Hundreds (up to 500 or more in batches)",
+          "D. Exactly 10 eggs"
+        ],
+        "correctAnswer": "C. Hundreds (up to 500 or more in batches)",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "A female housefly can lay batches of 100 to 150 eggs, totaling hundreds of eggs across its lifespan.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What type of skin infection can be transferred when houseflies contact open sores?",
+        "options": [
+          "A. Ringworm",
+          "B. Yaws",
+          "C. Scabies",
+          "D. Eczema"
+        ],
+        "correctAnswer": "B. Yaws",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Yaws is a bacterial skin infection that can be spread by flies feeding on exudates from open ulcers.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to the pupa's outer shell as it ages toward emergence?",
+        "options": [
+          "A. It becomes transparent and soft",
+          "B. It hardens and changes from yellow-brown to dark brown or black",
+          "C. It dissolves in water",
+          "D. It turns green"
+        ],
+        "correctAnswer": "B. It hardens and changes from yellow-brown to dark brown or black",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The puparium hardens and darkens progressively into a deep brown or black protective shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which physical barrier prevents houseflies from entering residential kitchens?",
+        "options": [
+          "A. Wire mesh netting on windows",
+          "B. Leaving windows wide open",
+          "C. Painting walls white",
+          "D. Keeping lights off"
+        ],
+        "correctAnswer": "A. Wire mesh netting on windows",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Fine wire or plastic mesh screens block the entry of flying insects while allowing ventilation.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What do housefly maggots feed on most aggressively?",
+        "options": [
+          "A. Fresh green leaves",
+          "B. Decomposing organic matter and filth",
+          "C. Clean tap water",
+          "D. Tree bark"
+        ],
+        "correctAnswer": "B. Decomposing organic matter and filth",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Maggots feed on liquefying, decaying organic substrates and decomposing waste.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following insects develops by incomplete metamorphosis?",
+        "options": [
+          "A. Housefly",
+          "B. Honeybee",
+          "C. Cockroach",
+          "D. House mosquito"
+        ],
+        "correctAnswer": "C. Cockroach",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Cockroaches pass through three stages: egg, nymph, and adult (incomplete metamorphosis).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long does the pupal stage of a housefly typically last in warm climates?",
+        "options": [
+          "A. 8 hours",
+          "B. 4 to 6 days",
+          "C. 3 months",
+          "D. 1 year"
+        ],
+        "correctAnswer": "B. 4 to 6 days",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The transformation inside the puparium typically takes 4 to 6 days in warm weather.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which symptom is associated with food poisoning caused by fly-contaminated food?",
+        "options": [
+          "A. Vomiting and watery diarrhea",
+          "B. Fractured bone",
+          "C. Improved digestion",
+          "D. Hair loss"
+        ],
+        "correctAnswer": "A. Vomiting and watery diarrhea",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Food poisoning typically presents with nausea, vomiting, abdominal cramps, and diarrhea.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of adult houseflies in the natural food chain?",
+        "options": [
+          "A. Apex predators that hunt large animals",
+          "B. A food source for insectivorous birds, lizards, spiders, and frogs",
+          "C. Primary producers of carbohydrates",
+          "D. Decomposers of pure metals"
+        ],
+        "correctAnswer": "B. A food source for insectivorous birds, lizards, spiders, and frogs",
+        "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+        "workedSolution": "Adult flies and larvae are prey for various birds, amphibians, reptiles, and arachnids.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where does the third-instar maggot move when it is ready to pupate?",
+        "options": [
+          "A. Deep inside boiling water",
+          "B. A cooler, drier, and sheltered location away from excess moisture",
+          "C. The top of tall green trees",
+          "D. Inside human blood"
+        ],
+        "correctAnswer": "B. A cooler, drier, and sheltered location away from excess moisture",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Fully developed larvae leave moist feeding areas to seek drier, cooler soil or crevices to pupate.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an enteric infection spread by flies?",
+        "options": [
+          "A. Dysentery",
+          "B. Tuberculosis",
+          "C. Measles",
+          "D. Polio"
+        ],
+        "correctAnswer": "A. Dysentery",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Amoebic and bacillary dysentery are intestinal infections spread by contaminated flies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What structure covers the drophole of an improved pit latrine to keep flies out?",
+        "options": [
+          "A. An open grille",
+          "B. A tight-fitting lid",
+          "C. A wet cloth",
+          "D. A heap of sand"
+        ],
+        "correctAnswer": "B. A tight-fitting lid",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Tight-fitting drop-hole lids prevent flies from accessing pit feces for breeding and feeding.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following pairs of insects both undergo incomplete metamorphosis?",
+        "options": [
+          "A. Housefly and Mosquito",
+          "B. Dragonfly and Termite",
+          "C. Butterfly and Moth",
+          "D. Honeybee and Wasp"
+        ],
+        "correctAnswer": "B. Dragonfly and Termite",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Dragonflies and termites both develop through egg, nymph, and adult stages.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do houseflies rub their front legs together when resting?",
+        "options": [
+          "A. To sharpen their claws",
+          "B. To clean debris, dirt, and pathogens off their sensory hairs and footpads",
+          "C. To generate flight heat",
+          "D. To produce mating sounds"
+        ],
+        "correctAnswer": "B. To clean debris, dirt, and pathogens off their sensory hairs and footpads",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Flies clean their sensory receptors and sticky footpads (pulvilli) by grooming with their legs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which insect stage is enclosed in a chrysalis or cocoon during complete metamorphosis?",
+        "options": [
+          "A. Egg",
+          "B. Nymph",
+          "C. Pupa",
+          "D. Adult"
+        ],
+        "correctAnswer": "C. Pupa",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The pupal stage is often enclosed in a chrysalis, cocoon, or puparium.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why are houseflies useful in genetic and biological research?",
+        "options": [
+          "A. They live for 100 years",
+          "B. They have a short life cycle and are easy to breed in large numbers in laboratories",
+          "C. They are very large animals",
+          "D. They do not possess DNA"
+        ],
+        "correctAnswer": "B. They have a short life cycle and are easy to breed in large numbers in laboratories",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Their rapid reproduction and short life cycle make them practical subjects for lab genetics.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following practices promotes housefly breeding around homes?",
+        "options": [
+          "A. Promptly burying or burning animal waste",
+          "B. Allowing garbage and rotten food to pile up uncovered",
+          "C. Using fly screens on windows",
+          "D. Spraying approved insecticides"
+        ],
+        "correctAnswer": "B. Allowing garbage and rotten food to pile up uncovered",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Exposed garbage and decaying matter provide prime breeding grounds for houseflies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What ecological service do adult houseflies provide when visiting flowers?",
+        "options": [
+          "A. Decomposition",
+          "B. Incidental pollination",
+          "C. Seed storage",
+          "D. Soil aeration"
+        ],
+        "correctAnswer": "B. Incidental pollination",
+        "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+        "workedSolution": "Flies feeding on nectar transfer pollen grains between flowers, aiding in minor pollination.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary physical characteristic of a newly laid housefly egg?",
+        "options": [
+          "A. Round and black",
+          "B. Elongated, creamy-white, and cylindrical",
+          "C. Large, green, and hairy",
+          "D. Flat and brown"
+        ],
+        "correctAnswer": "B. Elongated, creamy-white, and cylindrical",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Housefly eggs are small, elongated, creamy-white cylinders deposited in clusters.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I01",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the housefly classified as an insect with complete metamorphosis rather than incomplete metamorphosis?",
+        "options": [
+          "A. Its larva hatches with wings and compound eyes",
+          "B. It passes through four distinct stages (egg, larva, pupa, adult), with the larva looking completely different from the adult",
+          "C. It reproduces without laying eggs",
+          "D. It only lives in water"
+        ],
+        "correctAnswer": "B. It passes through four distinct stages (egg, larva, pupa, adult), with the larva looking completely different from the adult",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Complete metamorphosis requires four distinct phases where the larval form differs fundamentally from the adult.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the feeding behavior of an adult housefly lead to food contamination?",
+        "options": [
+          "A. It punctures food with a sharp needle-like beak and injects venom",
+          "B. It deposits digestive vomit and feces onto the food to dissolve solids before sponging",
+          "C. It lays thousands of adult flies into the food",
+          "D. It uses its wings to break food apart"
+        ],
+        "correctAnswer": "B. It deposits digestive vomit and feces onto the food to dissolve solids before sponging",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Flies vomit enzymatic saliva and frequently defecate while feeding, contaminating food with pathogens.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are houseflies more dangerous as disease vectors than crickets or dragonflies?",
+        "options": [
+          "A. Houseflies are larger in size",
+          "B. Houseflies feed on both decaying filth/excreta and human food, moving between them with hairy, pathogen-carrying bodies",
+          "C. Houseflies have poisonous stingers",
+          "D. Dragonflies cannot fly"
+        ],
+        "correctAnswer": "B. Houseflies feed on both decaying filth/excreta and human food, moving between them with hairy, pathogen-carrying bodies",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Houseflies frequent human waste, manure, and exposed human food, carrying pathogens on their bodies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What morphological adaptation on the legs of a housefly allows it to pick up and transfer millions of bacteria?",
+        "options": [
+          "A. Smooth metallic skin",
+          "B. Numerous sticky hairs, bristles, and adhesive footpads (pulvilli)",
+          "C. Sharp piercing stingers",
+          "D. Claws that dig burrows"
+        ],
+        "correctAnswer": "B. Numerous sticky hairs, bristles, and adhesive footpads (pulvilli)",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Sticky footpads and setae easily gather bacteria and debris from unhygienic surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the nymph of a cockroach differ primarily from the maggot of a housefly?",
+        "options": [
+          "A. The cockroach nymph resembles a miniature adult with legs; the maggot is a legless, cylindrical worm",
+          "B. The nymph has full functional wings upon hatching",
+          "C. The maggot has compound eyes and six legs",
+          "D. The cockroach nymph stays inside an egg for five years"
+        ],
+        "correctAnswer": "A. The cockroach nymph resembles a miniature adult with legs; the maggot is a legless, cylindrical worm",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Nymphs look like wingless miniature adults, whereas housefly maggots are worm-like and legless.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following represents an environmental control method that targets the larval stage of houseflies?",
+        "options": [
+          "A. Hanging sticky fly tapes from kitchen ceilings",
+          "B. Turning compost heaps regularly so internal microbial heat kills developing maggots",
+          "C. Using fly swatters to hit flying adults",
+          "D. Installing bright light bulbs"
+        ],
+        "correctAnswer": "B. Turning compost heaps regularly so internal microbial heat kills developing maggots",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Turning organic compost generates internal fermentation heat that destroys maggots and eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a housefly maggot undergo three separate instar stages?",
+        "options": [
+          "A. To change its color from green to red",
+          "B. Because its rigid exoskeleton cannot stretch indefinitely, requiring moulting to accommodate body growth",
+          "C. To develop wings before pupating",
+          "D. To find a mate as a maggot"
+        ],
+        "correctAnswer": "B. Because its rigid exoskeleton cannot stretch indefinitely, requiring moulting to accommodate body growth",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Insects shed their cuticles (moulting) periodically to allow tissue growth across instars.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What occurs biologically inside the puparium during the pupal stage of a housefly?",
+        "options": [
+          "A. The insect feeds heavily on leaves",
+          "B. Complete histolysis and tissue remodeling transform the larval body into an adult with wings and compound eyes",
+          "C. The pupa lays eggs",
+          "D. The maggot grows larger"
+        ],
+        "correctAnswer": "B. Complete histolysis and tissue remodeling transform the larval body into an adult with wings and compound eyes",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The pupal stage involves major tissue reorganization into adult anatomical structures.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following conditions accelerates the rate of development of housefly eggs and larvae?",
+        "options": [
+          "A. Extreme cold and dry conditions",
+          "B. High environmental warmth, moisture, and abundant decaying organic matter",
+          "C. Direct exposure to bright sunlight in clean water",
+          "D. Salty ocean currents"
+        ],
+        "correctAnswer": "B. High environmental warmth, moisture, and abundant decaying organic matter",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Warmth and high moisture accelerate microbial decay and shorten insect development times.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does a Ventilated Improved Pit (VIP) latrine prevent the spread of houseflies?",
+        "options": [
+          "A. It produces poisonous smoke",
+          "B. A vent pipe fitted with a fly-screen traps emerging flies attracted to the light, preventing them from escaping",
+          "C. It uses electricity to kill flies",
+          "D. It converts feces into stone instantly"
+        ],
+        "correctAnswer": "B. A vent pipe fitted with a fly-screen traps emerging flies attracted to the light, preventing them from escaping",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "VIP latrines use an odor-clearing vent pipe with a mesh screen to trap flies attempting to exit toward light.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following statements about the mouthparts of houseflies versus mosquitoes is accurate?",
+        "options": [
+          "A. Both have chewing mandibles",
+          "B. Houseflies have sponging mouthparts for fluids, while female mosquitoes have piercing-sucking stylets to draw blood",
+          "C. Mosquitoes have sponging mouthparts; houseflies have piercing needles",
+          "D. Houseflies have teeth like mammals"
+        ],
+        "correctAnswer": "B. Houseflies have sponging mouthparts for fluids, while female mosquitoes have piercing-sucking stylets to draw blood",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Houseflies have non-piercing sponging proboscises, while female mosquitoes have piercing-sucking mouthparts.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What ecological role is played by housefly maggots in agriculture and wildlife?",
+        "options": [
+          "A. They destroy plant roots",
+          "B. They accelerate the decomposition of manure and animal carcasses, returning minerals to the soil",
+          "C. They pollinate cocoa flowers",
+          "D. They kill harmful snakes"
+        ],
+        "correctAnswer": "B. They accelerate the decomposition of manure and animal carcasses, returning minerals to the soil",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Maggots break down organic matter, recycling essential nutrients into the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do adult houseflies defecate frequently while feeding?",
+        "options": [
+          "A. They have very fast metabolisms and short digestive tracts that process fluid meals rapidly",
+          "B. To scare away predators",
+          "C. Defecation produces flight energy",
+          "D. To keep their wings clean"
+        ],
+        "correctAnswer": "A. They have very fast metabolisms and short digestive tracts that process fluid meals rapidly",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Fluid intake triggers rapid digestive processing and frequent excretion during feeding.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An outbreak of amoebic dysentery in a boarding school was traced to uncovered dining food. Which vector was most likely responsible?",
+        "options": [
+          "A. Tsetse fly",
+          "B. Honeybee",
+          "C. Housefly",
+          "D. Butterfly"
+        ],
+        "correctAnswer": "C. Housefly",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Houseflies carry amoebic cysts and bacteria on their bodies from latrines onto exposed food.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does prompt disposal of household refuse disrupt the life cycle of the housefly?",
+        "options": [
+          "A. It breaks the cycle by removing the moist breeding sites required for egg-laying and larval feeding",
+          "B. It prevents adult flies from flying",
+          "C. It turns maggots into pupae immediately",
+          "D. It poisons the air"
+        ],
+        "correctAnswer": "A. It breaks the cycle by removing the moist breeding sites required for egg-laying and larval feeding",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Removing organic refuse denies females suitable egg-laying sites and deprives larvae of food.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following insect orders includes butterflies and moths that also undergo complete metamorphosis?",
+        "options": [
+          "A. Diptera",
+          "B. Lepidoptera",
+          "C. Odonata",
+          "D. Orthoptera"
+        ],
+        "correctAnswer": "B. Lepidoptera",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Butterflies and moths belong to Lepidoptera, undergoing four-stage complete metamorphosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a third-instar maggot migrate away from moist, decaying food before transforming into a pupa?",
+        "options": [
+          "A. To find more food to eat",
+          "B. Excess moisture can rot or drown the pupa; it requires a drier, firmer spot for safe metamorphosis",
+          "C. To learn how to fly",
+          "D. To search for sunlight"
+        ],
+        "correctAnswer": "B. Excess moisture can rot or drown the pupa; it requires a drier, firmer spot for safe metamorphosis",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Excessive moisture can cause fungal decay or drown pupating insects, so they seek drier micro-environments.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following actions constitutes an effective biological control method for houseflies?",
+        "options": [
+          "A. Introducing natural predators like parasitic wasps that attack fly pupae, or keeping poultry that eat maggots",
+          "B. Spraying heavy engine oil on dining tables",
+          "C. Burning garbage near residential windows",
+          "D. Boiling all drinking water"
+        ],
+        "correctAnswer": "A. Introducing natural predators like parasitic wasps that attack fly pupae, or keeping poultry that eat maggots",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Biological control uses natural predators or parasites (such as chickens or parasitic wasps) to suppress fly populations.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger of using chemical insecticide sprays continuously against houseflies?",
+        "options": [
+          "A. Flies become completely immune to all gravity",
+          "B. Flies can develop genetic resistance over generations, rendering the chemical sprays ineffective",
+          "C. Insecticides make flies grow larger",
+          "D. Sprays freeze the house"
+        ],
+        "correctAnswer": "B. Flies can develop genetic resistance over generations, rendering the chemical sprays ineffective",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Overusing chemical sprays can select for insecticide-resistant fly strains over time.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do houseflies lack a nymph stage in their life history?",
+        "options": [
+          "A. They are holometabolous insects that have a larval stage instead of a nymph stage",
+          "B. Nymphs only live in polar ice",
+          "C. They are not insects",
+          "D. Housefly eggs hatch directly into adults"
+        ],
+        "correctAnswer": "A. They are holometabolous insects that have a larval stage instead of a nymph stage",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Holometabolous insects develop through egg, larva, and pupa rather than a nymph stage.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following pairs of diseases are both mechanical fly-borne enteric infections?",
+        "options": [
+          "A. Cholera and Typhoid fever",
+          "B. Malaria and Yellow fever",
+          "C. Tetanus and Rabies",
+          "D. Measles and Chickenpox"
+        ],
+        "correctAnswer": "A. Cholera and Typhoid fever",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Cholera and typhoid are bacterial enteric infections spread mechanically by contaminated houseflies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What structural feature allows a fly to land and walk upside down on ceilings?",
+        "options": [
+          "A. Sharp teeth on its head",
+          "B. Adhesive footpads (pulvilli) that secrete sticky fluids combined with microscopic claws",
+          "C. Magnetic wings",
+          "D. Suction mouthparts"
+        ],
+        "correctAnswer": "B. Adhesive footpads (pulvilli) that secrete sticky fluids combined with microscopic claws",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Pulvilli use glandular secretions and microscopic setae to adhere to smooth and inverted surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role do halteres play during the flight of a housefly?",
+        "options": [
+          "A. They flap to create lift",
+          "B. They act as gyroscopic balancing organs to detect body rotations and stabilize flight",
+          "C. They make buzzing sounds to scare birds",
+          "D. They pump blood to the wings"
+        ],
+        "correctAnswer": "B. They act as gyroscopic balancing organs to detect body rotations and stabilize flight",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Halteres oscillate during flight, functioning as gyroscopes that provide balance control.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does covering food with a wire mesh cover prevent disease transmission?",
+        "options": [
+          "A. It cooks the food with infrared waves",
+          "B. It establishes a physical barrier that prevents flies from landing on the food and depositing pathogens",
+          "C. It attracts flies into the food",
+          "D. It removes bacteria chemically"
+        ],
+        "correctAnswer": "B. It establishes a physical barrier that prevents flies from landing on the food and depositing pathogens",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Mesh covers create a physical barrier preventing fly contact and contamination.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do maggots have mouth hooks instead of flat molars?",
+        "options": [
+          "A. To tear and scrape soft, decaying organic tissue and feed on fluids",
+          "B. To catch flying insects",
+          "C. To chew hard wood",
+          "D. To bite humans"
+        ],
+        "correctAnswer": "A. To tear and scrape soft, decaying organic tissue and feed on fluids",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Mouth hooks allow maggots to tear into decomposing substrate to feed on organic liquids.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens if a housefly lands on an open wound on human skin?",
+        "options": [
+          "A. It heals the wound immediately",
+          "B. It may deposit pathogenic bacteria from filth, causing secondary skin infections like yaws",
+          "C. It removes scar tissue",
+          "D. It lays eggs that turn into bees"
+        ],
+        "correctAnswer": "B. It may deposit pathogenic bacteria from filth, causing secondary skin infections like yaws",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Flies feeding on wound exudates can inoculate lesions with pathogenic bacteria.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In what environment is housefly egg-laying completely inhibited?",
+        "options": [
+          "A. Warm compost",
+          "B. Clean, dry, and cold environments without decaying organic matter",
+          "C. Moist cow dung",
+          "D. Decomposing fish"
+        ],
+        "correctAnswer": "B. Clean, dry, and cold environments without decaying organic matter",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Without moisture, warmth, and decaying organic matter, flies cannot oviposit viable eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the puparium of a housefly?",
+        "options": [
+          "A. A soft white skin that allows swimming",
+          "B. A rigid, barrel-shaped casing formed from the hardened cuticle of the last larval instar",
+          "C. A leaf-like structure",
+          "D. A silk thread spun like spider webs"
+        ],
+        "correctAnswer": "B. A rigid, barrel-shaped casing formed from the hardened cuticle of the last larval instar",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The puparium is formed when the third-instar cuticle contracts and hardens.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following methods of waste management most effectively reduces fly populations in urban areas?",
+        "options": [
+          "A. Open dumping along riverbanks",
+          "B. Timely collection, burial, or incineration of municipal solid waste",
+          "C. Storing waste in open paper boxes",
+          "D. Washing waste into gutters"
+        ],
+        "correctAnswer": "B. Timely collection, burial, or incineration of municipal solid waste",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Proper waste containment and timely disposal prevent fly access and larval development.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is personal hygiene, such as washing hands with soap after defecation, important in breaking the fly transmission cycle?",
+        "options": [
+          "A. Soap attracts flies away from food",
+          "B. It removes trace fecal matter and pathogens that flies might otherwise transfer to food or other people",
+          "C. It changes skin color",
+          "D. It makes the hands completely waterproof"
+        ],
+        "correctAnswer": "B. It removes trace fecal matter and pathogens that flies might otherwise transfer to food or other people",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Washing hands removes fecal contaminants, stopping human-to-human and surface-to-food pathogen spread.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main function of the large compound eyes of the housefly?",
+        "options": [
+          "A. To focus sharply on distant stars",
+          "B. To provide a wide field of view and detect fast-moving predators or disturbances",
+          "C. To produce light at night",
+          "D. To smell rotting food"
+        ],
+        "correctAnswer": "B. To provide a wide field of view and detect fast-moving predators or disturbances",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Compound eyes provide near-360-degree vision and sensitive motion detection.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are houseflies absent or inactive in cold temperate winters?",
+        "options": [
+          "A. They fly to the moon",
+          "B. As cold-blooded ectotherms, low temperatures slow their metabolic rates and arrest larval development",
+          "C. They turn into butterflies",
+          "D. They drown in snow"
+        ],
+        "correctAnswer": "B. As cold-blooded ectotherms, low temperatures slow their metabolic rates and arrest larval development",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Insect metabolic rates depend on ambient warmth; cold weather slows or pauses their development.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which part of the housefly's life cycle is the most mobile and poses the greatest direct threat of spreading disease to food?",
+        "options": [
+          "A. Egg",
+          "B. Maggot",
+          "C. Pupa",
+          "D. Adult fly"
+        ],
+        "correctAnswer": "D. Adult fly",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Adult flies fly between contaminated waste and human food, making them the primary transmission stage.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do fly swatters and electric insect traps control houseflies?",
+        "options": [
+          "A. By destroying the fly's eggs",
+          "B. By physically killing adult flies to reduce the breeding population",
+          "C. By repelling flies with sweet smells",
+          "D. By poisoning clean drinking water"
+        ],
+        "correctAnswer": "B. By physically killing adult flies to reduce the breeding population",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Swatters and electrocutors target and kill adult flies, lowering their numbers.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What type of vision do houseflies possess?",
+        "options": [
+          "A. Binocular vision like humans",
+          "B. Compound vision composed of thousands of ommatidia",
+          "C. Blind vision",
+          "D. Single-lens camera vision"
+        ],
+        "correctAnswer": "B. Compound vision composed of thousands of ommatidia",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Housefly eyes are compound structures made of thousands of individual photoreceptive units (ommatidia).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is regular clearing of domestic animal pens effective in reducing fly infestations?",
+        "options": [
+          "A. Animals eat less when pens are cleaned",
+          "B. It removes accumulating manure and dung, which are preferred media for fly oviposition and larval feeding",
+          "C. Cleaning pens makes flies lose their wings",
+          "D. Flies only live on clean animals"
+        ],
+        "correctAnswer": "B. It removes accumulating manure and dung, which are preferred media for fly oviposition and larval feeding",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Removing manure deprives female flies of their primary breeding sites.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the larva of a housefly breathe underground in moist rotting organic matter?",
+        "options": [
+          "A. Through lungs like humans",
+          "B. Through posterior spiracles (breathing pores) located at the rear of its body",
+          "C. Through its mouth hooks",
+          "D. It does not need oxygen"
+        ],
+        "correctAnswer": "B. Through posterior spiracles (breathing pores) located at the rear of its body",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Spiracles at the rear of the maggot take in air even while its head is buried feeding in waste.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens if food contaminated with fly vomit containing Salmonella is consumed by a person?",
+        "options": [
+          "A. The person experiences food poisoning, fever, and intestinal cramps",
+          "B. The person grows wings",
+          "C. The person gains immediate immunity to all diseases",
+          "D. Nothing happens"
+        ],
+        "correctAnswer": "A. The person experiences food poisoning, fever, and intestinal cramps",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Salmonella causes food poisoning, leading to fever, vomiting, and diarrhea.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the texture of housefly eggs?",
+        "options": [
+          "A. Covered with a sticky secretion that glues them together in clusters",
+          "B. Hard as stone",
+          "C. Wrapped in silk threads",
+          "D. Floating like dry cork"
+        ],
+        "correctAnswer": "A. Covered with a sticky secretion that glues them together in clusters",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "A sticky maternal secretion glues housefly eggs together into moist clusters.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should pit latrines be constructed far from domestic water boreholes?",
+        "options": [
+          "A. To make latrines easier to find",
+          "B. To prevent underground seepage of fecal microbes and stop flies from transferring pathogens to drinking water sources",
+          "C. Because water attracts flies away from feces",
+          "D. To keep latrines warm"
+        ],
+        "correctAnswer": "B. To prevent underground seepage of fecal microbes and stop flies from transferring pathogens to drinking water sources",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Separation prevents microbial contamination of drinking water by leaching and insect activity.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do adult houseflies locate decomposing food from a distance?",
+        "options": [
+          "A. By hearing sounds",
+          "B. Using sensitive chemoreceptors located on their antennae and mouthparts to detect volatile organic odors",
+          "C. By checking maps",
+          "D. Through magnetic waves"
+        ],
+        "correctAnswer": "B. Using sensitive chemoreceptors located on their antennae and mouthparts to detect volatile organic odors",
+        "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+        "workedSolution": "Chemoreceptors on their antennae and mouthparts detect the airborne scents of decay.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an adult insect that lives only on liquid food?",
+        "options": [
+          "A. Grasshopper",
+          "B. Adult housefly",
+          "C. Termite worker",
+          "D. Praying mantis"
+        ],
+        "correctAnswer": "B. Adult housefly",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Because of its sponging proboscis, the adult housefly can only ingest liquids or liquefied solids.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the use of sticky fly-paper (sticky ribbons) considered an environmentally safe control method?",
+        "options": [
+          "A. It does not release toxic chemical fumes into living areas or food spaces",
+          "B. It smells like perfume",
+          "C. It feeds the flies",
+          "D. It dissolves refuse"
+        ],
+        "correctAnswer": "A. It does not release toxic chemical fumes into living areas or food spaces",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Sticky fly-papers trap insects mechanically without using airborne pesticides.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting the survival of housefly eggs in hot, dry weather?",
+        "options": [
+          "A. Desiccation (drying out)",
+          "B. Excessive air movement",
+          "C. Lack of flight wings",
+          "D. Too much oxygen"
+        ],
+        "correctAnswer": "A. Desiccation (drying out)",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Housefly eggs have thin shells and dry out quickly if deprived of moisture.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which insect stage is responsible for the rapid consumption of organic matter in a compost heap?",
+        "options": [
+          "A. Adult fly",
+          "B. Maggot (Larva)",
+          "C. Pupa",
+          "D. Egg"
+        ],
+        "correctAnswer": "B. Maggot (Larva)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The maggot feeds heavily and rapidly breaks down organic matter.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do houseflies thrive in slaughterhouses and fish markets?",
+        "options": [
+          "A. Because slaughterhouses are quiet",
+          "B. Abundant offal, animal blood, and moist rotting scraps provide ideal feeding and breeding grounds",
+          "C. Flies prefer clean concrete floors",
+          "D. They like cold water"
+        ],
+        "correctAnswer": "B. Abundant offal, animal blood, and moist rotting scraps provide ideal feeding and breeding grounds",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Abundant blood, offal, and organic waste provide suitable sites for fly feeding and egg-laying.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological difference between a biological vector and a mechanical vector?",
+        "options": [
+          "A. A biological vector hosts essential developmental stages of the pathogen; a mechanical vector transfers pathogens passively on its body",
+          "B. Biological vectors are plants; mechanical vectors are animals",
+          "C. Mechanical vectors bite, whereas biological vectors do not",
+          "D. Biological vectors only live in water"
+        ],
+        "correctAnswer": "A. A biological vector hosts essential developmental stages of the pathogen; a mechanical vector transfers pathogens passively on its body",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Biological vectors host pathogen life cycles; mechanical vectors simply transfer pathogens on their exterior.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following insect behaviors makes the housefly an effective vector for conjunctivitis?",
+        "options": [
+          "A. Laying eggs in water",
+          "B. Landing near eyes to sponge up lacrimal secretions (tears), transferring bacteria directly to the conjunctiva",
+          "C. Chewing eyelashes",
+          "D. Flying in circles"
+        ],
+        "correctAnswer": "B. Landing near eyes to sponge up lacrimal secretions (tears), transferring bacteria directly to the conjunctiva",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Flies landing to feed on eye secretions can deposit bacteria that cause conjunctivitis and trachoma.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is proper burial of dead animals considered a sanitation measure against houseflies?",
+        "options": [
+          "A. It prevents adult flies from accessing carcasses to feed and lay thousands of eggs",
+          "B. It cools the earth",
+          "C. It improves fly flight",
+          "D. Dead animals produce honey"
+        ],
+        "correctAnswer": "A. It prevents adult flies from accessing carcasses to feed and lay thousands of eggs",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Burying carcasses denies female flies the organic substrate required for larval development.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the structural role of the chitinous exoskeleton during the adult stage of a housefly?",
+        "options": [
+          "A. To help the fly digest wood",
+          "B. To provide structural support, prevent water loss, and anchor flight muscles",
+          "C. To trap sunlight for photosynthesis",
+          "D. To produce eggs"
+        ],
+        "correctAnswer": "B. To provide structural support, prevent water loss, and anchor flight muscles",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The chitinous exoskeleton provides structural support, prevents desiccation, and anchors muscles.",
         "points": 1
       },
       {
         "id": "B7_FLY_A01",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Contrast the disease transmission mode of the female Anopheles mosquito with that of the common housefly:",
+        "prompt": "Under a microscope, an investigator observes that a single housefly carries over 1 million bacteria on its legs and body hairs. Which anatomical adaptation explains this high pathogen capacity?",
         "options": [
-          "A. Mosquito is a mechanical vector; housefly is a biological vector",
-          "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
-          "C. Both insects transmit pathogens exclusively through saliva without biting",
-          "D. Neither insect carries pathogenic micro-organisms"
+          "A. Smooth, polished wings that reflect light",
+          "B. Dense coverings of setae (hairs), micro-bristles, and adhesive pulvilli designed for clinging to surfaces",
+          "C. Large compound eyes that store bacteria",
+          "D. The absence of an exoskeleton"
         ],
-        "correctAnswer": "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
-        "hint": "In biological vectors, the pathogen requires internal incubation.",
-        "workedSolution": "Plasmodium undergoes vital development within mosquitoes (biological vector), whereas houseflies merely transport pathogens externally or in vomit/faeces (mechanical vector).",
+        "correctAnswer": "B. Dense coverings of setae (hairs), micro-bristles, and adhesive pulvilli designed for clinging to surfaces",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Microscopic setae and adhesive footpads create a large, sticky surface area that collects bacteria from contaminated surfaces.",
         "points": 1
       },
       {
         "id": "B7_FLY_A02",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Why does turning a municipal compost heap regularly control housefly maggot development?",
+        "prompt": "A community health officer notes a surge in cholera cases during the peak of the mango and rainy season in a rural district. How does the housefly population correlate with this epidemic?",
         "options": [
-          "A. It exposes the maggots to moonlight",
-          "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
-          "C. It freezes the organic waste",
-          "D. It converts all nitrogen into rock"
+          "A. Warm, moist weather and rotting dropped mangoes accelerate fly reproduction, leading to high fly densities that spread Vibrio cholerae from open latrines to exposed food",
+          "B. Mango fruits generate cholera bacteria internally",
+          "C. Houseflies become biological vectors during the rain",
+          "D. Cold rain freezes the fly pupae"
         ],
-        "correctAnswer": "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
-        "hint": "Aerobic microbial fermentation produces lethal internal heat.",
-        "workedSolution": "Frequent turning aerates compost, accelerating thermophilic bacterial fermentation that raises core temperatures high enough to destroy eggs and maggots.",
+        "correctAnswer": "A. Warm, moist weather and rotting dropped mangoes accelerate fly reproduction, leading to high fly densities that spread Vibrio cholerae from open latrines to exposed food",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Warm, humid weather combined with rotting fruit and exposed waste accelerates fly breeding, increasing mechanical transmission of cholera.",
         "points": 1
       },
       {
         "id": "B7_FLY_A03",
         "difficulty": "high",
         "type": "objective",
-        "prompt": "Explain how the microscopic structure of the housefly's footpads (pulvilli) enhances its efficiency as a mechanical disease vector:",
+        "prompt": "Why is the pupal stage of Musca domestica described as a phase of profound histolysis and histogenesis?",
         "options": [
-          "A. Pulvilli have sharp claws that inject poison into human skin",
-          "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
-          "C. Pulvilli produce digestive enzymes that absorb carbohydrates directly through the legs",
-          "D. Pulvilli freeze bacteria to keep them alive for years"
+          "A. The pupa feeds on external leaves",
+          "B. Larval tissues break down (histolysis) into an embryonic soup, which is reconstructed (histogenesis) into adult organs like wings and reproductive structures",
+          "C. The pupa lays eggs inside the puparium",
+          "D. The puparium dissolves in rainwater"
         ],
-        "correctAnswer": "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
-        "hint": "Microscopic sticky pads allow the fly to adhere to smooth surfaces and pick up pathogens.",
-        "workedSolution": "Glandular adhesive setae on the fly's pulvilli maximize contact surface area, passively picking up pathogen-laden particulate matter from waste.",
+        "correctAnswer": "B. Larval tissues break down (histolysis) into an embryonic soup, which is reconstructed (histogenesis) into adult organs like wings and reproductive structures",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Inside the puparium, larval tissues break down and remodel into adult structures.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In what way does the feeding mechanism of the adult housefly make chemical food contamination more dangerous than that caused by biting mosquitoes?",
+        "options": [
+          "A. Mosquitoes cannot fly fast",
+          "B. Flies regurgitate stomach enzymes and fecal drops directly onto human food, inoculating it with bacteria and fungal spores",
+          "C. Flies bite through skin to inject stomach acid",
+          "D. Mosquitoes only land on clean surfaces"
+        ],
+        "correctAnswer": "B. Flies regurgitate stomach enzymes and fecal drops directly onto human food, inoculating it with bacteria and fungal spores",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Regurgitating digestive fluids and defecating during feeding contaminates broad food surfaces directly consumed by humans.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary physiological reason housefly larvae (maggots) are photonegative (move away from light)?",
+        "options": [
+          "A. They are blinded by darkness",
+          "B. Sunlight and surface exposure cause fatal dehydration and expose them to predatory birds; burrowing into waste keeps them moist and fed",
+          "C. Light kills their wings",
+          "D. They photosynthesize best in the dark"
+        ],
+        "correctAnswer": "B. Sunlight and surface exposure cause fatal dehydration and expose them to predatory birds; burrowing into waste keeps them moist and fed",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Moving away from light keeps maggots buried in moist, food-rich organic waste, protecting them from desiccation and predators.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the short generational turnover of Musca domestica (8 to 14 days under ideal warmth) influence the rapid development of insecticide resistance?",
+        "options": [
+          "A. Flies learn how to avoid spray cans",
+          "B. Rapid reproduction allows beneficial mutations that confer insecticide resistance to be selected for and spread through the population within months",
+          "C. Insecticides make the larvae grow wings early",
+          "D. Older flies teach younger flies how to metabolize poison"
+        ],
+        "correctAnswer": "B. Rapid reproduction allows beneficial mutations that confer insecticide resistance to be selected for and spread through the population within months",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Short life cycles and high fecundity allow natural selection for resistant mutations to happen rapidly.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A biology laboratory set up two culture jars with decaying meat. Jar 1 was covered with fine porous gauze; Jar 2 was left open. Maggots developed only in Jar 2. What scientific principle does this demonstrate?",
+        "options": [
+          "A. Spontaneous generation of life from meat",
+          "B. Biogenesis: maggots arise only from eggs laid by visiting adult flies, disproving spontaneous generation (Redi's experiment)",
+          "C. Meat produces larvae automatically when covered",
+          "D. Flies hate open jars"
+        ],
+        "correctAnswer": "B. Biogenesis: maggots arise only from eggs laid by visiting adult flies, disproving spontaneous generation (Redi's experiment)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "This mirrors Francesco Redi's classic experiment proving that maggots hatch from fly eggs rather than arising spontaneously.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the eradication of houseflies virtually impossible and ecologically inadvisable?",
+        "options": [
+          "A. Houseflies are the largest animals on earth",
+          "B. They occupy critical ecological niches as primary recyclers of decaying organic waste and serve as a baseline food source for birds, amphibians, and reptiles",
+          "C. Houseflies are made of metal",
+          "D. They produce oxygen in the atmosphere"
+        ],
+        "correctAnswer": "B. They occupy critical ecological niches as primary recyclers of decaying organic waste and serve as a baseline food source for birds, amphibians, and reptiles",
+        "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+        "workedSolution": "Flies and maggots play key roles in waste decomposition, nutrient cycling, and serving as food for higher trophic levels.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the anatomical structure of the puparium provide evolutionary survival advantages to the developing imago?",
+        "options": [
+          "A. It allows the pupa to crawl into rivers",
+          "B. The sclerotized, hardened outer casing protects the delicate transforming tissues from desiccation, physical crushing, and soil pathogens",
+          "C. It allows the pupa to breathe underwater without oxygen",
+          "D. It generates solar heat like a greenhouse"
+        ],
+        "correctAnswer": "B. The sclerotized, hardened outer casing protects the delicate transforming tissues from desiccation, physical crushing, and soil pathogens",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The hardened puparium forms a protective barrier against physical damage, soil microbes, and drying out.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological role of the ptilinum (an inflatable head sac) when an adult housefly emerges from its puparium?",
+        "options": [
+          "A. It acts as an airbag to absorb flight crashes",
+          "B. It inflates with hemolymph fluid to pop open the circular cap of the puparium and push through surrounding soil",
+          "C. It stores food for the adult fly",
+          "D. It produces mating pheromones"
+        ],
+        "correctAnswer": "B. It inflates with hemolymph fluid to pop open the circular cap of the puparium and push through surrounding soil",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The ptilinum expands using blood pressure to pop off the puparium cap and help the fly tunnel out of soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do epidemiological outbreaks of fly-borne diarrhea often peak after flooding events in developing communities?",
+        "options": [
+          "A. Flooding drowns all flies",
+          "B. Floodwaters disrupt sewage containment, spreading human waste across open land and creating vast breeding and feeding media for flies",
+          "C. Water turns into flies",
+          "D. Rain makes flies sterile"
+        ],
+        "correctAnswer": "B. Floodwaters disrupt sewage containment, spreading human waste across open land and creating vast breeding and feeding media for flies",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Flooding breaches latrines and mixes waste with surface water, expanding fly breeding sites and pathogen spread.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do maggots of certain blowflies and houseflies contribute to modern forensic science (forensic entomology)?",
+        "options": [
+          "A. They testify in courtrooms",
+          "B. By analyzing the growth stage and age of maggots feeding on a corpse, forensic scientists can accurately estimate the Post-Mortem Interval (time of death)",
+          "C. They revive dead tissues",
+          "D. They change blood groups"
+        ],
+        "correctAnswer": "B. By analyzing the growth stage and age of maggots feeding on a corpse, forensic scientists can accurately estimate the Post-Mortem Interval (time of death)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Because insect development follows a predictable timeline, maggot age can help establish time of death.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is chemical control alone insufficient for long-term housefly management on livestock farms?",
+        "options": [
+          "A. Insecticides make flies lay twice as many eggs",
+          "B. Insecticide sprays only kill exposed adults temporarily, leaving millions of sheltered eggs, larvae, and pupae in manure to emerge continuously",
+          "C. Insecticides cause flies to grow fur",
+          "D. Animals absorb all the insecticide"
+        ],
+        "correctAnswer": "B. Insecticide sprays only kill exposed adults temporarily, leaving millions of sheltered eggs, larvae, and pupae in manure to emerge continuously",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Chemical adulticides do not clear the breeding habitat, allowing new generations to emerge continually from manure.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical reason fly-regurgitated saliva softens solid foods like bread or dried meat?",
+        "options": [
+          "A. It contains strong hydrolytic digestive enzymes (like amylases and proteases) that break down macromolecules into soluble liquids outside the body",
+          "B. It freezes the food",
+          "C. It adds water with no enzymes",
+          "D. It relies on stomach bacteria only"
+        ],
+        "correctAnswer": "A. It contains strong hydrolytic digestive enzymes (like amylases and proteases) that break down macromolecules into soluble liquids outside the body",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Salivary enzymes digest complex starches and proteins externally so the resulting fluid can be sponged up.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the respiratory system of the larva (tracheal spiracles) restrict its survival in completely submerged aquatic environments?",
+        "options": [
+          "A. It has gills that need warm water",
+          "B. The spiracles take in atmospheric air; complete, prolonged immersion in water deprives the tracheal tubes of oxygen, drowning the larva",
+          "C. Water hardens the maggot's mouth hooks",
+          "D. Submersion causes the maggot to turn into a fish"
+        ],
+        "correctAnswer": "B. The spiracles take in atmospheric air; complete, prolonged immersion in water deprives the tracheal tubes of oxygen, drowning the larva",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Fly larvae rely on spiracles to take in gaseous air; prolonged submersion prevents respiration and drowns them.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following describes the compound eye of Musca domestica?",
+        "options": [
+          "A. A single lens that forms inverted pictures",
+          "B. An array of thousands of independent optical units (ommatidia), providing exceptional flicker-fusion frequency and motion sensitivity",
+          "C. A blind sensory pit",
+          "D. A light bulb that glows"
+        ],
+        "correctAnswer": "B. An array of thousands of independent optical units (ommatidia), providing exceptional flicker-fusion frequency and motion sensitivity",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Thousands of ommatidia give houseflies high temporal resolution, allowing them to detect rapid movements.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does covering compost heaps with black plastic sheeting eliminate housefly larvae effectively?",
+        "options": [
+          "A. Plastic makes the compost freeze",
+          "B. It creates a physical barrier that prevents oviposition while trapping metabolic heat, raising temperatures past the thermal tolerance of maggots",
+          "C. It prevents air from entering the compost entirely",
+          "D. It turns the larvae into fertilizers"
+        ],
+        "correctAnswer": "B. It creates a physical barrier that prevents oviposition while trapping metabolic heat, raising temperatures past the thermal tolerance of maggots",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Solarization traps solar and decomposition heat under the sheet, exceeding the lethal thermal threshold for maggots.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What distinguishes the life cycle of the housefly from that of the dragonfly regarding juvenile habitat?",
+        "options": [
+          "A. The housefly maggot lives in terrestrial decaying organic waste, whereas the dragonfly nymph is an aquatic predator living underwater",
+          "B. Both live in the clouds",
+          "C. Dragonfly nymphs live in animal dung",
+          "D. Housefly larvae live in clean ocean water"
+        ],
+        "correctAnswer": "A. The housefly maggot lives in terrestrial decaying organic waste, whereas the dragonfly nymph is an aquatic predator living underwater",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Housefly maggots develop in decaying terrestrial filth, while dragonfly nymphs are aquatic predators.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are houseflies capable of transmitting trachoma (Chlamydia trachomatis)?",
+        "options": [
+          "A. They bite the cornea with sharp teeth",
+          "B. They land on infected eye discharges and mechanically carry the bacteria to the conjunctiva of healthy eyes",
+          "C. They lay eggs inside the tear ducts",
+          "D. They inject toxins into the optic nerve"
+        ],
+        "correctAnswer": "B. They land on infected eye discharges and mechanically carry the bacteria to the conjunctiva of healthy eyes",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Flies feeding on ocular secretions mechanically transfer Chlamydia bacteria between individuals.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the reproductive biology of Musca domestica allow a small initial population to cause an infestation within weeks?",
+        "options": [
+          "A. Flies lay only 1 egg per year",
+          "B. Females lay up to 500–1000 eggs across their life, and with a life cycle as short as 10 days, numbers multiply exponentially under warm conditions",
+          "C. Adult flies live for 20 years",
+          "D. Larvae reproduce without becoming adults"
+        ],
+        "correctAnswer": "B. Females lay up to 500–1000 eggs across their life, and with a life cycle as short as 10 days, numbers multiply exponentially under warm conditions",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "High egg production paired with a developmental cycle of under two weeks allows rapid population growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the function of the pseudotracheae on the labellum of a housefly's proboscis?",
+        "options": [
+          "A. Stinging humans",
+          "B. Microscopic channels that draw up liquefied food by capillary action into the central food canal",
+          "C. Grinding bones",
+          "D. Digging into wood"
+        ],
+        "correctAnswer": "B. Microscopic channels that draw up liquefied food by capillary action into the central food canal",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "Capillary grooves called pseudotracheae channel liquefied food into the central oral canal.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an integrated pest management (IPM) approach against houseflies in food-processing factories?",
+        "options": [
+          "A. Relying solely on spraying chemical DDT over food",
+          "B. Combining physical exclusion (air curtains, door screens), sanitation (prompt waste clearing), and mechanical sticky traps",
+          "C. Leaving rotting meat outside doors to distract flies",
+          "D. Doing nothing"
+        ],
+        "correctAnswer": "B. Combining physical exclusion (air curtains, door screens), sanitation (prompt waste clearing), and mechanical sticky traps",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Integrated Pest Management combines sanitation, physical barriers, and traps to control pests sustainably.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the housefly classified as holometabolous, while a termite is hemimetabolous?",
+        "options": [
+          "A. The housefly has an egg, maggot (larva), pupa, and adult; the termite has an egg, nymph, and adult with no pupa",
+          "B. Termites have five wings",
+          "C. Houseflies live in colonies",
+          "D. Termites do not lay eggs"
+        ],
+        "correctAnswer": "A. The housefly has an egg, maggot (larva), pupa, and adult; the termite has an egg, nymph, and adult with no pupa",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Houseflies have a pupal stage (holometabolous); termites transition directly from nymph to adult (hemimetabolous).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the housefly contribute to mechanical food poisoning with Staphylococcus aureus?",
+        "options": [
+          "A. The fly synthesizes toxins inside its wings",
+          "B. The fly transfers staphylococcal bacteria from infected skin ulcers or decaying waste onto cooked meals, where the bacteria multiply and produce enterotoxins",
+          "C. The fly injects poison into clean vegetables",
+          "D. The fly carries venomous stingers"
+        ],
+        "correctAnswer": "B. The fly transfers staphylococcal bacteria from infected skin ulcers or decaying waste onto cooked meals, where the bacteria multiply and produce enterotoxins",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Flies transfer staphylococcal bacteria from lesions onto food, where they can grow and produce heat-stable toxins.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a puparium turn progressively darker as the pupa matures inside?",
+        "options": [
+          "A. It is getting dirty from soil",
+          "B. Sclerotization and melanization chemically cross-link proteins and pigments, hardening the protective shell",
+          "C. It absorbs light to generate electricity",
+          "D. The pupa inside is burning"
+        ],
+        "correctAnswer": "B. Sclerotization and melanization chemically cross-link proteins and pigments, hardening the protective shell",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Tanning processes (sclerotization and melanization) crosslink proteins to harden and darken the cuticle.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the danger of placing open latrines adjacent to fruit and vegetable markets?",
+        "options": [
+          "A. Flies visit human excreta in latrines, pick up enteric pathogens (e.g., Shigella, Vibrio), and fly directly onto market produce sold for consumption",
+          "B. Vegetables grow too fast",
+          "C. Latrines absorb the scent of fruits",
+          "D. Market sounds kill the flies"
+        ],
+        "correctAnswer": "A. Flies visit human excreta in latrines, pick up enteric pathogens (e.g., Shigella, Vibrio), and fly directly onto market produce sold for consumption",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Close proximity allows flies to move easily between human feces and uncovered fresh food.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do maggots move through their environment without jointed walking legs?",
+        "options": [
+          "A. By using small wings inside their body",
+          "B. Through coordinated waves of longitudinal and circular body-wall muscular contractions anchored by tiny spinules (spines)",
+          "C. By rolling like balls",
+          "D. They are blown by the wind"
+        ],
+        "correctAnswer": "B. Through coordinated waves of longitudinal and circular body-wall muscular contractions anchored by tiny spinules (spines)",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Peristaltic muscular contractions work against ventral spine bands to move the maggot forward.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does boiling drinking water protect humans against fly-borne water contamination?",
+        "options": [
+          "A. It removes the water",
+          "B. Thermal heat denatures the proteins and disrupts cell membranes of fly-deposited bacterial pathogens, rendering them harmless",
+          "C. It turns bacteria into fly food",
+          "D. It makes water taste sweeter"
+        ],
+        "correctAnswer": "B. Thermal heat denatures the proteins and disrupts cell membranes of fly-deposited bacterial pathogens, rendering them harmless",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Boiling temperatures pasteurize water by denaturing the proteins of pathogenic bacteria.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What primary adaptation allows a fly to evade a descending fly swatter so quickly?",
+        "options": [
+          "A. It can predict the future",
+          "B. Giant interneuron pathways allow sensory signals from compound eyes to trigger motor flight muscles within milliseconds",
+          "C. It feels the swatter with ears",
+          "D. Its wings are made of steel"
+        ],
+        "correctAnswer": "B. Giant interneuron pathways allow sensory signals from compound eyes to trigger motor flight muscles within milliseconds",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Compound eyes and specialized giant nerve fibers enable fast, involuntary escape reflexes.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are maggots of certain laboratory-reared fly species used in medical 'maggot debridement therapy'?",
+        "options": [
+          "A. They eat healthy skin cells",
+          "B. Sterile maggots selectively consume dead (necrotic) flesh in infected non-healing wounds while secreting antibacterial fluids",
+          "C. They lay eggs inside the blood vessels",
+          "D. They turn into bone"
+        ],
+        "correctAnswer": "B. Sterile maggots selectively consume dead (necrotic) flesh in infected non-healing wounds while secreting antibacterial fluids",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Sterile medical maggots feed on necrotic tissue and promote wound healing by cleaning ulcers.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural role of the halteres during high-speed escape maneuvers of an adult housefly?",
+        "options": [
+          "A. They produce forward propulsion",
+          "B. They vibrate rapidly, measuring Coriolis forces during turns to provide real-time balance feedback to flight muscles",
+          "C. They generate defensive poison",
+          "D. They act as air brakes"
+        ],
+        "correctAnswer": "B. They vibrate rapidly, measuring Coriolis forces during turns to provide real-time balance feedback to flight muscles",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Oscillating halteres detect Coriolis forces, helping stabilize the fly during complex turns.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the domestic garbage can described as a primary 'fly factory' in urban centers?",
+        "options": [
+          "A. It manufactures metal cans",
+          "B. It contains warm, moist, unsealed food waste that provides ideal nutritional and environmental conditions for egg-laying and larval growth",
+          "C. Flies build nests like birds in dry plastic",
+          "D. It generates insecticides"
+        ],
+        "correctAnswer": "B. It contains warm, moist, unsealed food waste that provides ideal nutritional and environmental conditions for egg-laying and larval growth",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Unsealed trash bins provide ideal moisture and organic matter for fly breeding.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following insect mouthparts is anatomically homologous to the sponging labellum of the housefly?",
+        "options": [
+          "A. The biting jaws of a grasshopper",
+          "B. The piercing stylets of a female mosquito",
+          "C. The siphoning coiled proboscis of a butterfly",
+          "D. All of the above (they are all modified insect mouthparts adapted for different feeding strategies)"
+        ],
+        "correctAnswer": "D. All of the above (they are all modified insect mouthparts adapted for different feeding strategies)",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "All insect mouthparts derive from the same basic ancestral structures, modified for different diets.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the application of lime (calcium hydroxide) over pit latrines suppress housefly development?",
+        "options": [
+          "A. It acts as a fertilizer for maggots",
+          "B. It creates an alkaline, desiccating environment that dries out organic matter and destroys fragile fly eggs and larvae",
+          "C. It feeds adult flies sweet nectar",
+          "D. It cools the latrine down to freezing"
+        ],
+        "correctAnswer": "B. It creates an alkaline, desiccating environment that dries out organic matter and destroys fragile fly eggs and larvae",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Lime alters the pH and dries out surface waste, making it inhospitable to eggs and larvae.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological purpose of the extensive crop (food storage pouch) in the digestive tract of the housefly?",
+        "options": [
+          "A. To store solid rocks for grinding",
+          "B. To temporarily hold large volumes of sponged-up liquid food before releasing it slowly into the midgut for digestion",
+          "C. To pump air into the wings",
+          "D. To produce eggs"
+        ],
+        "correctAnswer": "B. To temporarily hold large volumes of sponged-up liquid food before releasing it slowly into the midgut for digestion",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "The crop serves as a storage chamber for fluids before they pass into the digestive midgut.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the spread of trachoma by flies particularly severe in dry, arid regions with water scarcity?",
+        "options": [
+          "A. Flies die in dry weather",
+          "B. Water scarcity reduces face-washing hygiene, leaving ocular discharges on children's faces that attract thirsty, protein-seeking flies",
+          "C. Arid dust turns into flies",
+          "D. Trachoma only travels in air"
+        ],
+        "correctAnswer": "B. Water scarcity reduces face-washing hygiene, leaving ocular discharges on children's faces that attract thirsty, protein-seeking flies",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Limited water access reduces facial hygiene, attracting flies to feed on ocular moisture and spread Chlamydia.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the rapid development of housefly pupae inside dry soil protect them from standard liquid chemical larvicides applied to manure surfaces?",
+        "options": [
+          "A. The pupae absorb the insecticide as food",
+          "B. Maggots migrate out of wet manure into surrounding dry soil before pupating, avoiding chemicals applied only to the waste surface",
+          "C. The pupa has wings to fly away",
+          "D. The puparium dissolves all chemicals"
+        ],
+        "correctAnswer": "B. Maggots migrate out of wet manure into surrounding dry soil before pupating, avoiding chemicals applied only to the waste surface",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Pupation away from the wet feeding surface protects pupae from surface-applied larvicides.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological significance of courtship rituals (such as wing vibrations) performed by male houseflies?",
+        "options": [
+          "A. To cool down the female",
+          "B. To communicate species identity and sexual readiness, ensuring successful mating and fertilization",
+          "C. To intimidate predators",
+          "D. To scare off other maggots"
+        ],
+        "correctAnswer": "B. To communicate species identity and sexual readiness, ensuring successful mating and fertilization",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "Courtship displays communicate species identity and facilitate successful mating.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the housefly considered an inferior pollinator compared to the European honeybee (Apis mellifera)?",
+        "options": [
+          "A. Houseflies do not visit flowers at all",
+          "B. Flies do not possess specialized pollen baskets (corbiculae) or branched hairs designed to carry large pollen loads systematically",
+          "C. Bees eat all the flowers",
+          "D. Flies destroy all pollen grains"
+        ],
+        "correctAnswer": "B. Flies do not possess specialized pollen baskets (corbiculae) or branched hairs designed to carry large pollen loads systematically",
+        "hint": "Reflect on the beneficial ecological roles of maggots in decomposing waste and adult flies in food chains.",
+        "workedSolution": "Flies lack specialized pollen-carrying structures, making their pollination incidental rather than systematic.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What physical process allows a fly to drink liquid food through its proboscis?",
+        "options": [
+          "A. Gravity alone",
+          "B. Muscular pharyngeal pumping creating negative pressure that draws liquid through capillary channels into the esophagus",
+          "C. Surface evaporation",
+          "D. Static electricity"
+        ],
+        "correctAnswer": "B. Muscular pharyngeal pumping creating negative pressure that draws liquid through capillary channels into the esophagus",
+        "hint": "Remember that adult houseflies have sponging mouthparts and regurgitate digestive enzymes to liquefy food before ingestion.",
+        "workedSolution": "A muscular pharyngeal pump draws liquid up through the proboscis into the digestive canal.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a sudden cold snap in late autumn cause a dramatic drop in housefly infestations?",
+        "options": [
+          "A. Cold weather causes all flies to explode",
+          "B. Low temperatures halt ovarian development in females, slow larval feeding, and extend pupal duration, halting population growth",
+          "C. Flies turn into caterpillars in winter",
+          "D. Cold weather makes garbage disappear"
+        ],
+        "correctAnswer": "B. Low temperatures halt ovarian development in females, slow larval feeding, and extend pupal duration, halting population growth",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Low temperatures suppress insect metabolism, reproduction, and larval development rates.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does installing ultraviolet (UV) light fly electrocutors in commercial restaurants exploit insect behavior?",
+        "options": [
+          "A. Flies use UV light to warm their bodies",
+          "B. Compound eyes are naturally attracted to UV wavelengths (positive phototaxis); flies fly toward the light grid and are electrocuted",
+          "C. UV light blinds the flies so they starve",
+          "D. UV light smells like rotting meat"
+        ],
+        "correctAnswer": "B. Compound eyes are naturally attracted to UV wavelengths (positive phototaxis); flies fly toward the light grid and are electrocuted",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Flies exhibit positive phototaxis toward UV light, which draws them into the electrified grid.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the connection between unsanitary open defecation in communities and high rates of infant diarrhea?",
+        "options": [
+          "A. Feces pollute the sunlight",
+          "B. Uncontained feces provide breeding and feeding grounds for flies, which then transfer enteric pathogens onto infants' feeding bottles and food",
+          "C. Flies directly bite children to inject bacteria",
+          "D. Children eat the flies"
+        ],
+        "correctAnswer": "B. Uncontained feces provide breeding and feeding grounds for flies, which then transfer enteric pathogens onto infants' feeding bottles and food",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Open defecation exposes fecal pathogens to flies, which then contaminate infant foods and feeding surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the cuticle of a third-instar maggot transform into the puparium without being cast off?",
+        "options": [
+          "A. It melts into the soil",
+          "B. The larva retains its third-instar skin, which shortens, rounds into a barrel shape, and hardens via sclerotization",
+          "C. It weaves silk like a silkworm",
+          "D. The skin falls off and is eaten"
+        ],
+        "correctAnswer": "B. The larva retains its third-instar skin, which shortens, rounds into a barrel shape, and hardens via sclerotization",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "The puparium is formed from the retained, tanned, and hardened third-instar larval cuticle.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are houseflies capable of carrying pathogens across distances of several kilometers?",
+        "options": [
+          "A. They are carried inside bird stomachs",
+          "B. They are active fliers capable of traveling 2 to 7 kilometers aided by wind currents in search of feeding and oviposition sites",
+          "C. They walk along underground telephone wires",
+          "D. They travel inside car engines only"
+        ],
+        "correctAnswer": "B. They are active fliers capable of traveling 2 to 7 kilometers aided by wind currents in search of feeding and oviposition sites",
+        "hint": "Houseflies act as mechanical vectors, transporting pathogens passively on their setae, pulvilli, and mouthparts.",
+        "workedSolution": "Adult flies can travel several kilometers, aided by wind, to find food and breeding habitats.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following adaptations allows a maggot to survive inside dense, oxygen-poor compost heaps?",
+        "options": [
+          "A. It possesses gills on its head",
+          "B. Its posterior spiracles can remain extended toward surface air pockets while its body is submerged feeding in waste",
+          "C. It holds its breath for three months",
+          "D. It generates oxygen chemically"
+        ],
+        "correctAnswer": "B. Its posterior spiracles can remain extended toward surface air pockets while its body is submerged feeding in waste",
+        "hint": "Consider the four developmental stages of complete metamorphosis: egg, larva (maggot), pupa, and adult (imago).",
+        "workedSolution": "Posterior spiracles allow maggots to breathe air while their anterior ends remain buried in decomposing matter.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary epidemiological goal of using fly-proof VIP latrines in public schools?",
+        "options": [
+          "A. To make latrines look modern",
+          "B. To break the fecal-oral pathogen transmission route by preventing flies from contacting human excreta",
+          "C. To kill all insects in the surrounding forest",
+          "D. To collect fly eggs for science experiments"
+        ],
+        "correctAnswer": "B. To break the fecal-oral pathogen transmission route by preventing flies from contacting human excreta",
+        "hint": "Focus on breaking the life cycle by removing moist organic waste and denying flies access to food or excreta.",
+        "workedSolution": "Fly-proofing latrines cuts the contact link between human waste and disease-carrying insect vectors.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are housefly eggs laid in clusters rather than individually scattered over miles?",
+        "options": [
+          "A. Female flies cannot move while laying",
+          "B. Clustered eggs maintain humidity and allow hatched larvae to pool digestive secretions, breaking down food faster",
+          "C. Eggs fuse into a single large animal",
+          "D. To make it easier for birds to eat them"
+        ],
+        "correctAnswer": "B. Clustered eggs maintain humidity and allow hatched larvae to pool digestive secretions, breaking down food faster",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Clustered eggs conserve localized humidity and allow groups of larvae to liquefy food collaboratively.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chemical fly bait containing attractants and insecticide work?",
+        "options": [
+          "A. It repels flies into the forest",
+          "B. It mimics natural feeding odors to lure adult flies to feed, delivering a lethal stomach poison",
+          "C. It turns flies into bees",
+          "D. It freezes the surrounding air"
+        ],
+        "correctAnswer": "B. It mimics natural feeding odors to lure adult flies to feed, delivering a lethal stomach poison",
+        "hint": "Recall the developmental stages, anatomy, and public health impact of the housefly under NaCCA B7 standards.",
+        "workedSolution": "Baits use attractants to lure adult flies into ingesting a fast-acting insecticide.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following scenarios demonstrates the successful completion of an insect's holometabolous life cycle?",
+        "options": [
+          "A. A housefly egg hatches into a nymph, grows wings, and flies away",
+          "B. A housefly egg hatches into a maggot, feeds through three instars, pupates in a puparium, and emerges as a winged adult that successfully mates",
+          "C. A maggot divides into two maggots",
+          "D. An adult fly sheds its skin to become a pupa"
+        ],
+        "correctAnswer": "B. A housefly egg hatches into a maggot, feeds through three instars, pupates in a puparium, and emerges as a winged adult that successfully mates",
+        "hint": "Recall housefly anatomical features: one pair of flight wings, club-shaped halteres for balance, and 4 dark thoracic stripes.",
+        "workedSolution": "A complete holometabolous cycle involves hatching as a larva, pupating, and emerging as a sexually mature adult.",
         "points": 1
       }
     ]
