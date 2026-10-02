@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.035Z"
+    "updatedAt": "2026-10-02T21:25:48.624Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.036Z"
+    "updatedAt": "2026-10-02T21:25:48.626Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.036Z"
+    "updatedAt": "2026-10-02T21:25:48.626Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.036Z"
+    "updatedAt": "2026-10-02T21:25:48.626Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.036Z"
+    "updatedAt": "2026-10-02T21:25:48.626Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.626Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -16896,20 +16896,20 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Navigate interplanetary space and gravitational mechanics with orbital trajectory simulators. Compares terrestrial and gas-giant planetary systems, investigates solar/lunar eclipse geometries, and evaluates aerospace satellite deployment for communications and climate monitoring.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b8_strand3_solar_system"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Architecture of the Solar System & Planetary Classes",
-        "summary": "Chart the Solar System, contrast terrestrial vs. Jovian gas giants, and examine scale orbits around the Sun.",
-        "notes": "### The Solar System: Planetary Architecture & Orbital Scales\n* **NaCCA Curriculum Code:** `B7.3.2.1`\n* **Core Competency:** Classify the planets of the solar system into terrestrial and Jovian planets and describe their relative orbital characteristics.\n\n#### 1. Structure of the Solar System\nThe Solar System comprises the Sun (a G-type main-sequence star containing $99.86\\%$ of the system's mass), eight planets, dwarf planets (Pluto, Ceres), over 200 planetary moons, and billions of asteroids and comets held in orbital equilibrium by gravity.\n* **Order of Planets from the Sun:** Mercury $\\rightarrow$ Venus $\\rightarrow$ Earth $\\rightarrow$ Mars $\\rightarrow$ Jupiter $\\rightarrow$ Saturn $\\rightarrow$ Uranus $\\rightarrow$ Neptune.\n* Mnemonic: *My Very Educated Mother Just Served Us Noodles*.\n\n#### 2. Terrestrial (Inner) vs. Jovian (Outer) Planets\n* **Inner Terrestrial Planets (Mercury, Venus, Earth, Mars):**\n  * Located between the Sun and the Main Asteroid Belt.\n  * Composed predominantly of dense silicate rock and metallic iron-nickel cores.\n  * High densities ($>3.9\\text{ g/cm}^3$), solid impact-cratered surfaces, shallow atmospheres, few or no natural satellites, and zero planetary rings.\n* **Outer Jovian Planets (Jupiter, Saturn, Uranus, Neptune):**\n  * Located beyond the Asteroid Belt.\n  * Massive gas and ice giants composed of hydrogen, helium, methane, and ammonia.\n  * Low average densities (Saturn's density $\\approx 0.69\\text{ g/cm}^3$ is less than liquid water), deep turbulent atmospheres, extensive ring systems, and dozens of natural moons.",
+        "levelTitle": "Basic 7 (JHS 1) • The Solar System: Inner Planets, Planetary Characteristics & Orbital Dynamics",
+        "summary": "Explore the architecture of the solar system, terrestrial traits of Mercury, Venus, Earth, and Mars, why Earth sustains life, and the physical consequences of planetary rotation and revolution under NaCCA B7 standards.",
+        "notes": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### Overview & Celestial Inventory\nThe **solar system** consists of our central star, the Sun, and all celestial bodies gravitationally bound in orbital motion around it: eight major planets, recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), natural satellites (moons), and countless millions of interplanetary debris including asteroids, comets, and meteoroids.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Orbital Architecture of the Inner Solar System\n\nBelow is a scale vector diagram depicting the elliptical orbits of Mercury, Venus, Earth, and Mars around the Sun, bounded by the Asteroid Belt:\n\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"25%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><radialGradient id=\"earthColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#1e3a8a\"/></radialGradient><radialGradient id=\"marsColor\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"55%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"venusColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"60%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#a16207\"/></radialGradient><radialGradient id=\"mercColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"65%\" stop-color=\"#94a3b8\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><linearGradient id=\"spaceBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#0b1329\"/><stop offset=\"100%\" stop-color=\"#030712\"/></linearGradient></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"url(#spaceBack)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"45\" cy=\"40\" r=\"1\"/><circle cx=\"120\" cy=\"80\" r=\"1.2\"/><circle cx=\"230\" cy=\"35\" r=\"0.8\"/><circle cx=\"680\" cy=\"60\" r=\"1.5\"/><circle cx=\"710\" cy=\"140\" r=\"0.8\"/><circle cx=\"60\" cy=\"390\" r=\"1.2\"/><circle cx=\"190\" cy=\"410\" r=\"0.8\"/><circle cx=\"640\" cy=\"380\" r=\"1.2\"/><circle cx=\"700\" cy=\"330\" r=\"1\"/><circle cx=\"520\" cy=\"30\" r=\"1.5\"/><circle cx=\"400\" cy=\"20\" r=\"1\"/></g><ellipse cx=\"380\" cy=\"220\" rx=\"90\" ry=\"38\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"150\" ry=\"62\" fill=\"none\" stroke=\"#eab308\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"215\" ry=\"90\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"275\" ry=\"118\" fill=\"none\" stroke=\"#f87171\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"340\" ry=\"150\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"7\" stroke-dasharray=\"2 8\" opacity=\"0.4\"/><text x=\"380\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\">ASTEROID BELT (BOUNDARY TO GAS GIANTS)</text><circle cx=\"380\" cy=\"220\" r=\"34\" fill=\"url(#sunGlow)\"/><circle cx=\"380\" cy=\"220\" r=\"42\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.5\" opacity=\"0.4\"/><text x=\"380\" y=\"224\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(305, 198)\"><circle cx=\"0\" cy=\"0\" r=\"6\" fill=\"url(#mercColor)\" stroke=\"#64748b\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"-8\" x2=\"-30\" y2=\"-35\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"-35\" y=\"-40\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(250, 255)\"><circle cx=\"0\" cy=\"0\" r=\"11\" fill=\"url(#venusColor)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><line x1=\"0\" y1=\"13\" x2=\"-30\" y2=\"45\" stroke=\"#eab308\" stroke-width=\"1\"/><text x=\"-35\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(545, 160)\"><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#earthColor)\" stroke=\"#60a5fa\" stroke-width=\"1\"/><circle cx=\"16\" cy=\"-10\" r=\"3\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-15\" x2=\"25\" y2=\"-40\" stroke=\"#60a5fa\" stroke-width=\"1\"/><text x=\"30\" y=\"-42\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth (with Moon)</text></g><g transform=\"translate(600, 275)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#marsColor)\" stroke=\"#dc2626\" stroke-width=\"1\"/><line x1=\"0\" y1=\"10\" x2=\"25\" y2=\"35\" stroke=\"#f87171\" stroke-width=\"1\"/><text x=\"30\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars (Red Planet)</text></g><path d=\"M 480 320 Q 560 305 630 330\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><polygon points=\"635,330 622,324 624,335\" fill=\"#f59e0b\"/><text x=\"545\" y=\"345\" font-family=\"sans-serif\" font-size=\"10\" font-style=\"italic\" fill=\"#fcd34d\">Elliptical Orbital Vector (Counterclockwise)</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
         "workedExamples": [
           {
             "id": "ex_b7_s8_1",
-            "title": "Worked Example: Contrasting Inner and Outer Planets",
+            "title": "Worked Example 1: Contrasting Inner Terrestrial and Outer Jovian Planets",
             "problem": "Give three key physical differences between the inner terrestrial planets and the outer Jovian planets of our Solar System.",
             "steps": [
               "Difference 1: Composition — Inner planets are rocky bodies with solid silicate crusts and metallic cores; outer planets are gaseous and icy bodies composed mainly of hydrogen, helium, and methane.",
@@ -16917,23 +16917,867 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "Difference 3: Rings and Moons — Inner planets have zero rings and few moons (Earth has 1, Mars has 2); outer planets all possess complex ring systems and dozens of orbiting moons."
             ],
             "finalAnswer": "Examiner Tip: Note that all four outer planets (Jupiter, Saturn, Uranus, Neptune) have ring systems, though Saturn's rings are the most prominent and visible."
+          },
+          {
+            "id": "ex_b7_s8_2",
+            "title": "Worked Example 2: Calculating Planetary Revolution and Leap Year Mechanics",
+            "problem": "Earth requires approximately 365.25 days to complete one full revolution around the Sun. Explain why our standard civil calendar year consists of 365 days, and calculate how frequently a leap year must be inserted to keep the calendar synchronized with Earth's orbit.",
+            "steps": [
+              "Step 1: Understand the astronomical discrepancy: A standard calendar year counts 365 integer days, ignoring the remaining 0.25 day (6 hours) of Earth's true revolution period.",
+              "Step 2: Calculate the accumulated time deficit: Every year, the calendar lags behind the solar orbit by 0.25 day. Over 4 consecutive years, the accumulated deficit equals: 0.25 day/year x 4 years = 1.0 full day (24 hours).",
+              "Step 3: Apply the synchronization mechanism: To compensate for this 24-hour lag, an extra calendar day (February 29th) is added to the calendar every 4th year, creating a 366-day 'leap year'."
+            ],
+            "finalAnswer": "Examiner Tip: A leap year occurs every 4 years because the extra 0.25 day per year accumulates to one complete 24-hour day every 4 solar revolutions (0.25 x 4 = 1 day)."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s8_1",
+              "id": "B7_SYS_F01",
               "difficulty": "low",
-              "prompt": "Which planet is the closest planet to the Sun in our Solar System?",
+              "prompt": "What central celestial body holds the solar system together by its gravitational pull?",
               "options": [
-                "Venus",
-                "Mercury",
-                "Mars",
-                "Earth"
+                "A. The Earth",
+                "B. The Moon",
+                "C. The Sun",
+                "D. Jupiter"
               ],
-              "correctAnswer": "Mercury",
-              "hint": "It has the shortest orbital period of 88 Earth days.",
-              "workedSolution": "Mercury is the innermost planet orbiting closest to the Sun at an average distance of approximately 57.9 million kilometers.",
+              "correctAnswer": "C. The Sun",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Sun is the massive central star of our solar system whose gravity binds all orbiting planets and bodies.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F02",
+              "difficulty": "low",
+              "prompt": "How many recognized major planets revolve around the Sun in our solar system?",
+              "options": [
+                "A. Seven",
+                "B. Eight",
+                "C. Nine",
+                "D. Ten"
+              ],
+              "correctAnswer": "B. Eight",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "There are eight officially recognized major planets revolving around the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F03",
+              "difficulty": "low",
+              "prompt": "Which of the following is the correct order of the first four planets starting closest to the Sun?",
+              "options": [
+                "A. Earth, Mars, Mercury, Venus",
+                "B. Mercury, Venus, Earth, Mars",
+                "C. Venus, Mercury, Mars, Earth",
+                "D. Mercury, Earth, Venus, Mars"
+              ],
+              "correctAnswer": "B. Mercury, Venus, Earth, Mars",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Starting from the Sun, the inner planetary sequence is Mercury, Venus, Earth, and Mars.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F04",
+              "difficulty": "low",
+              "prompt": "The four planets closest to the Sun are collectively referred to as the:",
+              "options": [
+                "A. Gas giants",
+                "B. Inner or terrestrial planets",
+                "C. Ice giants",
+                "D. Dwarf planets"
+              ],
+              "correctAnswer": "B. Inner or terrestrial planets",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury, Venus, Earth, and Mars are designated as the inner or terrestrial (rocky) planets.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F05",
+              "difficulty": "low",
+              "prompt": "Which planet is closest to the Sun?",
+              "options": [
+                "A. Venus",
+                "B. Earth",
+                "C. Mercury",
+                "D. Mars"
+              ],
+              "correctAnswer": "C. Mercury",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury is the first and innermost planet orbiting closest to the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F06",
+              "difficulty": "low",
+              "prompt": "Which planet is the smallest in our solar system?",
+              "options": [
+                "A. Mars",
+                "B. Mercury",
+                "C. Venus",
+                "D. Earth"
+              ],
+              "correctAnswer": "B. Mercury",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury is the smallest of the eight major planets in our solar system.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F07",
+              "difficulty": "low",
+              "prompt": "Which planet is the hottest in the entire solar system due to a runaway greenhouse effect?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Mars",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "B. Venus",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Venus has a dense carbon dioxide atmosphere that traps heat, making it the hottest planet.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F08",
+              "difficulty": "low",
+              "prompt": "What is the primary gas making up the thick atmosphere of Venus?",
+              "options": [
+                "A. Oxygen",
+                "B. Nitrogen",
+                "C. Carbon dioxide",
+                "D. Hydrogen"
+              ],
+              "correctAnswer": "C. Carbon dioxide",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The dense atmosphere of Venus is composed mainly of carbon dioxide.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F09",
+              "difficulty": "low",
+              "prompt": "Which planet is frequently referred to as the 'Red Planet'?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Mars",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "C. Mars",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mars appears reddish due to iron-oxide rich rocks and dust across its surface.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F10",
+              "difficulty": "low",
+              "prompt": "What is the natural satellite that orbits the Earth called?",
+              "options": [
+                "A. Phobos",
+                "B. Deimos",
+                "C. The Moon",
+                "D. Titan"
+              ],
+              "correctAnswer": "C. The Moon",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Moon is Earth's only permanent natural satellite.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F11",
+              "difficulty": "low",
+              "prompt": "How many natural moons revolve around planet Mercury?",
+              "options": [
+                "A. Zero",
+                "B. One",
+                "C. Two",
+                "D. Four"
+              ],
+              "correctAnswer": "A. Zero",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury does not possess any natural moons or rings.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F12",
+              "difficulty": "low",
+              "prompt": "How many natural moons orbit planet Venus?",
+              "options": [
+                "A. Zero",
+                "B. One",
+                "C. Two",
+                "D. Three"
+              ],
+              "correctAnswer": "A. Zero",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Venus has no natural moons and no planetary rings.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F13",
+              "difficulty": "low",
+              "prompt": "How many natural moons orbit planet Mars?",
+              "options": [
+                "A. Zero",
+                "B. One",
+                "C. Two",
+                "D. Four"
+              ],
+              "correctAnswer": "C. Two",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mars has two small natural moons (Phobos and Deimos).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F14",
+              "difficulty": "low",
+              "prompt": "What natural feature separates the inner rocky planets from the outer gas giants?",
+              "options": [
+                "A. The Kuiper Belt",
+                "B. The Asteroid Belt",
+                "C. The Oort Cloud",
+                "D. The Rings of Saturn"
+              ],
+              "correctAnswer": "B. The Asteroid Belt",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Asteroid Belt lies between the orbits of Mars and Jupiter, acting as a dividing line.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F15",
+              "difficulty": "low",
+              "prompt": "The Asteroid Belt is located between the orbits of which two planets?",
+              "options": [
+                "A. Earth and Mars",
+                "B. Mars and Jupiter",
+                "C. Jupiter and Saturn",
+                "D. Mercury and Venus"
+              ],
+              "correctAnswer": "B. Mars and Jupiter",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Asteroid Belt forms a ring between Mars and Jupiter.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F16",
+              "difficulty": "low",
+              "prompt": "The spinning of the Earth around its own internal imaginary axis is termed:",
+              "options": [
+                "A. Revolution",
+                "B. Rotation",
+                "C. Precession",
+                "D. Gravitation"
+              ],
+              "correctAnswer": "B. Rotation",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Rotation specifically refers to an object spinning on its own axis.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F17",
+              "difficulty": "low",
+              "prompt": "In what direction does the Earth rotate on its axis?",
+              "options": [
+                "A. From East to West",
+                "B. From West to East",
+                "C. From North to South",
+                "D. From South to North"
+              ],
+              "correctAnswer": "B. From West to East",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Earth rotates on its axis from West to East.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F18",
+              "difficulty": "low",
+              "prompt": "Approximately how long does it take the Earth to complete one full rotation on its axis?",
+              "options": [
+                "A. 12 hours",
+                "B. 24 hours",
+                "C. 30 days",
+                "D. 365 days"
+              ],
+              "correctAnswer": "B. 24 hours",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Earth completes one full rotation on its axis in approximately 24 hours (one solar day).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F19",
+              "difficulty": "low",
+              "prompt": "The movement of the Earth in an elliptical orbit around the Sun is called:",
+              "options": [
+                "A. Rotation",
+                "B. Revolution",
+                "C. Reflection",
+                "D. Radiation"
+              ],
+              "correctAnswer": "B. Revolution",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The journey of an astronomical body around another along an orbital path is called revolution.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F20",
+              "difficulty": "low",
+              "prompt": "How long does it take the Earth to complete one full revolution around the Sun?",
+              "options": [
+                "A. 24 hours",
+                "B. 30 days",
+                "C. 365¼ days",
+                "D. 100 days"
+              ],
+              "correctAnswer": "C. 365¼ days",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "One complete revolution of the Earth around the Sun takes 365¼ days (approximately 365.25 days).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F21",
+              "difficulty": "low",
+              "prompt": "What is the primary effect of the Earth's rotation on its axis?",
+              "options": [
+                "A. The four seasons of the year",
+                "B. The alternating cycle of day and night",
+                "C. Solar eclipses",
+                "D. Lunar phases"
+              ],
+              "correctAnswer": "B. The alternating cycle of day and night",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Earth's rotation exposes half of its spherical surface to sunlight while the other half faces away, creating day and night.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F22",
+              "difficulty": "low",
+              "prompt": "What natural phenomenon is primarily caused by the revolution of the Earth and its tilted axis?",
+              "options": [
+                "A. The occurrence of the seasons",
+                "B. Day and night",
+                "C. High and low ocean tides",
+                "D. Volcanic eruptions"
+              ],
+              "correctAnswer": "A. The occurrence of the seasons",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The revolution of the Earth around the Sun combined with its axial tilt creates the seasons.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F23",
+              "difficulty": "low",
+              "prompt": "What geometric shape best describes the orbital path of planets around the Sun?",
+              "options": [
+                "A. A perfect circle",
+                "B. A square",
+                "C. An ellipse (oval-like path)",
+                "D. A straight line"
+              ],
+              "correctAnswer": "C. An ellipse (oval-like path)",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Planets revolve around the Sun along slightly elongated, oval-like paths known as elliptical orbits.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F24",
+              "difficulty": "low",
+              "prompt": "Approximately what percentage of the Earth's surface is covered with liquid water?",
+              "options": [
+                "A. 25%",
+                "B. 50%",
+                "C. 71%",
+                "D. 95%"
+              ],
+              "correctAnswer": "C. 71%",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Approximately 71% of Earth's surface is covered by oceans and liquid water bodies.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F25",
+              "difficulty": "low",
+              "prompt": "Which protective layer in Earth's atmosphere shields living organisms from harmful ultraviolet (UV) rays?",
+              "options": [
+                "A. Carbon layer",
+                "B. Ozone layer",
+                "C. Dust cloud",
+                "D. Nitrogen blanket"
+              ],
+              "correctAnswer": "B. Ozone layer",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The ozone layer filters and absorbs lethal ultraviolet rays from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F26",
+              "difficulty": "low",
+              "prompt": "Which of the following is a recognized dwarf planet located in our solar system?",
+              "options": [
+                "A. Pluto",
+                "B. Mercury",
+                "C. Mars",
+                "D. Neptune"
+              ],
+              "correctAnswer": "A. Pluto",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Pluto is classified as a dwarf planet alongside bodies like Ceres and Eris.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F27",
+              "difficulty": "low",
+              "prompt": "Which planet rotates in a retrograde (clockwise) direction, opposite to most other planets?",
+              "options": [
+                "A. Earth",
+                "B. Mars",
+                "C. Venus",
+                "D. Mercury"
+              ],
+              "correctAnswer": "C. Venus",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Venus rotates in a retrograde direction, spinning clockwise on its axis.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F28",
+              "difficulty": "low",
+              "prompt": "What is the average distance from the Earth to the Sun?",
+              "options": [
+                "A. 10 million km",
+                "B. 58 million km",
+                "C. 150 million km",
+                "D. 500 million km"
+              ],
+              "correctAnswer": "C. 150 million km",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The mean orbital distance from the Earth to the Sun is approximately 150 million kilometers.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F29",
+              "difficulty": "low",
+              "prompt": "Why do the inner planets have solid, firm surfaces compared to the outer planets?",
+              "options": [
+                "A. They are made of frozen gas",
+                "B. They are composed largely of rocks, silicates, and heavy metals",
+                "C. They are covered with ice",
+                "D. They have rings"
+              ],
+              "correctAnswer": "B. They are composed largely of rocks, silicates, and heavy metals",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The terrestrial planets are dense bodies made primarily of rocky crusts and metallic cores.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F30",
+              "difficulty": "low",
+              "prompt": "Which of the following inner planets has the shortest orbit around the Sun?",
+              "options": [
+                "A. Earth",
+                "B. Mars",
+                "C. Mercury",
+                "D. Venus"
+              ],
+              "correctAnswer": "C. Mercury",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Being closest to the Sun, Mercury has the shortest orbital circumference and completes an orbit the fastest.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F31",
+              "difficulty": "low",
+              "prompt": "What covers the polar regions of the planet Mars?",
+              "options": [
+                "A. Liquid lava lakes",
+                "B. Polar ice caps of water ice and frozen carbon dioxide",
+                "C. Thick forests",
+                "D. Liquid methane oceans"
+              ],
+              "correctAnswer": "B. Polar ice caps of water ice and frozen carbon dioxide",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mars possesses polar ice caps composed of water ice and frozen carbon dioxide (dry ice).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F32",
+              "difficulty": "low",
+              "prompt": "Which of the following inner planets has a visible ring system around it?",
+              "options": [
+                "A. Earth",
+                "B. Mars",
+                "C. Venus",
+                "D. None of the inner planets"
+              ],
+              "correctAnswer": "D. None of the inner planets",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "None of the four inner terrestrial planets possess planetary rings.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F33",
+              "difficulty": "low",
+              "prompt": "How often does a leap year occur in our calendar system?",
+              "options": [
+                "A. Every 2 years",
+                "B. Every 4 years",
+                "C. Every 10 years",
+                "D. Every year"
+              ],
+              "correctAnswer": "B. Every 4 years",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "A leap year occurs every four years to account for the extra ¼ day (0.25 × 4 = 1 day) in Earth's orbit.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F34",
+              "difficulty": "low",
+              "prompt": "Which planet is similar in size and mass to the Earth, earning it the nickname 'Earth's twin'?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Mars",
+                "D. Pluto"
+              ],
+              "correctAnswer": "B. Venus",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Venus has a diameter and mass very close to that of the Earth.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F35",
+              "difficulty": "low",
+              "prompt": "What gas is necessary for human and animal respiration that is abundant on Earth?",
+              "options": [
+                "A. Carbon dioxide",
+                "B. Nitrogen",
+                "C. Oxygen",
+                "D. Helium"
+              ],
+              "correctAnswer": "C. Oxygen",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Oxygen makes up about 21% of Earth's atmosphere and supports aerobic cellular respiration.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F36",
+              "difficulty": "low",
+              "prompt": "What causes the apparent rising of the Sun in the east and setting in the west?",
+              "options": [
+                "A. The Sun flying across the sky",
+                "B. The rotation of the Earth from west to east",
+                "C. The movement of the Moon",
+                "D. Earth's ocean currents"
+              ],
+              "correctAnswer": "B. The rotation of the Earth from west to east",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Because the Earth rotates eastward, celestial bodies appear to rise in the east and set in the west.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F37",
+              "difficulty": "low",
+              "prompt": "Which instrument swings back and forth to provide visual proof that the Earth is rotating?",
+              "options": [
+                "A. Microscope",
+                "B. Foucault pendulum",
+                "C. Barometer",
+                "D. Telescope"
+              ],
+              "correctAnswer": "B. Foucault pendulum",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "A Foucault pendulum gradually changes its plane of swing, demonstrating the Earth's rotation beneath it.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F38",
+              "difficulty": "low",
+              "prompt": "Which planet takes approximately 225 Earth days to complete one revolution around the Sun?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Mars",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "B. Venus",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Venus takes approximately 225 Earth days to complete one orbit around the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F39",
+              "difficulty": "low",
+              "prompt": "Which inner planet experiences the most extreme temperature swings between day and night?",
+              "options": [
+                "A. Earth",
+                "B. Venus",
+                "C. Mercury",
+                "D. Mars"
+              ],
+              "correctAnswer": "C. Mercury",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Lacking a substantial atmosphere to trap or distribute heat, Mercury swings from extreme daylight heat to freezing night.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F40",
+              "difficulty": "low",
+              "prompt": "What effect does the Moon's gravitational pull have on the Earth?",
+              "options": [
+                "A. It causes volcanic eruptions",
+                "B. It creates ocean tides",
+                "C. It changes the length of the year",
+                "D. It stops the Earth's spin"
+              ],
+              "correctAnswer": "B. It creates ocean tides",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The gravitational interaction between the Moon and Earth generates oceanic tides.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F41",
+              "difficulty": "low",
+              "prompt": "Which of the following inner planets has an atmosphere composed of thick clouds of sulfuric acid?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Earth",
+                "D. Mars"
+              ],
+              "correctAnswer": "B. Venus",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The upper atmosphere of Venus contains dense, reflective clouds of sulfuric acid.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F42",
+              "difficulty": "low",
+              "prompt": "What celestial bodies are icy objects that form bright glowing tails of gas and dust when approaching the Sun?",
+              "options": [
+                "A. Asteroids",
+                "B. Comets",
+                "C. Meteoroids",
+                "D. Moons"
+              ],
+              "correctAnswer": "B. Comets",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Comets are icy bodies that vaporize when near the Sun, forming a glowing coma and tail.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F43",
+              "difficulty": "low",
+              "prompt": "How long does one day (rotation period) on Mercury last in Earth days?",
+              "options": [
+                "A. 1 day",
+                "B. 24 hours",
+                "C. 59 Earth days",
+                "D. 365 days"
+              ],
+              "correctAnswer": "C. 59 Earth days",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury has a very slow axial rotation, taking about 59 Earth days to complete one turn.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F44",
+              "difficulty": "low",
+              "prompt": "The apparent deflection of winds and ocean currents caused by Earth's rotation is called the:",
+              "options": [
+                "A. Greenhouse effect",
+                "B. Coriolis effect",
+                "C. Doppler effect",
+                "D. Tectonic shift"
+              ],
+              "correctAnswer": "B. Coriolis effect",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "The Coriolis effect deflects moving fluids due to the rotation of the Earth.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F45",
+              "difficulty": "low",
+              "prompt": "Which planet is the fourth planet from the Sun?",
+              "options": [
+                "A. Venus",
+                "B. Earth",
+                "C. Mars",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "C. Mars",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mars occupies the fourth orbital position from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F46",
+              "difficulty": "low",
+              "prompt": "What happens to the length and direction of outdoor shadows throughout a sunny day?",
+              "options": [
+                "A. They never change",
+                "B. They shift direction and change length as Earth's rotation alters the Sun's apparent position",
+                "C. Shadows disappear completely at midday forever",
+                "D. Shadows only point south"
+              ],
+              "correctAnswer": "B. They shift direction and change length as Earth's rotation alters the Sun's apparent position",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Earth's rotation changes the apparent solar angle across the sky, continuously altering shadow lengths and directions.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F47",
+              "difficulty": "low",
+              "prompt": "Which of the following is true about all four inner planets?",
+              "options": [
+                "A. They are made of gas",
+                "B. They have multiple moons",
+                "C. They are made of solid rock and have no rings",
+                "D. They support plant life"
+              ],
+              "correctAnswer": "C. They are made of solid rock and have no rings",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "All four inner planets are rocky terrestrial worlds without ring systems.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F48",
+              "difficulty": "low",
+              "prompt": "Which planet is surrounded by a magnetic field that is much weaker than Earth's, despite being close to the Sun?",
+              "options": [
+                "A. Mercury",
+                "B. Jupiter",
+                "C. Saturn",
+                "D. Uranus"
+              ],
+              "correctAnswer": "A. Mercury",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Mercury has a global magnetic field, but it is considerably weaker than Earth's.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F49",
+              "difficulty": "low",
+              "prompt": "What surface features cover the airless, unweathered landscape of Mercury?",
+              "options": [
+                "A. Dense forests",
+                "B. Deep impact craters",
+                "C. Vast oceans",
+                "D. Active rivers"
+              ],
+              "correctAnswer": "B. Deep impact craters",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Lacking atmospheric weathering, Mercury's surface remains heavily cratered from ancient impacts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_F50",
+              "difficulty": "low",
+              "prompt": "Which planet is the third planet from the Sun and the only home to human life?",
+              "options": [
+                "A. Venus",
+                "B. Earth",
+                "C. Mars",
+                "D. Neptune"
+              ],
+              "correctAnswer": "B. Earth",
+              "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+              "workedSolution": "Earth is the third planet from the Sun and the only known planetary body with life.",
               "points": 1,
               "learningCompetency": "B7.3.2.1",
               "type": "objective"
@@ -16941,24 +17785,1708 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "q_b7_s8_2",
+              "id": "B7_SYS_I01",
               "difficulty": "medium",
-              "prompt": "Why is Venus significantly hotter on its surface than Mercury, even though Mercury is much closer to the Sun?",
+              "prompt": "Why is Venus significantly hotter than Mercury, even though Mercury is much closer to the Sun?",
               "options": [
-                "Venus contains radioactive lava oceans",
-                "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
-                "Venus generates nuclear fusion in its core",
-                "Mercury is covered in ice that reflects all sunlight"
+                "A. Mercury has an atmosphere made of pure liquid nitrogen",
+                "B. Venus possesses a dense CO₂ atmosphere that traps infrared radiation in a runaway greenhouse effect",
+                "C. Venus burns like a star",
+                "D. Mercury is shielded by rings"
               ],
-              "correctAnswer": "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
-              "hint": "Venus has an extremely dense CO2 atmosphere.",
-              "workedSolution": "Although Mercury is closer to the Sun, it has virtually no atmosphere to trap heat. Venus has an ultra-dense atmosphere of 96% CO2 with surface pressures 92 times Earth's, driving a catastrophic runaway greenhouse effect that elevates surface temperatures to 465°C.",
+              "correctAnswer": "B. Venus possesses a dense CO₂ atmosphere that traps infrared radiation in a runaway greenhouse effect",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Venus's heavy carbon dioxide atmosphere traps thermal radiation, producing higher surface temperatures than airless Mercury.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I02",
+              "difficulty": "medium",
+              "prompt": "Why does Mercury experience extreme temperature variations between day and night?",
+              "options": [
+                "A. Its thin, tenuous atmosphere cannot retain daytime solar heat during its long night",
+                "B. Its oceans freeze every evening",
+                "C. The Sun shuts off its light regularly",
+                "D. Mercury is made of ice"
+              ],
+              "correctAnswer": "A. Its thin, tenuous atmosphere cannot retain daytime solar heat during its long night",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Without a dense atmosphere to trap heat or distribute thermal energy, heat rapidly escapes into space at night.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I03",
+              "difficulty": "medium",
+              "prompt": "How does the orbital speed of inner planets compare to that of outer planets?",
+              "options": [
+                "A. Inner planets travel much faster because they experience stronger gravitational attraction from the Sun",
+                "B. Inner planets travel much slower",
+                "C. All planets travel at identical orbital speeds",
+                "D. Outer planets travel backwards"
+              ],
+              "correctAnswer": "A. Inner planets travel much faster because they experience stronger gravitational attraction from the Sun",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Planets closer to the Sun experience stronger solar gravity, requiring faster orbital speeds to maintain stable orbits.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I04",
+              "difficulty": "medium",
+              "prompt": "What is the reason behind adding an extra day to the month of February every four years (Leap Year)?",
+              "options": [
+                "A. The Moon takes 30 days to orbit the Earth",
+                "B. Earth's revolution takes ~365.25 days; accumulating four 0.25-day fractions equals one whole day every four years",
+                "C. Earth's rotation slows down by one hour every month",
+                "D. The Sun changes its position every four years"
+              ],
+              "correctAnswer": "B. Earth's revolution takes ~365.25 days; accumulating four 0.25-day fractions equals one whole day every four years",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The extra 0.25 day per tropical year is accounted for by adding a 366th day every fourth calendar year.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I05",
+              "difficulty": "medium",
+              "prompt": "Why are Mars and Mercury considered terrestrial planets while Jupiter and Saturn are not?",
+              "options": [
+                "A. Mars and Mercury have solid rocky crusts and silicate mantles, while Jupiter and Saturn are composed mostly of hydrogen and helium gas",
+                "B. Mars and Mercury have multiple rings",
+                "C. Jupiter and Saturn are closer to the Sun",
+                "D. Terrestrial planets do not orbit stars"
+              ],
+              "correctAnswer": "A. Mars and Mercury have solid rocky crusts and silicate mantles, while Jupiter and Saturn are composed mostly of hydrogen and helium gas",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Terrestrial planets possess solid surfaces of rock and metal, unlike gas giants.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I06",
+              "difficulty": "medium",
+              "prompt": "What is meant by the 'retrograde rotation' of Venus?",
+              "options": [
+                "A. Venus does not rotate at all",
+                "B. Venus spins clockwise on its axis (from East to West), which is opposite to the counterclockwise rotation of most planets",
+                "C. Venus orbits the Sun backwards",
+                "D. Venus spins upside down twice a day"
+              ],
+              "correctAnswer": "B. Venus spins clockwise on its axis (from East to West), which is opposite to the counterclockwise rotation of most planets",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Retrograde rotation means rotating in the opposite (clockwise) direction relative to the planetary majority.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I07",
+              "difficulty": "medium",
+              "prompt": "What causes the apparent north-south seasonal migration of the Sun across the Equator throughout the year?",
+              "options": [
+                "A. The Sun moving up and down in space",
+                "B. The 23.5° tilt of Earth's rotational axis relative to its orbital plane as it revolves around the Sun",
+                "C. Changes in the Moon's distance",
+                "D. Global warming"
+              ],
+              "correctAnswer": "B. The 23.5° tilt of Earth's rotational axis relative to its orbital plane as it revolves around the Sun",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Earth's axial tilt causes different hemispheres to lean toward the Sun at opposite points in its orbit.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I08",
+              "difficulty": "medium",
+              "prompt": "How does the Coriolis effect alter the path of prevailing global winds?",
+              "options": [
+                "A. It stops all winds from blowing",
+                "B. Earth's rotation deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+                "C. It heats the wind into steam",
+                "D. It pulls winds directly toward outer space"
+              ],
+              "correctAnswer": "B. Earth's rotation deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The Coriolis effect causes fluids to deflect rightward in the north and leftward in the south due to rotational velocity differences.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I09",
+              "difficulty": "medium",
+              "prompt": "Why is the atmosphere of Mars unable to produce a strong greenhouse warming effect like that of Venus?",
+              "options": [
+                "A. Mars contains no carbon dioxide",
+                "B. Although made mostly of CO₂, the Martian atmosphere is extremely thin and low in density, so it retains little heat",
+                "C. Mars is made of ice",
+                "D. Mars reflects all solar rays"
+              ],
+              "correctAnswer": "B. Although made mostly of CO₂, the Martian atmosphere is extremely thin and low in density, so it retains little heat",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Mars's atmospheric pressure is less than 1% of Earth's, providing insufficient mass to trap heat effectively.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I10",
+              "difficulty": "medium",
+              "prompt": "What accounts for the reddish color of the surface of Mars?",
+              "options": [
+                "A. Abundant pools of red liquid water",
+                "B. Widespread iron minerals on its surface that have oxidized (rusted)",
+                "C. The reflection of red light from the Sun",
+                "D. Active fires across the planet"
+              ],
+              "correctAnswer": "B. Widespread iron minerals on its surface that have oxidized (rusted)",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Iron minerals in Martian regolith have oxidized into iron oxide (rust), imparting a reddish tint.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I11",
+              "difficulty": "medium",
+              "prompt": "What is the key difference between rotation and revolution?",
+              "options": [
+                "A. Rotation is spinning on an internal axis; revolution is traveling in an orbit around another body",
+                "B. Rotation takes a year; revolution takes 24 hours",
+                "C. Rotation creates seasons; revolution creates day and night",
+                "D. Rotation applies only to the Moon"
+              ],
+              "correctAnswer": "A. Rotation is spinning on an internal axis; revolution is traveling in an orbit around another body",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Rotation refers to spinning on an axis, while revolution describes orbital transit around another celestial body.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I12",
+              "difficulty": "medium",
+              "prompt": "Why does a Foucault pendulum appear to change its swinging direction over the course of a day?",
+              "options": [
+                "A. The wind blows the pendulum",
+                "B. The pendulum maintains its swing plane in space while the Earth rotates underneath it",
+                "C. The string unwinds",
+                "D. Magnetic rocks in the ground attract it"
+              ],
+              "correctAnswer": "B. The pendulum maintains its swing plane in space while the Earth rotates underneath it",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The pendulum swings in a fixed plane while the Earth rotates beneath it, providing evidence of rotation.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I13",
+              "difficulty": "medium",
+              "prompt": "Why does Mercury take only 88 Earth days to orbit the Sun, while Venus takes 225 Earth days?",
+              "options": [
+                "A. Mercury is closer to the Sun, with a shorter orbital path and faster orbital velocity",
+                "B. Mercury has a larger mass than Venus",
+                "C. Venus travels in a straight line",
+                "D. Mercury is pushed by solar winds"
+              ],
+              "correctAnswer": "A. Mercury is closer to the Sun, with a shorter orbital path and faster orbital velocity",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "A smaller orbital radius combined with higher orbital speed results in a shorter orbital period for Mercury.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I14",
+              "difficulty": "medium",
+              "prompt": "What would happen to the cycle of seasons on Earth if the rotational axis were perpendicular (0° tilt) to its orbital plane?",
+              "options": [
+                "A. Seasons would change twice as fast",
+                "B. Seasonal changes would cease, resulting in constant climatic conditions year-round at any given latitude",
+                "C. Days would become 48 hours long",
+                "D. The Earth would stop revolving"
+              ],
+              "correctAnswer": "B. Seasonal changes would cease, resulting in constant climatic conditions year-round at any given latitude",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Without an axial tilt, solar insolation at each latitude would stay constant throughout the year, ending seasons.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I15",
+              "difficulty": "medium",
+              "prompt": "Which of the following environmental factors makes Earth uniquely suited to support complex biological life?",
+              "options": [
+                "A. A crushing atmosphere of sulfuric acid",
+                "B. Stable temperatures, liquid water, an oxygen-rich atmosphere, and an ozone shield",
+                "C. Proximity to the Asteroid Belt",
+                "D. Extreme temperature swings between day and night"
+              ],
+              "correctAnswer": "B. Stable temperatures, liquid water, an oxygen-rich atmosphere, and an ozone shield",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Liquid oceans, breathable oxygen, moderate temperatures, and radiation shielding support life on Earth.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I16",
+              "difficulty": "medium",
+              "prompt": "Why is the surface of Venus invisible to optical telescopes looking from Earth?",
+              "options": [
+                "A. Venus does not reflect light",
+                "B. It is permanently shrouded by thick, reflective clouds of sulfuric acid and carbon dioxide",
+                "C. Venus is always positioned behind the Sun",
+                "D. Its atmosphere absorbs all visible light"
+              ],
+              "correctAnswer": "B. It is permanently shrouded by thick, reflective clouds of sulfuric acid and carbon dioxide",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Dense, opaque clouds of sulfuric acid obscure optical views of Venus's surface.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I17",
+              "difficulty": "medium",
+              "prompt": "What is the significance of the Asteroid Belt's location?",
+              "options": [
+                "A. It prevents comets from entering the solar system",
+                "B. It marks the transition zone between inner terrestrial worlds and outer Jovian gas giants",
+                "C. It forms the boundary of the solar system",
+                "D. It generates solar heat"
+              ],
+              "correctAnswer": "B. It marks the transition zone between inner terrestrial worlds and outer Jovian gas giants",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The Asteroid Belt sits between Mars and Jupiter, separating the inner rocky and outer gas planets.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I18",
+              "difficulty": "medium",
+              "prompt": "How does the duration of daylight change at the Equator during Earth's annual revolution?",
+              "options": [
+                "A. Day lengths fluctuate between 2 hours and 22 hours",
+                "B. Daylight remains approximately 12 hours long throughout the entire year",
+                "C. The Equator experiences six months of darkness",
+                "D. Days disappear completely during winter"
+              ],
+              "correctAnswer": "B. Daylight remains approximately 12 hours long throughout the entire year",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Because the Equator bisects the planet, it receives roughly 12 hours of daylight year-round regardless of tilt.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I19",
+              "difficulty": "medium",
+              "prompt": "Why are impact craters preserved for billions of years on Mercury, whereas they are worn away on Earth?",
+              "options": [
+                "A. Mercury is made of soft clay",
+                "B. Mercury lacks liquid water, active weather, and plate tectonics to erode craters",
+                "C. Earth is older than Mercury",
+                "D. Meteorites bounce off Earth without touching it"
+              ],
+              "correctAnswer": "B. Mercury lacks liquid water, active weather, and plate tectonics to erode craters",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Without wind, rain, or plate tectonics, craters on Mercury remain geologically undisturbed.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I20",
+              "difficulty": "medium",
+              "prompt": "What geological features on Mars suggest that liquid water once flowed across its ancient surface?",
+              "options": [
+                "A. Active geysers of boiling water",
+                "B. Dry riverbeds, meandering valley networks, and sedimentary delta formations",
+                "C. Dense rain clouds",
+                "D. Large tropical forests"
+              ],
+              "correctAnswer": "B. Dry riverbeds, meandering valley networks, and sedimentary delta formations",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Sinuous channels and deltaic deposits indicate ancient surface water flow on Mars.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I21",
+              "difficulty": "medium",
+              "prompt": "Why do stars and constellations appear to shift positions in the night sky over several months?",
+              "options": [
+                "A. The stars are flying around the Earth",
+                "B. The Earth changes its vantage point in space as it revolves around the Sun",
+                "C. The stars turn off their light",
+                "D. Earth's axis reverses every month"
+              ],
+              "correctAnswer": "B. The Earth changes its vantage point in space as it revolves around the Sun",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "As Earth moves along its orbit, our nighttime field of view points toward different stellar backdrops.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I22",
+              "difficulty": "medium",
+              "prompt": "Which of the following planets has an axial rotation that is slower than its orbital revolution?",
+              "options": [
+                "A. Earth",
+                "B. Mars",
+                "C. Venus",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "C. Venus",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Venus rotates once every 243 Earth days but completes its orbit in 225 Earth days.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I23",
+              "difficulty": "medium",
+              "prompt": "Why do global wind systems not blow in a straight north-to-south line from the poles to the Equator?",
+              "options": [
+                "A. They are blocked by high mountains",
+                "B. The Earth's eastward rotation deflects their paths via the Coriolis effect",
+                "C. The Moon pulls winds in circles",
+                "D. Gravity pushes air backwards"
+              ],
+              "correctAnswer": "B. The Earth's eastward rotation deflects their paths via the Coriolis effect",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Earth's eastward rotation exerts a Coriolis deflection on air masses moving across latitudes.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I24",
+              "difficulty": "medium",
+              "prompt": "What causes the seasonal variations in the Arctic Circle between midnight sun and polar night?",
+              "options": [
+                "A. Periodic solar shutdowns",
+                "B. Earth's 23.5° axial tilt keeps polar regions pointed continuously toward or away from the Sun during solstices",
+                "C. The Moon blocks the Sun for months",
+                "D. The Earth stops rotating during winter"
+              ],
+              "correctAnswer": "B. Earth's 23.5° axial tilt keeps polar regions pointed continuously toward or away from the Sun during solstices",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Axial tilt keeps high polar latitudes continuously in light or shadow at opposite points in Earth's orbit.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I25",
+              "difficulty": "medium",
+              "prompt": "What is the primary constituent of the thin Martian atmosphere?",
+              "options": [
+                "A. Oxygen",
+                "B. Nitrogen",
+                "C. Carbon dioxide",
+                "D. Hydrogen"
+              ],
+              "correctAnswer": "C. Carbon dioxide",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Carbon dioxide accounts for roughly 95% of Mars's tenuous atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I26",
+              "difficulty": "medium",
+              "prompt": "Why is the gravitational pull of Mars weaker than that of the Earth?",
+              "options": [
+                "A. Mars has a smaller mass and radius than the Earth",
+                "B. Mars does not rotate",
+                "C. Mars has no core",
+                "D. Mars is farther from the Sun"
+              ],
+              "correctAnswer": "A. Mars has a smaller mass and radius than the Earth",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Surface gravity depends on mass and radius; Mars is smaller and less massive than Earth.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I27",
+              "difficulty": "medium",
+              "prompt": "What evidence indicates that volcanic activity took place on the surface of Mars in the past?",
+              "options": [
+                "A. Smoke clouds rising today",
+                "B. Large shield volcanoes, including Olympus Mons, and extensive basaltic lava plains",
+                "C. Ash rain falling on polar caps",
+                "D. Boiling oceans"
+              ],
+              "correctAnswer": "B. Large shield volcanoes, including Olympus Mons, and extensive basaltic lava plains",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Large volcanic cones and lava plains show evidence of extensive past volcanism on Mars.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I28",
+              "difficulty": "medium",
+              "prompt": "How does the length of a solar day on Mars compare to an Earth day?",
+              "options": [
+                "A. It lasts 59 Earth days",
+                "B. It is very similar, lasting approximately 24 hours and 37 minutes",
+                "C. It lasts only 2 hours",
+                "D. It lasts a full Earth year"
+              ],
+              "correctAnswer": "B. It is very similar, lasting approximately 24 hours and 37 minutes",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Mars's rotation period (a sol) is roughly 24 hours and 37 minutes.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I29",
+              "difficulty": "medium",
+              "prompt": "Why do celestial bodies appear to cross the local meridian at slightly different times each night?",
+              "options": [
+                "A. Stars change their speed",
+                "B. A sidereal day is about 4 minutes shorter than a solar day due to Earth's orbital progression around the Sun",
+                "C. The Earth changes its shape",
+                "D. Gravity fluctuates every day"
+              ],
+              "correctAnswer": "B. A sidereal day is about 4 minutes shorter than a solar day due to Earth's orbital progression around the Sun",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Earth's orbit requires an extra ~4 minutes of rotation each day to realign with the Sun compared to distant stars.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I30",
+              "difficulty": "medium",
+              "prompt": "What causes dust storms on Mars to grow into planet-wide events?",
+              "options": [
+                "A. Heavy rainfall",
+                "B. Solar heating generates convective winds in the thin, dry atmosphere, lifting fine dust that absorbs heat and drives stronger winds",
+                "C. Volcanic eruptions",
+                "D. Gravitational tugs from its moons"
+              ],
+              "correctAnswer": "B. Solar heating generates convective winds in the thin, dry atmosphere, lifting fine dust that absorbs heat and drives stronger winds",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Airborne dust absorbs sunlight, warming the thin air and driving feedback loops that expand dust storms.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I31",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor determining a planet's orbital period around the Sun?",
+              "options": [
+                "A. The planet's color",
+                "B. Its semi-major axis (average distance from the Sun)",
+                "C. The number of moons it possesses",
+                "D. Its axial rotation rate"
+              ],
+              "correctAnswer": "B. Its semi-major axis (average distance from the Sun)",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Per Kepler's third law, orbital period depends directly on a planet's distance from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I32",
+              "difficulty": "medium",
+              "prompt": "Why does Venus appear as the brightest starlike object in Earth's twilight sky?",
+              "options": [
+                "A. It generates light through nuclear fusion",
+                "B. Its proximity and dense sulfuric acid clouds give it a high albedo, reflecting most sunlight",
+                "C. It is on fire",
+                "D. It has massive ring systems"
+              ],
+              "correctAnswer": "B. Its proximity and dense sulfuric acid clouds give it a high albedo, reflecting most sunlight",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Venus's cloud cover reflects roughly 70% of incoming sunlight, giving it high visual brightness.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I33",
+              "difficulty": "medium",
+              "prompt": "How does Earth's magnetic field support life on the surface?",
+              "options": [
+                "A. It holds the atmosphere in place through friction",
+                "B. It deflects charged solar wind particles and cosmic rays that would strip the atmosphere and harm living cells",
+                "C. It heats ocean water",
+                "D. It produces oxygen gas"
+              ],
+              "correctAnswer": "B. It deflects charged solar wind particles and cosmic rays that would strip the atmosphere and harm living cells",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The magnetosphere acts as a shield against ionizing radiation from the solar wind.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I34",
+              "difficulty": "medium",
+              "prompt": "Why do shadows cast by stationary objects point westward in the morning and eastward in the late afternoon?",
+              "options": [
+                "A. Earth rotates eastward, making the Sun appear to move from east to west",
+                "B. Trees move slightly during the day",
+                "C. The Moon pulls the shadows",
+                "D. The ground tilts backwards"
+              ],
+              "correctAnswer": "A. Earth rotates eastward, making the Sun appear to move from east to west",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "An eastward-rotating Earth produces an apparent westward solar path, casting opposing shadows.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I35",
+              "difficulty": "medium",
+              "prompt": "What causes the seasonal variations in weather experienced by temperate regions of the Earth?",
+              "options": [
+                "A. Earth getting closer to or farther from the Sun in its orbit",
+                "B. Changes in solar angle and day length caused by Earth's tilted axis as it revolves around the Sun",
+                "C. The Sun cooling down periodically",
+                "D. Ocean water evaporating completely"
+              ],
+              "correctAnswer": "B. Changes in solar angle and day length caused by Earth's tilted axis as it revolves around the Sun",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Seasons result from the axial tilt altering the angle of sunlight and day length, not distance from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I36",
+              "difficulty": "medium",
+              "prompt": "Which of the following characteristics is unique to Earth among all inner planets?",
+              "options": [
+                "A. Having a solid rocky crust",
+                "B. Maintaining large bodies of stable surface liquid water",
+                "C. Revolving in an elliptical orbit",
+                "D. Experiencing daytime and nighttime"
+              ],
+              "correctAnswer": "B. Maintaining large bodies of stable surface liquid water",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Earth is the only terrestrial planet with abundant, stable liquid oceans on its surface.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I37",
+              "difficulty": "medium",
+              "prompt": "Why is the surface atmospheric pressure on Venus roughly 90 times greater than that on Earth?",
+              "options": [
+                "A. Venus has far more water",
+                "B. Venus has a massive, dense column of carbon dioxide gas filling its atmosphere",
+                "C. Venus has higher gravity than Earth",
+                "D. Venus is smaller"
+              ],
+              "correctAnswer": "B. Venus has a massive, dense column of carbon dioxide gas filling its atmosphere",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "The high mass and density of Venus's carbon dioxide atmosphere produce crushing surface pressure.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I38",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor that prevents water on the surface of Mars from remaining liquid today?",
+              "options": [
+                "A. Too much oxygen in the atmosphere",
+                "B. Extremely low atmospheric pressure and freezing temperatures cause water to sublimate or freeze",
+                "C. Mars is too close to the Sun",
+                "D. The rocks on Mars absorb water instantly"
+              ],
+              "correctAnswer": "B. Extremely low atmospheric pressure and freezing temperatures cause water to sublimate or freeze",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Low atmospheric pressure and sub-freezing temperatures cause exposed liquid water to boil or freeze rapidly.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I39",
+              "difficulty": "medium",
+              "prompt": "How does the eccentricity of a planetary orbit affect its distance from the Sun?",
+              "options": [
+                "A. The distance remains constant at all times",
+                "B. The distance varies between a closest approach (perihelion) and a farthest point (aphelion)",
+                "C. The planet leaves the solar system",
+                "D. The planet stops revolving"
+              ],
+              "correctAnswer": "B. The distance varies between a closest approach (perihelion) and a farthest point (aphelion)",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Elliptical orbits have varying distances, reaching perihelion (closest) and aphelion (farthest).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I40",
+              "difficulty": "medium",
+              "prompt": "Why are dwarf planets like Pluto and Ceres not classified as major planets?",
+              "options": [
+                "A. They do not orbit the Sun",
+                "B. They have not cleared their orbital neighborhoods of other debris",
+                "C. They are made entirely of liquid",
+                "D. They have no gravity"
+              ],
+              "correctAnswer": "B. They have not cleared their orbital neighborhoods of other debris",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Dwarf planets orbit the Sun and are spherical, but have not cleared their orbital paths of competing bodies.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I41",
+              "difficulty": "medium",
+              "prompt": "What effect does Earth's axial tilt have on the Southern Hemisphere when the Northern Hemisphere experiences summer?",
+              "options": [
+                "A. The Southern Hemisphere also experiences summer",
+                "B. The Southern Hemisphere is tilted away from the Sun, experiencing winter",
+                "C. The Southern Hemisphere experiences continuous daylight",
+                "D. The Southern Hemisphere stops revolving"
+              ],
+              "correctAnswer": "B. The Southern Hemisphere is tilted away from the Sun, experiencing winter",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Axial tilt produces opposing seasons in opposite hemispheres.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I42",
+              "difficulty": "medium",
+              "prompt": "How does the density of terrestrial planets compare to that of the gas giant planets?",
+              "options": [
+                "A. Terrestrial planets are far denser because they are composed of rock and metal rather than light gases",
+                "B. Gas giants are denser because they are larger",
+                "C. Both groups have identical densities",
+                "D. Terrestrial planets have zero density"
+              ],
+              "correctAnswer": "A. Terrestrial planets are far denser because they are composed of rock and metal rather than light gases",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Dense metallic and silicate compositions give terrestrial planets higher densities than Jovian gas giants.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I43",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of the stratospheric ozone layer for life on Earth?",
+              "options": [
+                "A. Providing carbon dioxide for photosynthesis",
+                "B. Absorbing biologically damaging high-energy ultraviolet radiation (UV-B and UV-C)",
+                "C. Trapping heat to melt polar caps",
+                "D. Producing nitrogen rain"
+              ],
+              "correctAnswer": "B. Absorbing biologically damaging high-energy ultraviolet radiation (UV-B and UV-C)",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Ozone absorbs hazardous ultraviolet wavelengths, shielding terrestrial life from genetic damage.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I44",
+              "difficulty": "medium",
+              "prompt": "Why does Mercury have no true seasons like the Earth or Mars?",
+              "options": [
+                "A. It is too close to the Sun",
+                "B. Its rotational axis has virtually no tilt (near 0°), so solar insolation does not change seasonally",
+                "C. Its day lasts 100 years",
+                "D. It has no core"
+              ],
+              "correctAnswer": "B. Its rotational axis has virtually no tilt (near 0°), so solar insolation does not change seasonally",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Near-zero axial tilt means solar exposure remains consistent across Mercury's orbit.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I45",
+              "difficulty": "medium",
+              "prompt": "Why are meteors seen as glowing streaks across Earth's night sky?",
+              "options": [
+                "A. They are burning stars",
+                "B. Small interplanetary meteoroids enter Earth's atmosphere at high speed, heating by compression and friction until they glow",
+                "C. They are reflections from the Moon",
+                "D. They are flying airplanes"
+              ],
+              "correctAnswer": "B. Small interplanetary meteoroids enter Earth's atmosphere at high speed, heating by compression and friction until they glow",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Atmospheric compression and friction vaporize meteoroids, producing luminous streaks (meteors).",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I46",
+              "difficulty": "medium",
+              "prompt": "What determines whether an interplanetary rocky fragment is classified as a meteoroid, meteor, or meteorite?",
+              "options": [
+                "A. Its chemical composition",
+                "B. Its location: meteoroid in space, meteor burning in an atmosphere, meteorite recovered on the ground",
+                "C. Its color",
+                "D. Its age"
+              ],
+              "correctAnswer": "B. Its location: meteoroid in space, meteor burning in an atmosphere, meteorite recovered on the ground",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Terminology reflects position: meteoroids travel in space, meteors glow in the atmosphere, and meteorites strike ground.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I47",
+              "difficulty": "medium",
+              "prompt": "Why does Mars have polar ice caps that change size with the Martian seasons?",
+              "options": [
+                "A. The poles melt and freeze as Mars's 25° axial tilt causes seasonal temperature shifts during its orbit",
+                "B. Oceans flood the poles",
+                "C. The Sun gets closer to Mars in winter",
+                "D. Dust covers the ice permanently"
+              ],
+              "correctAnswer": "A. The poles melt and freeze as Mars's 25° axial tilt causes seasonal temperature shifts during its orbit",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Mars's 25° tilt produces seasons that cause carbon dioxide ice to sublimate and reform periodically.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I48",
+              "difficulty": "medium",
+              "prompt": "Why is the day-to-night temperature range on Earth much more moderate than on Mercury or Mars?",
+              "options": [
+                "A. Earth has a dense atmosphere containing water vapor and greenhouse gases that retain and distribute heat",
+                "B. Earth has more volcanic fires",
+                "C. Earth does not rotate",
+                "D. Earth is shielded by the Moon"
+              ],
+              "correctAnswer": "A. Earth has a dense atmosphere containing water vapor and greenhouse gases that retain and distribute heat",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Atmospheric gases, water vapor, and circulating oceans moderate diurnal temperature swings on Earth.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I49",
+              "difficulty": "medium",
+              "prompt": "What accounts for the presence of canyons like Valles Marineris on Mars?",
+              "options": [
+                "A. Human excavation",
+                "B. Ancient tectonic rifting and crustal cracking as the planet cooled, enlarged by wind erosion",
+                "C. Impact by a large comet yesterday",
+                "D. Rivers flowing today"
+              ],
+              "correctAnswer": "B. Ancient tectonic rifting and crustal cracking as the planet cooled, enlarged by wind erosion",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Valles Marineris formed primarily through tectonic fracture and crustal pulling, widened by erosion.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_I50",
+              "difficulty": "medium",
+              "prompt": "How does the presence of an atmosphere on Earth protect the surface from incoming space debris compared to Mercury?",
+              "options": [
+                "A. It reflects rocks like a mirror",
+                "B. Earth's dense atmospheric layers vaporize small debris through frictional heat before they can strike the ground",
+                "C. The atmosphere pushes debris into the Sun",
+                "D. Earth has no protection"
+              ],
+              "correctAnswer": "B. Earth's dense atmospheric layers vaporize small debris through frictional heat before they can strike the ground",
+              "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+              "workedSolution": "Atmospheric friction incinerates small space rocks before ground impact, protecting the surface.",
               "points": 1,
               "learningCompetency": "B7.3.2.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_SYS_A01",
+              "difficulty": "hard",
+              "prompt": "Mercury orbits the Sun every 88 Earth days, yet a single solar day (sunrise to sunrise) on its surface takes 176 Earth days. What astronomical mechanism causes this?",
+              "options": [
+                "A. Mercury is physically expanding and contracting",
+                "B. A 3:2 spin-orbit resonance where Mercury rotates three times on its axis for every two orbital revolutions around the Sun",
+                "C. Solar flares push Mercury backwards in its orbit",
+                "D. Mercury's core stops rotating"
+              ],
+              "correctAnswer": "B. A 3:2 spin-orbit resonance where Mercury rotates three times on its axis for every two orbital revolutions around the Sun",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Tidal locking produces a 3:2 spin-orbit resonance, making one noon-to-noon solar day equal two full orbital years.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A02",
+              "difficulty": "hard",
+              "prompt": "Why did Venus experience a runaway greenhouse effect while Earth maintained a stable, life-supporting climate?",
+              "options": [
+                "A. Venus was formed without water",
+                "B. Being closer to the Sun, initial warmth vaporized oceans on Venus; without oceans to dissolve CO₂ into carbonate rocks, atmospheric CO₂ accumulated unchecked",
+                "C. Earth has no carbon dioxide in its crust",
+                "D. Solar winds blew Venus's oceans to Mars"
+              ],
+              "correctAnswer": "B. Being closer to the Sun, initial warmth vaporized oceans on Venus; without oceans to dissolve CO₂ into carbonate rocks, atmospheric CO₂ accumulated unchecked",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Proximity to the Sun triggered ocean evaporation on Venus, disabling carbonate-silicate cycles that lock carbon into rock.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A03",
+              "difficulty": "hard",
+              "prompt": "How does Kepler's Second Law of Planetary Motion explain why Mercury travels faster along its orbit at perihelion than at aphelion?",
+              "options": [
+                "A. Solar wind pushes it faster from behind",
+                "B. An imaginary line connecting the planet to the Sun sweeps out equal areas in equal times, requiring faster velocity when closer to the gravitational source",
+                "C. Mercury loses mass at perihelion",
+                "D. Planets slow down when falling toward the Sun"
+              ],
+              "correctAnswer": "B. An imaginary line connecting the planet to the Sun sweeps out equal areas in equal times, requiring faster velocity when closer to the gravitational source",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "The conservation of angular momentum requires orbital velocity to increase near perihelion.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A04",
+              "difficulty": "hard",
+              "prompt": "Why does Mars lack an active global dipole magnetic field today, unlike the Earth?",
+              "options": [
+                "A. Mars is too far from the Sun",
+                "B. Its smaller metallic core cooled and solidified more rapidly, halting the convective geodynamo needed to generate a global field",
+                "C. The Martian atmosphere burned the magnetic poles",
+                "D. Mars contains no iron"
+              ],
+              "correctAnswer": "B. Its smaller metallic core cooled and solidified more rapidly, halting the convective geodynamo needed to generate a global field",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "A smaller planetary volume cooled faster, quenching the liquid core convection that generates a global dynamo.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A05",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor that caused Mars to lose most of its ancient, dense atmosphere over billions of years?",
+              "options": [
+                "A. Mars was hit by Venus",
+                "B. Loss of its protective magnetic field allowed the solar wind to strip volatile atmospheric gases away into space",
+                "C. The atmosphere froze permanently into the core",
+                "D. Plant life absorbed all gases"
+              ],
+              "correctAnswer": "B. Loss of its protective magnetic field allowed the solar wind to strip volatile atmospheric gases away into space",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Without a magnetic shield, unhindered solar wind stripped away atmospheric gases over geologic time.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A06",
+              "difficulty": "hard",
+              "prompt": "Why is the rate of precession of a Foucault pendulum dependent on the latitude where it is set up?",
+              "options": [
+                "A. Gravity disappears at the Equator",
+                "B. The vertical component of Earth's rotational vector is maximum at the poles (precessing in 24 hours) and zero at the Equator (no apparent precession)",
+                "C. Pendulums only work in the Northern Hemisphere",
+                "D. Pendulum strings stretch in warm weather"
+              ],
+              "correctAnswer": "B. The vertical component of Earth's rotational vector is maximum at the poles (precessing in 24 hours) and zero at the Equator (no apparent precession)",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Precession rate equals ω sin(latitude); it completes in 24 hours at poles and ceases entirely at the Equator.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A07",
+              "difficulty": "hard",
+              "prompt": "Why does Olympus Mons on Mars reach three times the height of Mount Everest without collapsing?",
+              "options": [
+                "A. It is made of lightweight foam",
+                "B. Lower Martian surface gravity and a thick, stationary crust allowed hot-spot volcanism to build up over billions of years without plate motion",
+                "C. Comets piled rock on top of it",
+                "D. It is supported by ocean water"
+              ],
+              "correctAnswer": "B. Lower Martian surface gravity and a thick, stationary crust allowed hot-spot volcanism to build up over billions of years without plate motion",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Lower gravity and the absence of moving tectonic plates allowed lava to build a single massive shield.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A08",
+              "difficulty": "hard",
+              "prompt": "How does the carbonate-silicate geochemical cycle stabilize Earth's long-term climate over geological timescales?",
+              "options": [
+                "A. It stops volcanoes from erupting",
+                "B. Weathering of silicate rocks by rainwater draws down atmospheric CO₂, depositing it as ocean carbonates that subduct and release CO₂ via volcanism",
+                "C. It converts carbon into oxygen gas",
+                "D. It cools the Earth's core"
+              ],
+              "correctAnswer": "B. Weathering of silicate rocks by rainwater draws down atmospheric CO₂, depositing it as ocean carbonates that subduct and release CO₂ via volcanism",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Negative feedback between rainfall, silicate weathering, and carbon subduction regulates Earth's greenhouse balance.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A09",
+              "difficulty": "hard",
+              "prompt": "Why does Venus have so few impact craters across its surface compared to Mercury?",
+              "options": [
+                "A. Asteroids cannot reach Venus",
+                "B. Its dense atmosphere burns up small meteoroids, and widespread volcanic resurfacing within the last 500 million years erased older craters",
+                "C. Venus's crust is liquid water",
+                "D. Craters are washed away by rainfall"
+              ],
+              "correctAnswer": "B. Its dense atmosphere burns up small meteoroids, and widespread volcanic resurfacing within the last 500 million years erased older craters",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Atmospheric shielding and young volcanic plains have resurfaced Venus, erasing older cratering records.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A10",
+              "difficulty": "hard",
+              "prompt": "Why is the synodic day (solar day) of the Earth approximately 4 minutes longer than its sidereal day?",
+              "options": [
+                "A. Earth slows down at night",
+                "B. As Earth completes one 360° axial rotation, it has moved along its orbit and must rotate an additional ~1° to realign with the Sun",
+                "C. The Moon pulls Earth backwards",
+                "D. Clocks run faster in space"
+              ],
+              "correctAnswer": "B. As Earth completes one 360° axial rotation, it has moved along its orbit and must rotate an additional ~1° to realign with the Sun",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Earth moves ~1° along its orbit each day, requiring roughly 4 extra minutes of rotation to face the Sun again.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A11",
+              "difficulty": "hard",
+              "prompt": "What is the primary mechanism causing the super-rotation of the atmosphere of Venus?",
+              "options": [
+                "A. Fast core rotation",
+                "B. High-altitude thermal tides and momentum transfer drive cloud layers around the planet in four Earth days, far faster than its 243-day surface spin",
+                "C. Gravitational pull from Mercury",
+                "D. Magnetic field rotation"
+              ],
+              "correctAnswer": "B. High-altitude thermal tides and momentum transfer drive cloud layers around the planet in four Earth days, far faster than its 243-day surface spin",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Thermal solar heating drives high-altitude winds that circulate around Venus 60 times faster than the planet spins.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A12",
+              "difficulty": "hard",
+              "prompt": "Why does Mars exhibit a high orbital eccentricity (e ≈ 0.093) compared to Venus (e ≈ 0.007)?",
+              "options": [
+                "A. Mars has a circular orbit",
+                "B. Mars's path is more elongated, resulting in significant solar energy differences between its perihelion and aphelion",
+                "C. Mars was pushed by the Moon",
+                "D. Venus has no gravity"
+              ],
+              "correctAnswer": "B. Mars's path is more elongated, resulting in significant solar energy differences between its perihelion and aphelion",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Higher eccentricity means Mars's distance from the Sun varies substantially, intensifying seasonal contrasts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A13",
+              "difficulty": "hard",
+              "prompt": "What is the main source of the magnetic field detected on Mercury despite its slow rotation?",
+              "options": [
+                "A. Radioactive rocks on its surface",
+                "B. A partially molten, iron-rich outer core supporting a convective dynamo driven by core crystallization",
+                "C. Electrical currents in its clouds",
+                "D. External induction from Mars"
+              ],
+              "correctAnswer": "B. A partially molten, iron-rich outer core supporting a convective dynamo driven by core crystallization",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Thermodynamic and compositional convection within a molten outer core layer maintains Mercury's dynamo.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A14",
+              "difficulty": "hard",
+              "prompt": "How does the Milankovitch cycle of orbital eccentricity influence Earth's long-term glacial periods?",
+              "options": [
+                "A. It changes the color of the Sun",
+                "B. Periodic variations in Earth's orbital shape modulate seasonal solar insolation extremes, driving ice-age pacing over 100,000-year cycles",
+                "C. It stops the Earth's rotation",
+                "D. It removes the ozone layer"
+              ],
+              "correctAnswer": "B. Periodic variations in Earth's orbital shape modulate seasonal solar insolation extremes, driving ice-age pacing over 100,000-year cycles",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Cyclic variations in orbital eccentricity alter seasonal insolation, influencing long-term glacial cycles.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A15",
+              "difficulty": "hard",
+              "prompt": "Why are volatile compounds (such as water, ammonia, and methane) depleted on the inner planets compared to the outer planets?",
+              "options": [
+                "A. Volatiles were destroyed by comets",
+                "B. Proximity to the early Sun kept temperatures above the condensation points of volatiles ('frost line'), allowing only silicates and metals to accrete",
+                "C. Inner planets absorbed only pure iron",
+                "D. Gas giants pulled all water away instantly"
+              ],
+              "correctAnswer": "B. Proximity to the early Sun kept temperatures above the condensation points of volatiles ('frost line'), allowing only silicates and metals to accrete",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Inside the frost line, heat prevented volatile gases from condensing, leaving only rocks and metals to form planets.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A16",
+              "difficulty": "hard",
+              "prompt": "Why does liquid water fail to persist on the present-day surface of Mars even when temperatures rise above 0°C?",
+              "options": [
+                "A. The water burns into flames",
+                "B. Ambient surface pressure (~610 Pa) is near the triple point of water, causing ice to sublimate directly into vapor or liquid to boil away",
+                "C. Martian gravity repels water",
+                "D. Rocks absorb all moisture chemically"
+              ],
+              "correctAnswer": "B. Ambient surface pressure (~610 Pa) is near the triple point of water, causing ice to sublimate directly into vapor or liquid to boil away",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "At low atmospheric pressures near the triple point, water cannot remain liquid and boils or sublimates rapidly.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A17",
+              "difficulty": "hard",
+              "prompt": "What is the physical cause of planetary differentiation during the early formation of terrestrial worlds?",
+              "options": [
+                "A. Comets hitting the surface",
+                "B. Gravitational settling of dense, molten iron-nickel into the interior core, while lighter silicate minerals floated upward to form the mantle and crust",
+                "C. The planets turning into gas",
+                "D. Solar wind peeling the outer layers"
+              ],
+              "correctAnswer": "B. Gravitational settling of dense, molten iron-nickel into the interior core, while lighter silicate minerals floated upward to form the mantle and crust",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Internal heating melted planetary bodies, allowing dense metals to sink to the core and lighter silicates to float.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A18",
+              "difficulty": "hard",
+              "prompt": "Why do the tropical regions of Earth experience small annual temperature ranges compared to high-latitude polar regions?",
+              "options": [
+                "A. Tropical regions do not revolve around the Sun",
+                "B. The noon Sun remains at high angles near the zenith year-round, delivering consistent solar insolation despite axial tilt",
+                "C. The Equator is made of different rock",
+                "D. Polar regions have no atmosphere"
+              ],
+              "correctAnswer": "B. The noon Sun remains at high angles near the zenith year-round, delivering consistent solar insolation despite axial tilt",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "High solar angles deliver consistent insolation year-round in low latitudes, moderating seasonal temperature shifts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A19",
+              "difficulty": "hard",
+              "prompt": "What is the origin of the Kirkwood gaps observed within the Asteroid Belt?",
+              "options": [
+                "A. Large planets smashed through the gaps",
+                "B. Orbital resonances with Jupiter clear asteroids out of specific orbital periods through repeated gravitational perturbations",
+                "C. The Sun absorbs asteroids at those positions",
+                "D. Dust clouds hide the asteroids"
+              ],
+              "correctAnswer": "B. Orbital resonances with Jupiter clear asteroids out of specific orbital periods through repeated gravitational perturbations",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Orbital resonances with Jupiter's gravitational field destabilize and clear asteroids from specific orbital tracks.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A20",
+              "difficulty": "hard",
+              "prompt": "Why is the sidereal rotation period of Venus (243 Earth days) longer than its synodic day (117 Earth days)?",
+              "options": [
+                "A. Venus changes shape",
+                "B. Retrograde rotation opposes orbital revolution, shortening the time needed for the Sun to return to the same meridian",
+                "C. The Sun revolves around Venus",
+                "D. Clocks run differently on Venus"
+              ],
+              "correctAnswer": "B. Retrograde rotation opposes orbital revolution, shortening the time needed for the Sun to return to the same meridian",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Retrograde spin combined with forward orbital motion means the Sun returns to the zenith in only 117 Earth days.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A21",
+              "difficulty": "hard",
+              "prompt": "How does the presence of Earth's large Moon stabilize our planetary climate over millions of years?",
+              "options": [
+                "A. It provides heat to oceans",
+                "B. Gravitational tidal interactions prevent chaotic wobbling of Earth's axial tilt (obliquity), keeping seasons stable",
+                "C. It blocks solar flares",
+                "D. It creates cloud cover"
+              ],
+              "correctAnswer": "B. Gravitational tidal interactions prevent chaotic wobbling of Earth's axial tilt (obliquity), keeping seasons stable",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Tidal torques from our large Moon stabilize Earth's obliquity, preventing chaotic seasonal climate shifts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A22",
+              "difficulty": "hard",
+              "prompt": "What causes the high deuterium-to-hydrogen (D/H) ratio measured in the atmosphere of Venus compared to Earth?",
+              "options": [
+                "A. Venus was formed from nuclear waste",
+                "B. Massive past water loss; lighter hydrogen atoms escaped into space while heavier deuterium was retained",
+                "C. Volcanic eruptions create deuterium",
+                "D. Oxygen absorbs normal hydrogen"
+              ],
+              "correctAnswer": "B. Massive past water loss; lighter hydrogen atoms escaped into space while heavier deuterium was retained",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Solar UV broke atmospheric water; light hydrogen escaped to space while heavier deuterium accumulated.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A23",
+              "difficulty": "hard",
+              "prompt": "Why does Mars have larger variations in its axial tilt (15° to 35°) over geological time than Earth?",
+              "options": [
+                "A. Mars has no gravity",
+                "B. Mars lacks a massive stabilizing moon, leaving its axial orientation vulnerable to gravitational tugs from other planets",
+                "C. Its core is liquid water",
+                "D. The Sun attracts Mars's poles"
+              ],
+              "correctAnswer": "B. Mars lacks a massive stabilizing moon, leaving its axial orientation vulnerable to gravitational tugs from other planets",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Lacking a massive moon to stabilize its spin axis, Mars experiences chaotic obliquity variations.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A24",
+              "difficulty": "hard",
+              "prompt": "What constitutes the geodynamo mechanism in Earth's outer core?",
+              "options": [
+                "A. Solid iron spinning in a vacuum",
+                "B. Convection of electrically conductive molten iron-nickel combined with Coriolis deflection, generating self-sustaining magnetic fields",
+                "C. Nuclear explosions in the mantle",
+                "D. Surface ocean currents"
+              ],
+              "correctAnswer": "B. Convection of electrically conductive molten iron-nickel combined with Coriolis deflection, generating self-sustaining magnetic fields",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Helical thermal convection in the liquid metallic outer core generates and maintains our magnetic field.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A25",
+              "difficulty": "hard",
+              "prompt": "Why is the daytime sky black on Mercury when viewed from its surface?",
+              "options": [
+                "A. The Sun does not shine on Mercury",
+                "B. Mercury has no substantial atmosphere to scatter shorter wavelengths of sunlight (Rayleigh scattering)",
+                "C. The ground absorbs all light",
+                "D. Mercury's sky is covered in soot"
+              ],
+              "correctAnswer": "B. Mercury has no substantial atmosphere to scatter shorter wavelengths of sunlight (Rayleigh scattering)",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Rayleigh scattering requires gas molecules; without an atmosphere, sunlight travels in straight lines against a dark sky.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A26",
+              "difficulty": "hard",
+              "prompt": "How do lobate scarps (cliffs) across the surface of Mercury provide evidence of its internal thermal history?",
+              "options": [
+                "A. They were carved by ancient rivers",
+                "B. They are thrust faults formed as Mercury's massive metallic core cooled and contracted, shrinking the planetary surface",
+                "C. They were formed by plate tectonics like Earth's",
+                "D. Meteorites dug long trenches"
+              ],
+              "correctAnswer": "B. They are thrust faults formed as Mercury's massive metallic core cooled and contracted, shrinking the planetary surface",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Global contraction during core cooling buckled the brittle outer crust into compressive thrust faults.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A27",
+              "difficulty": "hard",
+              "prompt": "What causes the seasonal variations in atmospheric pressure observed on the surface of Mars?",
+              "options": [
+                "A. Heavy rainfall adding weight to air",
+                "B. Up to 25% of the atmospheric carbon dioxide freezes onto the winter polar cap and sublimates back into the atmosphere in summer",
+                "C. The Sun moves closer to Mars",
+                "D. Volcanoes erupt every winter"
+              ],
+              "correctAnswer": "B. Up to 25% of the atmospheric carbon dioxide freezes onto the winter polar cap and sublimates back into the atmosphere in summer",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Periodic freezing and sublimation of atmospheric CO₂ at the poles causes large global pressure shifts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A28",
+              "difficulty": "hard",
+              "prompt": "Why is liquid water considered the most critical solvent for life in the solar system?",
+              "options": [
+                "A. It dissolves all rocks instantly",
+                "B. Its polar molecule, wide liquid range, high heat capacity, and solvent capabilities allow biochemical reactions to occur in cells",
+                "C. It turns into oxygen at room temperature",
+                "D. It generates magnetic fields"
+              ],
+              "correctAnswer": "B. Its polar molecule, wide liquid range, high heat capacity, and solvent capabilities allow biochemical reactions to occur in cells",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Water's polarity, thermal buffer capacity, and ability to dissolve biochemicals make it central to carbon-based life.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A29",
+              "difficulty": "hard",
+              "prompt": "How does the Foucault pendulum provide empirical proof that the Earth is an accelerated reference frame?",
+              "options": [
+                "A. It proves gravity changes with time",
+                "B. Apparent rotation of the swing plane without applied horizontal torques reveals fictitious Coriolis forces produced by an inertial reference frame",
+                "C. It proves the Earth is flat",
+                "D. It demonstrates magnetic attraction"
+              ],
+              "correctAnswer": "B. Apparent rotation of the swing plane without applied horizontal torques reveals fictitious Coriolis forces produced by an inertial reference frame",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Apparent plane rotation without external torques demonstrates that Earth's surface is an accelerated rotating frame.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A30",
+              "difficulty": "hard",
+              "prompt": "What is the origin of the high concentrations of iron oxide in the regolith of Mars?",
+              "options": [
+                "A. A collision with an iron asteroid yesterday",
+                "B. Smaller planetary size allowed less iron to differentiate into the core during accretion, leaving more iron in mantle silicates to weather into surface rust",
+                "C. Alien industrial activity",
+                "D. Ocean salts turning into iron"
+              ],
+              "correctAnswer": "B. Smaller planetary size allowed less iron to differentiate into the core during accretion, leaving more iron in mantle silicates to weather into surface rust",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Less complete core segregation left more iron in the mantle and crust, which weathered into surface iron oxides.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A31",
+              "difficulty": "hard",
+              "prompt": "Why is the greenhouse warming on Earth self-regulating while that on Venus is unstable?",
+              "options": [
+                "A. Earth has no greenhouse gases",
+                "B. Earth possesses a negative feedback hydrological and rock-weathering cycle that removes excess CO₂ as temperatures rise, whereas Venus lost its water",
+                "C. Earth's plants absorb all solar heat",
+                "D. Earth is farther from the Asteroid Belt"
+              ],
+              "correctAnswer": "B. Earth possesses a negative feedback hydrological and rock-weathering cycle that removes excess CO₂ as temperatures rise, whereas Venus lost its water",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Water-driven chemical weathering accelerates with temperature, sequestering carbon and stabilizing Earth's climate.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A32",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor that causes the equatorial radius of the Earth to be approximately 21 km larger than its polar radius?",
+              "options": [
+                "A. Solar gravity pulling the Equator",
+                "B. Centrifugal force generated by Earth's axial rotation causes the equatorial region to bulge outward",
+                "C. More mountains exist at the Equator",
+                "D. The Moon orbits only around the Equator"
+              ],
+              "correctAnswer": "B. Centrifugal force generated by Earth's axial rotation causes the equatorial region to bulge outward",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Centrifugal forces from axial rotation cause the plastic interior of Earth to bulge into an oblate spheroid.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A33",
+              "difficulty": "hard",
+              "prompt": "Why does Mercury have an iron core that accounts for roughly 70% of its total planetary mass?",
+              "options": [
+                "A. It formed from an iron comet",
+                "B. Giant impacts during early accretion may have stripped away much of its outer silicate mantle, or solar vaporization depleted outer rocks",
+                "C. The core is made of liquid water",
+                "D. Iron was attracted to the Sun like a magnet"
+              ],
+              "correctAnswer": "B. Giant impacts during early accretion may have stripped away much of its outer silicate mantle, or solar vaporization depleted outer rocks",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Mantle-stripping impact events or intense solar vaporization early in formation explain Mercury's high core ratio.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A34",
+              "difficulty": "hard",
+              "prompt": "What is the primary cause of atmospheric escape of lighter gases like hydrogen and helium from Earth's upper exosphere?",
+              "options": [
+                "A. Gravity pulls them down",
+                "B. Thermal velocities of light atoms exceed Earth's escape velocity (Jeans escape), supplemented by non-thermal solar wind interactions",
+                "C. Ozone absorbs light gases",
+                "D. Trees absorb hydrogen"
+              ],
+              "correctAnswer": "B. Thermal velocities of light atoms exceed Earth's escape velocity (Jeans escape), supplemented by non-thermal solar wind interactions",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Lightweight gases have high thermal molecular velocities that regularly exceed planetary escape velocity.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A35",
+              "difficulty": "hard",
+              "prompt": "How does the tilt of Earth's axis affect the angle of solar incidence at the Tropic of Cancer during the June solstice?",
+              "options": [
+                "A. The Sun is at the horizon",
+                "B. The Sun reaches a 90° solar elevation (directly overhead at zenith) at solar noon",
+                "C. Sunlight disappears for 24 hours",
+                "D. The solar angle drops to zero"
+              ],
+              "correctAnswer": "B. The Sun reaches a 90° solar elevation (directly overhead at zenith) at solar noon",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "At the June solstice, the Northern Hemisphere tilts toward the Sun, placing it directly overhead at latitude 23.5° N.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A36",
+              "difficulty": "hard",
+              "prompt": "Why are the coronae features on the surface of Venus unique among the inner planets?",
+              "options": [
+                "A. They are impact craters filled with water",
+                "B. They are circular volcanic-tectonic features formed by rising mantle plumes pushing the crust upward and collapsing",
+                "C. They are dried lake beds",
+                "D. They are impact sites of moons"
+              ],
+              "correctAnswer": "B. They are circular volcanic-tectonic features formed by rising mantle plumes pushing the crust upward and collapsing",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Coronae form from hot mantle plumes that dome, fracture, and collapse the crust on a planet lacking plate tectonics.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A37",
+              "difficulty": "hard",
+              "prompt": "What causes the semi-annual occurrence of equinoxes across the Earth?",
+              "options": [
+                "A. Earth stops rotating on that day",
+                "B. Earth's axis points perpendicular to the Sun-Earth line, causing the subsolar point to cross the Equator and yielding equal day and night worldwide",
+                "C. The Moon aligns between the Earth and Sun",
+                "D. The Sun is at its farthest point from Earth"
+              ],
+              "correctAnswer": "B. Earth's axis points perpendicular to the Sun-Earth line, causing the subsolar point to cross the Equator and yielding equal day and night worldwide",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "At equinoxes, the subsolar point lies on the Equator, illuminating both hemispheres equally.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A38",
+              "difficulty": "hard",
+              "prompt": "Why does Mars show no current evidence of plate tectonics?",
+              "options": [
+                "A. It has too much ocean water",
+                "B. A cooler interior, thicker lithosphere, and absence of subducting water-lubricated plates lock the crust into a single stagnant lid",
+                "C. It has two moons that hold the crust",
+                "D. Mars is too young"
+              ],
+              "correctAnswer": "B. A cooler interior, thicker lithosphere, and absence of subducting water-lubricated plates lock the crust into a single stagnant lid",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "A thick, rigid lithosphere and lack of water lubrication hold Mars's crust in a stagnant-lid regime.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A39",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor driving thermal convection inside the Earth's mantle?",
+              "options": [
+                "A. Sunlight heating the crust",
+                "B. Primordial accretionary heat combined with continuous radioactive decay of isotopes (uranium, thorium, potassium-40) in the interior",
+                "C. Ocean water sinking to the core",
+                "D. Gravitational pull from Mars"
+              ],
+              "correctAnswer": "B. Primordial accretionary heat combined with continuous radioactive decay of isotopes (uranium, thorium, potassium-40) in the interior",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Mantle convection is driven by primordial heat and heat released by radioactive isotope decay.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A40",
+              "difficulty": "hard",
+              "prompt": "How does the absence of an atmosphere on Mercury affect its surface soil (regolith)?",
+              "options": [
+                "A. Regolith turns into rich farming soil",
+                "B. Space weathering, micrometeoroid impacts, and unhindered solar wind bombardment pulverize surface rocks into a fine glassy dust",
+                "C. Regolith dissolves into water",
+                "D. Soil is blown away by storms"
+              ],
+              "correctAnswer": "B. Space weathering, micrometeoroid impacts, and unhindered solar wind bombardment pulverize surface rocks into a fine glassy dust",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Direct exposure to cosmic rays, solar wind, and micrometeoroids breaks rock into impact-melt glass and regolith.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A41",
+              "difficulty": "hard",
+              "prompt": "Why does a solar eclipse happen only during the new moon phase, but not at every new moon?",
+              "options": [
+                "A. The Moon disappears every month",
+                "B. The Moon's orbital plane is tilted by approximately 5° relative to the Earth's ecliptic plane, so shadows usually miss the Earth",
+                "C. The Sun moves out of the way",
+                "D. Eclipses happen only in leap years"
+              ],
+              "correctAnswer": "B. The Moon's orbital plane is tilted by approximately 5° relative to the Earth's ecliptic plane, so shadows usually miss the Earth",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "A 5° orbital inclination means the Moon's shadow usually passes above or below Earth during new moon.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A42",
+              "difficulty": "hard",
+              "prompt": "What is the origin of the seasonal polar caps' expansion and contraction on Mars?",
+              "options": [
+                "A. Water boiling into steam",
+                "B. Sublimation of carbon dioxide during spring and summer, and redeposition as dry ice during autumn and winter",
+                "C. Dust storms blowing ice away",
+                "D. Volcanic ash covering the poles"
+              ],
+              "correctAnswer": "B. Sublimation of carbon dioxide during spring and summer, and redeposition as dry ice during autumn and winter",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Thin seasonal caps grow and shrink through condensation and sublimation of atmospheric carbon dioxide.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A43",
+              "difficulty": "hard",
+              "prompt": "Why is the escape velocity of Earth (11.2 km/s) higher than that of Mars (5.0 km/s)?",
+              "options": [
+                "A. Earth has more water",
+                "B. Escape velocity scales with sqrt(M/R), and Earth has higher mass (M) relative to its radius (R)",
+                "C. Earth rotates faster",
+                "D. Mars is closer to Jupiter"
+              ],
+              "correctAnswer": "B. Escape velocity scales with sqrt(M/R), and Earth has higher mass (M) relative to its radius (R)",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Greater planetary mass produces a deeper gravitational potential well, raising escape velocity.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A44",
+              "difficulty": "hard",
+              "prompt": "What produces the banded, alternating trade winds and westerlies on Earth?",
+              "options": [
+                "A. Trees swaying in the wind",
+                "B. Hadley, Ferrel, and polar convective atmospheric cells broken into zonal wind belts by the Coriolis effect of Earth's rotation",
+                "C. The Moon's orbit",
+                "D. Heat from the Earth's core"
+              ],
+              "correctAnswer": "B. Hadley, Ferrel, and polar convective atmospheric cells broken into zonal wind belts by the Coriolis effect of Earth's rotation",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Meridional convective cells are deflected by the Coriolis effect into distinct zonal wind belts.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A45",
+              "difficulty": "hard",
+              "prompt": "Why did the inner planets fail to capture vast atmospheres of primordial hydrogen and helium like Jupiter?",
+              "options": [
+                "A. Inner planets have no gravity",
+                "B. Lower masses and high early solar temperatures gave light hydrogen and helium thermal velocities higher than terrestrial escape speeds",
+                "C. Hydrogen was repelled by rock",
+                "D. The inner planets absorbed only nitrogen"
+              ],
+              "correctAnswer": "B. Lower masses and high early solar temperatures gave light hydrogen and helium thermal velocities higher than terrestrial escape speeds",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "High thermal velocity near the Sun allowed light gases to escape the gravitational wells of small inner planets.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A46",
+              "difficulty": "hard",
+              "prompt": "What causes the geological feature known as Caloris Basin on Mercury?",
+              "options": [
+                "A. A dried ocean bed",
+                "B. A cataclysmic impact by a massive asteroid early in the solar system's history, producing concentric shock rings",
+                "C. A collapsed volcano",
+                "D. Tectonic rifting"
+              ],
+              "correctAnswer": "B. A cataclysmic impact by a massive asteroid early in the solar system's history, producing concentric shock rings",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Caloris Basin is an ancient impact crater over 1,500 km across, ringed by compressive mountain ridges.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A47",
+              "difficulty": "hard",
+              "prompt": "Why does the presence of an ocean on Earth prevent it from suffering the greenhouse fate of Venus?",
+              "options": [
+                "A. Water cools the core",
+                "B. Oceans absorb atmospheric carbon dioxide, converting it into dissolved bicarbonate and solid carbonate rock precipitates",
+                "C. Oceans reflect all sunlight into space",
+                "D. Water dissolves incoming meteorites"
+              ],
+              "correctAnswer": "B. Oceans absorb atmospheric carbon dioxide, converting it into dissolved bicarbonate and solid carbonate rock precipitates",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Liquid oceans dissolve carbon dioxide and support carbonate precipitation, sequestering atmospheric carbon.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A48",
+              "difficulty": "hard",
+              "prompt": "How does the sidereal year differ from the tropical year on Earth?",
+              "options": [
+                "A. Tropical year is 100 days longer",
+                "B. The tropical year (equinox to equinox) is ~20 minutes shorter than the sidereal year (fixed stars) due to axial precession",
+                "C. Sidereal year applies only to Mars",
+                "D. Both are identical"
+              ],
+              "correctAnswer": "B. The tropical year (equinox to equinox) is ~20 minutes shorter than the sidereal year (fixed stars) due to axial precession",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Axial precession moves equinox points westward, shortening the tropical year by roughly 20.4 minutes.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A49",
+              "difficulty": "hard",
+              "prompt": "What evidence proves that the greenhouse effect on Venus is caused by carbon dioxide rather than proximity to the Sun alone?",
+              "options": [
+                "A. Venus reflects all solar heat",
+                "B. Theoretical calculations show an airless rock at Venus's distance would be much cooler, whereas infrared absorption by CO₂ accounts for the 460°C temperature",
+                "C. Venus is dark inside",
+                "D. Nuclear reactions occur on the surface"
+              ],
+              "correctAnswer": "B. Theoretical calculations show an airless rock at Venus's distance would be much cooler, whereas infrared absorption by CO₂ accounts for the 460°C temperature",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Its high albedo means Venus absorbs less solar energy than Earth; its heat is driven by infrared trapping in dense CO₂.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SYS_A50",
+              "difficulty": "hard",
+              "prompt": "Which combination of planetary dynamics explains both the 24-hour cycle of day and night and the annual progression of the seasons on Earth?",
+              "options": [
+                "A. Westward revolution in a circle combined with a vertical axis",
+                "B. Eastward axial rotation completed every 24 hours, combined with an elliptical revolution around the Sun completed in 365.25 days with an axial tilt of 23.5°",
+                "C. The Moon revolving around the Earth every 24 hours",
+                "D. Earth moving up and down relative to the Sun"
+              ],
+              "correctAnswer": "B. Eastward axial rotation completed every 24 hours, combined with an elliptical revolution around the Sun completed in 365.25 days with an axial tilt of 23.5°",
+              "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+              "workedSolution": "Diurnal cycles are produced by 24-hour eastward rotation, while seasons arise from the 23.5° tilted axis during the 365.25-day orbit.",
+              "points": 1,
+              "learningCompetency": "B7.3.2.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -17080,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -17275,7 +19803,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -17471,7 +19999,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -17667,7 +20195,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -17864,7 +20392,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -18062,7 +20590,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -18260,7 +20788,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -18453,7 +20981,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -18648,7 +21176,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -18843,7 +21371,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -19039,7 +21567,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -19236,7 +21764,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T20:58:46.037Z"
+    "updatedAt": "2026-10-02T21:25:48.627Z"
   }
 ];
 
@@ -34889,7 +37417,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
     "order": 22,
     "notes": {
-      "summaryMarkdown": "### The Solar System: Planetary Architecture & Orbital Scales\n* **NaCCA Curriculum Code:** `B7.3.2.1`\n* **Core Competency:** Classify the planets of the solar system into terrestrial and Jovian planets and describe their relative orbital characteristics.\n\n#### 1. Structure of the Solar System\nThe Solar System comprises the Sun (a G-type main-sequence star containing $99.86\\%$ of the system's mass), eight planets, dwarf planets (Pluto, Ceres), over 200 planetary moons, and billions of asteroids and comets held in orbital equilibrium by gravity.\n* **Order of Planets from the Sun:** Mercury $\\rightarrow$ Venus $\\rightarrow$ Earth $\\rightarrow$ Mars $\\rightarrow$ Jupiter $\\rightarrow$ Saturn $\\rightarrow$ Uranus $\\rightarrow$ Neptune.\n* Mnemonic: *My Very Educated Mother Just Served Us Noodles*.\n\n#### 2. Terrestrial (Inner) vs. Jovian (Outer) Planets\n* **Inner Terrestrial Planets (Mercury, Venus, Earth, Mars):**\n  * Located between the Sun and the Main Asteroid Belt.\n  * Composed predominantly of dense silicate rock and metallic iron-nickel cores.\n  * High densities ($>3.9\\text{ g/cm}^3$), solid impact-cratered surfaces, shallow atmospheres, few or no natural satellites, and zero planetary rings.\n* **Outer Jovian Planets (Jupiter, Saturn, Uranus, Neptune):**\n  * Located beyond the Asteroid Belt.\n  * Massive gas and ice giants composed of hydrogen, helium, methane, and ammonia.\n  * Low average densities (Saturn's density $\\approx 0.69\\text{ g/cm}^3$ is less than liquid water), deep turbulent atmospheres, extensive ring systems, and dozens of natural moons.",
+      "summaryMarkdown": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### Overview & Celestial Inventory\nThe **solar system** consists of our central star, the Sun, and all celestial bodies gravitationally bound in orbital motion around it: eight major planets, recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), natural satellites (moons), and countless millions of interplanetary debris including asteroids, comets, and meteoroids.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Orbital Architecture of the Inner Solar System\n\nBelow is a scale vector diagram depicting the elliptical orbits of Mercury, Venus, Earth, and Mars around the Sun, bounded by the Asteroid Belt:\n\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"25%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><radialGradient id=\"earthColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#1e3a8a\"/></radialGradient><radialGradient id=\"marsColor\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"55%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"venusColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"60%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#a16207\"/></radialGradient><radialGradient id=\"mercColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"65%\" stop-color=\"#94a3b8\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><linearGradient id=\"spaceBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#0b1329\"/><stop offset=\"100%\" stop-color=\"#030712\"/></linearGradient></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"url(#spaceBack)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"45\" cy=\"40\" r=\"1\"/><circle cx=\"120\" cy=\"80\" r=\"1.2\"/><circle cx=\"230\" cy=\"35\" r=\"0.8\"/><circle cx=\"680\" cy=\"60\" r=\"1.5\"/><circle cx=\"710\" cy=\"140\" r=\"0.8\"/><circle cx=\"60\" cy=\"390\" r=\"1.2\"/><circle cx=\"190\" cy=\"410\" r=\"0.8\"/><circle cx=\"640\" cy=\"380\" r=\"1.2\"/><circle cx=\"700\" cy=\"330\" r=\"1\"/><circle cx=\"520\" cy=\"30\" r=\"1.5\"/><circle cx=\"400\" cy=\"20\" r=\"1\"/></g><ellipse cx=\"380\" cy=\"220\" rx=\"90\" ry=\"38\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"150\" ry=\"62\" fill=\"none\" stroke=\"#eab308\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"215\" ry=\"90\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"275\" ry=\"118\" fill=\"none\" stroke=\"#f87171\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"340\" ry=\"150\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"7\" stroke-dasharray=\"2 8\" opacity=\"0.4\"/><text x=\"380\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\">ASTEROID BELT (BOUNDARY TO GAS GIANTS)</text><circle cx=\"380\" cy=\"220\" r=\"34\" fill=\"url(#sunGlow)\"/><circle cx=\"380\" cy=\"220\" r=\"42\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.5\" opacity=\"0.4\"/><text x=\"380\" y=\"224\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(305, 198)\"><circle cx=\"0\" cy=\"0\" r=\"6\" fill=\"url(#mercColor)\" stroke=\"#64748b\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"-8\" x2=\"-30\" y2=\"-35\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"-35\" y=\"-40\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(250, 255)\"><circle cx=\"0\" cy=\"0\" r=\"11\" fill=\"url(#venusColor)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><line x1=\"0\" y1=\"13\" x2=\"-30\" y2=\"45\" stroke=\"#eab308\" stroke-width=\"1\"/><text x=\"-35\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(545, 160)\"><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#earthColor)\" stroke=\"#60a5fa\" stroke-width=\"1\"/><circle cx=\"16\" cy=\"-10\" r=\"3\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-15\" x2=\"25\" y2=\"-40\" stroke=\"#60a5fa\" stroke-width=\"1\"/><text x=\"30\" y=\"-42\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth (with Moon)</text></g><g transform=\"translate(600, 275)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#marsColor)\" stroke=\"#dc2626\" stroke-width=\"1\"/><line x1=\"0\" y1=\"10\" x2=\"25\" y2=\"35\" stroke=\"#f87171\" stroke-width=\"1\"/><text x=\"30\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars (Red Planet)</text></g><path d=\"M 480 320 Q 560 305 630 330\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><polygon points=\"635,330 622,324 624,335\" fill=\"#f59e0b\"/><text x=\"545\" y=\"345\" font-family=\"sans-serif\" font-size=\"10\" font-style=\"italic\" fill=\"#fcd34d\">Elliptical Orbital Vector (Counterclockwise)</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -34898,39 +37426,2413 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
         "questionPrompt": "Give three key physical differences between the inner terrestrial planets and the outer Jovian planets of our Solar System.",
         "stepByStepSolution": "Difference 1: Composition — Inner planets are rocky bodies with solid silicate crusts and metallic cores; outer planets are gaseous and icy bodies composed mainly of hydrogen, helium, and methane.\nDifference 2: Size and Mass — Inner planets are comparatively small in diameter and low in mass; outer planets are massive giants (Jupiter alone has over 300 times Earth's mass).\nDifference 3: Rings and Moons — Inner planets have zero rings and few moons (Earth has 1, Mars has 2); outer planets all possess complex ring systems and dozens of orbiting moons.",
         "examinerTip": "Examiner Tip: Note that all four outer planets (Jupiter, Saturn, Uranus, Neptune) have ring systems, though Saturn's rings are the most prominent and visible."
+      },
+      {
+        "id": "ex_b7_s8_2",
+        "questionPrompt": "Earth requires approximately 365.25 days to complete one full revolution around the Sun. Explain why our standard civil calendar year consists of 365 days, and calculate how frequently a leap year must be inserted to keep the calendar synchronized with Earth's orbit.",
+        "stepByStepSolution": "Step 1: Understand the astronomical discrepancy: A standard calendar year counts 365 integer days, ignoring the remaining 0.25 day (6 hours) of Earth's true revolution period.\nStep 2: Calculate the accumulated time deficit: Every year, the calendar lags behind the solar orbit by 0.25 day. Over 4 consecutive years, the accumulated deficit equals: 0.25 day/year x 4 years = 1.0 full day (24 hours).\nStep 3: Apply the synchronization mechanism: To compensate for this 24-hour lag, an extra calendar day (February 29th) is added to the calendar every 4th year, creating a 366-day 'leap year'.",
+        "examinerTip": "Examiner Tip: A leap year occurs every 4 years because the extra 0.25 day per year accumulates to one complete 24-hour day every 4 solar revolutions (0.25 x 4 = 1 day)."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s8_1",
+        "id": "B7_SYS_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which planet is the closest planet to the Sun in our Solar System?",
+        "prompt": "What central celestial body holds the solar system together by its gravitational pull?",
         "options": [
-          "Venus",
-          "Mercury",
-          "Mars",
-          "Earth"
+          "A. The Earth",
+          "B. The Moon",
+          "C. The Sun",
+          "D. Jupiter"
         ],
-        "correctAnswer": "Mercury",
-        "hint": "It has the shortest orbital period of 88 Earth days.",
-        "workedSolution": "Mercury is the innermost planet orbiting closest to the Sun at an average distance of approximately 57.9 million kilometers.",
+        "correctAnswer": "C. The Sun",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Sun is the massive central star of our solar system whose gravity binds all orbiting planets and bodies.",
         "points": 1
       },
       {
-        "id": "q_b7_s8_2",
+        "id": "B7_SYS_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many recognized major planets revolve around the Sun in our solar system?",
+        "options": [
+          "A. Seven",
+          "B. Eight",
+          "C. Nine",
+          "D. Ten"
+        ],
+        "correctAnswer": "B. Eight",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "There are eight officially recognized major planets revolving around the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is the correct order of the first four planets starting closest to the Sun?",
+        "options": [
+          "A. Earth, Mars, Mercury, Venus",
+          "B. Mercury, Venus, Earth, Mars",
+          "C. Venus, Mercury, Mars, Earth",
+          "D. Mercury, Earth, Venus, Mars"
+        ],
+        "correctAnswer": "B. Mercury, Venus, Earth, Mars",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Starting from the Sun, the inner planetary sequence is Mercury, Venus, Earth, and Mars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The four planets closest to the Sun are collectively referred to as the:",
+        "options": [
+          "A. Gas giants",
+          "B. Inner or terrestrial planets",
+          "C. Ice giants",
+          "D. Dwarf planets"
+        ],
+        "correctAnswer": "B. Inner or terrestrial planets",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury, Venus, Earth, and Mars are designated as the inner or terrestrial (rocky) planets.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is closest to the Sun?",
+        "options": [
+          "A. Venus",
+          "B. Earth",
+          "C. Mercury",
+          "D. Mars"
+        ],
+        "correctAnswer": "C. Mercury",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury is the first and innermost planet orbiting closest to the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is the smallest in our solar system?",
+        "options": [
+          "A. Mars",
+          "B. Mercury",
+          "C. Venus",
+          "D. Earth"
+        ],
+        "correctAnswer": "B. Mercury",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury is the smallest of the eight major planets in our solar system.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is the hottest in the entire solar system due to a runaway greenhouse effect?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Mars",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "B. Venus",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Venus has a dense carbon dioxide atmosphere that traps heat, making it the hottest planet.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary gas making up the thick atmosphere of Venus?",
+        "options": [
+          "A. Oxygen",
+          "B. Nitrogen",
+          "C. Carbon dioxide",
+          "D. Hydrogen"
+        ],
+        "correctAnswer": "C. Carbon dioxide",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The dense atmosphere of Venus is composed mainly of carbon dioxide.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is frequently referred to as the 'Red Planet'?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Mars",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "C. Mars",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mars appears reddish due to iron-oxide rich rocks and dust across its surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the natural satellite that orbits the Earth called?",
+        "options": [
+          "A. Phobos",
+          "B. Deimos",
+          "C. The Moon",
+          "D. Titan"
+        ],
+        "correctAnswer": "C. The Moon",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Moon is Earth's only permanent natural satellite.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many natural moons revolve around planet Mercury?",
+        "options": [
+          "A. Zero",
+          "B. One",
+          "C. Two",
+          "D. Four"
+        ],
+        "correctAnswer": "A. Zero",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury does not possess any natural moons or rings.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many natural moons orbit planet Venus?",
+        "options": [
+          "A. Zero",
+          "B. One",
+          "C. Two",
+          "D. Three"
+        ],
+        "correctAnswer": "A. Zero",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Venus has no natural moons and no planetary rings.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many natural moons orbit planet Mars?",
+        "options": [
+          "A. Zero",
+          "B. One",
+          "C. Two",
+          "D. Four"
+        ],
+        "correctAnswer": "C. Two",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mars has two small natural moons (Phobos and Deimos).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What natural feature separates the inner rocky planets from the outer gas giants?",
+        "options": [
+          "A. The Kuiper Belt",
+          "B. The Asteroid Belt",
+          "C. The Oort Cloud",
+          "D. The Rings of Saturn"
+        ],
+        "correctAnswer": "B. The Asteroid Belt",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Asteroid Belt lies between the orbits of Mars and Jupiter, acting as a dividing line.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The Asteroid Belt is located between the orbits of which two planets?",
+        "options": [
+          "A. Earth and Mars",
+          "B. Mars and Jupiter",
+          "C. Jupiter and Saturn",
+          "D. Mercury and Venus"
+        ],
+        "correctAnswer": "B. Mars and Jupiter",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Asteroid Belt forms a ring between Mars and Jupiter.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The spinning of the Earth around its own internal imaginary axis is termed:",
+        "options": [
+          "A. Revolution",
+          "B. Rotation",
+          "C. Precession",
+          "D. Gravitation"
+        ],
+        "correctAnswer": "B. Rotation",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Rotation specifically refers to an object spinning on its own axis.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what direction does the Earth rotate on its axis?",
+        "options": [
+          "A. From East to West",
+          "B. From West to East",
+          "C. From North to South",
+          "D. From South to North"
+        ],
+        "correctAnswer": "B. From West to East",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Earth rotates on its axis from West to East.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Approximately how long does it take the Earth to complete one full rotation on its axis?",
+        "options": [
+          "A. 12 hours",
+          "B. 24 hours",
+          "C. 30 days",
+          "D. 365 days"
+        ],
+        "correctAnswer": "B. 24 hours",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Earth completes one full rotation on its axis in approximately 24 hours (one solar day).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The movement of the Earth in an elliptical orbit around the Sun is called:",
+        "options": [
+          "A. Rotation",
+          "B. Revolution",
+          "C. Reflection",
+          "D. Radiation"
+        ],
+        "correctAnswer": "B. Revolution",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The journey of an astronomical body around another along an orbital path is called revolution.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long does it take the Earth to complete one full revolution around the Sun?",
+        "options": [
+          "A. 24 hours",
+          "B. 30 days",
+          "C. 365¼ days",
+          "D. 100 days"
+        ],
+        "correctAnswer": "C. 365¼ days",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "One complete revolution of the Earth around the Sun takes 365¼ days (approximately 365.25 days).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary effect of the Earth's rotation on its axis?",
+        "options": [
+          "A. The four seasons of the year",
+          "B. The alternating cycle of day and night",
+          "C. Solar eclipses",
+          "D. Lunar phases"
+        ],
+        "correctAnswer": "B. The alternating cycle of day and night",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Earth's rotation exposes half of its spherical surface to sunlight while the other half faces away, creating day and night.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What natural phenomenon is primarily caused by the revolution of the Earth and its tilted axis?",
+        "options": [
+          "A. The occurrence of the seasons",
+          "B. Day and night",
+          "C. High and low ocean tides",
+          "D. Volcanic eruptions"
+        ],
+        "correctAnswer": "A. The occurrence of the seasons",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The revolution of the Earth around the Sun combined with its axial tilt creates the seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What geometric shape best describes the orbital path of planets around the Sun?",
+        "options": [
+          "A. A perfect circle",
+          "B. A square",
+          "C. An ellipse (oval-like path)",
+          "D. A straight line"
+        ],
+        "correctAnswer": "C. An ellipse (oval-like path)",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Planets revolve around the Sun along slightly elongated, oval-like paths known as elliptical orbits.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Approximately what percentage of the Earth's surface is covered with liquid water?",
+        "options": [
+          "A. 25%",
+          "B. 50%",
+          "C. 71%",
+          "D. 95%"
+        ],
+        "correctAnswer": "C. 71%",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Approximately 71% of Earth's surface is covered by oceans and liquid water bodies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which protective layer in Earth's atmosphere shields living organisms from harmful ultraviolet (UV) rays?",
+        "options": [
+          "A. Carbon layer",
+          "B. Ozone layer",
+          "C. Dust cloud",
+          "D. Nitrogen blanket"
+        ],
+        "correctAnswer": "B. Ozone layer",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The ozone layer filters and absorbs lethal ultraviolet rays from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a recognized dwarf planet located in our solar system?",
+        "options": [
+          "A. Pluto",
+          "B. Mercury",
+          "C. Mars",
+          "D. Neptune"
+        ],
+        "correctAnswer": "A. Pluto",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Pluto is classified as a dwarf planet alongside bodies like Ceres and Eris.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet rotates in a retrograde (clockwise) direction, opposite to most other planets?",
+        "options": [
+          "A. Earth",
+          "B. Mars",
+          "C. Venus",
+          "D. Mercury"
+        ],
+        "correctAnswer": "C. Venus",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Venus rotates in a retrograde direction, spinning clockwise on its axis.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the average distance from the Earth to the Sun?",
+        "options": [
+          "A. 10 million km",
+          "B. 58 million km",
+          "C. 150 million km",
+          "D. 500 million km"
+        ],
+        "correctAnswer": "C. 150 million km",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The mean orbital distance from the Earth to the Sun is approximately 150 million kilometers.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do the inner planets have solid, firm surfaces compared to the outer planets?",
+        "options": [
+          "A. They are made of frozen gas",
+          "B. They are composed largely of rocks, silicates, and heavy metals",
+          "C. They are covered with ice",
+          "D. They have rings"
+        ],
+        "correctAnswer": "B. They are composed largely of rocks, silicates, and heavy metals",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The terrestrial planets are dense bodies made primarily of rocky crusts and metallic cores.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following inner planets has the shortest orbit around the Sun?",
+        "options": [
+          "A. Earth",
+          "B. Mars",
+          "C. Mercury",
+          "D. Venus"
+        ],
+        "correctAnswer": "C. Mercury",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Being closest to the Sun, Mercury has the shortest orbital circumference and completes an orbit the fastest.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What covers the polar regions of the planet Mars?",
+        "options": [
+          "A. Liquid lava lakes",
+          "B. Polar ice caps of water ice and frozen carbon dioxide",
+          "C. Thick forests",
+          "D. Liquid methane oceans"
+        ],
+        "correctAnswer": "B. Polar ice caps of water ice and frozen carbon dioxide",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mars possesses polar ice caps composed of water ice and frozen carbon dioxide (dry ice).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following inner planets has a visible ring system around it?",
+        "options": [
+          "A. Earth",
+          "B. Mars",
+          "C. Venus",
+          "D. None of the inner planets"
+        ],
+        "correctAnswer": "D. None of the inner planets",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "None of the four inner terrestrial planets possess planetary rings.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How often does a leap year occur in our calendar system?",
+        "options": [
+          "A. Every 2 years",
+          "B. Every 4 years",
+          "C. Every 10 years",
+          "D. Every year"
+        ],
+        "correctAnswer": "B. Every 4 years",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "A leap year occurs every four years to account for the extra ¼ day (0.25 × 4 = 1 day) in Earth's orbit.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is similar in size and mass to the Earth, earning it the nickname 'Earth's twin'?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Mars",
+          "D. Pluto"
+        ],
+        "correctAnswer": "B. Venus",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Venus has a diameter and mass very close to that of the Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What gas is necessary for human and animal respiration that is abundant on Earth?",
+        "options": [
+          "A. Carbon dioxide",
+          "B. Nitrogen",
+          "C. Oxygen",
+          "D. Helium"
+        ],
+        "correctAnswer": "C. Oxygen",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Oxygen makes up about 21% of Earth's atmosphere and supports aerobic cellular respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What causes the apparent rising of the Sun in the east and setting in the west?",
+        "options": [
+          "A. The Sun flying across the sky",
+          "B. The rotation of the Earth from west to east",
+          "C. The movement of the Moon",
+          "D. Earth's ocean currents"
+        ],
+        "correctAnswer": "B. The rotation of the Earth from west to east",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Because the Earth rotates eastward, celestial bodies appear to rise in the east and set in the west.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which instrument swings back and forth to provide visual proof that the Earth is rotating?",
+        "options": [
+          "A. Microscope",
+          "B. Foucault pendulum",
+          "C. Barometer",
+          "D. Telescope"
+        ],
+        "correctAnswer": "B. Foucault pendulum",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "A Foucault pendulum gradually changes its plane of swing, demonstrating the Earth's rotation beneath it.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet takes approximately 225 Earth days to complete one revolution around the Sun?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Mars",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "B. Venus",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Venus takes approximately 225 Earth days to complete one orbit around the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which inner planet experiences the most extreme temperature swings between day and night?",
+        "options": [
+          "A. Earth",
+          "B. Venus",
+          "C. Mercury",
+          "D. Mars"
+        ],
+        "correctAnswer": "C. Mercury",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Lacking a substantial atmosphere to trap or distribute heat, Mercury swings from extreme daylight heat to freezing night.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What effect does the Moon's gravitational pull have on the Earth?",
+        "options": [
+          "A. It causes volcanic eruptions",
+          "B. It creates ocean tides",
+          "C. It changes the length of the year",
+          "D. It stops the Earth's spin"
+        ],
+        "correctAnswer": "B. It creates ocean tides",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The gravitational interaction between the Moon and Earth generates oceanic tides.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following inner planets has an atmosphere composed of thick clouds of sulfuric acid?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Earth",
+          "D. Mars"
+        ],
+        "correctAnswer": "B. Venus",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The upper atmosphere of Venus contains dense, reflective clouds of sulfuric acid.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What celestial bodies are icy objects that form bright glowing tails of gas and dust when approaching the Sun?",
+        "options": [
+          "A. Asteroids",
+          "B. Comets",
+          "C. Meteoroids",
+          "D. Moons"
+        ],
+        "correctAnswer": "B. Comets",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Comets are icy bodies that vaporize when near the Sun, forming a glowing coma and tail.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long does one day (rotation period) on Mercury last in Earth days?",
+        "options": [
+          "A. 1 day",
+          "B. 24 hours",
+          "C. 59 Earth days",
+          "D. 365 days"
+        ],
+        "correctAnswer": "C. 59 Earth days",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury has a very slow axial rotation, taking about 59 Earth days to complete one turn.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The apparent deflection of winds and ocean currents caused by Earth's rotation is called the:",
+        "options": [
+          "A. Greenhouse effect",
+          "B. Coriolis effect",
+          "C. Doppler effect",
+          "D. Tectonic shift"
+        ],
+        "correctAnswer": "B. Coriolis effect",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "The Coriolis effect deflects moving fluids due to the rotation of the Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is the fourth planet from the Sun?",
+        "options": [
+          "A. Venus",
+          "B. Earth",
+          "C. Mars",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "C. Mars",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mars occupies the fourth orbital position from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to the length and direction of outdoor shadows throughout a sunny day?",
+        "options": [
+          "A. They never change",
+          "B. They shift direction and change length as Earth's rotation alters the Sun's apparent position",
+          "C. Shadows disappear completely at midday forever",
+          "D. Shadows only point south"
+        ],
+        "correctAnswer": "B. They shift direction and change length as Earth's rotation alters the Sun's apparent position",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Earth's rotation changes the apparent solar angle across the sky, continuously altering shadow lengths and directions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is true about all four inner planets?",
+        "options": [
+          "A. They are made of gas",
+          "B. They have multiple moons",
+          "C. They are made of solid rock and have no rings",
+          "D. They support plant life"
+        ],
+        "correctAnswer": "C. They are made of solid rock and have no rings",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "All four inner planets are rocky terrestrial worlds without ring systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is surrounded by a magnetic field that is much weaker than Earth's, despite being close to the Sun?",
+        "options": [
+          "A. Mercury",
+          "B. Jupiter",
+          "C. Saturn",
+          "D. Uranus"
+        ],
+        "correctAnswer": "A. Mercury",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Mercury has a global magnetic field, but it is considerably weaker than Earth's.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What surface features cover the airless, unweathered landscape of Mercury?",
+        "options": [
+          "A. Dense forests",
+          "B. Deep impact craters",
+          "C. Vast oceans",
+          "D. Active rivers"
+        ],
+        "correctAnswer": "B. Deep impact craters",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Lacking atmospheric weathering, Mercury's surface remains heavily cratered from ancient impacts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is the third planet from the Sun and the only home to human life?",
+        "options": [
+          "A. Venus",
+          "B. Earth",
+          "C. Mars",
+          "D. Neptune"
+        ],
+        "correctAnswer": "B. Earth",
+        "hint": "Recall the order of the eight planets from the Sun, key characteristics of terrestrial worlds (Mercury, Venus, Earth, Mars), the position of the Asteroid Belt, and core definitions of rotation and revolution.",
+        "workedSolution": "Earth is the third planet from the Sun and the only known planetary body with life.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why is Venus significantly hotter on its surface than Mercury, even though Mercury is much closer to the Sun?",
+        "prompt": "Why is Venus significantly hotter than Mercury, even though Mercury is much closer to the Sun?",
         "options": [
-          "Venus contains radioactive lava oceans",
-          "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
-          "Venus generates nuclear fusion in its core",
-          "Mercury is covered in ice that reflects all sunlight"
+          "A. Mercury has an atmosphere made of pure liquid nitrogen",
+          "B. Venus possesses a dense CO₂ atmosphere that traps infrared radiation in a runaway greenhouse effect",
+          "C. Venus burns like a star",
+          "D. Mercury is shielded by rings"
         ],
-        "correctAnswer": "Venus has a dense atmosphere of 96% carbon dioxide that traps heat through an intense runaway greenhouse effect",
-        "hint": "Venus has an extremely dense CO2 atmosphere.",
-        "workedSolution": "Although Mercury is closer to the Sun, it has virtually no atmosphere to trap heat. Venus has an ultra-dense atmosphere of 96% CO2 with surface pressures 92 times Earth's, driving a catastrophic runaway greenhouse effect that elevates surface temperatures to 465°C.",
+        "correctAnswer": "B. Venus possesses a dense CO₂ atmosphere that traps infrared radiation in a runaway greenhouse effect",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Venus's heavy carbon dioxide atmosphere traps thermal radiation, producing higher surface temperatures than airless Mercury.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Mercury experience extreme temperature variations between day and night?",
+        "options": [
+          "A. Its thin, tenuous atmosphere cannot retain daytime solar heat during its long night",
+          "B. Its oceans freeze every evening",
+          "C. The Sun shuts off its light regularly",
+          "D. Mercury is made of ice"
+        ],
+        "correctAnswer": "A. Its thin, tenuous atmosphere cannot retain daytime solar heat during its long night",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Without a dense atmosphere to trap heat or distribute thermal energy, heat rapidly escapes into space at night.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the orbital speed of inner planets compare to that of outer planets?",
+        "options": [
+          "A. Inner planets travel much faster because they experience stronger gravitational attraction from the Sun",
+          "B. Inner planets travel much slower",
+          "C. All planets travel at identical orbital speeds",
+          "D. Outer planets travel backwards"
+        ],
+        "correctAnswer": "A. Inner planets travel much faster because they experience stronger gravitational attraction from the Sun",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Planets closer to the Sun experience stronger solar gravity, requiring faster orbital speeds to maintain stable orbits.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the reason behind adding an extra day to the month of February every four years (Leap Year)?",
+        "options": [
+          "A. The Moon takes 30 days to orbit the Earth",
+          "B. Earth's revolution takes ~365.25 days; accumulating four 0.25-day fractions equals one whole day every four years",
+          "C. Earth's rotation slows down by one hour every month",
+          "D. The Sun changes its position every four years"
+        ],
+        "correctAnswer": "B. Earth's revolution takes ~365.25 days; accumulating four 0.25-day fractions equals one whole day every four years",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The extra 0.25 day per tropical year is accounted for by adding a 366th day every fourth calendar year.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are Mars and Mercury considered terrestrial planets while Jupiter and Saturn are not?",
+        "options": [
+          "A. Mars and Mercury have solid rocky crusts and silicate mantles, while Jupiter and Saturn are composed mostly of hydrogen and helium gas",
+          "B. Mars and Mercury have multiple rings",
+          "C. Jupiter and Saturn are closer to the Sun",
+          "D. Terrestrial planets do not orbit stars"
+        ],
+        "correctAnswer": "A. Mars and Mercury have solid rocky crusts and silicate mantles, while Jupiter and Saturn are composed mostly of hydrogen and helium gas",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Terrestrial planets possess solid surfaces of rock and metal, unlike gas giants.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is meant by the 'retrograde rotation' of Venus?",
+        "options": [
+          "A. Venus does not rotate at all",
+          "B. Venus spins clockwise on its axis (from East to West), which is opposite to the counterclockwise rotation of most planets",
+          "C. Venus orbits the Sun backwards",
+          "D. Venus spins upside down twice a day"
+        ],
+        "correctAnswer": "B. Venus spins clockwise on its axis (from East to West), which is opposite to the counterclockwise rotation of most planets",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Retrograde rotation means rotating in the opposite (clockwise) direction relative to the planetary majority.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the apparent north-south seasonal migration of the Sun across the Equator throughout the year?",
+        "options": [
+          "A. The Sun moving up and down in space",
+          "B. The 23.5° tilt of Earth's rotational axis relative to its orbital plane as it revolves around the Sun",
+          "C. Changes in the Moon's distance",
+          "D. Global warming"
+        ],
+        "correctAnswer": "B. The 23.5° tilt of Earth's rotational axis relative to its orbital plane as it revolves around the Sun",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Earth's axial tilt causes different hemispheres to lean toward the Sun at opposite points in its orbit.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the Coriolis effect alter the path of prevailing global winds?",
+        "options": [
+          "A. It stops all winds from blowing",
+          "B. Earth's rotation deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+          "C. It heats the wind into steam",
+          "D. It pulls winds directly toward outer space"
+        ],
+        "correctAnswer": "B. Earth's rotation deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The Coriolis effect causes fluids to deflect rightward in the north and leftward in the south due to rotational velocity differences.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the atmosphere of Mars unable to produce a strong greenhouse warming effect like that of Venus?",
+        "options": [
+          "A. Mars contains no carbon dioxide",
+          "B. Although made mostly of CO₂, the Martian atmosphere is extremely thin and low in density, so it retains little heat",
+          "C. Mars is made of ice",
+          "D. Mars reflects all solar rays"
+        ],
+        "correctAnswer": "B. Although made mostly of CO₂, the Martian atmosphere is extremely thin and low in density, so it retains little heat",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Mars's atmospheric pressure is less than 1% of Earth's, providing insufficient mass to trap heat effectively.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What accounts for the reddish color of the surface of Mars?",
+        "options": [
+          "A. Abundant pools of red liquid water",
+          "B. Widespread iron minerals on its surface that have oxidized (rusted)",
+          "C. The reflection of red light from the Sun",
+          "D. Active fires across the planet"
+        ],
+        "correctAnswer": "B. Widespread iron minerals on its surface that have oxidized (rusted)",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Iron minerals in Martian regolith have oxidized into iron oxide (rust), imparting a reddish tint.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the key difference between rotation and revolution?",
+        "options": [
+          "A. Rotation is spinning on an internal axis; revolution is traveling in an orbit around another body",
+          "B. Rotation takes a year; revolution takes 24 hours",
+          "C. Rotation creates seasons; revolution creates day and night",
+          "D. Rotation applies only to the Moon"
+        ],
+        "correctAnswer": "A. Rotation is spinning on an internal axis; revolution is traveling in an orbit around another body",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Rotation refers to spinning on an axis, while revolution describes orbital transit around another celestial body.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a Foucault pendulum appear to change its swinging direction over the course of a day?",
+        "options": [
+          "A. The wind blows the pendulum",
+          "B. The pendulum maintains its swing plane in space while the Earth rotates underneath it",
+          "C. The string unwinds",
+          "D. Magnetic rocks in the ground attract it"
+        ],
+        "correctAnswer": "B. The pendulum maintains its swing plane in space while the Earth rotates underneath it",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The pendulum swings in a fixed plane while the Earth rotates beneath it, providing evidence of rotation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Mercury take only 88 Earth days to orbit the Sun, while Venus takes 225 Earth days?",
+        "options": [
+          "A. Mercury is closer to the Sun, with a shorter orbital path and faster orbital velocity",
+          "B. Mercury has a larger mass than Venus",
+          "C. Venus travels in a straight line",
+          "D. Mercury is pushed by solar winds"
+        ],
+        "correctAnswer": "A. Mercury is closer to the Sun, with a shorter orbital path and faster orbital velocity",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "A smaller orbital radius combined with higher orbital speed results in a shorter orbital period for Mercury.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What would happen to the cycle of seasons on Earth if the rotational axis were perpendicular (0° tilt) to its orbital plane?",
+        "options": [
+          "A. Seasons would change twice as fast",
+          "B. Seasonal changes would cease, resulting in constant climatic conditions year-round at any given latitude",
+          "C. Days would become 48 hours long",
+          "D. The Earth would stop revolving"
+        ],
+        "correctAnswer": "B. Seasonal changes would cease, resulting in constant climatic conditions year-round at any given latitude",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Without an axial tilt, solar insolation at each latitude would stay constant throughout the year, ending seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following environmental factors makes Earth uniquely suited to support complex biological life?",
+        "options": [
+          "A. A crushing atmosphere of sulfuric acid",
+          "B. Stable temperatures, liquid water, an oxygen-rich atmosphere, and an ozone shield",
+          "C. Proximity to the Asteroid Belt",
+          "D. Extreme temperature swings between day and night"
+        ],
+        "correctAnswer": "B. Stable temperatures, liquid water, an oxygen-rich atmosphere, and an ozone shield",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Liquid oceans, breathable oxygen, moderate temperatures, and radiation shielding support life on Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the surface of Venus invisible to optical telescopes looking from Earth?",
+        "options": [
+          "A. Venus does not reflect light",
+          "B. It is permanently shrouded by thick, reflective clouds of sulfuric acid and carbon dioxide",
+          "C. Venus is always positioned behind the Sun",
+          "D. Its atmosphere absorbs all visible light"
+        ],
+        "correctAnswer": "B. It is permanently shrouded by thick, reflective clouds of sulfuric acid and carbon dioxide",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Dense, opaque clouds of sulfuric acid obscure optical views of Venus's surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the significance of the Asteroid Belt's location?",
+        "options": [
+          "A. It prevents comets from entering the solar system",
+          "B. It marks the transition zone between inner terrestrial worlds and outer Jovian gas giants",
+          "C. It forms the boundary of the solar system",
+          "D. It generates solar heat"
+        ],
+        "correctAnswer": "B. It marks the transition zone between inner terrestrial worlds and outer Jovian gas giants",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The Asteroid Belt sits between Mars and Jupiter, separating the inner rocky and outer gas planets.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the duration of daylight change at the Equator during Earth's annual revolution?",
+        "options": [
+          "A. Day lengths fluctuate between 2 hours and 22 hours",
+          "B. Daylight remains approximately 12 hours long throughout the entire year",
+          "C. The Equator experiences six months of darkness",
+          "D. Days disappear completely during winter"
+        ],
+        "correctAnswer": "B. Daylight remains approximately 12 hours long throughout the entire year",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Because the Equator bisects the planet, it receives roughly 12 hours of daylight year-round regardless of tilt.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are impact craters preserved for billions of years on Mercury, whereas they are worn away on Earth?",
+        "options": [
+          "A. Mercury is made of soft clay",
+          "B. Mercury lacks liquid water, active weather, and plate tectonics to erode craters",
+          "C. Earth is older than Mercury",
+          "D. Meteorites bounce off Earth without touching it"
+        ],
+        "correctAnswer": "B. Mercury lacks liquid water, active weather, and plate tectonics to erode craters",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Without wind, rain, or plate tectonics, craters on Mercury remain geologically undisturbed.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What geological features on Mars suggest that liquid water once flowed across its ancient surface?",
+        "options": [
+          "A. Active geysers of boiling water",
+          "B. Dry riverbeds, meandering valley networks, and sedimentary delta formations",
+          "C. Dense rain clouds",
+          "D. Large tropical forests"
+        ],
+        "correctAnswer": "B. Dry riverbeds, meandering valley networks, and sedimentary delta formations",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Sinuous channels and deltaic deposits indicate ancient surface water flow on Mars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do stars and constellations appear to shift positions in the night sky over several months?",
+        "options": [
+          "A. The stars are flying around the Earth",
+          "B. The Earth changes its vantage point in space as it revolves around the Sun",
+          "C. The stars turn off their light",
+          "D. Earth's axis reverses every month"
+        ],
+        "correctAnswer": "B. The Earth changes its vantage point in space as it revolves around the Sun",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "As Earth moves along its orbit, our nighttime field of view points toward different stellar backdrops.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following planets has an axial rotation that is slower than its orbital revolution?",
+        "options": [
+          "A. Earth",
+          "B. Mars",
+          "C. Venus",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "C. Venus",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Venus rotates once every 243 Earth days but completes its orbit in 225 Earth days.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do global wind systems not blow in a straight north-to-south line from the poles to the Equator?",
+        "options": [
+          "A. They are blocked by high mountains",
+          "B. The Earth's eastward rotation deflects their paths via the Coriolis effect",
+          "C. The Moon pulls winds in circles",
+          "D. Gravity pushes air backwards"
+        ],
+        "correctAnswer": "B. The Earth's eastward rotation deflects their paths via the Coriolis effect",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Earth's eastward rotation exerts a Coriolis deflection on air masses moving across latitudes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the seasonal variations in the Arctic Circle between midnight sun and polar night?",
+        "options": [
+          "A. Periodic solar shutdowns",
+          "B. Earth's 23.5° axial tilt keeps polar regions pointed continuously toward or away from the Sun during solstices",
+          "C. The Moon blocks the Sun for months",
+          "D. The Earth stops rotating during winter"
+        ],
+        "correctAnswer": "B. Earth's 23.5° axial tilt keeps polar regions pointed continuously toward or away from the Sun during solstices",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Axial tilt keeps high polar latitudes continuously in light or shadow at opposite points in Earth's orbit.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary constituent of the thin Martian atmosphere?",
+        "options": [
+          "A. Oxygen",
+          "B. Nitrogen",
+          "C. Carbon dioxide",
+          "D. Hydrogen"
+        ],
+        "correctAnswer": "C. Carbon dioxide",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Carbon dioxide accounts for roughly 95% of Mars's tenuous atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the gravitational pull of Mars weaker than that of the Earth?",
+        "options": [
+          "A. Mars has a smaller mass and radius than the Earth",
+          "B. Mars does not rotate",
+          "C. Mars has no core",
+          "D. Mars is farther from the Sun"
+        ],
+        "correctAnswer": "A. Mars has a smaller mass and radius than the Earth",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Surface gravity depends on mass and radius; Mars is smaller and less massive than Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What evidence indicates that volcanic activity took place on the surface of Mars in the past?",
+        "options": [
+          "A. Smoke clouds rising today",
+          "B. Large shield volcanoes, including Olympus Mons, and extensive basaltic lava plains",
+          "C. Ash rain falling on polar caps",
+          "D. Boiling oceans"
+        ],
+        "correctAnswer": "B. Large shield volcanoes, including Olympus Mons, and extensive basaltic lava plains",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Large volcanic cones and lava plains show evidence of extensive past volcanism on Mars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the length of a solar day on Mars compare to an Earth day?",
+        "options": [
+          "A. It lasts 59 Earth days",
+          "B. It is very similar, lasting approximately 24 hours and 37 minutes",
+          "C. It lasts only 2 hours",
+          "D. It lasts a full Earth year"
+        ],
+        "correctAnswer": "B. It is very similar, lasting approximately 24 hours and 37 minutes",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Mars's rotation period (a sol) is roughly 24 hours and 37 minutes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do celestial bodies appear to cross the local meridian at slightly different times each night?",
+        "options": [
+          "A. Stars change their speed",
+          "B. A sidereal day is about 4 minutes shorter than a solar day due to Earth's orbital progression around the Sun",
+          "C. The Earth changes its shape",
+          "D. Gravity fluctuates every day"
+        ],
+        "correctAnswer": "B. A sidereal day is about 4 minutes shorter than a solar day due to Earth's orbital progression around the Sun",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Earth's orbit requires an extra ~4 minutes of rotation each day to realign with the Sun compared to distant stars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes dust storms on Mars to grow into planet-wide events?",
+        "options": [
+          "A. Heavy rainfall",
+          "B. Solar heating generates convective winds in the thin, dry atmosphere, lifting fine dust that absorbs heat and drives stronger winds",
+          "C. Volcanic eruptions",
+          "D. Gravitational tugs from its moons"
+        ],
+        "correctAnswer": "B. Solar heating generates convective winds in the thin, dry atmosphere, lifting fine dust that absorbs heat and drives stronger winds",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Airborne dust absorbs sunlight, warming the thin air and driving feedback loops that expand dust storms.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor determining a planet's orbital period around the Sun?",
+        "options": [
+          "A. The planet's color",
+          "B. Its semi-major axis (average distance from the Sun)",
+          "C. The number of moons it possesses",
+          "D. Its axial rotation rate"
+        ],
+        "correctAnswer": "B. Its semi-major axis (average distance from the Sun)",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Per Kepler's third law, orbital period depends directly on a planet's distance from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Venus appear as the brightest starlike object in Earth's twilight sky?",
+        "options": [
+          "A. It generates light through nuclear fusion",
+          "B. Its proximity and dense sulfuric acid clouds give it a high albedo, reflecting most sunlight",
+          "C. It is on fire",
+          "D. It has massive ring systems"
+        ],
+        "correctAnswer": "B. Its proximity and dense sulfuric acid clouds give it a high albedo, reflecting most sunlight",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Venus's cloud cover reflects roughly 70% of incoming sunlight, giving it high visual brightness.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does Earth's magnetic field support life on the surface?",
+        "options": [
+          "A. It holds the atmosphere in place through friction",
+          "B. It deflects charged solar wind particles and cosmic rays that would strip the atmosphere and harm living cells",
+          "C. It heats ocean water",
+          "D. It produces oxygen gas"
+        ],
+        "correctAnswer": "B. It deflects charged solar wind particles and cosmic rays that would strip the atmosphere and harm living cells",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The magnetosphere acts as a shield against ionizing radiation from the solar wind.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do shadows cast by stationary objects point westward in the morning and eastward in the late afternoon?",
+        "options": [
+          "A. Earth rotates eastward, making the Sun appear to move from east to west",
+          "B. Trees move slightly during the day",
+          "C. The Moon pulls the shadows",
+          "D. The ground tilts backwards"
+        ],
+        "correctAnswer": "A. Earth rotates eastward, making the Sun appear to move from east to west",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "An eastward-rotating Earth produces an apparent westward solar path, casting opposing shadows.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the seasonal variations in weather experienced by temperate regions of the Earth?",
+        "options": [
+          "A. Earth getting closer to or farther from the Sun in its orbit",
+          "B. Changes in solar angle and day length caused by Earth's tilted axis as it revolves around the Sun",
+          "C. The Sun cooling down periodically",
+          "D. Ocean water evaporating completely"
+        ],
+        "correctAnswer": "B. Changes in solar angle and day length caused by Earth's tilted axis as it revolves around the Sun",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Seasons result from the axial tilt altering the angle of sunlight and day length, not distance from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following characteristics is unique to Earth among all inner planets?",
+        "options": [
+          "A. Having a solid rocky crust",
+          "B. Maintaining large bodies of stable surface liquid water",
+          "C. Revolving in an elliptical orbit",
+          "D. Experiencing daytime and nighttime"
+        ],
+        "correctAnswer": "B. Maintaining large bodies of stable surface liquid water",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Earth is the only terrestrial planet with abundant, stable liquid oceans on its surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the surface atmospheric pressure on Venus roughly 90 times greater than that on Earth?",
+        "options": [
+          "A. Venus has far more water",
+          "B. Venus has a massive, dense column of carbon dioxide gas filling its atmosphere",
+          "C. Venus has higher gravity than Earth",
+          "D. Venus is smaller"
+        ],
+        "correctAnswer": "B. Venus has a massive, dense column of carbon dioxide gas filling its atmosphere",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "The high mass and density of Venus's carbon dioxide atmosphere produce crushing surface pressure.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor that prevents water on the surface of Mars from remaining liquid today?",
+        "options": [
+          "A. Too much oxygen in the atmosphere",
+          "B. Extremely low atmospheric pressure and freezing temperatures cause water to sublimate or freeze",
+          "C. Mars is too close to the Sun",
+          "D. The rocks on Mars absorb water instantly"
+        ],
+        "correctAnswer": "B. Extremely low atmospheric pressure and freezing temperatures cause water to sublimate or freeze",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Low atmospheric pressure and sub-freezing temperatures cause exposed liquid water to boil or freeze rapidly.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the eccentricity of a planetary orbit affect its distance from the Sun?",
+        "options": [
+          "A. The distance remains constant at all times",
+          "B. The distance varies between a closest approach (perihelion) and a farthest point (aphelion)",
+          "C. The planet leaves the solar system",
+          "D. The planet stops revolving"
+        ],
+        "correctAnswer": "B. The distance varies between a closest approach (perihelion) and a farthest point (aphelion)",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Elliptical orbits have varying distances, reaching perihelion (closest) and aphelion (farthest).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are dwarf planets like Pluto and Ceres not classified as major planets?",
+        "options": [
+          "A. They do not orbit the Sun",
+          "B. They have not cleared their orbital neighborhoods of other debris",
+          "C. They are made entirely of liquid",
+          "D. They have no gravity"
+        ],
+        "correctAnswer": "B. They have not cleared their orbital neighborhoods of other debris",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Dwarf planets orbit the Sun and are spherical, but have not cleared their orbital paths of competing bodies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What effect does Earth's axial tilt have on the Southern Hemisphere when the Northern Hemisphere experiences summer?",
+        "options": [
+          "A. The Southern Hemisphere also experiences summer",
+          "B. The Southern Hemisphere is tilted away from the Sun, experiencing winter",
+          "C. The Southern Hemisphere experiences continuous daylight",
+          "D. The Southern Hemisphere stops revolving"
+        ],
+        "correctAnswer": "B. The Southern Hemisphere is tilted away from the Sun, experiencing winter",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Axial tilt produces opposing seasons in opposite hemispheres.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the density of terrestrial planets compare to that of the gas giant planets?",
+        "options": [
+          "A. Terrestrial planets are far denser because they are composed of rock and metal rather than light gases",
+          "B. Gas giants are denser because they are larger",
+          "C. Both groups have identical densities",
+          "D. Terrestrial planets have zero density"
+        ],
+        "correctAnswer": "A. Terrestrial planets are far denser because they are composed of rock and metal rather than light gases",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Dense metallic and silicate compositions give terrestrial planets higher densities than Jovian gas giants.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of the stratospheric ozone layer for life on Earth?",
+        "options": [
+          "A. Providing carbon dioxide for photosynthesis",
+          "B. Absorbing biologically damaging high-energy ultraviolet radiation (UV-B and UV-C)",
+          "C. Trapping heat to melt polar caps",
+          "D. Producing nitrogen rain"
+        ],
+        "correctAnswer": "B. Absorbing biologically damaging high-energy ultraviolet radiation (UV-B and UV-C)",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Ozone absorbs hazardous ultraviolet wavelengths, shielding terrestrial life from genetic damage.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Mercury have no true seasons like the Earth or Mars?",
+        "options": [
+          "A. It is too close to the Sun",
+          "B. Its rotational axis has virtually no tilt (near 0°), so solar insolation does not change seasonally",
+          "C. Its day lasts 100 years",
+          "D. It has no core"
+        ],
+        "correctAnswer": "B. Its rotational axis has virtually no tilt (near 0°), so solar insolation does not change seasonally",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Near-zero axial tilt means solar exposure remains consistent across Mercury's orbit.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are meteors seen as glowing streaks across Earth's night sky?",
+        "options": [
+          "A. They are burning stars",
+          "B. Small interplanetary meteoroids enter Earth's atmosphere at high speed, heating by compression and friction until they glow",
+          "C. They are reflections from the Moon",
+          "D. They are flying airplanes"
+        ],
+        "correctAnswer": "B. Small interplanetary meteoroids enter Earth's atmosphere at high speed, heating by compression and friction until they glow",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Atmospheric compression and friction vaporize meteoroids, producing luminous streaks (meteors).",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What determines whether an interplanetary rocky fragment is classified as a meteoroid, meteor, or meteorite?",
+        "options": [
+          "A. Its chemical composition",
+          "B. Its location: meteoroid in space, meteor burning in an atmosphere, meteorite recovered on the ground",
+          "C. Its color",
+          "D. Its age"
+        ],
+        "correctAnswer": "B. Its location: meteoroid in space, meteor burning in an atmosphere, meteorite recovered on the ground",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Terminology reflects position: meteoroids travel in space, meteors glow in the atmosphere, and meteorites strike ground.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Mars have polar ice caps that change size with the Martian seasons?",
+        "options": [
+          "A. The poles melt and freeze as Mars's 25° axial tilt causes seasonal temperature shifts during its orbit",
+          "B. Oceans flood the poles",
+          "C. The Sun gets closer to Mars in winter",
+          "D. Dust covers the ice permanently"
+        ],
+        "correctAnswer": "A. The poles melt and freeze as Mars's 25° axial tilt causes seasonal temperature shifts during its orbit",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Mars's 25° tilt produces seasons that cause carbon dioxide ice to sublimate and reform periodically.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the day-to-night temperature range on Earth much more moderate than on Mercury or Mars?",
+        "options": [
+          "A. Earth has a dense atmosphere containing water vapor and greenhouse gases that retain and distribute heat",
+          "B. Earth has more volcanic fires",
+          "C. Earth does not rotate",
+          "D. Earth is shielded by the Moon"
+        ],
+        "correctAnswer": "A. Earth has a dense atmosphere containing water vapor and greenhouse gases that retain and distribute heat",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Atmospheric gases, water vapor, and circulating oceans moderate diurnal temperature swings on Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What accounts for the presence of canyons like Valles Marineris on Mars?",
+        "options": [
+          "A. Human excavation",
+          "B. Ancient tectonic rifting and crustal cracking as the planet cooled, enlarged by wind erosion",
+          "C. Impact by a large comet yesterday",
+          "D. Rivers flowing today"
+        ],
+        "correctAnswer": "B. Ancient tectonic rifting and crustal cracking as the planet cooled, enlarged by wind erosion",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Valles Marineris formed primarily through tectonic fracture and crustal pulling, widened by erosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the presence of an atmosphere on Earth protect the surface from incoming space debris compared to Mercury?",
+        "options": [
+          "A. It reflects rocks like a mirror",
+          "B. Earth's dense atmospheric layers vaporize small debris through frictional heat before they can strike the ground",
+          "C. The atmosphere pushes debris into the Sun",
+          "D. Earth has no protection"
+        ],
+        "correctAnswer": "B. Earth's dense atmospheric layers vaporize small debris through frictional heat before they can strike the ground",
+        "hint": "Consider orbital velocities, runaway greenhouse dynamics on Venus, thin CO2 atmosphere and iron oxide rust on Mars, shadow transitions, Coriolis deflection, and axial tilt driving the 4 seasons.",
+        "workedSolution": "Atmospheric friction incinerates small space rocks before ground impact, protecting the surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Mercury orbits the Sun every 88 Earth days, yet a single solar day (sunrise to sunrise) on its surface takes 176 Earth days. What astronomical mechanism causes this?",
+        "options": [
+          "A. Mercury is physically expanding and contracting",
+          "B. A 3:2 spin-orbit resonance where Mercury rotates three times on its axis for every two orbital revolutions around the Sun",
+          "C. Solar flares push Mercury backwards in its orbit",
+          "D. Mercury's core stops rotating"
+        ],
+        "correctAnswer": "B. A 3:2 spin-orbit resonance where Mercury rotates three times on its axis for every two orbital revolutions around the Sun",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Tidal locking produces a 3:2 spin-orbit resonance, making one noon-to-noon solar day equal two full orbital years.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why did Venus experience a runaway greenhouse effect while Earth maintained a stable, life-supporting climate?",
+        "options": [
+          "A. Venus was formed without water",
+          "B. Being closer to the Sun, initial warmth vaporized oceans on Venus; without oceans to dissolve CO₂ into carbonate rocks, atmospheric CO₂ accumulated unchecked",
+          "C. Earth has no carbon dioxide in its crust",
+          "D. Solar winds blew Venus's oceans to Mars"
+        ],
+        "correctAnswer": "B. Being closer to the Sun, initial warmth vaporized oceans on Venus; without oceans to dissolve CO₂ into carbonate rocks, atmospheric CO₂ accumulated unchecked",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Proximity to the Sun triggered ocean evaporation on Venus, disabling carbonate-silicate cycles that lock carbon into rock.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Kepler's Second Law of Planetary Motion explain why Mercury travels faster along its orbit at perihelion than at aphelion?",
+        "options": [
+          "A. Solar wind pushes it faster from behind",
+          "B. An imaginary line connecting the planet to the Sun sweeps out equal areas in equal times, requiring faster velocity when closer to the gravitational source",
+          "C. Mercury loses mass at perihelion",
+          "D. Planets slow down when falling toward the Sun"
+        ],
+        "correctAnswer": "B. An imaginary line connecting the planet to the Sun sweeps out equal areas in equal times, requiring faster velocity when closer to the gravitational source",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "The conservation of angular momentum requires orbital velocity to increase near perihelion.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mars lack an active global dipole magnetic field today, unlike the Earth?",
+        "options": [
+          "A. Mars is too far from the Sun",
+          "B. Its smaller metallic core cooled and solidified more rapidly, halting the convective geodynamo needed to generate a global field",
+          "C. The Martian atmosphere burned the magnetic poles",
+          "D. Mars contains no iron"
+        ],
+        "correctAnswer": "B. Its smaller metallic core cooled and solidified more rapidly, halting the convective geodynamo needed to generate a global field",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "A smaller planetary volume cooled faster, quenching the liquid core convection that generates a global dynamo.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor that caused Mars to lose most of its ancient, dense atmosphere over billions of years?",
+        "options": [
+          "A. Mars was hit by Venus",
+          "B. Loss of its protective magnetic field allowed the solar wind to strip volatile atmospheric gases away into space",
+          "C. The atmosphere froze permanently into the core",
+          "D. Plant life absorbed all gases"
+        ],
+        "correctAnswer": "B. Loss of its protective magnetic field allowed the solar wind to strip volatile atmospheric gases away into space",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Without a magnetic shield, unhindered solar wind stripped away atmospheric gases over geologic time.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the rate of precession of a Foucault pendulum dependent on the latitude where it is set up?",
+        "options": [
+          "A. Gravity disappears at the Equator",
+          "B. The vertical component of Earth's rotational vector is maximum at the poles (precessing in 24 hours) and zero at the Equator (no apparent precession)",
+          "C. Pendulums only work in the Northern Hemisphere",
+          "D. Pendulum strings stretch in warm weather"
+        ],
+        "correctAnswer": "B. The vertical component of Earth's rotational vector is maximum at the poles (precessing in 24 hours) and zero at the Equator (no apparent precession)",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Precession rate equals ω sin(latitude); it completes in 24 hours at poles and ceases entirely at the Equator.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Olympus Mons on Mars reach three times the height of Mount Everest without collapsing?",
+        "options": [
+          "A. It is made of lightweight foam",
+          "B. Lower Martian surface gravity and a thick, stationary crust allowed hot-spot volcanism to build up over billions of years without plate motion",
+          "C. Comets piled rock on top of it",
+          "D. It is supported by ocean water"
+        ],
+        "correctAnswer": "B. Lower Martian surface gravity and a thick, stationary crust allowed hot-spot volcanism to build up over billions of years without plate motion",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Lower gravity and the absence of moving tectonic plates allowed lava to build a single massive shield.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the carbonate-silicate geochemical cycle stabilize Earth's long-term climate over geological timescales?",
+        "options": [
+          "A. It stops volcanoes from erupting",
+          "B. Weathering of silicate rocks by rainwater draws down atmospheric CO₂, depositing it as ocean carbonates that subduct and release CO₂ via volcanism",
+          "C. It converts carbon into oxygen gas",
+          "D. It cools the Earth's core"
+        ],
+        "correctAnswer": "B. Weathering of silicate rocks by rainwater draws down atmospheric CO₂, depositing it as ocean carbonates that subduct and release CO₂ via volcanism",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Negative feedback between rainfall, silicate weathering, and carbon subduction regulates Earth's greenhouse balance.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Venus have so few impact craters across its surface compared to Mercury?",
+        "options": [
+          "A. Asteroids cannot reach Venus",
+          "B. Its dense atmosphere burns up small meteoroids, and widespread volcanic resurfacing within the last 500 million years erased older craters",
+          "C. Venus's crust is liquid water",
+          "D. Craters are washed away by rainfall"
+        ],
+        "correctAnswer": "B. Its dense atmosphere burns up small meteoroids, and widespread volcanic resurfacing within the last 500 million years erased older craters",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Atmospheric shielding and young volcanic plains have resurfaced Venus, erasing older cratering records.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the synodic day (solar day) of the Earth approximately 4 minutes longer than its sidereal day?",
+        "options": [
+          "A. Earth slows down at night",
+          "B. As Earth completes one 360° axial rotation, it has moved along its orbit and must rotate an additional ~1° to realign with the Sun",
+          "C. The Moon pulls Earth backwards",
+          "D. Clocks run faster in space"
+        ],
+        "correctAnswer": "B. As Earth completes one 360° axial rotation, it has moved along its orbit and must rotate an additional ~1° to realign with the Sun",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Earth moves ~1° along its orbit each day, requiring roughly 4 extra minutes of rotation to face the Sun again.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary mechanism causing the super-rotation of the atmosphere of Venus?",
+        "options": [
+          "A. Fast core rotation",
+          "B. High-altitude thermal tides and momentum transfer drive cloud layers around the planet in four Earth days, far faster than its 243-day surface spin",
+          "C. Gravitational pull from Mercury",
+          "D. Magnetic field rotation"
+        ],
+        "correctAnswer": "B. High-altitude thermal tides and momentum transfer drive cloud layers around the planet in four Earth days, far faster than its 243-day surface spin",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Thermal solar heating drives high-altitude winds that circulate around Venus 60 times faster than the planet spins.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mars exhibit a high orbital eccentricity (e ≈ 0.093) compared to Venus (e ≈ 0.007)?",
+        "options": [
+          "A. Mars has a circular orbit",
+          "B. Mars's path is more elongated, resulting in significant solar energy differences between its perihelion and aphelion",
+          "C. Mars was pushed by the Moon",
+          "D. Venus has no gravity"
+        ],
+        "correctAnswer": "B. Mars's path is more elongated, resulting in significant solar energy differences between its perihelion and aphelion",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Higher eccentricity means Mars's distance from the Sun varies substantially, intensifying seasonal contrasts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the main source of the magnetic field detected on Mercury despite its slow rotation?",
+        "options": [
+          "A. Radioactive rocks on its surface",
+          "B. A partially molten, iron-rich outer core supporting a convective dynamo driven by core crystallization",
+          "C. Electrical currents in its clouds",
+          "D. External induction from Mars"
+        ],
+        "correctAnswer": "B. A partially molten, iron-rich outer core supporting a convective dynamo driven by core crystallization",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Thermodynamic and compositional convection within a molten outer core layer maintains Mercury's dynamo.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Milankovitch cycle of orbital eccentricity influence Earth's long-term glacial periods?",
+        "options": [
+          "A. It changes the color of the Sun",
+          "B. Periodic variations in Earth's orbital shape modulate seasonal solar insolation extremes, driving ice-age pacing over 100,000-year cycles",
+          "C. It stops the Earth's rotation",
+          "D. It removes the ozone layer"
+        ],
+        "correctAnswer": "B. Periodic variations in Earth's orbital shape modulate seasonal solar insolation extremes, driving ice-age pacing over 100,000-year cycles",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Cyclic variations in orbital eccentricity alter seasonal insolation, influencing long-term glacial cycles.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are volatile compounds (such as water, ammonia, and methane) depleted on the inner planets compared to the outer planets?",
+        "options": [
+          "A. Volatiles were destroyed by comets",
+          "B. Proximity to the early Sun kept temperatures above the condensation points of volatiles ('frost line'), allowing only silicates and metals to accrete",
+          "C. Inner planets absorbed only pure iron",
+          "D. Gas giants pulled all water away instantly"
+        ],
+        "correctAnswer": "B. Proximity to the early Sun kept temperatures above the condensation points of volatiles ('frost line'), allowing only silicates and metals to accrete",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Inside the frost line, heat prevented volatile gases from condensing, leaving only rocks and metals to form planets.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does liquid water fail to persist on the present-day surface of Mars even when temperatures rise above 0°C?",
+        "options": [
+          "A. The water burns into flames",
+          "B. Ambient surface pressure (~610 Pa) is near the triple point of water, causing ice to sublimate directly into vapor or liquid to boil away",
+          "C. Martian gravity repels water",
+          "D. Rocks absorb all moisture chemically"
+        ],
+        "correctAnswer": "B. Ambient surface pressure (~610 Pa) is near the triple point of water, causing ice to sublimate directly into vapor or liquid to boil away",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "At low atmospheric pressures near the triple point, water cannot remain liquid and boils or sublimates rapidly.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physical cause of planetary differentiation during the early formation of terrestrial worlds?",
+        "options": [
+          "A. Comets hitting the surface",
+          "B. Gravitational settling of dense, molten iron-nickel into the interior core, while lighter silicate minerals floated upward to form the mantle and crust",
+          "C. The planets turning into gas",
+          "D. Solar wind peeling the outer layers"
+        ],
+        "correctAnswer": "B. Gravitational settling of dense, molten iron-nickel into the interior core, while lighter silicate minerals floated upward to form the mantle and crust",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Internal heating melted planetary bodies, allowing dense metals to sink to the core and lighter silicates to float.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do the tropical regions of Earth experience small annual temperature ranges compared to high-latitude polar regions?",
+        "options": [
+          "A. Tropical regions do not revolve around the Sun",
+          "B. The noon Sun remains at high angles near the zenith year-round, delivering consistent solar insolation despite axial tilt",
+          "C. The Equator is made of different rock",
+          "D. Polar regions have no atmosphere"
+        ],
+        "correctAnswer": "B. The noon Sun remains at high angles near the zenith year-round, delivering consistent solar insolation despite axial tilt",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "High solar angles deliver consistent insolation year-round in low latitudes, moderating seasonal temperature shifts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the origin of the Kirkwood gaps observed within the Asteroid Belt?",
+        "options": [
+          "A. Large planets smashed through the gaps",
+          "B. Orbital resonances with Jupiter clear asteroids out of specific orbital periods through repeated gravitational perturbations",
+          "C. The Sun absorbs asteroids at those positions",
+          "D. Dust clouds hide the asteroids"
+        ],
+        "correctAnswer": "B. Orbital resonances with Jupiter clear asteroids out of specific orbital periods through repeated gravitational perturbations",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Orbital resonances with Jupiter's gravitational field destabilize and clear asteroids from specific orbital tracks.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the sidereal rotation period of Venus (243 Earth days) longer than its synodic day (117 Earth days)?",
+        "options": [
+          "A. Venus changes shape",
+          "B. Retrograde rotation opposes orbital revolution, shortening the time needed for the Sun to return to the same meridian",
+          "C. The Sun revolves around Venus",
+          "D. Clocks run differently on Venus"
+        ],
+        "correctAnswer": "B. Retrograde rotation opposes orbital revolution, shortening the time needed for the Sun to return to the same meridian",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Retrograde spin combined with forward orbital motion means the Sun returns to the zenith in only 117 Earth days.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the presence of Earth's large Moon stabilize our planetary climate over millions of years?",
+        "options": [
+          "A. It provides heat to oceans",
+          "B. Gravitational tidal interactions prevent chaotic wobbling of Earth's axial tilt (obliquity), keeping seasons stable",
+          "C. It blocks solar flares",
+          "D. It creates cloud cover"
+        ],
+        "correctAnswer": "B. Gravitational tidal interactions prevent chaotic wobbling of Earth's axial tilt (obliquity), keeping seasons stable",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Tidal torques from our large Moon stabilize Earth's obliquity, preventing chaotic seasonal climate shifts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the high deuterium-to-hydrogen (D/H) ratio measured in the atmosphere of Venus compared to Earth?",
+        "options": [
+          "A. Venus was formed from nuclear waste",
+          "B. Massive past water loss; lighter hydrogen atoms escaped into space while heavier deuterium was retained",
+          "C. Volcanic eruptions create deuterium",
+          "D. Oxygen absorbs normal hydrogen"
+        ],
+        "correctAnswer": "B. Massive past water loss; lighter hydrogen atoms escaped into space while heavier deuterium was retained",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Solar UV broke atmospheric water; light hydrogen escaped to space while heavier deuterium accumulated.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mars have larger variations in its axial tilt (15° to 35°) over geological time than Earth?",
+        "options": [
+          "A. Mars has no gravity",
+          "B. Mars lacks a massive stabilizing moon, leaving its axial orientation vulnerable to gravitational tugs from other planets",
+          "C. Its core is liquid water",
+          "D. The Sun attracts Mars's poles"
+        ],
+        "correctAnswer": "B. Mars lacks a massive stabilizing moon, leaving its axial orientation vulnerable to gravitational tugs from other planets",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Lacking a massive moon to stabilize its spin axis, Mars experiences chaotic obliquity variations.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What constitutes the geodynamo mechanism in Earth's outer core?",
+        "options": [
+          "A. Solid iron spinning in a vacuum",
+          "B. Convection of electrically conductive molten iron-nickel combined with Coriolis deflection, generating self-sustaining magnetic fields",
+          "C. Nuclear explosions in the mantle",
+          "D. Surface ocean currents"
+        ],
+        "correctAnswer": "B. Convection of electrically conductive molten iron-nickel combined with Coriolis deflection, generating self-sustaining magnetic fields",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Helical thermal convection in the liquid metallic outer core generates and maintains our magnetic field.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the daytime sky black on Mercury when viewed from its surface?",
+        "options": [
+          "A. The Sun does not shine on Mercury",
+          "B. Mercury has no substantial atmosphere to scatter shorter wavelengths of sunlight (Rayleigh scattering)",
+          "C. The ground absorbs all light",
+          "D. Mercury's sky is covered in soot"
+        ],
+        "correctAnswer": "B. Mercury has no substantial atmosphere to scatter shorter wavelengths of sunlight (Rayleigh scattering)",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Rayleigh scattering requires gas molecules; without an atmosphere, sunlight travels in straight lines against a dark sky.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do lobate scarps (cliffs) across the surface of Mercury provide evidence of its internal thermal history?",
+        "options": [
+          "A. They were carved by ancient rivers",
+          "B. They are thrust faults formed as Mercury's massive metallic core cooled and contracted, shrinking the planetary surface",
+          "C. They were formed by plate tectonics like Earth's",
+          "D. Meteorites dug long trenches"
+        ],
+        "correctAnswer": "B. They are thrust faults formed as Mercury's massive metallic core cooled and contracted, shrinking the planetary surface",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Global contraction during core cooling buckled the brittle outer crust into compressive thrust faults.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the seasonal variations in atmospheric pressure observed on the surface of Mars?",
+        "options": [
+          "A. Heavy rainfall adding weight to air",
+          "B. Up to 25% of the atmospheric carbon dioxide freezes onto the winter polar cap and sublimates back into the atmosphere in summer",
+          "C. The Sun moves closer to Mars",
+          "D. Volcanoes erupt every winter"
+        ],
+        "correctAnswer": "B. Up to 25% of the atmospheric carbon dioxide freezes onto the winter polar cap and sublimates back into the atmosphere in summer",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Periodic freezing and sublimation of atmospheric CO₂ at the poles causes large global pressure shifts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is liquid water considered the most critical solvent for life in the solar system?",
+        "options": [
+          "A. It dissolves all rocks instantly",
+          "B. Its polar molecule, wide liquid range, high heat capacity, and solvent capabilities allow biochemical reactions to occur in cells",
+          "C. It turns into oxygen at room temperature",
+          "D. It generates magnetic fields"
+        ],
+        "correctAnswer": "B. Its polar molecule, wide liquid range, high heat capacity, and solvent capabilities allow biochemical reactions to occur in cells",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Water's polarity, thermal buffer capacity, and ability to dissolve biochemicals make it central to carbon-based life.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Foucault pendulum provide empirical proof that the Earth is an accelerated reference frame?",
+        "options": [
+          "A. It proves gravity changes with time",
+          "B. Apparent rotation of the swing plane without applied horizontal torques reveals fictitious Coriolis forces produced by an inertial reference frame",
+          "C. It proves the Earth is flat",
+          "D. It demonstrates magnetic attraction"
+        ],
+        "correctAnswer": "B. Apparent rotation of the swing plane without applied horizontal torques reveals fictitious Coriolis forces produced by an inertial reference frame",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Apparent plane rotation without external torques demonstrates that Earth's surface is an accelerated rotating frame.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the origin of the high concentrations of iron oxide in the regolith of Mars?",
+        "options": [
+          "A. A collision with an iron asteroid yesterday",
+          "B. Smaller planetary size allowed less iron to differentiate into the core during accretion, leaving more iron in mantle silicates to weather into surface rust",
+          "C. Alien industrial activity",
+          "D. Ocean salts turning into iron"
+        ],
+        "correctAnswer": "B. Smaller planetary size allowed less iron to differentiate into the core during accretion, leaving more iron in mantle silicates to weather into surface rust",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Less complete core segregation left more iron in the mantle and crust, which weathered into surface iron oxides.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the greenhouse warming on Earth self-regulating while that on Venus is unstable?",
+        "options": [
+          "A. Earth has no greenhouse gases",
+          "B. Earth possesses a negative feedback hydrological and rock-weathering cycle that removes excess CO₂ as temperatures rise, whereas Venus lost its water",
+          "C. Earth's plants absorb all solar heat",
+          "D. Earth is farther from the Asteroid Belt"
+        ],
+        "correctAnswer": "B. Earth possesses a negative feedback hydrological and rock-weathering cycle that removes excess CO₂ as temperatures rise, whereas Venus lost its water",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Water-driven chemical weathering accelerates with temperature, sequestering carbon and stabilizing Earth's climate.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor that causes the equatorial radius of the Earth to be approximately 21 km larger than its polar radius?",
+        "options": [
+          "A. Solar gravity pulling the Equator",
+          "B. Centrifugal force generated by Earth's axial rotation causes the equatorial region to bulge outward",
+          "C. More mountains exist at the Equator",
+          "D. The Moon orbits only around the Equator"
+        ],
+        "correctAnswer": "B. Centrifugal force generated by Earth's axial rotation causes the equatorial region to bulge outward",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Centrifugal forces from axial rotation cause the plastic interior of Earth to bulge into an oblate spheroid.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mercury have an iron core that accounts for roughly 70% of its total planetary mass?",
+        "options": [
+          "A. It formed from an iron comet",
+          "B. Giant impacts during early accretion may have stripped away much of its outer silicate mantle, or solar vaporization depleted outer rocks",
+          "C. The core is made of liquid water",
+          "D. Iron was attracted to the Sun like a magnet"
+        ],
+        "correctAnswer": "B. Giant impacts during early accretion may have stripped away much of its outer silicate mantle, or solar vaporization depleted outer rocks",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Mantle-stripping impact events or intense solar vaporization early in formation explain Mercury's high core ratio.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary cause of atmospheric escape of lighter gases like hydrogen and helium from Earth's upper exosphere?",
+        "options": [
+          "A. Gravity pulls them down",
+          "B. Thermal velocities of light atoms exceed Earth's escape velocity (Jeans escape), supplemented by non-thermal solar wind interactions",
+          "C. Ozone absorbs light gases",
+          "D. Trees absorb hydrogen"
+        ],
+        "correctAnswer": "B. Thermal velocities of light atoms exceed Earth's escape velocity (Jeans escape), supplemented by non-thermal solar wind interactions",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Lightweight gases have high thermal molecular velocities that regularly exceed planetary escape velocity.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the tilt of Earth's axis affect the angle of solar incidence at the Tropic of Cancer during the June solstice?",
+        "options": [
+          "A. The Sun is at the horizon",
+          "B. The Sun reaches a 90° solar elevation (directly overhead at zenith) at solar noon",
+          "C. Sunlight disappears for 24 hours",
+          "D. The solar angle drops to zero"
+        ],
+        "correctAnswer": "B. The Sun reaches a 90° solar elevation (directly overhead at zenith) at solar noon",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "At the June solstice, the Northern Hemisphere tilts toward the Sun, placing it directly overhead at latitude 23.5° N.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are the coronae features on the surface of Venus unique among the inner planets?",
+        "options": [
+          "A. They are impact craters filled with water",
+          "B. They are circular volcanic-tectonic features formed by rising mantle plumes pushing the crust upward and collapsing",
+          "C. They are dried lake beds",
+          "D. They are impact sites of moons"
+        ],
+        "correctAnswer": "B. They are circular volcanic-tectonic features formed by rising mantle plumes pushing the crust upward and collapsing",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Coronae form from hot mantle plumes that dome, fracture, and collapse the crust on a planet lacking plate tectonics.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the semi-annual occurrence of equinoxes across the Earth?",
+        "options": [
+          "A. Earth stops rotating on that day",
+          "B. Earth's axis points perpendicular to the Sun-Earth line, causing the subsolar point to cross the Equator and yielding equal day and night worldwide",
+          "C. The Moon aligns between the Earth and Sun",
+          "D. The Sun is at its farthest point from Earth"
+        ],
+        "correctAnswer": "B. Earth's axis points perpendicular to the Sun-Earth line, causing the subsolar point to cross the Equator and yielding equal day and night worldwide",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "At equinoxes, the subsolar point lies on the Equator, illuminating both hemispheres equally.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mars show no current evidence of plate tectonics?",
+        "options": [
+          "A. It has too much ocean water",
+          "B. A cooler interior, thicker lithosphere, and absence of subducting water-lubricated plates lock the crust into a single stagnant lid",
+          "C. It has two moons that hold the crust",
+          "D. Mars is too young"
+        ],
+        "correctAnswer": "B. A cooler interior, thicker lithosphere, and absence of subducting water-lubricated plates lock the crust into a single stagnant lid",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "A thick, rigid lithosphere and lack of water lubrication hold Mars's crust in a stagnant-lid regime.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor driving thermal convection inside the Earth's mantle?",
+        "options": [
+          "A. Sunlight heating the crust",
+          "B. Primordial accretionary heat combined with continuous radioactive decay of isotopes (uranium, thorium, potassium-40) in the interior",
+          "C. Ocean water sinking to the core",
+          "D. Gravitational pull from Mars"
+        ],
+        "correctAnswer": "B. Primordial accretionary heat combined with continuous radioactive decay of isotopes (uranium, thorium, potassium-40) in the interior",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Mantle convection is driven by primordial heat and heat released by radioactive isotope decay.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the absence of an atmosphere on Mercury affect its surface soil (regolith)?",
+        "options": [
+          "A. Regolith turns into rich farming soil",
+          "B. Space weathering, micrometeoroid impacts, and unhindered solar wind bombardment pulverize surface rocks into a fine glassy dust",
+          "C. Regolith dissolves into water",
+          "D. Soil is blown away by storms"
+        ],
+        "correctAnswer": "B. Space weathering, micrometeoroid impacts, and unhindered solar wind bombardment pulverize surface rocks into a fine glassy dust",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Direct exposure to cosmic rays, solar wind, and micrometeoroids breaks rock into impact-melt glass and regolith.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a solar eclipse happen only during the new moon phase, but not at every new moon?",
+        "options": [
+          "A. The Moon disappears every month",
+          "B. The Moon's orbital plane is tilted by approximately 5° relative to the Earth's ecliptic plane, so shadows usually miss the Earth",
+          "C. The Sun moves out of the way",
+          "D. Eclipses happen only in leap years"
+        ],
+        "correctAnswer": "B. The Moon's orbital plane is tilted by approximately 5° relative to the Earth's ecliptic plane, so shadows usually miss the Earth",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "A 5° orbital inclination means the Moon's shadow usually passes above or below Earth during new moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the origin of the seasonal polar caps' expansion and contraction on Mars?",
+        "options": [
+          "A. Water boiling into steam",
+          "B. Sublimation of carbon dioxide during spring and summer, and redeposition as dry ice during autumn and winter",
+          "C. Dust storms blowing ice away",
+          "D. Volcanic ash covering the poles"
+        ],
+        "correctAnswer": "B. Sublimation of carbon dioxide during spring and summer, and redeposition as dry ice during autumn and winter",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Thin seasonal caps grow and shrink through condensation and sublimation of atmospheric carbon dioxide.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the escape velocity of Earth (11.2 km/s) higher than that of Mars (5.0 km/s)?",
+        "options": [
+          "A. Earth has more water",
+          "B. Escape velocity scales with sqrt(M/R), and Earth has higher mass (M) relative to its radius (R)",
+          "C. Earth rotates faster",
+          "D. Mars is closer to Jupiter"
+        ],
+        "correctAnswer": "B. Escape velocity scales with sqrt(M/R), and Earth has higher mass (M) relative to its radius (R)",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Greater planetary mass produces a deeper gravitational potential well, raising escape velocity.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What produces the banded, alternating trade winds and westerlies on Earth?",
+        "options": [
+          "A. Trees swaying in the wind",
+          "B. Hadley, Ferrel, and polar convective atmospheric cells broken into zonal wind belts by the Coriolis effect of Earth's rotation",
+          "C. The Moon's orbit",
+          "D. Heat from the Earth's core"
+        ],
+        "correctAnswer": "B. Hadley, Ferrel, and polar convective atmospheric cells broken into zonal wind belts by the Coriolis effect of Earth's rotation",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Meridional convective cells are deflected by the Coriolis effect into distinct zonal wind belts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why did the inner planets fail to capture vast atmospheres of primordial hydrogen and helium like Jupiter?",
+        "options": [
+          "A. Inner planets have no gravity",
+          "B. Lower masses and high early solar temperatures gave light hydrogen and helium thermal velocities higher than terrestrial escape speeds",
+          "C. Hydrogen was repelled by rock",
+          "D. The inner planets absorbed only nitrogen"
+        ],
+        "correctAnswer": "B. Lower masses and high early solar temperatures gave light hydrogen and helium thermal velocities higher than terrestrial escape speeds",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "High thermal velocity near the Sun allowed light gases to escape the gravitational wells of small inner planets.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the geological feature known as Caloris Basin on Mercury?",
+        "options": [
+          "A. A dried ocean bed",
+          "B. A cataclysmic impact by a massive asteroid early in the solar system's history, producing concentric shock rings",
+          "C. A collapsed volcano",
+          "D. Tectonic rifting"
+        ],
+        "correctAnswer": "B. A cataclysmic impact by a massive asteroid early in the solar system's history, producing concentric shock rings",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Caloris Basin is an ancient impact crater over 1,500 km across, ringed by compressive mountain ridges.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the presence of an ocean on Earth prevent it from suffering the greenhouse fate of Venus?",
+        "options": [
+          "A. Water cools the core",
+          "B. Oceans absorb atmospheric carbon dioxide, converting it into dissolved bicarbonate and solid carbonate rock precipitates",
+          "C. Oceans reflect all sunlight into space",
+          "D. Water dissolves incoming meteorites"
+        ],
+        "correctAnswer": "B. Oceans absorb atmospheric carbon dioxide, converting it into dissolved bicarbonate and solid carbonate rock precipitates",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Liquid oceans dissolve carbon dioxide and support carbonate precipitation, sequestering atmospheric carbon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the sidereal year differ from the tropical year on Earth?",
+        "options": [
+          "A. Tropical year is 100 days longer",
+          "B. The tropical year (equinox to equinox) is ~20 minutes shorter than the sidereal year (fixed stars) due to axial precession",
+          "C. Sidereal year applies only to Mars",
+          "D. Both are identical"
+        ],
+        "correctAnswer": "B. The tropical year (equinox to equinox) is ~20 minutes shorter than the sidereal year (fixed stars) due to axial precession",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Axial precession moves equinox points westward, shortening the tropical year by roughly 20.4 minutes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What evidence proves that the greenhouse effect on Venus is caused by carbon dioxide rather than proximity to the Sun alone?",
+        "options": [
+          "A. Venus reflects all solar heat",
+          "B. Theoretical calculations show an airless rock at Venus's distance would be much cooler, whereas infrared absorption by CO₂ accounts for the 460°C temperature",
+          "C. Venus is dark inside",
+          "D. Nuclear reactions occur on the surface"
+        ],
+        "correctAnswer": "B. Theoretical calculations show an airless rock at Venus's distance would be much cooler, whereas infrared absorption by CO₂ accounts for the 460°C temperature",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Its high albedo means Venus absorbs less solar energy than Earth; its heat is driven by infrared trapping in dense CO₂.",
+        "points": 1
+      },
+      {
+        "id": "B7_SYS_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which combination of planetary dynamics explains both the 24-hour cycle of day and night and the annual progression of the seasons on Earth?",
+        "options": [
+          "A. Westward revolution in a circle combined with a vertical axis",
+          "B. Eastward axial rotation completed every 24 hours, combined with an elliptical revolution around the Sun completed in 365.25 days with an axial tilt of 23.5°",
+          "C. The Moon revolving around the Earth every 24 hours",
+          "D. Earth moving up and down relative to the Sun"
+        ],
+        "correctAnswer": "B. Eastward axial rotation completed every 24 hours, combined with an elliptical revolution around the Sun completed in 365.25 days with an axial tilt of 23.5°",
+        "hint": "Apply principles of orbital mechanics (Kepler's laws, spin-orbit resonance, eccentricity), planetary geodynamics (core cooling, geodynamo, escape velocity), and geochemical cycles (carbonate-silicate climate stabilization).",
+        "workedSolution": "Diurnal cycles are produced by 24-hour eastward rotation, while seasons arise from the 23.5° tilted axis during the 365.25-day orbit.",
         "points": 1
       }
     ]
