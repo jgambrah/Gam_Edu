@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.559Z"
+    "updatedAt": "2026-10-02T17:15:12.852Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -2781,21 +2781,21 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "title": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "strand": "STRAND 1: DIVERSITY OF MATTER",
     "strandCode": "S1",
-    "subStrand": "Living Cells (Ultrastructure, Organelle Specialization & Tissues)",
+    "subStrand": "Living Cells (Structure, Organelles & Organization of Life)",
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. Students trace life from fundamental cell theory and plant vs. animal ultrastructure to multicellular differentiation and organ-system hierarchies.",
-    "totalPracticeQuestions": 156,
+    "totalPracticeQuestions": 159,
     "version": 1,
     "aliases": [
       "b7_strand1_cells"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Cell Theory, Microscopy, Plant vs. Animal Ultrastructure & Specialization",
-        "summary": "Master the cell as the structural unit of life, optical light microscope anatomy and handling, contrast plant and animal cell ultrastructure, and explore specialized cell adaptations across multicellular hierarchies.",
-        "notes": "### Unit 1: The Cell Theory & Optical Light Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate a thorough understanding of cellular biology, handle an optical light microscope safely, and distinguish between plant and animal cells.\n\n#### 1. The Classical Cell Theory\nThe cell theory was formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms (unicellular and multicellular) are composed of one or more living cells.\n2. **Functional Tenet:** The cell is the most fundamental structural, functional, and physiological unit of all biological life.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n#### 2. The Optical Compound Light Microscope\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"360\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"metalGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#94a3b8\"/>\n      <stop offset=\"100%\" stop-color=\"#475569\"/>\n    </linearGradient>\n    <linearGradient id=\"lensGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <linearGradient id=\"beamGrad\" x1=\"0%\" y1=\"100%\" x2=\"0%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" stop-opacity=\"0.8\"/>\n      <stop offset=\"100%\" stop-color=\"#fef08a\" stop-opacity=\"0.1\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"15\" width=\"680\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"35\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</text>\n  \n  <!-- Microscope Base -->\n  <path d=\"M140,320 L280,320 L270,300 L150,300 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Light Source / Mirror -->\n  <ellipse cx=\"210\" cy=\"285\" r=\"16\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n  <polygon points=\"200,285 220,285 226,200 194,200\" fill=\"url(#beamGrad)\"/>\n  \n  <!-- Arm -->\n  <path d=\"M260,300 C330,280 340,160 270,120 L250,120 C300,150 290,260 240,290 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Stage and Condenser/Diaphragm -->\n  <rect x=\"160\" y=\"200\" width=\"100\" height=\"12\" rx=\"2\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <rect x=\"185\" y=\"212\" width=\"50\" height=\"14\" rx=\"2\" fill=\"#64748b\"/>\n  <line x1=\"180\" y1=\"198\" x2=\"240\" y2=\"198\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n  \n  <!-- Coarse & Fine Focus Knobs -->\n  <circle cx=\"285\" cy=\"220\" r=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"2\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"8\" fill=\"#64748b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"4\" fill=\"#cbd5e1\"/>\n  \n  <!-- Body Tube -->\n  <rect x=\"195\" y=\"70\" width=\"30\" height=\"80\" rx=\"3\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Eyepiece (Ocular Lens) -->\n  <rect x=\"190\" y=\"48\" width=\"40\" height=\"22\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"210\" cy=\"50\" rx=\"14\" ry=\"4\" fill=\"url(#lensGrad)\"/>\n  \n  <!-- Revolving Nosepiece -->\n  <path d=\"M190,150 L230,150 L238,162 L182,162 Z\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Objective Lenses (Low, Medium, High) -->\n  <rect x=\"188\" y=\"162\" width=\"12\" height=\"24\" rx=\"2\" fill=\"#ef4444\" stroke=\"#991b1b\" stroke-width=\"1\"/>\n  <rect x=\"204\" y=\"162\" width=\"12\" height=\"32\" rx=\"2\" fill=\"#eab308\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <rect x=\"220\" y=\"162\" width=\"12\" height=\"38\" rx=\"2\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1\"/>\n\n  <!-- Annotations / Callouts -->\n  <g font-family=\"sans-serif\" font-size=\"11\" fill=\"#0f172a\">\n    <line x1=\"230\" y1=\"58\" x2=\"380\" y2=\"58\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"62\" font-weight=\"bold\"><tspan fill=\"#0284c7\">1. Eyepiece (Ocular Lens):</tspan> Magnifies image (typically 10×)</text>\n    \n    <line x1=\"225\" y1=\"110\" x2=\"380\" y2=\"110\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"114\" font-weight=\"bold\"><tspan fill=\"#0f172a\">2. Body Tube:</tspan> Holds eyepiece at correct optical distance</text>\n    \n    <line x1=\"235\" y1=\"175\" x2=\"380\" y2=\"155\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"159\" font-weight=\"bold\"><tspan fill=\"#eab308\">3. Objective Lenses:</tspan> 4× (low), 10× (medium), 40× (high power)</text>\n    \n    <line x1=\"260\" y1=\"206\" x2=\"380\" y2=\"200\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"204\" font-weight=\"bold\"><tspan fill=\"#0f172a\">4. Stage &amp; Stage Clips:</tspan> Supports glass slide securely</text>\n    \n    <line x1=\"300\" y1=\"220\" x2=\"380\" y2=\"245\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"249\" font-weight=\"bold\"><tspan fill=\"#334155\">5. Coarse &amp; Fine Focus:</tspan> Rapid positioning / sharp definition</text>\n    \n    <line x1=\"235\" y1=\"222\" x2=\"380\" y2=\"290\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"294\" font-weight=\"bold\"><tspan fill=\"#047857\">6. Diaphragm &amp; Condenser:</tspan> Regulates incident light beam volume</text>\n    \n    <line x1=\"226\" y1=\"285\" x2=\"380\" y2=\"330\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"334\" font-weight=\"bold\"><tspan fill=\"#ca8a04\">7. Substage Light / Mirror:</tspan> Reflects illumination through specimen</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</p>\n</div>\n\n| Microscope Component | Mechanical or Optical? | Specific Functional Role |\n| :--- | :---: | :--- |\n| **Eyepiece (Ocular Lens)** | Optical | Magnifies primary image formed by objective lens (standard magnification: $10\\times$). |\n| **Body Tube (Barrel)** | Mechanical | Maintains the correct optical focal distance between eyepiece and objective lenses. |\n| **Revolving Nosepiece** | Mechanical | Rotating turret housing multiple objective lenses allowing rapid switching of magnifications. |\n| **Objective Lenses** | Optical | Primary magnification lenses: Low power ($4\\times$), Medium power ($10\\times$), High power ($40\\times$). |\n| **Stage & Stage Clips** | Mechanical | Flat platform holding the specimen glass slide securely over the central optical aperture. |\n| **Diaphragm & Condenser** | Optical | Regulates the cone angle and intensity of light illuminating the specimen. |\n| **Coarse Adjustment Knob** | Mechanical | Moves stage rapidly up or down for initial specimen location under low power ($4\\times$ or $10\\times$). |\n| **Fine Adjustment Knob** | Mechanical | Delicately shifts the objective focal plane to achieve sharp, high-resolution clarity under high power. |\n| **Substage Mirror / Lamp** | Optical | Directs natural or electric light upward through the condenser and glass slide. |\n| **Arm & Base** | Mechanical | Structural backbone and heavy foot providing stability during laboratory operation. |\n\n#### Calculating Total Magnification:\n$$\\text{Total Magnification} = \\text{Magnification of Eyepiece} \\times \\text{Magnification of Objective Lens}$$\n* *Example:* If an eyepiece lens has a rating of $10\\times$ and the high-power objective lens is $40\\times$:\n  $$\\text{Total Magnification} = 10 \\times 40 = 400\\times$$\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"plantWall\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#15803d\"/>\n      <stop offset=\"100%\" stop-color=\"#166534\"/>\n    </linearGradient>\n    <linearGradient id=\"plantCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#dcfce7\"/>\n      <stop offset=\"100%\" stop-color=\"#bbf7d0\"/>\n    </linearGradient>\n    <linearGradient id=\"animalCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fde68a\"/>\n    </linearGradient>\n    <linearGradient id=\"nucGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#818cf8\"/>\n      <stop offset=\"100%\" stop-color=\"#4f46e5\"/>\n    </linearGradient>\n    <linearGradient id=\"chloroGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"760\" height=\"340\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"12\" width=\"720\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</text>\n  \n  <!-- ================= PLANT CELL (LEFT) ================= -->\n  <g transform=\"translate(30, 55)\">\n    <!-- Cell Wall Outer -->\n    <rect x=\"0\" y=\"0\" width=\"310\" height=\"230\" rx=\"20\" fill=\"url(#plantWall)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Cell Wall Inner / Middle Lamella Space -->\n    <rect x=\"8\" y=\"8\" width=\"294\" height=\"214\" rx=\"14\" fill=\"#86efac\"/>\n    <!-- Cell Membrane & Cytoplasm -->\n    <rect x=\"12\" y=\"12\" width=\"286\" height=\"206\" rx=\"12\" fill=\"url(#plantCyto)\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    \n    <!-- Large Central Vacuole -->\n    <rect x=\"70\" y=\"50\" width=\"170\" height=\"130\" rx=\"30\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"155\" y=\"120\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Central Vacuole</text>\n    <text x=\"155\" y=\"135\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0284c7\" text-anchor=\"middle\">(Cell Sap &amp; Turgor Pressure)</text>\n    \n    <!-- Nucleus (Pushed to periphery) -->\n    <circle cx=\"50\" cy=\"65\" r=\"26\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"1.5\"/>\n    <circle cx=\"50\" cy=\"65\" r=\"10\" fill=\"#312e81\"/>\n    <text x=\"50\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#312e81\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Chloroplasts -->\n    <g fill=\"url(#chloroGrad)\" stroke=\"#14532d\" stroke-width=\"1\">\n      <ellipse cx=\"60\" cy=\"180\" rx=\"18\" ry=\"10\" transform=\"rotate(-20 60 180)\"/>\n      <ellipse cx=\"260\" cy=\"80\" rx=\"18\" ry=\"10\" transform=\"rotate(30 260 80)\"/>\n      <ellipse cx=\"260\" cy=\"160\" rx=\"18\" ry=\"10\" transform=\"rotate(-15 260 160)\"/>\n    </g>\n    <!-- Mitochondria -->\n    <ellipse cx=\"140\" cy=\"200\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <ellipse cx=\"210\" cy=\"35\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    \n    <text x=\"155\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">PLANT CELL (Regular Polygonal)</text>\n  </g>\n\n  <!-- ================= ANIMAL CELL (RIGHT) ================= -->\n  <g transform=\"translate(410, 55)\">\n    <!-- Flexible Cell Membrane & Cytoplasm -->\n    <path d=\"M40,50 Q120,10 220,30 Q300,70 280,160 Q260,225 180,220 Q70,225 25,160 Q0,80 40,50 Z\" fill=\"url(#animalCyto)\" stroke=\"#d97706\" stroke-width=\"2.5\"/>\n    \n    <!-- Centrally Located Nucleus -->\n    <circle cx=\"150\" cy=\"120\" r=\"34\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"2\"/>\n    <circle cx=\"150\" cy=\"120\" r=\"12\" fill=\"#312e81\"/>\n    <text x=\"150\" y=\"124\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Mitochondria (Abundant) -->\n    <ellipse cx=\"70\" cy=\"90\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(25 70 90)\"/>\n    <ellipse cx=\"230\" cy=\"80\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-30 230 80)\"/>\n    <ellipse cx=\"90\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-10 90 170)\"/>\n    <ellipse cx=\"220\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(40 220 170)\"/>\n    \n    <!-- Small Temporary Vacuoles -->\n    <circle cx=\"85\" cy=\"130\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <circle cx=\"215\" cy=\"125\" r=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    \n    <!-- Centrosome / Centrioles -->\n    <rect x=\"175\" y=\"70\" width=\"10\" height=\"4\" fill=\"#475569\"/>\n    <rect x=\"178\" y=\"67\" width=\"4\" height=\"10\" fill=\"#475569\"/>\n    \n    <text x=\"150\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (Irregular / Amorphous)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</p>\n</div>\n\n#### Detailed Organelle Functions:\n1. **Cell Membrane (Plasma Membrane):**\n   * Selectively permeable phospholipid bilayer studded with proteins.\n   * Regulates the bidirectional passage of substances (nutrients, gases, metabolic wastes).\n2. **Cell Wall (Plants Only):**\n   * Rigid, non-living outer casing constructed predominantly of tough cellulose fibers.\n   * Provides structural support, prevents osmotic burst (lysis), and imparts a fixed polygonal shape.\n3. **Cytoplasm:**\n   * Gel-like aqueous cytosol containing dissolved sugars, amino acids, mineral ions, and suspended organelles.\n   * Site of metabolic activities, including glycolysis and enzymatic synthesis.\n4. **Nucleus & Nucleolus:**\n   * Enclosed by a double membrane with nuclear pores; houses genetic material (DNA in chromatin/chromosomes).\n   * Serves as the executive control center directing cell division, enzyme production, and protein synthesis.\n5. **Mitochondria (Singular: Mitochondrion):**\n   * Oval organelle with folded inner membranes (*cristae*).\n   * Known as the **\"powerhouse of the cell\"**: site of aerobic cellular respiration generating adenosine triphosphate ($ATP$).\n6. **Chloroplasts (Plants Only):**\n   * Double-membraned plastid containing green chlorophyll pigments arranged on stacked thylakoid disks (*grana*).\n   * Captures radiant sunlight energy to synthesize glucose through photosynthesis ($6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\rightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$).\n7. **Vacuole:**\n   * *In Plant Cells:* Single, immense central permanent vacuole bounded by a membrane (*tonoplast*) filled with watery cell sap. Generates internal turgor pressure that keeps non-woody stems upright.\n   * *In Animal Cells:* Multiple, small, temporary vacuoles used for phagocytosis, pinocytosis, or waste excretion.\n\n#### Plant vs. Animal Cell Distinction Matrix:\n| Feature / Characteristic | Typical Plant Cell | Typical Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Shape** | Fixed, rigid, regular polygonal shape | Flexible, variable, irregular / spherical shape |\n| **Outer Boundary** | Cellulose cell wall + inner cell membrane | Outer cell membrane only (no cell wall) |\n| **Chloroplasts & Chlorophyll** | Present in photosynthetic cells (leaves) | Completely absent |\n| **Vacuolar Architecture** | One large, prominent central permanent vacuole | Multiple small, temporary vacuoles (if present) |\n| **Position of Nucleus** | Pushed to the periphery by central vacuole | Usually positioned near the geometric center |\n| **Centrioles & Centrosomes** | Absent in higher plants | Present (organizes spindle fibers in division) |\n| **Carbohydrate Food Storage** | Stored as insoluble **Starch grains** | Stored as branched **Glycogen granules** |\n\n---\n\n### Unit 3: Cellular Specialization & Multicellular Complexity\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B7 Extension`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"760\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"720\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.3: Structural Specializations in Animal and Plant Cells</text>\n  \n  <!-- Red Blood Cell -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"32\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.5\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"16\" fill=\"#fca5a5\" stroke=\"#ef4444\" stroke-width=\"1\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Red Blood Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Biconcave disc</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• No nucleus (haemoglobin)</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• High surface area</text>\n  </g>\n  \n  <!-- Sperm Cell -->\n  <g transform=\"translate(175, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <ellipse cx=\"40\" cy=\"55\" rx=\"16\" ry=\"10\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.5\"/>\n    <circle cx=\"30\" cy=\"55\" r=\"4\" fill=\"#93c5fd\"/>\n    <rect x=\"56\" y=\"52\" width=\"12\" height=\"6\" rx=\"2\" fill=\"#f59e0b\"/>\n    <path d=\"M68,55 Q95,40 105,65 Q115,85 120,55\" fill=\"none\" stroke=\"#1d4ed8\" stroke-width=\"2\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sperm Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Male Gamete</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Flagellum for motility</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Acrosome enzyme tip</text>\n  </g>\n\n  <!-- Nerve Cell / Motor Neuron -->\n  <g transform=\"translate(320, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <!-- Soma & Dendrites -->\n    <polygon points=\"35,45 25,35 30,55 18,60 30,70 42,75 50,60\" fill=\"#8b5cf6\" stroke=\"#6d28d9\" stroke-width=\"1\"/>\n    <line x1=\"50\" y1=\"60\" x2=\"105\" y2=\"60\" stroke=\"#6d28d9\" stroke-width=\"2\"/>\n    <rect x=\"60\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"75\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"90\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Nerve Cell (Neuron)</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Signal Conduction</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Elongated axon cable</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Myelin sheath insulation</text>\n  </g>\n\n  <!-- Root Hair Cell -->\n  <g transform=\"translate(465, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <path d=\"M25,40 L65,40 L115,55 L65,70 L25,70 Z\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Root Hair Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Plant Subterranean</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Long finger projection</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vast absorption area</text>\n  </g>\n\n  <!-- Palisade Mesophyll Cell -->\n  <g transform=\"translate(610, 45)\">\n    <rect width=\"120\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <rect x=\"35\" y=\"35\" width=\"50\" height=\"55\" rx=\"4\" fill=\"#86efac\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <circle cx=\"45\" cy=\"45\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"58\" cy=\"43\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"72\" cy=\"46\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"48\" cy=\"62\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"65\" cy=\"65\" r=\"3\" fill=\"#166534\"/>\n    <text x=\"60\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Palisade Cell</text>\n    <text x=\"60\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Leaf Photosynthesis</text>\n    <text x=\"60\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Packed chloroplasts</text>\n    <text x=\"60\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vertical light capture</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.3: Structural Specializations in Animal and Plant Cells</p>\n</div>\n\n| Specialized Cell | Biological Location | Structural Adaptation | Physiological Function |\n| :--- | :--- | :--- | :--- |\n| **Red Blood Cell (Erythrocyte)** | Blood vascular system | Biconcave disc shape (maximizes surface-area-to-volume ratio); mature cells lack a nucleus to pack more haemoglobin pigment. | Transports oxygen from pulmonary alveoli to respiring body tissues. |\n| **Sperm Cell (Male Gamete)** | Mammalian testes | Long whip-like flagellum; head capped with an **acrosome** containing digestive enzymes; midpiece loaded with mitochondria. | Swims toward female ovum and digests outer egg membrane during fertilization. |\n| **Nerve Cell (Neuron)** | Central & peripheral nervous system | Extended axon transmitting electrical impulses across great distances; insulating myelin sheath; branching dendrites. | Transmits electro-chemical nerve impulses between receptors, brain, and effectors. |\n| **Root Hair Cell** | Outer root epidermis | Elongated finger-like projection extending into soil pores; thin cell wall; lacks chloroplasts; high solute concentration. | Absorbs soil water by osmosis and dissolved mineral salts by active transport. |\n| **Palisade Mesophyll Cell** | Upper leaf interior | Columnar vertical arrangement packed with hundreds of chloroplasts positioned directly beneath the transparent upper cuticle. | Maximum absorption of sunlight for photosynthetic carbohydrate synthesis. |\n| **Guard Cells** | Leaf epidermis (stomatal pore) | Kidney-shaped paired cells with thicker inner walls; expand when turgid to open stomata, relax when flaccid to close. | Regulates transpirational water loss and photosynthetic gaseous exchange ($\\text{CO}_2 / \\text{O}_2$). |\n\n---\n\n### Unit 4: Hierarchical Levels of Biological Organization\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B9.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"180\" viewBox=\"0 0 720 180\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"720\" height=\"180\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"680\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</text>\n\n  <!-- Level 1: Cell -->\n  <g transform=\"translate(30, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">1. CELL</text>\n    <circle cx=\"47\" cy=\"60\" r=\"16\" fill=\"#38bdf8\" stroke=\"#0284c7\"/>\n    <circle cx=\"47\" cy=\"60\" r=\"5\" fill=\"#0369a1\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Basic life unit</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Muscle fiber)</text>\n  </g>\n  <text x=\"138\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 2: Tissue -->\n  <g transform=\"translate(160, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">2. TISSUE</text>\n    <rect x=\"25\" y=\"48\" width=\"45\" height=\"25\" rx=\"3\" fill=\"#86efac\" stroke=\"#16a34a\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Similar cells</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Cardiac muscle)</text>\n  </g>\n  <text x=\"268\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 3: Organ -->\n  <g transform=\"translate(290, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. ORGAN</text>\n    <path d=\"M47,50 C30,35 15,60 47,80 C79,60 64,35 47,50 Z\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Tissues united</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Heart, Leaf)</text>\n  </g>\n  <text x=\"398\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 4: Organ System -->\n  <g transform=\"translate(420, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#f3e8ff\" stroke=\"#9333ea\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. ORGAN SYSTEM</text>\n    <rect x=\"35\" y=\"45\" width=\"45\" height=\"30\" rx=\"4\" fill=\"#d8b4fe\" stroke=\"#9333ea\"/>\n    <text x=\"57\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Organs working</text>\n    <text x=\"57\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Circulatory system)</text>\n  </g>\n  <text x=\"548\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 5: Organism -->\n  <g transform=\"translate(570, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. ORGANISM</text>\n    <circle cx=\"57\" cy=\"48\" r=\"8\" fill=\"#fca5a5\" stroke=\"#ef4444\"/>\n    <line x1=\"57\" y1=\"56\" x2=\"57\" y2=\"76\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"42\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"45\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"69\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <text x=\"57\" y=\"100\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Complete living</text>\n    <text x=\"57\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">individual (Human)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</p>\n</div>\n\n1. **Level 1: Organelles:** Specialized sub-cellular structures (e.g. Nucleus, Mitochondria, Ribosomes) executing distinct biochemical duties within a single cell.\n2. **Level 2: Cells:** The fundamental building blocks of living organisms (e.g. cardiac muscle cell, epidermal cell).\n3. **Level 3: Tissues:** An aggregate of similar, morphologically specialized cells working collectively to perform a common physiological duty (e.g. cardiac muscle tissue, xylem vascular tissue).\n4. **Level 4: Organs:** Distinct anatomical units composed of two or more coordinated tissues executing a primary physiological function (e.g. the human heart, mammalian kidney, angiosperm leaf).\n5. **Level 5: Organ Systems:** A group of interconnected organs operating symbiotically to carry out a comprehensive life process (e.g. circulatory system, digestive system, plant shoot system).\n6. **Level 6: Multicellular Organism:** An autonomous living individual possessing integrated organ systems (e.g. human being, mango tree).",
+        "levelTitle": "Basic 7 (JHS 1) • Cell Structure, Organelles & Organization of Life",
+        "summary": "Identify and describe the cell as the basic unit of life, examine the structural organization in multicellular organisms, and compare plant and animal cell ultrastructures and functions.",
+        "notes": "### Unit 1: The Cell as the Basic Unit of Life & Classical Cell Theory\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n* **Core Concept:** Cell as the fundamental microscopic structural and functional building block.\n\n#### 1. Fundamental Definition & Architectural Analogy\nA **cell** is the fundamental microscopic structural and functional building block of every living organism. Just as a modern building is constructed from individual structural bricks, all living bodies—from microscopic unicellular bacteria to complex multicellular mammals—are assembled from cells.\n\n#### 2. The Classical Cell Theory\nThe foundational tenets of cellular biology were formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms are composed of one or more cells.\n2. **Functional Tenet:** The cell is the smallest independent living unit capable of performing all essential life processes.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nPlant and animal cells are **eukaryotic**, meaning their internal contents are organized into distinct, membrane-enclosed microscopic sub-units known as **organelles**. Each organelle handles a specialized duty essential for cellular metabolism and survival.\n\n<div class=\"my-6 grid grid-cols-1 lg:grid-cols-2 gap-4\">\n  <div class=\"flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n    <span class=\"text-xs font-bold text-emerald-400 mb-2\">Figure 2.1: Ultrastructure of a Typical Plant Cell</span>\n    <div class=\"w-full flex justify-center overflow-x-auto\">\n      <svg width=\"420\" height=\"320\" viewBox=\"0 0 420 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"420\" height=\"320\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.5\"/><rect x=\"40\" y=\"35\" width=\"210\" height=\"250\" rx=\"22\" fill=\"#dcfce7\" stroke=\"#15803d\" stroke-width=\"6\"/><rect x=\"48\" y=\"43\" width=\"194\" height=\"234\" rx=\"16\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"2\"/><path d=\"M 90 75 Q 190 70 195 130 Q 200 220 130 230 Q 75 225 80 145 Z\" fill=\"#fef9c3\" stroke=\"#eab308\" stroke-width=\"1.8Base\"/><circle cx=\"100\" cy=\"120\" r=\"26\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.8\"/><circle cx=\"100\" cy=\"120\" r=\"10\" fill=\"#991b1b\"/><g fill=\"#16a34a\" stroke=\"#14532d\" stroke-width=\"1\"><ellipse cx=\"70\" cy=\"220\" rx=\"14\" ry=\"8\"/><ellipse cx=\"180\" cy=\"85\" rx=\"14\" ry=\"8\"/><ellipse cx=\"185\" cy=\"210\" rx=\"14\" ry=\"8\"/></g><g fill=\"#ea580c\" stroke=\"#9a3412\" stroke-width=\"1\"><ellipse cx=\"65\" cy=\"70\" rx=\"11\" ry=\"6\"/><ellipse cx=\"175\" cy=\"160\" rx=\"11\" ry=\"6\"/></g><line x1=\"250\" y1=\"60\" x2=\"280\" y2=\"60\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"64\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\">Cell Wall</text><line x1=\"242\" y1=\"80\" x2=\"280\" y2=\"95\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"99\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#22c55e\">Cell Membrane</text><line x1=\"195\" y1=\"115\" x2=\"280\" y2=\"130\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"134\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ca8a04\">Large Central Vacuole</text><line x1=\"126\" y1=\"120\" x2=\"280\" y2=\"165\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"169\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Nucleus</text><line x1=\"195\" y1=\"210\" x2=\"280\" y2=\"205\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"209\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#14532d\">Chloroplast</text><line x1=\"185\" y1=\"165\" x2=\"280\" y2=\"240\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"244\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9a3412\">Mitochondrion</text><line x1=\"220\" y1=\"250\" x2=\"280\" y2=\"275\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"279\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Cytoplasm</text></svg>\n    </div>\n  </div>\n  <div class=\"flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n    <span class=\"text-xs font-bold text-pink-400 mb-2\">Figure 2.2: Ultrastructure of a Typical Animal Cell</span>\n    <div class=\"w-full flex justify-center overflow-x-auto\">\n      <svg width=\"420\" height=\"320\" viewBox=\"0 0 420 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"420\" height=\"320\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.5\"/><path d=\"M 60 160 C 50 80 100 40 170 45 C 240 50 260 100 255 180 C 250 250 200 280 130 270 C 70 260 70 220 60 160 Z\" fill=\"#fdf2f8\" stroke=\"#ec4899\" stroke-width=\"3\"/><circle cx=\"150\" cy=\"150\" r=\"34\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"2\"/><circle cx=\"150\" cy=\"150\" r=\"12\" fill=\"#991b1b\"/><g fill=\"#ea580c\" stroke=\"#9a3412\" stroke-width=\"1\"><ellipse cx=\"95\" cy=\"105\" rx=\"12\" ry=\"7\"/><ellipse cx=\"195\" cy=\"210\" rx=\"12\" ry=\"7\"/><ellipse cx=\"210\" cy=\"100\" rx=\"12\" ry=\"7\"/></g><g fill=\"#38bdf8\" stroke=\"#0284c7\" stroke-width=\"1\"><circle cx=\"100\" cy=\"210\" r=\"7\"/><circle cx=\"115\" cy=\"75\" r=\"6\"/><circle cx=\"190\" cy=\"70\" r=\"7\"/></g><g fill=\"#64748b\"><circle cx=\"90\" cy=\"150\" r=\"2\"/><circle cx=\"120\" cy=\"195\" r=\"2\"/><circle cx=\"180\" cy=\"115\" r=\"2\"/><circle cx=\"215\" cy=\"160\" r=\"2\"/></g><line x1=\"256\" y1=\"140\" x2=\"290\" y2=\"110\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"114\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#db2777\">Cell Membrane</text><line x1=\"184\" y1=\"150\" x2=\"290\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Nucleus</text><line x1=\"215\" cy1=\"100\" x2=\"290\" y2=\"190\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"194\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9a3412\">Mitochondrion</text><line x1=\"107\" y1=\"210\" x2=\"290\" y2=\"230\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"234\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\">Small Vacuoles</text><line x1=\"210\" y1=\"240\" x2=\"290\" y2=\"265\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"269\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Cytoplasm</text></svg>\n    </div>\n  </div>\n</div>\n\n#### Detailed Organelle Functions:\n| Organelle | Cellular Presence | Biological Function & Significance |\n| :--- | :--- | :--- |\n| **Nucleus** | Both Plant & Animal | Functions as the control headquarters of the cell. It coordinates vital cellular activities and safeguards the genetic blueprint (DNA) inherited across generations. |\n| **Cytoplasm** | Both Plant & Animal | A transparent, jelly-like fluid that fills the cell interior. It suspends organelles and serves as the primary site where biochemical reactions happen. |\n| **Cell Membrane** | Both Plant & Animal | A semi-permeable flexible outer boundary that monitors and regulates the entry and exit of dissolved substances, nutrients, and metabolic wastes. |\n| **Mitochondria** | Both Plant & Animal | Commonly described as the 'powerhouse' of the cell. It carries out aerobic cellular respiration, converting glucose into usable chemical energy (ATP). |\n| **Cell Wall** | Plant Cells Only | A rigid, protective outer encasement made of cellulose fibers. It provides structural integrity, maintains fixed cell shape, and shields against mechanical injury. |\n| **Chloroplast** | Plant Cells Only | Specialized disc-shaped plastids packed with green chlorophyll pigments. They capture sunlight energy to manufacture carbohydrates through photosynthesis. |\n| **Vacuole** | Both (Different Sizes) | In plant cells, it is large, permanent, and central, storing cell sap (water, dissolved sugars, and mineral salts) to keep the cell firm and turgid. In animal cells, vacuoles are small, numerous, and temporary. |\n\n#### Diagnostic Distinction Matrix: Plant vs. Animal Cells\n| Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Exterior Boundary** | Bound by both an outer cellulose cell wall and an inner membrane | Enclosed by a flexible cell membrane only (no cell wall) |\n| **Geometric Shape** | Rigid, definite, and regular angular shape | Flexible, rounded, or irregular shape |\n| **Chloroplasts** | Present (contains chlorophyll for photosynthesis) | Completely absent (cannot synthesize food) |\n| **Vacuole Characteristics** | Has one or few large, central permanent vacuoles | Has multiple tiny, scattered temporary vacuoles |\n| **Storage Carbohydrate** | Stores excess carbohydrates in the form of starch | Stores reserve carbohydrates in the form of glycogen |\n| **Lipid Storage Form** | Primarily stores energy reserves as oils | Primarily stores energy reserves as adipose fats |\n\n---\n\n### Unit 3: Cellular Specialization & Morphological Adaptations\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nIn multicellular organisms, cells undergo **differentiation**—modifying their shape, structure, and organelle density to perform specialized physiological functions:\n* **Red Blood Cell (Erythrocyte):** Biconcave disc without a nucleus to maximize surface area and capacity for hemoglobin oxygen transport.\n* **Root Hair Cell:** Elongated tubular projection to dramatically increase surface area for absorbing soil water (osmosis) and mineral ions (active transport).\n* **Xylem Vessel Element:** Hollow, lignified dead cylindrical tubes aligned end-to-end to transport water and dissolved minerals from roots to leaves.\n* **Motor Neuron (Nerve Cell):** Elongated axon sheath with dendrites to transmit electrical impulses rapidly across anatomical distances.\n* **Sperm Cell (Male Gamete):** Streamlined head with acrosome enzymes, midpiece packed with mitochondria for motility energy, and flagellum whip for propulsion.\n* **Muscle Cell (Myocyte):** Packed with contractile protein filaments (actin and myosin) and dense mitochondria to generate mechanical force through contraction.\n\n---\n\n### Unit 4: Hierarchical Organization of Multicellular Life\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nIn multicellular creatures, cells specialize and coordinate in progressive levels of organization to sustain life:\n1. **Rank 1 — Cell:** The smallest independent living unit that performs life processes (e.g., nerve cell, red blood cell, leaf epidermal cell).\n2. **Rank 2 — Tissue:** A collaborative cluster of similar cells that share the same shape, size, and specific biological function (e.g., muscle tissue, xylem tissue).\n3. **Rank 3 — Organ:** A distinct anatomical structure composed of different tissues working together to carry out a dedicated activity (e.g., heart, stomach, plant leaf).\n4. **Rank 4 — Organ System:** A coordinated group of interrelated organs functioning in harmony to perform major physiological duties (e.g., digestive system, circulatory system).\n5. **Rank 5 — Organism:** A complete, autonomous individual living being capable of carrying out all life activities independently (e.g., a human being, a maize plant).\n\n```\n[ Cell ] ──▶ [ Tissue ] ──▶ [ Organ ] ──▶ [ Organ System ] ──▶ [ Complete Organism ]\n  (e.g., Muscle Cell)   (e.g., Muscle Tissue)   (e.g., Heart)        (Circulatory System)     (e.g., Human Being)\n```\n",
         "workedExamples": [
           {
             "id": "ex_b7_s1_cells_01",
@@ -2826,6 +2826,57 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
+              "id": "B7_CELL_MCQ_01",
+              "difficulty": "low",
+              "prompt": "Which of the following describes the correct order of biological organization in a multicellular organism, starting from the smallest unit?",
+              "options": [
+                "A. Organism → Tissue → Organ → Cell → Organ System",
+                "B. Cell → Tissue → Organ → Organ System → Organism",
+                "C. Organ → Cell → Tissue → Organ System → Organism",
+                "D. Tissue → Cell → Organ System → Organ → Organism"
+              ],
+              "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
+              "hint": "Think from microscopic building block to the whole living creature.",
+              "workedSolution": "Life is built systematically: individual Cells group into Tissues, tissues form functional Organs, organs coordinate into Organ Systems, which together form the complete Organism.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_MCQ_02",
+              "difficulty": "low",
+              "prompt": "An organelle found inside a plant leaf cell that absorbs solar energy to manufacture carbohydrates is the:",
+              "options": [
+                "A. Mitochondrion",
+                "B. Cell membrane",
+                "C. Chloroplast",
+                "D. Nucleus"
+              ],
+              "correctAnswer": "C. Chloroplast",
+              "hint": "This organelle contains green chlorophyll pigments.",
+              "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb sunlight to carry out photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_MCQ_03",
+              "difficulty": "low",
+              "prompt": "A key difference between plant and animal cells is that plant cells:",
+              "options": [
+                "A. Lack a nucleus",
+                "B. Possess a rigid outer cellulose cell wall",
+                "C. Have small, temporary vacuoles",
+                "D. Store carbohydrates as glycogen"
+              ],
+              "correctAnswer": "B. Possess a rigid outer cellulose cell wall",
+              "hint": "Consider the rigid outer encasement that maintains definite shape.",
+              "workedSolution": "Plant cells have an outer cellulose cell wall that gives them structural support and a definite shape. Animal cells lack a cell wall.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1.1",
+              "type": "objective"
+            },
+            {
               "id": "B7_CELL_F01",
               "difficulty": "low",
               "prompt": "The basic structural and functional unit of all living organisms is the:",
@@ -2839,7 +2890,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Recall the core tenet of the classical cell theory.",
               "workedSolution": "The cell is scientifically defined as the fundamental structural and functional unit of all biological organisms.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2856,7 +2907,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Newton was a physicist who formulated the laws of universal gravitation and motion.",
               "workedSolution": "Schleiden, Schwann, and Virchow formulated the biological cell theory, whereas Isaac Newton was a physicist.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2873,7 +2924,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Also called the ocular lens, it is situated at the top of the body tube.",
               "workedSolution": "The eyepiece (or ocular lens) is positioned at the top of the body tube through which the observer directly views the magnified image.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2890,7 +2941,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "This organelle produces adenosine triphosphate (ATP) during aerobic cellular respiration.",
               "workedSolution": "Mitochondria are known as the powerhouses of the cell because they synthesize ATP through cellular respiration.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2907,7 +2958,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It gives plants their rigid polygonal structure and is made of cellulose.",
               "workedSolution": "The rigid cellulose cell wall is found exclusively in plant cells and provides external structural support.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2924,7 +2975,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It is the site of carbohydrate synthesis in photosynthetic plant cells.",
               "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb light energy to drive the chemical reactions of photosynthesis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2941,7 +2992,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It acts as the executive control headquarters of the cell.",
               "workedSolution": "The nucleus contains genetic material (DNA/chromosomes) and directs all cellular activities, including protein synthesis and cell division.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2958,7 +3009,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It stains starch and cell structures brown/yellow to enhance optical contrast.",
               "workedSolution": "Dilute iodine solution stains nuclei and cell walls, creating visual contrast under optical light microscopy.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2975,7 +3026,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It moves the stage rapidly to establish the initial approximate focal plane.",
               "workedSolution": "The coarse adjustment knob moves the stage in large increments to quickly bring the specimen into initial focus under low power.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -2992,7 +3043,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It provides an aqueous medium for cellular organelles and metabolic reactions.",
               "workedSolution": "The cytoplasm is the gelatinous fluid comprising water, dissolved solutes, and suspended organelles within the cell membrane.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3009,7 +3060,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Multiply eyepiece magnification by objective magnification (10 × 10).",
               "workedSolution": "Total magnification = Eyepiece (10×) × Objective (10×) = 100×.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3026,7 +3077,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It is a selectively permeable phospholipid bilayer.",
               "workedSolution": "The cell membrane (plasma membrane) is selectively permeable, regulating the passage of solutes and water into and out of animal cells.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3043,7 +3094,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The rigid cell wall restricts plant cells into angular polygonal contours.",
               "workedSolution": "Because of the rigid cellulose cell wall, plant cells possess a definite regular polygonal geometry, whereas animal cells have flexible, variable contours.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3060,7 +3111,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Examples include muscle tissue and vascular xylem tissue.",
               "workedSolution": "A tissue is defined as a cluster of specialized cells having similar structure and collaborating to execute a specific function.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3077,7 +3128,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It is composed of muscle, nervous, and connective tissues working together.",
               "workedSolution": "The heart is an organ composed of multiple coordinated tissues (cardiac muscle, nerve, epithelial, and connective tissues).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3094,7 +3145,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It is filled with haemoglobin to transport respiratory oxygen.",
               "workedSolution": "Mature mammalian red blood cells are enucleated biconcave discs designed to pack maximum haemoglobin for oxygen transport.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3111,7 +3162,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It uses ATP energy to lash from side to side.",
               "workedSolution": "The flagellum is the elongated motility apparatus that propels the sperm cell through fluid media toward the ovum.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3128,7 +3179,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Its long projection extends directly into interstitial soil water.",
               "workedSolution": "Root hair cells have long cytoplasmic extensions that increase the surface area for absorbing soil moisture and dissolved mineral ions.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3145,7 +3196,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They are the primary sites of photosynthetic carbohydrate manufacture.",
               "workedSolution": "Palisade mesophyll cells are columnar cells densely packed with chloroplasts to maximize sunlight absorption for photosynthesis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3162,7 +3213,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It has a central aperture allowing light to pass through the specimen.",
               "workedSolution": "The stage is the flat platform fitted with metal clips where the specimen glass slide is positioned for viewing.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3179,7 +3230,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It contains dissolved sugars, mineral salts, and organic acids.",
               "workedSolution": "The fluid inside a plant's central vacuole is cell sap, which maintains cellular turgor and stores metabolic reserves.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3196,7 +3247,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They are kidney-shaped cells surrounding each stomatal aperture.",
               "workedSolution": "Paired guard cells regulate stomatal opening and closing to balance transpirational water loss and gaseous exchange.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3213,7 +3264,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They can be found free in the cytoplasm or attached to the rough endoplasmic reticulum.",
               "workedSolution": "Ribosomes are granular ribonucleoprotein complexes that assemble amino acids into polypeptide chains (proteins).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3230,7 +3281,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Air bubbles appear as black rings under the microscope and obstruct specimen visibility.",
               "workedSolution": "Lowering the coverslip gently at 45° pushes out air pockets, preventing trapped bubbles that interfere with observation.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3247,7 +3298,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Adjusting its opening brightens or dims the illuminated field of view.",
               "workedSolution": "The iris diaphragm regulates the diameter of the light cone passing through the specimen to optimize image contrast.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3264,7 +3315,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A tough, insoluble structural polysaccharide.",
               "workedSolution": "Cellulose microfibrils provide the tensile strength and rigidity characteristic of plant cell walls.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3281,7 +3332,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It includes the mouth, esophagus, stomach, liver, pancreas, and intestines.",
               "workedSolution": "An organ system is an integrated network of organs working symbiotically to achieve a major physiological life process.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3298,7 +3349,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Often called 'animal starch', stored predominantly in the liver and skeletal muscles.",
               "workedSolution": "Animal cells store excess carbohydrates as branched glycogen granules, whereas plant cells store starch.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3315,7 +3366,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A single-celled protozoan that moves using pseudopodia.",
               "workedSolution": "Amoeba is a single-celled microscopic organism capable of executing all vital life functions within a single cell.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3332,7 +3383,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Higher plant cells possess microtubule organizing centers instead of centrioles.",
               "workedSolution": "Higher plant cells lack centrioles, organizing their mitotic spindles through specialized cytoplasm regions without centrosomes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3349,7 +3400,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It transmits electrical impulses throughout the nervous system.",
               "workedSolution": "Nerve cells (neurons) feature elongated axons and branched dendrites for conducting electro-chemical impulses.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3366,7 +3417,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It clicks into position when shifting between 4×, 10×, and 40× lenses.",
               "workedSolution": "The revolving nosepiece is the circular rotating turret that permits rapid selection of different objective lenses.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3383,7 +3434,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It acts like a security filter guarding cell entry.",
               "workedSolution": "A selectively (or semi-) permeable membrane regulates the passage of water and specific solutes while restricting others.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3400,7 +3451,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Packaged into chromatin threads and chromosomes.",
               "workedSolution": "DNA is enclosed within the nuclear envelope inside the nucleus in all eukaryotic cells.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3417,7 +3468,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Movement from high water potential (dilute) to low water potential (concentrated).",
               "workedSolution": "Osmosis is the spontaneous passage of solvent water molecules across a selectively permeable membrane down a water potential gradient.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3434,7 +3485,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It is composed of epidermis, vascular bundles, and mesophyll tissues.",
               "workedSolution": "The leaf is a botanical organ composed of multiple coordinated tissues designed for photosynthesis and gas exchange.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3451,7 +3502,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Enucleation maximizes internal volume for oxygen packaging.",
               "workedSolution": "Erythrocytes extrude their nuclei during maturation to maximize internal space for haemoglobin, optimizing oxygen transport capacity.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3468,7 +3519,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Higher magnification focuses on a much smaller physical area of the slide.",
               "workedSolution": "Increasing magnification narrows the observable area (field of view) and reduces light transmission per unit area, making the image darker.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3485,7 +3536,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A photosynthetic single-celled freshwater alga with two flagella.",
               "workedSolution": "Chlamydomonas is a unicellular green alga containing a cup-shaped chloroplast for autotrophic photosynthesis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3502,7 +3553,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They act as a microscopic escalator clearing the windpipe.",
               "workedSolution": "Cilia beat rhythmically to propel mucus, inhaled microbes, and dirt particles out of the trachea towards the throat for expulsion.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3519,7 +3570,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Mounted directly below the stage aperture.",
               "workedSolution": "The substage condenser focuses light from the illumination source into a concentrated cone on the specimen plane.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3536,7 +3587,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It bounds the vacuolar sap and regulates solute movement into the vacuole.",
               "workedSolution": "The tonoplast is the specialized semi-permeable membrane enclosing the central plant vacuole.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3553,7 +3604,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Composed of neurons, neuroglia, and blood vascular tissues.",
               "workedSolution": "The brain is an anatomical organ executing command and coordination duties within the central nervous system.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3570,7 +3621,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Divide total magnification by eyepiece power: 600 / 15.",
               "workedSolution": "Objective magnification = Total Magnification / Eyepiece = 600 / 15 = 40×.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3587,7 +3638,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Human cells are non-photosynthetic animal cells.",
               "workedSolution": "Cheek cells are animal cells, meaning they lack chloroplasts and cellulose cell walls.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3604,7 +3655,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Often nicknamed the 'suicide bags' or recycling units of the cell.",
               "workedSolution": "Lysosomes contain hydrolytic enzymes that digest cellular debris, foreign pathogens, and damaged organelles.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3621,7 +3672,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Formed of hollow, lignified dead vessel tubes.",
               "workedSolution": "Xylem tissue consists of hollow, lignified vessels that conduct water and dissolved minerals from roots to the shoot system.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3638,7 +3689,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Contains living sieve tube elements and companion cells.",
               "workedSolution": "Phloem tissue translocates photosynthetic carbohydrates (sucrose) and amino acids throughout the plant.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3655,7 +3706,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Two hands ensure balance and prevent dropping optical lenses.",
               "workedSolution": "Standard laboratory safety mandates gripping the microscope arm firmly with one hand while cupping the heavy base with the other.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3672,7 +3723,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "'Pro' means before; 'karyon' means nucleus.",
               "workedSolution": "Prokaryotes (like bacteria) lack a true nuclear membrane enclosing their DNA, while eukaryotes (plants, animals, fungi) possess a membrane-bound nucleus.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             }
           ],
@@ -3691,7 +3742,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Consider the mechanical tensile strength of the cellulose outer casing.",
               "workedSolution": "In hypotonic distilled water, endosmosis forces water into both cells. Plant cells develop turgor pressure resisted by their cellulose cell walls, while animal cells lack cell walls and burst (lysis).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3708,7 +3759,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The central sap cavity occupies up to 90% of the interior volume.",
               "workedSolution": "The development of a single immense central vacuole filled with cell sap exerts pressure outward, displacing the nucleus and cytosol to the periphery against the cell wall.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3725,7 +3776,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "High-power lenses require precise focal adjustment and wider light apertures.",
               "workedSolution": "High power narrows the depth of field and dims the light. The fine focus knob brings the focal plane into sharp focus, while opening the iris diaphragm restores brightness.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3742,7 +3793,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Chloroplast synthesis requires sunlight.",
               "workedSolution": "Plant roots grow subterraneously in total darkness. Because photosynthesis requires light, subterranean cells do not waste biological resources developing chloroplasts.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3759,7 +3810,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cristae vastly expand the surface area for oxidative phosphorylation inside mitochondria.",
               "workedSolution": "The mitochondrial cristae host ATP synthase and electron transport chain complexes vital for aerobic respiration.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3776,7 +3827,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The compound microscope inverts images both horizontally and vertically.",
               "workedSolution": "Because compound microscope lenses produce real, inverted images, you must move the slide in the exact direction the image appears to drift (top-right) to re-center it.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3793,7 +3844,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Water moves down its water potential gradient out of the cell.",
               "workedSolution": "In a hypertonic medium, water flows out of erythrocytes by exosmosis, causing them to lose turgidity and develop crinkled edges (crenation).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3810,7 +3861,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The myelin sheath prevents ion leakage, allowing saltatory conduction.",
               "workedSolution": "Neurons feature extended cytoplasmic axons insulated by lipid-rich myelin sheaths that permit rapid, long-distance transmission of action potentials.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3827,7 +3878,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It acts as a chemical drill during fertilization.",
               "workedSolution": "The acrosome is a modified lysosomal cap containing enzymes (like hyaluronidase) that digest the corona radiata and zona pellucida of the egg cell.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3844,7 +3895,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cells unite into tissues, tissues build organs, and organs form systems.",
               "workedSolution": "The standard hierarchy ascends from Cells to Tissues, Organs, Organ Systems, and finally the complete Multicellular Organism.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3861,7 +3912,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cytoplasm and end walls would create hydraulic friction.",
               "workedSolution": "Xylem vessel elements lose their living end walls and protoplasm upon lignification, forming open, continuous tubes that minimize resistance to transpirational water flow.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3878,7 +3929,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Image Size = Actual Size × Magnification: 0.05 mm × 200.",
               "workedSolution": "Image Size = Actual Size × Magnification = 0.05 mm × 200 = 10 mm.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3895,7 +3946,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A flattened disc has a shorter diffusion distance to its center than a sphere of equal volume.",
               "workedSolution": "The biconcave indentation increases surface area relative to volume and minimizes internal diffusion distance, maximizing the rate of gas exchange.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3912,7 +3963,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It glues neighbor plant cells together.",
               "workedSolution": "The middle lamella is an extracellular pectin layer that acts as biological cement adhering neighboring plant cell walls together into rigid tissues.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3929,7 +3980,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cellulose polymers form cross-linked microfibrils embedded in matrix polysaccharides.",
               "workedSolution": "Cellulose microfibrils intertwined with hemicellulose, pectin, and sometimes lignin provide formidable mechanical rigidity and tensile strength.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3946,7 +3997,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Like inflating an air mattress, hydrostatic pressure produces structural rigidity.",
               "workedSolution": "Water absorption builds hydrostatic pressure within vacuoles that presses the protoplast firmly against cell walls, providing skeletal support to non-woody plants.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3963,7 +4014,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It binds strongly to acidic nuclear chromatin, staining the nucleus deep blue.",
               "workedSolution": "Methylene blue is a cationic dye that selectively binds to nucleic acids (DNA/RNA), sharply staining animal cell nuclei deep blue.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3980,7 +4031,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Consists of protein and rRNA molecules without a lipid envelope.",
               "workedSolution": "Ribosomes are molecular machines constructed from rRNA and structural proteins, devoid of any enclosing phospholipid membrane.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -3997,7 +4048,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The working distance of a 40× lens is less than 1 mm.",
               "workedSolution": "Under high power, the objective lens sits fractions of a millimeter from the glass. The rapid travel of coarse focus risks driving the lens into the slide, shattering both.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4014,7 +4065,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Its surface is studded with ribosomes.",
               "workedSolution": "The rough ER is studded with ribosomes that synthesize polypeptides directly into its lumen for folding, post-translational modification, and vesicle transport.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4031,7 +4082,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Differential wall thickness forces the cells to curve like bananas when inflated.",
               "workedSolution": "Guard cells have thick, inelastic inner walls and thin, flexible outer walls. When turgid with water, the outer walls bulge outward, pulling the inner pore open.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4048,7 +4099,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Consists of flattened membranous cisternae acting as the shipping center of the cell.",
               "workedSolution": "The Golgi apparatus sorts, glycosylates, and packages proteins and lipids received from the ER into membrane-bound vesicles for secretion.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4065,7 +4116,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The central vacuole shrinks, pulling the protoplast inwards.",
               "workedSolution": "Plasmolysis is the shrinking of the plant protoplast away from the rigid cell wall due to extreme exosmotic water loss in hypertonic solutions.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4082,7 +4133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Vertical orientation maximizes light path absorption through stacked chloroplasts.",
               "workedSolution": "Vertical columnar orientation packs more photosynthetic cells per unit leaf area and increases the optical path length for light absorption.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4099,7 +4150,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Prokaryotic bacteria do not compartmentalize their interiors with internal membranes.",
               "workedSolution": "Eukaryotes are characterized by internal compartmentalization with membrane-bound organelles (nucleus, mitochondria, ER, Golgi), which prokaryotes lack.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4116,7 +4167,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Without a nucleus, no transcription or protein synthesis can take place.",
               "workedSolution": "Lacking a nucleus and ribosomes, erythrocytes cannot transcribe genes to repair damaged membrane proteins or enzymes, degrading after ~120 days.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4133,7 +4184,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Eyepiece = Total / Objective = 400 / 40.",
               "workedSolution": "Eyepiece magnification = 400 / 40 = 10×.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4150,7 +4201,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Sieve tubes lack nuclei; companion cells have dense mitochondria and nuclei.",
               "workedSolution": "Companion cells carry out vital metabolic functions and actively pump sucrose into sieve tubes using ATP generated in their abundant mitochondria.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4167,7 +4218,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Evidence of endosymbiotic bacterial evolution.",
               "workedSolution": "Mitochondria and chloroplasts possess their own circular DNA genomes and 70S ribosomes, dividing independently by binary fission.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4184,7 +4235,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They are the mobile defensive infantry of the blood vascular system.",
               "workedSolution": "White blood cells defend against infection through phagocytic ingestion of microbes and antibody secretion by lymphocytes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4201,7 +4252,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Water's dipole moment hydrates both cations and anions.",
               "workedSolution": "Water's hydrogen-bonding polarity dissolves polar and ionic biochemicals, providing an aqueous medium for enzymatic reactions.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4218,7 +4269,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Mitosis yields two genetically identical daughter cells.",
               "workedSolution": "Mitosis produces genetically identical diploid somatic cells required for organismal growth, wound healing, and tissue replacement.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4235,7 +4286,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "It secretes digestive enzymes into the duodenum and insulin into the bloodstream.",
               "workedSolution": "The pancreas serves exocrine digestive roles (pancreatic juice) and endocrine hormonal roles (insulin and glucagon regulation).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4252,7 +4303,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Amoebae live in hypotonic ponds and lack cell walls.",
               "workedSolution": "Surrounded by hypotonic pond water, Amoebae experience continuous influx of water. Contractile vacuoles collect and actively pump this water out (osmoregulation).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4269,7 +4320,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Often coated with an external waxy cuticle layer.",
               "workedSolution": "Epidermal tissue forms a protective outer boundary, often synthesizing a waxy, hydrophobic cuticle to minimize evaporation.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4286,7 +4337,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Hosts the glyoxylate cycle before photosynthesis begins.",
               "workedSolution": "Glyoxysomes are specialized microbodies in oil seeds that convert stored lipids into soluble sucrose to nourish the developing seedling.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4303,7 +4354,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "From generic embryonic cells into neurons, muscle fibers, or xylem.",
               "workedSolution": "Cellular differentiation is the developmental process whereby generalized cells undergo selective gene expression to acquire specialized morphological adaptations.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4320,7 +4371,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Enlarging a blurry photo does not reveal extra detail without resolution.",
               "workedSolution": "Magnification scales up the apparent dimension of an image, while optical resolution is the minimum distance between two points at which they remain distinctly discernible.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4337,7 +4388,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A dense granular region inside the nucleus.",
               "workedSolution": "The nucleolus is the sub-nuclear factory where ribosomal RNA (rRNA) is transcribed and combined with proteins to produce ribosomal subunits.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4354,7 +4405,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Lacks ribosomes and synthesizes lipids while detoxifying xenobiotics.",
               "workedSolution": "Smooth ER contains cytochrome P450 and other enzymes that metabolize and detoxify toxic chemicals, drugs, and alcohol in hepatocytes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4371,7 +4422,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Contains actin and myosin contractile protein filaments.",
               "workedSolution": "Muscular tissue contains filament proteins (actin and myosin) that slide past one another to generate contractile force for locomotion and internal organ motility.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4388,7 +4439,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A monolayer allows light to pass directly through without optical overlap.",
               "workedSolution": "The transparent inner membrane of an onion bulb scale is an authentic biological monolayer, providing an unobstructed view of cells without microtome sectioning.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4405,7 +4456,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cell fragments adhering to exposed collagen fibers.",
               "workedSolution": "Platelets are enucleated cell fragments derived from megakaryocytes that trigger the coagulation cascade and aggregate to form hemostatic plugs.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4422,7 +4473,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Filters metabolic nitrogenous wastes from the bloodstream.",
               "workedSolution": "The urinary/excretory system filters blood plasma to remove urea and excess ions, regulating systemic fluid and electrolyte homeostasis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4439,7 +4490,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Robert Hooke's 1665 observation of cork was viewing empty cell wall chambers.",
               "workedSolution": "Cellulose and lignin cell walls are non-living structural matrices that remain intact and support woody tissues indefinitely after the living cytoplasm dies.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4456,7 +4507,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Compound microscopes are transmission light instruments.",
               "workedSolution": "Light microscopes require an incident beam of light reflected through the condenser lens and specimen slide; diverting the mirror eliminates image visibility.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4473,7 +4524,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Site of light-dependent photosynthetic reactions.",
               "workedSolution": "Thylakoid disks organized in grana stacks are located within chloroplast stroma, hosting light-absorbing photosystems and electron transport proteins.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4490,7 +4541,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The egg nourishes the zygote before uterine implantation.",
               "workedSolution": "The ovum accumulates massive cytoplasmic nutrient reserves, maternal mRNAs, and organelles to support cellular cleavage following fertilization.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4507,7 +4558,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Spring-loaded metal fingers flanking the aperture.",
               "workedSolution": "Stage clips secure the glass specimen slide against the mechanical stage, preventing slipping during focal adjustments.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4524,7 +4575,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "An internal proteinaceous scaffolding within the cytosol.",
               "workedSolution": "The cytoskeleton is a dynamic network of actin microfilaments, intermediate filaments, and tubulin microtubules that provides internal structural scaffolding.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             }
           ],
@@ -4543,7 +4594,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The 20% sucrose solution has a lower water potential than the cell sap.",
               "workedSolution": "Because the external sucrose solution is hypertonic, water leaves the vacuolar sap by exosmosis down the water potential gradient, reducing mass and causing flaccidity.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4560,7 +4611,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Hydrophobic fatty acid tails repel polar solutes; channel/carrier proteins regulate specific transport.",
               "workedSolution": "The hydrophobic core of the phospholipid bilayer repels polar and charged molecules, while specific integral transmembrane channel and carrier proteins selectively transport designated solutes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4577,7 +4628,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The cell wall is freely permeable to small dissolved solutes, while the plasma membrane is semi-permeable.",
               "workedSolution": "The cellulose cell wall is freely permeable to water and dissolved solutes; when the protoplast contracts during plasmolysis, external salt solution freely passes through the wall to occupy the perimeter space.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4594,7 +4645,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Diffraction limits resolution to approximately half the wavelength of the illumination source.",
               "workedSolution": "Resolution is constrained by radiation wavelength. Accelerated electrons have wavelengths ~100,000× shorter than visible light photons (0.005 nm vs 400-700 nm), reducing diffraction limits.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4611,7 +4662,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Primary active transport is directly coupled to ATP hydrolysis.",
               "workedSolution": "Active transport requires metabolic energy in the form of ATP. Poisoning ATP synthase depletes cellular energy stores, immediately stopping active ion pumps.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4628,7 +4679,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Shared biochemical traits with modern alpha-proteobacteria and cyanobacteria.",
               "workedSolution": "Mitochondria and chloroplasts share distinct prokaryotic traits: naked circular DNA genomes, 70S ribosomes, binary fission, and double membranes reflecting ancestral phagocytosis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4645,7 +4696,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Osmosis requires an intact, selectively permeable living membrane.",
               "workedSolution": "Thermal heat denatures membrane proteins and disrupts the phospholipid bilayer. Losing semi-permeability makes the membrane freely porous, preventing osmotic gradients.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4662,7 +4713,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "They interconnect plant protoplasts into a continuous living symplast.",
               "workedSolution": "Plasmodesmata are trans-wall channels lined by plasma membrane that connect the cytoplasm of adjacent cells, facilitating molecular transport and systemic signaling.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4679,7 +4730,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Field Diameter is inversely proportional to magnification: Diameter(high) = Diameter(low) × (Low Mag / High Mag).",
               "workedSolution": "Diameter(high) = 2.0 mm × (10 / 40) = 2.0 × 0.25 = 0.5 mm (or 500 µm).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4696,7 +4747,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Surface area-to-volume ratio constraint.",
               "workedSolution": "Volume increases much faster than surface area ($V \\propto r^3$ vs $SA \\propto r^2$). A gigantic cell would have insufficient plasma membrane surface to transport nutrients and remove metabolic wastes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4713,7 +4764,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "High metabolic workloads demand massive ATP synthesis.",
               "workedSolution": "Cardiac myocytes contract non-stop throughout an organism's lifetime without fatigue, requiring enormous mitochondrial density to fuel continuous aerobic respiration.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4730,7 +4781,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Glycosylation takes place within its cisternae.",
               "workedSolution": "The Golgi apparatus enzymatically attaches oligosaccharides to proteins (glycosylation) and tags them for export or delivery to lysosomes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4747,7 +4798,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "0.9% NaCl has the same osmotic potential as human blood plasma.",
               "workedSolution": "Pure water is strongly hypotonic to erythrocytes, driving massive endosmosis and lysis. 0.9% NaCl is isotonic to human blood, maintaining zero net osmotic flow.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4764,7 +4815,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Transpirational pull creates powerful negative hydrostatic suction inside the xylem.",
               "workedSolution": "Lignin is an intricate polymer that waterproofs and reinforces xylem walls, preventing implosion under the high tension forces generated by transpiration.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4781,7 +4832,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Münch pressure flow hypothesis.",
               "workedSolution": "Active accumulation of sucrose lowers water potential, drawing in water that generates high internal turgor pressure, keeping sieve tubes patent and driving mass flow.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4798,7 +4849,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Uncoiled DNA permits RNA polymerase access; condensed chromatin prevents mechanical breakage during anaphase.",
               "workedSolution": "Interphase DNA is uncoiled (euchromatin) to allow enzyme access for gene expression. During mitosis, it supercoils into tight chromosomes to prevent shearing during spindle segregation.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4815,7 +4866,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Both are forms of endocytosis.",
               "workedSolution": "Phagocytosis involves actin-driven pseudopodial extension around solid targets (e.g. bacteria), whereas pinocytosis invaginates tiny droplets of extracellular fluid.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4832,7 +4883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Active transport concentrates solutes into the cell sap against steep gradients.",
               "workedSolution": "Vacuolar $H^+$-ATPases actively pump protons into the vacuole, creating electrochemical gradients that power antiporters and symporters to concentrate minerals and sugars.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4849,7 +4900,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Composed of nine triplets of microtubules.",
               "workedSolution": "The centrosome contains orthogonal centrioles that organize gamma-tubulin ring complexes to nucleate spindle microtubules during mitotic prophase.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4866,7 +4917,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Chitin is a nitrogenous polysaccharide also found in arthropod exoskeletons.",
               "workedSolution": "Fungi have rigid walls composed of chitin (not cellulose), lack chloroplasts (heterotrophic), and store carbohydrates as glycogen, bridging plant-like and animal-like characteristics.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4883,7 +4934,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "An adaptation to conserve water in terrestrial environments.",
               "workedSolution": "Positioning stomata on the cooler, shaded lower leaf surface reduces evaporation and transpirational water deficit while still allowing carbon dioxide intake.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4900,7 +4951,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Cell length = Field Diameter / Cell count = 1.2 mm / 12.",
               "workedSolution": "Average length = Field Diameter / Number of cells = 1.2 mm / 12 = 0.1 mm = 100 µm.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4917,7 +4968,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Forms the walls of pulmonary alveoli and capillary blood vessels.",
               "workedSolution": "Simple squamous epithelium is a delicate monolayer of flattened cells offering minimal diffusion distance across alveolar and capillary barriers.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4934,7 +4985,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Low thermal kinetic energy causes hydrophobic tails to aggregate.",
               "workedSolution": "At low temperatures, reduced thermal motion causes phospholipid hydrocarbon chains to pack closely into a viscous gel, impeding protein motility and membrane transport.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4951,7 +5002,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Nuclear pore complexes act as gated molecular checkpoints.",
               "workedSolution": "Nuclear pore complexes (NPCs) recognize specific nuclear localization signals (NLS) on proteins to mediate selective, energy-dependent bidirectional nucleocytoplasmic transit.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4968,7 +5019,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Gases diffuse 10,000 times faster in air spaces than through aqueous cytoplasm.",
               "workedSolution": "Loose packing and extensive intercellular air voids facilitate rapid internal diffusion of carbon dioxide and oxygen between stomatal cavities and palisade layers.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -4985,7 +5036,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Autolysis or apoptosis.",
               "workedSolution": "Widespread lysosomal leakage releases hydrolytic enzymes (proteases, nucleases, lipases) that degrade vital macromolecules, triggering autolytic cell death.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5002,7 +5053,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Prominent in testicular Leydig cells and adrenal cortex.",
               "workedSolution": "Smooth ER contains enzymes that catalyze the synthesis of phospholipids, cholesterol, and steroid hormones from acetate and lipid precursors.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5019,7 +5070,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Intercalated discs provide mechanical bonding and electrical coupling.",
               "workedSolution": "Intercalated discs feature mechanical desmosomes (fascia adherens) that withstand contractile shear stress and gap junctions that allow rapid ion flux for coordinated contraction.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5036,7 +5087,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "If rotating objectives and shifting the slide does not move the artifact, the defect must reside on the remaining optical element.",
               "workedSolution": "Since rotating the objective turret and moving the stage failed to alter the artifact's orientation, the scratch is situated on the stationary eyepiece lens.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5053,7 +5104,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Erythrocytes rely exclusively on anaerobic glycolysis for ATP.",
               "workedSolution": "Lacking mitochondria, red blood cells generate ATP solely via anaerobic glycolysis, ensuring that 100% of bound oxygen is delivered intact to target tissues.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5070,7 +5121,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Microscopic brush border on enterocytes.",
               "workedSolution": "Dense microvillar brush borders increase enterocyte surface area by over 20-fold, maximizing the density of nutrient transport proteins.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5087,7 +5138,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Like dissolves like: polar solutes are repelled by hydrocarbon interiors.",
               "workedSolution": "Multiple polar hydroxyl (-OH) groups make glucose highly hydrophilic, creating a thermodynamic barrier that prevents entry through the non-polar lipid core without GLUT transporters.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5104,7 +5155,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The vacuole contains acid hydrolases that degrade cellular waste.",
               "workedSolution": "In addition to maintaining turgor, plant vacuoles contain acidic hydrolytic enzymes that perform waste degradation analogous to animal lysosomes.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5121,7 +5172,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Target of penicillin antibiotic inhibition.",
               "workedSolution": "Bacterial walls are made of peptidoglycan (alternating NAG-NAM glycan chains cross-linked by amino acids), while plant walls are made of glucose-polymer cellulose.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5138,7 +5189,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Osmosis is passive, but maintaining the solute gradient requires active transport.",
               "workedSolution": "Active transport of minerals into root cells requires ATP from aerobic respiration. Oxygenated soil fuels ATP synthesis, creating steep hypertonic gradients that drive rapid osmosis.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5155,7 +5206,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Neutralizes reactive oxygen species.",
               "workedSolution": "Peroxisomes contain catalase and oxidases that oxidize long-chain fatty acids and decompose cytotoxic hydrogen peroxide into benign water and oxygen.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5172,7 +5223,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Invaginated epithelial sheets specialized for secretion.",
               "workedSolution": "Glands (thyroid, salivary, sweat glands) develop from specialized glandular epithelial tissues specialized for protein or steroid secretion.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5189,7 +5240,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Seawater has an osmolarity four times higher than blood plasma.",
               "workedSolution": "Seawater (~1000 mOsm/L) is strongly hypertonic to erythrocytes (~300 mOsm/L), pulling water out by exosmosis and causing cell shriveling (crenation).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5206,7 +5257,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Intercalates between fatty acid chains to stabilize membrane fluidity.",
               "workedSolution": "Cholesterol restrains phospholipid movement at warm temperatures to prevent excess fluidity, while disrupting close packing at cold temperatures to prevent solidification.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5223,7 +5274,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "A prominent non-membranous nuclear sub-structure.",
               "workedSolution": "The nucleolus organizes around chromosomal nucleolar organizer regions (NORs) to transcribe pre-rRNA and assemble ribosomal subunits.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5240,7 +5291,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "The Haversian system / osteon structure.",
               "workedSolution": "Osteons consist of concentric mineralized lamellae reinforced by helical collagen fibers surrounding vascular Haversian canals, optimizing weight-to-strength ratios.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5257,7 +5308,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Metachronal rhythm coordination of cilia.",
               "workedSolution": "Paramecia are covered with ~4,000 cilia coordinated by subpellicular fiber networks into rhythmic metachronal waves that generate hydrodynamic thrust.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5274,7 +5325,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Both are passive, but one requires integral carrier/channel proteins.",
               "workedSolution": "Simple diffusion occurs directly through the lipid bilayer (e.g. $O_2, CO_2$), while facilitated diffusion requires integral membrane proteins (e.g. glucose, $K^+$) without metabolic energy.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5291,7 +5342,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Darkness halts photosynthetic carbon fixation.",
               "workedSolution": "Without light, light-dependent proton pumping stops in guard cells, releasing potassium ions and water by exosmosis to render cells flaccid and close stomata.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5308,7 +5359,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Vesicles carry pectin and cellulose precursors to build the new cross wall.",
               "workedSolution": "During telophase, Golgi-derived phragmoplast vesicles carry pectin and cell wall precursors to the equatorial plane, coalescing into the cell plate and middle lamella.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5325,7 +5376,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Saltatory conduction across unmyelinated nodes.",
               "workedSolution": "Myelin's high lipid resistance prevents trans-membrane ion leakage, causing depolarizing currents to jump rapidly between unmyelinated Nodes of Ranvier (saltatory conduction).",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5342,7 +5393,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Protects cells from oxidative radical damage.",
               "workedSolution": "Catalase has one of the highest enzymatic turnover rates known, converting toxic $H_2O_2$ byproducts of oxidation into benign water and oxygen gas.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5359,7 +5410,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Non-mineralized extracellular matrix.",
               "workedSolution": "Cartilage matrix consists of flexible chondroitin sulfate proteoglycans and collagen fibers, lacking the brittle, rigid calcium hydroxyapatite mineralization of bone.",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             },
             {
@@ -5376,7 +5427,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Diffraction barrier restricts useful magnification.",
               "workedSolution": "The wave nature of visible light limits optical resolution to ~200 nm. Magnifying beyond 1,500× enlarges diffraction blurs without resolving finer detail ('empty magnification').",
               "points": 1,
-              "learningCompetency": "B7.1.2.1",
+              "learningCompetency": "B7.1.2.1.1",
               "type": "objective"
             }
           ]
@@ -5503,81 +5554,365 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
     "topicId": "sci_strand2_earth_cycles",
-    "title": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "title": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "strand": "STRAND 2: CYCLES",
     "strandCode": "S2",
-    "subStrand": "Earth Science (Atmospheric Cycles, Hydrology & Biogeochemical Loops)",
+    "subStrand": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Investigate the closed thermodynamic cycles that regulate planetary climate, atmospheric composition, and soil biochemical fertility. Interactive modules simulate precipitation mechanisms, carbon sequestration sinks, and biological nitrogen fixation pathways.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 24,
     "version": 1,
     "aliases": [
       "b7_strand2_earth_cycles"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • The Hydrological Cycle & Potable Water Resources",
-        "summary": "Model the water cycle phases, precipitation mechanisms, and human impacts on freshwater drainage basins.",
-        "notes": "### The Hydrological (Water) Cycle & Freshwater Conservation\n* **NaCCA Curriculum Code:** `B7.2.1.1`\n* **Core Competency:** Explain the stages of the water cycle and evaluate human activities on municipal watersheds.\n\n#### 1. Stages of the Hydrological Cycle\nThe water cycle is a continuous, solar-driven thermodynamic loop:\n* **Evaporation:** Solar radiative heating converts liquid water from oceans, rivers, and soil into water vapor.\n* **Transpiration:** Water loss as vapor from microscopic leaf stomata into the atmosphere.\n* **Condensation:** Rising warm, moist air expands and cools adiabatically; water vapor condenses around microscopic aerosol condensation nuclei to form clouds.\n* **Precipitation:** Condensed cloud droplets coalesce until gravitational pull overcomes air resistance, falling as rain, drizzle, or hail.\n* **Percolation & Infiltration:** Water seeps downward through soil pore spaces to recharge groundwater aquifers and water tables.\n* **Surface Runoff:** Excess precipitation flows overland into streams, rivers, and oceans.\n\n#### 2. Human Disturbances to Watersheds\n* Deforestation reduces vegetative interception and transpiration, accelerating soil erosion and flash flooding.\n* Unregulated alluvial gold mining (galamsey) pollutes water basins with toxic heavy metals (mercury, lead) and suspended silt.\n* Industrial effluent discharge causes severe eutrophication and biochemical oxygen demand (BOD) spikes.",
+        "levelTitle": "Basic 7 (JHS 1) • The Hydrological (Water) Cycle & Environmental Sustainability",
+        "summary": "Demonstrate an understanding of the water cycle as a repeated natural pattern, explore its ecological significance to plants, animals, and humans, and apply methods of water conservation.",
+        "notes": "### Unit 1: Foundations of the Hydrological Cycle & Closed-Loop Dynamics\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n* **Core Concept:** Continuous solar-powered dynamic closed loop.\n\n#### 1. Fundamental Definition\nThe **hydrological cycle** (water cycle) is a continuous, natural closed-loop biogeochemical process by which the Earth's water moves dynamically between the ground, surface water bodies, living tissues, and the atmosphere. Because the Earth's total planetary volume of water remains essentially constant, this cycle provides a continuous, reliable renewal of fresh water necessary to sustain biological life.\n\n#### 2. The Solar Thermodynamic Engine\nThe water cycle is powered by radiant solar thermal energy and guided by gravity:\n* **Solar Heating:** Drives the endothermic conversion of liquid water into atmospheric water vapor.\n* **Atmospheric Convection:** Warm, moist air ascends into cooler tropospheric zones.\n* **Gravitational Potential:** Pulls precipitation back down to Earth and channels rivers and groundwater toward sea level.\n\n---\n\n### Unit 2: The Four Sequential Stages of the Hydrological Cycle\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n<div class=\"my-6 flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n  <span class=\"text-xs font-bold text-sky-400 mb-2\">Figure 1.1: The Four Stages of the Hydrological Cycle</span>\n  <div class=\"w-full flex justify-center overflow-x-auto\">\n    <svg width=\"580\" height=\"340\" viewBox=\"0 0 580 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"sky\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#bae6fd\"/><stop offset=\"100%\" stop-color=\"#f0fdf4\"/></linearGradient><linearGradient id=\"sea\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#38bdf8\"/><stop offset=\"100%\" stop-color=\"#0284c7\"/></linearGradient><marker id=\"arr\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#0284c7\"/></marker><marker id=\"arrRed\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#dc2626\"/></marker></defs><rect width=\"580\" height=\"340\" rx=\"12\" fill=\"url(#sky)\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><circle cx=\"70\" cy=\"55\" r=\"26\" fill=\"#f59e0b\" stroke=\"#d97706\" stroke-width=\"2\"/><path d=\"M 400 200 L 480 120 L 580 300 L 320 300 Z\" fill=\"#64748b\"/><path d=\"M 470 135 L 480 120 L 505 155 Z\" fill=\"#ffffff\"/><path d=\"M 260 220 L 330 150 L 410 300 L 210 300 Z\" fill=\"#475569\"/><rect x=\"0\" y=\"270\" width=\"580\" height=\"70\" fill=\"url(#sea)\"/><g fill=\"#cbd5e1\" stroke=\"#94a3b8\" stroke-width=\"1.5\"><ellipse cx=\"180\" cy=\"75\" rx=\"40\" ry=\"20\"/><ellipse cx=\"210\" cy=\"70\" rx=\"35\" ry=\"22\"/><ellipse cx=\"150\" cy=\"80\" rx=\"30\" ry=\"16\"/><ellipse cx=\"360\" cy=\"65\" rx=\"45\" ry=\"22\"/><ellipse cx=\"395\" cy=\"60\" rx=\"38\" ry=\"24\"/></g><g stroke=\"#0284c7\" stroke-width=\"1.8\" stroke-dasharray=\"3\"><line x1=\"160\" y1=\"100\" x2=\"150\" y2=\"170\"/><line x1=\"180\" y1=\"100\" x2=\"170\" y2=\"170\"/><line x1=\"200\" y1=\"100\" x2=\"190\" y2=\"170\"/></g><text x=\"130\" y=\"140\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">Precipitation</text><path d=\"M 480 270 Q 460 210 420 100\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-dasharray=\"4\" marker-end=\"url(#arrRed)\"/><text x=\"470\" y=\"180\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Evaporation</text><path d=\"M 260 260 Q 280 210 320 100\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\" stroke-dasharray=\"4\" marker-end=\"url(#arr)\"/><text x=\"260\" y=\"190\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#15803d\">Transpiration</text><path d=\"M 240 60 Q 290 50 330 60\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arr)\"/><text x=\"265\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">Condensation</text><path d=\"M 380 250 Q 280 265 180 280\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2.5\" marker-end=\"url(#arr)\"/><text x=\"260\" y=\"315\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\">Collection &amp; Runoff</text></svg>\n  </div>\n</div>\n\n#### Step-by-Step Mechanisms:\n1. **Stage 1 — Evaporation (and Transpiration):**\n   * **Evaporation:** Solar thermal energy heats open reservoirs (oceans, lakes, rivers, damp soils), transforming liquid surface water into gaseous water vapor that ascends into the air.\n   * **Transpiration:** Concurrently, terrestrial vegetation releases water vapor through specialized microscopic leaf pores called stomata into the atmosphere.\n2. **Stage 2 — Condensation:**\n   * As warm, buoyant water vapor travels higher into the troposphere, ambient temperatures drop adiabatically.\n   * The vapor loses latent heat and condenses into tiny liquid droplets suspended on microscopic aerosol condensation nuclei (dust, sea salt), coalescing to form visible clouds and fog banks.\n3. **Stage 3 — Precipitation:**\n   * As condensation persists within clouds, droplets collide, merge, and grow heavier until atmospheric thermal updrafts can no longer support their mass.\n   * Under gravity, water falls back to the Earth's surface in various forms: rain, hail, sleet, or snow.\n4. **Stage 4 — Collection & Runoff:**\n   * Precipitated water either filters down through porous soils into underground aquifers (**percolation/infiltration & groundwater recharge**) or flows across terrain as **surface runoff** into streams, rivers, and oceans, where the cycle begins anew.\n\n---\n\n### Unit 3: Ecological Significance & Biological Importance\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n#### 1. Crucial Importance for Plants & Flora:\n* **Transpiration Cooling:** Evaporative loss of water through stomata creates a continuous cooling mechanism that prevents thermal heat stress and protein denaturation in foliage under harsh tropical sun.\n* **Aqueous Solvent for Mineral Transport:** Soil water acts as the solvent that dissolves vital soil minerals (nitrates, phosphates, potassium), enabling root hairs to absorb and transport nutrients upward through xylem vessels.\n* **Cellular Turgidity & Structural Support:** Water uptake creates turgor pressure within vegetative cells, keeping herbaceous stems and leaves erect without woody secondary growth.\n* **Seed & Spore Dispersal:** Rainwater streams and surface runoff serve as essential hydrochoric dispersal agents for buoyant seeds, fruits, and reproductive spores.\n\n#### 2. Vital Importance for Humans, Animals & Planetary Climate:\n* **Freshwater Replenishment:** Restores and replenishes freshwater reserves needed for drinking, domestic hygiene, agricultural irrigation, and industrial manufacturing.\n* **Thermoregulation via Evaporative Cooling:** Supports natural sweating and perspiration in humans and animals, stabilizing core internal body temperatures.\n* **Global Climate Moderation:** Without the massive evaporative heat transfer and oceanic thermal buffers provided by the water cycle, greenhouse trapping would drive global surface temperatures above tolerable biological limits (~67°C).\n\n---\n\n### Unit 4: Watershed Protection & Water Conservation Practices\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n#### 1. Definition of Water Conservation\n**Water conservation** refers to using water thoughtfully, avoiding unnecessary waste, protecting catchment zones, and preserving clean, potable water supplies for current communities and future generations.\n\n#### 2. Five Action Practices for Water Conservation:\n1. **Rainwater Harvesting:** Installing roof gutters, high-capacity polytanks, and retention ponds to collect clean rainwater during rainy seasons for household chores, flushing, and agricultural drip irrigation.\n2. **Afforestation & Watershed Protection:** Planting indigenous trees and maintaining vegetative buffer strips along river banks and catchment basins to anchor soil, reduce flash runoff, and stabilize regional rainfall patterns.\n3. **Effluent & Sewage Treatment:** Constructing municipal biological sewage treatment facilities and enforcing mandatory pre-treatment of toxic factory wastewater before discharge into natural waterways.\n4. **Eco-friendly Agro-Chemical Application:** Using biodegradable compost, organic manure, and integrated pest management (IPM) rather than excessive synthetic nitrates and pesticides that leach into groundwater aquifers.\n5. **Industrial Closed-Loop Recycling:** Re-filtering, cooling, and recirculating cooling and processing water within manufacturing plants rather than draining millions of liters after a single cycle.\n\n#### 3. Combating Catchment Degradation in Ghana (*Galamsey* Mitigation):\nIn Ghana, unregulated illegal alluvial gold mining (*galamsey*) along critical river basins (Pra, Birim, Ankobra, Offin, and Densu) has severely polluted freshwater bodies with heavy metals (mercury, lead, cyanide) and suspended silt. Effective watershed stewardship requires:\n* Enforcing 100-meter non-disturbed vegetative riparian buffers along all riverbanks.\n* Banning dredging and heavy excavators in river channels.\n* Re-vegetating excavated mining pits to restore the natural water table.\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s3_1",
-            "title": "Worked Example: The Dual Role of Solar Energy in the Water Cycle",
+            "id": "ex_b7_s2_earth_01",
+            "title": "Worked Problem: The Dual Role of Solar Energy in the Hydrological Cycle",
             "problem": "Explain two distinct roles that solar radiation plays in driving the hydrological cycle.",
             "steps": [
-              "Role 1: Providing Latent Heat of Vaporization — Solar radiation heats oceanic, river, and terrestrial surfaces, providing the thermodynamic thermal energy required to break hydrogen bonds in liquid water, transforming it into atmospheric vapor.",
-              "Role 2: Generating Atmospheric Convection Currents — Unequal solar heating of the Earth's surface creates pressure differentials and convective thermal updrafts that carry humid air to higher, cooler altitudes where condensation and cloud formation occur."
+              "Step 1: Role 1 — Providing Latent Heat of Vaporization: Solar thermal radiation heats ocean, lake, river, and moist soil surfaces, supplying the thermal energy needed to break intermolecular hydrogen bonds between liquid water molecules, converting them into buoyant atmospheric water vapor.",
+              "Step 2: Role 2 — Generating Atmospheric Convection Currents: Unequal solar heating across equatorial vs. polar latitudes creates atmospheric pressure gradients and thermal convective updrafts that lift humid air masses to higher, cooler altitudes where condensation and cloud formation occur."
             ],
-            "finalAnswer": "Examiner Tip: Solar energy is the primary engine of the hydrological cycle; without solar thermal radiation, evaporation and cloud convection would cease."
+            "finalAnswer": "Examiner Tip: Always state that the Sun is the ultimate thermodynamic engine of the water cycle; without solar thermal radiation, both evaporation and convective cloud formation would stop completely."
+          },
+          {
+            "id": "ex_b7_s2_earth_02",
+            "title": "Worked Problem: Environmental & Hydrological Impacts of Galamsey Mining",
+            "problem": "Evaluate two severe impacts of illegal alluvial gold mining (galamsey) on the hydrological cycle in Ghanaian river basins, and recommend one sustainable engineering solution.",
+            "steps": [
+              "Step 1: Impact 1 — Siltation & Destruction of River Channels: Excavation and washing of alluvial gravels into river beds introduces massive amounts of suspended silt (high turbidity), shallowing river channels and causing severe flash flooding during heavy rains.",
+              "Step 2: Impact 2 — Chemical Contamination of Groundwater: The use of toxic mercury for gold amalgamation leaches into groundwater aquifers, contaminating potable drinking water and poisoning aquatic ecosystems via biomagnification.",
+              "Step 3: Recommended Solution: Establish mandatory 100-meter vegetative riparian buffer zones along riverbanks and construct engineered settling ponds with activated carbon filtration to prevent direct untreated tailings discharge into natural streams."
+            ],
+            "finalAnswer": "Examiner Tip: When discussing water pollution in Ghana, always link physical siltation (turbidity) and chemical toxicity (mercury/cyanide) to specific hydrological consequences like aquifer contamination and flash flooding."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s3_1",
+              "id": "B7_CYCLE_MCQ_04",
               "difficulty": "low",
-              "prompt": "The process by which green plants release water vapor through the stomata of their leaves into the atmosphere is termed:",
+              "prompt": "The natural process by which terrestrial green plants lose water vapor into the air through microscopic leaf pores is termed:",
               "options": [
-                "Precipitation",
-                "Transpiration",
-                "Respiration",
-                "Percolation"
+                "A. Precipitation",
+                "B. Condensation",
+                "C. Transpiration",
+                "D. Sublimation"
               ],
-              "correctAnswer": "Transpiration",
+              "correctAnswer": "C. Transpiration",
               "hint": "It occurs specifically through leaf stomata pores.",
-              "workedSolution": "Transpiration is the evaporation of water from plant leaves through open stomata into the surrounding atmospheric boundary layer.",
+              "workedSolution": "Transpiration is the evaporative loss of water from aerial plant surfaces, mainly through the stomata.",
               "points": 1,
-              "learningCompetency": "B7.2.1.1",
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_MCQ_05",
+              "difficulty": "low",
+              "prompt": "Which of the following actions is a sustainable method of conserving community water bodies?",
+              "options": [
+                "A. Channeling untreated factory chemicals directly into nearby rivers",
+                "B. Cutting down bank vegetation to clear the land for farming",
+                "C. Harvesting rainwater from building roofs during the rainy season",
+                "D. Applying non-biodegradable chemical pesticides next to river channels"
+              ],
+              "correctAnswer": "C. Harvesting rainwater from building roofs during the rainy season",
+              "hint": "Think about capturing water before it is lost or contaminated.",
+              "workedSolution": "Rainwater harvesting captures and stores rainwater for domestic and farm use, reducing strain on natural water bodies.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F01",
+              "difficulty": "low",
+              "prompt": "The primary source of energy that powers and drives the hydrological cycle is:",
+              "options": [
+                "A. Geothermal heat",
+                "B. Solar radiation from the Sun",
+                "C. Gravitational pull of the Moon",
+                "D. Wind energy"
+              ],
+              "correctAnswer": "B. Solar radiation from the Sun",
+              "hint": "The Sun heats surface water to cause evaporation.",
+              "workedSolution": "Solar thermal radiation heats open water bodies, driving evaporation and atmospheric convection currents.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F02",
+              "difficulty": "low",
+              "prompt": "The phase change where rising gaseous water vapor cools and transforms into liquid water droplets is called:",
+              "options": [
+                "A. Evaporation",
+                "B. Condensation",
+                "C. Sublimation",
+                "D. Infiltration"
+              ],
+              "correctAnswer": "B. Condensation",
+              "hint": "This process forms visible clouds in the sky.",
+              "workedSolution": "Condensation is the process where water vapor cools and changes state into liquid water droplets, forming clouds.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F03",
+              "difficulty": "low",
+              "prompt": "Water falling from clouds to Earth as rain, snow, sleet, or hail is classified scientifically as:",
+              "options": [
+                "A. Transpiration",
+                "B. Precipitation",
+                "C. Infiltration",
+                "D. Evaporation"
+              ],
+              "correctAnswer": "B. Precipitation",
+              "hint": "It occurs when cloud droplets become too heavy for air updrafts.",
+              "workedSolution": "Precipitation includes all forms of water particles that fall from the atmosphere to reach the ground.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F04",
+              "difficulty": "low",
+              "prompt": "The process by which rainwater soaks into the soil and percolates downward to recharge groundwater aquifers is:",
+              "options": [
+                "A. Surface runoff",
+                "B. Infiltration / Percolation",
+                "C. Condensation",
+                "D. Transpiration"
+              ],
+              "correctAnswer": "B. Infiltration / Percolation",
+              "hint": "Water filters through soil pore spaces.",
+              "workedSolution": "Infiltration is the movement of water from the ground surface into the soil, replenishing underground water tables.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F05",
+              "difficulty": "low",
+              "prompt": "Excess rainwater that does not sink into the soil but flows over the surface of the land into streams is:",
+              "options": [
+                "A. Groundwater",
+                "B. Surface runoff",
+                "C. Transpiration",
+                "D. Dew"
+              ],
+              "correctAnswer": "B. Surface runoff",
+              "hint": "Water running over ground surfaces.",
+              "workedSolution": "Surface runoff is precipitation that flows over the landscape toward streams, rivers, and oceans.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F06",
+              "difficulty": "low",
+              "prompt": "Microscopic pores on plant leaves through which water vapor is released during transpiration are called:",
+              "options": [
+                "A. Lenticels",
+                "B. Stomata",
+                "C. Chloroplasts",
+                "D. Cuticles"
+              ],
+              "correctAnswer": "B. Stomata",
+              "hint": "Specialized pores guarded by guard cells.",
+              "workedSolution": "Stomata are microscopic apertures on leaf surfaces that regulate gas exchange and transpiration.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F07",
+              "difficulty": "low",
+              "prompt": "Why is transpiration important for a growing plant?",
+              "options": [
+                "A. It produces chlorophyll in the roots",
+                "B. It cools the plant and creates suction tension to pull water upward",
+                "C. It prevents roots from absorbing soil minerals",
+                "D. It converts starch into glycogen"
+              ],
+              "correctAnswer": "B. It cools the plant and creates suction tension to pull water upward",
+              "hint": "Transpirational pull transports water and cools leaves.",
+              "workedSolution": "Transpiration generates a negative pressure gradient (transpiration pull) that draws water and dissolved nutrients from roots to leaves and provides evaporative cooling.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_F08",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of domestic water conservation in a Ghanaian household?",
+              "options": [
+                "A. Leaving the tap running while brushing teeth",
+                "B. Using a bucket instead of a running hose pipe to wash cars",
+                "C. Washing plates directly inside a river channel",
+                "D. Discarding clean cooking water down the gutter"
+              ],
+              "correctAnswer": "B. Using a bucket instead of a running hose pipe to wash cars",
+              "hint": "Using a bucket controls the volume of water used.",
+              "workedSolution": "Using a bucket limits water usage significantly compared to a continuous high-pressure hose.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s3_2",
+              "id": "B7_CYCLE_M01",
               "difficulty": "medium",
-              "prompt": "How does large-scale forest clear-cutting (deforestation) affect local hydrological cycles?",
+              "prompt": "What role do microscopic dust particles and sea salt aerosols play in the condensation stage of the water cycle?",
               "options": [
-                "It increases cloud condensation and triples rainfall",
-                "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
-                "It permanently lowers atmospheric temperature",
-                "It stops evaporation from oceans"
+                "A. They absorb solar radiation to boil water",
+                "B. They act as cloud condensation nuclei (CCN) upon which water vapor coalesces",
+                "C. They prevent clouds from precipitating rain",
+                "D. They convert water vapor directly into solid ice"
               ],
-              "correctAnswer": "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
-              "hint": "Fewer trees mean less water vapor released into the air.",
-              "workedSolution": "Deforestation drastically reduces plant transpiration, leading to lower atmospheric humidity and diminished localized rainfall, while barren soil suffers severe erosion and loss of water retention.",
+              "correctAnswer": "B. They act as cloud condensation nuclei (CCN) upon which water vapor coalesces",
+              "hint": "Water vapor requires a surface to condense into droplets.",
+              "workedSolution": "Aerosols and dust act as condensation nuclei, providing the micro-surfaces needed for vapor molecules to condense into liquid cloud droplets.",
               "points": 1,
-              "learningCompetency": "B7.2.1.1",
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_M02",
+              "difficulty": "medium",
+              "prompt": "How does large-scale deforestation in tropical regions directly disrupt the regional hydrological cycle?",
+              "options": [
+                "A. It increases transpiration and creates more rainfall",
+                "B. It reduces vegetative transpiration, lowers rainfall frequency, and increases flash surface runoff",
+                "C. It stops water from evaporating from the ocean",
+                "D. It completely eliminates groundwater tables permanently"
+              ],
+              "correctAnswer": "B. It reduces vegetative transpiration, lowers rainfall frequency, and increases flash surface runoff",
+              "hint": "Trees pump huge amounts of water vapor into the air through transpiration.",
+              "workedSolution": "Fewer trees mean reduced transpiration moisture in the air, diminishing cloud formation while bare soil accelerates erosion and flash runoff.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_M03",
+              "difficulty": "medium",
+              "prompt": "Which conservation practice helps maintain healthy soil moisture and reduces evaporation from farm beds?",
+              "options": [
+                "A. Excessive tilling and weeding during drought",
+                "B. Mulching with dried organic leaves or straw",
+                "C. Spraying synthetic chemical insecticides daily",
+                "D. Burning crop residue before planting"
+              ],
+              "correctAnswer": "B. Mulching with dried organic leaves or straw",
+              "hint": "Covering the soil surface traps moisture.",
+              "workedSolution": "Mulching covers the soil surface, shielding it from direct solar radiation to minimize evaporation and preserve moisture.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_M04",
+              "difficulty": "medium",
+              "prompt": "Why would Earth's surface temperature become unlivable without the cooling effect of the water cycle?",
+              "options": [
+                "A. Plants would produce too much oxygen",
+                "B. Evaporation absorbs enormous latent heat; without it, trapped solar heat would drive surface temperatures above 67°C",
+                "C. Gravity would no longer hold water to the ground",
+                "D. The Moon would pull all atmospheric gases into outer space"
+              ],
+              "correctAnswer": "B. Evaporation absorbs enormous latent heat; without it, trapped solar heat would drive surface temperatures above 67°C",
+              "hint": "Phase change from liquid to gas absorbs large amounts of heat.",
+              "workedSolution": "Water has a high latent heat of vaporization. Evaporation continuously removes heat from planetary surfaces, moderating climate.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_M05",
+              "difficulty": "medium",
+              "prompt": "A school compound experiences serious gully erosion every time it rains. What is the most sustainable botanical remedy?",
+              "options": [
+                "A. Paving the entire compound with concrete",
+                "B. Planting vetiver grass and indigenous trees along the drainage path",
+                "C. Digging wider bare trenches to speed up runoff",
+                "D. Applying weedicides to clear all grass"
+              ],
+              "correctAnswer": "B. Planting vetiver grass and indigenous trees along the drainage path",
+              "hint": "Plant roots bind the soil and slow down water speed.",
+              "workedSolution": "Grass roots bind loose topsoil, enhance infiltration, and disperse the kinetic energy of runoff, mitigating erosion.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_CYCLE_A01",
+              "difficulty": "hard",
+              "prompt": "In Ghana, alluvial gold mining (galamsey) along the Pra and Birim rivers causes severe turbidity. How does high turbidity directly affect aquatic life in the water cycle?",
+              "options": [
+                "A. It increases sunlight penetration and speeds up aquatic photosynthesis",
+                "B. It blocks sunlight, preventing phytoplankton photosynthesis, and clogs fish gills with suspended sediment",
+                "C. It converts fresh river water into pure saline ocean water",
+                "D. It causes water molecules to evaporate twice as fast"
+              ],
+              "correctAnswer": "B. It blocks sunlight, preventing phytoplankton photosynthesis, and clogs fish gills with suspended sediment",
+              "hint": "Turbidity means cloudiness caused by suspended silt.",
+              "workedSolution": "High turbidity prevents sunlight from penetrating the water column, halting photosynthesis by aquatic plants and starving or suffocating aquatic fauna.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_A02",
+              "difficulty": "hard",
+              "prompt": "Explain how industrial closed-loop water recycling reduces both freshwater depletion and chemical water pollution:",
+              "options": [
+                "A. It drains water into natural wetlands without treatment",
+                "B. Factories treat, cool, and reuse the same water repeatedly, minimizing extraction from municipal rivers and eliminating toxic effluent discharge",
+                "C. It evaporates all industrial water into acid rain clouds",
+                "D. It replaces water with liquid ammonia in factory boilers"
+              ],
+              "correctAnswer": "B. Factories treat, cool, and reuse the same water repeatedly, minimizing extraction from municipal rivers and eliminating toxic effluent discharge",
+              "hint": "Closed loop means zero waste water released externally.",
+              "workedSolution": "Closed-loop systems recirculate treated water continuously, reducing new intake from rivers and halting polluted waste discharge.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CYCLE_A03",
+              "difficulty": "hard",
+              "prompt": "During periods of severe drought, plants wilt primarily because:",
+              "options": [
+                "A. Cell walls dissolve completely",
+                "B. Loss of water decreases cell vacuole turgor pressure, causing non-woody tissues to lose rigidity",
+                "C. Mitochondria consume all internal cellular cytoplasm",
+                "D. Chloroplasts transform into starch granules"
+              ],
+              "correctAnswer": "B. Loss of water decreases cell vacuole turgor pressure, causing non-woody tissues to lose rigidity",
+              "hint": "Recall how water in vacuoles keeps cells firm and turgid.",
+              "workedSolution": "Turgor pressure from water inside the central vacuole presses against the cell wall, providing hydrostatic support. Loss of water causes flaccidity and wilting.",
+              "points": 1,
+              "learningCompetency": "B7.2.1.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -5699,7 +6034,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -5896,7 +6231,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -6091,7 +6426,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -6288,7 +6623,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -6485,7 +6820,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -6682,7 +7017,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -6877,7 +7212,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -7073,7 +7408,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -7269,7 +7604,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -7466,7 +7801,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -7664,7 +7999,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -7862,7 +8197,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -8055,7 +8390,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -8250,7 +8585,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -8445,7 +8780,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -8641,7 +8976,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -8838,7 +9173,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T15:33:04.568Z"
+    "updatedAt": "2026-10-02T17:15:12.853Z"
   }
 ];
 
@@ -11387,7 +11722,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 4,
     "notes": {
-      "summaryMarkdown": "### Unit 1: The Cell Theory & Optical Light Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate a thorough understanding of cellular biology, handle an optical light microscope safely, and distinguish between plant and animal cells.\n\n#### 1. The Classical Cell Theory\nThe cell theory was formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms (unicellular and multicellular) are composed of one or more living cells.\n2. **Functional Tenet:** The cell is the most fundamental structural, functional, and physiological unit of all biological life.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n#### 2. The Optical Compound Light Microscope\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"360\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"metalGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#94a3b8\"/>\n      <stop offset=\"100%\" stop-color=\"#475569\"/>\n    </linearGradient>\n    <linearGradient id=\"lensGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <linearGradient id=\"beamGrad\" x1=\"0%\" y1=\"100%\" x2=\"0%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" stop-opacity=\"0.8\"/>\n      <stop offset=\"100%\" stop-color=\"#fef08a\" stop-opacity=\"0.1\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"15\" width=\"680\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"35\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</text>\n  \n  <!-- Microscope Base -->\n  <path d=\"M140,320 L280,320 L270,300 L150,300 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Light Source / Mirror -->\n  <ellipse cx=\"210\" cy=\"285\" r=\"16\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n  <polygon points=\"200,285 220,285 226,200 194,200\" fill=\"url(#beamGrad)\"/>\n  \n  <!-- Arm -->\n  <path d=\"M260,300 C330,280 340,160 270,120 L250,120 C300,150 290,260 240,290 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Stage and Condenser/Diaphragm -->\n  <rect x=\"160\" y=\"200\" width=\"100\" height=\"12\" rx=\"2\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <rect x=\"185\" y=\"212\" width=\"50\" height=\"14\" rx=\"2\" fill=\"#64748b\"/>\n  <line x1=\"180\" y1=\"198\" x2=\"240\" y2=\"198\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n  \n  <!-- Coarse & Fine Focus Knobs -->\n  <circle cx=\"285\" cy=\"220\" r=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"2\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"8\" fill=\"#64748b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"4\" fill=\"#cbd5e1\"/>\n  \n  <!-- Body Tube -->\n  <rect x=\"195\" y=\"70\" width=\"30\" height=\"80\" rx=\"3\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Eyepiece (Ocular Lens) -->\n  <rect x=\"190\" y=\"48\" width=\"40\" height=\"22\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"210\" cy=\"50\" rx=\"14\" ry=\"4\" fill=\"url(#lensGrad)\"/>\n  \n  <!-- Revolving Nosepiece -->\n  <path d=\"M190,150 L230,150 L238,162 L182,162 Z\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Objective Lenses (Low, Medium, High) -->\n  <rect x=\"188\" y=\"162\" width=\"12\" height=\"24\" rx=\"2\" fill=\"#ef4444\" stroke=\"#991b1b\" stroke-width=\"1\"/>\n  <rect x=\"204\" y=\"162\" width=\"12\" height=\"32\" rx=\"2\" fill=\"#eab308\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <rect x=\"220\" y=\"162\" width=\"12\" height=\"38\" rx=\"2\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1\"/>\n\n  <!-- Annotations / Callouts -->\n  <g font-family=\"sans-serif\" font-size=\"11\" fill=\"#0f172a\">\n    <line x1=\"230\" y1=\"58\" x2=\"380\" y2=\"58\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"62\" font-weight=\"bold\"><tspan fill=\"#0284c7\">1. Eyepiece (Ocular Lens):</tspan> Magnifies image (typically 10×)</text>\n    \n    <line x1=\"225\" y1=\"110\" x2=\"380\" y2=\"110\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"114\" font-weight=\"bold\"><tspan fill=\"#0f172a\">2. Body Tube:</tspan> Holds eyepiece at correct optical distance</text>\n    \n    <line x1=\"235\" y1=\"175\" x2=\"380\" y2=\"155\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"159\" font-weight=\"bold\"><tspan fill=\"#eab308\">3. Objective Lenses:</tspan> 4× (low), 10× (medium), 40× (high power)</text>\n    \n    <line x1=\"260\" y1=\"206\" x2=\"380\" y2=\"200\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"204\" font-weight=\"bold\"><tspan fill=\"#0f172a\">4. Stage &amp; Stage Clips:</tspan> Supports glass slide securely</text>\n    \n    <line x1=\"300\" y1=\"220\" x2=\"380\" y2=\"245\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"249\" font-weight=\"bold\"><tspan fill=\"#334155\">5. Coarse &amp; Fine Focus:</tspan> Rapid positioning / sharp definition</text>\n    \n    <line x1=\"235\" y1=\"222\" x2=\"380\" y2=\"290\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"294\" font-weight=\"bold\"><tspan fill=\"#047857\">6. Diaphragm &amp; Condenser:</tspan> Regulates incident light beam volume</text>\n    \n    <line x1=\"226\" y1=\"285\" x2=\"380\" y2=\"330\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"334\" font-weight=\"bold\"><tspan fill=\"#ca8a04\">7. Substage Light / Mirror:</tspan> Reflects illumination through specimen</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</p>\n</div>\n\n| Microscope Component | Mechanical or Optical? | Specific Functional Role |\n| :--- | :---: | :--- |\n| **Eyepiece (Ocular Lens)** | Optical | Magnifies primary image formed by objective lens (standard magnification: $10\\times$). |\n| **Body Tube (Barrel)** | Mechanical | Maintains the correct optical focal distance between eyepiece and objective lenses. |\n| **Revolving Nosepiece** | Mechanical | Rotating turret housing multiple objective lenses allowing rapid switching of magnifications. |\n| **Objective Lenses** | Optical | Primary magnification lenses: Low power ($4\\times$), Medium power ($10\\times$), High power ($40\\times$). |\n| **Stage & Stage Clips** | Mechanical | Flat platform holding the specimen glass slide securely over the central optical aperture. |\n| **Diaphragm & Condenser** | Optical | Regulates the cone angle and intensity of light illuminating the specimen. |\n| **Coarse Adjustment Knob** | Mechanical | Moves stage rapidly up or down for initial specimen location under low power ($4\\times$ or $10\\times$). |\n| **Fine Adjustment Knob** | Mechanical | Delicately shifts the objective focal plane to achieve sharp, high-resolution clarity under high power. |\n| **Substage Mirror / Lamp** | Optical | Directs natural or electric light upward through the condenser and glass slide. |\n| **Arm & Base** | Mechanical | Structural backbone and heavy foot providing stability during laboratory operation. |\n\n#### Calculating Total Magnification:\n$$\\text{Total Magnification} = \\text{Magnification of Eyepiece} \\times \\text{Magnification of Objective Lens}$$\n* *Example:* If an eyepiece lens has a rating of $10\\times$ and the high-power objective lens is $40\\times$:\n  $$\\text{Total Magnification} = 10 \\times 40 = 400\\times$$\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"plantWall\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#15803d\"/>\n      <stop offset=\"100%\" stop-color=\"#166534\"/>\n    </linearGradient>\n    <linearGradient id=\"plantCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#dcfce7\"/>\n      <stop offset=\"100%\" stop-color=\"#bbf7d0\"/>\n    </linearGradient>\n    <linearGradient id=\"animalCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fde68a\"/>\n    </linearGradient>\n    <linearGradient id=\"nucGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#818cf8\"/>\n      <stop offset=\"100%\" stop-color=\"#4f46e5\"/>\n    </linearGradient>\n    <linearGradient id=\"chloroGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"760\" height=\"340\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"12\" width=\"720\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</text>\n  \n  <!-- ================= PLANT CELL (LEFT) ================= -->\n  <g transform=\"translate(30, 55)\">\n    <!-- Cell Wall Outer -->\n    <rect x=\"0\" y=\"0\" width=\"310\" height=\"230\" rx=\"20\" fill=\"url(#plantWall)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Cell Wall Inner / Middle Lamella Space -->\n    <rect x=\"8\" y=\"8\" width=\"294\" height=\"214\" rx=\"14\" fill=\"#86efac\"/>\n    <!-- Cell Membrane & Cytoplasm -->\n    <rect x=\"12\" y=\"12\" width=\"286\" height=\"206\" rx=\"12\" fill=\"url(#plantCyto)\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    \n    <!-- Large Central Vacuole -->\n    <rect x=\"70\" y=\"50\" width=\"170\" height=\"130\" rx=\"30\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"155\" y=\"120\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Central Vacuole</text>\n    <text x=\"155\" y=\"135\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0284c7\" text-anchor=\"middle\">(Cell Sap &amp; Turgor Pressure)</text>\n    \n    <!-- Nucleus (Pushed to periphery) -->\n    <circle cx=\"50\" cy=\"65\" r=\"26\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"1.5\"/>\n    <circle cx=\"50\" cy=\"65\" r=\"10\" fill=\"#312e81\"/>\n    <text x=\"50\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#312e81\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Chloroplasts -->\n    <g fill=\"url(#chloroGrad)\" stroke=\"#14532d\" stroke-width=\"1\">\n      <ellipse cx=\"60\" cy=\"180\" rx=\"18\" ry=\"10\" transform=\"rotate(-20 60 180)\"/>\n      <ellipse cx=\"260\" cy=\"80\" rx=\"18\" ry=\"10\" transform=\"rotate(30 260 80)\"/>\n      <ellipse cx=\"260\" cy=\"160\" rx=\"18\" ry=\"10\" transform=\"rotate(-15 260 160)\"/>\n    </g>\n    <!-- Mitochondria -->\n    <ellipse cx=\"140\" cy=\"200\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <ellipse cx=\"210\" cy=\"35\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    \n    <text x=\"155\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">PLANT CELL (Regular Polygonal)</text>\n  </g>\n\n  <!-- ================= ANIMAL CELL (RIGHT) ================= -->\n  <g transform=\"translate(410, 55)\">\n    <!-- Flexible Cell Membrane & Cytoplasm -->\n    <path d=\"M40,50 Q120,10 220,30 Q300,70 280,160 Q260,225 180,220 Q70,225 25,160 Q0,80 40,50 Z\" fill=\"url(#animalCyto)\" stroke=\"#d97706\" stroke-width=\"2.5\"/>\n    \n    <!-- Centrally Located Nucleus -->\n    <circle cx=\"150\" cy=\"120\" r=\"34\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"2\"/>\n    <circle cx=\"150\" cy=\"120\" r=\"12\" fill=\"#312e81\"/>\n    <text x=\"150\" y=\"124\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Mitochondria (Abundant) -->\n    <ellipse cx=\"70\" cy=\"90\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(25 70 90)\"/>\n    <ellipse cx=\"230\" cy=\"80\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-30 230 80)\"/>\n    <ellipse cx=\"90\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-10 90 170)\"/>\n    <ellipse cx=\"220\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(40 220 170)\"/>\n    \n    <!-- Small Temporary Vacuoles -->\n    <circle cx=\"85\" cy=\"130\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <circle cx=\"215\" cy=\"125\" r=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    \n    <!-- Centrosome / Centrioles -->\n    <rect x=\"175\" y=\"70\" width=\"10\" height=\"4\" fill=\"#475569\"/>\n    <rect x=\"178\" y=\"67\" width=\"4\" height=\"10\" fill=\"#475569\"/>\n    \n    <text x=\"150\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (Irregular / Amorphous)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</p>\n</div>\n\n#### Detailed Organelle Functions:\n1. **Cell Membrane (Plasma Membrane):**\n   * Selectively permeable phospholipid bilayer studded with proteins.\n   * Regulates the bidirectional passage of substances (nutrients, gases, metabolic wastes).\n2. **Cell Wall (Plants Only):**\n   * Rigid, non-living outer casing constructed predominantly of tough cellulose fibers.\n   * Provides structural support, prevents osmotic burst (lysis), and imparts a fixed polygonal shape.\n3. **Cytoplasm:**\n   * Gel-like aqueous cytosol containing dissolved sugars, amino acids, mineral ions, and suspended organelles.\n   * Site of metabolic activities, including glycolysis and enzymatic synthesis.\n4. **Nucleus & Nucleolus:**\n   * Enclosed by a double membrane with nuclear pores; houses genetic material (DNA in chromatin/chromosomes).\n   * Serves as the executive control center directing cell division, enzyme production, and protein synthesis.\n5. **Mitochondria (Singular: Mitochondrion):**\n   * Oval organelle with folded inner membranes (*cristae*).\n   * Known as the **\"powerhouse of the cell\"**: site of aerobic cellular respiration generating adenosine triphosphate ($ATP$).\n6. **Chloroplasts (Plants Only):**\n   * Double-membraned plastid containing green chlorophyll pigments arranged on stacked thylakoid disks (*grana*).\n   * Captures radiant sunlight energy to synthesize glucose through photosynthesis ($6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\rightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$).\n7. **Vacuole:**\n   * *In Plant Cells:* Single, immense central permanent vacuole bounded by a membrane (*tonoplast*) filled with watery cell sap. Generates internal turgor pressure that keeps non-woody stems upright.\n   * *In Animal Cells:* Multiple, small, temporary vacuoles used for phagocytosis, pinocytosis, or waste excretion.\n\n#### Plant vs. Animal Cell Distinction Matrix:\n| Feature / Characteristic | Typical Plant Cell | Typical Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Shape** | Fixed, rigid, regular polygonal shape | Flexible, variable, irregular / spherical shape |\n| **Outer Boundary** | Cellulose cell wall + inner cell membrane | Outer cell membrane only (no cell wall) |\n| **Chloroplasts & Chlorophyll** | Present in photosynthetic cells (leaves) | Completely absent |\n| **Vacuolar Architecture** | One large, prominent central permanent vacuole | Multiple small, temporary vacuoles (if present) |\n| **Position of Nucleus** | Pushed to the periphery by central vacuole | Usually positioned near the geometric center |\n| **Centrioles & Centrosomes** | Absent in higher plants | Present (organizes spindle fibers in division) |\n| **Carbohydrate Food Storage** | Stored as insoluble **Starch grains** | Stored as branched **Glycogen granules** |\n\n---\n\n### Unit 3: Cellular Specialization & Multicellular Complexity\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B7 Extension`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"760\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"720\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.3: Structural Specializations in Animal and Plant Cells</text>\n  \n  <!-- Red Blood Cell -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"32\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.5\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"16\" fill=\"#fca5a5\" stroke=\"#ef4444\" stroke-width=\"1\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Red Blood Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Biconcave disc</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• No nucleus (haemoglobin)</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• High surface area</text>\n  </g>\n  \n  <!-- Sperm Cell -->\n  <g transform=\"translate(175, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <ellipse cx=\"40\" cy=\"55\" rx=\"16\" ry=\"10\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.5\"/>\n    <circle cx=\"30\" cy=\"55\" r=\"4\" fill=\"#93c5fd\"/>\n    <rect x=\"56\" y=\"52\" width=\"12\" height=\"6\" rx=\"2\" fill=\"#f59e0b\"/>\n    <path d=\"M68,55 Q95,40 105,65 Q115,85 120,55\" fill=\"none\" stroke=\"#1d4ed8\" stroke-width=\"2\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sperm Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Male Gamete</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Flagellum for motility</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Acrosome enzyme tip</text>\n  </g>\n\n  <!-- Nerve Cell / Motor Neuron -->\n  <g transform=\"translate(320, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <!-- Soma & Dendrites -->\n    <polygon points=\"35,45 25,35 30,55 18,60 30,70 42,75 50,60\" fill=\"#8b5cf6\" stroke=\"#6d28d9\" stroke-width=\"1\"/>\n    <line x1=\"50\" y1=\"60\" x2=\"105\" y2=\"60\" stroke=\"#6d28d9\" stroke-width=\"2\"/>\n    <rect x=\"60\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"75\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"90\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Nerve Cell (Neuron)</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Signal Conduction</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Elongated axon cable</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Myelin sheath insulation</text>\n  </g>\n\n  <!-- Root Hair Cell -->\n  <g transform=\"translate(465, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <path d=\"M25,40 L65,40 L115,55 L65,70 L25,70 Z\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Root Hair Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Plant Subterranean</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Long finger projection</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vast absorption area</text>\n  </g>\n\n  <!-- Palisade Mesophyll Cell -->\n  <g transform=\"translate(610, 45)\">\n    <rect width=\"120\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <rect x=\"35\" y=\"35\" width=\"50\" height=\"55\" rx=\"4\" fill=\"#86efac\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <circle cx=\"45\" cy=\"45\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"58\" cy=\"43\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"72\" cy=\"46\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"48\" cy=\"62\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"65\" cy=\"65\" r=\"3\" fill=\"#166534\"/>\n    <text x=\"60\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Palisade Cell</text>\n    <text x=\"60\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Leaf Photosynthesis</text>\n    <text x=\"60\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Packed chloroplasts</text>\n    <text x=\"60\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vertical light capture</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.3: Structural Specializations in Animal and Plant Cells</p>\n</div>\n\n| Specialized Cell | Biological Location | Structural Adaptation | Physiological Function |\n| :--- | :--- | :--- | :--- |\n| **Red Blood Cell (Erythrocyte)** | Blood vascular system | Biconcave disc shape (maximizes surface-area-to-volume ratio); mature cells lack a nucleus to pack more haemoglobin pigment. | Transports oxygen from pulmonary alveoli to respiring body tissues. |\n| **Sperm Cell (Male Gamete)** | Mammalian testes | Long whip-like flagellum; head capped with an **acrosome** containing digestive enzymes; midpiece loaded with mitochondria. | Swims toward female ovum and digests outer egg membrane during fertilization. |\n| **Nerve Cell (Neuron)** | Central & peripheral nervous system | Extended axon transmitting electrical impulses across great distances; insulating myelin sheath; branching dendrites. | Transmits electro-chemical nerve impulses between receptors, brain, and effectors. |\n| **Root Hair Cell** | Outer root epidermis | Elongated finger-like projection extending into soil pores; thin cell wall; lacks chloroplasts; high solute concentration. | Absorbs soil water by osmosis and dissolved mineral salts by active transport. |\n| **Palisade Mesophyll Cell** | Upper leaf interior | Columnar vertical arrangement packed with hundreds of chloroplasts positioned directly beneath the transparent upper cuticle. | Maximum absorption of sunlight for photosynthetic carbohydrate synthesis. |\n| **Guard Cells** | Leaf epidermis (stomatal pore) | Kidney-shaped paired cells with thicker inner walls; expand when turgid to open stomata, relax when flaccid to close. | Regulates transpirational water loss and photosynthetic gaseous exchange ($\\text{CO}_2 / \\text{O}_2$). |\n\n---\n\n### Unit 4: Hierarchical Levels of Biological Organization\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B9.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"180\" viewBox=\"0 0 720 180\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"720\" height=\"180\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"680\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</text>\n\n  <!-- Level 1: Cell -->\n  <g transform=\"translate(30, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">1. CELL</text>\n    <circle cx=\"47\" cy=\"60\" r=\"16\" fill=\"#38bdf8\" stroke=\"#0284c7\"/>\n    <circle cx=\"47\" cy=\"60\" r=\"5\" fill=\"#0369a1\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Basic life unit</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Muscle fiber)</text>\n  </g>\n  <text x=\"138\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 2: Tissue -->\n  <g transform=\"translate(160, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">2. TISSUE</text>\n    <rect x=\"25\" y=\"48\" width=\"45\" height=\"25\" rx=\"3\" fill=\"#86efac\" stroke=\"#16a34a\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Similar cells</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Cardiac muscle)</text>\n  </g>\n  <text x=\"268\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 3: Organ -->\n  <g transform=\"translate(290, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. ORGAN</text>\n    <path d=\"M47,50 C30,35 15,60 47,80 C79,60 64,35 47,50 Z\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Tissues united</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Heart, Leaf)</text>\n  </g>\n  <text x=\"398\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 4: Organ System -->\n  <g transform=\"translate(420, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#f3e8ff\" stroke=\"#9333ea\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. ORGAN SYSTEM</text>\n    <rect x=\"35\" y=\"45\" width=\"45\" height=\"30\" rx=\"4\" fill=\"#d8b4fe\" stroke=\"#9333ea\"/>\n    <text x=\"57\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Organs working</text>\n    <text x=\"57\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Circulatory system)</text>\n  </g>\n  <text x=\"548\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 5: Organism -->\n  <g transform=\"translate(570, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. ORGANISM</text>\n    <circle cx=\"57\" cy=\"48\" r=\"8\" fill=\"#fca5a5\" stroke=\"#ef4444\"/>\n    <line x1=\"57\" y1=\"56\" x2=\"57\" y2=\"76\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"42\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"45\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"69\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <text x=\"57\" y=\"100\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Complete living</text>\n    <text x=\"57\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">individual (Human)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</p>\n</div>\n\n1. **Level 1: Organelles:** Specialized sub-cellular structures (e.g. Nucleus, Mitochondria, Ribosomes) executing distinct biochemical duties within a single cell.\n2. **Level 2: Cells:** The fundamental building blocks of living organisms (e.g. cardiac muscle cell, epidermal cell).\n3. **Level 3: Tissues:** An aggregate of similar, morphologically specialized cells working collectively to perform a common physiological duty (e.g. cardiac muscle tissue, xylem vascular tissue).\n4. **Level 4: Organs:** Distinct anatomical units composed of two or more coordinated tissues executing a primary physiological function (e.g. the human heart, mammalian kidney, angiosperm leaf).\n5. **Level 5: Organ Systems:** A group of interconnected organs operating symbiotically to carry out a comprehensive life process (e.g. circulatory system, digestive system, plant shoot system).\n6. **Level 6: Multicellular Organism:** An autonomous living individual possessing integrated organ systems (e.g. human being, mango tree).",
+      "summaryMarkdown": "### Unit 1: The Cell as the Basic Unit of Life & Classical Cell Theory\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n* **Core Concept:** Cell as the fundamental microscopic structural and functional building block.\n\n#### 1. Fundamental Definition & Architectural Analogy\nA **cell** is the fundamental microscopic structural and functional building block of every living organism. Just as a modern building is constructed from individual structural bricks, all living bodies—from microscopic unicellular bacteria to complex multicellular mammals—are assembled from cells.\n\n#### 2. The Classical Cell Theory\nThe foundational tenets of cellular biology were formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms are composed of one or more cells.\n2. **Functional Tenet:** The cell is the smallest independent living unit capable of performing all essential life processes.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nPlant and animal cells are **eukaryotic**, meaning their internal contents are organized into distinct, membrane-enclosed microscopic sub-units known as **organelles**. Each organelle handles a specialized duty essential for cellular metabolism and survival.\n\n<div class=\"my-6 grid grid-cols-1 lg:grid-cols-2 gap-4\">\n  <div class=\"flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n    <span class=\"text-xs font-bold text-emerald-400 mb-2\">Figure 2.1: Ultrastructure of a Typical Plant Cell</span>\n    <div class=\"w-full flex justify-center overflow-x-auto\">\n      <svg width=\"420\" height=\"320\" viewBox=\"0 0 420 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"420\" height=\"320\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.5\"/><rect x=\"40\" y=\"35\" width=\"210\" height=\"250\" rx=\"22\" fill=\"#dcfce7\" stroke=\"#15803d\" stroke-width=\"6\"/><rect x=\"48\" y=\"43\" width=\"194\" height=\"234\" rx=\"16\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"2\"/><path d=\"M 90 75 Q 190 70 195 130 Q 200 220 130 230 Q 75 225 80 145 Z\" fill=\"#fef9c3\" stroke=\"#eab308\" stroke-width=\"1.8Base\"/><circle cx=\"100\" cy=\"120\" r=\"26\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.8\"/><circle cx=\"100\" cy=\"120\" r=\"10\" fill=\"#991b1b\"/><g fill=\"#16a34a\" stroke=\"#14532d\" stroke-width=\"1\"><ellipse cx=\"70\" cy=\"220\" rx=\"14\" ry=\"8\"/><ellipse cx=\"180\" cy=\"85\" rx=\"14\" ry=\"8\"/><ellipse cx=\"185\" cy=\"210\" rx=\"14\" ry=\"8\"/></g><g fill=\"#ea580c\" stroke=\"#9a3412\" stroke-width=\"1\"><ellipse cx=\"65\" cy=\"70\" rx=\"11\" ry=\"6\"/><ellipse cx=\"175\" cy=\"160\" rx=\"11\" ry=\"6\"/></g><line x1=\"250\" y1=\"60\" x2=\"280\" y2=\"60\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"64\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\">Cell Wall</text><line x1=\"242\" y1=\"80\" x2=\"280\" y2=\"95\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"99\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#22c55e\">Cell Membrane</text><line x1=\"195\" y1=\"115\" x2=\"280\" y2=\"130\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"134\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ca8a04\">Large Central Vacuole</text><line x1=\"126\" y1=\"120\" x2=\"280\" y2=\"165\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"169\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Nucleus</text><line x1=\"195\" y1=\"210\" x2=\"280\" y2=\"205\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"209\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#14532d\">Chloroplast</text><line x1=\"185\" y1=\"165\" x2=\"280\" y2=\"240\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"244\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9a3412\">Mitochondrion</text><line x1=\"220\" y1=\"250\" x2=\"280\" y2=\"275\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"285\" y=\"279\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Cytoplasm</text></svg>\n    </div>\n  </div>\n  <div class=\"flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n    <span class=\"text-xs font-bold text-pink-400 mb-2\">Figure 2.2: Ultrastructure of a Typical Animal Cell</span>\n    <div class=\"w-full flex justify-center overflow-x-auto\">\n      <svg width=\"420\" height=\"320\" viewBox=\"0 0 420 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"420\" height=\"320\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.5\"/><path d=\"M 60 160 C 50 80 100 40 170 45 C 240 50 260 100 255 180 C 250 250 200 280 130 270 C 70 260 70 220 60 160 Z\" fill=\"#fdf2f8\" stroke=\"#ec4899\" stroke-width=\"3\"/><circle cx=\"150\" cy=\"150\" r=\"34\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"2\"/><circle cx=\"150\" cy=\"150\" r=\"12\" fill=\"#991b1b\"/><g fill=\"#ea580c\" stroke=\"#9a3412\" stroke-width=\"1\"><ellipse cx=\"95\" cy=\"105\" rx=\"12\" ry=\"7\"/><ellipse cx=\"195\" cy=\"210\" rx=\"12\" ry=\"7\"/><ellipse cx=\"210\" cy=\"100\" rx=\"12\" ry=\"7\"/></g><g fill=\"#38bdf8\" stroke=\"#0284c7\" stroke-width=\"1\"><circle cx=\"100\" cy=\"210\" r=\"7\"/><circle cx=\"115\" cy=\"75\" r=\"6\"/><circle cx=\"190\" cy=\"70\" r=\"7\"/></g><g fill=\"#64748b\"><circle cx=\"90\" cy=\"150\" r=\"2\"/><circle cx=\"120\" cy=\"195\" r=\"2\"/><circle cx=\"180\" cy=\"115\" r=\"2\"/><circle cx=\"215\" cy=\"160\" r=\"2\"/></g><line x1=\"256\" y1=\"140\" x2=\"290\" y2=\"110\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"114\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#db2777\">Cell Membrane</text><line x1=\"184\" y1=\"150\" x2=\"290\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Nucleus</text><line x1=\"215\" cy1=\"100\" x2=\"290\" y2=\"190\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"194\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9a3412\">Mitochondrion</text><line x1=\"107\" y1=\"210\" x2=\"290\" y2=\"230\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"234\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\">Small Vacuoles</text><line x1=\"210\" y1=\"240\" x2=\"290\" y2=\"265\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"295\" y=\"269\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Cytoplasm</text></svg>\n    </div>\n  </div>\n</div>\n\n#### Detailed Organelle Functions:\n| Organelle | Cellular Presence | Biological Function & Significance |\n| :--- | :--- | :--- |\n| **Nucleus** | Both Plant & Animal | Functions as the control headquarters of the cell. It coordinates vital cellular activities and safeguards the genetic blueprint (DNA) inherited across generations. |\n| **Cytoplasm** | Both Plant & Animal | A transparent, jelly-like fluid that fills the cell interior. It suspends organelles and serves as the primary site where biochemical reactions happen. |\n| **Cell Membrane** | Both Plant & Animal | A semi-permeable flexible outer boundary that monitors and regulates the entry and exit of dissolved substances, nutrients, and metabolic wastes. |\n| **Mitochondria** | Both Plant & Animal | Commonly described as the 'powerhouse' of the cell. It carries out aerobic cellular respiration, converting glucose into usable chemical energy (ATP). |\n| **Cell Wall** | Plant Cells Only | A rigid, protective outer encasement made of cellulose fibers. It provides structural integrity, maintains fixed cell shape, and shields against mechanical injury. |\n| **Chloroplast** | Plant Cells Only | Specialized disc-shaped plastids packed with green chlorophyll pigments. They capture sunlight energy to manufacture carbohydrates through photosynthesis. |\n| **Vacuole** | Both (Different Sizes) | In plant cells, it is large, permanent, and central, storing cell sap (water, dissolved sugars, and mineral salts) to keep the cell firm and turgid. In animal cells, vacuoles are small, numerous, and temporary. |\n\n#### Diagnostic Distinction Matrix: Plant vs. Animal Cells\n| Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Exterior Boundary** | Bound by both an outer cellulose cell wall and an inner membrane | Enclosed by a flexible cell membrane only (no cell wall) |\n| **Geometric Shape** | Rigid, definite, and regular angular shape | Flexible, rounded, or irregular shape |\n| **Chloroplasts** | Present (contains chlorophyll for photosynthesis) | Completely absent (cannot synthesize food) |\n| **Vacuole Characteristics** | Has one or few large, central permanent vacuoles | Has multiple tiny, scattered temporary vacuoles |\n| **Storage Carbohydrate** | Stores excess carbohydrates in the form of starch | Stores reserve carbohydrates in the form of glycogen |\n| **Lipid Storage Form** | Primarily stores energy reserves as oils | Primarily stores energy reserves as adipose fats |\n\n---\n\n### Unit 3: Cellular Specialization & Morphological Adaptations\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nIn multicellular organisms, cells undergo **differentiation**—modifying their shape, structure, and organelle density to perform specialized physiological functions:\n* **Red Blood Cell (Erythrocyte):** Biconcave disc without a nucleus to maximize surface area and capacity for hemoglobin oxygen transport.\n* **Root Hair Cell:** Elongated tubular projection to dramatically increase surface area for absorbing soil water (osmosis) and mineral ions (active transport).\n* **Xylem Vessel Element:** Hollow, lignified dead cylindrical tubes aligned end-to-end to transport water and dissolved minerals from roots to leaves.\n* **Motor Neuron (Nerve Cell):** Elongated axon sheath with dendrites to transmit electrical impulses rapidly across anatomical distances.\n* **Sperm Cell (Male Gamete):** Streamlined head with acrosome enzymes, midpiece packed with mitochondria for motility energy, and flagellum whip for propulsion.\n* **Muscle Cell (Myocyte):** Packed with contractile protein filaments (actin and myosin) and dense mitochondria to generate mechanical force through contraction.\n\n---\n\n### Unit 4: Hierarchical Organization of Multicellular Life\n* **Curriculum Standard:** NaCCA `B7.1.2.1.1`\n\nIn multicellular creatures, cells specialize and coordinate in progressive levels of organization to sustain life:\n1. **Rank 1 — Cell:** The smallest independent living unit that performs life processes (e.g., nerve cell, red blood cell, leaf epidermal cell).\n2. **Rank 2 — Tissue:** A collaborative cluster of similar cells that share the same shape, size, and specific biological function (e.g., muscle tissue, xylem tissue).\n3. **Rank 3 — Organ:** A distinct anatomical structure composed of different tissues working together to carry out a dedicated activity (e.g., heart, stomach, plant leaf).\n4. **Rank 4 — Organ System:** A coordinated group of interrelated organs functioning in harmony to perform major physiological duties (e.g., digestive system, circulatory system).\n5. **Rank 5 — Organism:** A complete, autonomous individual living being capable of carrying out all life activities independently (e.g., a human being, a maize plant).\n\n```\n[ Cell ] ──▶ [ Tissue ] ──▶ [ Organ ] ──▶ [ Organ System ] ──▶ [ Complete Organism ]\n  (e.g., Muscle Cell)   (e.g., Muscle Tissue)   (e.g., Heart)        (Circulatory System)     (e.g., Human Being)\n```\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -11405,6 +11740,54 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
       }
     ],
     "drillQuestions": [
+      {
+        "id": "B7_CELL_MCQ_01",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following describes the correct order of biological organization in a multicellular organism, starting from the smallest unit?",
+        "options": [
+          "A. Organism → Tissue → Organ → Cell → Organ System",
+          "B. Cell → Tissue → Organ → Organ System → Organism",
+          "C. Organ → Cell → Tissue → Organ System → Organism",
+          "D. Tissue → Cell → Organ System → Organ → Organism"
+        ],
+        "correctAnswer": "B. Cell → Tissue → Organ → Organ System → Organism",
+        "hint": "Think from microscopic building block to the whole living creature.",
+        "workedSolution": "Life is built systematically: individual Cells group into Tissues, tissues form functional Organs, organs coordinate into Organ Systems, which together form the complete Organism.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_MCQ_02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An organelle found inside a plant leaf cell that absorbs solar energy to manufacture carbohydrates is the:",
+        "options": [
+          "A. Mitochondrion",
+          "B. Cell membrane",
+          "C. Chloroplast",
+          "D. Nucleus"
+        ],
+        "correctAnswer": "C. Chloroplast",
+        "hint": "This organelle contains green chlorophyll pigments.",
+        "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb sunlight to carry out photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_MCQ_03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A key difference between plant and animal cells is that plant cells:",
+        "options": [
+          "A. Lack a nucleus",
+          "B. Possess a rigid outer cellulose cell wall",
+          "C. Have small, temporary vacuoles",
+          "D. Store carbohydrates as glycogen"
+        ],
+        "correctAnswer": "B. Possess a rigid outer cellulose cell wall",
+        "hint": "Consider the rigid outer encasement that maintains definite shape.",
+        "workedSolution": "Plant cells have an outer cellulose cell wall that gives them structural support and a definite shape. Animal cells lack a cell wall.",
+        "points": 1
+      },
       {
         "id": "B7_CELL_F01",
         "difficulty": "low",
@@ -13920,51 +14303,313 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS7",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "subStrandTitle": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "order": 7,
     "notes": {
-      "summaryMarkdown": "### The Hydrological (Water) Cycle & Freshwater Conservation\n* **NaCCA Curriculum Code:** `B7.2.1.1`\n* **Core Competency:** Explain the stages of the water cycle and evaluate human activities on municipal watersheds.\n\n#### 1. Stages of the Hydrological Cycle\nThe water cycle is a continuous, solar-driven thermodynamic loop:\n* **Evaporation:** Solar radiative heating converts liquid water from oceans, rivers, and soil into water vapor.\n* **Transpiration:** Water loss as vapor from microscopic leaf stomata into the atmosphere.\n* **Condensation:** Rising warm, moist air expands and cools adiabatically; water vapor condenses around microscopic aerosol condensation nuclei to form clouds.\n* **Precipitation:** Condensed cloud droplets coalesce until gravitational pull overcomes air resistance, falling as rain, drizzle, or hail.\n* **Percolation & Infiltration:** Water seeps downward through soil pore spaces to recharge groundwater aquifers and water tables.\n* **Surface Runoff:** Excess precipitation flows overland into streams, rivers, and oceans.\n\n#### 2. Human Disturbances to Watersheds\n* Deforestation reduces vegetative interception and transpiration, accelerating soil erosion and flash flooding.\n* Unregulated alluvial gold mining (galamsey) pollutes water basins with toxic heavy metals (mercury, lead) and suspended silt.\n* Industrial effluent discharge causes severe eutrophication and biochemical oxygen demand (BOD) spikes.",
+      "summaryMarkdown": "### Unit 1: Foundations of the Hydrological Cycle & Closed-Loop Dynamics\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n* **Core Concept:** Continuous solar-powered dynamic closed loop.\n\n#### 1. Fundamental Definition\nThe **hydrological cycle** (water cycle) is a continuous, natural closed-loop biogeochemical process by which the Earth's water moves dynamically between the ground, surface water bodies, living tissues, and the atmosphere. Because the Earth's total planetary volume of water remains essentially constant, this cycle provides a continuous, reliable renewal of fresh water necessary to sustain biological life.\n\n#### 2. The Solar Thermodynamic Engine\nThe water cycle is powered by radiant solar thermal energy and guided by gravity:\n* **Solar Heating:** Drives the endothermic conversion of liquid water into atmospheric water vapor.\n* **Atmospheric Convection:** Warm, moist air ascends into cooler tropospheric zones.\n* **Gravitational Potential:** Pulls precipitation back down to Earth and channels rivers and groundwater toward sea level.\n\n---\n\n### Unit 2: The Four Sequential Stages of the Hydrological Cycle\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n<div class=\"my-6 flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n  <span class=\"text-xs font-bold text-sky-400 mb-2\">Figure 1.1: The Four Stages of the Hydrological Cycle</span>\n  <div class=\"w-full flex justify-center overflow-x-auto\">\n    <svg width=\"580\" height=\"340\" viewBox=\"0 0 580 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"sky\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#bae6fd\"/><stop offset=\"100%\" stop-color=\"#f0fdf4\"/></linearGradient><linearGradient id=\"sea\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#38bdf8\"/><stop offset=\"100%\" stop-color=\"#0284c7\"/></linearGradient><marker id=\"arr\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#0284c7\"/></marker><marker id=\"arrRed\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#dc2626\"/></marker></defs><rect width=\"580\" height=\"340\" rx=\"12\" fill=\"url(#sky)\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><circle cx=\"70\" cy=\"55\" r=\"26\" fill=\"#f59e0b\" stroke=\"#d97706\" stroke-width=\"2\"/><path d=\"M 400 200 L 480 120 L 580 300 L 320 300 Z\" fill=\"#64748b\"/><path d=\"M 470 135 L 480 120 L 505 155 Z\" fill=\"#ffffff\"/><path d=\"M 260 220 L 330 150 L 410 300 L 210 300 Z\" fill=\"#475569\"/><rect x=\"0\" y=\"270\" width=\"580\" height=\"70\" fill=\"url(#sea)\"/><g fill=\"#cbd5e1\" stroke=\"#94a3b8\" stroke-width=\"1.5\"><ellipse cx=\"180\" cy=\"75\" rx=\"40\" ry=\"20\"/><ellipse cx=\"210\" cy=\"70\" rx=\"35\" ry=\"22\"/><ellipse cx=\"150\" cy=\"80\" rx=\"30\" ry=\"16\"/><ellipse cx=\"360\" cy=\"65\" rx=\"45\" ry=\"22\"/><ellipse cx=\"395\" cy=\"60\" rx=\"38\" ry=\"24\"/></g><g stroke=\"#0284c7\" stroke-width=\"1.8\" stroke-dasharray=\"3\"><line x1=\"160\" y1=\"100\" x2=\"150\" y2=\"170\"/><line x1=\"180\" y1=\"100\" x2=\"170\" y2=\"170\"/><line x1=\"200\" y1=\"100\" x2=\"190\" y2=\"170\"/></g><text x=\"130\" y=\"140\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">Precipitation</text><path d=\"M 480 270 Q 460 210 420 100\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-dasharray=\"4\" marker-end=\"url(#arrRed)\"/><text x=\"470\" y=\"180\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\">Evaporation</text><path d=\"M 260 260 Q 280 210 320 100\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\" stroke-dasharray=\"4\" marker-end=\"url(#arr)\"/><text x=\"260\" y=\"190\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#15803d\">Transpiration</text><path d=\"M 240 60 Q 290 50 330 60\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arr)\"/><text x=\"265\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">Condensation</text><path d=\"M 380 250 Q 280 265 180 280\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2.5\" marker-end=\"url(#arr)\"/><text x=\"260\" y=\"315\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\">Collection &amp; Runoff</text></svg>\n  </div>\n</div>\n\n#### Step-by-Step Mechanisms:\n1. **Stage 1 — Evaporation (and Transpiration):**\n   * **Evaporation:** Solar thermal energy heats open reservoirs (oceans, lakes, rivers, damp soils), transforming liquid surface water into gaseous water vapor that ascends into the air.\n   * **Transpiration:** Concurrently, terrestrial vegetation releases water vapor through specialized microscopic leaf pores called stomata into the atmosphere.\n2. **Stage 2 — Condensation:**\n   * As warm, buoyant water vapor travels higher into the troposphere, ambient temperatures drop adiabatically.\n   * The vapor loses latent heat and condenses into tiny liquid droplets suspended on microscopic aerosol condensation nuclei (dust, sea salt), coalescing to form visible clouds and fog banks.\n3. **Stage 3 — Precipitation:**\n   * As condensation persists within clouds, droplets collide, merge, and grow heavier until atmospheric thermal updrafts can no longer support their mass.\n   * Under gravity, water falls back to the Earth's surface in various forms: rain, hail, sleet, or snow.\n4. **Stage 4 — Collection & Runoff:**\n   * Precipitated water either filters down through porous soils into underground aquifers (**percolation/infiltration & groundwater recharge**) or flows across terrain as **surface runoff** into streams, rivers, and oceans, where the cycle begins anew.\n\n---\n\n### Unit 3: Ecological Significance & Biological Importance\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n#### 1. Crucial Importance for Plants & Flora:\n* **Transpiration Cooling:** Evaporative loss of water through stomata creates a continuous cooling mechanism that prevents thermal heat stress and protein denaturation in foliage under harsh tropical sun.\n* **Aqueous Solvent for Mineral Transport:** Soil water acts as the solvent that dissolves vital soil minerals (nitrates, phosphates, potassium), enabling root hairs to absorb and transport nutrients upward through xylem vessels.\n* **Cellular Turgidity & Structural Support:** Water uptake creates turgor pressure within vegetative cells, keeping herbaceous stems and leaves erect without woody secondary growth.\n* **Seed & Spore Dispersal:** Rainwater streams and surface runoff serve as essential hydrochoric dispersal agents for buoyant seeds, fruits, and reproductive spores.\n\n#### 2. Vital Importance for Humans, Animals & Planetary Climate:\n* **Freshwater Replenishment:** Restores and replenishes freshwater reserves needed for drinking, domestic hygiene, agricultural irrigation, and industrial manufacturing.\n* **Thermoregulation via Evaporative Cooling:** Supports natural sweating and perspiration in humans and animals, stabilizing core internal body temperatures.\n* **Global Climate Moderation:** Without the massive evaporative heat transfer and oceanic thermal buffers provided by the water cycle, greenhouse trapping would drive global surface temperatures above tolerable biological limits (~67°C).\n\n---\n\n### Unit 4: Watershed Protection & Water Conservation Practices\n* **Curriculum Standard:** NaCCA `B7.2.1.1.1`\n\n#### 1. Definition of Water Conservation\n**Water conservation** refers to using water thoughtfully, avoiding unnecessary waste, protecting catchment zones, and preserving clean, potable water supplies for current communities and future generations.\n\n#### 2. Five Action Practices for Water Conservation:\n1. **Rainwater Harvesting:** Installing roof gutters, high-capacity polytanks, and retention ponds to collect clean rainwater during rainy seasons for household chores, flushing, and agricultural drip irrigation.\n2. **Afforestation & Watershed Protection:** Planting indigenous trees and maintaining vegetative buffer strips along river banks and catchment basins to anchor soil, reduce flash runoff, and stabilize regional rainfall patterns.\n3. **Effluent & Sewage Treatment:** Constructing municipal biological sewage treatment facilities and enforcing mandatory pre-treatment of toxic factory wastewater before discharge into natural waterways.\n4. **Eco-friendly Agro-Chemical Application:** Using biodegradable compost, organic manure, and integrated pest management (IPM) rather than excessive synthetic nitrates and pesticides that leach into groundwater aquifers.\n5. **Industrial Closed-Loop Recycling:** Re-filtering, cooling, and recirculating cooling and processing water within manufacturing plants rather than draining millions of liters after a single cycle.\n\n#### 3. Combating Catchment Degradation in Ghana (*Galamsey* Mitigation):\nIn Ghana, unregulated illegal alluvial gold mining (*galamsey*) along critical river basins (Pra, Birim, Ankobra, Offin, and Densu) has severely polluted freshwater bodies with heavy metals (mercury, lead, cyanide) and suspended silt. Effective watershed stewardship requires:\n* Enforcing 100-meter non-disturbed vegetative riparian buffers along all riverbanks.\n* Banning dredging and heavy excavators in river channels.\n* Re-vegetating excavated mining pits to restore the natural water table.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s3_1",
+        "id": "ex_b7_s2_earth_01",
         "questionPrompt": "Explain two distinct roles that solar radiation plays in driving the hydrological cycle.",
-        "stepByStepSolution": "Role 1: Providing Latent Heat of Vaporization — Solar radiation heats oceanic, river, and terrestrial surfaces, providing the thermodynamic thermal energy required to break hydrogen bonds in liquid water, transforming it into atmospheric vapor.\nRole 2: Generating Atmospheric Convection Currents — Unequal solar heating of the Earth's surface creates pressure differentials and convective thermal updrafts that carry humid air to higher, cooler altitudes where condensation and cloud formation occur.",
-        "examinerTip": "Examiner Tip: Solar energy is the primary engine of the hydrological cycle; without solar thermal radiation, evaporation and cloud convection would cease."
+        "stepByStepSolution": "Step 1: Role 1 — Providing Latent Heat of Vaporization: Solar thermal radiation heats ocean, lake, river, and moist soil surfaces, supplying the thermal energy needed to break intermolecular hydrogen bonds between liquid water molecules, converting them into buoyant atmospheric water vapor.\nStep 2: Role 2 — Generating Atmospheric Convection Currents: Unequal solar heating across equatorial vs. polar latitudes creates atmospheric pressure gradients and thermal convective updrafts that lift humid air masses to higher, cooler altitudes where condensation and cloud formation occur.",
+        "examinerTip": "Examiner Tip: Always state that the Sun is the ultimate thermodynamic engine of the water cycle; without solar thermal radiation, both evaporation and convective cloud formation would stop completely."
+      },
+      {
+        "id": "ex_b7_s2_earth_02",
+        "questionPrompt": "Evaluate two severe impacts of illegal alluvial gold mining (galamsey) on the hydrological cycle in Ghanaian river basins, and recommend one sustainable engineering solution.",
+        "stepByStepSolution": "Step 1: Impact 1 — Siltation & Destruction of River Channels: Excavation and washing of alluvial gravels into river beds introduces massive amounts of suspended silt (high turbidity), shallowing river channels and causing severe flash flooding during heavy rains.\nStep 2: Impact 2 — Chemical Contamination of Groundwater: The use of toxic mercury for gold amalgamation leaches into groundwater aquifers, contaminating potable drinking water and poisoning aquatic ecosystems via biomagnification.\nStep 3: Recommended Solution: Establish mandatory 100-meter vegetative riparian buffer zones along riverbanks and construct engineered settling ponds with activated carbon filtration to prevent direct untreated tailings discharge into natural streams.",
+        "examinerTip": "Examiner Tip: When discussing water pollution in Ghana, always link physical siltation (turbidity) and chemical toxicity (mercury/cyanide) to specific hydrological consequences like aquifer contamination and flash flooding."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s3_1",
+        "id": "B7_CYCLE_MCQ_04",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The process by which green plants release water vapor through the stomata of their leaves into the atmosphere is termed:",
+        "prompt": "The natural process by which terrestrial green plants lose water vapor into the air through microscopic leaf pores is termed:",
         "options": [
-          "Precipitation",
-          "Transpiration",
-          "Respiration",
-          "Percolation"
+          "A. Precipitation",
+          "B. Condensation",
+          "C. Transpiration",
+          "D. Sublimation"
         ],
-        "correctAnswer": "Transpiration",
+        "correctAnswer": "C. Transpiration",
         "hint": "It occurs specifically through leaf stomata pores.",
-        "workedSolution": "Transpiration is the evaporation of water from plant leaves through open stomata into the surrounding atmospheric boundary layer.",
+        "workedSolution": "Transpiration is the evaporative loss of water from aerial plant surfaces, mainly through the stomata.",
         "points": 1
       },
       {
-        "id": "q_b7_s3_2",
+        "id": "B7_CYCLE_MCQ_05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following actions is a sustainable method of conserving community water bodies?",
+        "options": [
+          "A. Channeling untreated factory chemicals directly into nearby rivers",
+          "B. Cutting down bank vegetation to clear the land for farming",
+          "C. Harvesting rainwater from building roofs during the rainy season",
+          "D. Applying non-biodegradable chemical pesticides next to river channels"
+        ],
+        "correctAnswer": "C. Harvesting rainwater from building roofs during the rainy season",
+        "hint": "Think about capturing water before it is lost or contaminated.",
+        "workedSolution": "Rainwater harvesting captures and stores rainwater for domestic and farm use, reducing strain on natural water bodies.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F01",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The primary source of energy that powers and drives the hydrological cycle is:",
+        "options": [
+          "A. Geothermal heat",
+          "B. Solar radiation from the Sun",
+          "C. Gravitational pull of the Moon",
+          "D. Wind energy"
+        ],
+        "correctAnswer": "B. Solar radiation from the Sun",
+        "hint": "The Sun heats surface water to cause evaporation.",
+        "workedSolution": "Solar thermal radiation heats open water bodies, driving evaporation and atmospheric convection currents.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The phase change where rising gaseous water vapor cools and transforms into liquid water droplets is called:",
+        "options": [
+          "A. Evaporation",
+          "B. Condensation",
+          "C. Sublimation",
+          "D. Infiltration"
+        ],
+        "correctAnswer": "B. Condensation",
+        "hint": "This process forms visible clouds in the sky.",
+        "workedSolution": "Condensation is the process where water vapor cools and changes state into liquid water droplets, forming clouds.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Water falling from clouds to Earth as rain, snow, sleet, or hail is classified scientifically as:",
+        "options": [
+          "A. Transpiration",
+          "B. Precipitation",
+          "C. Infiltration",
+          "D. Evaporation"
+        ],
+        "correctAnswer": "B. Precipitation",
+        "hint": "It occurs when cloud droplets become too heavy for air updrafts.",
+        "workedSolution": "Precipitation includes all forms of water particles that fall from the atmosphere to reach the ground.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The process by which rainwater soaks into the soil and percolates downward to recharge groundwater aquifers is:",
+        "options": [
+          "A. Surface runoff",
+          "B. Infiltration / Percolation",
+          "C. Condensation",
+          "D. Transpiration"
+        ],
+        "correctAnswer": "B. Infiltration / Percolation",
+        "hint": "Water filters through soil pore spaces.",
+        "workedSolution": "Infiltration is the movement of water from the ground surface into the soil, replenishing underground water tables.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Excess rainwater that does not sink into the soil but flows over the surface of the land into streams is:",
+        "options": [
+          "A. Groundwater",
+          "B. Surface runoff",
+          "C. Transpiration",
+          "D. Dew"
+        ],
+        "correctAnswer": "B. Surface runoff",
+        "hint": "Water running over ground surfaces.",
+        "workedSolution": "Surface runoff is precipitation that flows over the landscape toward streams, rivers, and oceans.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Microscopic pores on plant leaves through which water vapor is released during transpiration are called:",
+        "options": [
+          "A. Lenticels",
+          "B. Stomata",
+          "C. Chloroplasts",
+          "D. Cuticles"
+        ],
+        "correctAnswer": "B. Stomata",
+        "hint": "Specialized pores guarded by guard cells.",
+        "workedSolution": "Stomata are microscopic apertures on leaf surfaces that regulate gas exchange and transpiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is transpiration important for a growing plant?",
+        "options": [
+          "A. It produces chlorophyll in the roots",
+          "B. It cools the plant and creates suction tension to pull water upward",
+          "C. It prevents roots from absorbing soil minerals",
+          "D. It converts starch into glycogen"
+        ],
+        "correctAnswer": "B. It cools the plant and creates suction tension to pull water upward",
+        "hint": "Transpirational pull transports water and cools leaves.",
+        "workedSolution": "Transpiration generates a negative pressure gradient (transpiration pull) that draws water and dissolved nutrients from roots to leaves and provides evaporative cooling.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of domestic water conservation in a Ghanaian household?",
+        "options": [
+          "A. Leaving the tap running while brushing teeth",
+          "B. Using a bucket instead of a running hose pipe to wash cars",
+          "C. Washing plates directly inside a river channel",
+          "D. Discarding clean cooking water down the gutter"
+        ],
+        "correctAnswer": "B. Using a bucket instead of a running hose pipe to wash cars",
+        "hint": "Using a bucket controls the volume of water used.",
+        "workedSolution": "Using a bucket limits water usage significantly compared to a continuous high-pressure hose.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_M01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "How does large-scale forest clear-cutting (deforestation) affect local hydrological cycles?",
+        "prompt": "What role do microscopic dust particles and sea salt aerosols play in the condensation stage of the water cycle?",
         "options": [
-          "It increases cloud condensation and triples rainfall",
-          "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
-          "It permanently lowers atmospheric temperature",
-          "It stops evaporation from oceans"
+          "A. They absorb solar radiation to boil water",
+          "B. They act as cloud condensation nuclei (CCN) upon which water vapor coalesces",
+          "C. They prevent clouds from precipitating rain",
+          "D. They convert water vapor directly into solid ice"
         ],
-        "correctAnswer": "It decreases transpiration, lowers humidity, and accelerates surface soil erosion",
-        "hint": "Fewer trees mean less water vapor released into the air.",
-        "workedSolution": "Deforestation drastically reduces plant transpiration, leading to lower atmospheric humidity and diminished localized rainfall, while barren soil suffers severe erosion and loss of water retention.",
+        "correctAnswer": "B. They act as cloud condensation nuclei (CCN) upon which water vapor coalesces",
+        "hint": "Water vapor requires a surface to condense into droplets.",
+        "workedSolution": "Aerosols and dust act as condensation nuclei, providing the micro-surfaces needed for vapor molecules to condense into liquid cloud droplets.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_M02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does large-scale deforestation in tropical regions directly disrupt the regional hydrological cycle?",
+        "options": [
+          "A. It increases transpiration and creates more rainfall",
+          "B. It reduces vegetative transpiration, lowers rainfall frequency, and increases flash surface runoff",
+          "C. It stops water from evaporating from the ocean",
+          "D. It completely eliminates groundwater tables permanently"
+        ],
+        "correctAnswer": "B. It reduces vegetative transpiration, lowers rainfall frequency, and increases flash surface runoff",
+        "hint": "Trees pump huge amounts of water vapor into the air through transpiration.",
+        "workedSolution": "Fewer trees mean reduced transpiration moisture in the air, diminishing cloud formation while bare soil accelerates erosion and flash runoff.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_M03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which conservation practice helps maintain healthy soil moisture and reduces evaporation from farm beds?",
+        "options": [
+          "A. Excessive tilling and weeding during drought",
+          "B. Mulching with dried organic leaves or straw",
+          "C. Spraying synthetic chemical insecticides daily",
+          "D. Burning crop residue before planting"
+        ],
+        "correctAnswer": "B. Mulching with dried organic leaves or straw",
+        "hint": "Covering the soil surface traps moisture.",
+        "workedSolution": "Mulching covers the soil surface, shielding it from direct solar radiation to minimize evaporation and preserve moisture.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_M04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why would Earth's surface temperature become unlivable without the cooling effect of the water cycle?",
+        "options": [
+          "A. Plants would produce too much oxygen",
+          "B. Evaporation absorbs enormous latent heat; without it, trapped solar heat would drive surface temperatures above 67°C",
+          "C. Gravity would no longer hold water to the ground",
+          "D. The Moon would pull all atmospheric gases into outer space"
+        ],
+        "correctAnswer": "B. Evaporation absorbs enormous latent heat; without it, trapped solar heat would drive surface temperatures above 67°C",
+        "hint": "Phase change from liquid to gas absorbs large amounts of heat.",
+        "workedSolution": "Water has a high latent heat of vaporization. Evaporation continuously removes heat from planetary surfaces, moderating climate.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_M05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A school compound experiences serious gully erosion every time it rains. What is the most sustainable botanical remedy?",
+        "options": [
+          "A. Paving the entire compound with concrete",
+          "B. Planting vetiver grass and indigenous trees along the drainage path",
+          "C. Digging wider bare trenches to speed up runoff",
+          "D. Applying weedicides to clear all grass"
+        ],
+        "correctAnswer": "B. Planting vetiver grass and indigenous trees along the drainage path",
+        "hint": "Plant roots bind the soil and slow down water speed.",
+        "workedSolution": "Grass roots bind loose topsoil, enhance infiltration, and disperse the kinetic energy of runoff, mitigating erosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In Ghana, alluvial gold mining (galamsey) along the Pra and Birim rivers causes severe turbidity. How does high turbidity directly affect aquatic life in the water cycle?",
+        "options": [
+          "A. It increases sunlight penetration and speeds up aquatic photosynthesis",
+          "B. It blocks sunlight, preventing phytoplankton photosynthesis, and clogs fish gills with suspended sediment",
+          "C. It converts fresh river water into pure saline ocean water",
+          "D. It causes water molecules to evaporate twice as fast"
+        ],
+        "correctAnswer": "B. It blocks sunlight, preventing phytoplankton photosynthesis, and clogs fish gills with suspended sediment",
+        "hint": "Turbidity means cloudiness caused by suspended silt.",
+        "workedSolution": "High turbidity prevents sunlight from penetrating the water column, halting photosynthesis by aquatic plants and starving or suffocating aquatic fauna.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Explain how industrial closed-loop water recycling reduces both freshwater depletion and chemical water pollution:",
+        "options": [
+          "A. It drains water into natural wetlands without treatment",
+          "B. Factories treat, cool, and reuse the same water repeatedly, minimizing extraction from municipal rivers and eliminating toxic effluent discharge",
+          "C. It evaporates all industrial water into acid rain clouds",
+          "D. It replaces water with liquid ammonia in factory boilers"
+        ],
+        "correctAnswer": "B. Factories treat, cool, and reuse the same water repeatedly, minimizing extraction from municipal rivers and eliminating toxic effluent discharge",
+        "hint": "Closed loop means zero waste water released externally.",
+        "workedSolution": "Closed-loop systems recirculate treated water continuously, reducing new intake from rivers and halting polluted waste discharge.",
+        "points": 1
+      },
+      {
+        "id": "B7_CYCLE_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "During periods of severe drought, plants wilt primarily because:",
+        "options": [
+          "A. Cell walls dissolve completely",
+          "B. Loss of water decreases cell vacuole turgor pressure, causing non-woody tissues to lose rigidity",
+          "C. Mitochondria consume all internal cellular cytoplasm",
+          "D. Chloroplasts transform into starch granules"
+        ],
+        "correctAnswer": "B. Loss of water decreases cell vacuole turgor pressure, causing non-woody tissues to lose rigidity",
+        "hint": "Recall how water in vacuoles keeps cells firm and turgid.",
+        "workedSolution": "Turgor pressure from water inside the central vacuole presses against the cell wall, providing hydrostatic support. Loss of water causes flaccidity and wilting.",
         "points": 1
       }
     ]
@@ -13974,7 +14619,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS8",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "subStrandTitle": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "order": 8,
     "notes": {
       "summaryMarkdown": "### The Global Carbon Cycle & Atmospheric Equilibrium\n* **NaCCA Curriculum Code:** `B8.2.1.1`\n* **Core Competency:** Trace carbon movement through the biosphere, atmosphere, hydrosphere, and geosphere.\n\n#### 1. Carbon Sequestration & Release Pathways\nCarbon is the fundamental structural backbone of organic macromolecules.\n* **Carbon Removal Pathways (Carbon Sinks):**\n  * **Photosynthesis:** Terrestrial vegetation and marine phytoplankton absorb atmospheric $\\text{CO}_2$:\n    $$6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Light, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$$\n  * **Oceanic Dissolution:** $\\text{CO}_2$ dissolves into surface waters forming carbonic acid ($\\text{H}_2\\text{CO}_3$) and marine carbonate sediments (mollusk shells, corals).\n* **Carbon Release Pathways (Carbon Sources):**\n  * **Cellular Respiration:** Aerobic respiration by plants, animals, and microbes:\n    $$\\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2 \\rightarrow 6\\text{CO}_2 + 6\\text{H}_2\\text{O} + \\text{ATP}$$\n  * **Decomposition:** Saprophytic bacteria and fungi break down dead biomass, releasing $\\text{CO}_2$ and $\\text{CH}_4$.\n  * **Fossil Fuel Combustion:** Burning coal, crude oil, and natural gas oxidized stored subterranean carbon deposits.\n  * **Volcanic Outgassing:** Thermal degassing of subducted carbonate rocks.",
@@ -14028,7 +14673,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS9",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Earth Science & Biogeochemical Cycles (Water, Carbon & Nitrogen Cycles)",
+    "subStrandTitle": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "order": 9,
     "notes": {
       "summaryMarkdown": "### The Nitrogen Cycle & Biological Nitrogen Fixation\n* **NaCCA Curriculum Code:** `B9.2.1.1`\n* **Core Competency:** Explain the chemical stages of the nitrogen cycle and identify the bacteria involved in soil fertility maintenance.\n\n#### 1. The Inert Atmospheric Nitrogen Paradox\nAlthough elemental nitrogen ($\\text{N}_2$) comprises $\\approx 78\\%$ of Earth's atmosphere, plants and animals cannot absorb gaseous $\\text{N}_2$ directly because of its extremely strong, unreactive covalent triple bond ($N \\equiv N$). It must first be fixed into soluble bioavailable ions: ammonium ($\\text{NH}_4^+$) and nitrates ($\\text{NO}_3^-$).\n\n#### 2. Key Chemical Stages of the Nitrogen Cycle\n* **1. Nitrogen Fixation:**\n  * **Biological:** Symbiotic bacteria (*Rhizobium*) residing in root nodules of leguminous plants (cowpea, groundnut, soybean) convert atmospheric $\\text{N}_2$ into organic amino compounds. Free-living soil bacteria (*Azotobacter*, *Clostridium*) also fix nitrogen.\n  * **Physical (Atmospheric):** High-voltage electrical lightning discharges break the $N \\equiv N$ triple bond, reacting with oxygen to form nitrogen oxides ($\\text{NO}, \\text{NO}_2$), which dissolve in rainfall as dilute nitric acid ($\\text{HNO}_3$).\n  * **Industrial:** The Haber-Bosch process manufactures synthetic ammonia fertilizer: $\\text{N}_2 + 3\\text{H}_2 \\rightleftharpoons 2\\text{NH}_3$.\n* **2. Ammonification:** Saprophytic putrefying bacteria and fungi break down dead proteinaceous tissue and urea wastes into ammonium compounds ($\\text{NH}_4^+$).\n* **3. Nitrification (Two-Step Aerobic Process):**\n  * Step A: *Nitrosomonas* bacteria oxidize ammonia into nitrites:\n    $$2\\text{NH}_3 + 3\\text{O}_2 \\rightarrow 2\\text{NO}_2^- + 2\\text{H}^+ + 2\\text{H}_2\\text{O}$$\n  * Step B: *Nitrobacter* bacteria oxidize nitrites into absorbable nitrates:\n    $$2\\text{NO}_2^- + \\text{O}_2 \\rightarrow 2\\text{NO}_3^-$$\n* **4. Assimilation:** Plant roots absorb nitrates via active transport, incorporating nitrogen into amino acids, proteins, and chlorophyll.\n* **5. Denitrification:** In waterlogged, anaerobic soils, *Pseudomonas denitrificans* bacteria convert soil nitrates back into gaseous molecular nitrogen ($\\text{N}_2 \\uparrow$), returning it to the atmosphere and depleting agricultural soil fertility.",
