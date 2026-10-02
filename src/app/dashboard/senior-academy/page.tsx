@@ -6340,7 +6340,7 @@ function EnglishMastery({
                                                     {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                         <div key={subTitle} className="space-y-1">
                                                             <span className="text-[10px] text-slate-400 font-semibold block">{subTitle}</span>
-                                                            {items.map((item: any) => (
+                                                            {Array.isArray(items) && items.map((item: any) => (
                                                                 <button
                                                                     key={item.id}
                                                                     onClick={() => handleLaunchModule({ title: item.title || item.subTopic })}
@@ -10136,7 +10136,7 @@ if (
                                                                                 </div>
                                                                             </AccordionTrigger>
                                                                             <AccordionContent className="space-y-1 pl-3">
-                                                                                {items.map((item: any) => (
+                                                                                {Array.isArray(items) && items.map((item: any) => (
                                                                                     <button
                                                                                         key={item.id}
                                                                                         onClick={() => handleLaunchModule({ title: item.title || item.subTopic, ...item })}
@@ -10376,7 +10376,7 @@ function DiscoveryLab({
                                         <div className={isJunior ? "p-8 bg-white rounded-[36px] border-4 border-blue-100 shadow-inner animate-in zoom-in" : "p-8 bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl animate-in zoom-in"}>
                                             {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
                                             <div className="grid grid-cols-1 gap-4">
-                                                {lab.hypothesisOptions.map((opt: string) => (
+                                                {lab.hypothesisOptions && lab.hypothesisOptions.map((opt: string) => (
                                                     <Button 
                                                         key={opt} 
                                                         variant="outline" 
@@ -10588,7 +10588,7 @@ function DiscoveryLab({
                                                                                 </div>
                                                                             </AccordionTrigger>
                                                                             <AccordionContent className="space-y-1 pl-3">
-                                                                                {items.map((item: any) => (
+                                                                                {Array.isArray(items) && items.map((item: any) => (
                                                                                     <button
                                                                                         key={item.id}
                                                                                         onClick={() => { setLab(item); setStage('hypothesis'); }}
