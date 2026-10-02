@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.273Z"
+    "updatedAt": "2026-10-02T18:46:45.673Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.673Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,82 +5983,366 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.673Z"
   },
   {
     "id": "sci_strand2_life_cycles",
     "topicId": "sci_strand2_life_cycles",
-    "title": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "title": "Life Cycle of Organisms (Metamorphosis, Housefly, Mosquito & Pest Vectors)",
     "strand": "STRAND 2: CYCLES",
     "strandCode": "S2",
-    "subStrand": "Life Cycles of Organisms (Metamorphic Stages, Vectors & Pest Control)",
+    "subStrand": "Life Cycle of Organisms",
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Dissect the developmental biology of insects and economic vectors with virtual rearing chambers. Students map instars, identify disease transmission mechanisms, and develop biological and integrated pest management (IPM) interventions.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 24,
     "version": 1,
     "aliases": [
       "b8_strand2_life_cycles"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Metamorphic Developmental Pathways in Organisms",
-        "summary": "Contrast complete and incomplete metamorphosis; examine the life cycle and nymph instars of the cockroach.",
-        "notes": "### Insect Metamorphosis: Complete vs. Incomplete Developmental Pathways\n* **NaCCA Curriculum Code:** `B7.2.2.1`\n* **Core Competency:** Distinguish between complete and incomplete metamorphosis and map the life stages of the cockroach and grasshopper.\n\n#### 1. Concept of Metamorphosis\nMetamorphosis is the biological developmental progression through distinct structural and physiological stages from egg to adult form.\n\n#### 2. Incomplete (Hemimetabolous) Metamorphosis\n* **Three Stages:** $\\text{Egg} \\rightarrow \\text{Nymph} \\rightarrow \\text{Adult (Imago)}$\n* The newly hatched **nymph** resembles a miniature, sexually immature, wingless version of the adult.\n* The nymph undergoes successive molting stages called **instars** (shedding its chitinous exoskeleton via ecdysis).\n* **Examples:** Cockroach (*Periplaneta americana*), grasshopper, dragonfly, praying mantis.\n* **Cockroach Biology:** Female deposits eggs encased in a protective purse-like capsule called an **ootheca**. Nymphs molt 6-13 times over several months before developing functional wings and reproductive maturity.\n\n#### 3. Complete (Holometabolous) Metamorphosis\n* **Four Stages:** $\\text{Egg} \\rightarrow \\text{Larva} \\rightarrow \\text{Pupa} \\rightarrow \\text{Adult}$\n* The larva differs completely from the adult in morphology, anatomy, diet, and habitat (e.g., caterpillar vs. butterfly).\n* The **pupa** is a non-feeding, quiescent developmental stage during which complete histolysis and organ rebuilding take place inside a cocoon or puparium.\n* **Examples:** Housefly, mosquito, butterfly, honeybee, beetle.",
+        "levelTitle": "Basic 7 (JHS 1) • Metamorphic Life Cycles: The Housefly (Musca domestica) & Disease Transmission",
+        "summary": "Distinguish between complete and incomplete metamorphosis, outline the four developmental stages of the common housefly, analyze its role as a mechanical vector, and apply environmental sanitation strategies.",
+        "notes": "### Unit 1: Understanding Metamorphosis in Insects\n* **Curriculum Standard:** NaCCA `B7.2.2.1.1`\n* **Core Concept:** Morphological transformations from egg to sexually mature adult.\n\n#### 1. Biological Definition\n**Metamorphosis** is the biological sequence of distinct structural and physical changes an insect passes through from its initial hatching to its mature adult form. Depending on whether an inactive pupa stage occurs and whether the juvenile resembles the adult, metamorphosis is divided into two primary categories:\n\n#### 2. The Two Primary Metamorphic Pathways:\n1. **Incomplete Metamorphosis (Hemimetabolous):**\n   * **Total Stages:** Three (3) distinct stages: $\\text{Egg} \\to \\text{Nymph} \\to \\text{Adult}$.\n   * **Juvenile Characteristics:** The young that emerges from the egg is termed a **nymph**. The nymph closely resembles a miniature, wingless adult, sharing similar feeding habits and compound eyes.\n   * **Growth Mechanism:** As the nymph feeds and expands, it sheds its rigid chitinous exoskeleton several times (**moulting** or ecdysis) until it develops fully functional wings and mature reproductive organs.\n   * **Typical Examples:** Grasshoppers, cockroaches, crickets, dragonflies, termites, and praying mantises.\n\n2. **Complete Metamorphosis (Holometabolous):**\n   * **Total Stages:** Four (4) distinct stages: $\\text{Egg} \\to \\text{Larva} \\to \\text{Pupa} \\to \\text{Adult}$.\n   * **Juvenile Characteristics:** The young hatches out as a **larva** (maggot, caterpillar, or grub), which looks completely different from the adult (lacks wings, has specialized mouth hooks or chewing mandibles, and crawls).\n   * **Growth & Pupation:** The larva feeds voraciously, moulting through distinct growth instars. It then secretes a protective casing or contracts to form an inactive, non-feeding **pupa** (puparium or cocoon). Inside this capsule, larval tissues break down (histolysis) and are rebuilt (histogenesis) into adult organs, legs, and wings.\n   * **Typical Examples:** Houseflies, mosquitoes, butterflies, moths, beetles, bees, and wasps.\n\n#### Quick Comparison: Incomplete vs. Complete Metamorphosis\n| Characteristic | Incomplete Metamorphosis | Complete Metamorphosis |\n| :--- | :--- | :--- |\n| **Total Stages** | Three (3) distinct stages | Four (4) distinct stages |\n| **Developmental Sequence** | $\\text{Egg} \\to \\text{Nymph} \\to \\text{Adult}$ | $\\text{Egg} \\to \\text{Larva} \\to \\text{Pupa} \\to \\text{Adult}$ |\n| **Immature Form** | **Nymph**: Resembles a miniature wingless adult | **Larva (Maggot/Caterpillar)**: Worm-like; totally different from the adult |\n| **Resting (Pupa) Stage** | Absent (growth occurs through progressive moulting) | Present (enclosed in a puparium or cocoon) |\n| **Typical Insect Examples** | Cockroaches, grasshoppers, termites, crickets | Houseflies, mosquitoes, butterflies, honeybees |\n\n---\n\n### Unit 2: The Four Stages in the Life Cycle of the Housefly (*Musca domestica*)\n* **Curriculum Standard:** NaCCA `B7.2.2.1.1`\n\nThe common housefly (*Musca domestica*) belongs to the scientific order **Diptera** (true two-winged insects). Adults possess a dull grey body with four dark longitudinal stripes along the thorax, large compound eyes, and a spongy mouthpart adapted exclusively for liquid feeding.\n\n<div class=\"my-6 flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n  <span class=\"text-xs font-bold text-sky-400 mb-2\">Figure 2.1: Complete Metamorphosis of the Housefly (Musca domestica)</span>\n  <div class=\"w-full flex justify-center overflow-x-auto\">\n    <svg width=\"700\" height=\"460\" viewBox=\"0 0 700 460\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"cycleArrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"4\" orient=\"auto\"><path d=\"M 1 1 L 7 4 L 1 7 Z\" fill=\"#0284c7\"/></marker><linearGradient id=\"flyBody\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#475569\"/><stop offset=\"100%\" stop-color=\"#1e293b\"/></linearGradient><linearGradient id=\"wingGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#e0f2fe\" stop-opacity=\"0.75\"/><stop offset=\"100%\" stop-color=\"#bae6fd\" stop-opacity=\"0.4\"/></linearGradient><linearGradient id=\"pupaGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#78350f\"/><stop offset=\"50%\" stop-color=\"#451a03\"/><stop offset=\"100%\" stop-color=\"#1c1917\"/></linearGradient></defs><rect width=\"700\" height=\"460\" rx=\"16\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"350\" y=\"32\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPLETE METAMORPHOSIS OF THE HOUSEFLY (Musca domestica)</text><text x=\"350\" y=\"50\" font-family=\"sans-serif\" font-size=\"12\" fill=\"#64748b\" text-anchor=\"middle\">Four Continuous Stages: Egg → Larva → Pupa → Adult</text><path d=\"M 420 120 Q 560 140 560 210\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 550 290 Q 490 380 400 395\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 280 400 Q 140 380 140 290\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 140 210 Q 160 140 270 115\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><g transform=\"translate(350, 115)\"><path d=\"M -15 -20 L -60 -45 M -18 -8 L -75 -15 M -15 8 L -65 35\" stroke=\"#334155\" stroke-width=\"2.5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 15 -20 L 60 -45 M 18 -8 L 75 -15 M 15 8 L 65 35\" stroke=\"#334155\" stroke-width=\"2.5\" stroke-linecap=\"round\" fill=\"none\"/><ellipse cx=\"-36\" cy=\"0\" rx=\"40\" ry=\"16\" transform=\"rotate(-30 -36 0)\" fill=\"url(#wingGrad)\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"-15\" y1=\"-5\" x2=\"-65\" y2=\"-12\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><line x1=\"-20\" y1=\"-2\" x2=\"-55\" y2=\"10\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><ellipse cx=\"36\" cy=\"0\" rx=\"40\" ry=\"16\" transform=\"rotate(30 36 0)\" fill=\"url(#wingGrad)\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"15\" y1=\"-5\" x2=\"65\" y2=\"-12\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><line x1=\"20\" y1=\"-2\" x2=\"55\" y2=\"10\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><ellipse cx=\"0\" cy=\"22\" rx=\"16\" ry=\"24\" fill=\"url(#flyBody)\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><line x1=\"-10\" y1=\"10\" x2=\"-10\" y2=\"36\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"0\" y1=\"8\" x2=\"0\" y2=\"38\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"36\" stroke=\"#94a3b8\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"-8\" rx=\"17\" ry=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><line x1=\"-9\" y1=\"-20\" x2=\"-9\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"-3\" y1=\"-22\" x2=\"-3\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"3\" y1=\"-22\" x2=\"3\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"9\" y1=\"-20\" x2=\"9\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><ellipse cx=\"0\" cy=\"-28\" rx=\"13\" ry=\"10\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><ellipse cx=\"-9\" cy=\"-29\" rx=\"6\" ry=\"8\" fill=\"#b91c1c\"/><ellipse cx=\"9\" cy=\"-29\" rx=\"6\" ry=\"8\" fill=\"#b91c1c\"/><path d=\"M -4 -38 L 0 -44 L 4 -38\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"0\" y=\"65\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 4: ADULT FLY</text><text x=\"0\" y=\"80\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Two wings • Sponging mouthpart • 15–30 days</text></g><g transform=\"translate(550, 240)\"><rect x=\"-75\" y=\"-35\" width=\"150\" height=\"85\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><g transform=\"rotate(18)\"><ellipse cx=\"-15\" cy=\"-4\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-1\" rx=\"13\" ry=\"3.5\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"8\" cy=\"-6\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"-8\" cy=\"7\" rx=\"13\" ry=\"3.5\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"10\" cy=\"6\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/></g><text x=\"0\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 1: EGGS</text><text x=\"0\" y=\"40\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Batches of 100–150 • Hatches in 8–24 hrs</text></g><g transform=\"translate(350, 390)\"><rect x=\"-120\" y=\"-35\" width=\"240\" height=\"75\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><path d=\"M -85 0 C -60 -9 40 -9 70 -2 C 78 1 82 4 82 7 C 82 10 75 12 65 11 C 35 9 -60 9 -85 4 Z\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><line x1=\"-65\" y1=\"-7\" x2=\"-65\" y2=\"6\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-45\" y1=\"-8\" x2=\"-45\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-25\" y1=\"-8\" x2=\"-25\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-5\" y1=\"-8\" x2=\"-5\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"15\" y1=\"-7\" x2=\"15\" y2=\"8\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"35\" y1=\"-6\" x2=\"35\" y2=\"8\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"55\" y1=\"-5\" x2=\"55\" y2=\"9\" stroke=\"#d97706\" stroke-width=\"1\"/><circle cx=\"-83\" cy=\"0\" r=\"2\" fill=\"#0f172a\"/><path d=\"M -87 1 L -83 -2\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><text x=\"0\" y=\"22\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 2: LARVA (MAGGOT)</text><text x=\"0\" y=\"35\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">3 Instars • Feeds on waste • 3–8 days</text></g><g transform=\"translate(140, 240)\"><rect x=\"-75\" y=\"-35\" width=\"150\" height=\"85\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><ellipse cx=\"0\" cy=\"-5\" rx=\"20\" ry=\"30\" fill=\"url(#pupaGrad)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/><line x1=\"-15\" y1=\"-20\" x2=\"15\" y2=\"-20\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-19\" y1=\"-12\" x2=\"19\" y2=\"-12\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-20\" y1=\"-4\" x2=\"20\" y2=\"-4\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-20\" y1=\"4\" x2=\"20\" y2=\"4\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-18\" y1=\"12\" x2=\"18\" y2=\"12\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-13\" y1=\"20\" x2=\"13\" y2=\"20\" stroke=\"#92400e\" stroke-width=\"1\"/><text x=\"0\" y=\"36\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 3: PUPA</text><text x=\"0\" y=\"49\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Puparium case • Non-feeding • 4–6 days</text></g></svg>\n  </div>\n</div>\n\n#### Detailed Stage-by-Stage Breakdown:\n1. **Stage 1 — The Egg Stage:**\n   * After mating, the adult female deposits batches of 100 to 150 creamy-white, elongated, cylindrical eggs (laying up to 300 eggs in a single day) directly onto moist, warm, decaying organic matter (animal dung, compost, uncovered rubbish).\n   * Moisture and decaying heat are essential; under warm tropical temperatures, eggs hatch rapidly within **8 to 24 hours**.\n\n2. **Stage 2 — The Larva Stage (Maggot):**\n   * The emerging larva is a pale, legless, segmented, worm-like creature known as a **maggot**.\n   * It possesses curved oral mouth hooks used to tear through liquefying organic substrate.\n   * The maggot progresses through **three growth instars**, shedding its cuticle between each:\n     * *First Instar:* Measures approximately 5 mm in length.\n     * *Second Instar:* Reaches up to 10 mm.\n     * *Third Instar:* Fully grown at 15 mm to 20 mm.\n   * The larval feeding period lasts approximately **3 to 8 days** before the maggot crawls away to a cooler, drier location to pupate.\n\n3. **Stage 3 — The Pupa Stage:**\n   * The mature maggot contracts, and its final larval skin hardens and darkens into a smooth, oval, barrel-shaped brown capsule called the **puparium**.\n   * The pupa is immobile and does not feed. Inside, profound metamorphosis occurs over **4 to 6 days**, reassembling larval tissues into adult anatomy.\n\n4. **Stage 4 — The Adult Stage (Imago):**\n   * The adult fly pushes open the cap of the puparium using an expandable head sac (ptilinum) and emerges.\n   * Within hours, its wings expand and its chitinous exoskeleton hardens, allowing it to take flight.\n   * Adults have an average lifespan of **15 to 30 days** and reach sexual maturity within 2 to 3 days, restarting the reproductive cycle.\n\n---\n\n### Unit 3: Feeding Mechanism & Disease Transmission (Mechanical Vector)\n* **Curriculum Standard:** NaCCA `B7.2.2.1.2`\n\n#### 1. Unique Sponging Feeding Mechanism\nHouseflies cannot bite, chew, or pierce solid food because they lack biting mandibles or sharp jaws. Instead, they feed through an elaborate, highly unhygienic external digestion process:\n1. **Salivary Regurgitation (Vomit Drop):** Upon landing on solid food (bread, meat, cooked yam), the fly regurgitates acidic stomach fluid and digestive saliva directly onto the food surface.\n2. **External Enzymatic Liquefaction:** The enzymes break down and dissolve the solid food into a liquefied chemical broth.\n3. **Sponging & Lapping:** The fly laps up the liquid broth through its fleshy, grooved proboscis (*pseudotracheae*).\n4. **Concurrent Defecation:** During feeding, houseflies frequently defecate on the very same food surface, depositing microbes and metabolic wastes.\n\n#### 2. Why Houseflies Are Dangerous Mechanical Vectors\nHouseflies are classified as **non-biting mechanical vectors**. Unlike biological vectors (where a pathogen must complete a developmental cycle inside the vector, such as malaria parasites in mosquitoes), houseflies simply act as physical transport carriers:\n* They breed in and crawl over human faeces, open latrines, animal dung, and rotting carcasses.\n* Pathogenic bacteria, viruses, and parasite cysts stick to their **hairy legs, sticky footpads (pulvilli), wings, and mouthparts**.\n* Millions of pathogens also survive in their gut and are transferred via **vomit drops** and **faecal pellets** whenever the fly lands on human food or utensils.\n\n#### 3. Serious Human Diseases Transmitted by Houseflies\n| Category | Specific Infections | Transmission Mechanism & Symptoms |\n| :--- | :--- | :--- |\n| **Enteric (Gastrointestinal)** | **Cholera**, **Typhoid fever**, **Amoebic dysentery**, **Bacillary dysentery (Shigellosis)**, **Infantile diarrhea** | Pathogens transferred from faeces to food. Causes severe nausea, watery diarrhea, vomiting, dehydration, and high fever. |\n| **Ophthalmic (Eye Infections)** | **Trachoma**, **Epidemic conjunctivitis (Red eye)** | Flies attracted to eye moisture land on faces, transferring *Chlamydia trachomatis* or bacteria; causes chronic eye inflammation and preventable blindness. |\n| **Cutaneous (Skin Infections)** | **Yaws**, **Infected cutaneous ulcers** | Flies feeding on purulent exudate from open wounds transfer bacteria (*Treponema pallidum pertenue*) to healthy skin scratches. |\n\n---\n\n### Unit 4: Control Strategies & Ecological Roles\n* **Curriculum Standard:** NaCCA `B7.2.2.1.2`\n\n#### 1. The Four Pillars of Housefly Control:\n1. **Pillar 1 — Elimination of Breeding Grounds:**\n   * Rapid, airtight disposal of household garbage in securely covered plastic bins.\n   * Daily clearing and proper composting of domestic animal dung from livestock pens.\n   * Turning organic compost heaps regularly; microbial fermentation generates core heat ($>60^\\circ\\text{C}$) that destroys fly eggs and maggots.\n2. **Pillar 2 — Elimination of Attractive Odours:**\n   * Tightly sealing decomposing organic waste.\n   * Ensuring pit latrines have self-closing drop-hole lids.\n   * Repairing broken sewage conduits and clearing open municipal gutters.\n3. **Pillar 3 — Blocking Pathogen Contact:**\n   * Constructing modern **Ventilated Improved Pit (VIP) latrines** fitted with gauze fly screens on vent pipes.\n   * Thorough handwashing with soap under clean running water after using toilet facilities and before meal preparation.\n4. **Pillar 4 — Food & Living Space Protection:**\n   * Keeping all food in refrigerators or under fine wire-mesh food covers.\n   * Installing fine wire mesh on doors and windows to exclude adult flies.\n   * Deploying non-toxic adhesive flypaper strips, UV light zappers, or targeted pyrethroid insecticides when infestations occur.\n\n#### 2. Ecological Importance of Houseflies\nWhile houseflies are hazardous in human settlements, they play vital roles in natural ecological food webs:\n* **Decomposition & Soil Humus:** Maggots rapidly consume dead animal carcasses, rotting vegetation, and dung, accelerating biological decomposition.\n* **Nutrient Recycling:** Larval excretion and feeding return vital nitrogen, phosphorus, and organic minerals back into topsoil for plant nutrition.\n* **Food Web Trophic Link:** Maggots and adult flies represent high-protein food sources for birds, lizards, toads, frogs, spiders, and fish.\n* **Incidental Pollination:** When adults visit wild flowers to feed on sweet nectar, pollen grains adhere to their body hairs and are transferred between blossoms.\n* **Medical & Genetic Research:** With a generation turnaround of 10 to 14 days and high egg production, houseflies are widely used in genetics, developmental biology, and toxicology studies.\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s4_1",
-            "title": "Worked Example: Contrasting Cockroach and Butterfly Development",
-            "problem": "Tabulate three differences between the developmental stages of the cockroach and the butterfly.",
+            "id": "ex_b7_s2_fly_01",
+            "title": "Worked Problem: Contrasting Metamorphic Pathways (Cockroach vs. Housefly)",
+            "problem": "Tabulate three distinct differences between the life cycle of the cockroach and that of the common housefly, stating the specific biological terminology for each.",
             "steps": [
-              "Difference 1: Type of metamorphosis — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Butterfly undergoes complete (holometabolous) metamorphosis.",
-              "Difference 2: Number of developmental stages — Cockroach has 3 stages (Egg -> Nymph -> Adult); Butterfly has 4 stages (Egg -> Larva -> Pupa -> Adult).",
-              "Difference 3: Resemblance of juvenile to adult — Cockroach nymph closely resembles the adult minus wings and reproductive organs; Butterfly larva (caterpillar) bears no morphological resemblance to the winged adult."
+              "Step 1: Identify the metamorphosis type — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Housefly undergoes complete (holometabolous) metamorphosis.",
+              "Step 2: Compare the number and sequence of stages — Cockroach has 3 developmental stages (Egg → Nymph → Adult); Housefly has 4 developmental stages (Egg → Larva/Maggot → Pupa → Adult).",
+              "Step 3: Contrast juvenile appearance and resting stage — Cockroach nymph looks like a miniature wingless adult with no pupa stage; Housefly larva is a legless maggot completely different from the adult and must pass through a non-feeding puparium stage."
             ],
-            "finalAnswer": "Examiner Tip: Always present comparative questions in a clearly aligned table with matching rows."
+            "finalAnswer": "Examiner Tip: When contrasting metamorphic pathways, always use the correct scientific terms (incomplete/hemimetabolous vs. complete/holometabolous) and state the exact stage names."
+          },
+          {
+            "id": "ex_b7_s2_fly_02",
+            "title": "Worked Problem: Disease Vector Analysis & Sanitation Protocol",
+            "problem": "Explain why the feeding habits of the housefly make it a major mechanical vector for cholera, and formulate two community sanitation measures that disrupt this transmission pathway.",
+            "steps": [
+              "Step 1: Explain the feeding mechanism — The housefly lacks biting mandibles and must regurgitate acidic digestive fluid and saliva ('vomit drop') onto solid food to liquefy it before sponging it up with its proboscis. While feeding, it also defecates simultaneously.",
+              "Step 2: Connect to mechanical vector transmission — If the fly previously visited human faeces or an open latrine, Vibrio cholerae bacteria clinging to its hairy body, sticky footpads (pulvilli), and gut are inoculated into the food during regurgitation and contact.",
+              "Step 3: Formulate sanitation measures — (1) Construct Ventilated Improved Pit (VIP) latrines with fly screens on the vent pipe to prevent flies from reaching human faeces. (2) Keep all cooked food in covered wire-mesh cupboards or refrigerators to prevent adult fly access."
+            ],
+            "finalAnswer": "Examiner Tip: A mechanical vector transports pathogens physically without the pathogen multiplying or undergoing biological transformation inside the vector."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s4_1",
+              "id": "B7_FLY_01",
               "difficulty": "low",
-              "prompt": "The protective egg case in which a female cockroach deposits its eggs is called an:",
+              "prompt": "Which of the following insect pairs both undergo complete metamorphosis?",
               "options": [
-                "Ootheca",
-                "Pupa",
-                "Instar",
-                "Cocoon"
+                "A. Housefly and Grasshopper",
+                "B. Housefly and Mosquito",
+                "C. Cockroach and Butterfly",
+                "D. Termite and Honeybee"
               ],
-              "correctAnswer": "Ootheca",
-              "hint": "It is a hardened, purse-like proteinaceous casing.",
-              "workedSolution": "Female cockroaches enclose their fertilized eggs in a leathery, chitinous egg case called an ootheca, which shields developing embryos from desiccation and predators.",
+              "correctAnswer": "B. Housefly and Mosquito",
+              "hint": "Recall insects that pass through egg, larva, pupa, and adult stages.",
+              "workedSolution": "Both the housefly and the mosquito undergo complete metamorphosis involving four distinct stages: egg, larva, pupa, and adult.",
               "points": 1,
-              "learningCompetency": "B7.2.2.1",
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_02",
+              "difficulty": "low",
+              "prompt": "What is the non-feeding resting stage inside the protective puparium during housefly development?",
+              "options": [
+                "A. Nymph",
+                "B. Pupa",
+                "C. Maggot",
+                "D. Imago"
+              ],
+              "correctAnswer": "B. Pupa",
+              "hint": "Inside this stage, larval tissues are transformed into adult body structures.",
+              "workedSolution": "The pupa is the non-feeding, stationary stage enclosed within the hardened puparium where the transformation to an adult occurs.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_03",
+              "difficulty": "low",
+              "prompt": "Why is the housefly termed a 'mechanical vector' of enteric diseases like cholera?",
+              "options": [
+                "A. The cholera pathogen must complete its sexual cycle inside the fly's blood",
+                "B. The fly bites people and injects venom directly into their veins",
+                "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
+                "D. The fly builds mechanical nests inside human intestines"
+              ],
+              "correctAnswer": "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
+              "hint": "Think about physical transport of pathogens without developmental multiplication.",
+              "workedSolution": "Houseflies act as mechanical vectors because they transport pathogens on their hairy legs, body, and through regurgitated digestive fluids without the pathogen needing to develop inside them.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F04",
+              "difficulty": "low",
+              "prompt": "How many developmental stages occur in complete metamorphosis?",
+              "options": [
+                "A. Two",
+                "B. Three",
+                "C. Four",
+                "D. Five"
+              ],
+              "correctAnswer": "C. Four",
+              "hint": "Count: Egg, Larva, Pupa, Adult.",
+              "workedSolution": "Complete metamorphosis consists of four distinct stages: egg, larva, pupa, and adult.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F05",
+              "difficulty": "low",
+              "prompt": "What is the common name for the larva of a housefly?",
+              "options": [
+                "A. Caterpillar",
+                "B. Maggot",
+                "C. Grub",
+                "D. Tadpole"
+              ],
+              "correctAnswer": "B. Maggot",
+              "hint": "It is a legless, pale worm-like creature.",
+              "workedSolution": "The legless larva that hatches from a housefly egg is called a maggot.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F06",
+              "difficulty": "low",
+              "prompt": "Which of the following insects undergoes INCOMPLETE metamorphosis?",
+              "options": [
+                "A. Housefly",
+                "B. Mosquito",
+                "C. Butterfly",
+                "D. Cockroach"
+              ],
+              "correctAnswer": "D. Cockroach",
+              "hint": "Its juvenile is called a nymph.",
+              "workedSolution": "Cockroaches undergo incomplete metamorphosis with only three stages: egg, nymph, and adult.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F07",
+              "difficulty": "low",
+              "prompt": "Where does a female housefly prefer to lay her eggs?",
+              "options": [
+                "A. On clean drinking water",
+                "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
+                "C. On dry wooden furniture",
+                "D. In deep underground rock caves"
+              ],
+              "correctAnswer": "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
+              "hint": "Maggots need decaying organic matter to feed on.",
+              "workedSolution": "Houseflies lay eggs in warm, moist, decomposing organic materials that provide food for emerging maggots.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F08",
+              "difficulty": "low",
+              "prompt": "What type of mouthparts does an adult housefly possess?",
+              "options": [
+                "A. Biting and chewing mandibles",
+                "B. Piercing and sucking needle",
+                "C. Sponging and lapping proboscis",
+                "D. Siphoning tube"
+              ],
+              "correctAnswer": "C. Sponging and lapping proboscis",
+              "hint": "It laps up fluid meals.",
+              "workedSolution": "Adult houseflies have spongy, fleshy proboscis mouthparts adapted for lapping liquids.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F09",
+              "difficulty": "low",
+              "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+              "options": [
+                "A. Malaria",
+                "B. Cholera",
+                "C. Yellow fever",
+                "D. Sleeping sickness"
+              ],
+              "correctAnswer": "B. Cholera",
+              "hint": "An acute diarrhoeal illness caused by food contamination.",
+              "workedSolution": "Cholera is caused by Vibrio cholerae bacteria mechanically transferred to food by houseflies.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_F10",
+              "difficulty": "low",
+              "prompt": "How does an adult housefly break down solid food like bread or yam?",
+              "options": [
+                "A. It crushes the food with strong jaws",
+                "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
+                "C. It pierces the food and injects venom",
+                "D. It drags the food into water"
+              ],
+              "correctAnswer": "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
+              "hint": "External digestion via regurgitated vomit drops.",
+              "workedSolution": "Lacking chewing jaws, houseflies regurgitate saliva and gastric juice to dissolve solids into a liquid broth.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s4_2",
+              "id": "B7_FLY_M01",
               "difficulty": "medium",
-              "prompt": "Which insect exhibits incomplete metamorphosis during its life cycle?",
+              "prompt": "What is the protective brown barrel-shaped capsule that houses the housefly pupa called?",
               "options": [
-                "Housefly",
-                "Mosquito",
-                "Grasshopper",
-                "Butterfly"
+                "A. Cocoon",
+                "B. Puparium",
+                "C. Chrysalis",
+                "D. Ootheca"
               ],
-              "correctAnswer": "Grasshopper",
-              "hint": "The young nymph resembles the adult without passing through a pupal stage.",
-              "workedSolution": "Grasshoppers undergo incomplete metamorphosis with three stages: Egg -> Nymph -> Adult. The other options undergo complete 4-stage metamorphosis.",
+              "correctAnswer": "B. Puparium",
+              "hint": "Formed from the hardened skin of the third instar larva.",
+              "workedSolution": "In true flies (Diptera), the pupa is enclosed within a hardened, barrel-shaped capsule termed the puparium.",
               "points": 1,
-              "learningCompetency": "B7.2.2.1",
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_M02",
+              "difficulty": "medium",
+              "prompt": "Why is a Ventilated Improved Pit (VIP) latrine effective at controlling housefly populations?",
+              "options": [
+                "A. It poisons flies with cyanide gas",
+                "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
+                "C. It operates without human waste",
+                "D. It freezes the waste into ice"
+              ],
+              "correctAnswer": "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
+              "hint": "Flies fly toward the light at the top of the vent pipe and are trapped by the screen.",
+              "workedSolution": "Flies entering the dark pit fly toward the light at the top of the vent pipe, where a gauze mesh traps them until they desiccate and die.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_M03",
+              "difficulty": "medium",
+              "prompt": "How do housefly maggots play an ecologically beneficial role in nature?",
+              "options": [
+                "A. They sting harmful snakes",
+                "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
+                "C. They prevent soil erosion on steep slopes",
+                "D. They purify underground borehole water"
+              ],
+              "correctAnswer": "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
+              "hint": "Consider their role in nutrient recycling and decay.",
+              "workedSolution": "Maggots feed on decaying organic debris, accelerating decomposition and returning vital minerals to the soil.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_M04",
+              "difficulty": "medium",
+              "prompt": "What is the biological difference between a nymph and a larva?",
+              "options": [
+                "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
+                "B. A nymph has four wings, while a larva has six wings",
+                "C. A larva can reproduce sexually, whereas a nymph cannot",
+                "D. Nymphs only live in water"
+              ],
+              "correctAnswer": "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
+              "hint": "Compare juvenile appearance to the mature parent.",
+              "workedSolution": "A nymph resembles a miniature wingless adult in incomplete metamorphosis, whereas a larva has distinct anatomy in complete metamorphosis.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_M05",
+              "difficulty": "medium",
+              "prompt": "Which eye infection can be transmitted by houseflies landing on human faces to feed on eye secretions?",
+              "options": [
+                "A. Astigmatism",
+                "B. Trachoma",
+                "C. Glaucoma",
+                "D. Cataract"
+              ],
+              "correctAnswer": "B. Trachoma",
+              "hint": "Caused by Chlamydia trachomatis, leading to preventable blindness.",
+              "workedSolution": "Trachoma and epidemic conjunctivitis are transmitted when flies transfer bacteria from infected ocular discharges.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_FLY_A01",
+              "difficulty": "hard",
+              "prompt": "Contrast the disease transmission mode of the female Anopheles mosquito with that of the common housefly:",
+              "options": [
+                "A. Mosquito is a mechanical vector; housefly is a biological vector",
+                "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
+                "C. Both insects transmit pathogens exclusively through saliva without biting",
+                "D. Neither insect carries pathogenic micro-organisms"
+              ],
+              "correctAnswer": "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
+              "hint": "In biological vectors, the pathogen requires internal incubation.",
+              "workedSolution": "Plasmodium undergoes vital development within mosquitoes (biological vector), whereas houseflies merely transport pathogens externally or in vomit/faeces (mechanical vector).",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A02",
+              "difficulty": "hard",
+              "prompt": "Why does turning a municipal compost heap regularly control housefly maggot development?",
+              "options": [
+                "A. It exposes the maggots to moonlight",
+                "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
+                "C. It freezes the organic waste",
+                "D. It converts all nitrogen into rock"
+              ],
+              "correctAnswer": "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
+              "hint": "Aerobic microbial fermentation produces lethal internal heat.",
+              "workedSolution": "Frequent turning aerates compost, accelerating thermophilic bacterial fermentation that raises core temperatures high enough to destroy eggs and maggots.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_FLY_A03",
+              "difficulty": "hard",
+              "prompt": "Explain how the microscopic structure of the housefly's footpads (pulvilli) enhances its efficiency as a mechanical disease vector:",
+              "options": [
+                "A. Pulvilli have sharp claws that inject poison into human skin",
+                "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
+                "C. Pulvilli produce digestive enzymes that absorb carbohydrates directly through the legs",
+                "D. Pulvilli freeze bacteria to keep them alive for years"
+              ],
+              "correctAnswer": "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
+              "hint": "Microscopic sticky pads allow the fly to adhere to smooth surfaces and pick up pathogens.",
+              "workedSolution": "Glandular adhesive setae on the fly's pulvilli maximize contact surface area, passively picking up pathogen-laden particulate matter from waste.",
+              "points": 1,
+              "learningCompetency": "B7.2.2.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -6180,7 +6464,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -6375,7 +6659,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -6572,7 +6856,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -6769,7 +7053,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -6966,7 +7250,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -7161,7 +7445,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -7357,7 +7641,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -7553,7 +7837,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -7750,7 +8034,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -7948,7 +8232,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -8146,7 +8430,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -8339,7 +8623,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -8534,7 +8818,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -8729,7 +9013,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -8925,7 +9209,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -9122,7 +9406,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T18:36:25.289Z"
+    "updatedAt": "2026-10-02T18:46:45.674Z"
   }
 ];
 
@@ -14628,51 +14912,313 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS7",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "subStrandTitle": "Life Cycle of Organisms (Metamorphosis, Housefly, Mosquito & Pest Vectors)",
     "order": 10,
     "notes": {
-      "summaryMarkdown": "### Insect Metamorphosis: Complete vs. Incomplete Developmental Pathways\n* **NaCCA Curriculum Code:** `B7.2.2.1`\n* **Core Competency:** Distinguish between complete and incomplete metamorphosis and map the life stages of the cockroach and grasshopper.\n\n#### 1. Concept of Metamorphosis\nMetamorphosis is the biological developmental progression through distinct structural and physiological stages from egg to adult form.\n\n#### 2. Incomplete (Hemimetabolous) Metamorphosis\n* **Three Stages:** $\\text{Egg} \\rightarrow \\text{Nymph} \\rightarrow \\text{Adult (Imago)}$\n* The newly hatched **nymph** resembles a miniature, sexually immature, wingless version of the adult.\n* The nymph undergoes successive molting stages called **instars** (shedding its chitinous exoskeleton via ecdysis).\n* **Examples:** Cockroach (*Periplaneta americana*), grasshopper, dragonfly, praying mantis.\n* **Cockroach Biology:** Female deposits eggs encased in a protective purse-like capsule called an **ootheca**. Nymphs molt 6-13 times over several months before developing functional wings and reproductive maturity.\n\n#### 3. Complete (Holometabolous) Metamorphosis\n* **Four Stages:** $\\text{Egg} \\rightarrow \\text{Larva} \\rightarrow \\text{Pupa} \\rightarrow \\text{Adult}$\n* The larva differs completely from the adult in morphology, anatomy, diet, and habitat (e.g., caterpillar vs. butterfly).\n* The **pupa** is a non-feeding, quiescent developmental stage during which complete histolysis and organ rebuilding take place inside a cocoon or puparium.\n* **Examples:** Housefly, mosquito, butterfly, honeybee, beetle.",
+      "summaryMarkdown": "### Unit 1: Understanding Metamorphosis in Insects\n* **Curriculum Standard:** NaCCA `B7.2.2.1.1`\n* **Core Concept:** Morphological transformations from egg to sexually mature adult.\n\n#### 1. Biological Definition\n**Metamorphosis** is the biological sequence of distinct structural and physical changes an insect passes through from its initial hatching to its mature adult form. Depending on whether an inactive pupa stage occurs and whether the juvenile resembles the adult, metamorphosis is divided into two primary categories:\n\n#### 2. The Two Primary Metamorphic Pathways:\n1. **Incomplete Metamorphosis (Hemimetabolous):**\n   * **Total Stages:** Three (3) distinct stages: $\\text{Egg} \\to \\text{Nymph} \\to \\text{Adult}$.\n   * **Juvenile Characteristics:** The young that emerges from the egg is termed a **nymph**. The nymph closely resembles a miniature, wingless adult, sharing similar feeding habits and compound eyes.\n   * **Growth Mechanism:** As the nymph feeds and expands, it sheds its rigid chitinous exoskeleton several times (**moulting** or ecdysis) until it develops fully functional wings and mature reproductive organs.\n   * **Typical Examples:** Grasshoppers, cockroaches, crickets, dragonflies, termites, and praying mantises.\n\n2. **Complete Metamorphosis (Holometabolous):**\n   * **Total Stages:** Four (4) distinct stages: $\\text{Egg} \\to \\text{Larva} \\to \\text{Pupa} \\to \\text{Adult}$.\n   * **Juvenile Characteristics:** The young hatches out as a **larva** (maggot, caterpillar, or grub), which looks completely different from the adult (lacks wings, has specialized mouth hooks or chewing mandibles, and crawls).\n   * **Growth & Pupation:** The larva feeds voraciously, moulting through distinct growth instars. It then secretes a protective casing or contracts to form an inactive, non-feeding **pupa** (puparium or cocoon). Inside this capsule, larval tissues break down (histolysis) and are rebuilt (histogenesis) into adult organs, legs, and wings.\n   * **Typical Examples:** Houseflies, mosquitoes, butterflies, moths, beetles, bees, and wasps.\n\n#### Quick Comparison: Incomplete vs. Complete Metamorphosis\n| Characteristic | Incomplete Metamorphosis | Complete Metamorphosis |\n| :--- | :--- | :--- |\n| **Total Stages** | Three (3) distinct stages | Four (4) distinct stages |\n| **Developmental Sequence** | $\\text{Egg} \\to \\text{Nymph} \\to \\text{Adult}$ | $\\text{Egg} \\to \\text{Larva} \\to \\text{Pupa} \\to \\text{Adult}$ |\n| **Immature Form** | **Nymph**: Resembles a miniature wingless adult | **Larva (Maggot/Caterpillar)**: Worm-like; totally different from the adult |\n| **Resting (Pupa) Stage** | Absent (growth occurs through progressive moulting) | Present (enclosed in a puparium or cocoon) |\n| **Typical Insect Examples** | Cockroaches, grasshoppers, termites, crickets | Houseflies, mosquitoes, butterflies, honeybees |\n\n---\n\n### Unit 2: The Four Stages in the Life Cycle of the Housefly (*Musca domestica*)\n* **Curriculum Standard:** NaCCA `B7.2.2.1.1`\n\nThe common housefly (*Musca domestica*) belongs to the scientific order **Diptera** (true two-winged insects). Adults possess a dull grey body with four dark longitudinal stripes along the thorax, large compound eyes, and a spongy mouthpart adapted exclusively for liquid feeding.\n\n<div class=\"my-6 flex flex-col items-center p-4 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-md\">\n  <span class=\"text-xs font-bold text-sky-400 mb-2\">Figure 2.1: Complete Metamorphosis of the Housefly (Musca domestica)</span>\n  <div class=\"w-full flex justify-center overflow-x-auto\">\n    <svg width=\"700\" height=\"460\" viewBox=\"0 0 700 460\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"cycleArrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"6\" refY=\"4\" orient=\"auto\"><path d=\"M 1 1 L 7 4 L 1 7 Z\" fill=\"#0284c7\"/></marker><linearGradient id=\"flyBody\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#475569\"/><stop offset=\"100%\" stop-color=\"#1e293b\"/></linearGradient><linearGradient id=\"wingGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#e0f2fe\" stop-opacity=\"0.75\"/><stop offset=\"100%\" stop-color=\"#bae6fd\" stop-opacity=\"0.4\"/></linearGradient><linearGradient id=\"pupaGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#78350f\"/><stop offset=\"50%\" stop-color=\"#451a03\"/><stop offset=\"100%\" stop-color=\"#1c1917\"/></linearGradient></defs><rect width=\"700\" height=\"460\" rx=\"16\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"350\" y=\"32\" font-family=\"sans-serif\" font-size=\"16\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPLETE METAMORPHOSIS OF THE HOUSEFLY (Musca domestica)</text><text x=\"350\" y=\"50\" font-family=\"sans-serif\" font-size=\"12\" fill=\"#64748b\" text-anchor=\"middle\">Four Continuous Stages: Egg → Larva → Pupa → Adult</text><path d=\"M 420 120 Q 560 140 560 210\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 550 290 Q 490 380 400 395\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 280 400 Q 140 380 140 290\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><path d=\"M 140 210 Q 160 140 270 115\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6 4\" marker-end=\"url(#cycleArrow)\"/><g transform=\"translate(350, 115)\"><path d=\"M -15 -20 L -60 -45 M -18 -8 L -75 -15 M -15 8 L -65 35\" stroke=\"#334155\" stroke-width=\"2.5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 15 -20 L 60 -45 M 18 -8 L 75 -15 M 15 8 L 65 35\" stroke=\"#334155\" stroke-width=\"2.5\" stroke-linecap=\"round\" fill=\"none\"/><ellipse cx=\"-36\" cy=\"0\" rx=\"40\" ry=\"16\" transform=\"rotate(-30 -36 0)\" fill=\"url(#wingGrad)\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"-15\" y1=\"-5\" x2=\"-65\" y2=\"-12\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><line x1=\"-20\" y1=\"-2\" x2=\"-55\" y2=\"10\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><ellipse cx=\"36\" cy=\"0\" rx=\"40\" ry=\"16\" transform=\"rotate(30 36 0)\" fill=\"url(#wingGrad)\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"15\" y1=\"-5\" x2=\"65\" y2=\"-12\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><line x1=\"20\" y1=\"-2\" x2=\"55\" y2=\"10\" stroke=\"#0284c7\" stroke-width=\"0.8\"/><ellipse cx=\"0\" cy=\"22\" rx=\"16\" ry=\"24\" fill=\"url(#flyBody)\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><line x1=\"-10\" y1=\"10\" x2=\"-10\" y2=\"36\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"0\" y1=\"8\" x2=\"0\" y2=\"38\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"36\" stroke=\"#94a3b8\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"-8\" rx=\"17\" ry=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><line x1=\"-9\" y1=\"-20\" x2=\"-9\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"-3\" y1=\"-22\" x2=\"-3\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"3\" y1=\"-22\" x2=\"3\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><line x1=\"9\" y1=\"-20\" x2=\"9\" y2=\"-1\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><ellipse cx=\"0\" cy=\"-28\" rx=\"13\" ry=\"10\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><ellipse cx=\"-9\" cy=\"-29\" rx=\"6\" ry=\"8\" fill=\"#b91c1c\"/><ellipse cx=\"9\" cy=\"-29\" rx=\"6\" ry=\"8\" fill=\"#b91c1c\"/><path d=\"M -4 -38 L 0 -44 L 4 -38\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"0\" y=\"65\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 4: ADULT FLY</text><text x=\"0\" y=\"80\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Two wings • Sponging mouthpart • 15–30 days</text></g><g transform=\"translate(550, 240)\"><rect x=\"-75\" y=\"-35\" width=\"150\" height=\"85\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><g transform=\"rotate(18)\"><ellipse cx=\"-15\" cy=\"-4\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-1\" rx=\"13\" ry=\"3.5\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"8\" cy=\"-6\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"-8\" cy=\"7\" rx=\"13\" ry=\"3.5\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"10\" cy=\"6\" rx=\"13\" ry=\"3.5\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/></g><text x=\"0\" y=\"25\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 1: EGGS</text><text x=\"0\" y=\"40\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Batches of 100–150 • Hatches in 8–24 hrs</text></g><g transform=\"translate(350, 390)\"><rect x=\"-120\" y=\"-35\" width=\"240\" height=\"75\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><path d=\"M -85 0 C -60 -9 40 -9 70 -2 C 78 1 82 4 82 7 C 82 10 75 12 65 11 C 35 9 -60 9 -85 4 Z\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><line x1=\"-65\" y1=\"-7\" x2=\"-65\" y2=\"6\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-45\" y1=\"-8\" x2=\"-45\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-25\" y1=\"-8\" x2=\"-25\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"-5\" y1=\"-8\" x2=\"-5\" y2=\"7\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"15\" y1=\"-7\" x2=\"15\" y2=\"8\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"35\" y1=\"-6\" x2=\"35\" y2=\"8\" stroke=\"#d97706\" stroke-width=\"1\"/><line x1=\"55\" y1=\"-5\" x2=\"55\" y2=\"9\" stroke=\"#d97706\" stroke-width=\"1\"/><circle cx=\"-83\" cy=\"0\" r=\"2\" fill=\"#0f172a\"/><path d=\"M -87 1 L -83 -2\" stroke=\"#0f172a\" stroke-width=\"1.5\"/><text x=\"0\" y=\"22\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 2: LARVA (MAGGOT)</text><text x=\"0\" y=\"35\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">3 Instars • Feeds on waste • 3–8 days</text></g><g transform=\"translate(140, 240)\"><rect x=\"-75\" y=\"-35\" width=\"150\" height=\"85\" rx=\"10\" fill=\"#ffffff\" stroke=\"#e2e8f0\" stroke-width=\"1.2\"/><ellipse cx=\"0\" cy=\"-5\" rx=\"20\" ry=\"30\" fill=\"url(#pupaGrad)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/><line x1=\"-15\" y1=\"-20\" x2=\"15\" y2=\"-20\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-19\" y1=\"-12\" x2=\"19\" y2=\"-12\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-20\" y1=\"-4\" x2=\"20\" y2=\"-4\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-20\" y1=\"4\" x2=\"20\" y2=\"4\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-18\" y1=\"12\" x2=\"18\" y2=\"12\" stroke=\"#92400e\" stroke-width=\"1\"/><line x1=\"-13\" y1=\"20\" x2=\"13\" y2=\"20\" stroke=\"#92400e\" stroke-width=\"1\"/><text x=\"0\" y=\"36\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STAGE 3: PUPA</text><text x=\"0\" y=\"49\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">Puparium case • Non-feeding • 4–6 days</text></g></svg>\n  </div>\n</div>\n\n#### Detailed Stage-by-Stage Breakdown:\n1. **Stage 1 — The Egg Stage:**\n   * After mating, the adult female deposits batches of 100 to 150 creamy-white, elongated, cylindrical eggs (laying up to 300 eggs in a single day) directly onto moist, warm, decaying organic matter (animal dung, compost, uncovered rubbish).\n   * Moisture and decaying heat are essential; under warm tropical temperatures, eggs hatch rapidly within **8 to 24 hours**.\n\n2. **Stage 2 — The Larva Stage (Maggot):**\n   * The emerging larva is a pale, legless, segmented, worm-like creature known as a **maggot**.\n   * It possesses curved oral mouth hooks used to tear through liquefying organic substrate.\n   * The maggot progresses through **three growth instars**, shedding its cuticle between each:\n     * *First Instar:* Measures approximately 5 mm in length.\n     * *Second Instar:* Reaches up to 10 mm.\n     * *Third Instar:* Fully grown at 15 mm to 20 mm.\n   * The larval feeding period lasts approximately **3 to 8 days** before the maggot crawls away to a cooler, drier location to pupate.\n\n3. **Stage 3 — The Pupa Stage:**\n   * The mature maggot contracts, and its final larval skin hardens and darkens into a smooth, oval, barrel-shaped brown capsule called the **puparium**.\n   * The pupa is immobile and does not feed. Inside, profound metamorphosis occurs over **4 to 6 days**, reassembling larval tissues into adult anatomy.\n\n4. **Stage 4 — The Adult Stage (Imago):**\n   * The adult fly pushes open the cap of the puparium using an expandable head sac (ptilinum) and emerges.\n   * Within hours, its wings expand and its chitinous exoskeleton hardens, allowing it to take flight.\n   * Adults have an average lifespan of **15 to 30 days** and reach sexual maturity within 2 to 3 days, restarting the reproductive cycle.\n\n---\n\n### Unit 3: Feeding Mechanism & Disease Transmission (Mechanical Vector)\n* **Curriculum Standard:** NaCCA `B7.2.2.1.2`\n\n#### 1. Unique Sponging Feeding Mechanism\nHouseflies cannot bite, chew, or pierce solid food because they lack biting mandibles or sharp jaws. Instead, they feed through an elaborate, highly unhygienic external digestion process:\n1. **Salivary Regurgitation (Vomit Drop):** Upon landing on solid food (bread, meat, cooked yam), the fly regurgitates acidic stomach fluid and digestive saliva directly onto the food surface.\n2. **External Enzymatic Liquefaction:** The enzymes break down and dissolve the solid food into a liquefied chemical broth.\n3. **Sponging & Lapping:** The fly laps up the liquid broth through its fleshy, grooved proboscis (*pseudotracheae*).\n4. **Concurrent Defecation:** During feeding, houseflies frequently defecate on the very same food surface, depositing microbes and metabolic wastes.\n\n#### 2. Why Houseflies Are Dangerous Mechanical Vectors\nHouseflies are classified as **non-biting mechanical vectors**. Unlike biological vectors (where a pathogen must complete a developmental cycle inside the vector, such as malaria parasites in mosquitoes), houseflies simply act as physical transport carriers:\n* They breed in and crawl over human faeces, open latrines, animal dung, and rotting carcasses.\n* Pathogenic bacteria, viruses, and parasite cysts stick to their **hairy legs, sticky footpads (pulvilli), wings, and mouthparts**.\n* Millions of pathogens also survive in their gut and are transferred via **vomit drops** and **faecal pellets** whenever the fly lands on human food or utensils.\n\n#### 3. Serious Human Diseases Transmitted by Houseflies\n| Category | Specific Infections | Transmission Mechanism & Symptoms |\n| :--- | :--- | :--- |\n| **Enteric (Gastrointestinal)** | **Cholera**, **Typhoid fever**, **Amoebic dysentery**, **Bacillary dysentery (Shigellosis)**, **Infantile diarrhea** | Pathogens transferred from faeces to food. Causes severe nausea, watery diarrhea, vomiting, dehydration, and high fever. |\n| **Ophthalmic (Eye Infections)** | **Trachoma**, **Epidemic conjunctivitis (Red eye)** | Flies attracted to eye moisture land on faces, transferring *Chlamydia trachomatis* or bacteria; causes chronic eye inflammation and preventable blindness. |\n| **Cutaneous (Skin Infections)** | **Yaws**, **Infected cutaneous ulcers** | Flies feeding on purulent exudate from open wounds transfer bacteria (*Treponema pallidum pertenue*) to healthy skin scratches. |\n\n---\n\n### Unit 4: Control Strategies & Ecological Roles\n* **Curriculum Standard:** NaCCA `B7.2.2.1.2`\n\n#### 1. The Four Pillars of Housefly Control:\n1. **Pillar 1 — Elimination of Breeding Grounds:**\n   * Rapid, airtight disposal of household garbage in securely covered plastic bins.\n   * Daily clearing and proper composting of domestic animal dung from livestock pens.\n   * Turning organic compost heaps regularly; microbial fermentation generates core heat ($>60^\\circ\\text{C}$) that destroys fly eggs and maggots.\n2. **Pillar 2 — Elimination of Attractive Odours:**\n   * Tightly sealing decomposing organic waste.\n   * Ensuring pit latrines have self-closing drop-hole lids.\n   * Repairing broken sewage conduits and clearing open municipal gutters.\n3. **Pillar 3 — Blocking Pathogen Contact:**\n   * Constructing modern **Ventilated Improved Pit (VIP) latrines** fitted with gauze fly screens on vent pipes.\n   * Thorough handwashing with soap under clean running water after using toilet facilities and before meal preparation.\n4. **Pillar 4 — Food & Living Space Protection:**\n   * Keeping all food in refrigerators or under fine wire-mesh food covers.\n   * Installing fine wire mesh on doors and windows to exclude adult flies.\n   * Deploying non-toxic adhesive flypaper strips, UV light zappers, or targeted pyrethroid insecticides when infestations occur.\n\n#### 2. Ecological Importance of Houseflies\nWhile houseflies are hazardous in human settlements, they play vital roles in natural ecological food webs:\n* **Decomposition & Soil Humus:** Maggots rapidly consume dead animal carcasses, rotting vegetation, and dung, accelerating biological decomposition.\n* **Nutrient Recycling:** Larval excretion and feeding return vital nitrogen, phosphorus, and organic minerals back into topsoil for plant nutrition.\n* **Food Web Trophic Link:** Maggots and adult flies represent high-protein food sources for birds, lizards, toads, frogs, spiders, and fish.\n* **Incidental Pollination:** When adults visit wild flowers to feed on sweet nectar, pollen grains adhere to their body hairs and are transferred between blossoms.\n* **Medical & Genetic Research:** With a generation turnaround of 10 to 14 days and high egg production, houseflies are widely used in genetics, developmental biology, and toxicology studies.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s4_1",
-        "questionPrompt": "Tabulate three differences between the developmental stages of the cockroach and the butterfly.",
-        "stepByStepSolution": "Difference 1: Type of metamorphosis — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Butterfly undergoes complete (holometabolous) metamorphosis.\nDifference 2: Number of developmental stages — Cockroach has 3 stages (Egg -> Nymph -> Adult); Butterfly has 4 stages (Egg -> Larva -> Pupa -> Adult).\nDifference 3: Resemblance of juvenile to adult — Cockroach nymph closely resembles the adult minus wings and reproductive organs; Butterfly larva (caterpillar) bears no morphological resemblance to the winged adult.",
-        "examinerTip": "Examiner Tip: Always present comparative questions in a clearly aligned table with matching rows."
+        "id": "ex_b7_s2_fly_01",
+        "questionPrompt": "Tabulate three distinct differences between the life cycle of the cockroach and that of the common housefly, stating the specific biological terminology for each.",
+        "stepByStepSolution": "Step 1: Identify the metamorphosis type — Cockroach undergoes incomplete (hemimetabolous) metamorphosis; Housefly undergoes complete (holometabolous) metamorphosis.\nStep 2: Compare the number and sequence of stages — Cockroach has 3 developmental stages (Egg → Nymph → Adult); Housefly has 4 developmental stages (Egg → Larva/Maggot → Pupa → Adult).\nStep 3: Contrast juvenile appearance and resting stage — Cockroach nymph looks like a miniature wingless adult with no pupa stage; Housefly larva is a legless maggot completely different from the adult and must pass through a non-feeding puparium stage.",
+        "examinerTip": "Examiner Tip: When contrasting metamorphic pathways, always use the correct scientific terms (incomplete/hemimetabolous vs. complete/holometabolous) and state the exact stage names."
+      },
+      {
+        "id": "ex_b7_s2_fly_02",
+        "questionPrompt": "Explain why the feeding habits of the housefly make it a major mechanical vector for cholera, and formulate two community sanitation measures that disrupt this transmission pathway.",
+        "stepByStepSolution": "Step 1: Explain the feeding mechanism — The housefly lacks biting mandibles and must regurgitate acidic digestive fluid and saliva ('vomit drop') onto solid food to liquefy it before sponging it up with its proboscis. While feeding, it also defecates simultaneously.\nStep 2: Connect to mechanical vector transmission — If the fly previously visited human faeces or an open latrine, Vibrio cholerae bacteria clinging to its hairy body, sticky footpads (pulvilli), and gut are inoculated into the food during regurgitation and contact.\nStep 3: Formulate sanitation measures — (1) Construct Ventilated Improved Pit (VIP) latrines with fly screens on the vent pipe to prevent flies from reaching human faeces. (2) Keep all cooked food in covered wire-mesh cupboards or refrigerators to prevent adult fly access.",
+        "examinerTip": "Examiner Tip: A mechanical vector transports pathogens physically without the pathogen multiplying or undergoing biological transformation inside the vector."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s4_1",
+        "id": "B7_FLY_01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The protective egg case in which a female cockroach deposits its eggs is called an:",
+        "prompt": "Which of the following insect pairs both undergo complete metamorphosis?",
         "options": [
-          "Ootheca",
-          "Pupa",
-          "Instar",
-          "Cocoon"
+          "A. Housefly and Grasshopper",
+          "B. Housefly and Mosquito",
+          "C. Cockroach and Butterfly",
+          "D. Termite and Honeybee"
         ],
-        "correctAnswer": "Ootheca",
-        "hint": "It is a hardened, purse-like proteinaceous casing.",
-        "workedSolution": "Female cockroaches enclose their fertilized eggs in a leathery, chitinous egg case called an ootheca, which shields developing embryos from desiccation and predators.",
+        "correctAnswer": "B. Housefly and Mosquito",
+        "hint": "Recall insects that pass through egg, larva, pupa, and adult stages.",
+        "workedSolution": "Both the housefly and the mosquito undergo complete metamorphosis involving four distinct stages: egg, larva, pupa, and adult.",
         "points": 1
       },
       {
-        "id": "q_b7_s4_2",
+        "id": "B7_FLY_02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the non-feeding resting stage inside the protective puparium during housefly development?",
+        "options": [
+          "A. Nymph",
+          "B. Pupa",
+          "C. Maggot",
+          "D. Imago"
+        ],
+        "correctAnswer": "B. Pupa",
+        "hint": "Inside this stage, larval tissues are transformed into adult body structures.",
+        "workedSolution": "The pupa is the non-feeding, stationary stage enclosed within the hardened puparium where the transformation to an adult occurs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is the housefly termed a 'mechanical vector' of enteric diseases like cholera?",
+        "options": [
+          "A. The cholera pathogen must complete its sexual cycle inside the fly's blood",
+          "B. The fly bites people and injects venom directly into their veins",
+          "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
+          "D. The fly builds mechanical nests inside human intestines"
+        ],
+        "correctAnswer": "C. The fly passively carries bacteria on its hairy legs, mouthparts, and vomited fluids from waste onto food",
+        "hint": "Think about physical transport of pathogens without developmental multiplication.",
+        "workedSolution": "Houseflies act as mechanical vectors because they transport pathogens on their hairy legs, body, and through regurgitated digestive fluids without the pathogen needing to develop inside them.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many developmental stages occur in complete metamorphosis?",
+        "options": [
+          "A. Two",
+          "B. Three",
+          "C. Four",
+          "D. Five"
+        ],
+        "correctAnswer": "C. Four",
+        "hint": "Count: Egg, Larva, Pupa, Adult.",
+        "workedSolution": "Complete metamorphosis consists of four distinct stages: egg, larva, pupa, and adult.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the common name for the larva of a housefly?",
+        "options": [
+          "A. Caterpillar",
+          "B. Maggot",
+          "C. Grub",
+          "D. Tadpole"
+        ],
+        "correctAnswer": "B. Maggot",
+        "hint": "It is a legless, pale worm-like creature.",
+        "workedSolution": "The legless larva that hatches from a housefly egg is called a maggot.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following insects undergoes INCOMPLETE metamorphosis?",
+        "options": [
+          "A. Housefly",
+          "B. Mosquito",
+          "C. Butterfly",
+          "D. Cockroach"
+        ],
+        "correctAnswer": "D. Cockroach",
+        "hint": "Its juvenile is called a nymph.",
+        "workedSolution": "Cockroaches undergo incomplete metamorphosis with only three stages: egg, nymph, and adult.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where does a female housefly prefer to lay her eggs?",
+        "options": [
+          "A. On clean drinking water",
+          "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
+          "C. On dry wooden furniture",
+          "D. In deep underground rock caves"
+        ],
+        "correctAnswer": "B. On moist, warm, decaying organic matter such as animal dung or rotten rubbish",
+        "hint": "Maggots need decaying organic matter to feed on.",
+        "workedSolution": "Houseflies lay eggs in warm, moist, decomposing organic materials that provide food for emerging maggots.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What type of mouthparts does an adult housefly possess?",
+        "options": [
+          "A. Biting and chewing mandibles",
+          "B. Piercing and sucking needle",
+          "C. Sponging and lapping proboscis",
+          "D. Siphoning tube"
+        ],
+        "correctAnswer": "C. Sponging and lapping proboscis",
+        "hint": "It laps up fluid meals.",
+        "workedSolution": "Adult houseflies have spongy, fleshy proboscis mouthparts adapted for lapping liquids.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following diseases is transmitted mechanically by houseflies?",
+        "options": [
+          "A. Malaria",
+          "B. Cholera",
+          "C. Yellow fever",
+          "D. Sleeping sickness"
+        ],
+        "correctAnswer": "B. Cholera",
+        "hint": "An acute diarrhoeal illness caused by food contamination.",
+        "workedSolution": "Cholera is caused by Vibrio cholerae bacteria mechanically transferred to food by houseflies.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does an adult housefly break down solid food like bread or yam?",
+        "options": [
+          "A. It crushes the food with strong jaws",
+          "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
+          "C. It pierces the food and injects venom",
+          "D. It drags the food into water"
+        ],
+        "correctAnswer": "B. It vomits digestive saliva and stomach fluid onto the food to dissolve it into liquid",
+        "hint": "External digestion via regurgitated vomit drops.",
+        "workedSolution": "Lacking chewing jaws, houseflies regurgitate saliva and gastric juice to dissolve solids into a liquid broth.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_M01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which insect exhibits incomplete metamorphosis during its life cycle?",
+        "prompt": "What is the protective brown barrel-shaped capsule that houses the housefly pupa called?",
         "options": [
-          "Housefly",
-          "Mosquito",
-          "Grasshopper",
-          "Butterfly"
+          "A. Cocoon",
+          "B. Puparium",
+          "C. Chrysalis",
+          "D. Ootheca"
         ],
-        "correctAnswer": "Grasshopper",
-        "hint": "The young nymph resembles the adult without passing through a pupal stage.",
-        "workedSolution": "Grasshoppers undergo incomplete metamorphosis with three stages: Egg -> Nymph -> Adult. The other options undergo complete 4-stage metamorphosis.",
+        "correctAnswer": "B. Puparium",
+        "hint": "Formed from the hardened skin of the third instar larva.",
+        "workedSolution": "In true flies (Diptera), the pupa is enclosed within a hardened, barrel-shaped capsule termed the puparium.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_M02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is a Ventilated Improved Pit (VIP) latrine effective at controlling housefly populations?",
+        "options": [
+          "A. It poisons flies with cyanide gas",
+          "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
+          "C. It operates without human waste",
+          "D. It freezes the waste into ice"
+        ],
+        "correctAnswer": "B. The tall vent pipe has a fine wire-gauze screen that traps flies attracted to the light, preventing their exit",
+        "hint": "Flies fly toward the light at the top of the vent pipe and are trapped by the screen.",
+        "workedSolution": "Flies entering the dark pit fly toward the light at the top of the vent pipe, where a gauze mesh traps them until they desiccate and die.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_M03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do housefly maggots play an ecologically beneficial role in nature?",
+        "options": [
+          "A. They sting harmful snakes",
+          "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
+          "C. They prevent soil erosion on steep slopes",
+          "D. They purify underground borehole water"
+        ],
+        "correctAnswer": "B. They accelerate the decomposition of animal carcasses, dung, and organic waste, converting them into nutrient-rich humus",
+        "hint": "Consider their role in nutrient recycling and decay.",
+        "workedSolution": "Maggots feed on decaying organic debris, accelerating decomposition and returning vital minerals to the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_M04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological difference between a nymph and a larva?",
+        "options": [
+          "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
+          "B. A nymph has four wings, while a larva has six wings",
+          "C. A larva can reproduce sexually, whereas a nymph cannot",
+          "D. Nymphs only live in water"
+        ],
+        "correctAnswer": "A. A nymph resembles the adult, whereas a larva looks completely different from the adult",
+        "hint": "Compare juvenile appearance to the mature parent.",
+        "workedSolution": "A nymph resembles a miniature wingless adult in incomplete metamorphosis, whereas a larva has distinct anatomy in complete metamorphosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_M05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which eye infection can be transmitted by houseflies landing on human faces to feed on eye secretions?",
+        "options": [
+          "A. Astigmatism",
+          "B. Trachoma",
+          "C. Glaucoma",
+          "D. Cataract"
+        ],
+        "correctAnswer": "B. Trachoma",
+        "hint": "Caused by Chlamydia trachomatis, leading to preventable blindness.",
+        "workedSolution": "Trachoma and epidemic conjunctivitis are transmitted when flies transfer bacteria from infected ocular discharges.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Contrast the disease transmission mode of the female Anopheles mosquito with that of the common housefly:",
+        "options": [
+          "A. Mosquito is a mechanical vector; housefly is a biological vector",
+          "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
+          "C. Both insects transmit pathogens exclusively through saliva without biting",
+          "D. Neither insect carries pathogenic micro-organisms"
+        ],
+        "correctAnswer": "B. Mosquito is a biological vector (parasite multiplies inside its body); housefly is a mechanical vector (pathogen is carried externally on body parts)",
+        "hint": "In biological vectors, the pathogen requires internal incubation.",
+        "workedSolution": "Plasmodium undergoes vital development within mosquitoes (biological vector), whereas houseflies merely transport pathogens externally or in vomit/faeces (mechanical vector).",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does turning a municipal compost heap regularly control housefly maggot development?",
+        "options": [
+          "A. It exposes the maggots to moonlight",
+          "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
+          "C. It freezes the organic waste",
+          "D. It converts all nitrogen into rock"
+        ],
+        "correctAnswer": "B. Microbial aerobic decomposition generates high core temperatures (above 60°C) that kill developing fly eggs and maggots",
+        "hint": "Aerobic microbial fermentation produces lethal internal heat.",
+        "workedSolution": "Frequent turning aerates compost, accelerating thermophilic bacterial fermentation that raises core temperatures high enough to destroy eggs and maggots.",
+        "points": 1
+      },
+      {
+        "id": "B7_FLY_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Explain how the microscopic structure of the housefly's footpads (pulvilli) enhances its efficiency as a mechanical disease vector:",
+        "options": [
+          "A. Pulvilli have sharp claws that inject poison into human skin",
+          "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
+          "C. Pulvilli produce digestive enzymes that absorb carbohydrates directly through the legs",
+          "D. Pulvilli freeze bacteria to keep them alive for years"
+        ],
+        "correctAnswer": "B. Pulvilli are covered in sticky glandular hairs that pick up millions of bacteria from faeces and deposit them onto food",
+        "hint": "Microscopic sticky pads allow the fly to adhere to smooth surfaces and pick up pathogens.",
+        "workedSolution": "Glandular adhesive setae on the fly's pulvilli maximize contact surface area, passively picking up pathogen-laden particulate matter from waste.",
         "points": 1
       }
     ]
@@ -14682,7 +15228,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS8",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "subStrandTitle": "Life Cycle of Organisms (Metamorphosis, Housefly, Mosquito & Pest Vectors)",
     "order": 11,
     "notes": {
       "summaryMarkdown": "### Pathogenic Vectors: The Mosquito and Housefly Lifecycles\n* **NaCCA Curriculum Code:** `B8.2.2.1`\n* **Core Competency:** Trace life cycles of the mosquito and housefly, analyze disease transmission, and evaluate vector control.\n\n#### 1. Life Cycle of the Mosquito (*Anopheles*, *Aedes*, *Culex*)\nUndergoes complete metamorphosis in aquatic and terrestrial habitats:\n* **Egg:** Female *Anopheles* lays single boat-shaped eggs with lateral air floats on clean stagnant water. *Culex* lays eggs stuck together in rafts on polluted water.\n* **Larva (Wriggler):** Aquatic, active feeder. Breathes atmospheric air at the water surface:\n  * *Anopheles:* Lacks respiratory siphon; rests parallel to water surface.\n  * *Culex:* Possesses long breathing siphon; hangs at an angle from water surface.\n* **Pupa (Tumbler):** Comma-shaped, active non-feeding stage. Breathes through a pair of thoracic respiratory trumpets.\n* **Adult (Imago):** Emerges at water surface.\n  * Only female mosquitoes feed on vertebrate blood (requiring iron and proteins for egg maturation); males feed exclusively on plant nectar.\n  * *Anopheles* transmits *Plasmodium* (Malaria); *Aedes* transmits Yellow Fever & Dengue; *Culex* transmits *Wuchereria bancrofti* (Elephantiasis/Filariasis).\n\n#### 2. Life Cycle of the Housefly (*Musca domestica*)\n* **Egg:** Laid in batches on warm, decaying organic matter, feces, and garbage.\n* **Larva (Maggot):** Legless, conical white larva that feeds on decaying organic material.\n* **Pupa:** Barrel-shaped, dark brown puparium in dry soil.\n* **Adult:** Mechanical vector of pathogens (cholera, typhoid, dysentery). Houseflies vomit digestive enzymes onto solid food, sponge up the liquefied solution, and contaminate food surfaces with hairy appendages and fecal drops.\n\n#### 3. Vector Control & Ecological Disruption\n* **Larval Control:** Pouring oil/kerosene films on stagnant water surfaces to block respiratory siphons (suffocation); biological control using *Gambusia* (mosquito fish) or *Bacillus thuringiensis israelensis* (Bti).\n* **Adult Control:** Insecticide-Treated Nets (ITNs), indoor residual spraying, outdoor fogging.\n* **Environmental Sanitation:** Eliminating stagnant pools, clearing empty tins and tires, covering trash bins.",
@@ -14736,7 +15282,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS9",
     "strandNumber": 2,
     "strandTitle": "STRAND 2: CYCLES",
-    "subStrandTitle": "Life Cycles of Organisms & Pest Management (Metamorphosis, Housefly, Mosquito, Pests)",
+    "subStrandTitle": "Life Cycle of Organisms (Metamorphosis, Housefly, Mosquito & Pest Vectors)",
     "order": 12,
     "notes": {
       "summaryMarkdown": "### Agricultural Crop Pests & Integrated Pest Management (IPM)\n* **NaCCA Curriculum Code:** `B9.2.2.1`\n* **Core Competency:** Classify agricultural pests by feeding habits, analyze crop damage, and implement Integrated Pest Management (IPM).\n\n#### 1. Classification of Crop Pests by Feeding Mechanism\n* **Biting and Chewing Pests:** Possess strong, serrated mandibles and maxillae to masticate vegetative tissue (e.g., grasshoppers, locusts, armyworms, beetles, caterpillars). Cause extensive defoliation, reducing photosynthetic capacity.\n* **Piercing and Sucking Pests:** Possess needle-like tubular stylets to pierce plant tissues and suck cell sap (e.g., aphids, cotton stainers, mealybugs, whiteflies, cocoa mirids/capsids). Cause leaf curling, chlorosis, and transmit viral plant diseases (e.g., Cocoa Swollen Shoot Virus).\n* **Boring Pests:** Larvae bore into plant stems, pods, or grains (e.g., maize stem borer *Busseola fusca*, coffee berry borer). Weaken structural lodging resistance and kill growing shoots.\n\n#### 2. Major Storage Pests\n* **Maize Weevil (*Sitophilus zeamais*):** Female bores holes into mature maize kernels to deposit eggs; larvae feed internally on the endosperm and embryo, leaving hollow grains riddled with characteristic exit holes.\n* **Cowpea Weevil (*Callosobruchus maculatus*):** Infests dried cowpea beans, reducing seeds to empty shells and dust.\n\n#### 3. Integrated Pest Management (IPM) Paradigm\nIPM combines ecological, cultural, biological, and chemical methods to minimize pest damage while safeguarding environmental health:\n1. **Cultural Controls:** Crop rotation, early planting, field sanitation, intercropping with repellent plants.\n2. **Biological Controls:** Introducing natural parasites, parasitoids (e.g., *Trichogramma* wasps), and predators (ladybird beetles).\n3. **Physical / Mechanical Controls:** Hand-picking caterpillars, light traps, hermetic Purdue Improved Crop Storage (PICS) bags for grains.\n4. **Chemical Controls:**Judicious, targeted application of selective, biodegradable pesticides as a last resort.",
