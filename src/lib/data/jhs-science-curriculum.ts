@@ -66,7 +66,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
       "b7": {
         "levelTitle": "Basic 7 (JHS 1) • States of Matter, Everyday Substances & Atomic Structure",
         "summary": "Master the three states of matter (solids, liquids, gases), particle theory and compressibility, everyday importance of liquids and special solids (dry ice, table salt), chemical elements and symbols, atomic structure (protons, neutrons, electrons), electron configuration (2n² rule), and the broad groups of the Periodic Table.",
-        "notes": "### Unit 1: Understanding Matter and Its Three Everyday States\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter is everything around us that has mass and occupies space (volume).\n\n#### 1. The Three States of Matter & Particle Behavior\n* **Solids:** Particles are packed closely together in a neat, orderly pattern. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### 2. Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Elements, the Periodic Table, and Atomic Structure\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n\n#### Historical Foundation & Definition:\n* In 1869, Russian chemist Dmitri Mendeleev organized known elements into the **Periodic Table** based on recurring chemical behaviors and atomic patterns.\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### Chemical Naming & International Symbols:\n* Each element has a 1- or 2-letter Berzelius symbol. The first letter is always **CAPITALIZED**; the second letter (if present) is always lowercase.\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n#### Subatomic Architecture of the Atom:\nAn atom comprises three subatomic particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, located in the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, situated in the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **Electron Shell Configuration ($2n^2$ Rule):**\n  * First Shell ($K$ shell): Holds a maximum of $2$ electrons.\n  * Second Shell ($L$ shell): Holds a maximum of $8$ electrons.\n  * Third Shell ($M$ shell): Holds a maximum of $8$ electrons (for the first 20 elements).\n\n---\n\n### Unit 4: Broad Groups of the Periodic Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n\n1. **Metals:** Located on the left and central sectors. Shiny (lustrous), malleable, ductile, high melting points, and excellent conductors of heat and electricity. Readily lose electrons to form positive cations.\n   * *Examples:* Iron ($\\text{Fe}$ — structural beams), Aluminium ($\\text{Al}$ — cookware, aircraft), Copper ($\\text{Cu}$ — electrical wiring), Gold ($\\text{Au}$ — jewellery, corrosion-free contacts).\n2. **Non-Metals:** Located on the right sector. Dull appearance, brittle when solid, low density, poor electrical/thermal conductors (graphite is an exception). Accept or share electrons.\n   * *Examples:* Oxygen ($\\text{O}$ — respiration, combustion), Chlorine ($\\text{Cl}$ — water sanitation), Nitrogen ($\\text{N}$ — food packaging, fertilizers), Phosphorus ($\\text{P}$ — safety matches).\n3. **Semi-Metals (Metalloids):** Border the zigzag diagonal dividing line. Possess intermediate metallic and non-metallic traits. Act as semiconductors (poor conductors at low temperatures, highly conductive when heated or doped).\n   * *Six Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Key Application:* Silicon and Germanium power the global electronics industry in microchips, transistors, and solar photovoltaics.\n4. **Noble Gases (Group 18 / Group 0):** The extreme right column. Colorless, odorless, chemically unreactive (inert) gases with completely filled valence electron shells (Helium has $2$; Neon and Argon have $8$).\n   * *Examples:* Helium ($\\text{He}$ — lighter-than-air party balloons), Argon ($\\text{Ar}$ — inert shield in incandescent bulbs).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron. Cut easily with a knife; react violently with water to liberate hydrogen gas (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Reactive metals with 2 valence electrons; denser and harder than Group 1 (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / Group 7):** Very reactive non-metals with 7 valence electrons. Exist naturally as diatomic pairs ($F_2, Cl_2, Br_2, I_2$).\n\n---\n\n### Unit 5: First Twenty Elements Reference Table\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Chemical Class |\n| :---: | :--- | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | 1 | 1 | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | 2 | 2 (Duplet) | Noble Gas |\n| **3** | Lithium | $\\text{Li}$ | 2, 1 | 1 | Alkali Metal |\n| **4** | Beryllium | $\\text{Be}$ | 2, 2 | 2 | Alkaline Earth Metal |\n| **5** | Boron | $\\text{B}$ | 2, 3 | 3 | Metalloid |\n| **6** | Carbon | $\\text{C}$ | 2, 4 | 4 | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | 2, 5 | 5 | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | 2, 6 | 6 | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | 2, 7 | 7 | Halogen |\n| **10** | Neon | $\\text{Ne}$ | 2, 8 | 8 (Octet) | Noble Gas |\n| **11** | Sodium | $\\text{Na}$ | 2, 8, 1 | 1 | Alkali Metal |\n| **12** | Magnesium | $\\text{Mg}$ | 2, 8, 2 | 2 | Alkaline Earth Metal |\n| **13** | Aluminium | $\\text{Al}$ | 2, 8, 3 | 3 | Metal |\n| **14** | Silicon | $\\text{Si}$ | 2, 8, 4 | 4 | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | 2, 8, 5 | 5 | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | 2, 8, 6 | 6 | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | 2, 8, 7 | 7 | Halogen |\n| **18** | Argon | $\\text{Ar}$ | 2, 8, 8 | 8 (Octet) | Noble Gas |\n| **19** | Potassium | $\\text{K}$ | 2, 8, 8, 1 | 1 | Alkali Metal |\n| **20** | Calcium | $\\text{Ca}$ | 2, 8, 8, 2 | 2 | Alkaline Earth Metal |",
+        "notes": "### Unit 1: Particulate Nature of Matter: Solid, Liquid, and Gas\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter consists of tiny particles in continuous motion. The macroscopic properties of solids, liquids, and gases depend on how these particles are packed and how strongly they attract one another.\n\n#### Microscopic Particle Organization\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"solidGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#38bdf8\"/><stop offset=\"100%\" stop-color=\"#0284c7\"/></linearGradient><linearGradient id=\"liqGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#34d399\"/><stop offset=\"100%\" stop-color=\"#059669\"/></linearGradient><linearGradient id=\"gasGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"100%\" stop-color=\"#dc2626\"/></linearGradient><marker id=\"arrowRed\" markerWidth=\"6\" markerHeight=\"6\" refX=\"5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"#dc2626\"/></marker></defs><rect width=\"760\" height=\"280\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#e2e8f0\" stroke-width=\"2\"/><g transform=\"translate(30, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">SOLID</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Rigid • Fixed Lattice • Vibrational</text><g fill=\"url(#solidGrad)\" stroke=\"#0369a1\" stroke-width=\"1\"><circle cx=\"40\" cy=\"50\" r=\"11\"/><circle cx=\"68\" cy=\"50\" r=\"11\"/><circle cx=\"96\" cy=\"50\" r=\"11\"/><circle cx=\"124\" cy=\"50\" r=\"11\"/><circle cx=\"152\" cy=\"50\" r=\"11\"/><circle cx=\"40\" cy=\"76\" r=\"11\"/><circle cx=\"68\" cy=\"76\" r=\"11\"/><circle cx=\"96\" cy=\"76\" r=\"11\"/><circle cx=\"124\" cy=\"76\" r=\"11\"/><circle cx=\"152\" cy=\"76\" r=\"11\"/><circle cx=\"40\" cy=\"102\" r=\"11\"/><circle cx=\"68\" cy=\"102\" r=\"11\"/><circle cx=\"96\" cy=\"102\" r=\"11\"/><circle cx=\"124\" cy=\"102\" r=\"11\"/><circle cx=\"152\" cy=\"102\" r=\"11\"/><circle cx=\"40\" cy=\"128\" r=\"11\"/><circle cx=\"68\" cy=\"128\" r=\"11\"/><circle cx=\"96\" cy=\"128\" r=\"11\"/><circle cx=\"124\" cy=\"128\" r=\"11\"/><circle cx=\"152\" cy=\"128\" r=\"11\"/></g></g><g transform=\"translate(280, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#059669\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#047857\" text-anchor=\"middle\">LIQUID</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Fluid • Definite Volume • Slides past</text><g fill=\"url(#liqGrad)\" stroke=\"#047857\" stroke-width=\"1\"><circle cx=\"45\" cy=\"90\" r=\"11\"/><circle cx=\"75\" cy=\"96\" r=\"11\"/><circle cx=\"108\" cy=\"92\" r=\"11\"/><circle cx=\"140\" cy=\"98\" r=\"11\"/><circle cx=\"165\" cy=\"90\" r=\"11\"/><circle cx=\"55\" cy=\"118\" r=\"11\"/><circle cx=\"88\" cy=\"122\" r=\"11\"/><circle cx=\"120\" cy=\"116\" r=\"11\"/><circle cx=\"152\" cy=\"124\" r=\"11\"/><circle cx=\"42\" cy=\"144\" r=\"11\"/><circle cx=\"72\" cy=\"148\" r=\"11\"/><circle cx=\"104\" cy=\"145\" r=\"11\"/><circle cx=\"136\" cy=\"147\" r=\"11\"/><circle cx=\"164\" cy=\"142\" r=\"11\"/></g></g><g transform=\"translate(530, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#b91c1c\" text-anchor=\"middle\">GAS</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Vast Voids • Rapid Random Paths</text><g fill=\"url(#gasGrad)\" stroke=\"#b91c1c\" stroke-width=\"1\"><circle cx=\"45\" cy=\"45\" r=\"9\"/><line x1=\"45\" y1=\"45\" x2=\"25\" y2=\"30\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"155\" cy=\"55\" r=\"9\"/><line x1=\"155\" y1=\"55\" x2=\"175\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"80\" cy=\"95\" r=\"9\"/><line x1=\"80\" y1=\"95\" x2=\"95\" y2=\"115\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"145\" cy=\"125\" r=\"9\"/><line x1=\"145\" y1=\"125\" x2=\"125\" y2=\"140\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"50\" cy=\"135\" r=\"9\"/><line x1=\"50\" y1=\"135\" x2=\"65\" y2=\"115\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/></g></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Microscopic Particle Distribution across Solid, Liquid, and Gas Phases</p>\n</div>\n\n* **Solids:** Particles are packed closely together in a neat, orderly lattice. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Subatomic Architecture and Quantized Shell Occupancy\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n* **Core Principle:** Every atom comprises a central nucleus consisting of protons and neutrons, enveloped by electrons occupying quantized concentric energy shells (K, L, M, N) governed by the 2n² capacity law.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"600\" height=\"360\" rx=\"10\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"240\" cy=\"180\" r=\"130\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"85\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"45\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"24\" fill=\"#f1f5f9\" stroke=\"#0f172a\" stroke-width=\"2\"/><circle cx=\"235\" cy=\"174\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"246\" cy=\"172\" r=\"6\" fill=\"#64748b\"/><circle cx=\"236\" cy=\"186\" r=\"6\" fill=\"#64748b\"/><circle cx=\"246\" cy=\"185\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"240\" cy=\"135\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"225\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"155\" cy=\"180\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"325\" cy=\"180\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"180\" cy=\"120\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"300\" cy=\"240\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"50\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"310\" r=\"5.5\" fill=\"#0284c7\"/><line x1=\"240\" y1=\"180\" x2=\"430\" y2=\"130\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"440\" y=\"125\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\">Nucleus</text><text x=\"440\" y=\"142\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#ef4444\">• Protons (+1, 1 a.m.u.)</text><text x=\"440\" y=\"157\" font-family=\"sans-serif\" fill=\"#64748b\" font-size=\"11\">• Neutrons (0, 1 a.m.u.)</text><line x1=\"285\" y1=\"180\" x2=\"430\" y2=\"200\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"195\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">K-Shell (n = 1): Max 2 e⁻</text><line x1=\"325\" y1=\"180\" x2=\"430\" y2=\"220\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"220\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">L-Shell (n = 2): Max 8 e⁻</text><line x1=\"370\" y1=\"180\" x2=\"430\" y2=\"245\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"245\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">M-Shell (n = 3): Max 8 e⁻ (B7-B9)</text><text x=\"440\" y=\"285\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#b91c1c\">Capacity Law = 2n²</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Detailed Bohr Atomic Architecture showing Nucleus (Protons/Neutrons) and Shell Quantum Levels</p>\n</div>\n\n#### Subatomic Particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, locked inside the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, locked inside the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **The $2n^2$ Capacity Law:**\n  * First Shell ($K$-shell, $n=1$): Holds a maximum of $2(1)^2 = 2$ electrons.\n  * Second Shell ($L$-shell, $n=2$): Holds a maximum of $2(2)^2 = 8$ electrons.\n  * Third Shell ($M$-shell, $n=3$): Holds a maximum of $8$ electrons for the first 20 elements ($18$ in advanced quantum mechanics).\n\n---\n\n### Unit 4: Electron Shell Configurations: Representative Elements (Bohr Diagrams)\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n* **Core Principle:** Visual models of orbital occupancy demonstrating how valence electrons dictate chemical classification (Alkali Metal, Alkaline Earth Metal, Halogen, and Noble Gas).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><g transform=\"translate(20, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sodium (₁₁Na)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 1 (Group 1)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">11p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"50\" r=\"4.5\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">1 Valence Electron</text></g><g transform=\"translate(210, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Magnesium (₁₂Mg)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 2 (Group 2)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">12p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"70\" cy=\"51\" r=\"4.5\" fill=\"#f59e0b\"/><circle cx=\"90\" cy=\"51\" r=\"4.5\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">2 Valence Electrons</text></g><g transform=\"translate(400, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Chlorine (₁₇Cl)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 7 (Group 17)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">17p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"75\" cy=\"51\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"85\" cy=\"51\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"139\" cy=\"105\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"139\" cy=\"115\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"75\" cy=\"169\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"85\" cy=\"169\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"21\" cy=\"110\" r=\"4\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">7 Valence Electrons</text></g><g transform=\"translate(585, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Argon (₁₈Ar)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 8 (Group 18)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">18p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"75\" cy=\"51\" r=\"4\" fill=\"#10b981\"/><circle cx=\"85\" cy=\"51\" r=\"4\" fill=\"#10b981\"/><circle cx=\"139\" cy=\"105\" r=\"4\" fill=\"#10b981\"/><circle cx=\"139\" cy=\"115\" r=\"4\" fill=\"#10b981\"/><circle cx=\"75\" cy=\"169\" r=\"4\" fill=\"#10b981\"/><circle cx=\"85\" cy=\"169\" r=\"4\" fill=\"#10b981\"/><circle cx=\"21\" cy=\"105\" r=\"4\" fill=\"#10b981\"/><circle cx=\"21\" cy=\"115\" r=\"4\" fill=\"#10b981\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#047857\" text-anchor=\"middle\">Stable Octet (Inert)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Comparative Bohr Models for Sodium, Magnesium, Chlorine, and Argon</p>\n</div>\n\n#### Chemical Naming & International Symbols:\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n---\n\n### Unit 5: Periodic Table Architecture & Chemical Families\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n* **Core Principle:** Mendeleev organized elements to expose periodic trends. The modern layout separates elements into distinct functional groups with predictable behaviors.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"200\" viewBox=\"0 0 720 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"720\" height=\"200\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><rect x=\"25\" y=\"30\" width=\"55\" height=\"140\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"52\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\" text-anchor=\"middle\">Group 1</text><text x=\"52\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">Alkali</text><text x=\"52\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">Metals</text><rect x=\"85\" y=\"60\" width=\"55\" height=\"110\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><text x=\"112\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Group 2</text><text x=\"112\" y=\"118\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">Alk. Earth</text><rect x=\"145\" y=\"90\" width=\"280\" height=\"80\" rx=\"6\" fill=\"#e0e7ff\" stroke=\"#6366f1\" stroke-width=\"1.5\"/><text x=\"285\" y=\"135\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#3730a3\" text-anchor=\"middle\">Transition Metals (Fe, Cu, Zn, Au, Ag, Hg)</text><rect x=\"430\" y=\"60\" width=\"80\" height=\"110\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><text x=\"470\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Metalloids</text><text x=\"470\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#713f12\" text-anchor=\"middle\">(B, Si, Ge...)</text><rect x=\"515\" y=\"60\" width=\"65\" height=\"110\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"547\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Group 17</text><text x=\"547\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">Halogens</text><rect x=\"585\" y=\"30\" width=\"65\" height=\"140\" rx=\"6\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"617\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Group 18</text><text x=\"617\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0c4a6e\" text-anchor=\"middle\">Noble</text><text x=\"617\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0c4a6e\" text-anchor=\"middle\">Gases</text><path d=\"M25,185 L650,185\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"340\" y=\"196\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"middle\">Increasing Atomic Number (Z) Across Periods →</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Structural Overview of the Periodic Table showing Group Families and Locations</p>\n</div>\n\n1. **Metals:** Located on the left side and center of the table. Usually hard, lustrous, malleable, ductile, high melting points, and excellent conductors of heat and electricity.\n   * *Examples:* Iron ($\\text{Fe}$), Aluminium ($\\text{Al}$), Copper ($\\text{Cu}$), Gold ($\\text{Au}$).\n2. **Non-Metals:** Located on the right side of the table. Dull appearance, brittle when solid, poor conductors of heat and electricity (graphite carbon is a notable exception).\n   * *Examples:* Oxygen ($\\text{O}$), Chlorine ($\\text{Cl}$), Nitrogen ($\\text{N}$), Phosphorus ($\\text{P}$).\n3. **Semi-Metals (Metalloids):** Along the zigzag diagonal boundary. Exhibit intermediate metallic and non-metallic traits, acting as semiconductors.\n   * *Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Application:* Silicon and Germanium are the foundation of microprocessors and solar cells.\n4. **Noble Gases (Group 18 / 8):** Extreme right column. Chemically inert with complete outer electron shells (Helium: 2 duplet, Neon/Argon: 8 octet).\n   * *Examples:* Helium ($\\text{He}$), Argon ($\\text{Ar}$).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Denser, harder reactive metals with 2 valence electrons (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / 7):** Very reactive non-metals with 7 valence electrons, existing naturally as diatomic pairs ($\\text{F}_2, \\text{Cl}_2, \\text{Br}_2, \\text{I}_2$).\n\n---\n\n### Unit 6: Canonical First Twenty Elements Reference Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Reference)`\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Reactive Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Reactive Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Reactive Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Post-Transition Metal |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Reactive Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Reactive Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |",
         "workedExamples": [
           {
             "id": "ex_b7_s1_mat_01",
@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.312Z"
+    "updatedAt": "2026-10-02T15:33:04.559Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -2785,45 +2785,892 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
-    "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. The track traces life from fundamental cell theory and organelle functions to multicellular differentiation and organ-system hierarchies.",
-    "totalPracticeQuestions": 9,
+    "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. Students trace life from fundamental cell theory and plant vs. animal ultrastructure to multicellular differentiation and organ-system hierarchies.",
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b7_strand1_cells"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Cell Theory, Microscopy & Plant vs. Animal Ultrastructure",
-        "summary": "Understand the cell as the structural unit of life, master light microscope handling, and contrast plant and animal cell organelles.",
-        "notes": "### The Cell as the Fundamental Unit of Life & Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate an understanding of the structure of plant and animal cells, observe wet mounts under the microscope, and identify organelles.\n\n#### 1. The Classical Cell Theory\nDeveloped by Schleiden, Schwann, and Virchow:\n1. All living organisms are composed of one or more cells.\n2. The cell is the basic structural and functional unit of life.\n3. All cells arise from pre-existing cells through biological division.\n\n#### 2. Optical Light Microscope Components\n* **Eyepiece (Ocular Lens):** Magnifies image (typically $10\\times$).\n* **Objective Lenses:** Provide low ($4\\times$), medium ($10\\times$), and high ($40\\times$) magnification.\n* **Coarse & Fine Adjustment Knobs:** Bring specimen into initial rapid focus and fine, sharp resolution.\n* **Stage & Clips:** Support slide with central aperture for light transmission.\n* **Diaphragm & Condenser:** Regulate intensity and cone angle of illumination.\n* $\\text{Total Magnification} = \\text{Eyepiece Power} \\times \\text{Objective Lens Power}$.\n\n#### 3. Ultrastructural Comparison: Plant vs. Animal Cells\n| Structural Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Wall** | Present (rigid cellulose framework) | Absent (flexible outer boundary) |\n| **Plasma Membrane** | Present (interior to cell wall) | Present (outermost living boundary) |\n| **Chloroplasts** | Present (contain chlorophyll for photosynthesis) | Absent |\n| **Vacuole** | Large, permanent, central sap vacuole | Small, temporary, non-central vacuoles |\n| **Shape & Rigidity** | Regular, definite angular geometry | Irregular, fluid, polymorphic geometry |\n| **Storage Form** | Starch grains | Glycogen granules |",
+        "levelTitle": "Basic 7 (JHS 1) • Cell Theory, Microscopy, Plant vs. Animal Ultrastructure & Specialization",
+        "summary": "Master the cell as the structural unit of life, optical light microscope anatomy and handling, contrast plant and animal cell ultrastructure, and explore specialized cell adaptations across multicellular hierarchies.",
+        "notes": "### Unit 1: The Cell Theory & Optical Light Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate a thorough understanding of cellular biology, handle an optical light microscope safely, and distinguish between plant and animal cells.\n\n#### 1. The Classical Cell Theory\nThe cell theory was formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms (unicellular and multicellular) are composed of one or more living cells.\n2. **Functional Tenet:** The cell is the most fundamental structural, functional, and physiological unit of all biological life.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n#### 2. The Optical Compound Light Microscope\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"360\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"metalGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#94a3b8\"/>\n      <stop offset=\"100%\" stop-color=\"#475569\"/>\n    </linearGradient>\n    <linearGradient id=\"lensGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <linearGradient id=\"beamGrad\" x1=\"0%\" y1=\"100%\" x2=\"0%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" stop-opacity=\"0.8\"/>\n      <stop offset=\"100%\" stop-color=\"#fef08a\" stop-opacity=\"0.1\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"15\" width=\"680\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"35\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</text>\n  \n  <!-- Microscope Base -->\n  <path d=\"M140,320 L280,320 L270,300 L150,300 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Light Source / Mirror -->\n  <ellipse cx=\"210\" cy=\"285\" r=\"16\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n  <polygon points=\"200,285 220,285 226,200 194,200\" fill=\"url(#beamGrad)\"/>\n  \n  <!-- Arm -->\n  <path d=\"M260,300 C330,280 340,160 270,120 L250,120 C300,150 290,260 240,290 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Stage and Condenser/Diaphragm -->\n  <rect x=\"160\" y=\"200\" width=\"100\" height=\"12\" rx=\"2\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <rect x=\"185\" y=\"212\" width=\"50\" height=\"14\" rx=\"2\" fill=\"#64748b\"/>\n  <line x1=\"180\" y1=\"198\" x2=\"240\" y2=\"198\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n  \n  <!-- Coarse & Fine Focus Knobs -->\n  <circle cx=\"285\" cy=\"220\" r=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"2\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"8\" fill=\"#64748b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"4\" fill=\"#cbd5e1\"/>\n  \n  <!-- Body Tube -->\n  <rect x=\"195\" y=\"70\" width=\"30\" height=\"80\" rx=\"3\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Eyepiece (Ocular Lens) -->\n  <rect x=\"190\" y=\"48\" width=\"40\" height=\"22\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"210\" cy=\"50\" rx=\"14\" ry=\"4\" fill=\"url(#lensGrad)\"/>\n  \n  <!-- Revolving Nosepiece -->\n  <path d=\"M190,150 L230,150 L238,162 L182,162 Z\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Objective Lenses (Low, Medium, High) -->\n  <rect x=\"188\" y=\"162\" width=\"12\" height=\"24\" rx=\"2\" fill=\"#ef4444\" stroke=\"#991b1b\" stroke-width=\"1\"/>\n  <rect x=\"204\" y=\"162\" width=\"12\" height=\"32\" rx=\"2\" fill=\"#eab308\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <rect x=\"220\" y=\"162\" width=\"12\" height=\"38\" rx=\"2\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1\"/>\n\n  <!-- Annotations / Callouts -->\n  <g font-family=\"sans-serif\" font-size=\"11\" fill=\"#0f172a\">\n    <line x1=\"230\" y1=\"58\" x2=\"380\" y2=\"58\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"62\" font-weight=\"bold\"><tspan fill=\"#0284c7\">1. Eyepiece (Ocular Lens):</tspan> Magnifies image (typically 10×)</text>\n    \n    <line x1=\"225\" y1=\"110\" x2=\"380\" y2=\"110\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"114\" font-weight=\"bold\"><tspan fill=\"#0f172a\">2. Body Tube:</tspan> Holds eyepiece at correct optical distance</text>\n    \n    <line x1=\"235\" y1=\"175\" x2=\"380\" y2=\"155\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"159\" font-weight=\"bold\"><tspan fill=\"#eab308\">3. Objective Lenses:</tspan> 4× (low), 10× (medium), 40× (high power)</text>\n    \n    <line x1=\"260\" y1=\"206\" x2=\"380\" y2=\"200\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"204\" font-weight=\"bold\"><tspan fill=\"#0f172a\">4. Stage &amp; Stage Clips:</tspan> Supports glass slide securely</text>\n    \n    <line x1=\"300\" y1=\"220\" x2=\"380\" y2=\"245\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"249\" font-weight=\"bold\"><tspan fill=\"#334155\">5. Coarse &amp; Fine Focus:</tspan> Rapid positioning / sharp definition</text>\n    \n    <line x1=\"235\" y1=\"222\" x2=\"380\" y2=\"290\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"294\" font-weight=\"bold\"><tspan fill=\"#047857\">6. Diaphragm &amp; Condenser:</tspan> Regulates incident light beam volume</text>\n    \n    <line x1=\"226\" y1=\"285\" x2=\"380\" y2=\"330\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"334\" font-weight=\"bold\"><tspan fill=\"#ca8a04\">7. Substage Light / Mirror:</tspan> Reflects illumination through specimen</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</p>\n</div>\n\n| Microscope Component | Mechanical or Optical? | Specific Functional Role |\n| :--- | :---: | :--- |\n| **Eyepiece (Ocular Lens)** | Optical | Magnifies primary image formed by objective lens (standard magnification: $10\\times$). |\n| **Body Tube (Barrel)** | Mechanical | Maintains the correct optical focal distance between eyepiece and objective lenses. |\n| **Revolving Nosepiece** | Mechanical | Rotating turret housing multiple objective lenses allowing rapid switching of magnifications. |\n| **Objective Lenses** | Optical | Primary magnification lenses: Low power ($4\\times$), Medium power ($10\\times$), High power ($40\\times$). |\n| **Stage & Stage Clips** | Mechanical | Flat platform holding the specimen glass slide securely over the central optical aperture. |\n| **Diaphragm & Condenser** | Optical | Regulates the cone angle and intensity of light illuminating the specimen. |\n| **Coarse Adjustment Knob** | Mechanical | Moves stage rapidly up or down for initial specimen location under low power ($4\\times$ or $10\\times$). |\n| **Fine Adjustment Knob** | Mechanical | Delicately shifts the objective focal plane to achieve sharp, high-resolution clarity under high power. |\n| **Substage Mirror / Lamp** | Optical | Directs natural or electric light upward through the condenser and glass slide. |\n| **Arm & Base** | Mechanical | Structural backbone and heavy foot providing stability during laboratory operation. |\n\n#### Calculating Total Magnification:\n$$\\text{Total Magnification} = \\text{Magnification of Eyepiece} \\times \\text{Magnification of Objective Lens}$$\n* *Example:* If an eyepiece lens has a rating of $10\\times$ and the high-power objective lens is $40\\times$:\n  $$\\text{Total Magnification} = 10 \\times 40 = 400\\times$$\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"plantWall\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#15803d\"/>\n      <stop offset=\"100%\" stop-color=\"#166534\"/>\n    </linearGradient>\n    <linearGradient id=\"plantCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#dcfce7\"/>\n      <stop offset=\"100%\" stop-color=\"#bbf7d0\"/>\n    </linearGradient>\n    <linearGradient id=\"animalCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fde68a\"/>\n    </linearGradient>\n    <linearGradient id=\"nucGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#818cf8\"/>\n      <stop offset=\"100%\" stop-color=\"#4f46e5\"/>\n    </linearGradient>\n    <linearGradient id=\"chloroGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"760\" height=\"340\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"12\" width=\"720\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</text>\n  \n  <!-- ================= PLANT CELL (LEFT) ================= -->\n  <g transform=\"translate(30, 55)\">\n    <!-- Cell Wall Outer -->\n    <rect x=\"0\" y=\"0\" width=\"310\" height=\"230\" rx=\"20\" fill=\"url(#plantWall)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Cell Wall Inner / Middle Lamella Space -->\n    <rect x=\"8\" y=\"8\" width=\"294\" height=\"214\" rx=\"14\" fill=\"#86efac\"/>\n    <!-- Cell Membrane & Cytoplasm -->\n    <rect x=\"12\" y=\"12\" width=\"286\" height=\"206\" rx=\"12\" fill=\"url(#plantCyto)\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    \n    <!-- Large Central Vacuole -->\n    <rect x=\"70\" y=\"50\" width=\"170\" height=\"130\" rx=\"30\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"155\" y=\"120\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Central Vacuole</text>\n    <text x=\"155\" y=\"135\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0284c7\" text-anchor=\"middle\">(Cell Sap &amp; Turgor Pressure)</text>\n    \n    <!-- Nucleus (Pushed to periphery) -->\n    <circle cx=\"50\" cy=\"65\" r=\"26\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"1.5\"/>\n    <circle cx=\"50\" cy=\"65\" r=\"10\" fill=\"#312e81\"/>\n    <text x=\"50\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#312e81\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Chloroplasts -->\n    <g fill=\"url(#chloroGrad)\" stroke=\"#14532d\" stroke-width=\"1\">\n      <ellipse cx=\"60\" cy=\"180\" rx=\"18\" ry=\"10\" transform=\"rotate(-20 60 180)\"/>\n      <ellipse cx=\"260\" cy=\"80\" rx=\"18\" ry=\"10\" transform=\"rotate(30 260 80)\"/>\n      <ellipse cx=\"260\" cy=\"160\" rx=\"18\" ry=\"10\" transform=\"rotate(-15 260 160)\"/>\n    </g>\n    <!-- Mitochondria -->\n    <ellipse cx=\"140\" cy=\"200\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <ellipse cx=\"210\" cy=\"35\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    \n    <text x=\"155\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">PLANT CELL (Regular Polygonal)</text>\n  </g>\n\n  <!-- ================= ANIMAL CELL (RIGHT) ================= -->\n  <g transform=\"translate(410, 55)\">\n    <!-- Flexible Cell Membrane & Cytoplasm -->\n    <path d=\"M40,50 Q120,10 220,30 Q300,70 280,160 Q260,225 180,220 Q70,225 25,160 Q0,80 40,50 Z\" fill=\"url(#animalCyto)\" stroke=\"#d97706\" stroke-width=\"2.5\"/>\n    \n    <!-- Centrally Located Nucleus -->\n    <circle cx=\"150\" cy=\"120\" r=\"34\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"2\"/>\n    <circle cx=\"150\" cy=\"120\" r=\"12\" fill=\"#312e81\"/>\n    <text x=\"150\" y=\"124\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Mitochondria (Abundant) -->\n    <ellipse cx=\"70\" cy=\"90\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(25 70 90)\"/>\n    <ellipse cx=\"230\" cy=\"80\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-30 230 80)\"/>\n    <ellipse cx=\"90\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-10 90 170)\"/>\n    <ellipse cx=\"220\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(40 220 170)\"/>\n    \n    <!-- Small Temporary Vacuoles -->\n    <circle cx=\"85\" cy=\"130\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <circle cx=\"215\" cy=\"125\" r=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    \n    <!-- Centrosome / Centrioles -->\n    <rect x=\"175\" y=\"70\" width=\"10\" height=\"4\" fill=\"#475569\"/>\n    <rect x=\"178\" y=\"67\" width=\"4\" height=\"10\" fill=\"#475569\"/>\n    \n    <text x=\"150\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (Irregular / Amorphous)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</p>\n</div>\n\n#### Detailed Organelle Functions:\n1. **Cell Membrane (Plasma Membrane):**\n   * Selectively permeable phospholipid bilayer studded with proteins.\n   * Regulates the bidirectional passage of substances (nutrients, gases, metabolic wastes).\n2. **Cell Wall (Plants Only):**\n   * Rigid, non-living outer casing constructed predominantly of tough cellulose fibers.\n   * Provides structural support, prevents osmotic burst (lysis), and imparts a fixed polygonal shape.\n3. **Cytoplasm:**\n   * Gel-like aqueous cytosol containing dissolved sugars, amino acids, mineral ions, and suspended organelles.\n   * Site of metabolic activities, including glycolysis and enzymatic synthesis.\n4. **Nucleus & Nucleolus:**\n   * Enclosed by a double membrane with nuclear pores; houses genetic material (DNA in chromatin/chromosomes).\n   * Serves as the executive control center directing cell division, enzyme production, and protein synthesis.\n5. **Mitochondria (Singular: Mitochondrion):**\n   * Oval organelle with folded inner membranes (*cristae*).\n   * Known as the **\"powerhouse of the cell\"**: site of aerobic cellular respiration generating adenosine triphosphate ($ATP$).\n6. **Chloroplasts (Plants Only):**\n   * Double-membraned plastid containing green chlorophyll pigments arranged on stacked thylakoid disks (*grana*).\n   * Captures radiant sunlight energy to synthesize glucose through photosynthesis ($6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\rightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$).\n7. **Vacuole:**\n   * *In Plant Cells:* Single, immense central permanent vacuole bounded by a membrane (*tonoplast*) filled with watery cell sap. Generates internal turgor pressure that keeps non-woody stems upright.\n   * *In Animal Cells:* Multiple, small, temporary vacuoles used for phagocytosis, pinocytosis, or waste excretion.\n\n#### Plant vs. Animal Cell Distinction Matrix:\n| Feature / Characteristic | Typical Plant Cell | Typical Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Shape** | Fixed, rigid, regular polygonal shape | Flexible, variable, irregular / spherical shape |\n| **Outer Boundary** | Cellulose cell wall + inner cell membrane | Outer cell membrane only (no cell wall) |\n| **Chloroplasts & Chlorophyll** | Present in photosynthetic cells (leaves) | Completely absent |\n| **Vacuolar Architecture** | One large, prominent central permanent vacuole | Multiple small, temporary vacuoles (if present) |\n| **Position of Nucleus** | Pushed to the periphery by central vacuole | Usually positioned near the geometric center |\n| **Centrioles & Centrosomes** | Absent in higher plants | Present (organizes spindle fibers in division) |\n| **Carbohydrate Food Storage** | Stored as insoluble **Starch grains** | Stored as branched **Glycogen granules** |\n\n---\n\n### Unit 3: Cellular Specialization & Multicellular Complexity\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B7 Extension`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"760\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"720\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.3: Structural Specializations in Animal and Plant Cells</text>\n  \n  <!-- Red Blood Cell -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"32\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.5\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"16\" fill=\"#fca5a5\" stroke=\"#ef4444\" stroke-width=\"1\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Red Blood Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Biconcave disc</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• No nucleus (haemoglobin)</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• High surface area</text>\n  </g>\n  \n  <!-- Sperm Cell -->\n  <g transform=\"translate(175, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <ellipse cx=\"40\" cy=\"55\" rx=\"16\" ry=\"10\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.5\"/>\n    <circle cx=\"30\" cy=\"55\" r=\"4\" fill=\"#93c5fd\"/>\n    <rect x=\"56\" y=\"52\" width=\"12\" height=\"6\" rx=\"2\" fill=\"#f59e0b\"/>\n    <path d=\"M68,55 Q95,40 105,65 Q115,85 120,55\" fill=\"none\" stroke=\"#1d4ed8\" stroke-width=\"2\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sperm Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Male Gamete</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Flagellum for motility</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Acrosome enzyme tip</text>\n  </g>\n\n  <!-- Nerve Cell / Motor Neuron -->\n  <g transform=\"translate(320, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <!-- Soma & Dendrites -->\n    <polygon points=\"35,45 25,35 30,55 18,60 30,70 42,75 50,60\" fill=\"#8b5cf6\" stroke=\"#6d28d9\" stroke-width=\"1\"/>\n    <line x1=\"50\" y1=\"60\" x2=\"105\" y2=\"60\" stroke=\"#6d28d9\" stroke-width=\"2\"/>\n    <rect x=\"60\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"75\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"90\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Nerve Cell (Neuron)</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Signal Conduction</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Elongated axon cable</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Myelin sheath insulation</text>\n  </g>\n\n  <!-- Root Hair Cell -->\n  <g transform=\"translate(465, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <path d=\"M25,40 L65,40 L115,55 L65,70 L25,70 Z\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Root Hair Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Plant Subterranean</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Long finger projection</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vast absorption area</text>\n  </g>\n\n  <!-- Palisade Mesophyll Cell -->\n  <g transform=\"translate(610, 45)\">\n    <rect width=\"120\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <rect x=\"35\" y=\"35\" width=\"50\" height=\"55\" rx=\"4\" fill=\"#86efac\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <circle cx=\"45\" cy=\"45\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"58\" cy=\"43\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"72\" cy=\"46\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"48\" cy=\"62\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"65\" cy=\"65\" r=\"3\" fill=\"#166534\"/>\n    <text x=\"60\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Palisade Cell</text>\n    <text x=\"60\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Leaf Photosynthesis</text>\n    <text x=\"60\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Packed chloroplasts</text>\n    <text x=\"60\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vertical light capture</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.3: Structural Specializations in Animal and Plant Cells</p>\n</div>\n\n| Specialized Cell | Biological Location | Structural Adaptation | Physiological Function |\n| :--- | :--- | :--- | :--- |\n| **Red Blood Cell (Erythrocyte)** | Blood vascular system | Biconcave disc shape (maximizes surface-area-to-volume ratio); mature cells lack a nucleus to pack more haemoglobin pigment. | Transports oxygen from pulmonary alveoli to respiring body tissues. |\n| **Sperm Cell (Male Gamete)** | Mammalian testes | Long whip-like flagellum; head capped with an **acrosome** containing digestive enzymes; midpiece loaded with mitochondria. | Swims toward female ovum and digests outer egg membrane during fertilization. |\n| **Nerve Cell (Neuron)** | Central & peripheral nervous system | Extended axon transmitting electrical impulses across great distances; insulating myelin sheath; branching dendrites. | Transmits electro-chemical nerve impulses between receptors, brain, and effectors. |\n| **Root Hair Cell** | Outer root epidermis | Elongated finger-like projection extending into soil pores; thin cell wall; lacks chloroplasts; high solute concentration. | Absorbs soil water by osmosis and dissolved mineral salts by active transport. |\n| **Palisade Mesophyll Cell** | Upper leaf interior | Columnar vertical arrangement packed with hundreds of chloroplasts positioned directly beneath the transparent upper cuticle. | Maximum absorption of sunlight for photosynthetic carbohydrate synthesis. |\n| **Guard Cells** | Leaf epidermis (stomatal pore) | Kidney-shaped paired cells with thicker inner walls; expand when turgid to open stomata, relax when flaccid to close. | Regulates transpirational water loss and photosynthetic gaseous exchange ($\\text{CO}_2 / \\text{O}_2$). |\n\n---\n\n### Unit 4: Hierarchical Levels of Biological Organization\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B9.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"180\" viewBox=\"0 0 720 180\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"720\" height=\"180\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"680\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</text>\n\n  <!-- Level 1: Cell -->\n  <g transform=\"translate(30, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">1. CELL</text>\n    <circle cx=\"47\" cy=\"60\" r=\"16\" fill=\"#38bdf8\" stroke=\"#0284c7\"/>\n    <circle cx=\"47\" cy=\"60\" r=\"5\" fill=\"#0369a1\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Basic life unit</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Muscle fiber)</text>\n  </g>\n  <text x=\"138\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 2: Tissue -->\n  <g transform=\"translate(160, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">2. TISSUE</text>\n    <rect x=\"25\" y=\"48\" width=\"45\" height=\"25\" rx=\"3\" fill=\"#86efac\" stroke=\"#16a34a\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Similar cells</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Cardiac muscle)</text>\n  </g>\n  <text x=\"268\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 3: Organ -->\n  <g transform=\"translate(290, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. ORGAN</text>\n    <path d=\"M47,50 C30,35 15,60 47,80 C79,60 64,35 47,50 Z\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Tissues united</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Heart, Leaf)</text>\n  </g>\n  <text x=\"398\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 4: Organ System -->\n  <g transform=\"translate(420, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#f3e8ff\" stroke=\"#9333ea\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. ORGAN SYSTEM</text>\n    <rect x=\"35\" y=\"45\" width=\"45\" height=\"30\" rx=\"4\" fill=\"#d8b4fe\" stroke=\"#9333ea\"/>\n    <text x=\"57\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Organs working</text>\n    <text x=\"57\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Circulatory system)</text>\n  </g>\n  <text x=\"548\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 5: Organism -->\n  <g transform=\"translate(570, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. ORGANISM</text>\n    <circle cx=\"57\" cy=\"48\" r=\"8\" fill=\"#fca5a5\" stroke=\"#ef4444\"/>\n    <line x1=\"57\" y1=\"56\" x2=\"57\" y2=\"76\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"42\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"45\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"69\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <text x=\"57\" y=\"100\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Complete living</text>\n    <text x=\"57\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">individual (Human)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</p>\n</div>\n\n1. **Level 1: Organelles:** Specialized sub-cellular structures (e.g. Nucleus, Mitochondria, Ribosomes) executing distinct biochemical duties within a single cell.\n2. **Level 2: Cells:** The fundamental building blocks of living organisms (e.g. cardiac muscle cell, epidermal cell).\n3. **Level 3: Tissues:** An aggregate of similar, morphologically specialized cells working collectively to perform a common physiological duty (e.g. cardiac muscle tissue, xylem vascular tissue).\n4. **Level 4: Organs:** Distinct anatomical units composed of two or more coordinated tissues executing a primary physiological function (e.g. the human heart, mammalian kidney, angiosperm leaf).\n5. **Level 5: Organ Systems:** A group of interconnected organs operating symbiotically to carry out a comprehensive life process (e.g. circulatory system, digestive system, plant shoot system).\n6. **Level 6: Multicellular Organism:** An autonomous living individual possessing integrated organ systems (e.g. human being, mango tree).",
         "workedExamples": [
           {
-            "id": "ex_b7_s2_1",
-            "title": "Worked Example: Calculating Total Microscopic Magnification",
-            "problem": "A student observes an epidermal onion cell under a light microscope using a 15x ocular eyepiece lens and a 40x high-power objective lens. Calculate total magnification and explain why iodine solution is added.",
+            "id": "ex_b7_s1_cells_01",
+            "title": "Worked Problem: Wet Mount Slide Preparation & Microscope Magnification",
+            "problem": "A student is instructed to prepare a wet mount of an onion epidermal peel and view it under a compound light microscope. (a) Outline the step-by-step procedure to prepare the slide without trapping air bubbles. (b) Calculate the total magnification if the student uses a 10× eyepiece and a 40× objective lens.",
             "steps": [
-              "Step 1: Apply formula: Total Magnification = Magnification of Eyepiece x Magnification of Objective.",
-              "Step 2: Substitute values: Total Magnification = 15 x 40 = 600x.",
-              "Step 3: Staining rationale: Iodine solution stains cellular starch and selectively binds to nucleic acids, creating optical contrast so that the nucleus, cell wall, and cytoplasm become distinctly visible under brightfield illumination."
+              "Step 1: Peel Extraction — Use fine forceps to strip a thin, transparent epidermal layer from the concave inner surface of a fleshy onion scale leaf.",
+              "Step 2: Transfer & Staining — Place the delicate epidermal peel flat in the center of a clean glass slide, without folding. Add one drop of dilute Iodine solution (or Methylene blue) to stain nuclei and cell walls for visual contrast.",
+              "Step 3: Cover Slip Placement — Hold a clean coverslip by its edges at an angle of approximately 45° to the slide, with one edge touching the liquid drop. Slowly and gently lower the coverslip using a mounted needle to allow air to escape without trapping air bubbles.",
+              "Step 4: Blotting Excess Liquid — Use a piece of absorbent filter paper or blotting paper to remove any excess stain leaking around the coverslip edges.",
+              "Step 5: Magnification Calculation — Apply the formula: Total Magnification = Eyepiece Magnification × Objective Lens Magnification. Total Magnification = 10 × 40 = 400×."
             ],
-            "finalAnswer": "Examiner Tip: Always state the multiplication unit 'x' in your magnification answer (e.g. 600x)."
+            "finalAnswer": "Examiner Tip: Always state that the coverslip is lowered at a 45° angle with a mounted needle. Trapped air bubbles appear as thick, dark-bordered circles under the microscope and are frequently mistaken for cells by careless candidates."
+          },
+          {
+            "id": "ex_b7_s1_cells_02",
+            "title": "Worked Problem: Diagnostic Identification of Plant vs. Animal Cells",
+            "problem": "An unknown microscopic specimen is observed under high-power magnification. It reveals a distinct polygonal boundary, a prominent central sap-filled cavity that displaces the nucleus to the margin, and green disc-like granules in the cytoplasm. Deduce whether this specimen is of plant or animal origin, providing three anatomical justifications.",
+            "steps": [
+              "Step 1: Diagnostic Deduction — The specimen is unequivocally of Plant origin.",
+              "Step 2: Justification 1 (Cell Wall) — The presence of a rigid, fixed polygonal outer boundary indicates a cellulose cell wall, which animal cells completely lack.",
+              "Step 3: Justification 2 (Large Central Vacuole) — The prominent central cavity displacing the nucleus to the cell periphery is the large central permanent vacuole containing cell sap, characteristic exclusively of plant cells.",
+              "Step 4: Justification 3 (Chloroplasts) — The green disc-like granules are chloroplasts containing chlorophyll for photosynthesis, an organelle never found in animal cells."
+            ],
+            "finalAnswer": "Examiner Tip: Mentioning only 'green color' earns partial credit; always specify the organelle name (chloroplast) and its distinctive structural features (cellulose cell wall, large permanent vacuole)."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s2_1",
+              "id": "B7_CELL_F01",
               "difficulty": "low",
-              "prompt": "Which organelle is present in a green plant cell but completely absent in an animal cell?",
+              "prompt": "The basic structural and functional unit of all living organisms is the:",
               "options": [
-                "Mitochondrion",
-                "Cell membrane",
-                "Chloroplast",
-                "Nucleus"
+                "A. Organ",
+                "B. Tissue",
+                "C. Cell",
+                "D. System"
               ],
-              "correctAnswer": "Chloroplast",
-              "hint": "Think about the green pigment required for photosynthesis.",
-              "workedSolution": "Chloroplasts contain chlorophyll pigments and thylakoid membranes necessary for photosynthesis. Animal cells do not photosynthesize and lack chloroplasts.",
+              "correctAnswer": "C. Cell",
+              "hint": "Recall the core tenet of the classical cell theory.",
+              "workedSolution": "The cell is scientifically defined as the fundamental structural and functional unit of all biological organisms.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F02",
+              "difficulty": "low",
+              "prompt": "Which of the following scientists was NOT one of the primary contributors to the classical cell theory?",
+              "options": [
+                "A. Matthias Schleiden",
+                "B. Theodor Schwann",
+                "C. Rudolf Virchow",
+                "D. Isaac Newton"
+              ],
+              "correctAnswer": "D. Isaac Newton",
+              "hint": "Newton was a physicist who formulated the laws of universal gravitation and motion.",
+              "workedSolution": "Schleiden, Schwann, and Virchow formulated the biological cell theory, whereas Isaac Newton was a physicist.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F03",
+              "difficulty": "low",
+              "prompt": "Which part of the optical microscope is placed closest to the observer's eye?",
+              "options": [
+                "A. Objective lens",
+                "B. Eyepiece (ocular lens)",
+                "C. Diaphragm",
+                "D. Condenser"
+              ],
+              "correctAnswer": "B. Eyepiece (ocular lens)",
+              "hint": "Also called the ocular lens, it is situated at the top of the body tube.",
+              "workedSolution": "The eyepiece (or ocular lens) is positioned at the top of the body tube through which the observer directly views the magnified image.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F04",
+              "difficulty": "low",
+              "prompt": "Which organelle is universally referred to as the 'powerhouse of the cell'?",
+              "options": [
+                "A. Ribosome",
+                "B. Chloroplast",
+                "C. Mitochondrion",
+                "D. Vacuole"
+              ],
+              "correctAnswer": "C. Mitochondrion",
+              "hint": "This organelle produces adenosine triphosphate (ATP) during aerobic cellular respiration.",
+              "workedSolution": "Mitochondria are known as the powerhouses of the cell because they synthesize ATP through cellular respiration.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F05",
+              "difficulty": "low",
+              "prompt": "Which of the following structures is found in plant cells but completely absent in animal cells?",
+              "options": [
+                "A. Cell membrane",
+                "B. Cellulose cell wall",
+                "C. Cytoplasm",
+                "D. Mitochondria"
+              ],
+              "correctAnswer": "B. Cellulose cell wall",
+              "hint": "It gives plants their rigid polygonal structure and is made of cellulose.",
+              "workedSolution": "The rigid cellulose cell wall is found exclusively in plant cells and provides external structural support.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F06",
+              "difficulty": "low",
+              "prompt": "Which organelle contains the green pigment chlorophyll responsible for capturing sunlight?",
+              "options": [
+                "A. Nucleus",
+                "B. Chloroplast",
+                "C. Centrosome",
+                "D. Tonoplast"
+              ],
+              "correctAnswer": "B. Chloroplast",
+              "hint": "It is the site of carbohydrate synthesis in photosynthetic plant cells.",
+              "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb light energy to drive the chemical reactions of photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F07",
+              "difficulty": "low",
+              "prompt": "What is the primary role of the cell nucleus?",
+              "options": [
+                "A. Pumping water into the vacuole",
+                "B. Controlling all cellular activities and housing genetic material (DNA)",
+                "C. Digesting extracellular bacteria",
+                "D. Producing chlorophyll pigments"
+              ],
+              "correctAnswer": "B. Controlling all cellular activities and housing genetic material (DNA)",
+              "hint": "It acts as the executive control headquarters of the cell.",
+              "workedSolution": "The nucleus contains genetic material (DNA/chromosomes) and directs all cellular activities, including protein synthesis and cell division.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F08",
+              "difficulty": "low",
+              "prompt": "Which chemical solution is commonly used to stain onion epidermal cells during wet mount preparation?",
+              "options": [
+                "A. Concentrated sulfuric acid",
+                "B. Dilute iodine solution",
+                "C. Cooking oil",
+                "D. Distilled water"
+              ],
+              "correctAnswer": "B. Dilute iodine solution",
+              "hint": "It stains starch and cell structures brown/yellow to enhance optical contrast.",
+              "workedSolution": "Dilute iodine solution stains nuclei and cell walls, creating visual contrast under optical light microscopy.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F09",
+              "difficulty": "low",
+              "prompt": "Which microscope knob should be used FIRST to locate the specimen under low-power magnification?",
+              "options": [
+                "A. Fine adjustment knob",
+                "B. Coarse adjustment knob",
+                "C. Diaphragm lever",
+                "D. Revolving nosepiece"
+              ],
+              "correctAnswer": "B. Coarse adjustment knob",
+              "hint": "It moves the stage rapidly to establish the initial approximate focal plane.",
+              "workedSolution": "The coarse adjustment knob moves the stage in large increments to quickly bring the specimen into initial focus under low power.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F10",
+              "difficulty": "low",
+              "prompt": "What is the jelly-like fluid that fills the interior of the cell outside the nucleus?",
+              "options": [
+                "A. Cytoplasm",
+                "B. Cell sap",
+                "C. Nucleoplasm",
+                "D. Synovial fluid"
+              ],
+              "correctAnswer": "A. Cytoplasm",
+              "hint": "It provides an aqueous medium for cellular organelles and metabolic reactions.",
+              "workedSolution": "The cytoplasm is the gelatinous fluid comprising water, dissolved solutes, and suspended organelles within the cell membrane.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F11",
+              "difficulty": "low",
+              "prompt": "If a microscope has a 10× eyepiece and a 10× objective lens, the total magnification is:",
+              "options": [
+                "A. 20×",
+                "B. 100×",
+                "C. 10×",
+                "D. 1000×"
+              ],
+              "correctAnswer": "B. 100×",
+              "hint": "Multiply eyepiece magnification by objective magnification (10 × 10).",
+              "workedSolution": "Total magnification = Eyepiece (10×) × Objective (10×) = 100×.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F12",
+              "difficulty": "low",
+              "prompt": "Which boundary regulates the entry and exit of substances in and out of an animal cell?",
+              "options": [
+                "A. Cellulose cell wall",
+                "B. Cell membrane (plasma membrane)",
+                "C. Nuclear pore",
+                "D. Tonoplast"
+              ],
+              "correctAnswer": "B. Cell membrane (plasma membrane)",
+              "hint": "It is a selectively permeable phospholipid bilayer.",
+              "workedSolution": "The cell membrane (plasma membrane) is selectively permeable, regulating the passage of solutes and water into and out of animal cells.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F13",
+              "difficulty": "low",
+              "prompt": "What is the shape of a typical mature plant cell compared to an animal cell?",
+              "options": [
+                "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
+                "B. Plant cells are completely circular and animal cells are square",
+                "C. Both plant and animal cells are strictly triangular",
+                "D. Animal cells are always larger than plant cells"
+              ],
+              "correctAnswer": "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
+              "hint": "The rigid cell wall restricts plant cells into angular polygonal contours.",
+              "workedSolution": "Because of the rigid cellulose cell wall, plant cells possess a definite regular polygonal geometry, whereas animal cells have flexible, variable contours.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F14",
+              "difficulty": "low",
+              "prompt": "A group of similar cells working together to perform a specific biological task is called a(n):",
+              "options": [
+                "A. Organ",
+                "B. Organelle",
+                "C. Tissue",
+                "D. Organism"
+              ],
+              "correctAnswer": "C. Tissue",
+              "hint": "Examples include muscle tissue and vascular xylem tissue.",
+              "workedSolution": "A tissue is defined as a cluster of specialized cells having similar structure and collaborating to execute a specific function.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F15",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an organ in the human body?",
+              "options": [
+                "A. Red blood cell",
+                "B. Heart",
+                "C. Nucleus",
+                "D. Epithelial tissue"
+              ],
+              "correctAnswer": "B. Heart",
+              "hint": "It is composed of muscle, nervous, and connective tissues working together.",
+              "workedSolution": "The heart is an organ composed of multiple coordinated tissues (cardiac muscle, nerve, epithelial, and connective tissues).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F16",
+              "difficulty": "low",
+              "prompt": "Which specialized human cell has a biconcave disc shape and lacks a nucleus at maturity?",
+              "options": [
+                "A. White blood cell",
+                "B. Red blood cell (erythrocyte)",
+                "C. Sperm cell",
+                "D. Nerve cell"
+              ],
+              "correctAnswer": "B. Red blood cell (erythrocyte)",
+              "hint": "It is filled with haemoglobin to transport respiratory oxygen.",
+              "workedSolution": "Mature mammalian red blood cells are enucleated biconcave discs designed to pack maximum haemoglobin for oxygen transport.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F17",
+              "difficulty": "low",
+              "prompt": "The long whip-like tail that propels a sperm cell forward during swimming is called a:",
+              "options": [
+                "A. Cilium",
+                "B. Flagellum",
+                "C. Pseudopodium",
+                "D. Dendrite"
+              ],
+              "correctAnswer": "B. Flagellum",
+              "hint": "It uses ATP energy to lash from side to side.",
+              "workedSolution": "The flagellum is the elongated motility apparatus that propels the sperm cell through fluid media toward the ovum.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F18",
+              "difficulty": "low",
+              "prompt": "What is the primary function of a plant root hair cell?",
+              "options": [
+                "A. Photosynthesis to make sugars",
+                "B. Absorption of water and mineral salts from the soil",
+                "C. Transport of pollen grains",
+                "D. Protection against herbivores"
+              ],
+              "correctAnswer": "B. Absorption of water and mineral salts from the soil",
+              "hint": "Its long projection extends directly into interstitial soil water.",
+              "workedSolution": "Root hair cells have long cytoplasmic extensions that increase the surface area for absorbing soil moisture and dissolved mineral ions.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F19",
+              "difficulty": "low",
+              "prompt": "Which plant cells are packed with chloroplasts and arranged vertically beneath the upper leaf surface?",
+              "options": [
+                "A. Spongy mesophyll cells",
+                "B. Palisade mesophyll cells",
+                "C. Epidermal cells",
+                "D. Root cells"
+              ],
+              "correctAnswer": "B. Palisade mesophyll cells",
+              "hint": "They are the primary sites of photosynthetic carbohydrate manufacture.",
+              "workedSolution": "Palisade mesophyll cells are columnar cells densely packed with chloroplasts to maximize sunlight absorption for photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F20",
+              "difficulty": "low",
+              "prompt": "What structure on the microscope supports the glass slide directly under the objective lens?",
+              "options": [
+                "A. Mirror",
+                "B. Stage",
+                "C. Base",
+                "D. Arm"
+              ],
+              "correctAnswer": "B. Stage",
+              "hint": "It has a central aperture allowing light to pass through the specimen.",
+              "workedSolution": "The stage is the flat platform fitted with metal clips where the specimen glass slide is positioned for viewing.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F21",
+              "difficulty": "low",
+              "prompt": "In a plant cell, the large central vacuole is filled with a watery solution known as:",
+              "options": [
+                "A. Cytosol",
+                "B. Cell sap",
+                "C. Blood plasma",
+                "D. Bile"
+              ],
+              "correctAnswer": "B. Cell sap",
+              "hint": "It contains dissolved sugars, mineral salts, and organic acids.",
+              "workedSolution": "The fluid inside a plant's central vacuole is cell sap, which maintains cellular turgor and stores metabolic reserves.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F22",
+              "difficulty": "low",
+              "prompt": "Which pair of specialized cells on a plant leaf opens and closes the stomatal pores?",
+              "options": [
+                "A. Guard cells",
+                "B. Root hair cells",
+                "C. Xylem cells",
+                "D. Sieve tube elements"
+              ],
+              "correctAnswer": "A. Guard cells",
+              "hint": "They are kidney-shaped cells surrounding each stomatal aperture.",
+              "workedSolution": "Paired guard cells regulate stomatal opening and closing to balance transpirational water loss and gaseous exchange.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F23",
+              "difficulty": "low",
+              "prompt": "Which cell organelle is responsible for synthesizing proteins?",
+              "options": [
+                "A. Ribosome",
+                "B. Lysosome",
+                "C. Chloroplast",
+                "D. Vacuole"
+              ],
+              "correctAnswer": "A. Ribosome",
+              "hint": "They can be found free in the cytoplasm or attached to the rough endoplasmic reticulum.",
+              "workedSolution": "Ribosomes are granular ribonucleoprotein complexes that assemble amino acids into polypeptide chains (proteins).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F24",
+              "difficulty": "low",
+              "prompt": "Why should a glass coverslip be lowered onto a wet mount at an angle of 45°?",
+              "options": [
+                "A. To break the glass slide",
+                "B. To prevent the formation of trapped air bubbles",
+                "C. To evaporate the liquid stain",
+                "D. To kill any living bacteria"
+              ],
+              "correctAnswer": "B. To prevent the formation of trapped air bubbles",
+              "hint": "Air bubbles appear as black rings under the microscope and obstruct specimen visibility.",
+              "workedSolution": "Lowering the coverslip gently at 45° pushes out air pockets, preventing trapped bubbles that interfere with observation.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F25",
+              "difficulty": "low",
+              "prompt": "Which microscope component controls the amount of light passing through the stage aperture?",
+              "options": [
+                "A. Eyepiece",
+                "B. Iris diaphragm",
+                "C. Revolving nosepiece",
+                "D. Body tube"
+              ],
+              "correctAnswer": "B. Iris diaphragm",
+              "hint": "Adjusting its opening brightens or dims the illuminated field of view.",
+              "workedSolution": "The iris diaphragm regulates the diameter of the light cone passing through the specimen to optimize image contrast.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F26",
+              "difficulty": "low",
+              "prompt": "What carbohydrate compound forms the structural fibers of a plant cell wall?",
+              "options": [
+                "A. Starch",
+                "B. Glycogen",
+                "C. Cellulose",
+                "D. Glucose"
+              ],
+              "correctAnswer": "C. Cellulose",
+              "hint": "A tough, insoluble structural polysaccharide.",
+              "workedSolution": "Cellulose microfibrils provide the tensile strength and rigidity characteristic of plant cell walls.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F27",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an organ system?",
+              "options": [
+                "A. Stomach",
+                "B. Digestive system",
+                "C. Epithelial lining",
+                "D. Smooth muscle cell"
+              ],
+              "correctAnswer": "B. Digestive system",
+              "hint": "It includes the mouth, esophagus, stomach, liver, pancreas, and intestines.",
+              "workedSolution": "An organ system is an integrated network of organs working symbiotically to achieve a major physiological life process.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F28",
+              "difficulty": "low",
+              "prompt": "In which form do animal cells store excess glucose carbohydrates?",
+              "options": [
+                "A. Starch",
+                "B. Glycogen",
+                "C. Cellulose",
+                "D. Sucrose"
+              ],
+              "correctAnswer": "B. Glycogen",
+              "hint": "Often called 'animal starch', stored predominantly in the liver and skeletal muscles.",
+              "workedSolution": "Animal cells store excess carbohydrates as branched glycogen granules, whereas plant cells store starch.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F29",
+              "difficulty": "low",
+              "prompt": "Which of the following organisms is unicellular (made of only one cell)?",
+              "options": [
+                "A. Amoeba",
+                "B. Earthworm",
+                "C. Mango tree",
+                "D. Housefly"
+              ],
+              "correctAnswer": "A. Amoeba",
+              "hint": "A single-celled protozoan that moves using pseudopodia.",
+              "workedSolution": "Amoeba is a single-celled microscopic organism capable of executing all vital life functions within a single cell.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F30",
+              "difficulty": "low",
+              "prompt": "Why do plant cells lack centrioles but still divide successfully?",
+              "options": [
+                "A. Plant cells do not divide",
+                "B. Plant cells organize their spindle fibers without centrioles",
+                "C. Plant cells only divide by budding",
+                "D. Centrioles are only needed for feeding"
+              ],
+              "correctAnswer": "B. Plant cells organize their spindle fibers without centrioles",
+              "hint": "Higher plant cells possess microtubule organizing centers instead of centrioles.",
+              "workedSolution": "Higher plant cells lack centrioles, organizing their mitotic spindles through specialized cytoplasm regions without centrosomes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F31",
+              "difficulty": "low",
+              "prompt": "Which specialized human cell has long branching extensions called dendrites and an axon?",
+              "options": [
+                "A. Red blood cell",
+                "B. Nerve cell (neuron)",
+                "C. Muscle cell",
+                "D. White blood cell"
+              ],
+              "correctAnswer": "B. Nerve cell (neuron)",
+              "hint": "It transmits electrical impulses throughout the nervous system.",
+              "workedSolution": "Nerve cells (neurons) feature elongated axons and branched dendrites for conducting electro-chemical impulses.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F32",
+              "difficulty": "low",
+              "prompt": "What is the function of the revolving nosepiece on an optical microscope?",
+              "options": [
+                "A. Adjusts illumination brightness",
+                "B. Rotates to select different objective lenses",
+                "C. Holds the glass slide in place",
+                "D. Raises the eyepiece"
+              ],
+              "correctAnswer": "B. Rotates to select different objective lenses",
+              "hint": "It clicks into position when shifting between 4×, 10×, and 40× lenses.",
+              "workedSolution": "The revolving nosepiece is the circular rotating turret that permits rapid selection of different objective lenses.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F33",
+              "difficulty": "low",
+              "prompt": "Which term describes a cell membrane that permits only certain molecules to pass through while blocking others?",
+              "options": [
+                "A. Fully permeable",
+                "B. Selectively (semi-) permeable",
+                "C. Impermeable",
+                "D. Solid"
+              ],
+              "correctAnswer": "B. Selectively (semi-) permeable",
+              "hint": "It acts like a security filter guarding cell entry.",
+              "workedSolution": "A selectively (or semi-) permeable membrane regulates the passage of water and specific solutes while restricting others.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F34",
+              "difficulty": "low",
+              "prompt": "Where is the genetic code (DNA) located inside a eukaryotic plant or animal cell?",
+              "options": [
+                "A. In the cell wall",
+                "B. Inside the nucleus",
+                "C. In the vacuole",
+                "D. Inside the cell membrane"
+              ],
+              "correctAnswer": "B. Inside the nucleus",
+              "hint": "Packaged into chromatin threads and chromosomes.",
+              "workedSolution": "DNA is enclosed within the nuclear envelope inside the nucleus in all eukaryotic cells.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F35",
+              "difficulty": "low",
+              "prompt": "What is the biological term for the net movement of water molecules across a selectively permeable membrane?",
+              "options": [
+                "A. Active transport",
+                "B. Osmosis",
+                "C. Transpiration",
+                "D. Evaporation"
+              ],
+              "correctAnswer": "B. Osmosis",
+              "hint": "Movement from high water potential (dilute) to low water potential (concentrated).",
+              "workedSolution": "Osmosis is the spontaneous passage of solvent water molecules across a selectively permeable membrane down a water potential gradient.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F36",
+              "difficulty": "low",
+              "prompt": "Which of the following is considered an organ in vascular plants?",
+              "options": [
+                "A. Chloroplast",
+                "B. Leaf",
+                "C. Palisade cell",
+                "D. Cellulose"
+              ],
+              "correctAnswer": "B. Leaf",
+              "hint": "It is composed of epidermis, vascular bundles, and mesophyll tissues.",
+              "workedSolution": "The leaf is a botanical organ composed of multiple coordinated tissues designed for photosynthesis and gas exchange.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F37",
+              "difficulty": "low",
+              "prompt": "Why do red blood cells lack a nucleus when fully mature?",
+              "options": [
+                "A. To allow more space for carrying haemoglobin oxygen molecules",
+                "B. Because they do not need proteins",
+                "C. To make them swim faster",
+                "D. Because they are not living cells"
+              ],
+              "correctAnswer": "A. To allow more space for carrying haemoglobin oxygen molecules",
+              "hint": "Enucleation maximizes internal volume for oxygen packaging.",
+              "workedSolution": "Erythrocytes extrude their nuclei during maturation to maximize internal space for haemoglobin, optimizing oxygen transport capacity.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F38",
+              "difficulty": "low",
+              "prompt": "What happens to the field of view when you switch from low power (4×) to high power (40×) objective lens?",
+              "options": [
+                "A. The field of view becomes wider and brighter",
+                "B. The field of view becomes smaller and darker",
+                "C. The field of view remains exactly unchanged",
+                "D. The specimen disappears completely"
+              ],
+              "correctAnswer": "B. The field of view becomes smaller and darker",
+              "hint": "Higher magnification focuses on a much smaller physical area of the slide.",
+              "workedSolution": "Increasing magnification narrows the observable area (field of view) and reduces light transmission per unit area, making the image darker.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F39",
+              "difficulty": "low",
+              "prompt": "Which of the following is a unicellular green alga that possesses chloroplasts?",
+              "options": [
+                "A. Chlamydomonas",
+                "B. Yeast",
+                "C. Bacterium",
+                "D. Paramecium"
+              ],
+              "correctAnswer": "A. Chlamydomonas",
+              "hint": "A photosynthetic single-celled freshwater alga with two flagella.",
+              "workedSolution": "Chlamydomonas is a unicellular green alga containing a cup-shaped chloroplast for autotrophic photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F40",
+              "difficulty": "low",
+              "prompt": "What is the primary function of cilia found on ciliated epithelial cells lining the human respiratory tract?",
+              "options": [
+                "A. Absorbing digested food",
+                "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
+                "C. Producing red blood cells",
+                "D. Generating body heat"
+              ],
+              "correctAnswer": "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
+              "hint": "They act as a microscopic escalator clearing the windpipe.",
+              "workedSolution": "Cilia beat rhythmically to propel mucus, inhaled microbes, and dirt particles out of the trachea towards the throat for expulsion.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F41",
+              "difficulty": "low",
+              "prompt": "Which optical component gathers and focuses light rays from the mirror onto the microscopic specimen?",
+              "options": [
+                "A. Condenser",
+                "B. Eyepiece",
+                "C. Stage clip",
+                "D. Arm"
+              ],
+              "correctAnswer": "A. Condenser",
+              "hint": "Mounted directly below the stage aperture.",
+              "workedSolution": "The substage condenser focuses light from the illumination source into a concentrated cone on the specimen plane.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F42",
+              "difficulty": "low",
+              "prompt": "What is the structural term for the membrane surrounding the large central vacuole in plant cells?",
+              "options": [
+                "A. Tonoplast",
+                "B. Crista",
+                "C. Nuclear membrane",
+                "D. Plasma membrane"
+              ],
+              "correctAnswer": "A. Tonoplast",
+              "hint": "It bounds the vacuolar sap and regulates solute movement into the vacuole.",
+              "workedSolution": "The tonoplast is the specialized semi-permeable membrane enclosing the central plant vacuole.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F43",
+              "difficulty": "low",
+              "prompt": "Which level of organization is represented by the human brain?",
+              "options": [
+                "A. Tissue",
+                "B. Organ",
+                "C. Organ system",
+                "D. Cellular level"
+              ],
+              "correctAnswer": "B. Organ",
+              "hint": "Composed of neurons, neuroglia, and blood vascular tissues.",
+              "workedSolution": "The brain is an anatomical organ executing command and coordination duties within the central nervous system.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F44",
+              "difficulty": "low",
+              "prompt": "What is the magnification of an objective lens if a 15× eyepiece produces a total magnification of 600×?",
+              "options": [
+                "A. 20×",
+                "B. 40×",
+                "C. 45×",
+                "D. 60×"
+              ],
+              "correctAnswer": "B. 40×",
+              "hint": "Divide total magnification by eyepiece power: 600 / 15.",
+              "workedSolution": "Objective magnification = Total Magnification / Eyepiece = 600 / 15 = 40×.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F45",
+              "difficulty": "low",
+              "prompt": "Which of the following is NOT present in human cheek epidermal cells?",
+              "options": [
+                "A. Nucleus",
+                "B. Cell membrane",
+                "C. Chloroplast",
+                "D. Cytoplasm"
+              ],
+              "correctAnswer": "C. Chloroplast",
+              "hint": "Human cells are non-photosynthetic animal cells.",
+              "workedSolution": "Cheek cells are animal cells, meaning they lack chloroplasts and cellulose cell walls.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F46",
+              "difficulty": "low",
+              "prompt": "Which organelle carries digestive enzymes to break down old, worn-out cell parts?",
+              "options": [
+                "A. Lysosome",
+                "B. Chloroplast",
+                "C. Ribosome",
+                "D. Endoplasmic reticulum"
+              ],
+              "correctAnswer": "A. Lysosome",
+              "hint": "Often nicknamed the 'suicide bags' or recycling units of the cell.",
+              "workedSolution": "Lysosomes contain hydrolytic enzymes that digest cellular debris, foreign pathogens, and damaged organelles.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F47",
+              "difficulty": "low",
+              "prompt": "Which tissue in flowering plants transports water and dissolved mineral ions upward from roots to leaves?",
+              "options": [
+                "A. Phloem",
+                "B. Xylem",
+                "C. Epidermis",
+                "D. Pith"
+              ],
+              "correctAnswer": "B. Xylem",
+              "hint": "Formed of hollow, lignified dead vessel tubes.",
+              "workedSolution": "Xylem tissue consists of hollow, lignified vessels that conduct water and dissolved minerals from roots to the shoot system.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F48",
+              "difficulty": "low",
+              "prompt": "Which tissue in flowering plants transports manufactured sucrose sugars downward from leaves to roots and storage organs?",
+              "options": [
+                "A. Phloem",
+                "B. Xylem",
+                "C. Cortex",
+                "D. Cuticle"
+              ],
+              "correctAnswer": "A. Phloem",
+              "hint": "Contains living sieve tube elements and companion cells.",
+              "workedSolution": "Phloem tissue translocates photosynthetic carbohydrates (sucrose) and amino acids throughout the plant.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F49",
+              "difficulty": "low",
+              "prompt": "What is the proper way to carry an optical compound microscope across the laboratory?",
+              "options": [
+                "A. By holding only the eyepiece tube",
+                "B. By holding the arm with one hand and supporting the base with the other hand",
+                "C. By carrying it upside down by the stage",
+                "D. By pulling it along the bench by its power cord"
+              ],
+              "correctAnswer": "B. By holding the arm with one hand and supporting the base with the other hand",
+              "hint": "Two hands ensure balance and prevent dropping optical lenses.",
+              "workedSolution": "Standard laboratory safety mandates gripping the microscope arm firmly with one hand while cupping the heavy base with the other.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_F50",
+              "difficulty": "low",
+              "prompt": "Which statement accurately describes a major difference between prokaryotic (bacteria) and eukaryotic cells?",
+              "options": [
+                "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
+                "B. Eukaryotic cells have no DNA",
+                "C. Prokaryotic cells are always multi-cellular",
+                "D. Eukaryotic cells have no cell membrane"
+              ],
+              "correctAnswer": "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
+              "hint": "'Pro' means before; 'karyon' means nucleus.",
+              "workedSolution": "Prokaryotes (like bacteria) lack a true nuclear membrane enclosing their DNA, while eukaryotes (plants, animals, fungi) possess a membrane-bound nucleus.",
               "points": 1,
               "learningCompetency": "B7.1.2.1",
               "type": "objective"
@@ -2831,24 +3678,1708 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "q_b7_s2_2",
+              "id": "B7_CELL_I01",
               "difficulty": "medium",
-              "prompt": "What is the primary physiological function of the cell membrane?",
+              "prompt": "Why does an animal cell burst (undergo lysis) when placed in pure distilled water, while a plant cell does not?",
               "options": [
-                "Provide absolute rigid mechanical support to the plant stem",
-                "Selectively regulate the entry and exit of substances",
-                "Synthesize glucose using radiant solar energy",
-                "Store genetic chromosomes inside chromatin threads"
+                "A. Animal cells have larger vacuoles than plant cells",
+                "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
+                "C. Plant cell membranes do not allow water to enter",
+                "D. Plant cells actively pump water out of their chloroplasts"
               ],
-              "correctAnswer": "Selectively regulate the entry and exit of substances",
-              "hint": "The membrane is semi-permeable / selectively permeable.",
-              "workedSolution": "The plasma membrane is a phospholipid bilayer that acts as a selectively permeable barrier, controlling the transport of ions and organic molecules into and out of the cell.",
+              "correctAnswer": "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
+              "hint": "Consider the mechanical tensile strength of the cellulose outer casing.",
+              "workedSolution": "In hypotonic distilled water, endosmosis forces water into both cells. Plant cells develop turgor pressure resisted by their cellulose cell walls, while animal cells lack cell walls and burst (lysis).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I02",
+              "difficulty": "medium",
+              "prompt": "What happens to the position of the cell nucleus in a mature, fully developed plant cell?",
+              "options": [
+                "A. It remains positioned precisely in the center",
+                "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
+                "C. It dissolves into the chloroplasts",
+                "D. It migrates into the cell wall"
+              ],
+              "correctAnswer": "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
+              "hint": "The central sap cavity occupies up to 90% of the interior volume.",
+              "workedSolution": "The development of a single immense central vacuole filled with cell sap exerts pressure outward, displacing the nucleus and cytosol to the periphery against the cell wall.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I03",
+              "difficulty": "medium",
+              "prompt": "When viewing an epidermal wet mount under high power, the image appears blurred and dark. Which two adjustments should you perform?",
+              "options": [
+                "A. Turn the coarse focus knob rapidly and switch off the light",
+                "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
+                "C. Remove the coverslip and shake the slide",
+                "D. Wipe the objective lens with a rough paper towel"
+              ],
+              "correctAnswer": "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
+              "hint": "High-power lenses require precise focal adjustment and wider light apertures.",
+              "workedSolution": "High power narrows the depth of field and dims the light. The fine focus knob brings the focal plane into sharp focus, while opening the iris diaphragm restores brightness.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I04",
+              "difficulty": "medium",
+              "prompt": "Why are root hair cells unpigmented and completely devoid of chloroplasts?",
+              "options": [
+                "A. They are infected with plant viruses",
+                "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
+                "C. Root hair cells are animal cells",
+                "D. The soil acid destroys all chlorophyll molecules immediately"
+              ],
+              "correctAnswer": "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
+              "hint": "Chloroplast synthesis requires sunlight.",
+              "workedSolution": "Plant roots grow subterraneously in total darkness. Because photosynthesis requires light, subterranean cells do not waste biological resources developing chloroplasts.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I05",
+              "difficulty": "medium",
+              "prompt": "An organelle has folded inner membranes called cristae that host electron transport enzymes. Which metabolic process occurs here?",
+              "options": [
+                "A. Photosynthesis",
+                "B. Aerobic cellular respiration (ATP synthesis)",
+                "C. Protein translation",
+                "D. Lipid storage"
+              ],
+              "correctAnswer": "B. Aerobic cellular respiration (ATP synthesis)",
+              "hint": "Cristae vastly expand the surface area for oxidative phosphorylation inside mitochondria.",
+              "workedSolution": "The mitochondrial cristae host ATP synthase and electron transport chain complexes vital for aerobic respiration.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I06",
+              "difficulty": "medium",
+              "prompt": "A biological specimen moves towards the top-right corner of the microscope's field of view. In which direction must you move the glass slide to keep it centered?",
+              "options": [
+                "A. Towards the top-right",
+                "B. Towards the bottom-left",
+                "C. Towards the top-left",
+                "D. Slide movement does not affect image direction"
+              ],
+              "correctAnswer": "A. Towards the top-right",
+              "hint": "The compound microscope inverts images both horizontally and vertically.",
+              "workedSolution": "Because compound microscope lenses produce real, inverted images, you must move the slide in the exact direction the image appears to drift (top-right) to re-center it.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I07",
+              "difficulty": "medium",
+              "prompt": "What is the physiological consequence when mammalian red blood cells are submerged in a highly concentrated (hypertonic) salt solution?",
+              "options": [
+                "A. They swell up and burst",
+                "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
+                "C. They divide rapidly by mitosis",
+                "D. They turn bright green"
+              ],
+              "correctAnswer": "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
+              "hint": "Water moves down its water potential gradient out of the cell.",
+              "workedSolution": "In a hypertonic medium, water flows out of erythrocytes by exosmosis, causing them to lose turgidity and develop crinkled edges (crenation).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I08",
+              "difficulty": "medium",
+              "prompt": "Which structural adaptation enables motor neurons to conduct nerve impulses across distances up to one meter in humans?",
+              "options": [
+                "A. An enucleated biconcave shape",
+                "B. An elongated axon surrounded by an insulating myelin sheath",
+                "C. Thousands of cilia beating in synchrony",
+                "D. Multiple cellulose walls"
+              ],
+              "correctAnswer": "B. An elongated axon surrounded by an insulating myelin sheath",
+              "hint": "The myelin sheath prevents ion leakage, allowing saltatory conduction.",
+              "workedSolution": "Neurons feature extended cytoplasmic axons insulated by lipid-rich myelin sheaths that permit rapid, long-distance transmission of action potentials.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I09",
+              "difficulty": "medium",
+              "prompt": "What is the function of the acrosome located at the apex of a mature sperm cell?",
+              "options": [
+                "A. Powers the flagellum with ATP",
+                "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
+                "C. Stores sperm DNA",
+                "D. Produces testosterone hormones"
+              ],
+              "correctAnswer": "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
+              "hint": "It acts as a chemical drill during fertilization.",
+              "workedSolution": "The acrosome is a modified lysosomal cap containing enzymes (like hyaluronidase) that digest the corona radiata and zona pellucida of the egg cell.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I10",
+              "difficulty": "medium",
+              "prompt": "Which of the following correctly orders biological complexity from simplest to most complex?",
+              "options": [
+                "A. Cell → Tissue → Organ → Organ System → Organism",
+                "B. Organ → Tissue → Cell → Organelle → Organism",
+                "C. Tissue → Cell → Organ System → Organ → Organism",
+                "D. Organism → Organ System → Organ → Tissue → Cell"
+              ],
+              "correctAnswer": "A. Cell → Tissue → Organ → Organ System → Organism",
+              "hint": "Cells unite into tissues, tissues build organs, and organs form systems.",
+              "workedSolution": "The standard hierarchy ascends from Cells to Tissues, Organs, Organ Systems, and finally the complete Multicellular Organism.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I11",
+              "difficulty": "medium",
+              "prompt": "Why are mature xylem vessels composed of dead cells with hollow lumina?",
+              "options": [
+                "A. The plant killed them by lack of water",
+                "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
+                "C. Because plants do not need living roots",
+                "D. To store carbon dioxide"
+              ],
+              "correctAnswer": "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
+              "hint": "Cytoplasm and end walls would create hydraulic friction.",
+              "workedSolution": "Xylem vessel elements lose their living end walls and protoplasm upon lignification, forming open, continuous tubes that minimize resistance to transpirational water flow.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I12",
+              "difficulty": "medium",
+              "prompt": "A student observes a cell with a diameter of 0.05 mm under a microscope. If the total magnification is 200×, what is the apparent size of the cell in the image?",
+              "options": [
+                "A. 1 mm",
+                "B. 5 mm",
+                "C. 10 mm",
+                "D. 0.00025 mm"
+              ],
+              "correctAnswer": "C. 10 mm",
+              "hint": "Image Size = Actual Size × Magnification: 0.05 mm × 200.",
+              "workedSolution": "Image Size = Actual Size × Magnification = 0.05 mm × 200 = 10 mm.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I13",
+              "difficulty": "medium",
+              "prompt": "How does the biconcave shape of an erythrocyte enhance its physiological function?",
+              "options": [
+                "A. It allows the cell to stick to blood vessel walls",
+                "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
+                "C. It prevents the cell from passing through narrow capillaries",
+                "D. It generates electrical impulses"
+              ],
+              "correctAnswer": "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
+              "hint": "A flattened disc has a shorter diffusion distance to its center than a sphere of equal volume.",
+              "workedSolution": "The biconcave indentation increases surface area relative to volume and minimizes internal diffusion distance, maximizing the rate of gas exchange.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I14",
+              "difficulty": "medium",
+              "prompt": "What is the structural role of the middle lamella found between adjacent plant cells?",
+              "options": [
+                "A. Absorbs sunlight for photosynthesis",
+                "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
+                "C. Synthesizes mitochondrial enzymes",
+                "D. Stores water sap"
+              ],
+              "correctAnswer": "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
+              "hint": "It glues neighbor plant cells together.",
+              "workedSolution": "The middle lamella is an extracellular pectin layer that acts as biological cement adhering neighboring plant cell walls together into rigid tissues.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I15",
+              "difficulty": "medium",
+              "prompt": "What biochemical component of plant cell walls makes them rigid and resistant to decay?",
+              "options": [
+                "A. Pectin and cellulose reinforced with lignin",
+                "B. Phospholipids only",
+                "C. Glucose and fructose",
+                "D. Hemoglobin"
+              ],
+              "correctAnswer": "A. Pectin and cellulose reinforced with lignin",
+              "hint": "Cellulose polymers form cross-linked microfibrils embedded in matrix polysaccharides.",
+              "workedSolution": "Cellulose microfibrils intertwined with hemicellulose, pectin, and sometimes lignin provide formidable mechanical rigidity and tensile strength.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I16",
+              "difficulty": "medium",
+              "prompt": "Why does turgor pressure generated by plant vacuoles prevent herbaceous (non-woody) plants from wilting?",
+              "options": [
+                "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
+                "B. The vacuole produces bone tissue",
+                "C. Vacuoles freeze the plant in position",
+                "D. Vacuoles absorb heat from sunlight"
+              ],
+              "correctAnswer": "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
+              "hint": "Like inflating an air mattress, hydrostatic pressure produces structural rigidity.",
+              "workedSolution": "Water absorption builds hydrostatic pressure within vacuoles that presses the protoplast firmly against cell walls, providing skeletal support to non-woody plants.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I17",
+              "difficulty": "medium",
+              "prompt": "Which stain is best suited for highlighting the nucleus in animal cells, such as human buccal epithelial cells?",
+              "options": [
+                "A. Iodine solution",
+                "B. Methylene blue",
+                "C. Benedict's reagent",
+                "D. Biuret reagent"
+              ],
+              "correctAnswer": "B. Methylene blue",
+              "hint": "It binds strongly to acidic nuclear chromatin, staining the nucleus deep blue.",
+              "workedSolution": "Methylene blue is a cationic dye that selectively binds to nucleic acids (DNA/RNA), sharply staining animal cell nuclei deep blue.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I18",
+              "difficulty": "medium",
+              "prompt": "Which of the following cellular structures is non-membranous (lacks a surrounding lipid bilayer)?",
+              "options": [
+                "A. Mitochondrion",
+                "B. Ribosome",
+                "C. Chloroplast",
+                "D. Nucleus"
+              ],
+              "correctAnswer": "B. Ribosome",
+              "hint": "Consists of protein and rRNA molecules without a lipid envelope.",
+              "workedSolution": "Ribosomes are molecular machines constructed from rRNA and structural proteins, devoid of any enclosing phospholipid membrane.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I19",
+              "difficulty": "medium",
+              "prompt": "Why must the coarse adjustment knob NEVER be used under high-power (40× or 100×) magnification?",
+              "options": [
+                "A. It causes the electric light to burn out",
+                "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
+                "C. It turns the image completely upside down",
+                "D. It removes the stain from the specimen"
+              ],
+              "correctAnswer": "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
+              "hint": "The working distance of a 40× lens is less than 1 mm.",
+              "workedSolution": "Under high power, the objective lens sits fractions of a millimeter from the glass. The rapid travel of coarse focus risks driving the lens into the slide, shattering both.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I20",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of the rough endoplasmic reticulum (RER)?",
+              "options": [
+                "A. Processing and folding proteins synthesized by attached ribosomes",
+                "B. Synthesizing starch grains",
+                "C. Carrying out photosynthesis",
+                "D. Pumping blood"
+              ],
+              "correctAnswer": "A. Processing and folding proteins synthesized by attached ribosomes",
+              "hint": "Its surface is studded with ribosomes.",
+              "workedSolution": "The rough ER is studded with ribosomes that synthesize polypeptides directly into its lumen for folding, post-translational modification, and vesicle transport.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I21",
+              "difficulty": "medium",
+              "prompt": "How does the structure of guard cells cause a stomatal pore to open when they absorb water?",
+              "options": [
+                "A. Their cell walls are uniformly thin and expand equally",
+                "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
+                "C. They shrink and disintegrate",
+                "D. They detach from the leaf epidermis"
+              ],
+              "correctAnswer": "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
+              "hint": "Differential wall thickness forces the cells to curve like bananas when inflated.",
+              "workedSolution": "Guard cells have thick, inelastic inner walls and thin, flexible outer walls. When turgid with water, the outer walls bulge outward, pulling the inner pore open.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I22",
+              "difficulty": "medium",
+              "prompt": "Which organelle is responsible for packaging and modifying proteins into secretory vesicles?",
+              "options": [
+                "A. Golgi apparatus (Golgi body)",
+                "B. Nucleolus",
+                "C. Chloroplast",
+                "D. Centriole"
+              ],
+              "correctAnswer": "A. Golgi apparatus (Golgi body)",
+              "hint": "Consists of flattened membranous cisternae acting as the shipping center of the cell.",
+              "workedSolution": "The Golgi apparatus sorts, glycosylates, and packages proteins and lipids received from the ER into membrane-bound vesicles for secretion.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I23",
+              "difficulty": "medium",
+              "prompt": "What biological phenomenon occurs when plant cells lose excessive water in a hypertonic environment, causing the cytoplasm to pull away from the cell wall?",
+              "options": [
+                "A. Lysis",
+                "B. Plasmolysis",
+                "C. Turgidity",
+                "D. Diffusion"
+              ],
+              "correctAnswer": "B. Plasmolysis",
+              "hint": "The central vacuole shrinks, pulling the protoplast inwards.",
+              "workedSolution": "Plasmolysis is the shrinking of the plant protoplast away from the rigid cell wall due to extreme exosmotic water loss in hypertonic solutions.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I24",
+              "difficulty": "medium",
+              "prompt": "What is the structural advantage of palisade mesophyll cells being elongated vertically rather than horizontally?",
+              "options": [
+                "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
+                "B. Prevents oxygen from escaping",
+                "C. Makes the leaf heavier",
+                "D. Absorbs water directly from the air"
+              ],
+              "correctAnswer": "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
+              "hint": "Vertical orientation maximizes light path absorption through stacked chloroplasts.",
+              "workedSolution": "Vertical columnar orientation packs more photosynthetic cells per unit leaf area and increases the optical path length for light absorption.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I25",
+              "difficulty": "medium",
+              "prompt": "Which of the following cellular features is unique to eukaryotic cells and completely absent in all bacteria?",
+              "options": [
+                "A. Ribosomes",
+                "B. Membrane-bound organelles such as mitochondria and nucleus",
+                "C. Cytoplasm",
+                "D. Cell wall"
+              ],
+              "correctAnswer": "B. Membrane-bound organelles such as mitochondria and nucleus",
+              "hint": "Prokaryotic bacteria do not compartmentalize their interiors with internal membranes.",
+              "workedSolution": "Eukaryotes are characterized by internal compartmentalization with membrane-bound organelles (nucleus, mitochondria, ER, Golgi), which prokaryotes lack.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I26",
+              "difficulty": "medium",
+              "prompt": "Why does an enucleated red blood cell have a limited lifespan of only approximately 120 days?",
+              "options": [
+                "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
+                "B. It is eaten by bacteria every week",
+                "C. It melts in warm blood",
+                "D. It converts into white blood cells"
+              ],
+              "correctAnswer": "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
+              "hint": "Without a nucleus, no transcription or protein synthesis can take place.",
+              "workedSolution": "Lacking a nucleus and ribosomes, erythrocytes cannot transcribe genes to repair damaged membrane proteins or enzymes, degrading after ~120 days.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I27",
+              "difficulty": "medium",
+              "prompt": "A student calculates a total magnification of 400× using a 40× objective lens. What is the power of the eyepiece used?",
+              "options": [
+                "A. 4×",
+                "B. 10×",
+                "C. 40×",
+                "D. 100×"
+              ],
+              "correctAnswer": "B. 10×",
+              "hint": "Eyepiece = Total / Objective = 400 / 40.",
+              "workedSolution": "Eyepiece magnification = 400 / 40 = 10×.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I28",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of companion cells adjacent to phloem sieve tube elements?",
+              "options": [
+                "A. Provide mechanical rigidity to the stem",
+                "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
+                "C. Store water for dry seasons",
+                "D. Produce chlorophyll"
+              ],
+              "correctAnswer": "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
+              "hint": "Sieve tubes lack nuclei; companion cells have dense mitochondria and nuclei.",
+              "workedSolution": "Companion cells carry out vital metabolic functions and actively pump sucrose into sieve tubes using ATP generated in their abundant mitochondria.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I29",
+              "difficulty": "medium",
+              "prompt": "Which organelle contains its own small circular DNA loop and reproduces independently within eukaryotic cells?",
+              "options": [
+                "A. Mitochondrion (and Chloroplast)",
+                "B. Vacuole",
+                "C. Ribosome",
+                "D. Lysosome"
+              ],
+              "correctAnswer": "A. Mitochondrion (and Chloroplast)",
+              "hint": "Evidence of endosymbiotic bacterial evolution.",
+              "workedSolution": "Mitochondria and chloroplasts possess their own circular DNA genomes and 70S ribosomes, dividing independently by binary fission.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I30",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of white blood cells (leukocytes)?",
+              "options": [
+                "A. Oxygen transport",
+                "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
+                "C. Blood clotting at wound sites",
+                "D. Transport of digested lipids"
+              ],
+              "correctAnswer": "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
+              "hint": "They are the mobile defensive infantry of the blood vascular system.",
+              "workedSolution": "White blood cells defend against infection through phagocytic ingestion of microbes and antibody secretion by lymphocytes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I31",
+              "difficulty": "medium",
+              "prompt": "Why is water described as the universal solvent in cellular cytoplasm?",
+              "options": [
+                "A. It dissolves all plastics",
+                "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
+                "C. It never freezes",
+                "D. It generates oxygen spontaneously"
+              ],
+              "correctAnswer": "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
+              "hint": "Water's dipole moment hydrates both cations and anions.",
+              "workedSolution": "Water's hydrogen-bonding polarity dissolves polar and ionic biochemicals, providing an aqueous medium for enzymatic reactions.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I32",
+              "difficulty": "medium",
+              "prompt": "What is the main physiological purpose of mitotic cell division in multicellular organisms?",
+              "options": [
+                "A. Generating gametes with half the chromosome number",
+                "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
+                "C. Creating new species",
+                "D. Digesting carbohydrates"
+              ],
+              "correctAnswer": "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
+              "hint": "Mitosis yields two genetically identical daughter cells.",
+              "workedSolution": "Mitosis produces genetically identical diploid somatic cells required for organismal growth, wound healing, and tissue replacement.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I33",
+              "difficulty": "medium",
+              "prompt": "Which of the following organs is shared between the digestive and endocrine systems?",
+              "options": [
+                "A. Stomach",
+                "B. Pancreas",
+                "C. Gallbladder",
+                "D. Esophagus"
+              ],
+              "correctAnswer": "B. Pancreas",
+              "hint": "It secretes digestive enzymes into the duodenum and insulin into the bloodstream.",
+              "workedSolution": "The pancreas serves exocrine digestive roles (pancreatic juice) and endocrine hormonal roles (insulin and glucagon regulation).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I34",
+              "difficulty": "medium",
+              "prompt": "Why do freshwater protozoa like Amoeba require contractile vacuoles?",
+              "options": [
+                "A. To store starch",
+                "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
+                "C. To capture prey",
+                "D. To produce light"
+              ],
+              "correctAnswer": "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
+              "hint": "Amoebae live in hypotonic ponds and lack cell walls.",
+              "workedSolution": "Surrounded by hypotonic pond water, Amoebae experience continuous influx of water. Contractile vacuoles collect and actively pump this water out (osmoregulation).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I35",
+              "difficulty": "medium",
+              "prompt": "Which plant tissue covers the outer surfaces of leaves, stems, and roots to prevent desiccating water loss?",
+              "options": [
+                "A. Epidermal tissue",
+                "B. Xylem tissue",
+                "C. Phloem tissue",
+                "D. Cambium"
+              ],
+              "correctAnswer": "A. Epidermal tissue",
+              "hint": "Often coated with an external waxy cuticle layer.",
+              "workedSolution": "Epidermal tissue forms a protective outer boundary, often synthesizing a waxy, hydrophobic cuticle to minimize evaporation.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I36",
+              "difficulty": "medium",
+              "prompt": "Which organelle within eukaryotic plant cells is responsible for converting fatty acids into sugars in germinating seeds?",
+              "options": [
+                "A. Glyoxysome (specialized peroxisome)",
+                "B. Centriole",
+                "C. Ribosome",
+                "D. Chloroplast"
+              ],
+              "correctAnswer": "A. Glyoxysome (specialized peroxisome)",
+              "hint": "Hosts the glyoxylate cycle before photosynthesis begins.",
+              "workedSolution": "Glyoxysomes are specialized microbodies in oil seeds that convert stored lipids into soluble sucrose to nourish the developing seedling.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I37",
+              "difficulty": "medium",
+              "prompt": "What does the term 'tissue differentiation' mean in developmental biology?",
+              "options": [
+                "A. The death of unneeded cells",
+                "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
+                "C. Cells changing into different elements",
+                "D. Cells losing their nucleus"
+              ],
+              "correctAnswer": "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
+              "hint": "From generic embryonic cells into neurons, muscle fibers, or xylem.",
+              "workedSolution": "Cellular differentiation is the developmental process whereby generalized cells undergo selective gene expression to acquire specialized morphological adaptations.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I38",
+              "difficulty": "medium",
+              "prompt": "How does the resolution of a microscope differ from its magnification?",
+              "options": [
+                "A. They mean the exact same thing",
+                "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
+                "C. Resolution only applies to electron microscopes",
+                "D. Magnification makes things smaller"
+              ],
+              "correctAnswer": "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
+              "hint": "Enlarging a blurry photo does not reveal extra detail without resolution.",
+              "workedSolution": "Magnification scales up the apparent dimension of an image, while optical resolution is the minimum distance between two points at which they remain distinctly discernible.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I39",
+              "difficulty": "medium",
+              "prompt": "What is the function of the nucleolus found inside the eukaryotic nucleus?",
+              "options": [
+                "A. Assembles ribosome subunits and synthesizes rRNA",
+                "B. Produces ATP",
+                "C. Destroys bacteria",
+                "D. Pumps sodium ions"
+              ],
+              "correctAnswer": "A. Assembles ribosome subunits and synthesizes rRNA",
+              "hint": "A dense granular region inside the nucleus.",
+              "workedSolution": "The nucleolus is the sub-nuclear factory where ribosomal RNA (rRNA) is transcribed and combined with proteins to produce ribosomal subunits.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I40",
+              "difficulty": "medium",
+              "prompt": "Which organelle is abundant in mammalian liver cells to detoxify poisons, drugs, and alcohol?",
+              "options": [
+                "A. Smooth endoplasmic reticulum (SER)",
+                "B. Chloroplast",
+                "C. Nucleolus",
+                "D. Centrosome"
+              ],
+              "correctAnswer": "A. Smooth endoplasmic reticulum (SER)",
+              "hint": "Lacks ribosomes and synthesizes lipids while detoxifying xenobiotics.",
+              "workedSolution": "Smooth ER contains cytochrome P450 and other enzymes that metabolize and detoxify toxic chemicals, drugs, and alcohol in hepatocytes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I41",
+              "difficulty": "medium",
+              "prompt": "What is the biological function of muscular tissue in animals?",
+              "options": [
+                "A. Conducting electrical signals across synapses",
+                "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
+                "C. Secreting waxy cuticles",
+                "D. Photosynthesis"
+              ],
+              "correctAnswer": "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
+              "hint": "Contains actin and myosin contractile protein filaments.",
+              "workedSolution": "Muscular tissue contains filament proteins (actin and myosin) that slide past one another to generate contractile force for locomotion and internal organ motility.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I42",
+              "difficulty": "medium",
+              "prompt": "Why is an epidermal peel taken from an onion scale leaf rather than a green onion leaf blade when studying basic plant cells in introductory labs?",
+              "options": [
+                "A. Green leaves are poisonous",
+                "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
+                "C. Onion scale cells have no cell walls",
+                "D. Onions do not have DNA"
+              ],
+              "correctAnswer": "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
+              "hint": "A monolayer allows light to pass directly through without optical overlap.",
+              "workedSolution": "The transparent inner membrane of an onion bulb scale is an authentic biological monolayer, providing an unobstructed view of cells without microtome sectioning.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I43",
+              "difficulty": "medium",
+              "prompt": "What is the role of blood platelets (thrombocytes)?",
+              "options": [
+                "A. Transporting carbon dioxide",
+                "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
+                "C. Pumping lymph through nodes",
+                "D. Synthesizing insulin"
+              ],
+              "correctAnswer": "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
+              "hint": "Cell fragments adhering to exposed collagen fibers.",
+              "workedSolution": "Platelets are enucleated cell fragments derived from megakaryocytes that trigger the coagulation cascade and aggregate to form hemostatic plugs.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I44",
+              "difficulty": "medium",
+              "prompt": "Which organ system in vertebrates includes the kidneys, ureters, urinary bladder, and urethra?",
+              "options": [
+                "A. Excretory (urinary) system",
+                "B. Nervous system",
+                "C. Respiratory system",
+                "D. Endocrine system"
+              ],
+              "correctAnswer": "A. Excretory (urinary) system",
+              "hint": "Filters metabolic nitrogenous wastes from the bloodstream.",
+              "workedSolution": "The urinary/excretory system filters blood plasma to remove urea and excess ions, regulating systemic fluid and electrolyte homeostasis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I45",
+              "difficulty": "medium",
+              "prompt": "Why do mature plant cells maintain their shape even after dying, as seen in wood and cork?",
+              "options": [
+                "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
+                "B. Their vacuoles freeze solid",
+                "C. Their nuclei remain active",
+                "D. Dead cells absorb plastic from soil"
+              ],
+              "correctAnswer": "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
+              "hint": "Robert Hooke's 1665 observation of cork was viewing empty cell wall chambers.",
+              "workedSolution": "Cellulose and lignin cell walls are non-living structural matrices that remain intact and support woody tissues indefinitely after the living cytoplasm dies.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I46",
+              "difficulty": "medium",
+              "prompt": "What happens when an optical microscope's mirror is turned away from the light source?",
+              "options": [
+                "A. The magnification increases",
+                "B. The field of view goes completely dark because no light passes through the condenser",
+                "C. The specimen becomes sharp",
+                "D. The slide shatters"
+              ],
+              "correctAnswer": "B. The field of view goes completely dark because no light passes through the condenser",
+              "hint": "Compound microscopes are transmission light instruments.",
+              "workedSolution": "Light microscopes require an incident beam of light reflected through the condenser lens and specimen slide; diverting the mirror eliminates image visibility.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I47",
+              "difficulty": "medium",
+              "prompt": "Which organelle within eukaryotic plant cells contains stacks of thylakoids called grana?",
+              "options": [
+                "A. Chloroplast",
+                "B. Mitochondrion",
+                "C. Golgi body",
+                "D. Central vacuole"
+              ],
+              "correctAnswer": "A. Chloroplast",
+              "hint": "Site of light-dependent photosynthetic reactions.",
+              "workedSolution": "Thylakoid disks organized in grana stacks are located within chloroplast stroma, hosting light-absorbing photosystems and electron transport proteins.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I48",
+              "difficulty": "medium",
+              "prompt": "Why is the egg cell (ovum) significantly larger than the sperm cell?",
+              "options": [
+                "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
+                "B. It has ten nuclei",
+                "C. It contains bone fragments",
+                "D. It is an organ rather than a cell"
+              ],
+              "correctAnswer": "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
+              "hint": "The egg nourishes the zygote before uterine implantation.",
+              "workedSolution": "The ovum accumulates massive cytoplasmic nutrient reserves, maternal mRNAs, and organelles to support cellular cleavage following fertilization.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I49",
+              "difficulty": "medium",
+              "prompt": "What is the function of the stage clips on an optical microscope?",
+              "options": [
+                "A. Magnify the specimen",
+                "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
+                "C. Cool the light bulb",
+                "D. Clean the objective lens"
+              ],
+              "correctAnswer": "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
+              "hint": "Spring-loaded metal fingers flanking the aperture.",
+              "workedSolution": "Stage clips secure the glass specimen slide against the mechanical stage, preventing slipping during focal adjustments.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_I50",
+              "difficulty": "medium",
+              "prompt": "Which cell organelle is responsible for maintaining cellular shape and anchoring organelles via a network of microfilaments and microtubules?",
+              "options": [
+                "A. Cytoskeleton",
+                "B. Cell wall",
+                "C. Tonoplast",
+                "D. Nucleolus"
+              ],
+              "correctAnswer": "A. Cytoskeleton",
+              "hint": "An internal proteinaceous scaffolding within the cytosol.",
+              "workedSolution": "The cytoskeleton is a dynamic network of actin microfilaments, intermediate filaments, and tubulin microtubules that provides internal structural scaffolding.",
               "points": 1,
               "learningCompetency": "B7.1.2.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_CELL_A01",
+              "difficulty": "hard",
+              "prompt": "A slice of potato tuber weighing 10.0 g is placed in a 20% concentrated sucrose solution. After two hours, its mass decreases to 8.2 g and it becomes limp and flexible. What physiological process accounts for this change?",
+              "options": [
+                "A. Active uptake of sucrose molecules into potato cells",
+                "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
+                "C. Endosmosis of water into the potato cells causing bursting",
+                "D. Chemical decomposition of potato starch into gaseous carbon dioxide"
+              ],
+              "correctAnswer": "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
+              "hint": "The 20% sucrose solution has a lower water potential than the cell sap.",
+              "workedSolution": "Because the external sucrose solution is hypertonic, water leaves the vacuolar sap by exosmosis down the water potential gradient, reducing mass and causing flaccidity.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A02",
+              "difficulty": "hard",
+              "prompt": "How does the fluid mosaic model explain the selective permeability of the plasma membrane?",
+              "options": [
+                "A. The membrane is a solid sheet of impervious wax",
+                "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
+                "C. The membrane has large open holes that allow all molecules through",
+                "D. Carbohydrates form a rigid impenetrable cage around the cell"
+              ],
+              "correctAnswer": "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
+              "hint": "Hydrophobic fatty acid tails repel polar solutes; channel/carrier proteins regulate specific transport.",
+              "workedSolution": "The hydrophobic core of the phospholipid bilayer repels polar and charged molecules, while specific integral transmembrane channel and carrier proteins selectively transport designated solutes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A03",
+              "difficulty": "hard",
+              "prompt": "Under a light microscope, a plant cell in salt solution exhibits a shrunken protoplast detached from its cell wall. What substance fills the space between the shrunken cell membrane and the cell wall?",
+              "options": [
+                "A. Pure vacuum",
+                "B. The external salt solution, because the cellulose cell wall is fully permeable",
+                "C. Cytoplasm that leaked out",
+                "D. Pure air gas"
+              ],
+              "correctAnswer": "B. The external salt solution, because the cellulose cell wall is fully permeable",
+              "hint": "The cell wall is freely permeable to small dissolved solutes, while the plasma membrane is semi-permeable.",
+              "workedSolution": "The cellulose cell wall is freely permeable to water and dissolved solutes; when the protoplast contracts during plasmolysis, external salt solution freely passes through the wall to occupy the perimeter space.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A04",
+              "difficulty": "hard",
+              "prompt": "Why can electron microscopes achieve magnifications exceeding 500,000× with 0.2 nm resolution, whereas optical light microscopes are fundamentally limited to ~1,500× and 200 nm?",
+              "options": [
+                "A. Electron microscopes use much thicker glass lenses",
+                "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
+                "C. Light microscopes operate in a vacuum",
+                "D. Electrons are brighter than photons"
+              ],
+              "correctAnswer": "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
+              "hint": "Diffraction limits resolution to approximately half the wavelength of the illumination source.",
+              "workedSolution": "Resolution is constrained by radiation wavelength. Accelerated electrons have wavelengths ~100,000× shorter than visible light photons (0.005 nm vs 400-700 nm), reducing diffraction limits.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A05",
+              "difficulty": "hard",
+              "prompt": "A cell biologist treats cultured liver cells with a metabolic poison that specifically inhibits mitochondrial ATP synthase. Which cellular process will halt almost immediately?",
+              "options": [
+                "A. Passive osmosis of water",
+                "B. Simple diffusion of oxygen",
+                "C. Active transport pumping sodium ions against their electrochemical gradient",
+                "D. Evaporation"
+              ],
+              "correctAnswer": "C. Active transport pumping sodium ions against their electrochemical gradient",
+              "hint": "Primary active transport is directly coupled to ATP hydrolysis.",
+              "workedSolution": "Active transport requires metabolic energy in the form of ATP. Poisoning ATP synthase depletes cellular energy stores, immediately stopping active ion pumps.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A06",
+              "difficulty": "hard",
+              "prompt": "Which of the following cellular features supports the endosymbiotic theory that mitochondria and chloroplasts originated as free-living prokaryotic endosymbionts?",
+              "options": [
+                "A. They possess linear eukaryotic chromosomes wrapped in histones",
+                "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
+                "C. They are synthesized entirely in the nucleus",
+                "D. They are made of cellulose"
+              ],
+              "correctAnswer": "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
+              "hint": "Shared biochemical traits with modern alpha-proteobacteria and cyanobacteria.",
+              "workedSolution": "Mitochondria and chloroplasts share distinct prokaryotic traits: naked circular DNA genomes, 70S ribosomes, binary fission, and double membranes reflecting ancestral phagocytosis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A07",
+              "difficulty": "hard",
+              "prompt": "Why does boiling an onion epidermal peel in water before preparing a wet mount prevent plasmolysis when placed in concentrated salt solution?",
+              "options": [
+                "A. Boiling turns the salt into sugar",
+                "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
+                "C. Boiling makes the cell wall impermeable",
+                "D. The cells become immortal"
+              ],
+              "correctAnswer": "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
+              "hint": "Osmosis requires an intact, selectively permeable living membrane.",
+              "workedSolution": "Thermal heat denatures membrane proteins and disrupts the phospholipid bilayer. Losing semi-permeability makes the membrane freely porous, preventing osmotic gradients.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A08",
+              "difficulty": "hard",
+              "prompt": "What is the function of plasmodesmata in multicellular plant tissues?",
+              "options": [
+                "A. Synthesize photosynthetic pigments",
+                "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
+                "C. Pump water out of stomata",
+                "D. Anchor the root into rock"
+              ],
+              "correctAnswer": "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
+              "hint": "They interconnect plant protoplasts into a continuous living symplast.",
+              "workedSolution": "Plasmodesmata are trans-wall channels lined by plasma membrane that connect the cytoplasm of adjacent cells, facilitating molecular transport and systemic signaling.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A09",
+              "difficulty": "hard",
+              "prompt": "If a microscope's field of view has a diameter of 2.0 mm under low power (10× objective), what will be the diameter of the field of view when switched to high power (40× objective)?",
+              "options": [
+                "A. 8.0 mm",
+                "B. 0.5 mm",
+                "C. 0.2 mm",
+                "D. 0.05 mm"
+              ],
+              "correctAnswer": "B. 0.5 mm",
+              "hint": "Field Diameter is inversely proportional to magnification: Diameter(high) = Diameter(low) × (Low Mag / High Mag).",
+              "workedSolution": "Diameter(high) = 2.0 mm × (10 / 40) = 2.0 × 0.25 = 0.5 mm (or 500 µm).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A10",
+              "difficulty": "hard",
+              "prompt": "Why do cells maintain a small microscopic diameter rather than growing to the size of a tennis ball?",
+              "options": [
+                "A. Larger cells become too heavy to move",
+                "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
+                "C. Gravity crushes large cells immediately",
+                "D. DNA duplicates continuously until the cell explodes"
+              ],
+              "correctAnswer": "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
+              "hint": "Surface area-to-volume ratio constraint.",
+              "workedSolution": "Volume increases much faster than surface area ($V \\propto r^3$ vs $SA \\propto r^2$). A gigantic cell would have insufficient plasma membrane surface to transport nutrients and remove metabolic wastes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A11",
+              "difficulty": "hard",
+              "prompt": "How does the distribution of mitochondria correlate with cellular specialization in cardiac muscle cells compared to skin epithelial cells?",
+              "options": [
+                "A. Skin cells contain ten times more mitochondria than heart cells",
+                "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
+                "C. Cardiac cells have no mitochondria",
+                "D. Mitochondria are only found in plant cells"
+              ],
+              "correctAnswer": "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
+              "hint": "High metabolic workloads demand massive ATP synthesis.",
+              "workedSolution": "Cardiac myocytes contract non-stop throughout an organism's lifetime without fatigue, requiring enormous mitochondrial density to fuel continuous aerobic respiration.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A12",
+              "difficulty": "hard",
+              "prompt": "Which organelle is responsible for post-translational modification of proteins, including adding carbohydrate chains to form glycoproteins?",
+              "options": [
+                "A. Golgi apparatus",
+                "B. Nucleolus",
+                "C. Ribosome",
+                "D. Centriole"
+              ],
+              "correctAnswer": "A. Golgi apparatus",
+              "hint": "Glycosylation takes place within its cisternae.",
+              "workedSolution": "The Golgi apparatus enzymatically attaches oligosaccharides to proteins (glycosylation) and tags them for export or delivery to lysosomes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A13",
+              "difficulty": "hard",
+              "prompt": "In an experiment, red blood cells placed in Solution X swell and burst rapidly, while cells placed in Solution Y maintain their normal biconcave shape. What are Solutions X and Y?",
+              "options": [
+                "A. X is 10% salt solution; Y is pure water",
+                "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
+                "C. X is 20% sucrose; Y is 50% salt solution",
+                "D. Both X and Y are concentrated acids"
+              ],
+              "correctAnswer": "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
+              "hint": "0.9% NaCl has the same osmotic potential as human blood plasma.",
+              "workedSolution": "Pure water is strongly hypotonic to erythrocytes, driving massive endosmosis and lysis. 0.9% NaCl is isotonic to human blood, maintaining zero net osmotic flow.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A14",
+              "difficulty": "hard",
+              "prompt": "What is the physiological role of the lignin deposited in the secondary walls of xylem vessels?",
+              "options": [
+                "A. Captures sunlight for starch production",
+                "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
+                "C. Pumps glucose into the roots",
+                "D. Absorbs oxygen from atmospheric air"
+              ],
+              "correctAnswer": "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
+              "hint": "Transpirational pull creates powerful negative hydrostatic suction inside the xylem.",
+              "workedSolution": "Lignin is an intricate polymer that waterproofs and reinforces xylem walls, preventing implosion under the high tension forces generated by transpiration.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A15",
+              "difficulty": "hard",
+              "prompt": "What structural mechanism prevents mature sieve tube elements in phloem from being crushed by neighboring plant cells despite having no nucleus?",
+              "options": [
+                "A. Rigid lignified walls like xylem",
+                "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
+                "C. Internal bone structures",
+                "D. Large air chambers"
+              ],
+              "correctAnswer": "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
+              "hint": "Münch pressure flow hypothesis.",
+              "workedSolution": "Active accumulation of sucrose lowers water potential, drawing in water that generates high internal turgor pressure, keeping sieve tubes patent and driving mass flow.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A16",
+              "difficulty": "hard",
+              "prompt": "Why does the nucleus of a cell contain visible thread-like chromosomes during cell division, but appears as diffuse, indistinct chromatin during interphase?",
+              "options": [
+                "A. The DNA leaves the cell during interphase",
+                "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
+                "C. Chromosomes are eaten by lysosomes during interphase",
+                "D. The microscope loses magnification during interphase"
+              ],
+              "correctAnswer": "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
+              "hint": "Uncoiled DNA permits RNA polymerase access; condensed chromatin prevents mechanical breakage during anaphase.",
+              "workedSolution": "Interphase DNA is uncoiled (euchromatin) to allow enzyme access for gene expression. During mitosis, it supercoils into tight chromosomes to prevent shearing during spindle segregation.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A17",
+              "difficulty": "hard",
+              "prompt": "What is the primary difference between pinocytosis ('cell drinking') and phagocytosis ('cell eating') in animal cells?",
+              "options": [
+                "A. Pinocytosis takes in solid food particles; phagocytosis takes in liquid drops",
+                "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
+                "C. Only plant cells perform phagocytosis",
+                "D. Pinocytosis requires no energy"
+              ],
+              "correctAnswer": "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
+              "hint": "Both are forms of endocytosis.",
+              "workedSolution": "Phagocytosis involves actin-driven pseudopodial extension around solid targets (e.g. bacteria), whereas pinocytosis invaginates tiny droplets of extracellular fluid.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A18",
+              "difficulty": "hard",
+              "prompt": "Why is the tonoplast membrane of plant vacuoles capable of accumulating ions at concentrations much higher than the surrounding cytoplasm?",
+              "options": [
+                "A. The tonoplast is fully permeable",
+                "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
+                "C. Water evaporates from the vacuole",
+                "D. The plant cell wall pushes ions inside"
+              ],
+              "correctAnswer": "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
+              "hint": "Active transport concentrates solutes into the cell sap against steep gradients.",
+              "workedSolution": "Vacuolar $H^+$-ATPases actively pump protons into the vacuole, creating electrochemical gradients that power antiporters and symporters to concentrate minerals and sugars.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A19",
+              "difficulty": "hard",
+              "prompt": "Which of the following cellular structures is responsible for assembling and anchoring the spindle apparatus in dividing animal cells?",
+              "options": [
+                "A. Centrosome containing paired centrioles",
+                "B. Nucleolus",
+                "C. Golgi body",
+                "D. Ribosome"
+              ],
+              "correctAnswer": "A. Centrosome containing paired centrioles",
+              "hint": "Composed of nine triplets of microtubules.",
+              "workedSolution": "The centrosome contains orthogonal centrioles that organize gamma-tubulin ring complexes to nucleate spindle microtubules during mitotic prophase.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A20",
+              "difficulty": "hard",
+              "prompt": "How does the structure of a fungal cell differ from both typical plant and animal cells?",
+              "options": [
+                "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
+                "B. Fungi have no cell membrane",
+                "C. Fungi are identical to green plants",
+                "D. Fungal cells have no nuclei"
+              ],
+              "correctAnswer": "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
+              "hint": "Chitin is a nitrogenous polysaccharide also found in arthropod exoskeletons.",
+              "workedSolution": "Fungi have rigid walls composed of chitin (not cellulose), lack chloroplasts (heterotrophic), and store carbohydrates as glycogen, bridging plant-like and animal-like characteristics.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A21",
+              "difficulty": "hard",
+              "prompt": "Why are stomata predominantly located on the lower epidermis of dicotyledonous leaves rather than the upper surface?",
+              "options": [
+                "A. The upper surface has no cells",
+                "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
+                "C. Carbon dioxide only exists below leaves",
+                "D. Rain would drown the stomata"
+              ],
+              "correctAnswer": "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
+              "hint": "An adaptation to conserve water in terrestrial environments.",
+              "workedSolution": "Positioning stomata on the cooler, shaded lower leaf surface reduces evaporation and transpirational water deficit while still allowing carbon dioxide intake.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A22",
+              "difficulty": "hard",
+              "prompt": "A student counts 12 cells laid end-to-end across a 1.2 mm microscope field diameter. What is the average length of a single cell?",
+              "options": [
+                "A. 0.1 mm (100 µm)",
+                "B. 1.0 mm",
+                "C. 0.01 mm",
+                "D. 12 mm"
+              ],
+              "correctAnswer": "A. 0.1 mm (100 µm)",
+              "hint": "Cell length = Field Diameter / Cell count = 1.2 mm / 12.",
+              "workedSolution": "Average length = Field Diameter / Number of cells = 1.2 mm / 12 = 0.1 mm = 100 µm.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A23",
+              "difficulty": "hard",
+              "prompt": "Which type of human epithelial tissue consists of a single layer of flattened, scale-like cells adapted for rapid gas and nutrient diffusion?",
+              "options": [
+                "A. Simple squamous epithelium",
+                "B. Stratified squamous epithelium",
+                "C. Pseudostratified columnar epithelium",
+                "D. Transitional epithelium"
+              ],
+              "correctAnswer": "A. Simple squamous epithelium",
+              "hint": "Forms the walls of pulmonary alveoli and capillary blood vessels.",
+              "workedSolution": "Simple squamous epithelium is a delicate monolayer of flattened cells offering minimal diffusion distance across alveolar and capillary barriers.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A24",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical reason why animal cell membranes freeze and lose fluidity at near-freezing temperatures?",
+              "options": [
+                "A. Water inside the nucleus boils",
+                "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
+                "C. Cholesterol converts into diamond",
+                "D. The cell wall shatters"
+              ],
+              "correctAnswer": "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
+              "hint": "Low thermal kinetic energy causes hydrophobic tails to aggregate.",
+              "workedSolution": "At low temperatures, reduced thermal motion causes phospholipid hydrocarbon chains to pack closely into a viscous gel, impeding protein motility and membrane transport.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A25",
+              "difficulty": "hard",
+              "prompt": "How does the nuclear envelope regulate macromolecular transport between the nucleoplasm and the cytoplasm?",
+              "options": [
+                "A. It dissolves completely every hour",
+                "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
+                "C. It allows all molecules to pass freely without restriction",
+                "D. It is completely impermeable"
+              ],
+              "correctAnswer": "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
+              "hint": "Nuclear pore complexes act as gated molecular checkpoints.",
+              "workedSolution": "Nuclear pore complexes (NPCs) recognize specific nuclear localization signals (NLS) on proteins to mediate selective, energy-dependent bidirectional nucleocytoplasmic transit.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A26",
+              "difficulty": "hard",
+              "prompt": "Why do plant cells in the deep spongy mesophyll layer possess irregular shapes with large intercellular air spaces?",
+              "options": [
+                "A. To store poisonous gases",
+                "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
+                "C. Because they were damaged during growth",
+                "D. To absorb rain water from the stem"
+              ],
+              "correctAnswer": "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
+              "hint": "Gases diffuse 10,000 times faster in air spaces than through aqueous cytoplasm.",
+              "workedSolution": "Loose packing and extensive intercellular air voids facilitate rapid internal diffusion of carbon dioxide and oxygen between stomatal cavities and palisade layers.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A27",
+              "difficulty": "hard",
+              "prompt": "What is the consequence of lysosomal membrane rupture within an animal cell (autolysis)?",
+              "options": [
+                "A. The cell produces excess ATP",
+                "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
+                "C. The cell immediately divides into four",
+                "D. The cell turns into a plant cell"
+              ],
+              "correctAnswer": "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
+              "hint": "Autolysis or apoptosis.",
+              "workedSolution": "Widespread lysosomal leakage releases hydrolytic enzymes (proteases, nucleases, lipases) that degrade vital macromolecules, triggering autolytic cell death.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A28",
+              "difficulty": "hard",
+              "prompt": "Which organelle synthesizes membrane lipids and steroid hormones such as testosterone and estrogen?",
+              "options": [
+                "A. Rough endoplasmic reticulum",
+                "B. Smooth endoplasmic reticulum",
+                "C. Ribosome",
+                "D. Chloroplast"
+              ],
+              "correctAnswer": "B. Smooth endoplasmic reticulum",
+              "hint": "Prominent in testicular Leydig cells and adrenal cortex.",
+              "workedSolution": "Smooth ER contains enzymes that catalyze the synthesis of phospholipids, cholesterol, and steroid hormones from acetate and lipid precursors.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A29",
+              "difficulty": "hard",
+              "prompt": "How does the cellular architecture of cardiac muscle tissue prevent individual heart cells from pulling apart during vigorous contraction?",
+              "options": [
+                "A. They are glued together with cellulose",
+                "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
+                "C. They have no cell boundaries",
+                "D. Bones lock each heart cell in place"
+              ],
+              "correctAnswer": "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
+              "hint": "Intercalated discs provide mechanical bonding and electrical coupling.",
+              "workedSolution": "Intercalated discs feature mechanical desmosomes (fascia adherens) that withstand contractile shear stress and gap junctions that allow rapid ion flux for coordinated contraction.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A30",
+              "difficulty": "hard",
+              "prompt": "A microscope ocular lens has a tiny scratch that remains in the exact same position when you rotate the revolving nosepiece and move the slide. Where is the scratch located?",
+              "options": [
+                "A. On the objective lens",
+                "B. On the glass slide",
+                "C. On the eyepiece (ocular lens)",
+                "D. On the condenser lens"
+              ],
+              "correctAnswer": "C. On the eyepiece (ocular lens)",
+              "hint": "If rotating objectives and shifting the slide does not move the artifact, the defect must reside on the remaining optical element.",
+              "workedSolution": "Since rotating the objective turret and moving the stage failed to alter the artifact's orientation, the scratch is situated on the stationary eyepiece lens.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A31",
+              "difficulty": "hard",
+              "prompt": "Why do red blood cells lack mitochondria in addition to lacking a nucleus?",
+              "options": [
+                "A. Red blood cells do not require any energy",
+                "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
+                "C. Because mitochondria are too large to fit",
+                "D. Red blood cells use photosynthesis"
+              ],
+              "correctAnswer": "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
+              "hint": "Erythrocytes rely exclusively on anaerobic glycolysis for ATP.",
+              "workedSolution": "Lacking mitochondria, red blood cells generate ATP solely via anaerobic glycolysis, ensuring that 100% of bound oxygen is delivered intact to target tissues.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A32",
+              "difficulty": "hard",
+              "prompt": "What is the primary role of microvilli found on the apical surface of intestinal epithelial cells?",
+              "options": [
+                "A. Wave back and forth to push food along the gut",
+                "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
+                "C. Digest dietary cellulose",
+                "D. Filter pathogens from the blood"
+              ],
+              "correctAnswer": "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
+              "hint": "Microscopic brush border on enterocytes.",
+              "workedSolution": "Dense microvillar brush borders increase enterocyte surface area by over 20-fold, maximizing the density of nutrient transport proteins.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A33",
+              "difficulty": "hard",
+              "prompt": "What chemical property of the phospholipid bilayer prevents glucose from diffusing directly through the cell membrane without a transport protein?",
+              "options": [
+                "A. Glucose is too heavy to move",
+                "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
+                "C. The cell membrane is made of solid stone",
+                "D. Glucose is an insoluble gas"
+              ],
+              "correctAnswer": "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
+              "hint": "Like dissolves like: polar solutes are repelled by hydrocarbon interiors.",
+              "workedSolution": "Multiple polar hydroxyl (-OH) groups make glucose highly hydrophilic, creating a thermodynamic barrier that prevents entry through the non-polar lipid core without GLUT transporters.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A34",
+              "difficulty": "hard",
+              "prompt": "Which organelle in plant cells contains hydrolytic enzymes performing duties analogous to animal lysosomes?",
+              "options": [
+                "A. Chloroplast",
+                "B. The large central vacuole",
+                "C. Mitochondrion",
+                "D. Cell wall"
+              ],
+              "correctAnswer": "B. The large central vacuole",
+              "hint": "The vacuole contains acid hydrolases that degrade cellular waste.",
+              "workedSolution": "In addition to maintaining turgor, plant vacuoles contain acidic hydrolytic enzymes that perform waste degradation analogous to animal lysosomes.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A35",
+              "difficulty": "hard",
+              "prompt": "How does the chemical composition of bacterial cell walls differ fundamentally from plant cell walls?",
+              "options": [
+                "A. Bacteria have walls of pure cellulose",
+                "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
+                "C. Bacteria have no cell walls",
+                "D. Bacterial walls are made of bone"
+              ],
+              "correctAnswer": "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
+              "hint": "Target of penicillin antibiotic inhibition.",
+              "workedSolution": "Bacterial walls are made of peptidoglycan (alternating NAG-NAM glycan chains cross-linked by amino acids), while plant walls are made of glucose-polymer cellulose.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A36",
+              "difficulty": "hard",
+              "prompt": "Why does the rate of water absorption by osmosis in plant root hairs increase when the soil is warm and aerated compared to cold, waterlogged soil?",
+              "options": [
+                "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
+                "B. Cold soil freezes water solid immediately",
+                "C. Root hairs die when exposed to oxygen",
+                "D. Warm water is lighter than cold water"
+              ],
+              "correctAnswer": "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
+              "hint": "Osmosis is passive, but maintaining the solute gradient requires active transport.",
+              "workedSolution": "Active transport of minerals into root cells requires ATP from aerobic respiration. Oxygenated soil fuels ATP synthesis, creating steep hypertonic gradients that drive rapid osmosis.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A37",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of peroxisomes in eukaryotic cells?",
+              "options": [
+                "A. Photosynthesis",
+                "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
+                "C. Storing genetic code",
+                "D. Pumping lymph"
+              ],
+              "correctAnswer": "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
+              "hint": "Neutralizes reactive oxygen species.",
+              "workedSolution": "Peroxisomes contain catalase and oxidases that oxidize long-chain fatty acids and decompose cytotoxic hydrogen peroxide into benign water and oxygen.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A38",
+              "difficulty": "hard",
+              "prompt": "Which tissue in vertebrate animals forms the endocrine and exocrine glands that synthesize and secrete chemical substances?",
+              "options": [
+                "A. Epithelial tissue (glandular epithelium)",
+                "B. Connective tissue",
+                "C. Nervous tissue",
+                "D. Muscle tissue"
+              ],
+              "correctAnswer": "A. Epithelial tissue (glandular epithelium)",
+              "hint": "Invaginated epithelial sheets specialized for secretion.",
+              "workedSolution": "Glands (thyroid, salivary, sweat glands) develop from specialized glandular epithelial tissues specialized for protein or steroid secretion.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A39",
+              "difficulty": "hard",
+              "prompt": "Why do red blood cells crenate when exposed to seawater ($~3.5\\%\\text{ NaCl}$)?",
+              "options": [
+                "A. Salt enters the cell and blows it up",
+                "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
+                "C. Seawater dissolves the cell membrane",
+                "D. Red blood cells absorb salt until they freeze"
+              ],
+              "correctAnswer": "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
+              "hint": "Seawater has an osmolarity four times higher than blood plasma.",
+              "workedSolution": "Seawater (~1000 mOsm/L) is strongly hypertonic to erythrocytes (~300 mOsm/L), pulling water out by exosmosis and causing cell shriveling (crenation).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A40",
+              "difficulty": "hard",
+              "prompt": "What is the structural role of cholesterol embedded within mammalian cell membranes?",
+              "options": [
+                "A. Provides fuel for cellular respiration",
+                "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
+                "C. Forms the genetic code",
+                "D. Blocks all water transport"
+              ],
+              "correctAnswer": "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
+              "hint": "Intercalates between fatty acid chains to stabilize membrane fluidity.",
+              "workedSolution": "Cholesterol restrains phospholipid movement at warm temperatures to prevent excess fluidity, while disrupting close packing at cold temperatures to prevent solidification.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A41",
+              "difficulty": "hard",
+              "prompt": "Which organelle is responsible for synthesizing ribosomal RNA (rRNA) and assembling the large and small subunits of ribosomes?",
+              "options": [
+                "A. Nucleolus",
+                "B. Golgi apparatus",
+                "C. Centriole",
+                "D. Peroxisome"
+              ],
+              "correctAnswer": "A. Nucleolus",
+              "hint": "A prominent non-membranous nuclear sub-structure.",
+              "workedSolution": "The nucleolus organizes around chromosomal nucleolar organizer regions (NORs) to transcribe pre-rRNA and assemble ribosomal subunits.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A42",
+              "difficulty": "hard",
+              "prompt": "How does the structural organization of compact bone tissue (osteons) combine high mechanical compressive strength with lightweight efficiency?",
+              "options": [
+                "A. Bone is solid iron",
+                "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
+                "C. Bones are filled with air only",
+                "D. Bone cells have no extracellular matrix"
+              ],
+              "correctAnswer": "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
+              "hint": "The Haversian system / osteon structure.",
+              "workedSolution": "Osteons consist of concentric mineralized lamellae reinforced by helical collagen fibers surrounding vascular Haversian canals, optimizing weight-to-strength ratios.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A43",
+              "difficulty": "hard",
+              "prompt": "Why can unicellular Paramecium organisms propel themselves through pond water at speeds exceeding 50 body lengths per second?",
+              "options": [
+                "A. They have rocket engines",
+                "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
+                "C. They have legs",
+                "D. Water pushes them passively"
+              ],
+              "correctAnswer": "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
+              "hint": "Metachronal rhythm coordination of cilia.",
+              "workedSolution": "Paramecia are covered with ~4,000 cilia coordinated by subpellicular fiber networks into rhythmic metachronal waves that generate hydrodynamic thrust.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A44",
+              "difficulty": "hard",
+              "prompt": "What is the key difference between simple diffusion and facilitated diffusion across biological membranes?",
+              "options": [
+                "A. Simple diffusion requires ATP; facilitated does not",
+                "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
+                "C. Simple diffusion only transports ions",
+                "D. Facilitated diffusion moves substances against their gradient"
+              ],
+              "correctAnswer": "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
+              "hint": "Both are passive, but one requires integral carrier/channel proteins.",
+              "workedSolution": "Simple diffusion occurs directly through the lipid bilayer (e.g. $O_2, CO_2$), while facilitated diffusion requires integral membrane proteins (e.g. glucose, $K^+$) without metabolic energy.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A45",
+              "difficulty": "hard",
+              "prompt": "Why do stomata close at night in most $C_3$ and $C_4$ plants?",
+              "options": [
+                "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
+                "B. The leaf cells freeze every night",
+                "C. Stomata are closed by gravity",
+                "D. Leaves drop off at night"
+              ],
+              "correctAnswer": "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
+              "hint": "Darkness halts photosynthetic carbon fixation.",
+              "workedSolution": "Without light, light-dependent proton pumping stops in guard cells, releasing potassium ions and water by exosmosis to render cells flaccid and close stomata.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A46",
+              "difficulty": "hard",
+              "prompt": "Which organelle is responsible for synthesizing the cell plate during cytokinesis in dividing plant cells?",
+              "options": [
+                "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
+                "B. Centrosomes",
+                "C. Mitochondria",
+                "D. Central vacuole"
+              ],
+              "correctAnswer": "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
+              "hint": "Vesicles carry pectin and cellulose precursors to build the new cross wall.",
+              "workedSolution": "During telophase, Golgi-derived phragmoplast vesicles carry pectin and cell wall precursors to the equatorial plane, coalescing into the cell plate and middle lamella.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A47",
+              "difficulty": "hard",
+              "prompt": "How does the myelin sheath produced by Schwann cells around peripheral axons speed up nerve impulse transmission?",
+              "options": [
+                "A. It heats the axon to 100°C",
+                "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
+                "C. It converts nerve signals into sound waves",
+                "D. It generates oxygen"
+              ],
+              "correctAnswer": "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
+              "hint": "Saltatory conduction across unmyelinated nodes.",
+              "workedSolution": "Myelin's high lipid resistance prevents trans-membrane ion leakage, causing depolarizing currents to jump rapidly between unmyelinated Nodes of Ranvier (saltatory conduction).",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A48",
+              "difficulty": "hard",
+              "prompt": "What is the physiological role of the enzyme catalase abundant in cellular peroxisomes?",
+              "options": [
+                "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
+                "B. Synthesizes fatty acids",
+                "C. Absorbs light for photosynthesis",
+                "D. Binds oxygen in red blood cells"
+              ],
+              "correctAnswer": "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
+              "hint": "Protects cells from oxidative radical damage.",
+              "workedSolution": "Catalase has one of the highest enzymatic turnover rates known, converting toxic $H_2O_2$ byproducts of oxidation into benign water and oxygen gas.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A49",
+              "difficulty": "hard",
+              "prompt": "What is the structural basis for the high mechanical flexibility of cartilage compared to bone in the human skeleton?",
+              "options": [
+                "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
+                "B. Cartilage is made of water only",
+                "C. Cartilage is an epithelial tissue",
+                "D. Cartilage cells have no cell walls"
+              ],
+              "correctAnswer": "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
+              "hint": "Non-mineralized extracellular matrix.",
+              "workedSolution": "Cartilage matrix consists of flexible chondroitin sulfate proteoglycans and collagen fibers, lacking the brittle, rigid calcium hydroxyapatite mineralization of bone.",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CELL_A50",
+              "difficulty": "hard",
+              "prompt": "Why can the total magnification of an optical light microscope not be increased indefinitely by simply stacking extra glass lenses?",
+              "options": [
+                "A. The microscope would become too heavy to lift",
+                "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
+                "C. The light bulb would explode",
+                "D. Glass lenses melt when stacked"
+              ],
+              "correctAnswer": "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
+              "hint": "Diffraction barrier restricts useful magnification.",
+              "workedSolution": "The wave nature of visible light limits optical resolution to ~200 nm. Magnifying beyond 1,500× enlarges diffraction blurs without resolving finer detail ('empty magnification').",
+              "points": 1,
+              "learningCompetency": "B7.1.2.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -2972,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -3168,7 +5699,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -3365,7 +5896,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -3560,7 +6091,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -3757,7 +6288,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -3954,7 +6485,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -4151,7 +6682,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -4346,7 +6877,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -4542,7 +7073,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -4738,7 +7269,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -4935,7 +7466,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -5133,7 +7664,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -5331,7 +7862,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -5524,7 +8055,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -5719,7 +8250,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -5914,7 +8445,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -6110,7 +8641,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -6307,7 +8838,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-01T18:58:01.313Z"
+    "updatedAt": "2026-10-02T15:33:04.568Z"
   }
 ];
 
@@ -6320,7 +8851,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "order": 1,
     "notes": {
-      "summaryMarkdown": "### Unit 1: Understanding Matter and Its Three Everyday States\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter is everything around us that has mass and occupies space (volume).\n\n#### 1. The Three States of Matter & Particle Behavior\n* **Solids:** Particles are packed closely together in a neat, orderly pattern. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### 2. Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Elements, the Periodic Table, and Atomic Structure\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n\n#### Historical Foundation & Definition:\n* In 1869, Russian chemist Dmitri Mendeleev organized known elements into the **Periodic Table** based on recurring chemical behaviors and atomic patterns.\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### Chemical Naming & International Symbols:\n* Each element has a 1- or 2-letter Berzelius symbol. The first letter is always **CAPITALIZED**; the second letter (if present) is always lowercase.\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n#### Subatomic Architecture of the Atom:\nAn atom comprises three subatomic particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, located in the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, situated in the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **Electron Shell Configuration ($2n^2$ Rule):**\n  * First Shell ($K$ shell): Holds a maximum of $2$ electrons.\n  * Second Shell ($L$ shell): Holds a maximum of $8$ electrons.\n  * Third Shell ($M$ shell): Holds a maximum of $8$ electrons (for the first 20 elements).\n\n---\n\n### Unit 4: Broad Groups of the Periodic Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n\n1. **Metals:** Located on the left and central sectors. Shiny (lustrous), malleable, ductile, high melting points, and excellent conductors of heat and electricity. Readily lose electrons to form positive cations.\n   * *Examples:* Iron ($\\text{Fe}$ — structural beams), Aluminium ($\\text{Al}$ — cookware, aircraft), Copper ($\\text{Cu}$ — electrical wiring), Gold ($\\text{Au}$ — jewellery, corrosion-free contacts).\n2. **Non-Metals:** Located on the right sector. Dull appearance, brittle when solid, low density, poor electrical/thermal conductors (graphite is an exception). Accept or share electrons.\n   * *Examples:* Oxygen ($\\text{O}$ — respiration, combustion), Chlorine ($\\text{Cl}$ — water sanitation), Nitrogen ($\\text{N}$ — food packaging, fertilizers), Phosphorus ($\\text{P}$ — safety matches).\n3. **Semi-Metals (Metalloids):** Border the zigzag diagonal dividing line. Possess intermediate metallic and non-metallic traits. Act as semiconductors (poor conductors at low temperatures, highly conductive when heated or doped).\n   * *Six Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Key Application:* Silicon and Germanium power the global electronics industry in microchips, transistors, and solar photovoltaics.\n4. **Noble Gases (Group 18 / Group 0):** The extreme right column. Colorless, odorless, chemically unreactive (inert) gases with completely filled valence electron shells (Helium has $2$; Neon and Argon have $8$).\n   * *Examples:* Helium ($\\text{He}$ — lighter-than-air party balloons), Argon ($\\text{Ar}$ — inert shield in incandescent bulbs).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron. Cut easily with a knife; react violently with water to liberate hydrogen gas (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Reactive metals with 2 valence electrons; denser and harder than Group 1 (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / Group 7):** Very reactive non-metals with 7 valence electrons. Exist naturally as diatomic pairs ($F_2, Cl_2, Br_2, I_2$).\n\n---\n\n### Unit 5: First Twenty Elements Reference Table\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Chemical Class |\n| :---: | :--- | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | 1 | 1 | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | 2 | 2 (Duplet) | Noble Gas |\n| **3** | Lithium | $\\text{Li}$ | 2, 1 | 1 | Alkali Metal |\n| **4** | Beryllium | $\\text{Be}$ | 2, 2 | 2 | Alkaline Earth Metal |\n| **5** | Boron | $\\text{B}$ | 2, 3 | 3 | Metalloid |\n| **6** | Carbon | $\\text{C}$ | 2, 4 | 4 | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | 2, 5 | 5 | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | 2, 6 | 6 | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | 2, 7 | 7 | Halogen |\n| **10** | Neon | $\\text{Ne}$ | 2, 8 | 8 (Octet) | Noble Gas |\n| **11** | Sodium | $\\text{Na}$ | 2, 8, 1 | 1 | Alkali Metal |\n| **12** | Magnesium | $\\text{Mg}$ | 2, 8, 2 | 2 | Alkaline Earth Metal |\n| **13** | Aluminium | $\\text{Al}$ | 2, 8, 3 | 3 | Metal |\n| **14** | Silicon | $\\text{Si}$ | 2, 8, 4 | 4 | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | 2, 8, 5 | 5 | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | 2, 8, 6 | 6 | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | 2, 8, 7 | 7 | Halogen |\n| **18** | Argon | $\\text{Ar}$ | 2, 8, 8 | 8 (Octet) | Noble Gas |\n| **19** | Potassium | $\\text{K}$ | 2, 8, 8, 1 | 1 | Alkali Metal |\n| **20** | Calcium | $\\text{Ca}$ | 2, 8, 8, 2 | 2 | Alkaline Earth Metal |",
+      "summaryMarkdown": "### Unit 1: Particulate Nature of Matter: Solid, Liquid, and Gas\n* **Curriculum Standard:** NaCCA `B7.1.1.1.1`\n* **Core Principle:** Matter consists of tiny particles in continuous motion. The macroscopic properties of solids, liquids, and gases depend on how these particles are packed and how strongly they attract one another.\n\n#### Microscopic Particle Organization\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"solidGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#38bdf8\"/><stop offset=\"100%\" stop-color=\"#0284c7\"/></linearGradient><linearGradient id=\"liqGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#34d399\"/><stop offset=\"100%\" stop-color=\"#059669\"/></linearGradient><linearGradient id=\"gasGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"100%\" stop-color=\"#dc2626\"/></linearGradient><marker id=\"arrowRed\" markerWidth=\"6\" markerHeight=\"6\" refX=\"5\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"#dc2626\"/></marker></defs><rect width=\"760\" height=\"280\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#e2e8f0\" stroke-width=\"2\"/><g transform=\"translate(30, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">SOLID</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Rigid • Fixed Lattice • Vibrational</text><g fill=\"url(#solidGrad)\" stroke=\"#0369a1\" stroke-width=\"1\"><circle cx=\"40\" cy=\"50\" r=\"11\"/><circle cx=\"68\" cy=\"50\" r=\"11\"/><circle cx=\"96\" cy=\"50\" r=\"11\"/><circle cx=\"124\" cy=\"50\" r=\"11\"/><circle cx=\"152\" cy=\"50\" r=\"11\"/><circle cx=\"40\" cy=\"76\" r=\"11\"/><circle cx=\"68\" cy=\"76\" r=\"11\"/><circle cx=\"96\" cy=\"76\" r=\"11\"/><circle cx=\"124\" cy=\"76\" r=\"11\"/><circle cx=\"152\" cy=\"76\" r=\"11\"/><circle cx=\"40\" cy=\"102\" r=\"11\"/><circle cx=\"68\" cy=\"102\" r=\"11\"/><circle cx=\"96\" cy=\"102\" r=\"11\"/><circle cx=\"124\" cy=\"102\" r=\"11\"/><circle cx=\"152\" cy=\"102\" r=\"11\"/><circle cx=\"40\" cy=\"128\" r=\"11\"/><circle cx=\"68\" cy=\"128\" r=\"11\"/><circle cx=\"96\" cy=\"128\" r=\"11\"/><circle cx=\"124\" cy=\"128\" r=\"11\"/><circle cx=\"152\" cy=\"128\" r=\"11\"/></g></g><g transform=\"translate(280, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#059669\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#047857\" text-anchor=\"middle\">LIQUID</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Fluid • Definite Volume • Slides past</text><g fill=\"url(#liqGrad)\" stroke=\"#047857\" stroke-width=\"1\"><circle cx=\"45\" cy=\"90\" r=\"11\"/><circle cx=\"75\" cy=\"96\" r=\"11\"/><circle cx=\"108\" cy=\"92\" r=\"11\"/><circle cx=\"140\" cy=\"98\" r=\"11\"/><circle cx=\"165\" cy=\"90\" r=\"11\"/><circle cx=\"55\" cy=\"118\" r=\"11\"/><circle cx=\"88\" cy=\"122\" r=\"11\"/><circle cx=\"120\" cy=\"116\" r=\"11\"/><circle cx=\"152\" cy=\"124\" r=\"11\"/><circle cx=\"42\" cy=\"144\" r=\"11\"/><circle cx=\"72\" cy=\"148\" r=\"11\"/><circle cx=\"104\" cy=\"145\" r=\"11\"/><circle cx=\"136\" cy=\"147\" r=\"11\"/><circle cx=\"164\" cy=\"142\" r=\"11\"/></g></g><g transform=\"translate(530, 30)\"><rect width=\"200\" height=\"170\" rx=\"8\" fill=\"#ffffff\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"100\" y=\"200\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#b91c1c\" text-anchor=\"middle\">GAS</text><text x=\"100\" y=\"218\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Vast Voids • Rapid Random Paths</text><g fill=\"url(#gasGrad)\" stroke=\"#b91c1c\" stroke-width=\"1\"><circle cx=\"45\" cy=\"45\" r=\"9\"/><line x1=\"45\" y1=\"45\" x2=\"25\" y2=\"30\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"155\" cy=\"55\" r=\"9\"/><line x1=\"155\" y1=\"55\" x2=\"175\" y2=\"40\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"80\" cy=\"95\" r=\"9\"/><line x1=\"80\" y1=\"95\" x2=\"95\" y2=\"115\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"145\" cy=\"125\" r=\"9\"/><line x1=\"145\" y1=\"125\" x2=\"125\" y2=\"140\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/><circle cx=\"50\" cy=\"135\" r=\"9\"/><line x1=\"50\" y1=\"135\" x2=\"65\" y2=\"115\" stroke=\"#dc2626\" stroke-width=\"1.5\" marker-end=\"url(#arrowRed)\"/></g></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Microscopic Particle Distribution across Solid, Liquid, and Gas Phases</p>\n</div>\n\n* **Solids:** Particles are packed closely together in a neat, orderly lattice. Strong cohesive forces hold them firmly together, meaning they can only vibrate on the spot without moving freely.\n  * *Properties:* Fixed shape, fixed volume, high density, incompressible.\n  * *Everyday Examples:* Wood, Iron, Sand, Salt, Sugar, Chalk, Clay, Diamond, Graphite.\n* **Liquids:** Particles remain close together but are not arranged in neat rows. Forces holding them are weaker than in solids, allowing particles to slide smoothly past each other.\n  * *Properties:* Definite volume, no fixed shape (takes the shape of container), flows easily, resists compression.\n  * *Everyday Examples:* Water, Cooking oil, Milk, Kerosene, Honey, Liquid soap, Ink.\n* **Gases:** Particles are spaced far apart with large empty spaces between them. They possess high kinetic energy, moving rapidly and randomly in all directions with negligible attractive forces.\n  * *Properties:* No fixed shape, no fixed volume (fills any container completely), low density, highly compressible.\n  * *Everyday Examples:* Oxygen, Nitrogen, Carbon dioxide, Steam, Smoke, Methane, Cooking gas (propane).\n\n#### Why Can Gases Be Compressed Easily?\nUnlike solids and liquids where particles are touching or very close, gas particles have huge empty gaps between them. Applying external pressure pushes these particles closer together into the empty voids without altering the particle diameter.\n\n---\n\n### Unit 2: Everyday Importance of Specific Liquids and Solids\n* **Curriculum Standard:** NaCCA `B7.1.1.1.2`\n\n#### Biological & Domestic Importance of Liquids:\n1. **Hydration & Life Support:** The human body is approximately 60–70% water. Regular fluid intake replenishes moisture lost through perspiration and urine, sustaining cellular metabolism.\n2. **Digestion & Nutrient Absorption:** Saliva and gastric juices moisten food, break down complex nutrients chemically, and facilitate smooth intestinal peristalsis.\n3. **Internal Transportation:** Liquid blood plasma transports dissolved oxygen, glucose, hormones, and defensive antibodies to body tissues while removing metabolic waste (urea, CO₂).\n4. **Biological Lubrication:** Synovial fluid in moving skeletal joints prevents friction and bone attrition; tear film keeps ocular surfaces moist.\n5. **Cleanliness & Sanitation:** Water and liquid detergents disperse dirt, oil films, and pathogenic microbes from skin, apparel, and culinary equipment.\n\n#### Vital Importance of Key Solids:\n* **Dry Ice (Solid Carbon Dioxide, CO₂):**\n  * Sublimes directly from solid to gas at $-78.5^\\circ\\text{C}$ without leaving liquid residue, making it ideal for shipping vaccines, biological specimens, and chilled foodstuffs.\n  * Preserves human remains in mortuaries during mechanical refrigeration outages.\n  * Flushes out volatile oxygen vapors from industrial fuel tanks prior to welding to avert explosive combustion.\n  * Insulates freshly laid road asphalt during transit from batching plants to paving sites.\n* **Common Table Salt (Sodium Chloride, NaCl):**\n  * Provides savory flavoring and dietary iodine in culinary preparation.\n  * Functions as a natural preservative through osmotic dehydration: drawing water out of fish and meat tissues so decay bacteria cannot survive.\n  * Supplies essential $\\text{Na}^+$ and $\\text{Cl}^-$ electrolytes required for nerve signal conduction and muscular contraction.\n\n---\n\n### Unit 3: Subatomic Architecture and Quantized Shell Occupancy\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n* **Core Principle:** Every atom comprises a central nucleus consisting of protons and neutrons, enveloped by electrons occupying quantized concentric energy shells (K, L, M, N) governed by the 2n² capacity law.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"600\" height=\"360\" rx=\"10\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><circle cx=\"240\" cy=\"180\" r=\"130\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"85\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"45\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4\"/><circle cx=\"240\" cy=\"180\" r=\"24\" fill=\"#f1f5f9\" stroke=\"#0f172a\" stroke-width=\"2\"/><circle cx=\"235\" cy=\"174\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"246\" cy=\"172\" r=\"6\" fill=\"#64748b\"/><circle cx=\"236\" cy=\"186\" r=\"6\" fill=\"#64748b\"/><circle cx=\"246\" cy=\"185\" r=\"6\" fill=\"#ef4444\"/><circle cx=\"240\" cy=\"135\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"225\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"155\" cy=\"180\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"325\" cy=\"180\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"180\" cy=\"120\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"300\" cy=\"240\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"50\" r=\"5.5\" fill=\"#0284c7\"/><circle cx=\"240\" cy=\"310\" r=\"5.5\" fill=\"#0284c7\"/><line x1=\"240\" y1=\"180\" x2=\"430\" y2=\"130\" stroke=\"#0f172a\" stroke-width=\"1.2\"/><text x=\"440\" y=\"125\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\">Nucleus</text><text x=\"440\" y=\"142\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#ef4444\">• Protons (+1, 1 a.m.u.)</text><text x=\"440\" y=\"157\" font-family=\"sans-serif\" fill=\"#64748b\" font-size=\"11\">• Neutrons (0, 1 a.m.u.)</text><line x1=\"285\" y1=\"180\" x2=\"430\" y2=\"200\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"195\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">K-Shell (n = 1): Max 2 e⁻</text><line x1=\"325\" y1=\"180\" x2=\"430\" y2=\"220\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"220\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">L-Shell (n = 2): Max 8 e⁻</text><line x1=\"370\" y1=\"180\" x2=\"430\" y2=\"245\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"440\" y=\"245\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\">M-Shell (n = 3): Max 8 e⁻ (B7-B9)</text><text x=\"440\" y=\"285\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#b91c1c\">Capacity Law = 2n²</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Detailed Bohr Atomic Architecture showing Nucleus (Protons/Neutrons) and Shell Quantum Levels</p>\n</div>\n\n#### Subatomic Particles:\n1. **Protons ($p^+$):** Positive charge ($+1$), relative mass = $1\\text{ a.m.u.}$, locked inside the central nucleus.\n2. **Neutrons ($n^0$):** Neutral / zero charge ($0$), relative mass = $1\\text{ a.m.u.}$, locked inside the central nucleus alongside protons.\n3. **Electrons ($e^-$):** Negative charge ($-1$), negligible mass ($\\approx 1/1840\\text{ a.m.u.}$), revolving at high velocities in orbital shells around the nucleus.\n\n#### Fundamental Atomic Rules:\n* **Atomic Number ($Z$):** Total number of protons in the nucleus. ($Z = p^+$)\n* **Mass Number ($A$):** Total number of nucleons (protons + neutrons) in the nucleus. ($A = Z + n$)\n* **Neutral Atom Rule:** In an uncharged atom, number of protons equals number of electrons ($p^+ = e^-$).\n* **The $2n^2$ Capacity Law:**\n  * First Shell ($K$-shell, $n=1$): Holds a maximum of $2(1)^2 = 2$ electrons.\n  * Second Shell ($L$-shell, $n=2$): Holds a maximum of $2(2)^2 = 8$ electrons.\n  * Third Shell ($M$-shell, $n=3$): Holds a maximum of $8$ electrons for the first 20 elements ($18$ in advanced quantum mechanics).\n\n---\n\n### Unit 4: Electron Shell Configurations: Representative Elements (Bohr Diagrams)\n* **Curriculum Standard:** NaCCA `B7.1.1.2`\n* **Core Principle:** Visual models of orbital occupancy demonstrating how valence electrons dictate chemical classification (Alkali Metal, Alkaline Earth Metal, Halogen, and Noble Gas).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><g transform=\"translate(20, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sodium (₁₁Na)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 1 (Group 1)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">11p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"50\" r=\"4.5\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">1 Valence Electron</text></g><g transform=\"translate(210, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Magnesium (₁₂Mg)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 2 (Group 2)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">12p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"70\" cy=\"51\" r=\"4.5\" fill=\"#f59e0b\"/><circle cx=\"90\" cy=\"51\" r=\"4.5\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">2 Valence Electrons</text></g><g transform=\"translate(400, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Chlorine (₁₇Cl)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 7 (Group 17)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">17p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"75\" cy=\"51\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"85\" cy=\"51\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"139\" cy=\"105\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"139\" cy=\"115\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"75\" cy=\"169\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"85\" cy=\"169\" r=\"4\" fill=\"#f59e0b\"/><circle cx=\"21\" cy=\"110\" r=\"4\" fill=\"#f59e0b\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">7 Valence Electrons</text></g><g transform=\"translate(585, 15)\"><rect width=\"160\" height=\"190\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/><text x=\"80\" y=\"22\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Argon (₁₈Ar)</text><text x=\"80\" y=\"37\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#0284c7\" text-anchor=\"middle\">2, 8, 8 (Group 18)</text><circle cx=\"80\" cy=\"110\" r=\"60\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"40\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-dasharray=\"3\"/><circle cx=\"80\" cy=\"110\" r=\"12\" fill=\"#ef4444\"/><text x=\"80\" y=\"114\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fff\" text-anchor=\"middle\">18p</text><circle cx=\"80\" cy=\"90\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"130\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"40\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"120\" cy=\"110\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"70\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"80\" cy=\"150\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"52\" cy=\"138\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"108\" cy=\"82\" r=\"3.5\" fill=\"#0284c7\"/><circle cx=\"75\" cy=\"51\" r=\"4\" fill=\"#10b981\"/><circle cx=\"85\" cy=\"51\" r=\"4\" fill=\"#10b981\"/><circle cx=\"139\" cy=\"105\" r=\"4\" fill=\"#10b981\"/><circle cx=\"139\" cy=\"115\" r=\"4\" fill=\"#10b981\"/><circle cx=\"75\" cy=\"169\" r=\"4\" fill=\"#10b981\"/><circle cx=\"85\" cy=\"169\" r=\"4\" fill=\"#10b981\"/><circle cx=\"21\" cy=\"105\" r=\"4\" fill=\"#10b981\"/><circle cx=\"21\" cy=\"115\" r=\"4\" fill=\"#10b981\"/><text x=\"80\" y=\"182\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#047857\" text-anchor=\"middle\">Stable Octet (Inert)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Comparative Bohr Models for Sodium, Magnesium, Chlorine, and Argon</p>\n</div>\n\n#### Chemical Naming & International Symbols:\n* **English Name Derivations:** Carbon = $\\text{C}$, Oxygen = $\\text{O}$, Hydrogen = $\\text{H}$, Calcium = $\\text{Ca}$, Aluminium = $\\text{Al}$.\n* **Latin Name Derivations:**\n  * Sodium (*Natrium*) = $\\text{Na}$\n  * Potassium (*Kalium*) = $\\text{K}$\n  * Iron (*Ferrum*) = $\\text{Fe}$\n  * Gold (*Aurum*) = $\\text{Au}$\n  * Copper (*Cuprum*) = $\\text{Cu}$\n  * Lead (*Plumbum*) = $\\text{Pb}$\n\n---\n\n### Unit 5: Periodic Table Architecture & Chemical Families\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Extension)`\n* **Core Principle:** Mendeleev organized elements to expose periodic trends. The modern layout separates elements into distinct functional groups with predictable behaviors.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"200\" viewBox=\"0 0 720 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"720\" height=\"200\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><rect x=\"25\" y=\"30\" width=\"55\" height=\"140\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"52\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#b91c1c\" text-anchor=\"middle\">Group 1</text><text x=\"52\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">Alkali</text><text x=\"52\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">Metals</text><rect x=\"85\" y=\"60\" width=\"55\" height=\"110\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><text x=\"112\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Group 2</text><text x=\"112\" y=\"118\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">Alk. Earth</text><rect x=\"145\" y=\"90\" width=\"280\" height=\"80\" rx=\"6\" fill=\"#e0e7ff\" stroke=\"#6366f1\" stroke-width=\"1.5\"/><text x=\"285\" y=\"135\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#3730a3\" text-anchor=\"middle\">Transition Metals (Fe, Cu, Zn, Au, Ag, Hg)</text><rect x=\"430\" y=\"60\" width=\"80\" height=\"110\" rx=\"6\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><text x=\"470\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Metalloids</text><text x=\"470\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#713f12\" text-anchor=\"middle\">(B, Si, Ge...)</text><rect x=\"515\" y=\"60\" width=\"65\" height=\"110\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"547\" y=\"100\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Group 17</text><text x=\"547\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">Halogens</text><rect x=\"585\" y=\"30\" width=\"65\" height=\"140\" rx=\"6\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"617\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Group 18</text><text x=\"617\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0c4a6e\" text-anchor=\"middle\">Noble</text><text x=\"617\" y=\"120\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0c4a6e\" text-anchor=\"middle\">Gases</text><path d=\"M25,185 L650,185\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"340\" y=\"196\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\" text-anchor=\"middle\">Increasing Atomic Number (Z) Across Periods →</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Structural Overview of the Periodic Table showing Group Families and Locations</p>\n</div>\n\n1. **Metals:** Located on the left side and center of the table. Usually hard, lustrous, malleable, ductile, high melting points, and excellent conductors of heat and electricity.\n   * *Examples:* Iron ($\\text{Fe}$), Aluminium ($\\text{Al}$), Copper ($\\text{Cu}$), Gold ($\\text{Au}$).\n2. **Non-Metals:** Located on the right side of the table. Dull appearance, brittle when solid, poor conductors of heat and electricity (graphite carbon is a notable exception).\n   * *Examples:* Oxygen ($\\text{O}$), Chlorine ($\\text{Cl}$), Nitrogen ($\\text{N}$), Phosphorus ($\\text{P}$).\n3. **Semi-Metals (Metalloids):** Along the zigzag diagonal boundary. Exhibit intermediate metallic and non-metallic traits, acting as semiconductors.\n   * *Core Metalloids:* Boron ($\\text{B}$), Silicon ($\\text{Si}$), Germanium ($\\text{Ge}$), Arsenic ($\\text{As}$), Antimony ($\\text{Sb}$), Tellurium ($\\text{Te}$).\n   * *Application:* Silicon and Germanium are the foundation of microprocessors and solar cells.\n4. **Noble Gases (Group 18 / 8):** Extreme right column. Chemically inert with complete outer electron shells (Helium: 2 duplet, Neon/Argon: 8 octet).\n   * *Examples:* Helium ($\\text{He}$), Argon ($\\text{Ar}$).\n5. **Alkali Metals (Group 1):** Soft, highly reactive metals with 1 valence electron (Lithium, Sodium, Potassium).\n6. **Alkaline Earth Metals (Group 2):** Denser, harder reactive metals with 2 valence electrons (Beryllium, Magnesium, Calcium).\n7. **Halogens (Group 17 / 7):** Very reactive non-metals with 7 valence electrons, existing naturally as diatomic pairs ($\\text{F}_2, \\text{Cl}_2, \\text{Br}_2, \\text{I}_2$).\n\n---\n\n### Unit 6: Canonical First Twenty Elements Reference Table\n* **Curriculum Standard:** NaCCA `B7.1.1.2 (Reference)`\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Reactive Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Reactive Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Reactive Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Post-Transition Metal |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Reactive Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Reactive Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -8856,48 +11387,2422 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 4,
     "notes": {
-      "summaryMarkdown": "### The Cell as the Fundamental Unit of Life & Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate an understanding of the structure of plant and animal cells, observe wet mounts under the microscope, and identify organelles.\n\n#### 1. The Classical Cell Theory\nDeveloped by Schleiden, Schwann, and Virchow:\n1. All living organisms are composed of one or more cells.\n2. The cell is the basic structural and functional unit of life.\n3. All cells arise from pre-existing cells through biological division.\n\n#### 2. Optical Light Microscope Components\n* **Eyepiece (Ocular Lens):** Magnifies image (typically $10\\times$).\n* **Objective Lenses:** Provide low ($4\\times$), medium ($10\\times$), and high ($40\\times$) magnification.\n* **Coarse & Fine Adjustment Knobs:** Bring specimen into initial rapid focus and fine, sharp resolution.\n* **Stage & Clips:** Support slide with central aperture for light transmission.\n* **Diaphragm & Condenser:** Regulate intensity and cone angle of illumination.\n* $\\text{Total Magnification} = \\text{Eyepiece Power} \\times \\text{Objective Lens Power}$.\n\n#### 3. Ultrastructural Comparison: Plant vs. Animal Cells\n| Structural Feature | Plant Cell | Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Wall** | Present (rigid cellulose framework) | Absent (flexible outer boundary) |\n| **Plasma Membrane** | Present (interior to cell wall) | Present (outermost living boundary) |\n| **Chloroplasts** | Present (contain chlorophyll for photosynthesis) | Absent |\n| **Vacuole** | Large, permanent, central sap vacuole | Small, temporary, non-central vacuoles |\n| **Shape & Rigidity** | Regular, definite angular geometry | Irregular, fluid, polymorphic geometry |\n| **Storage Form** | Starch grains | Glycogen granules |",
+      "summaryMarkdown": "### Unit 1: The Cell Theory & Optical Light Microscopy\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n* **Core Competency:** Demonstrate a thorough understanding of cellular biology, handle an optical light microscope safely, and distinguish between plant and animal cells.\n\n#### 1. The Classical Cell Theory\nThe cell theory was formulated through the collaborative discoveries of Matthias Schleiden (botanist, 1838), Theodor Schwann (zoologist, 1839), and Rudolf Virchow (pathologist, 1855):\n1. **Structural Tenet:** All living organisms (unicellular and multicellular) are composed of one or more living cells.\n2. **Functional Tenet:** The cell is the most fundamental structural, functional, and physiological unit of all biological life.\n3. **Biogenic Tenet:** All cells arise exclusively from pre-existing living cells through cellular division (*omnis cellula e cellula*).\n\n#### 2. The Optical Compound Light Microscope\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"360\" viewBox=\"0 0 720 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"metalGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#94a3b8\"/>\n      <stop offset=\"100%\" stop-color=\"#475569\"/>\n    </linearGradient>\n    <linearGradient id=\"lensGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <linearGradient id=\"beamGrad\" x1=\"0%\" y1=\"100%\" x2=\"0%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" stop-opacity=\"0.8\"/>\n      <stop offset=\"100%\" stop-color=\"#fef08a\" stop-opacity=\"0.1\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"15\" width=\"680\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"35\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</text>\n  \n  <!-- Microscope Base -->\n  <path d=\"M140,320 L280,320 L270,300 L150,300 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Light Source / Mirror -->\n  <ellipse cx=\"210\" cy=\"285\" r=\"16\" fill=\"#facc15\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n  <polygon points=\"200,285 220,285 226,200 194,200\" fill=\"url(#beamGrad)\"/>\n  \n  <!-- Arm -->\n  <path d=\"M260,300 C330,280 340,160 270,120 L250,120 C300,150 290,260 240,290 Z\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"2\"/>\n  \n  <!-- Stage and Condenser/Diaphragm -->\n  <rect x=\"160\" y=\"200\" width=\"100\" height=\"12\" rx=\"2\" fill=\"#1e293b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <rect x=\"185\" y=\"212\" width=\"50\" height=\"14\" rx=\"2\" fill=\"#64748b\"/>\n  <line x1=\"180\" y1=\"198\" x2=\"240\" y2=\"198\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n  \n  <!-- Coarse & Fine Focus Knobs -->\n  <circle cx=\"285\" cy=\"220\" r=\"15\" fill=\"#334155\" stroke=\"#0f172a\" stroke-width=\"2\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"8\" fill=\"#64748b\" stroke=\"#0f172a\" stroke-width=\"1.5\"/>\n  <circle cx=\"285\" cy=\"220\" r=\"4\" fill=\"#cbd5e1\"/>\n  \n  <!-- Body Tube -->\n  <rect x=\"195\" y=\"70\" width=\"30\" height=\"80\" rx=\"3\" fill=\"url(#metalGrad)\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Eyepiece (Ocular Lens) -->\n  <rect x=\"190\" y=\"48\" width=\"40\" height=\"22\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"210\" cy=\"50\" rx=\"14\" ry=\"4\" fill=\"url(#lensGrad)\"/>\n  \n  <!-- Revolving Nosepiece -->\n  <path d=\"M190,150 L230,150 L238,162 L182,162 Z\" fill=\"#0f172a\" stroke=\"#334155\" stroke-width=\"1.5\"/>\n  \n  <!-- Objective Lenses (Low, Medium, High) -->\n  <rect x=\"188\" y=\"162\" width=\"12\" height=\"24\" rx=\"2\" fill=\"#ef4444\" stroke=\"#991b1b\" stroke-width=\"1\"/>\n  <rect x=\"204\" y=\"162\" width=\"12\" height=\"32\" rx=\"2\" fill=\"#eab308\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <rect x=\"220\" y=\"162\" width=\"12\" height=\"38\" rx=\"2\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1\"/>\n\n  <!-- Annotations / Callouts -->\n  <g font-family=\"sans-serif\" font-size=\"11\" fill=\"#0f172a\">\n    <line x1=\"230\" y1=\"58\" x2=\"380\" y2=\"58\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"62\" font-weight=\"bold\"><tspan fill=\"#0284c7\">1. Eyepiece (Ocular Lens):</tspan> Magnifies image (typically 10×)</text>\n    \n    <line x1=\"225\" y1=\"110\" x2=\"380\" y2=\"110\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"114\" font-weight=\"bold\"><tspan fill=\"#0f172a\">2. Body Tube:</tspan> Holds eyepiece at correct optical distance</text>\n    \n    <line x1=\"235\" y1=\"175\" x2=\"380\" y2=\"155\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"159\" font-weight=\"bold\"><tspan fill=\"#eab308\">3. Objective Lenses:</tspan> 4× (low), 10× (medium), 40× (high power)</text>\n    \n    <line x1=\"260\" y1=\"206\" x2=\"380\" y2=\"200\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"204\" font-weight=\"bold\"><tspan fill=\"#0f172a\">4. Stage &amp; Stage Clips:</tspan> Supports glass slide securely</text>\n    \n    <line x1=\"300\" y1=\"220\" x2=\"380\" y2=\"245\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"249\" font-weight=\"bold\"><tspan fill=\"#334155\">5. Coarse &amp; Fine Focus:</tspan> Rapid positioning / sharp definition</text>\n    \n    <line x1=\"235\" y1=\"222\" x2=\"380\" y2=\"290\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"294\" font-weight=\"bold\"><tspan fill=\"#047857\">6. Diaphragm &amp; Condenser:</tspan> Regulates incident light beam volume</text>\n    \n    <line x1=\"226\" y1=\"285\" x2=\"380\" y2=\"330\" stroke=\"#64748b\" stroke-dasharray=\"3\"/>\n    <text x=\"390\" y=\"334\" font-weight=\"bold\"><tspan fill=\"#ca8a04\">7. Substage Light / Mirror:</tspan> Reflects illumination through specimen</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.1: Optical Compound Light Microscope &amp; Key Functional Components</p>\n</div>\n\n| Microscope Component | Mechanical or Optical? | Specific Functional Role |\n| :--- | :---: | :--- |\n| **Eyepiece (Ocular Lens)** | Optical | Magnifies primary image formed by objective lens (standard magnification: $10\\times$). |\n| **Body Tube (Barrel)** | Mechanical | Maintains the correct optical focal distance between eyepiece and objective lenses. |\n| **Revolving Nosepiece** | Mechanical | Rotating turret housing multiple objective lenses allowing rapid switching of magnifications. |\n| **Objective Lenses** | Optical | Primary magnification lenses: Low power ($4\\times$), Medium power ($10\\times$), High power ($40\\times$). |\n| **Stage & Stage Clips** | Mechanical | Flat platform holding the specimen glass slide securely over the central optical aperture. |\n| **Diaphragm & Condenser** | Optical | Regulates the cone angle and intensity of light illuminating the specimen. |\n| **Coarse Adjustment Knob** | Mechanical | Moves stage rapidly up or down for initial specimen location under low power ($4\\times$ or $10\\times$). |\n| **Fine Adjustment Knob** | Mechanical | Delicately shifts the objective focal plane to achieve sharp, high-resolution clarity under high power. |\n| **Substage Mirror / Lamp** | Optical | Directs natural or electric light upward through the condenser and glass slide. |\n| **Arm & Base** | Mechanical | Structural backbone and heavy foot providing stability during laboratory operation. |\n\n#### Calculating Total Magnification:\n$$\\text{Total Magnification} = \\text{Magnification of Eyepiece} \\times \\text{Magnification of Objective Lens}$$\n* *Example:* If an eyepiece lens has a rating of $10\\times$ and the high-power objective lens is $40\\times$:\n  $$\\text{Total Magnification} = 10 \\times 40 = 400\\times$$\n\n---\n\n### Unit 2: Comparative Cell Ultrastructure: Plant vs. Animal Cells\n* **NaCCA Curriculum Code:** `B7.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"plantWall\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#15803d\"/>\n      <stop offset=\"100%\" stop-color=\"#166534\"/>\n    </linearGradient>\n    <linearGradient id=\"plantCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#dcfce7\"/>\n      <stop offset=\"100%\" stop-color=\"#bbf7d0\"/>\n    </linearGradient>\n    <linearGradient id=\"animalCyto\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\"/>\n      <stop offset=\"100%\" stop-color=\"#fde68a\"/>\n    </linearGradient>\n    <linearGradient id=\"nucGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#818cf8\"/>\n      <stop offset=\"100%\" stop-color=\"#4f46e5\"/>\n    </linearGradient>\n    <linearGradient id=\"chloroGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#22c55e\"/>\n      <stop offset=\"100%\" stop-color=\"#15803d\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"760\" height=\"340\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"12\" width=\"720\" height=\"30\" rx=\"6\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"32\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</text>\n  \n  <!-- ================= PLANT CELL (LEFT) ================= -->\n  <g transform=\"translate(30, 55)\">\n    <!-- Cell Wall Outer -->\n    <rect x=\"0\" y=\"0\" width=\"310\" height=\"230\" rx=\"20\" fill=\"url(#plantWall)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Cell Wall Inner / Middle Lamella Space -->\n    <rect x=\"8\" y=\"8\" width=\"294\" height=\"214\" rx=\"14\" fill=\"#86efac\"/>\n    <!-- Cell Membrane & Cytoplasm -->\n    <rect x=\"12\" y=\"12\" width=\"286\" height=\"206\" rx=\"12\" fill=\"url(#plantCyto)\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    \n    <!-- Large Central Vacuole -->\n    <rect x=\"70\" y=\"50\" width=\"170\" height=\"130\" rx=\"30\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"155\" y=\"120\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Central Vacuole</text>\n    <text x=\"155\" y=\"135\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0284c7\" text-anchor=\"middle\">(Cell Sap &amp; Turgor Pressure)</text>\n    \n    <!-- Nucleus (Pushed to periphery) -->\n    <circle cx=\"50\" cy=\"65\" r=\"26\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"1.5\"/>\n    <circle cx=\"50\" cy=\"65\" r=\"10\" fill=\"#312e81\"/>\n    <text x=\"50\" y=\"105\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#312e81\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Chloroplasts -->\n    <g fill=\"url(#chloroGrad)\" stroke=\"#14532d\" stroke-width=\"1\">\n      <ellipse cx=\"60\" cy=\"180\" rx=\"18\" ry=\"10\" transform=\"rotate(-20 60 180)\"/>\n      <ellipse cx=\"260\" cy=\"80\" rx=\"18\" ry=\"10\" transform=\"rotate(30 260 80)\"/>\n      <ellipse cx=\"260\" cy=\"160\" rx=\"18\" ry=\"10\" transform=\"rotate(-15 260 160)\"/>\n    </g>\n    <!-- Mitochondria -->\n    <ellipse cx=\"140\" cy=\"200\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <ellipse cx=\"210\" cy=\"35\" rx=\"14\" ry=\"7\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    \n    <text x=\"155\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">PLANT CELL (Regular Polygonal)</text>\n  </g>\n\n  <!-- ================= ANIMAL CELL (RIGHT) ================= -->\n  <g transform=\"translate(410, 55)\">\n    <!-- Flexible Cell Membrane & Cytoplasm -->\n    <path d=\"M40,50 Q120,10 220,30 Q300,70 280,160 Q260,225 180,220 Q70,225 25,160 Q0,80 40,50 Z\" fill=\"url(#animalCyto)\" stroke=\"#d97706\" stroke-width=\"2.5\"/>\n    \n    <!-- Centrally Located Nucleus -->\n    <circle cx=\"150\" cy=\"120\" r=\"34\" fill=\"url(#nucGrad)\" stroke=\"#312e81\" stroke-width=\"2\"/>\n    <circle cx=\"150\" cy=\"120\" r=\"12\" fill=\"#312e81\"/>\n    <text x=\"150\" y=\"124\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Nucleus</text>\n    \n    <!-- Mitochondria (Abundant) -->\n    <ellipse cx=\"70\" cy=\"90\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(25 70 90)\"/>\n    <ellipse cx=\"230\" cy=\"80\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-30 230 80)\"/>\n    <ellipse cx=\"90\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(-10 90 170)\"/>\n    <ellipse cx=\"220\" cy=\"170\" rx=\"15\" ry=\"8\" fill=\"#f87171\" stroke=\"#b91c1c\" stroke-width=\"1.2\" transform=\"rotate(40 220 170)\"/>\n    \n    <!-- Small Temporary Vacuoles -->\n    <circle cx=\"85\" cy=\"130\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <circle cx=\"215\" cy=\"125\" r=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    \n    <!-- Centrosome / Centrioles -->\n    <rect x=\"175\" y=\"70\" width=\"10\" height=\"4\" fill=\"#475569\"/>\n    <rect x=\"178\" y=\"67\" width=\"4\" height=\"10\" fill=\"#475569\"/>\n    \n    <text x=\"150\" y=\"260\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (Irregular / Amorphous)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.2: Ultrastructure of Typical Plant Cell vs. Animal Cell</p>\n</div>\n\n#### Detailed Organelle Functions:\n1. **Cell Membrane (Plasma Membrane):**\n   * Selectively permeable phospholipid bilayer studded with proteins.\n   * Regulates the bidirectional passage of substances (nutrients, gases, metabolic wastes).\n2. **Cell Wall (Plants Only):**\n   * Rigid, non-living outer casing constructed predominantly of tough cellulose fibers.\n   * Provides structural support, prevents osmotic burst (lysis), and imparts a fixed polygonal shape.\n3. **Cytoplasm:**\n   * Gel-like aqueous cytosol containing dissolved sugars, amino acids, mineral ions, and suspended organelles.\n   * Site of metabolic activities, including glycolysis and enzymatic synthesis.\n4. **Nucleus & Nucleolus:**\n   * Enclosed by a double membrane with nuclear pores; houses genetic material (DNA in chromatin/chromosomes).\n   * Serves as the executive control center directing cell division, enzyme production, and protein synthesis.\n5. **Mitochondria (Singular: Mitochondrion):**\n   * Oval organelle with folded inner membranes (*cristae*).\n   * Known as the **\"powerhouse of the cell\"**: site of aerobic cellular respiration generating adenosine triphosphate ($ATP$).\n6. **Chloroplasts (Plants Only):**\n   * Double-membraned plastid containing green chlorophyll pigments arranged on stacked thylakoid disks (*grana*).\n   * Captures radiant sunlight energy to synthesize glucose through photosynthesis ($6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\rightarrow \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$).\n7. **Vacuole:**\n   * *In Plant Cells:* Single, immense central permanent vacuole bounded by a membrane (*tonoplast*) filled with watery cell sap. Generates internal turgor pressure that keeps non-woody stems upright.\n   * *In Animal Cells:* Multiple, small, temporary vacuoles used for phagocytosis, pinocytosis, or waste excretion.\n\n#### Plant vs. Animal Cell Distinction Matrix:\n| Feature / Characteristic | Typical Plant Cell | Typical Animal Cell |\n| :--- | :--- | :--- |\n| **Cell Shape** | Fixed, rigid, regular polygonal shape | Flexible, variable, irregular / spherical shape |\n| **Outer Boundary** | Cellulose cell wall + inner cell membrane | Outer cell membrane only (no cell wall) |\n| **Chloroplasts & Chlorophyll** | Present in photosynthetic cells (leaves) | Completely absent |\n| **Vacuolar Architecture** | One large, prominent central permanent vacuole | Multiple small, temporary vacuoles (if present) |\n| **Position of Nucleus** | Pushed to the periphery by central vacuole | Usually positioned near the geometric center |\n| **Centrioles & Centrosomes** | Absent in higher plants | Present (organizes spindle fibers in division) |\n| **Carbohydrate Food Storage** | Stored as insoluble **Starch grains** | Stored as branched **Glycogen granules** |\n\n---\n\n### Unit 3: Cellular Specialization & Multicellular Complexity\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B7 Extension`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"760\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"720\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"380\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.3: Structural Specializations in Animal and Plant Cells</text>\n  \n  <!-- Red Blood Cell -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"32\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.5\"/>\n    <circle cx=\"62\" cy=\"55\" r=\"16\" fill=\"#fca5a5\" stroke=\"#ef4444\" stroke-width=\"1\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Red Blood Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Biconcave disc</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• No nucleus (haemoglobin)</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#dc2626\" text-anchor=\"middle\">• High surface area</text>\n  </g>\n  \n  <!-- Sperm Cell -->\n  <g transform=\"translate(175, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <ellipse cx=\"40\" cy=\"55\" rx=\"16\" ry=\"10\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.5\"/>\n    <circle cx=\"30\" cy=\"55\" r=\"4\" fill=\"#93c5fd\"/>\n    <rect x=\"56\" y=\"52\" width=\"12\" height=\"6\" rx=\"2\" fill=\"#f59e0b\"/>\n    <path d=\"M68,55 Q95,40 105,65 Q115,85 120,55\" fill=\"none\" stroke=\"#1d4ed8\" stroke-width=\"2\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Sperm Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Male Gamete</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Flagellum for motility</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#2563eb\" text-anchor=\"middle\">• Acrosome enzyme tip</text>\n  </g>\n\n  <!-- Nerve Cell / Motor Neuron -->\n  <g transform=\"translate(320, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <!-- Soma & Dendrites -->\n    <polygon points=\"35,45 25,35 30,55 18,60 30,70 42,75 50,60\" fill=\"#8b5cf6\" stroke=\"#6d28d9\" stroke-width=\"1\"/>\n    <line x1=\"50\" y1=\"60\" x2=\"105\" y2=\"60\" stroke=\"#6d28d9\" stroke-width=\"2\"/>\n    <rect x=\"60\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"75\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <rect x=\"90\" y=\"56\" width=\"10\" height=\"8\" rx=\"2\" fill=\"#c4b5fd\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Nerve Cell (Neuron)</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Signal Conduction</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Elongated axon cable</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c3aed\" text-anchor=\"middle\">• Myelin sheath insulation</text>\n  </g>\n\n  <!-- Root Hair Cell -->\n  <g transform=\"translate(465, 45)\">\n    <rect width=\"125\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <path d=\"M25,40 L65,40 L115,55 L65,70 L25,70 Z\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Root Hair Cell</text>\n    <text x=\"62\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Plant Subterranean</text>\n    <text x=\"62\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Long finger projection</text>\n    <text x=\"62\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vast absorption area</text>\n  </g>\n\n  <!-- Palisade Mesophyll Cell -->\n  <g transform=\"translate(610, 45)\">\n    <rect width=\"120\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n    <rect x=\"35\" y=\"35\" width=\"50\" height=\"55\" rx=\"4\" fill=\"#86efac\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <circle cx=\"45\" cy=\"45\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"58\" cy=\"43\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"72\" cy=\"46\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"48\" cy=\"62\" r=\"3\" fill=\"#166534\"/>\n    <circle cx=\"65\" cy=\"65\" r=\"3\" fill=\"#166534\"/>\n    <text x=\"60\" y=\"105\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Palisade Cell</text>\n    <text x=\"60\" y=\"122\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#64748b\" text-anchor=\"middle\">Leaf Photosynthesis</text>\n    <text x=\"60\" y=\"136\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Packed chloroplasts</text>\n    <text x=\"60\" y=\"149\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#15803d\" text-anchor=\"middle\">• Vertical light capture</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.3: Structural Specializations in Animal and Plant Cells</p>\n</div>\n\n| Specialized Cell | Biological Location | Structural Adaptation | Physiological Function |\n| :--- | :--- | :--- | :--- |\n| **Red Blood Cell (Erythrocyte)** | Blood vascular system | Biconcave disc shape (maximizes surface-area-to-volume ratio); mature cells lack a nucleus to pack more haemoglobin pigment. | Transports oxygen from pulmonary alveoli to respiring body tissues. |\n| **Sperm Cell (Male Gamete)** | Mammalian testes | Long whip-like flagellum; head capped with an **acrosome** containing digestive enzymes; midpiece loaded with mitochondria. | Swims toward female ovum and digests outer egg membrane during fertilization. |\n| **Nerve Cell (Neuron)** | Central & peripheral nervous system | Extended axon transmitting electrical impulses across great distances; insulating myelin sheath; branching dendrites. | Transmits electro-chemical nerve impulses between receptors, brain, and effectors. |\n| **Root Hair Cell** | Outer root epidermis | Elongated finger-like projection extending into soil pores; thin cell wall; lacks chloroplasts; high solute concentration. | Absorbs soil water by osmosis and dissolved mineral salts by active transport. |\n| **Palisade Mesophyll Cell** | Upper leaf interior | Columnar vertical arrangement packed with hundreds of chloroplasts positioned directly beneath the transparent upper cuticle. | Maximum absorption of sunlight for photosynthetic carbohydrate synthesis. |\n| **Guard Cells** | Leaf epidermis (stomatal pore) | Kidney-shaped paired cells with thicker inner walls; expand when turgid to open stomata, relax when flaccid to close. | Regulates transpirational water loss and photosynthetic gaseous exchange ($\\text{CO}_2 / \\text{O}_2$). |\n\n---\n\n### Unit 4: Hierarchical Levels of Biological Organization\n* **NaCCA Curriculum Code:** `B8.1.2.1 / B9.1.2.1`\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"720\" height=\"180\" viewBox=\"0 0 720 180\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"720\" height=\"180\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <rect x=\"20\" y=\"10\" width=\"680\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/>\n  <text x=\"360\" y=\"26\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</text>\n\n  <!-- Level 1: Cell -->\n  <g transform=\"translate(30, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">1. CELL</text>\n    <circle cx=\"47\" cy=\"60\" r=\"16\" fill=\"#38bdf8\" stroke=\"#0284c7\"/>\n    <circle cx=\"47\" cy=\"60\" r=\"5\" fill=\"#0369a1\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Basic life unit</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Muscle fiber)</text>\n  </g>\n  <text x=\"138\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 2: Tissue -->\n  <g transform=\"translate(160, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">2. TISSUE</text>\n    <rect x=\"25\" y=\"48\" width=\"45\" height=\"25\" rx=\"3\" fill=\"#86efac\" stroke=\"#16a34a\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Similar cells</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Cardiac muscle)</text>\n  </g>\n  <text x=\"268\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 3: Organ -->\n  <g transform=\"translate(290, 48)\">\n    <rect width=\"95\" height=\"110\" rx=\"8\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n    <text x=\"47\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. ORGAN</text>\n    <path d=\"M47,50 C30,35 15,60 47,80 C79,60 64,35 47,50 Z\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n    <text x=\"47\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Tissues united</text>\n    <text x=\"47\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Heart, Leaf)</text>\n  </g>\n  <text x=\"398\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 4: Organ System -->\n  <g transform=\"translate(420, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#f3e8ff\" stroke=\"#9333ea\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. ORGAN SYSTEM</text>\n    <rect x=\"35\" y=\"45\" width=\"45\" height=\"30\" rx=\"4\" fill=\"#d8b4fe\" stroke=\"#9333ea\"/>\n    <text x=\"57\" y=\"95\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Organs working</text>\n    <text x=\"57\" y=\"105\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">(Circulatory system)</text>\n  </g>\n  <text x=\"548\" y=\"110\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#94a3b8\">→</text>\n\n  <!-- Level 5: Organism -->\n  <g transform=\"translate(570, 48)\">\n    <rect width=\"115\" height=\"110\" rx=\"8\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"57\" y=\"30\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. ORGANISM</text>\n    <circle cx=\"57\" cy=\"48\" r=\"8\" fill=\"#fca5a5\" stroke=\"#ef4444\"/>\n    <line x1=\"57\" y1=\"56\" x2=\"57\" y2=\"76\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"42\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"45\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <line x1=\"57\" y1=\"76\" x2=\"69\" y2=\"88\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <text x=\"57\" y=\"100\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#475569\" text-anchor=\"middle\">Complete living</text>\n    <text x=\"57\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\" text-anchor=\"middle\">individual (Human)</text>\n  </g>\n</svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2.4: Hierarchical Spectrum of Multicellular Biological Organization</p>\n</div>\n\n1. **Level 1: Organelles:** Specialized sub-cellular structures (e.g. Nucleus, Mitochondria, Ribosomes) executing distinct biochemical duties within a single cell.\n2. **Level 2: Cells:** The fundamental building blocks of living organisms (e.g. cardiac muscle cell, epidermal cell).\n3. **Level 3: Tissues:** An aggregate of similar, morphologically specialized cells working collectively to perform a common physiological duty (e.g. cardiac muscle tissue, xylem vascular tissue).\n4. **Level 4: Organs:** Distinct anatomical units composed of two or more coordinated tissues executing a primary physiological function (e.g. the human heart, mammalian kidney, angiosperm leaf).\n5. **Level 5: Organ Systems:** A group of interconnected organs operating symbiotically to carry out a comprehensive life process (e.g. circulatory system, digestive system, plant shoot system).\n6. **Level 6: Multicellular Organism:** An autonomous living individual possessing integrated organ systems (e.g. human being, mango tree).",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s2_1",
-        "questionPrompt": "A student observes an epidermal onion cell under a light microscope using a 15x ocular eyepiece lens and a 40x high-power objective lens. Calculate total magnification and explain why iodine solution is added.",
-        "stepByStepSolution": "Step 1: Apply formula: Total Magnification = Magnification of Eyepiece x Magnification of Objective.\nStep 2: Substitute values: Total Magnification = 15 x 40 = 600x.\nStep 3: Staining rationale: Iodine solution stains cellular starch and selectively binds to nucleic acids, creating optical contrast so that the nucleus, cell wall, and cytoplasm become distinctly visible under brightfield illumination.",
-        "examinerTip": "Examiner Tip: Always state the multiplication unit 'x' in your magnification answer (e.g. 600x)."
+        "id": "ex_b7_s1_cells_01",
+        "questionPrompt": "A student is instructed to prepare a wet mount of an onion epidermal peel and view it under a compound light microscope. (a) Outline the step-by-step procedure to prepare the slide without trapping air bubbles. (b) Calculate the total magnification if the student uses a 10× eyepiece and a 40× objective lens.",
+        "stepByStepSolution": "Step 1: Peel Extraction — Use fine forceps to strip a thin, transparent epidermal layer from the concave inner surface of a fleshy onion scale leaf.\nStep 2: Transfer & Staining — Place the delicate epidermal peel flat in the center of a clean glass slide, without folding. Add one drop of dilute Iodine solution (or Methylene blue) to stain nuclei and cell walls for visual contrast.\nStep 3: Cover Slip Placement — Hold a clean coverslip by its edges at an angle of approximately 45° to the slide, with one edge touching the liquid drop. Slowly and gently lower the coverslip using a mounted needle to allow air to escape without trapping air bubbles.\nStep 4: Blotting Excess Liquid — Use a piece of absorbent filter paper or blotting paper to remove any excess stain leaking around the coverslip edges.\nStep 5: Magnification Calculation — Apply the formula: Total Magnification = Eyepiece Magnification × Objective Lens Magnification. Total Magnification = 10 × 40 = 400×.",
+        "examinerTip": "Examiner Tip: Always state that the coverslip is lowered at a 45° angle with a mounted needle. Trapped air bubbles appear as thick, dark-bordered circles under the microscope and are frequently mistaken for cells by careless candidates."
+      },
+      {
+        "id": "ex_b7_s1_cells_02",
+        "questionPrompt": "An unknown microscopic specimen is observed under high-power magnification. It reveals a distinct polygonal boundary, a prominent central sap-filled cavity that displaces the nucleus to the margin, and green disc-like granules in the cytoplasm. Deduce whether this specimen is of plant or animal origin, providing three anatomical justifications.",
+        "stepByStepSolution": "Step 1: Diagnostic Deduction — The specimen is unequivocally of Plant origin.\nStep 2: Justification 1 (Cell Wall) — The presence of a rigid, fixed polygonal outer boundary indicates a cellulose cell wall, which animal cells completely lack.\nStep 3: Justification 2 (Large Central Vacuole) — The prominent central cavity displacing the nucleus to the cell periphery is the large central permanent vacuole containing cell sap, characteristic exclusively of plant cells.\nStep 4: Justification 3 (Chloroplasts) — The green disc-like granules are chloroplasts containing chlorophyll for photosynthesis, an organelle never found in animal cells.",
+        "examinerTip": "Examiner Tip: Mentioning only 'green color' earns partial credit; always specify the organelle name (chloroplast) and its distinctive structural features (cellulose cell wall, large permanent vacuole)."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s2_1",
+        "id": "B7_CELL_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which organelle is present in a green plant cell but completely absent in an animal cell?",
+        "prompt": "The basic structural and functional unit of all living organisms is the:",
         "options": [
-          "Mitochondrion",
-          "Cell membrane",
-          "Chloroplast",
-          "Nucleus"
+          "A. Organ",
+          "B. Tissue",
+          "C. Cell",
+          "D. System"
         ],
-        "correctAnswer": "Chloroplast",
-        "hint": "Think about the green pigment required for photosynthesis.",
-        "workedSolution": "Chloroplasts contain chlorophyll pigments and thylakoid membranes necessary for photosynthesis. Animal cells do not photosynthesize and lack chloroplasts.",
+        "correctAnswer": "C. Cell",
+        "hint": "Recall the core tenet of the classical cell theory.",
+        "workedSolution": "The cell is scientifically defined as the fundamental structural and functional unit of all biological organisms.",
         "points": 1
       },
       {
-        "id": "q_b7_s2_2",
+        "id": "B7_CELL_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following scientists was NOT one of the primary contributors to the classical cell theory?",
+        "options": [
+          "A. Matthias Schleiden",
+          "B. Theodor Schwann",
+          "C. Rudolf Virchow",
+          "D. Isaac Newton"
+        ],
+        "correctAnswer": "D. Isaac Newton",
+        "hint": "Newton was a physicist who formulated the laws of universal gravitation and motion.",
+        "workedSolution": "Schleiden, Schwann, and Virchow formulated the biological cell theory, whereas Isaac Newton was a physicist.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which part of the optical microscope is placed closest to the observer's eye?",
+        "options": [
+          "A. Objective lens",
+          "B. Eyepiece (ocular lens)",
+          "C. Diaphragm",
+          "D. Condenser"
+        ],
+        "correctAnswer": "B. Eyepiece (ocular lens)",
+        "hint": "Also called the ocular lens, it is situated at the top of the body tube.",
+        "workedSolution": "The eyepiece (or ocular lens) is positioned at the top of the body tube through which the observer directly views the magnified image.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle is universally referred to as the 'powerhouse of the cell'?",
+        "options": [
+          "A. Ribosome",
+          "B. Chloroplast",
+          "C. Mitochondrion",
+          "D. Vacuole"
+        ],
+        "correctAnswer": "C. Mitochondrion",
+        "hint": "This organelle produces adenosine triphosphate (ATP) during aerobic cellular respiration.",
+        "workedSolution": "Mitochondria are known as the powerhouses of the cell because they synthesize ATP through cellular respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following structures is found in plant cells but completely absent in animal cells?",
+        "options": [
+          "A. Cell membrane",
+          "B. Cellulose cell wall",
+          "C. Cytoplasm",
+          "D. Mitochondria"
+        ],
+        "correctAnswer": "B. Cellulose cell wall",
+        "hint": "It gives plants their rigid polygonal structure and is made of cellulose.",
+        "workedSolution": "The rigid cellulose cell wall is found exclusively in plant cells and provides external structural support.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle contains the green pigment chlorophyll responsible for capturing sunlight?",
+        "options": [
+          "A. Nucleus",
+          "B. Chloroplast",
+          "C. Centrosome",
+          "D. Tonoplast"
+        ],
+        "correctAnswer": "B. Chloroplast",
+        "hint": "It is the site of carbohydrate synthesis in photosynthetic plant cells.",
+        "workedSolution": "Chloroplasts contain chlorophyll pigments that absorb light energy to drive the chemical reactions of photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of the cell nucleus?",
+        "options": [
+          "A. Pumping water into the vacuole",
+          "B. Controlling all cellular activities and housing genetic material (DNA)",
+          "C. Digesting extracellular bacteria",
+          "D. Producing chlorophyll pigments"
+        ],
+        "correctAnswer": "B. Controlling all cellular activities and housing genetic material (DNA)",
+        "hint": "It acts as the executive control headquarters of the cell.",
+        "workedSolution": "The nucleus contains genetic material (DNA/chromosomes) and directs all cellular activities, including protein synthesis and cell division.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which chemical solution is commonly used to stain onion epidermal cells during wet mount preparation?",
+        "options": [
+          "A. Concentrated sulfuric acid",
+          "B. Dilute iodine solution",
+          "C. Cooking oil",
+          "D. Distilled water"
+        ],
+        "correctAnswer": "B. Dilute iodine solution",
+        "hint": "It stains starch and cell structures brown/yellow to enhance optical contrast.",
+        "workedSolution": "Dilute iodine solution stains nuclei and cell walls, creating visual contrast under optical light microscopy.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which microscope knob should be used FIRST to locate the specimen under low-power magnification?",
+        "options": [
+          "A. Fine adjustment knob",
+          "B. Coarse adjustment knob",
+          "C. Diaphragm lever",
+          "D. Revolving nosepiece"
+        ],
+        "correctAnswer": "B. Coarse adjustment knob",
+        "hint": "It moves the stage rapidly to establish the initial approximate focal plane.",
+        "workedSolution": "The coarse adjustment knob moves the stage in large increments to quickly bring the specimen into initial focus under low power.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the jelly-like fluid that fills the interior of the cell outside the nucleus?",
+        "options": [
+          "A. Cytoplasm",
+          "B. Cell sap",
+          "C. Nucleoplasm",
+          "D. Synovial fluid"
+        ],
+        "correctAnswer": "A. Cytoplasm",
+        "hint": "It provides an aqueous medium for cellular organelles and metabolic reactions.",
+        "workedSolution": "The cytoplasm is the gelatinous fluid comprising water, dissolved solutes, and suspended organelles within the cell membrane.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "If a microscope has a 10× eyepiece and a 10× objective lens, the total magnification is:",
+        "options": [
+          "A. 20×",
+          "B. 100×",
+          "C. 10×",
+          "D. 1000×"
+        ],
+        "correctAnswer": "B. 100×",
+        "hint": "Multiply eyepiece magnification by objective magnification (10 × 10).",
+        "workedSolution": "Total magnification = Eyepiece (10×) × Objective (10×) = 100×.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which boundary regulates the entry and exit of substances in and out of an animal cell?",
+        "options": [
+          "A. Cellulose cell wall",
+          "B. Cell membrane (plasma membrane)",
+          "C. Nuclear pore",
+          "D. Tonoplast"
+        ],
+        "correctAnswer": "B. Cell membrane (plasma membrane)",
+        "hint": "It is a selectively permeable phospholipid bilayer.",
+        "workedSolution": "The cell membrane (plasma membrane) is selectively permeable, regulating the passage of solutes and water into and out of animal cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the shape of a typical mature plant cell compared to an animal cell?",
+        "options": [
+          "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
+          "B. Plant cells are completely circular and animal cells are square",
+          "C. Both plant and animal cells are strictly triangular",
+          "D. Animal cells are always larger than plant cells"
+        ],
+        "correctAnswer": "A. Plant cells have a fixed, regular polygonal shape; animal cells have an irregular, variable shape",
+        "hint": "The rigid cell wall restricts plant cells into angular polygonal contours.",
+        "workedSolution": "Because of the rigid cellulose cell wall, plant cells possess a definite regular polygonal geometry, whereas animal cells have flexible, variable contours.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A group of similar cells working together to perform a specific biological task is called a(n):",
+        "options": [
+          "A. Organ",
+          "B. Organelle",
+          "C. Tissue",
+          "D. Organism"
+        ],
+        "correctAnswer": "C. Tissue",
+        "hint": "Examples include muscle tissue and vascular xylem tissue.",
+        "workedSolution": "A tissue is defined as a cluster of specialized cells having similar structure and collaborating to execute a specific function.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an organ in the human body?",
+        "options": [
+          "A. Red blood cell",
+          "B. Heart",
+          "C. Nucleus",
+          "D. Epithelial tissue"
+        ],
+        "correctAnswer": "B. Heart",
+        "hint": "It is composed of muscle, nervous, and connective tissues working together.",
+        "workedSolution": "The heart is an organ composed of multiple coordinated tissues (cardiac muscle, nerve, epithelial, and connective tissues).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which specialized human cell has a biconcave disc shape and lacks a nucleus at maturity?",
+        "options": [
+          "A. White blood cell",
+          "B. Red blood cell (erythrocyte)",
+          "C. Sperm cell",
+          "D. Nerve cell"
+        ],
+        "correctAnswer": "B. Red blood cell (erythrocyte)",
+        "hint": "It is filled with haemoglobin to transport respiratory oxygen.",
+        "workedSolution": "Mature mammalian red blood cells are enucleated biconcave discs designed to pack maximum haemoglobin for oxygen transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The long whip-like tail that propels a sperm cell forward during swimming is called a:",
+        "options": [
+          "A. Cilium",
+          "B. Flagellum",
+          "C. Pseudopodium",
+          "D. Dendrite"
+        ],
+        "correctAnswer": "B. Flagellum",
+        "hint": "It uses ATP energy to lash from side to side.",
+        "workedSolution": "The flagellum is the elongated motility apparatus that propels the sperm cell through fluid media toward the ovum.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of a plant root hair cell?",
+        "options": [
+          "A. Photosynthesis to make sugars",
+          "B. Absorption of water and mineral salts from the soil",
+          "C. Transport of pollen grains",
+          "D. Protection against herbivores"
+        ],
+        "correctAnswer": "B. Absorption of water and mineral salts from the soil",
+        "hint": "Its long projection extends directly into interstitial soil water.",
+        "workedSolution": "Root hair cells have long cytoplasmic extensions that increase the surface area for absorbing soil moisture and dissolved mineral ions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which plant cells are packed with chloroplasts and arranged vertically beneath the upper leaf surface?",
+        "options": [
+          "A. Spongy mesophyll cells",
+          "B. Palisade mesophyll cells",
+          "C. Epidermal cells",
+          "D. Root cells"
+        ],
+        "correctAnswer": "B. Palisade mesophyll cells",
+        "hint": "They are the primary sites of photosynthetic carbohydrate manufacture.",
+        "workedSolution": "Palisade mesophyll cells are columnar cells densely packed with chloroplasts to maximize sunlight absorption for photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What structure on the microscope supports the glass slide directly under the objective lens?",
+        "options": [
+          "A. Mirror",
+          "B. Stage",
+          "C. Base",
+          "D. Arm"
+        ],
+        "correctAnswer": "B. Stage",
+        "hint": "It has a central aperture allowing light to pass through the specimen.",
+        "workedSolution": "The stage is the flat platform fitted with metal clips where the specimen glass slide is positioned for viewing.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a plant cell, the large central vacuole is filled with a watery solution known as:",
+        "options": [
+          "A. Cytosol",
+          "B. Cell sap",
+          "C. Blood plasma",
+          "D. Bile"
+        ],
+        "correctAnswer": "B. Cell sap",
+        "hint": "It contains dissolved sugars, mineral salts, and organic acids.",
+        "workedSolution": "The fluid inside a plant's central vacuole is cell sap, which maintains cellular turgor and stores metabolic reserves.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which pair of specialized cells on a plant leaf opens and closes the stomatal pores?",
+        "options": [
+          "A. Guard cells",
+          "B. Root hair cells",
+          "C. Xylem cells",
+          "D. Sieve tube elements"
+        ],
+        "correctAnswer": "A. Guard cells",
+        "hint": "They are kidney-shaped cells surrounding each stomatal aperture.",
+        "workedSolution": "Paired guard cells regulate stomatal opening and closing to balance transpirational water loss and gaseous exchange.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which cell organelle is responsible for synthesizing proteins?",
+        "options": [
+          "A. Ribosome",
+          "B. Lysosome",
+          "C. Chloroplast",
+          "D. Vacuole"
+        ],
+        "correctAnswer": "A. Ribosome",
+        "hint": "They can be found free in the cytoplasm or attached to the rough endoplasmic reticulum.",
+        "workedSolution": "Ribosomes are granular ribonucleoprotein complexes that assemble amino acids into polypeptide chains (proteins).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why should a glass coverslip be lowered onto a wet mount at an angle of 45°?",
+        "options": [
+          "A. To break the glass slide",
+          "B. To prevent the formation of trapped air bubbles",
+          "C. To evaporate the liquid stain",
+          "D. To kill any living bacteria"
+        ],
+        "correctAnswer": "B. To prevent the formation of trapped air bubbles",
+        "hint": "Air bubbles appear as black rings under the microscope and obstruct specimen visibility.",
+        "workedSolution": "Lowering the coverslip gently at 45° pushes out air pockets, preventing trapped bubbles that interfere with observation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which microscope component controls the amount of light passing through the stage aperture?",
+        "options": [
+          "A. Eyepiece",
+          "B. Iris diaphragm",
+          "C. Revolving nosepiece",
+          "D. Body tube"
+        ],
+        "correctAnswer": "B. Iris diaphragm",
+        "hint": "Adjusting its opening brightens or dims the illuminated field of view.",
+        "workedSolution": "The iris diaphragm regulates the diameter of the light cone passing through the specimen to optimize image contrast.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What carbohydrate compound forms the structural fibers of a plant cell wall?",
+        "options": [
+          "A. Starch",
+          "B. Glycogen",
+          "C. Cellulose",
+          "D. Glucose"
+        ],
+        "correctAnswer": "C. Cellulose",
+        "hint": "A tough, insoluble structural polysaccharide.",
+        "workedSolution": "Cellulose microfibrils provide the tensile strength and rigidity characteristic of plant cell walls.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an organ system?",
+        "options": [
+          "A. Stomach",
+          "B. Digestive system",
+          "C. Epithelial lining",
+          "D. Smooth muscle cell"
+        ],
+        "correctAnswer": "B. Digestive system",
+        "hint": "It includes the mouth, esophagus, stomach, liver, pancreas, and intestines.",
+        "workedSolution": "An organ system is an integrated network of organs working symbiotically to achieve a major physiological life process.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In which form do animal cells store excess glucose carbohydrates?",
+        "options": [
+          "A. Starch",
+          "B. Glycogen",
+          "C. Cellulose",
+          "D. Sucrose"
+        ],
+        "correctAnswer": "B. Glycogen",
+        "hint": "Often called 'animal starch', stored predominantly in the liver and skeletal muscles.",
+        "workedSolution": "Animal cells store excess carbohydrates as branched glycogen granules, whereas plant cells store starch.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following organisms is unicellular (made of only one cell)?",
+        "options": [
+          "A. Amoeba",
+          "B. Earthworm",
+          "C. Mango tree",
+          "D. Housefly"
+        ],
+        "correctAnswer": "A. Amoeba",
+        "hint": "A single-celled protozoan that moves using pseudopodia.",
+        "workedSolution": "Amoeba is a single-celled microscopic organism capable of executing all vital life functions within a single cell.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do plant cells lack centrioles but still divide successfully?",
+        "options": [
+          "A. Plant cells do not divide",
+          "B. Plant cells organize their spindle fibers without centrioles",
+          "C. Plant cells only divide by budding",
+          "D. Centrioles are only needed for feeding"
+        ],
+        "correctAnswer": "B. Plant cells organize their spindle fibers without centrioles",
+        "hint": "Higher plant cells possess microtubule organizing centers instead of centrioles.",
+        "workedSolution": "Higher plant cells lack centrioles, organizing their mitotic spindles through specialized cytoplasm regions without centrosomes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which specialized human cell has long branching extensions called dendrites and an axon?",
+        "options": [
+          "A. Red blood cell",
+          "B. Nerve cell (neuron)",
+          "C. Muscle cell",
+          "D. White blood cell"
+        ],
+        "correctAnswer": "B. Nerve cell (neuron)",
+        "hint": "It transmits electrical impulses throughout the nervous system.",
+        "workedSolution": "Nerve cells (neurons) feature elongated axons and branched dendrites for conducting electro-chemical impulses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the function of the revolving nosepiece on an optical microscope?",
+        "options": [
+          "A. Adjusts illumination brightness",
+          "B. Rotates to select different objective lenses",
+          "C. Holds the glass slide in place",
+          "D. Raises the eyepiece"
+        ],
+        "correctAnswer": "B. Rotates to select different objective lenses",
+        "hint": "It clicks into position when shifting between 4×, 10×, and 40× lenses.",
+        "workedSolution": "The revolving nosepiece is the circular rotating turret that permits rapid selection of different objective lenses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which term describes a cell membrane that permits only certain molecules to pass through while blocking others?",
+        "options": [
+          "A. Fully permeable",
+          "B. Selectively (semi-) permeable",
+          "C. Impermeable",
+          "D. Solid"
+        ],
+        "correctAnswer": "B. Selectively (semi-) permeable",
+        "hint": "It acts like a security filter guarding cell entry.",
+        "workedSolution": "A selectively (or semi-) permeable membrane regulates the passage of water and specific solutes while restricting others.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where is the genetic code (DNA) located inside a eukaryotic plant or animal cell?",
+        "options": [
+          "A. In the cell wall",
+          "B. Inside the nucleus",
+          "C. In the vacuole",
+          "D. Inside the cell membrane"
+        ],
+        "correctAnswer": "B. Inside the nucleus",
+        "hint": "Packaged into chromatin threads and chromosomes.",
+        "workedSolution": "DNA is enclosed within the nuclear envelope inside the nucleus in all eukaryotic cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the biological term for the net movement of water molecules across a selectively permeable membrane?",
+        "options": [
+          "A. Active transport",
+          "B. Osmosis",
+          "C. Transpiration",
+          "D. Evaporation"
+        ],
+        "correctAnswer": "B. Osmosis",
+        "hint": "Movement from high water potential (dilute) to low water potential (concentrated).",
+        "workedSolution": "Osmosis is the spontaneous passage of solvent water molecules across a selectively permeable membrane down a water potential gradient.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is considered an organ in vascular plants?",
+        "options": [
+          "A. Chloroplast",
+          "B. Leaf",
+          "C. Palisade cell",
+          "D. Cellulose"
+        ],
+        "correctAnswer": "B. Leaf",
+        "hint": "It is composed of epidermis, vascular bundles, and mesophyll tissues.",
+        "workedSolution": "The leaf is a botanical organ composed of multiple coordinated tissues designed for photosynthesis and gas exchange.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do red blood cells lack a nucleus when fully mature?",
+        "options": [
+          "A. To allow more space for carrying haemoglobin oxygen molecules",
+          "B. Because they do not need proteins",
+          "C. To make them swim faster",
+          "D. Because they are not living cells"
+        ],
+        "correctAnswer": "A. To allow more space for carrying haemoglobin oxygen molecules",
+        "hint": "Enucleation maximizes internal volume for oxygen packaging.",
+        "workedSolution": "Erythrocytes extrude their nuclei during maturation to maximize internal space for haemoglobin, optimizing oxygen transport capacity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to the field of view when you switch from low power (4×) to high power (40×) objective lens?",
+        "options": [
+          "A. The field of view becomes wider and brighter",
+          "B. The field of view becomes smaller and darker",
+          "C. The field of view remains exactly unchanged",
+          "D. The specimen disappears completely"
+        ],
+        "correctAnswer": "B. The field of view becomes smaller and darker",
+        "hint": "Higher magnification focuses on a much smaller physical area of the slide.",
+        "workedSolution": "Increasing magnification narrows the observable area (field of view) and reduces light transmission per unit area, making the image darker.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a unicellular green alga that possesses chloroplasts?",
+        "options": [
+          "A. Chlamydomonas",
+          "B. Yeast",
+          "C. Bacterium",
+          "D. Paramecium"
+        ],
+        "correctAnswer": "A. Chlamydomonas",
+        "hint": "A photosynthetic single-celled freshwater alga with two flagella.",
+        "workedSolution": "Chlamydomonas is a unicellular green alga containing a cup-shaped chloroplast for autotrophic photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of cilia found on ciliated epithelial cells lining the human respiratory tract?",
+        "options": [
+          "A. Absorbing digested food",
+          "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
+          "C. Producing red blood cells",
+          "D. Generating body heat"
+        ],
+        "correctAnswer": "B. Beating in waves to sweep mucus and trapped dust particles upward away from the lungs",
+        "hint": "They act as a microscopic escalator clearing the windpipe.",
+        "workedSolution": "Cilia beat rhythmically to propel mucus, inhaled microbes, and dirt particles out of the trachea towards the throat for expulsion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which optical component gathers and focuses light rays from the mirror onto the microscopic specimen?",
+        "options": [
+          "A. Condenser",
+          "B. Eyepiece",
+          "C. Stage clip",
+          "D. Arm"
+        ],
+        "correctAnswer": "A. Condenser",
+        "hint": "Mounted directly below the stage aperture.",
+        "workedSolution": "The substage condenser focuses light from the illumination source into a concentrated cone on the specimen plane.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the structural term for the membrane surrounding the large central vacuole in plant cells?",
+        "options": [
+          "A. Tonoplast",
+          "B. Crista",
+          "C. Nuclear membrane",
+          "D. Plasma membrane"
+        ],
+        "correctAnswer": "A. Tonoplast",
+        "hint": "It bounds the vacuolar sap and regulates solute movement into the vacuole.",
+        "workedSolution": "The tonoplast is the specialized semi-permeable membrane enclosing the central plant vacuole.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which level of organization is represented by the human brain?",
+        "options": [
+          "A. Tissue",
+          "B. Organ",
+          "C. Organ system",
+          "D. Cellular level"
+        ],
+        "correctAnswer": "B. Organ",
+        "hint": "Composed of neurons, neuroglia, and blood vascular tissues.",
+        "workedSolution": "The brain is an anatomical organ executing command and coordination duties within the central nervous system.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the magnification of an objective lens if a 15× eyepiece produces a total magnification of 600×?",
+        "options": [
+          "A. 20×",
+          "B. 40×",
+          "C. 45×",
+          "D. 60×"
+        ],
+        "correctAnswer": "B. 40×",
+        "hint": "Divide total magnification by eyepiece power: 600 / 15.",
+        "workedSolution": "Objective magnification = Total Magnification / Eyepiece = 600 / 15 = 40×.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is NOT present in human cheek epidermal cells?",
+        "options": [
+          "A. Nucleus",
+          "B. Cell membrane",
+          "C. Chloroplast",
+          "D. Cytoplasm"
+        ],
+        "correctAnswer": "C. Chloroplast",
+        "hint": "Human cells are non-photosynthetic animal cells.",
+        "workedSolution": "Cheek cells are animal cells, meaning they lack chloroplasts and cellulose cell walls.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle carries digestive enzymes to break down old, worn-out cell parts?",
+        "options": [
+          "A. Lysosome",
+          "B. Chloroplast",
+          "C. Ribosome",
+          "D. Endoplasmic reticulum"
+        ],
+        "correctAnswer": "A. Lysosome",
+        "hint": "Often nicknamed the 'suicide bags' or recycling units of the cell.",
+        "workedSolution": "Lysosomes contain hydrolytic enzymes that digest cellular debris, foreign pathogens, and damaged organelles.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which tissue in flowering plants transports water and dissolved mineral ions upward from roots to leaves?",
+        "options": [
+          "A. Phloem",
+          "B. Xylem",
+          "C. Epidermis",
+          "D. Pith"
+        ],
+        "correctAnswer": "B. Xylem",
+        "hint": "Formed of hollow, lignified dead vessel tubes.",
+        "workedSolution": "Xylem tissue consists of hollow, lignified vessels that conduct water and dissolved minerals from roots to the shoot system.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which tissue in flowering plants transports manufactured sucrose sugars downward from leaves to roots and storage organs?",
+        "options": [
+          "A. Phloem",
+          "B. Xylem",
+          "C. Cortex",
+          "D. Cuticle"
+        ],
+        "correctAnswer": "A. Phloem",
+        "hint": "Contains living sieve tube elements and companion cells.",
+        "workedSolution": "Phloem tissue translocates photosynthetic carbohydrates (sucrose) and amino acids throughout the plant.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the proper way to carry an optical compound microscope across the laboratory?",
+        "options": [
+          "A. By holding only the eyepiece tube",
+          "B. By holding the arm with one hand and supporting the base with the other hand",
+          "C. By carrying it upside down by the stage",
+          "D. By pulling it along the bench by its power cord"
+        ],
+        "correctAnswer": "B. By holding the arm with one hand and supporting the base with the other hand",
+        "hint": "Two hands ensure balance and prevent dropping optical lenses.",
+        "workedSolution": "Standard laboratory safety mandates gripping the microscope arm firmly with one hand while cupping the heavy base with the other.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which statement accurately describes a major difference between prokaryotic (bacteria) and eukaryotic cells?",
+        "options": [
+          "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
+          "B. Eukaryotic cells have no DNA",
+          "C. Prokaryotic cells are always multi-cellular",
+          "D. Eukaryotic cells have no cell membrane"
+        ],
+        "correctAnswer": "A. Prokaryotic cells lack a membrane-bound nucleus, whereas eukaryotic cells possess a true membrane-enclosed nucleus",
+        "hint": "'Pro' means before; 'karyon' means nucleus.",
+        "workedSolution": "Prokaryotes (like bacteria) lack a true nuclear membrane enclosing their DNA, while eukaryotes (plants, animals, fungi) possess a membrane-bound nucleus.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary physiological function of the cell membrane?",
+        "prompt": "Why does an animal cell burst (undergo lysis) when placed in pure distilled water, while a plant cell does not?",
         "options": [
-          "Provide absolute rigid mechanical support to the plant stem",
-          "Selectively regulate the entry and exit of substances",
-          "Synthesize glucose using radiant solar energy",
-          "Store genetic chromosomes inside chromatin threads"
+          "A. Animal cells have larger vacuoles than plant cells",
+          "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
+          "C. Plant cell membranes do not allow water to enter",
+          "D. Plant cells actively pump water out of their chloroplasts"
         ],
-        "correctAnswer": "Selectively regulate the entry and exit of substances",
-        "hint": "The membrane is semi-permeable / selectively permeable.",
-        "workedSolution": "The plasma membrane is a phospholipid bilayer that acts as a selectively permeable barrier, controlling the transport of ions and organic molecules into and out of the cell.",
+        "correctAnswer": "B. Animal cells lack a rigid cell wall to resist the hydrostatic turgor pressure of incoming water",
+        "hint": "Consider the mechanical tensile strength of the cellulose outer casing.",
+        "workedSolution": "In hypotonic distilled water, endosmosis forces water into both cells. Plant cells develop turgor pressure resisted by their cellulose cell walls, while animal cells lack cell walls and burst (lysis).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens to the position of the cell nucleus in a mature, fully developed plant cell?",
+        "options": [
+          "A. It remains positioned precisely in the center",
+          "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
+          "C. It dissolves into the chloroplasts",
+          "D. It migrates into the cell wall"
+        ],
+        "correctAnswer": "B. It is displaced to the periphery (edge) by the expansion of the large central permanent vacuole",
+        "hint": "The central sap cavity occupies up to 90% of the interior volume.",
+        "workedSolution": "The development of a single immense central vacuole filled with cell sap exerts pressure outward, displacing the nucleus and cytosol to the periphery against the cell wall.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "When viewing an epidermal wet mount under high power, the image appears blurred and dark. Which two adjustments should you perform?",
+        "options": [
+          "A. Turn the coarse focus knob rapidly and switch off the light",
+          "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
+          "C. Remove the coverslip and shake the slide",
+          "D. Wipe the objective lens with a rough paper towel"
+        ],
+        "correctAnswer": "B. Adjust the fine focus knob for crisp resolution and open the iris diaphragm to increase illumination",
+        "hint": "High-power lenses require precise focal adjustment and wider light apertures.",
+        "workedSolution": "High power narrows the depth of field and dims the light. The fine focus knob brings the focal plane into sharp focus, while opening the iris diaphragm restores brightness.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are root hair cells unpigmented and completely devoid of chloroplasts?",
+        "options": [
+          "A. They are infected with plant viruses",
+          "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
+          "C. Root hair cells are animal cells",
+          "D. The soil acid destroys all chlorophyll molecules immediately"
+        ],
+        "correctAnswer": "B. Roots develop underground in darkness where photosynthesis cannot occur, making chloroplasts energetically unnecessary",
+        "hint": "Chloroplast synthesis requires sunlight.",
+        "workedSolution": "Plant roots grow subterraneously in total darkness. Because photosynthesis requires light, subterranean cells do not waste biological resources developing chloroplasts.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An organelle has folded inner membranes called cristae that host electron transport enzymes. Which metabolic process occurs here?",
+        "options": [
+          "A. Photosynthesis",
+          "B. Aerobic cellular respiration (ATP synthesis)",
+          "C. Protein translation",
+          "D. Lipid storage"
+        ],
+        "correctAnswer": "B. Aerobic cellular respiration (ATP synthesis)",
+        "hint": "Cristae vastly expand the surface area for oxidative phosphorylation inside mitochondria.",
+        "workedSolution": "The mitochondrial cristae host ATP synthase and electron transport chain complexes vital for aerobic respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A biological specimen moves towards the top-right corner of the microscope's field of view. In which direction must you move the glass slide to keep it centered?",
+        "options": [
+          "A. Towards the top-right",
+          "B. Towards the bottom-left",
+          "C. Towards the top-left",
+          "D. Slide movement does not affect image direction"
+        ],
+        "correctAnswer": "A. Towards the top-right",
+        "hint": "The compound microscope inverts images both horizontally and vertically.",
+        "workedSolution": "Because compound microscope lenses produce real, inverted images, you must move the slide in the exact direction the image appears to drift (top-right) to re-center it.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the physiological consequence when mammalian red blood cells are submerged in a highly concentrated (hypertonic) salt solution?",
+        "options": [
+          "A. They swell up and burst",
+          "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
+          "C. They divide rapidly by mitosis",
+          "D. They turn bright green"
+        ],
+        "correctAnswer": "B. Water leaves the cells by exosmosis, causing them to shrink and shrivel (crenation)",
+        "hint": "Water moves down its water potential gradient out of the cell.",
+        "workedSolution": "In a hypertonic medium, water flows out of erythrocytes by exosmosis, causing them to lose turgidity and develop crinkled edges (crenation).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which structural adaptation enables motor neurons to conduct nerve impulses across distances up to one meter in humans?",
+        "options": [
+          "A. An enucleated biconcave shape",
+          "B. An elongated axon surrounded by an insulating myelin sheath",
+          "C. Thousands of cilia beating in synchrony",
+          "D. Multiple cellulose walls"
+        ],
+        "correctAnswer": "B. An elongated axon surrounded by an insulating myelin sheath",
+        "hint": "The myelin sheath prevents ion leakage, allowing saltatory conduction.",
+        "workedSolution": "Neurons feature extended cytoplasmic axons insulated by lipid-rich myelin sheaths that permit rapid, long-distance transmission of action potentials.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the acrosome located at the apex of a mature sperm cell?",
+        "options": [
+          "A. Powers the flagellum with ATP",
+          "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
+          "C. Stores sperm DNA",
+          "D. Produces testosterone hormones"
+        ],
+        "correctAnswer": "B. Contains hydrolytic digestive enzymes that break down the protective coat of the ovum",
+        "hint": "It acts as a chemical drill during fertilization.",
+        "workedSolution": "The acrosome is a modified lysosomal cap containing enzymes (like hyaluronidase) that digest the corona radiata and zona pellucida of the egg cell.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following correctly orders biological complexity from simplest to most complex?",
+        "options": [
+          "A. Cell → Tissue → Organ → Organ System → Organism",
+          "B. Organ → Tissue → Cell → Organelle → Organism",
+          "C. Tissue → Cell → Organ System → Organ → Organism",
+          "D. Organism → Organ System → Organ → Tissue → Cell"
+        ],
+        "correctAnswer": "A. Cell → Tissue → Organ → Organ System → Organism",
+        "hint": "Cells unite into tissues, tissues build organs, and organs form systems.",
+        "workedSolution": "The standard hierarchy ascends from Cells to Tissues, Organs, Organ Systems, and finally the complete Multicellular Organism.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are mature xylem vessels composed of dead cells with hollow lumina?",
+        "options": [
+          "A. The plant killed them by lack of water",
+          "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
+          "C. Because plants do not need living roots",
+          "D. To store carbon dioxide"
+        ],
+        "correctAnswer": "B. To form unobstructed continuous capillary pipelines for water conduction under negative pressure",
+        "hint": "Cytoplasm and end walls would create hydraulic friction.",
+        "workedSolution": "Xylem vessel elements lose their living end walls and protoplasm upon lignification, forming open, continuous tubes that minimize resistance to transpirational water flow.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A student observes a cell with a diameter of 0.05 mm under a microscope. If the total magnification is 200×, what is the apparent size of the cell in the image?",
+        "options": [
+          "A. 1 mm",
+          "B. 5 mm",
+          "C. 10 mm",
+          "D. 0.00025 mm"
+        ],
+        "correctAnswer": "C. 10 mm",
+        "hint": "Image Size = Actual Size × Magnification: 0.05 mm × 200.",
+        "workedSolution": "Image Size = Actual Size × Magnification = 0.05 mm × 200 = 10 mm.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the biconcave shape of an erythrocyte enhance its physiological function?",
+        "options": [
+          "A. It allows the cell to stick to blood vessel walls",
+          "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
+          "C. It prevents the cell from passing through narrow capillaries",
+          "D. It generates electrical impulses"
+        ],
+        "correctAnswer": "B. It increases the surface-area-to-volume ratio, facilitating rapid oxygen diffusion into and out of the cell",
+        "hint": "A flattened disc has a shorter diffusion distance to its center than a sphere of equal volume.",
+        "workedSolution": "The biconcave indentation increases surface area relative to volume and minimizes internal diffusion distance, maximizing the rate of gas exchange.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the structural role of the middle lamella found between adjacent plant cells?",
+        "options": [
+          "A. Absorbs sunlight for photosynthesis",
+          "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
+          "C. Synthesizes mitochondrial enzymes",
+          "D. Stores water sap"
+        ],
+        "correctAnswer": "B. Acts as a pectin-rich adhesive cement binding adjoining cell walls together",
+        "hint": "It glues neighbor plant cells together.",
+        "workedSolution": "The middle lamella is an extracellular pectin layer that acts as biological cement adhering neighboring plant cell walls together into rigid tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What biochemical component of plant cell walls makes them rigid and resistant to decay?",
+        "options": [
+          "A. Pectin and cellulose reinforced with lignin",
+          "B. Phospholipids only",
+          "C. Glucose and fructose",
+          "D. Hemoglobin"
+        ],
+        "correctAnswer": "A. Pectin and cellulose reinforced with lignin",
+        "hint": "Cellulose polymers form cross-linked microfibrils embedded in matrix polysaccharides.",
+        "workedSolution": "Cellulose microfibrils intertwined with hemicellulose, pectin, and sometimes lignin provide formidable mechanical rigidity and tensile strength.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does turgor pressure generated by plant vacuoles prevent herbaceous (non-woody) plants from wilting?",
+        "options": [
+          "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
+          "B. The vacuole produces bone tissue",
+          "C. Vacuoles freeze the plant in position",
+          "D. Vacuoles absorb heat from sunlight"
+        ],
+        "correctAnswer": "A. Turgid cells push firmly against each other and their rigid cell walls, keeping the plant stems erect",
+        "hint": "Like inflating an air mattress, hydrostatic pressure produces structural rigidity.",
+        "workedSolution": "Water absorption builds hydrostatic pressure within vacuoles that presses the protoplast firmly against cell walls, providing skeletal support to non-woody plants.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which stain is best suited for highlighting the nucleus in animal cells, such as human buccal epithelial cells?",
+        "options": [
+          "A. Iodine solution",
+          "B. Methylene blue",
+          "C. Benedict's reagent",
+          "D. Biuret reagent"
+        ],
+        "correctAnswer": "B. Methylene blue",
+        "hint": "It binds strongly to acidic nuclear chromatin, staining the nucleus deep blue.",
+        "workedSolution": "Methylene blue is a cationic dye that selectively binds to nucleic acids (DNA/RNA), sharply staining animal cell nuclei deep blue.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following cellular structures is non-membranous (lacks a surrounding lipid bilayer)?",
+        "options": [
+          "A. Mitochondrion",
+          "B. Ribosome",
+          "C. Chloroplast",
+          "D. Nucleus"
+        ],
+        "correctAnswer": "B. Ribosome",
+        "hint": "Consists of protein and rRNA molecules without a lipid envelope.",
+        "workedSolution": "Ribosomes are molecular machines constructed from rRNA and structural proteins, devoid of any enclosing phospholipid membrane.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must the coarse adjustment knob NEVER be used under high-power (40× or 100×) magnification?",
+        "options": [
+          "A. It causes the electric light to burn out",
+          "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
+          "C. It turns the image completely upside down",
+          "D. It removes the stain from the specimen"
+        ],
+        "correctAnswer": "B. The long objective lens is very close to the slide and can crush the coverslip, permanently damaging the lens",
+        "hint": "The working distance of a 40× lens is less than 1 mm.",
+        "workedSolution": "Under high power, the objective lens sits fractions of a millimeter from the glass. The rapid travel of coarse focus risks driving the lens into the slide, shattering both.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of the rough endoplasmic reticulum (RER)?",
+        "options": [
+          "A. Processing and folding proteins synthesized by attached ribosomes",
+          "B. Synthesizing starch grains",
+          "C. Carrying out photosynthesis",
+          "D. Pumping blood"
+        ],
+        "correctAnswer": "A. Processing and folding proteins synthesized by attached ribosomes",
+        "hint": "Its surface is studded with ribosomes.",
+        "workedSolution": "The rough ER is studded with ribosomes that synthesize polypeptides directly into its lumen for folding, post-translational modification, and vesicle transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the structure of guard cells cause a stomatal pore to open when they absorb water?",
+        "options": [
+          "A. Their cell walls are uniformly thin and expand equally",
+          "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
+          "C. They shrink and disintegrate",
+          "D. They detach from the leaf epidermis"
+        ],
+        "correctAnswer": "B. Their inner walls bordering the pore are much thicker than their outer walls, causing them to bow outward when turgid",
+        "hint": "Differential wall thickness forces the cells to curve like bananas when inflated.",
+        "workedSolution": "Guard cells have thick, inelastic inner walls and thin, flexible outer walls. When turgid with water, the outer walls bulge outward, pulling the inner pore open.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle is responsible for packaging and modifying proteins into secretory vesicles?",
+        "options": [
+          "A. Golgi apparatus (Golgi body)",
+          "B. Nucleolus",
+          "C. Chloroplast",
+          "D. Centriole"
+        ],
+        "correctAnswer": "A. Golgi apparatus (Golgi body)",
+        "hint": "Consists of flattened membranous cisternae acting as the shipping center of the cell.",
+        "workedSolution": "The Golgi apparatus sorts, glycosylates, and packages proteins and lipids received from the ER into membrane-bound vesicles for secretion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What biological phenomenon occurs when plant cells lose excessive water in a hypertonic environment, causing the cytoplasm to pull away from the cell wall?",
+        "options": [
+          "A. Lysis",
+          "B. Plasmolysis",
+          "C. Turgidity",
+          "D. Diffusion"
+        ],
+        "correctAnswer": "B. Plasmolysis",
+        "hint": "The central vacuole shrinks, pulling the protoplast inwards.",
+        "workedSolution": "Plasmolysis is the shrinking of the plant protoplast away from the rigid cell wall due to extreme exosmotic water loss in hypertonic solutions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the structural advantage of palisade mesophyll cells being elongated vertically rather than horizontally?",
+        "options": [
+          "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
+          "B. Prevents oxygen from escaping",
+          "C. Makes the leaf heavier",
+          "D. Absorbs water directly from the air"
+        ],
+        "correctAnswer": "A. Allows more cells to be packed tightly in the upper leaf layer to intercept light rays as they penetrate downward",
+        "hint": "Vertical orientation maximizes light path absorption through stacked chloroplasts.",
+        "workedSolution": "Vertical columnar orientation packs more photosynthetic cells per unit leaf area and increases the optical path length for light absorption.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following cellular features is unique to eukaryotic cells and completely absent in all bacteria?",
+        "options": [
+          "A. Ribosomes",
+          "B. Membrane-bound organelles such as mitochondria and nucleus",
+          "C. Cytoplasm",
+          "D. Cell wall"
+        ],
+        "correctAnswer": "B. Membrane-bound organelles such as mitochondria and nucleus",
+        "hint": "Prokaryotic bacteria do not compartmentalize their interiors with internal membranes.",
+        "workedSolution": "Eukaryotes are characterized by internal compartmentalization with membrane-bound organelles (nucleus, mitochondria, ER, Golgi), which prokaryotes lack.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does an enucleated red blood cell have a limited lifespan of only approximately 120 days?",
+        "options": [
+          "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
+          "B. It is eaten by bacteria every week",
+          "C. It melts in warm blood",
+          "D. It converts into white blood cells"
+        ],
+        "correctAnswer": "A. It cannot synthesize new proteins or repair cellular damage without nuclear DNA instructions",
+        "hint": "Without a nucleus, no transcription or protein synthesis can take place.",
+        "workedSolution": "Lacking a nucleus and ribosomes, erythrocytes cannot transcribe genes to repair damaged membrane proteins or enzymes, degrading after ~120 days.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A student calculates a total magnification of 400× using a 40× objective lens. What is the power of the eyepiece used?",
+        "options": [
+          "A. 4×",
+          "B. 10×",
+          "C. 40×",
+          "D. 100×"
+        ],
+        "correctAnswer": "B. 10×",
+        "hint": "Eyepiece = Total / Objective = 400 / 40.",
+        "workedSolution": "Eyepiece magnification = 400 / 40 = 10×.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of companion cells adjacent to phloem sieve tube elements?",
+        "options": [
+          "A. Provide mechanical rigidity to the stem",
+          "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
+          "C. Store water for dry seasons",
+          "D. Produce chlorophyll"
+        ],
+        "correctAnswer": "B. Perform metabolic and active loading duties to sustain the enucleated sieve tube elements",
+        "hint": "Sieve tubes lack nuclei; companion cells have dense mitochondria and nuclei.",
+        "workedSolution": "Companion cells carry out vital metabolic functions and actively pump sucrose into sieve tubes using ATP generated in their abundant mitochondria.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle contains its own small circular DNA loop and reproduces independently within eukaryotic cells?",
+        "options": [
+          "A. Mitochondrion (and Chloroplast)",
+          "B. Vacuole",
+          "C. Ribosome",
+          "D. Lysosome"
+        ],
+        "correctAnswer": "A. Mitochondrion (and Chloroplast)",
+        "hint": "Evidence of endosymbiotic bacterial evolution.",
+        "workedSolution": "Mitochondria and chloroplasts possess their own circular DNA genomes and 70S ribosomes, dividing independently by binary fission.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of white blood cells (leukocytes)?",
+        "options": [
+          "A. Oxygen transport",
+          "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
+          "C. Blood clotting at wound sites",
+          "D. Transport of digested lipids"
+        ],
+        "correctAnswer": "B. Immune defense: engulfing pathogens (phagocytosis) and generating antibodies",
+        "hint": "They are the mobile defensive infantry of the blood vascular system.",
+        "workedSolution": "White blood cells defend against infection through phagocytic ingestion of microbes and antibody secretion by lymphocytes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is water described as the universal solvent in cellular cytoplasm?",
+        "options": [
+          "A. It dissolves all plastics",
+          "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
+          "C. It never freezes",
+          "D. It generates oxygen spontaneously"
+        ],
+        "correctAnswer": "B. Its polar molecular nature allows it to dissolve and ionize a vast array of biological solutes and metabolites",
+        "hint": "Water's dipole moment hydrates both cations and anions.",
+        "workedSolution": "Water's hydrogen-bonding polarity dissolves polar and ionic biochemicals, providing an aqueous medium for enzymatic reactions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main physiological purpose of mitotic cell division in multicellular organisms?",
+        "options": [
+          "A. Generating gametes with half the chromosome number",
+          "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
+          "C. Creating new species",
+          "D. Digesting carbohydrates"
+        ],
+        "correctAnswer": "B. Growth, tissue renewal, and cellular repair maintaining identical diploid chromosome sets",
+        "hint": "Mitosis yields two genetically identical daughter cells.",
+        "workedSolution": "Mitosis produces genetically identical diploid somatic cells required for organismal growth, wound healing, and tissue replacement.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following organs is shared between the digestive and endocrine systems?",
+        "options": [
+          "A. Stomach",
+          "B. Pancreas",
+          "C. Gallbladder",
+          "D. Esophagus"
+        ],
+        "correctAnswer": "B. Pancreas",
+        "hint": "It secretes digestive enzymes into the duodenum and insulin into the bloodstream.",
+        "workedSolution": "The pancreas serves exocrine digestive roles (pancreatic juice) and endocrine hormonal roles (insulin and glucagon regulation).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do freshwater protozoa like Amoeba require contractile vacuoles?",
+        "options": [
+          "A. To store starch",
+          "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
+          "C. To capture prey",
+          "D. To produce light"
+        ],
+        "correctAnswer": "B. To pump out excess water entering continuously by endosmosis to prevent lysis",
+        "hint": "Amoebae live in hypotonic ponds and lack cell walls.",
+        "workedSolution": "Surrounded by hypotonic pond water, Amoebae experience continuous influx of water. Contractile vacuoles collect and actively pump this water out (osmoregulation).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which plant tissue covers the outer surfaces of leaves, stems, and roots to prevent desiccating water loss?",
+        "options": [
+          "A. Epidermal tissue",
+          "B. Xylem tissue",
+          "C. Phloem tissue",
+          "D. Cambium"
+        ],
+        "correctAnswer": "A. Epidermal tissue",
+        "hint": "Often coated with an external waxy cuticle layer.",
+        "workedSolution": "Epidermal tissue forms a protective outer boundary, often synthesizing a waxy, hydrophobic cuticle to minimize evaporation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle within eukaryotic plant cells is responsible for converting fatty acids into sugars in germinating seeds?",
+        "options": [
+          "A. Glyoxysome (specialized peroxisome)",
+          "B. Centriole",
+          "C. Ribosome",
+          "D. Chloroplast"
+        ],
+        "correctAnswer": "A. Glyoxysome (specialized peroxisome)",
+        "hint": "Hosts the glyoxylate cycle before photosynthesis begins.",
+        "workedSolution": "Glyoxysomes are specialized microbodies in oil seeds that convert stored lipids into soluble sucrose to nourish the developing seedling.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What does the term 'tissue differentiation' mean in developmental biology?",
+        "options": [
+          "A. The death of unneeded cells",
+          "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
+          "C. Cells changing into different elements",
+          "D. Cells losing their nucleus"
+        ],
+        "correctAnswer": "B. The process where unspecialized stem cells develop specialized structures to perform specific functions",
+        "hint": "From generic embryonic cells into neurons, muscle fibers, or xylem.",
+        "workedSolution": "Cellular differentiation is the developmental process whereby generalized cells undergo selective gene expression to acquire specialized morphological adaptations.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the resolution of a microscope differ from its magnification?",
+        "options": [
+          "A. They mean the exact same thing",
+          "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
+          "C. Resolution only applies to electron microscopes",
+          "D. Magnification makes things smaller"
+        ],
+        "correctAnswer": "B. Magnification is the enlargement of image size; resolution is the ability to distinguish two close points as separate entities",
+        "hint": "Enlarging a blurry photo does not reveal extra detail without resolution.",
+        "workedSolution": "Magnification scales up the apparent dimension of an image, while optical resolution is the minimum distance between two points at which they remain distinctly discernible.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the nucleolus found inside the eukaryotic nucleus?",
+        "options": [
+          "A. Assembles ribosome subunits and synthesizes rRNA",
+          "B. Produces ATP",
+          "C. Destroys bacteria",
+          "D. Pumps sodium ions"
+        ],
+        "correctAnswer": "A. Assembles ribosome subunits and synthesizes rRNA",
+        "hint": "A dense granular region inside the nucleus.",
+        "workedSolution": "The nucleolus is the sub-nuclear factory where ribosomal RNA (rRNA) is transcribed and combined with proteins to produce ribosomal subunits.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle is abundant in mammalian liver cells to detoxify poisons, drugs, and alcohol?",
+        "options": [
+          "A. Smooth endoplasmic reticulum (SER)",
+          "B. Chloroplast",
+          "C. Nucleolus",
+          "D. Centrosome"
+        ],
+        "correctAnswer": "A. Smooth endoplasmic reticulum (SER)",
+        "hint": "Lacks ribosomes and synthesizes lipids while detoxifying xenobiotics.",
+        "workedSolution": "Smooth ER contains cytochrome P450 and other enzymes that metabolize and detoxify toxic chemicals, drugs, and alcohol in hepatocytes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological function of muscular tissue in animals?",
+        "options": [
+          "A. Conducting electrical signals across synapses",
+          "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
+          "C. Secreting waxy cuticles",
+          "D. Photosynthesis"
+        ],
+        "correctAnswer": "B. Contracting and relaxing to exert mechanical force for movement and locomotion",
+        "hint": "Contains actin and myosin contractile protein filaments.",
+        "workedSolution": "Muscular tissue contains filament proteins (actin and myosin) that slide past one another to generate contractile force for locomotion and internal organ motility.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is an epidermal peel taken from an onion scale leaf rather than a green onion leaf blade when studying basic plant cells in introductory labs?",
+        "options": [
+          "A. Green leaves are poisonous",
+          "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
+          "C. Onion scale cells have no cell walls",
+          "D. Onions do not have DNA"
+        ],
+        "correctAnswer": "B. The inner epidermis of onion scales is only a single cell layer thick and easily peeled without slicing",
+        "hint": "A monolayer allows light to pass directly through without optical overlap.",
+        "workedSolution": "The transparent inner membrane of an onion bulb scale is an authentic biological monolayer, providing an unobstructed view of cells without microtome sectioning.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of blood platelets (thrombocytes)?",
+        "options": [
+          "A. Transporting carbon dioxide",
+          "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
+          "C. Pumping lymph through nodes",
+          "D. Synthesizing insulin"
+        ],
+        "correctAnswer": "B. Initiating blood clotting cascades to seal damaged vascular walls and prevent blood loss",
+        "hint": "Cell fragments adhering to exposed collagen fibers.",
+        "workedSolution": "Platelets are enucleated cell fragments derived from megakaryocytes that trigger the coagulation cascade and aggregate to form hemostatic plugs.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organ system in vertebrates includes the kidneys, ureters, urinary bladder, and urethra?",
+        "options": [
+          "A. Excretory (urinary) system",
+          "B. Nervous system",
+          "C. Respiratory system",
+          "D. Endocrine system"
+        ],
+        "correctAnswer": "A. Excretory (urinary) system",
+        "hint": "Filters metabolic nitrogenous wastes from the bloodstream.",
+        "workedSolution": "The urinary/excretory system filters blood plasma to remove urea and excess ions, regulating systemic fluid and electrolyte homeostasis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do mature plant cells maintain their shape even after dying, as seen in wood and cork?",
+        "options": [
+          "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
+          "B. Their vacuoles freeze solid",
+          "C. Their nuclei remain active",
+          "D. Dead cells absorb plastic from soil"
+        ],
+        "correctAnswer": "A. Their cellulose and lignin cell walls persist long after the protoplast has died and degenerated",
+        "hint": "Robert Hooke's 1665 observation of cork was viewing empty cell wall chambers.",
+        "workedSolution": "Cellulose and lignin cell walls are non-living structural matrices that remain intact and support woody tissues indefinitely after the living cytoplasm dies.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens when an optical microscope's mirror is turned away from the light source?",
+        "options": [
+          "A. The magnification increases",
+          "B. The field of view goes completely dark because no light passes through the condenser",
+          "C. The specimen becomes sharp",
+          "D. The slide shatters"
+        ],
+        "correctAnswer": "B. The field of view goes completely dark because no light passes through the condenser",
+        "hint": "Compound microscopes are transmission light instruments.",
+        "workedSolution": "Light microscopes require an incident beam of light reflected through the condenser lens and specimen slide; diverting the mirror eliminates image visibility.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle within eukaryotic plant cells contains stacks of thylakoids called grana?",
+        "options": [
+          "A. Chloroplast",
+          "B. Mitochondrion",
+          "C. Golgi body",
+          "D. Central vacuole"
+        ],
+        "correctAnswer": "A. Chloroplast",
+        "hint": "Site of light-dependent photosynthetic reactions.",
+        "workedSolution": "Thylakoid disks organized in grana stacks are located within chloroplast stroma, hosting light-absorbing photosystems and electron transport proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the egg cell (ovum) significantly larger than the sperm cell?",
+        "options": [
+          "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
+          "B. It has ten nuclei",
+          "C. It contains bone fragments",
+          "D. It is an organ rather than a cell"
+        ],
+        "correctAnswer": "A. It contains large nutrient reserves (yolk) in its cytoplasm to sustain early embryonic divisions",
+        "hint": "The egg nourishes the zygote before uterine implantation.",
+        "workedSolution": "The ovum accumulates massive cytoplasmic nutrient reserves, maternal mRNAs, and organelles to support cellular cleavage following fertilization.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the stage clips on an optical microscope?",
+        "options": [
+          "A. Magnify the specimen",
+          "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
+          "C. Cool the light bulb",
+          "D. Clean the objective lens"
+        ],
+        "correctAnswer": "B. Hold the glass slide firmly in place on the stage to prevent accidental movement",
+        "hint": "Spring-loaded metal fingers flanking the aperture.",
+        "workedSolution": "Stage clips secure the glass specimen slide against the mechanical stage, preventing slipping during focal adjustments.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which cell organelle is responsible for maintaining cellular shape and anchoring organelles via a network of microfilaments and microtubules?",
+        "options": [
+          "A. Cytoskeleton",
+          "B. Cell wall",
+          "C. Tonoplast",
+          "D. Nucleolus"
+        ],
+        "correctAnswer": "A. Cytoskeleton",
+        "hint": "An internal proteinaceous scaffolding within the cytosol.",
+        "workedSolution": "The cytoskeleton is a dynamic network of actin microfilaments, intermediate filaments, and tubulin microtubules that provides internal structural scaffolding.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A slice of potato tuber weighing 10.0 g is placed in a 20% concentrated sucrose solution. After two hours, its mass decreases to 8.2 g and it becomes limp and flexible. What physiological process accounts for this change?",
+        "options": [
+          "A. Active uptake of sucrose molecules into potato cells",
+          "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
+          "C. Endosmosis of water into the potato cells causing bursting",
+          "D. Chemical decomposition of potato starch into gaseous carbon dioxide"
+        ],
+        "correctAnswer": "B. Exosmosis of water molecules out of potato cells down a water potential gradient into the hypertonic sucrose solution",
+        "hint": "The 20% sucrose solution has a lower water potential than the cell sap.",
+        "workedSolution": "Because the external sucrose solution is hypertonic, water leaves the vacuolar sap by exosmosis down the water potential gradient, reducing mass and causing flaccidity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the fluid mosaic model explain the selective permeability of the plasma membrane?",
+        "options": [
+          "A. The membrane is a solid sheet of impervious wax",
+          "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
+          "C. The membrane has large open holes that allow all molecules through",
+          "D. Carbohydrates form a rigid impenetrable cage around the cell"
+        ],
+        "correctAnswer": "B. A fluid phospholipid bilayer acts as a hydrophobic barrier to polar ions, while embedded transport proteins facilitate selective transit",
+        "hint": "Hydrophobic fatty acid tails repel polar solutes; channel/carrier proteins regulate specific transport.",
+        "workedSolution": "The hydrophobic core of the phospholipid bilayer repels polar and charged molecules, while specific integral transmembrane channel and carrier proteins selectively transport designated solutes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Under a light microscope, a plant cell in salt solution exhibits a shrunken protoplast detached from its cell wall. What substance fills the space between the shrunken cell membrane and the cell wall?",
+        "options": [
+          "A. Pure vacuum",
+          "B. The external salt solution, because the cellulose cell wall is fully permeable",
+          "C. Cytoplasm that leaked out",
+          "D. Pure air gas"
+        ],
+        "correctAnswer": "B. The external salt solution, because the cellulose cell wall is fully permeable",
+        "hint": "The cell wall is freely permeable to small dissolved solutes, while the plasma membrane is semi-permeable.",
+        "workedSolution": "The cellulose cell wall is freely permeable to water and dissolved solutes; when the protoplast contracts during plasmolysis, external salt solution freely passes through the wall to occupy the perimeter space.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why can electron microscopes achieve magnifications exceeding 500,000× with 0.2 nm resolution, whereas optical light microscopes are fundamentally limited to ~1,500× and 200 nm?",
+        "options": [
+          "A. Electron microscopes use much thicker glass lenses",
+          "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
+          "C. Light microscopes operate in a vacuum",
+          "D. Electrons are brighter than photons"
+        ],
+        "correctAnswer": "B. The de Broglie wavelength of an electron beam is thousands of times shorter than the wavelength of visible light photons",
+        "hint": "Diffraction limits resolution to approximately half the wavelength of the illumination source.",
+        "workedSolution": "Resolution is constrained by radiation wavelength. Accelerated electrons have wavelengths ~100,000× shorter than visible light photons (0.005 nm vs 400-700 nm), reducing diffraction limits.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A cell biologist treats cultured liver cells with a metabolic poison that specifically inhibits mitochondrial ATP synthase. Which cellular process will halt almost immediately?",
+        "options": [
+          "A. Passive osmosis of water",
+          "B. Simple diffusion of oxygen",
+          "C. Active transport pumping sodium ions against their electrochemical gradient",
+          "D. Evaporation"
+        ],
+        "correctAnswer": "C. Active transport pumping sodium ions against their electrochemical gradient",
+        "hint": "Primary active transport is directly coupled to ATP hydrolysis.",
+        "workedSolution": "Active transport requires metabolic energy in the form of ATP. Poisoning ATP synthase depletes cellular energy stores, immediately stopping active ion pumps.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following cellular features supports the endosymbiotic theory that mitochondria and chloroplasts originated as free-living prokaryotic endosymbionts?",
+        "options": [
+          "A. They possess linear eukaryotic chromosomes wrapped in histones",
+          "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
+          "C. They are synthesized entirely in the nucleus",
+          "D. They are made of cellulose"
+        ],
+        "correctAnswer": "B. They contain circular double-stranded DNA, 70S bacterial-sized ribosomes, and divide via binary fission",
+        "hint": "Shared biochemical traits with modern alpha-proteobacteria and cyanobacteria.",
+        "workedSolution": "Mitochondria and chloroplasts share distinct prokaryotic traits: naked circular DNA genomes, 70S ribosomes, binary fission, and double membranes reflecting ancestral phagocytosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does boiling an onion epidermal peel in water before preparing a wet mount prevent plasmolysis when placed in concentrated salt solution?",
+        "options": [
+          "A. Boiling turns the salt into sugar",
+          "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
+          "C. Boiling makes the cell wall impermeable",
+          "D. The cells become immortal"
+        ],
+        "correctAnswer": "B. High heat denatures membrane proteins and ruptures the lipid bilayer, destroying its selective permeability",
+        "hint": "Osmosis requires an intact, selectively permeable living membrane.",
+        "workedSolution": "Thermal heat denatures membrane proteins and disrupts the phospholipid bilayer. Losing semi-permeability makes the membrane freely porous, preventing osmotic gradients.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the function of plasmodesmata in multicellular plant tissues?",
+        "options": [
+          "A. Synthesize photosynthetic pigments",
+          "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
+          "C. Pump water out of stomata",
+          "D. Anchor the root into rock"
+        ],
+        "correctAnswer": "B. Microscopic cytoplasmic channels traversing cell walls that allow symplastic transport and biochemical communication between neighboring plant cells",
+        "hint": "They interconnect plant protoplasts into a continuous living symplast.",
+        "workedSolution": "Plasmodesmata are trans-wall channels lined by plasma membrane that connect the cytoplasm of adjacent cells, facilitating molecular transport and systemic signaling.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "If a microscope's field of view has a diameter of 2.0 mm under low power (10× objective), what will be the diameter of the field of view when switched to high power (40× objective)?",
+        "options": [
+          "A. 8.0 mm",
+          "B. 0.5 mm",
+          "C. 0.2 mm",
+          "D. 0.05 mm"
+        ],
+        "correctAnswer": "B. 0.5 mm",
+        "hint": "Field Diameter is inversely proportional to magnification: Diameter(high) = Diameter(low) × (Low Mag / High Mag).",
+        "workedSolution": "Diameter(high) = 2.0 mm × (10 / 40) = 2.0 × 0.25 = 0.5 mm (or 500 µm).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do cells maintain a small microscopic diameter rather than growing to the size of a tennis ball?",
+        "options": [
+          "A. Larger cells become too heavy to move",
+          "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
+          "C. Gravity crushes large cells immediately",
+          "D. DNA duplicates continuously until the cell explodes"
+        ],
+        "correctAnswer": "B. As cell volume expands by the cube of radius (r³), surface area expands only by the square (r²), resulting in an inadequate surface-area-to-volume ratio for diffusion",
+        "hint": "Surface area-to-volume ratio constraint.",
+        "workedSolution": "Volume increases much faster than surface area ($V \\propto r^3$ vs $SA \\propto r^2$). A gigantic cell would have insufficient plasma membrane surface to transport nutrients and remove metabolic wastes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the distribution of mitochondria correlate with cellular specialization in cardiac muscle cells compared to skin epithelial cells?",
+        "options": [
+          "A. Skin cells contain ten times more mitochondria than heart cells",
+          "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
+          "C. Cardiac cells have no mitochondria",
+          "D. Mitochondria are only found in plant cells"
+        ],
+        "correctAnswer": "B. Cardiac muscle cells are densely packed with mitochondria (~40% of cell volume) to supply continuous ATP for involuntary rhythmic pumping",
+        "hint": "High metabolic workloads demand massive ATP synthesis.",
+        "workedSolution": "Cardiac myocytes contract non-stop throughout an organism's lifetime without fatigue, requiring enormous mitochondrial density to fuel continuous aerobic respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which organelle is responsible for post-translational modification of proteins, including adding carbohydrate chains to form glycoproteins?",
+        "options": [
+          "A. Golgi apparatus",
+          "B. Nucleolus",
+          "C. Ribosome",
+          "D. Centriole"
+        ],
+        "correctAnswer": "A. Golgi apparatus",
+        "hint": "Glycosylation takes place within its cisternae.",
+        "workedSolution": "The Golgi apparatus enzymatically attaches oligosaccharides to proteins (glycosylation) and tags them for export or delivery to lysosomes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In an experiment, red blood cells placed in Solution X swell and burst rapidly, while cells placed in Solution Y maintain their normal biconcave shape. What are Solutions X and Y?",
+        "options": [
+          "A. X is 10% salt solution; Y is pure water",
+          "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
+          "C. X is 20% sucrose; Y is 50% salt solution",
+          "D. Both X and Y are concentrated acids"
+        ],
+        "correctAnswer": "B. X is pure hypotonic water; Y is 0.9% isotonic saline solution",
+        "hint": "0.9% NaCl has the same osmotic potential as human blood plasma.",
+        "workedSolution": "Pure water is strongly hypotonic to erythrocytes, driving massive endosmosis and lysis. 0.9% NaCl is isotonic to human blood, maintaining zero net osmotic flow.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological role of the lignin deposited in the secondary walls of xylem vessels?",
+        "options": [
+          "A. Captures sunlight for starch production",
+          "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
+          "C. Pumps glucose into the roots",
+          "D. Absorbs oxygen from atmospheric air"
+        ],
+        "correctAnswer": "B. Provides extreme tensile and compressive strength, preventing vessel collapse under the tremendous negative pressure (tension) of the transpiration stream",
+        "hint": "Transpirational pull creates powerful negative hydrostatic suction inside the xylem.",
+        "workedSolution": "Lignin is an intricate polymer that waterproofs and reinforces xylem walls, preventing implosion under the high tension forces generated by transpiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What structural mechanism prevents mature sieve tube elements in phloem from being crushed by neighboring plant cells despite having no nucleus?",
+        "options": [
+          "A. Rigid lignified walls like xylem",
+          "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
+          "C. Internal bone structures",
+          "D. Large air chambers"
+        ],
+        "correctAnswer": "B. High hydrostatic turgor pressure maintained by active sucrose loading from companion cells",
+        "hint": "Münch pressure flow hypothesis.",
+        "workedSolution": "Active accumulation of sucrose lowers water potential, drawing in water that generates high internal turgor pressure, keeping sieve tubes patent and driving mass flow.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the nucleus of a cell contain visible thread-like chromosomes during cell division, but appears as diffuse, indistinct chromatin during interphase?",
+        "options": [
+          "A. The DNA leaves the cell during interphase",
+          "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
+          "C. Chromosomes are eaten by lysosomes during interphase",
+          "D. The microscope loses magnification during interphase"
+        ],
+        "correctAnswer": "B. Chromosomes condense and supercoil around histone proteins during mitosis to ensure orderly separation without tangling, whereas interphase DNA must be uncoiled for transcription",
+        "hint": "Uncoiled DNA permits RNA polymerase access; condensed chromatin prevents mechanical breakage during anaphase.",
+        "workedSolution": "Interphase DNA is uncoiled (euchromatin) to allow enzyme access for gene expression. During mitosis, it supercoils into tight chromosomes to prevent shearing during spindle segregation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary difference between pinocytosis ('cell drinking') and phagocytosis ('cell eating') in animal cells?",
+        "options": [
+          "A. Pinocytosis takes in solid food particles; phagocytosis takes in liquid drops",
+          "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
+          "C. Only plant cells perform phagocytosis",
+          "D. Pinocytosis requires no energy"
+        ],
+        "correctAnswer": "B. Phagocytosis engulfs large solid particles or pathogens via pseudopodia; pinocytosis non-specifically ingests extracellular fluid droplets via micro-invaginations",
+        "hint": "Both are forms of endocytosis.",
+        "workedSolution": "Phagocytosis involves actin-driven pseudopodial extension around solid targets (e.g. bacteria), whereas pinocytosis invaginates tiny droplets of extracellular fluid.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the tonoplast membrane of plant vacuoles capable of accumulating ions at concentrations much higher than the surrounding cytoplasm?",
+        "options": [
+          "A. The tonoplast is fully permeable",
+          "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
+          "C. Water evaporates from the vacuole",
+          "D. The plant cell wall pushes ions inside"
+        ],
+        "correctAnswer": "B. It contains active transport proton pumps (V-ATPases) that generate proton gradients driving secondary active transport of solutes into the sap",
+        "hint": "Active transport concentrates solutes into the cell sap against steep gradients.",
+        "workedSolution": "Vacuolar $H^+$-ATPases actively pump protons into the vacuole, creating electrochemical gradients that power antiporters and symporters to concentrate minerals and sugars.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following cellular structures is responsible for assembling and anchoring the spindle apparatus in dividing animal cells?",
+        "options": [
+          "A. Centrosome containing paired centrioles",
+          "B. Nucleolus",
+          "C. Golgi body",
+          "D. Ribosome"
+        ],
+        "correctAnswer": "A. Centrosome containing paired centrioles",
+        "hint": "Composed of nine triplets of microtubules.",
+        "workedSolution": "The centrosome contains orthogonal centrioles that organize gamma-tubulin ring complexes to nucleate spindle microtubules during mitotic prophase.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the structure of a fungal cell differ from both typical plant and animal cells?",
+        "options": [
+          "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
+          "B. Fungi have no cell membrane",
+          "C. Fungi are identical to green plants",
+          "D. Fungal cells have no nuclei"
+        ],
+        "correctAnswer": "A. Fungi have cell walls made of chitin rather than cellulose and store glycogen like animals, while lacking chloroplasts",
+        "hint": "Chitin is a nitrogenous polysaccharide also found in arthropod exoskeletons.",
+        "workedSolution": "Fungi have rigid walls composed of chitin (not cellulose), lack chloroplasts (heterotrophic), and store carbohydrates as glycogen, bridging plant-like and animal-like characteristics.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are stomata predominantly located on the lower epidermis of dicotyledonous leaves rather than the upper surface?",
+        "options": [
+          "A. The upper surface has no cells",
+          "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
+          "C. Carbon dioxide only exists below leaves",
+          "D. Rain would drown the stomata"
+        ],
+        "correctAnswer": "B. The lower surface is shielded from direct solar radiation and wind currents, minimizing excessive transpirational water loss",
+        "hint": "An adaptation to conserve water in terrestrial environments.",
+        "workedSolution": "Positioning stomata on the cooler, shaded lower leaf surface reduces evaporation and transpirational water deficit while still allowing carbon dioxide intake.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A student counts 12 cells laid end-to-end across a 1.2 mm microscope field diameter. What is the average length of a single cell?",
+        "options": [
+          "A. 0.1 mm (100 µm)",
+          "B. 1.0 mm",
+          "C. 0.01 mm",
+          "D. 12 mm"
+        ],
+        "correctAnswer": "A. 0.1 mm (100 µm)",
+        "hint": "Cell length = Field Diameter / Cell count = 1.2 mm / 12.",
+        "workedSolution": "Average length = Field Diameter / Number of cells = 1.2 mm / 12 = 0.1 mm = 100 µm.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which type of human epithelial tissue consists of a single layer of flattened, scale-like cells adapted for rapid gas and nutrient diffusion?",
+        "options": [
+          "A. Simple squamous epithelium",
+          "B. Stratified squamous epithelium",
+          "C. Pseudostratified columnar epithelium",
+          "D. Transitional epithelium"
+        ],
+        "correctAnswer": "A. Simple squamous epithelium",
+        "hint": "Forms the walls of pulmonary alveoli and capillary blood vessels.",
+        "workedSolution": "Simple squamous epithelium is a delicate monolayer of flattened cells offering minimal diffusion distance across alveolar and capillary barriers.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical reason why animal cell membranes freeze and lose fluidity at near-freezing temperatures?",
+        "options": [
+          "A. Water inside the nucleus boils",
+          "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
+          "C. Cholesterol converts into diamond",
+          "D. The cell wall shatters"
+        ],
+        "correctAnswer": "B. Phospholipid fatty acid tails pack tightly into a rigid paracrystalline gel, reducing lateral mobility of embedded transport proteins",
+        "hint": "Low thermal kinetic energy causes hydrophobic tails to aggregate.",
+        "workedSolution": "At low temperatures, reduced thermal motion causes phospholipid hydrocarbon chains to pack closely into a viscous gel, impeding protein motility and membrane transport.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the nuclear envelope regulate macromolecular transport between the nucleoplasm and the cytoplasm?",
+        "options": [
+          "A. It dissolves completely every hour",
+          "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
+          "C. It allows all molecules to pass freely without restriction",
+          "D. It is completely impermeable"
+        ],
+        "correctAnswer": "B. It is studded with octagonal nuclear pore complexes that selectively transport proteins into the nucleus and export assembled ribosomal subunits and mRNA",
+        "hint": "Nuclear pore complexes act as gated molecular checkpoints.",
+        "workedSolution": "Nuclear pore complexes (NPCs) recognize specific nuclear localization signals (NLS) on proteins to mediate selective, energy-dependent bidirectional nucleocytoplasmic transit.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do plant cells in the deep spongy mesophyll layer possess irregular shapes with large intercellular air spaces?",
+        "options": [
+          "A. To store poisonous gases",
+          "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
+          "C. Because they were damaged during growth",
+          "D. To absorb rain water from the stem"
+        ],
+        "correctAnswer": "B. To facilitate rapid gaseous diffusion of carbon dioxide to palisade cells and water vapor outward to stomata",
+        "hint": "Gases diffuse 10,000 times faster in air spaces than through aqueous cytoplasm.",
+        "workedSolution": "Loose packing and extensive intercellular air voids facilitate rapid internal diffusion of carbon dioxide and oxygen between stomatal cavities and palisade layers.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the consequence of lysosomal membrane rupture within an animal cell (autolysis)?",
+        "options": [
+          "A. The cell produces excess ATP",
+          "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
+          "C. The cell immediately divides into four",
+          "D. The cell turns into a plant cell"
+        ],
+        "correctAnswer": "B. Released hydrolytic acid hydrolases digest the cell from within, leading to programmed cell destruction",
+        "hint": "Autolysis or apoptosis.",
+        "workedSolution": "Widespread lysosomal leakage releases hydrolytic enzymes (proteases, nucleases, lipases) that degrade vital macromolecules, triggering autolytic cell death.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which organelle synthesizes membrane lipids and steroid hormones such as testosterone and estrogen?",
+        "options": [
+          "A. Rough endoplasmic reticulum",
+          "B. Smooth endoplasmic reticulum",
+          "C. Ribosome",
+          "D. Chloroplast"
+        ],
+        "correctAnswer": "B. Smooth endoplasmic reticulum",
+        "hint": "Prominent in testicular Leydig cells and adrenal cortex.",
+        "workedSolution": "Smooth ER contains enzymes that catalyze the synthesis of phospholipids, cholesterol, and steroid hormones from acetate and lipid precursors.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the cellular architecture of cardiac muscle tissue prevent individual heart cells from pulling apart during vigorous contraction?",
+        "options": [
+          "A. They are glued together with cellulose",
+          "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
+          "C. They have no cell boundaries",
+          "D. Bones lock each heart cell in place"
+        ],
+        "correctAnswer": "B. Intercalated discs containing mechanical desmosomes anchor cells firmly while gap junctions permit synchronized electrical depolarization",
+        "hint": "Intercalated discs provide mechanical bonding and electrical coupling.",
+        "workedSolution": "Intercalated discs feature mechanical desmosomes (fascia adherens) that withstand contractile shear stress and gap junctions that allow rapid ion flux for coordinated contraction.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A microscope ocular lens has a tiny scratch that remains in the exact same position when you rotate the revolving nosepiece and move the slide. Where is the scratch located?",
+        "options": [
+          "A. On the objective lens",
+          "B. On the glass slide",
+          "C. On the eyepiece (ocular lens)",
+          "D. On the condenser lens"
+        ],
+        "correctAnswer": "C. On the eyepiece (ocular lens)",
+        "hint": "If rotating objectives and shifting the slide does not move the artifact, the defect must reside on the remaining optical element.",
+        "workedSolution": "Since rotating the objective turret and moving the stage failed to alter the artifact's orientation, the scratch is situated on the stationary eyepiece lens.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do red blood cells lack mitochondria in addition to lacking a nucleus?",
+        "options": [
+          "A. Red blood cells do not require any energy",
+          "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
+          "C. Because mitochondria are too large to fit",
+          "D. Red blood cells use photosynthesis"
+        ],
+        "correctAnswer": "B. To prevent the red blood cells from consuming the very oxygen molecules they are tasked with transporting",
+        "hint": "Erythrocytes rely exclusively on anaerobic glycolysis for ATP.",
+        "workedSolution": "Lacking mitochondria, red blood cells generate ATP solely via anaerobic glycolysis, ensuring that 100% of bound oxygen is delivered intact to target tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary role of microvilli found on the apical surface of intestinal epithelial cells?",
+        "options": [
+          "A. Wave back and forth to push food along the gut",
+          "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
+          "C. Digest dietary cellulose",
+          "D. Filter pathogens from the blood"
+        ],
+        "correctAnswer": "B. Vastly multiply the surface area of the plasma membrane to accelerate nutrient absorption by diffusion and active transport",
+        "hint": "Microscopic brush border on enterocytes.",
+        "workedSolution": "Dense microvillar brush borders increase enterocyte surface area by over 20-fold, maximizing the density of nutrient transport proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What chemical property of the phospholipid bilayer prevents glucose from diffusing directly through the cell membrane without a transport protein?",
+        "options": [
+          "A. Glucose is too heavy to move",
+          "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
+          "C. The cell membrane is made of solid stone",
+          "D. Glucose is an insoluble gas"
+        ],
+        "correctAnswer": "B. Glucose is a polar, hydrophilic molecule that cannot pass freely through the non-polar, hydrophobic fatty acid core of the membrane",
+        "hint": "Like dissolves like: polar solutes are repelled by hydrocarbon interiors.",
+        "workedSolution": "Multiple polar hydroxyl (-OH) groups make glucose highly hydrophilic, creating a thermodynamic barrier that prevents entry through the non-polar lipid core without GLUT transporters.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which organelle in plant cells contains hydrolytic enzymes performing duties analogous to animal lysosomes?",
+        "options": [
+          "A. Chloroplast",
+          "B. The large central vacuole",
+          "C. Mitochondrion",
+          "D. Cell wall"
+        ],
+        "correctAnswer": "B. The large central vacuole",
+        "hint": "The vacuole contains acid hydrolases that degrade cellular waste.",
+        "workedSolution": "In addition to maintaining turgor, plant vacuoles contain acidic hydrolytic enzymes that perform waste degradation analogous to animal lysosomes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the chemical composition of bacterial cell walls differ fundamentally from plant cell walls?",
+        "options": [
+          "A. Bacteria have walls of pure cellulose",
+          "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
+          "C. Bacteria have no cell walls",
+          "D. Bacterial walls are made of bone"
+        ],
+        "correctAnswer": "B. Bacteria have peptidoglycan (murein) walls consisting of sugar chains cross-linked by short peptides, whereas plants have cellulose walls",
+        "hint": "Target of penicillin antibiotic inhibition.",
+        "workedSolution": "Bacterial walls are made of peptidoglycan (alternating NAG-NAM glycan chains cross-linked by amino acids), while plant walls are made of glucose-polymer cellulose.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the rate of water absorption by osmosis in plant root hairs increase when the soil is warm and aerated compared to cold, waterlogged soil?",
+        "options": [
+          "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
+          "B. Cold soil freezes water solid immediately",
+          "C. Root hairs die when exposed to oxygen",
+          "D. Warm water is lighter than cold water"
+        ],
+        "correctAnswer": "A. Aerobic respiration in roots produces ATP necessary to actively pump mineral ions into root vacuoles, maintaining a steep osmotic gradient",
+        "hint": "Osmosis is passive, but maintaining the solute gradient requires active transport.",
+        "workedSolution": "Active transport of minerals into root cells requires ATP from aerobic respiration. Oxygenated soil fuels ATP synthesis, creating steep hypertonic gradients that drive rapid osmosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of peroxisomes in eukaryotic cells?",
+        "options": [
+          "A. Photosynthesis",
+          "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
+          "C. Storing genetic code",
+          "D. Pumping lymph"
+        ],
+        "correctAnswer": "B. Breaking down fatty acids and hydrogen peroxide ($H_2O_2$) into water and oxygen using catalase enzyme",
+        "hint": "Neutralizes reactive oxygen species.",
+        "workedSolution": "Peroxisomes contain catalase and oxidases that oxidize long-chain fatty acids and decompose cytotoxic hydrogen peroxide into benign water and oxygen.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which tissue in vertebrate animals forms the endocrine and exocrine glands that synthesize and secrete chemical substances?",
+        "options": [
+          "A. Epithelial tissue (glandular epithelium)",
+          "B. Connective tissue",
+          "C. Nervous tissue",
+          "D. Muscle tissue"
+        ],
+        "correctAnswer": "A. Epithelial tissue (glandular epithelium)",
+        "hint": "Invaginated epithelial sheets specialized for secretion.",
+        "workedSolution": "Glands (thyroid, salivary, sweat glands) develop from specialized glandular epithelial tissues specialized for protein or steroid secretion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do red blood cells crenate when exposed to seawater ($~3.5\\%\\text{ NaCl}$)?",
+        "options": [
+          "A. Salt enters the cell and blows it up",
+          "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
+          "C. Seawater dissolves the cell membrane",
+          "D. Red blood cells absorb salt until they freeze"
+        ],
+        "correctAnswer": "B. Seawater has a much higher solute concentration (hypertonic) than blood plasma ($0.9\\%\\text{ NaCl}$), driving rapid exosmotic water loss",
+        "hint": "Seawater has an osmolarity four times higher than blood plasma.",
+        "workedSolution": "Seawater (~1000 mOsm/L) is strongly hypertonic to erythrocytes (~300 mOsm/L), pulling water out by exosmosis and causing cell shriveling (crenation).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural role of cholesterol embedded within mammalian cell membranes?",
+        "options": [
+          "A. Provides fuel for cellular respiration",
+          "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
+          "C. Forms the genetic code",
+          "D. Blocks all water transport"
+        ],
+        "correctAnswer": "B. Acts as a bidirectional fluidity buffer, preventing membranes from becoming too fluid at high temperatures and too rigid at low temperatures",
+        "hint": "Intercalates between fatty acid chains to stabilize membrane fluidity.",
+        "workedSolution": "Cholesterol restrains phospholipid movement at warm temperatures to prevent excess fluidity, while disrupting close packing at cold temperatures to prevent solidification.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which organelle is responsible for synthesizing ribosomal RNA (rRNA) and assembling the large and small subunits of ribosomes?",
+        "options": [
+          "A. Nucleolus",
+          "B. Golgi apparatus",
+          "C. Centriole",
+          "D. Peroxisome"
+        ],
+        "correctAnswer": "A. Nucleolus",
+        "hint": "A prominent non-membranous nuclear sub-structure.",
+        "workedSolution": "The nucleolus organizes around chromosomal nucleolar organizer regions (NORs) to transcribe pre-rRNA and assemble ribosomal subunits.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the structural organization of compact bone tissue (osteons) combine high mechanical compressive strength with lightweight efficiency?",
+        "options": [
+          "A. Bone is solid iron",
+          "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
+          "C. Bones are filled with air only",
+          "D. Bone cells have no extracellular matrix"
+        ],
+        "correctAnswer": "B. Cylindrical lamellae of calcium hydroxyapatite crystals and collagen fibers encircle central Haversian canals containing blood vessels and nerves",
+        "hint": "The Haversian system / osteon structure.",
+        "workedSolution": "Osteons consist of concentric mineralized lamellae reinforced by helical collagen fibers surrounding vascular Haversian canals, optimizing weight-to-strength ratios.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why can unicellular Paramecium organisms propel themselves through pond water at speeds exceeding 50 body lengths per second?",
+        "options": [
+          "A. They have rocket engines",
+          "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
+          "C. They have legs",
+          "D. Water pushes them passively"
+        ],
+        "correctAnswer": "B. Thousands of surface cilia beat in coordinated metachronal waves, generating effective forward thrust",
+        "hint": "Metachronal rhythm coordination of cilia.",
+        "workedSolution": "Paramecia are covered with ~4,000 cilia coordinated by subpellicular fiber networks into rhythmic metachronal waves that generate hydrodynamic thrust.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the key difference between simple diffusion and facilitated diffusion across biological membranes?",
+        "options": [
+          "A. Simple diffusion requires ATP; facilitated does not",
+          "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
+          "C. Simple diffusion only transports ions",
+          "D. Facilitated diffusion moves substances against their gradient"
+        ],
+        "correctAnswer": "B. Facilitated diffusion uses specific transmembrane protein channels or carriers down a concentration gradient without ATP, whereas simple diffusion passes directly through the lipid bilayer",
+        "hint": "Both are passive, but one requires integral carrier/channel proteins.",
+        "workedSolution": "Simple diffusion occurs directly through the lipid bilayer (e.g. $O_2, CO_2$), while facilitated diffusion requires integral membrane proteins (e.g. glucose, $K^+$) without metabolic energy.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do stomata close at night in most $C_3$ and $C_4$ plants?",
+        "options": [
+          "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
+          "B. The leaf cells freeze every night",
+          "C. Stomata are closed by gravity",
+          "D. Leaves drop off at night"
+        ],
+        "correctAnswer": "A. Photosynthesis ceases in the absence of sunlight, eliminating the immediate metabolic demand for $CO_2$ and closing stomata to conserve water",
+        "hint": "Darkness halts photosynthetic carbon fixation.",
+        "workedSolution": "Without light, light-dependent proton pumping stops in guard cells, releasing potassium ions and water by exosmosis to render cells flaccid and close stomata.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which organelle is responsible for synthesizing the cell plate during cytokinesis in dividing plant cells?",
+        "options": [
+          "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
+          "B. Centrosomes",
+          "C. Mitochondria",
+          "D. Central vacuole"
+        ],
+        "correctAnswer": "A. Golgi-derived vesicles fusing along the equatorial metaphase plate",
+        "hint": "Vesicles carry pectin and cellulose precursors to build the new cross wall.",
+        "workedSolution": "During telophase, Golgi-derived phragmoplast vesicles carry pectin and cell wall precursors to the equatorial plane, coalescing into the cell plate and middle lamella.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the myelin sheath produced by Schwann cells around peripheral axons speed up nerve impulse transmission?",
+        "options": [
+          "A. It heats the axon to 100°C",
+          "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
+          "C. It converts nerve signals into sound waves",
+          "D. It generates oxygen"
+        ],
+        "correctAnswer": "B. It acts as an electrical insulator, forcing the action potential to leap from one Node of Ranvier to the next (saltatory conduction)",
+        "hint": "Saltatory conduction across unmyelinated nodes.",
+        "workedSolution": "Myelin's high lipid resistance prevents trans-membrane ion leakage, causing depolarizing currents to jump rapidly between unmyelinated Nodes of Ranvier (saltatory conduction).",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological role of the enzyme catalase abundant in cellular peroxisomes?",
+        "options": [
+          "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
+          "B. Synthesizes fatty acids",
+          "C. Absorbs light for photosynthesis",
+          "D. Binds oxygen in red blood cells"
+        ],
+        "correctAnswer": "A. Decomposes toxic metabolic hydrogen peroxide into harmless water and oxygen ($2H_2O_2 \\rightarrow 2H_2O + O_2$)",
+        "hint": "Protects cells from oxidative radical damage.",
+        "workedSolution": "Catalase has one of the highest enzymatic turnover rates known, converting toxic $H_2O_2$ byproducts of oxidation into benign water and oxygen gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural basis for the high mechanical flexibility of cartilage compared to bone in the human skeleton?",
+        "options": [
+          "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
+          "B. Cartilage is made of water only",
+          "C. Cartilage is an epithelial tissue",
+          "D. Cartilage cells have no cell walls"
+        ],
+        "correctAnswer": "A. Cartilage contains dense collagen and chondroitin sulfate proteoglycan matrix without mineralized calcium phosphate crystals",
+        "hint": "Non-mineralized extracellular matrix.",
+        "workedSolution": "Cartilage matrix consists of flexible chondroitin sulfate proteoglycans and collagen fibers, lacking the brittle, rigid calcium hydroxyapatite mineralization of bone.",
+        "points": 1
+      },
+      {
+        "id": "B7_CELL_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why can the total magnification of an optical light microscope not be increased indefinitely by simply stacking extra glass lenses?",
+        "options": [
+          "A. The microscope would become too heavy to lift",
+          "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
+          "C. The light bulb would explode",
+          "D. Glass lenses melt when stacked"
+        ],
+        "correctAnswer": "B. Magnification beyond ~1,500× produces 'empty magnification' where the image is scaled up without revealing new structural detail due to the optical diffraction limit of visible light (~200 nm)",
+        "hint": "Diffraction barrier restricts useful magnification.",
+        "workedSolution": "The wave nature of visible light limits optical resolution to ~200 nm. Magnifying beyond 1,500× enlarges diffraction blurs without resolving finer detail ('empty magnification').",
         "points": 1
       }
     ]

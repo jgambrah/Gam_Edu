@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import katex from 'katex';
@@ -51,7 +52,7 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
   return (
     <div className={`prose prose-invert max-w-none text-sm leading-relaxed whitespace-pre-line ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkMath]}
+        remarkPlugins={[remarkMath, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeKatex]}
         components={{
           details: ({ node, ...props }) => (
@@ -76,6 +77,22 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
           ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1 text-slate-200">{children}</ul>,
           ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1 text-slate-200">{children}</ol>,
           li: ({ children }) => <li className="text-slate-200 leading-relaxed">{children}</li>,
+                    table: ({ children }) => (
+            <div className="overflow-x-auto my-4 rounded-2xl border border-slate-800 bg-slate-950/60 shadow-lg">
+              <table className="w-full text-left text-xs text-slate-200 border-collapse">
+                {children}
+              </table>
+            </div>
+          ),
+          thead: ({ children }) => (
+            <thead className="bg-slate-900/90 text-indigo-300 font-bold border-b border-slate-800 text-[11px] uppercase tracking-wider">
+              {children}
+            </thead>
+          ),
+          tbody: ({ children }) => <tbody className="divide-y divide-slate-800/60">{children}</tbody>,
+          tr: ({ children }) => <tr className="hover:bg-slate-800/40 transition-colors">{children}</tr>,
+          th: ({ children }) => <th className="px-3.5 py-3 font-bold text-slate-100 whitespace-nowrap">{children}</th>,
+          td: ({ children }) => <td className="px-3.5 py-2.5 text-slate-300 align-middle leading-normal">{children}</td>,
           code: ({ children }) => (
             <code className="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-xs">
               {children}
