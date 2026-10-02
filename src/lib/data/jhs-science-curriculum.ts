@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.904Z"
+    "updatedAt": "2026-10-02T19:41:43.303Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.304Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.304Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.304Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -8968,7 +8968,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.304Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -8981,69 +8981,165 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Apply zoological principles to domestic livestock management through interactive feed formulation and housing simulation modules. Explores monogastric versus ruminant physiology, nutritional balancing, modern pen construction, and herd prophylactic biosecurity.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 13,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Domestic Farm Animals & Economic Importance",
-        "summary": "Classify domestic farm animals into ruminants, non-ruminants, and poultry; identify economic roles in rural and national development.",
-        "notes": "### Domestic Farm Animals: Classification & Economic Significance\n* **NaCCA Curriculum Code:** `B7.2.4.1`\n* **Core Competency:** Classify domestic livestock and evaluate their economic and nutritional contributions.\n\n#### 1. Classification of Domestic Farm Animals\n* **Ruminants (Polygastric animals):** Herbivorous mammals possessing a complex four-chambered stomach (Rumen, Reticulum, Omasum, Abomasum) capable of digesting cellulose via microbial fermentation.\n  * *Large Ruminants:* Cattle (West African Shorthorn, N'Dama, Zebu).\n  * *Small Ruminants:* Sheep (Djallonké), Goats (West African Dwarf).\n* **Non-Ruminants (Monogastric animals):** Animals possessing a single simple stomach chamber:\n  * Pigs (Swine), Rabbits, Horses, Donkeys.\n* **Poultry:** Domesticated avian species raised for meat and eggs:\n  * Chickens (layers, broilers), Ducks, Turkeys, Guinea fowls, Quails.\n\n#### 2. Economic & Nutritional Significance of Livestock\n* **Nutritional Security:** High-biological-value animal protein containing all essential amino acids, iron, zinc, and vitamin B12 (meat, milk, eggs).\n* **Industrial Raw Materials:** Hides and skins for leather footwear and garments; wool and down feathers; bone meal and blood meal for feeds.\n* **Draft Power & Transport:** Bullocks and donkeys providing traction power for plowing and cart transportation in the northern savannah.\n* **Organic Manure:** Dung and poultry droppings serve as high-nitrogen organic fertilizers for arable crop production.",
+        "levelTitle": "Basic 7 (JHS 1) • Animal Production: Digestive Anatomy, Breeds & Commercial Husbandry",
+        "summary": "Classify farm animals anatomically into ruminants (polygastric) and non-ruminants (monogastric), examine the four-chambered ruminant stomach and avian digestive tract, identify commercial breeds and production traits of rabbits, sheep, goats, cattle, fowl, and turkeys, and evaluate biosecurity guidelines.",
+        "notes": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"320\" viewBox=\"0 0 680 320\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#ea580c\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fecdd3\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"320\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE FOUR-CHAMBERED RUMINANT DIGESTIVE SYSTEM</text>\n  <path d=\"M 40 100 L 140 120\" stroke=\"#64748b\" stroke-width=\"12\" fill=\"none\" stroke-linecap=\"round\"/>\n  <text x=\"75\" y=\"90\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Esophagus</text>\n  <ellipse cx=\"240\" cy=\"150\" rx=\"110\" ry=\"70\" fill=\"url(#rumenGrad)\" stroke=\"#c2410c\" stroke-width=\"2\"/>\n  <text x=\"240\" y=\"150\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">1. RUMEN</text>\n  <text x=\"240\" y=\"168\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Fermentation Vat</text>\n  <ellipse cx=\"145\" cy=\"200\" rx=\"40\" ry=\"35\" fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\"2\"/>\n  <text x=\"145\" y=\"198\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">2. RETICULUM</text>\n  <text x=\"145\" y=\"212\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#78350f\" text-anchor=\"middle\">Cud Formation</text>\n  <circle cx=\"365\" cy=\"140\" r=\"32\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n  <text x=\"365\" y=\"138\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. OMASUM</text>\n  <text x=\"365\" y=\"152\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0369a1\" text-anchor=\"middle\">Water Squeezer</text>\n  <path d=\"M 385 160 C 440 160 480 200 450 240 C 420 270 360 250 360 220\" fill=\"url(#abomasumGrad)\" stroke=\"#be123c\" stroke-width=\"2\"/>\n  <text x=\"420\" y=\"215\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#881337\" text-anchor=\"middle\">4. ABOMASUM</text>\n  <text x=\"420\" y=\"230\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#881337\" text-anchor=\"middle\">True Stomach (Enzymes)</text>\n  <path d=\"M 460 230 Q 520 220 540 250 Q 560 280 640 260\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n  <text x=\"560\" y=\"240\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Small Intestine</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"480\" height=\"440\" viewBox=\"0 0 480 440\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"480\" height=\"440\" rx=\"12\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"240\" y=\"25\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">DIGESTIVE SYSTEM OF THE FOWL</text>\n  <path d=\"M 140 45 L 140 90\" stroke=\"#fda4af\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n  <ellipse cx=\"170\" cy=\"110\" rx=\"35\" ry=\"22\" fill=\"#fecdd3\" stroke=\"#e11d48\" stroke-width=\"1.5\"/>\n  <text x=\"220\" y=\"115\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#be123c\">Crop (Temporary Storage)</text>\n  <path d=\"M 155 125 L 155 155\" stroke=\"#fda4af\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n  <text x=\"220\" y=\"148\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9d174d\">Proventriculus (Glandular Stomach)</text>\n  <ellipse cx=\"155\" cy=\"185\" rx=\"28\" ry=\"22\" fill=\"#fb7185\" stroke=\"#be123c\" stroke-width=\"2\"/>\n  <text x=\"220\" y=\"188\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#881337\">Gizzard (Mechanical Grinder)</text>\n  <path d=\"M 145 205 Q 110 230 145 255 Q 185 280 145 305 Q 110 330 150 350\" fill=\"none\" stroke=\"#f43f5e\" stroke-width=\"6\"/>\n  <text x=\"220\" y=\"270\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Small Intestine</text>\n  <path d=\"M 145 350 Q 110 340 100 320 M 145 350 Q 110 365 105 385\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"4\"/>\n  <text x=\"60\" y=\"340\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\">Caeca</text>\n  <ellipse cx=\"150\" cy=\"395\" rx=\"16\" ry=\"22\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/>\n  <text x=\"220\" y=\"398\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca (Common Vent)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous & Commercial Sheep Breeds:**\n  * **Indigenous:** West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge), Nungua Blackhead, Ouda Fulani (long-legged savanna breed), and Yankasa.\n  * **Exotic:** Australian Merino, Spanish Merino (fine wool), and Finnish Landrace.\n* **Morphological Differences: Goat vs. Sheep**\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards. | Longer tail hanging limply downwards. |\n| **Beard Presence** | Present in both mature bucks (males) and does. | Present only on mature rams (males). |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks. | Lacks specialized rubbery friction pads. |\n| **Body Odor** | Mature bucks emit an intense, musky odor. | Rams lack an offensive musky odor. |\n| **Interdigital Glands** | Glands between toes are absent. | Specialized sweat/scent glands present between toes. |\n| **Feeding Behavior** | Agile **browsers**; prefer shrubs, tree leaves, and twigs. | Ground **grazers**; prefer low-growing grass and clovers. |\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:** Friesian / Holstein (highest milk volume, black-and-white markings), Jersey (high butterfat content, golden-fawn color), Ayrshire, and White Fulani (dual-purpose zebu).\n* **Beef Breeds:** Aberdeen Angus (solid black, compact, high marbling), Hereford, West African Shorthorn (WAS), N'Dama (humpless, trypano-tolerant forest cattle), Muturu, and Sokoto Gudali.\n* **Conformation Contrast: Dairy vs. Beef Cattle**\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct **wedge-shaped (triangular)** frame. | **Rectangular, blocky, square-shaped** body frame. |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones. | Deep, heavily fleshed thighs, loin, and rounded rump. |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder. | Small, tight, poorly developed udder. |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck. | Short, stout, thickset muscular legs and short neck. |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s6_1",
-            "title": "Worked Example: Classification of Farm Animals by Digestive Anatomy",
-            "problem": "Classify the following domestic animals into Ruminants or Non-Ruminants, and justify each classification: Sheep, Pig, Rabbit, Cattle, Horse.",
+            "id": "ex_b7_s2_anim_01",
+            "title": "Worked Problem: Comparative Cellulose Digestion Mechanisms Across Livestock",
+            "problem": "Compare how a cow (ruminant), a rabbit (hindgut monogastric), and a domestic fowl (avian) break down cellulose and absorb nutrients from plant diets. Tabulate their anatomical sites of fermentation and state why the cow is the most efficient.",
             "steps": [
-              "Sheep: Ruminant — Possesses a complex 4-chambered stomach; chews the cud (regurgitates partially digested boluses).",
-              "Pig: Non-Ruminant (Monogastric) — Possesses a single, simple acid-secreting stomach chamber.",
-              "Rabbit: Non-Ruminant (Hindgut Fermenter) — Possesses a single simple stomach, relying on an enlarged caecum for cellulose breakdown.",
-              "Cattle: Ruminant — True polygastric herbivore possessing rumen, reticulum, omasum, and abomasum chambers.",
-              "Horse: Non-Ruminant (Hindgut Fermenter) — Single stomach; digests cellulose in the caecum and colon."
+              "Step 1: Identify the anatomical site of cellulose fermentation for each animal — Cow: Foregut fermentation in the massive Rumen (prior to the true stomach); Rabbit: Hindgut fermentation in the enlarged Caecum (after the stomach and small intestine); Domestic Fowl: Minor fermentation in paired Caeca.",
+              "Step 2: Compare microbial protein utilization — In the cow, symbiotic microbes ferment grass in the rumen; the microbes then pass into the abomasum and small intestine where they are digested as high-quality protein. In the rabbit, fermentation happens past the small intestine; to absorb microbial protein, rabbits must practice coprophagy (re-ingesting soft caecal pellets/caecotrophes). In the fowl, caecal fermentation contributes only minimal energy.",
+              "Step 3: Justify the superior efficiency of the cow — The cow is most efficient because microbial foregut fermentation occurs upstream of the enzymatic stomach and absorption sites, allowing complete digestion and absorption of both volatile fatty acids and microbial protein without requiring coprophagy."
             ],
-            "finalAnswer": "Examiner Tip: Note that while rabbits and horses eat grass, they are NOT ruminants because they do not have a four-chambered stomach and do not chew the cud."
+            "finalAnswer": "Examiner Tip: Always state the position of the fermentation site relative to the enzymatic stomach (foregut vs. hindgut) when comparing herbivorous digestive strategies."
+          },
+          {
+            "id": "ex_b7_s2_anim_02",
+            "title": "Worked Problem: Commercial Layer Culling & Avian Pox Biosecurity Protocol",
+            "problem": "During a poultry farm inspection: (a) Student A examines a hen with a 1-finger pelvic bone span, dry yellow vent, and shrunken pale comb. Formulate an agronomic recommendation for this bird. (b) Student B observes turkeys with wart-like crusty scabs on their combs, snoods, and eyelids. Identify the disease, state the causative agent, and outline two immediate biosecurity actions.",
+            "steps": [
+              "Step 1: Diagnose the layer hen — A hen displaying a narrow pelvic span (1-finger), shrunken pale comb, and pigmented yellow vent has ceased ovulating and laying eggs (it is a non-productive cull hen).",
+              "Step 2: Provide recommendation for the hen — The farmer should cull (remove and slaughter/market) this hen immediately, as it consumes costly feed without yielding eggs.",
+              "Step 3: Identify the turkey disease — The wart-like nodular scabs on unfeathered facial structures indicate Cutaneous Fowl Pox, caused by the Avipoxvirus.",
+              "Step 4: Formulate biosecurity interventions — (1) Isolate infected turkeys immediately and treat eye lesions with mild antiseptic ointments. (2) Drain standing water around poultry houses to eliminate mosquito vectors, and vaccinate all healthy unaffected birds via wing-web stick."
+            ],
+            "finalAnswer": "Examiner Tip: Distinguish between the dry cutaneous form (scabs on comb/snood) and the wet diphtheritic form (yellow plaques in the trachea) of Avian Fowl Pox."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s6_1",
+              "id": "B7_ANIM_MCQ_01",
               "difficulty": "low",
-              "prompt": "Which of the following farm animals is a small ruminant native to West Africa?",
+              "prompt": "Which of the following farm animals is classified scientifically as a polygastric (ruminant) animal?",
               "options": [
-                "West African Dwarf goat",
-                "Commercial broiler chicken",
-                "Large White pig",
-                "New Zealand White rabbit"
+                "A. Domestic pig",
+                "B. Sheep",
+                "C. Rabbit",
+                "D. Domestic fowl"
               ],
-              "correctAnswer": "West African Dwarf goat",
-              "hint": "It is a small polygastric animal known for high trypanosomiasis resistance.",
-              "workedSolution": "The West African Dwarf goat and Djallonké sheep are indigenous small ruminants possessing four-chambered stomachs and adapted to humid West African ecologies.",
+              "correctAnswer": "B. Sheep",
+              "hint": "Ruminants possess a four-chambered stomach and chew the cud.",
+              "workedSolution": "Sheep are polygastric ruminants equipped with a four-chambered stomach (rumen, reticulum, omasum, abomasum) for fermenting plant cellulose.",
               "points": 1,
-              "learningCompetency": "B7.2.4.1",
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_MCQ_02",
+              "difficulty": "low",
+              "prompt": "In the domestic fowl, mechanical grinding of tough grains and whole seeds is performed by the:",
+              "options": [
+                "A. Crop",
+                "B. Proventriculus",
+                "C. Gizzard (Ventriculus)",
+                "D. Caeca"
+              ],
+              "correctAnswer": "C. Gizzard (Ventriculus)",
+              "hint": "This organ is thick, muscular, and contains swallowed small stones and grit.",
+              "workedSolution": "The gizzard (ventriculus) has thick muscular walls and grit that churn together to pulverize hard seeds and grains mechanically.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_TURK_01",
+              "difficulty": "low",
+              "prompt": "Which of the following is a heavy commercial breed of turkey characterized by metallic brown feathers and greenish-grey shanks?",
+              "options": [
+                "A. Beltsville Small White",
+                "B. Broad-Breasted Bronze",
+                "C. Rhode Island Red",
+                "D. White Leghorn"
+              ],
+              "correctAnswer": "B. Broad-Breasted Bronze",
+              "hint": "The breed name contains the color \"Bronze\".",
+              "workedSolution": "The Broad-Breasted Bronze is a heavy commercial meat turkey recognized by its metallic bronze plumage and greenish-grey shanks.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s6_2",
+              "id": "B7_ANIM_MCQ_03",
               "difficulty": "medium",
-              "prompt": "Why are domestic cattle classified as polygastric animals while domestic pigs are monogastric?",
+              "prompt": "Which of the following morphological characteristics distinguishes a dairy cow from a beef cow?",
               "options": [
-                "Cattle eat meat while pigs eat grass",
-                "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
-                "Pigs can fly while cattle cannot",
-                "Cattle have four hearts while pigs have one"
+                "A. Rectangular blocky body with heavy muscle fleshing",
+                "B. Wedge-shaped triangular body with a large, capacious udder",
+                "C. Short stout legs with a thick neck",
+                "D. Absence of an abomasum"
               ],
-              "correctAnswer": "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
-              "hint": "Poly = many; Mono = single; Gastric = stomach.",
-              "workedSolution": "Cattle have a complex four-chambered digestive tract (rumen, reticulum, omasum, abomasum) for microbial cellulose fermentation, whereas pigs have a single simple glandular stomach.",
+              "correctAnswer": "B. Wedge-shaped triangular body with a large, capacious udder",
+              "hint": "Dairy cattle channel energy into milk synthesis rather than body fat and meat.",
+              "workedSolution": "Dairy cattle exhibit a lean, angular, wedge-shaped body silhouette with a well-developed udder, whereas beef cattle possess a blocky, rectangular meat frame.",
               "points": 1,
-              "learningCompetency": "B7.2.4.1",
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ANIM_MCQ_04",
+              "difficulty": "medium",
+              "prompt": "A practical anatomical difference between domestic goats and domestic sheep is that:",
+              "options": [
+                "A. Sheep tails point erect while goat tails hang downwards",
+                "B. Goat tails point erect while sheep tails hang downwards",
+                "C. Goats chew the cud but sheep do not",
+                "D. Sheep have single stomachs while goats have four-chambered stomachs"
+              ],
+              "correctAnswer": "B. Goat tails point erect while sheep tails hang downwards",
+              "hint": "Look closely at tail orientation and behavioral browsing habits.",
+              "workedSolution": "Domestic goats carry their short tails erect (pointing upwards), whereas domestic sheep have longer tails that hang limply downwards.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_TURK_03",
+              "difficulty": "medium",
+              "prompt": "Which avian viral disease produces nodular, wart-like crusty scabs on the unfeathered skin of the head, comb, and snood?",
+              "options": [
+                "A. Coccidiosis",
+                "B. Fowl Pox (Avian Pox)",
+                "C. Gumboro disease",
+                "D. Anthrax"
+              ],
+              "correctAnswer": "B. Fowl Pox (Avian Pox)",
+              "hint": "It is caused by an Avipoxvirus and spread by biting mosquitoes.",
+              "workedSolution": "Fowl pox is a contagious viral disease caused by an Avipoxvirus that manifests as wart-like nodular scabs on unfeathered facial and head areas.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_TURK_02",
+              "difficulty": "hard",
+              "prompt": "A major commercial breeding challenge common to both Broad-Breasted Bronze and Broad-Breasted White turkeys is their:",
+              "options": [
+                "A. High susceptibility to bovine trypanosomiasis",
+                "B. Poor natural mating performance due to heavy chest muscling and weight",
+                "C. Inability to synthesize digestive pepsin",
+                "D. Complete absence of feathers at maturity"
+              ],
+              "correctAnswer": "B. Poor natural mating performance due to heavy chest muscling and weight",
+              "hint": "Extreme breast muscling prevents toms from mounting hens naturally without injury.",
+              "workedSolution": "Due to extreme body mass and heavy breast muscling, giant broad-breasted turkeys experience poor natural mating rates and require artificial insemination.",
+              "points": 1,
+              "learningCompetency": "B7.2.4.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -9165,7 +9261,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -9362,7 +9458,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -9559,7 +9655,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -9754,7 +9850,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -9950,7 +10046,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -10146,7 +10242,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -10343,7 +10439,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -10541,7 +10637,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -10739,7 +10835,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -10932,7 +11028,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -11127,7 +11223,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -11322,7 +11418,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -11518,7 +11614,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -11715,7 +11811,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T19:16:45.905Z"
+    "updatedAt": "2026-10-02T19:41:43.305Z"
   }
 ];
 
@@ -19976,48 +20072,134 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Animal Production & Livestock Husbandry (Domestic Animals, Feeds, Housing & Health)",
     "order": 16,
     "notes": {
-      "summaryMarkdown": "### Domestic Farm Animals: Classification & Economic Significance\n* **NaCCA Curriculum Code:** `B7.2.4.1`\n* **Core Competency:** Classify domestic livestock and evaluate their economic and nutritional contributions.\n\n#### 1. Classification of Domestic Farm Animals\n* **Ruminants (Polygastric animals):** Herbivorous mammals possessing a complex four-chambered stomach (Rumen, Reticulum, Omasum, Abomasum) capable of digesting cellulose via microbial fermentation.\n  * *Large Ruminants:* Cattle (West African Shorthorn, N'Dama, Zebu).\n  * *Small Ruminants:* Sheep (Djallonké), Goats (West African Dwarf).\n* **Non-Ruminants (Monogastric animals):** Animals possessing a single simple stomach chamber:\n  * Pigs (Swine), Rabbits, Horses, Donkeys.\n* **Poultry:** Domesticated avian species raised for meat and eggs:\n  * Chickens (layers, broilers), Ducks, Turkeys, Guinea fowls, Quails.\n\n#### 2. Economic & Nutritional Significance of Livestock\n* **Nutritional Security:** High-biological-value animal protein containing all essential amino acids, iron, zinc, and vitamin B12 (meat, milk, eggs).\n* **Industrial Raw Materials:** Hides and skins for leather footwear and garments; wool and down feathers; bone meal and blood meal for feeds.\n* **Draft Power & Transport:** Bullocks and donkeys providing traction power for plowing and cart transportation in the northern savannah.\n* **Organic Manure:** Dung and poultry droppings serve as high-nitrogen organic fertilizers for arable crop production.",
+      "summaryMarkdown": "### Unit 1: Classification of Domestic Farm Animals\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Zoological domestication, anatomical grouping, and economic utilities of livestock.\n\n#### 1. Definition and General Traits of Domestic Livestock\n**Domestic animals** are species that have been tamed, adapted over centuries to live in association with human settlements, and selectively bred over generations to yield meat, milk, fiber, draft power, and agricultural wealth.\n* **Rapid Maturation:** Grow and reach market weights or sexual maturity rapidly, ensuring commercial farming profitability.\n* **Herbivorous & Omnivorous Feeding:** Thrive predominantly on pastures, fibrous forages, agro-industrial by-products, and cereal grains.\n* **High Captivity Fecundity:** Reproduce reliably in confinement, displaying regular oestrus cycles and multi-parturition within a calendar year.\n\n#### 2. Anatomical Classification by Stomach Architecture\n1. **Monogastric (Non-Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **single, simple, non-compartmentalized stomach** similar to that of humans.\n   * **Digestive Limitation:** Lack multi-chambered fermentation vats; cannot digest tough structural plant cellulose efficiently unless specialized with an enlarged, fermenting post-gastric caecum.\n   * **Primary Examples:** Pigs (*Sus domesticus*), horses (*Equus caballus*), rabbits (*Oryctolagus cuniculus*), domestic fowl (*Gallus gallus*), dogs, and cats.\n2. **Polygastric (Ruminant) Farm Animals:**\n   * **Stomach Architecture:** Possess a **complex, four-compartment stomach** consisting sequentially of the rumen, reticulum, omasum, and abomasum.\n   * **Digestive Specialization:** Evolutionarily adapted to thrive exclusively on coarse grasses and fibrous forages. They utilize millions of symbiotic microbial organisms (bacteria, protozoa, and anaerobic fungi) to ferment and break down beta-linked cellulose into absorbable volatile fatty acids (VFAs).\n   * **Primary Examples:** Cattle (*Bos taurus* / *Bos indicus*), sheep (*Ovis aries*), goats (*Capra hircus*), camels, and antelopes.\n\n---\n\n### Unit 2: Digestive Anatomy: The Complex Ruminant Stomach\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Foregut fermentation, rumination physiology, and gastric chambers.\n\n#### 1. Physiology of Rumination (\"Chewing the Cud\")\nRuminants graze rapidly in open pastures, swallowing coarse unchewed forage into the rumen. When resting in a sheltered location, rhythmic contractions of the reticulum and esophagus regurgitate fibrous boluses (the \"cud\") back into the oral cavity. The animal re-chews, grinds, and thoroughly re-salivates the cud with alkaline saliva before swallowing it back down to accelerate microbial fermentation.\n\n#### 2. The Four Specialized Stomach Compartments\n1. **Rumen (The Paunch):**\n   * The first, largest compartment, occupying over $80\\\\%$ of the total stomach volume on the left side of the abdominal cavity.\n   * Operates as an anaerobic microbial fermentation vat containing billions of bacteria and ciliates that ferment cellulose into acetate, propionate, and butyrate.\n2. **Reticulum (The Honeycomb):**\n   * Second compartment whose internal mucosal lining is arranged in a distinct hexagonal, honeycomb-patterned network.\n   * Regulates the passage of feed particles, traps dense foreign materials (nails, wires, stones), and coordinates the muscular regurgitation of cud boluses back to the mouth.\n3. **Omasum (The Manyplies / Book):**\n   * Third spherical compartment lined with numerous muscular, leaf-like broad laminae resembling pages of a book.\n   * Serves as a powerful water squeezer, absorbing $60\\\\text{--}70\\\\%$ of water, residual bicarbonate, and dissolved mineral electrolytes from the ingested mash.\n4. **Abomasum (The \"True\" Glandular Stomach):**\n   * The fourth compartment and the **only true enzymatic stomach** homologous to the human stomach.\n   * Possesses a glandular mucosal lining that secretes hydrochloric acid ($\\\\text{HCl}$, maintaining $\\\\text{pH } 2\\\\text{--}3$) and proteolytic digestive enzymes (pepsin and rennin) to digest microbial proteins and bypass nutrients enzymatically before entering the duodenum.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"680\" height=\"320\" viewBox=\"0 0 680 320\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"rumenGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fed7aa\"/>\n      <stop offset=\"100%\" stop-color=\"#ea580c\"/>\n    </linearGradient>\n    <linearGradient id=\"abomasumGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fecdd3\"/>\n      <stop offset=\"100%\" stop-color=\"#e11d48\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"680\" height=\"320\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE FOUR-CHAMBERED RUMINANT DIGESTIVE SYSTEM</text>\n  <path d=\"M 40 100 L 140 120\" stroke=\"#64748b\" stroke-width=\"12\" fill=\"none\" stroke-linecap=\"round\"/>\n  <text x=\"75\" y=\"90\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Esophagus</text>\n  <ellipse cx=\"240\" cy=\"150\" rx=\"110\" ry=\"70\" fill=\"url(#rumenGrad)\" stroke=\"#c2410c\" stroke-width=\"2\"/>\n  <text x=\"240\" y=\"150\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">1. RUMEN</text>\n  <text x=\"240\" y=\"168\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#7c2d12\" text-anchor=\"middle\">Fermentation Vat</text>\n  <ellipse cx=\"145\" cy=\"200\" rx=\"40\" ry=\"35\" fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\"2\"/>\n  <text x=\"145\" y=\"198\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">2. RETICULUM</text>\n  <text x=\"145\" y=\"212\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#78350f\" text-anchor=\"middle\">Cud Formation</text>\n  <circle cx=\"365\" cy=\"140\" r=\"32\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n  <text x=\"365\" y=\"138\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">3. OMASUM</text>\n  <text x=\"365\" y=\"152\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#0369a1\" text-anchor=\"middle\">Water Squeezer</text>\n  <path d=\"M 385 160 C 440 160 480 200 450 240 C 420 270 360 250 360 220\" fill=\"url(#abomasumGrad)\" stroke=\"#be123c\" stroke-width=\"2\"/>\n  <text x=\"420\" y=\"215\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#881337\" text-anchor=\"middle\">4. ABOMASUM</text>\n  <text x=\"420\" y=\"230\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#881337\" text-anchor=\"middle\">True Stomach (Enzymes)</text>\n  <path d=\"M 460 230 Q 520 220 540 250 Q 560 280 640 260\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n  <text x=\"560\" y=\"240\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Small Intestine</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.1: Internal Anatomical Architecture of the Four-Chambered Ruminant Stomach</em></p>\n</div>\n\n---\n\n### Unit 3: Avian Digestive Anatomy (Domestic Fowl)\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Specialized avian adaptations for seed and grain digestion in the absence of teeth.\n\nBecause birds lack teeth and heavy jaws to reduce body weight for flight, their digestive tract is adapted with mechanical and chemical organs arranged along the alimentary canal:\n\n1. **Beak & Esophagus:**\n   * Food (grains, insects, greens) is picked up by the beak, lubricated with mucus, and swallowed whole through the esophagus.\n2. **Crop (Ingluvies):**\n   * An expandable, muscular pouch situated at the base of the neck. Serves as a temporary food and water storage reservoir, softening and moistening whole grain kernels.\n3. **Proventriculus (Glandular Stomach):**\n   * The small, thick-walled glandular stomach where gastric juices, hydrochloric acid ($\\\\text{HCl}$), and pepsinogen are secreted and thoroughly mixed with softened feed.\n4. **Ventriculus (Gizzard):**\n   * A thick, disc-shaped, powerful muscular grinding organ lined with a tough, abrasive carbohydrate-protein layer (koilin). Domestic birds ingest small pebbles, grit, and insoluble stones that remain trapped in the gizzard; powerful muscular contractions churn the grit, grinding coarse grains into a smooth liquid mash mechanically.\n5. **Small Intestine (Duodenum & Ileum):**\n   * Long convoluted tube receiving bile from the liver and pancreatic enzymes to digest proteins, fats, and starches, absorbing nutrients into the bloodstream.\n6. **Paired Caeca (Blind Gut Sacs):**\n   * Two elongated blind-ending pouches located at the ileocecal junction. Symbiotic bacteria break down residual crude fiber by fermentation and synthesize B-complex vitamins.\n7. **Colon (Large Intestine):**\n   * Short tube that reabsorbs water and electrolytes, maintaining the bird's hydration.\n8. **Cloaca & Vent:**\n   * The common terminal chamber where the digestive tract, urinary system (uric acid paste), and reproductive tract (eggs or semen) converge before discharging through the external vent.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"480\" height=\"440\" viewBox=\"0 0 480 440\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"480\" height=\"440\" rx=\"12\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"240\" y=\"25\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">DIGESTIVE SYSTEM OF THE FOWL</text>\n  <path d=\"M 140 45 L 140 90\" stroke=\"#fda4af\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n  <ellipse cx=\"170\" cy=\"110\" rx=\"35\" ry=\"22\" fill=\"#fecdd3\" stroke=\"#e11d48\" stroke-width=\"1.5\"/>\n  <text x=\"220\" y=\"115\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#be123c\">Crop (Temporary Storage)</text>\n  <path d=\"M 155 125 L 155 155\" stroke=\"#fda4af\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"round\"/>\n  <text x=\"220\" y=\"148\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#9d174d\">Proventriculus (Glandular Stomach)</text>\n  <ellipse cx=\"155\" cy=\"185\" rx=\"28\" ry=\"22\" fill=\"#fb7185\" stroke=\"#be123c\" stroke-width=\"2\"/>\n  <text x=\"220\" y=\"188\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#881337\">Gizzard (Mechanical Grinder)</text>\n  <path d=\"M 145 205 Q 110 230 145 255 Q 185 280 145 305 Q 110 330 150 350\" fill=\"none\" stroke=\"#f43f5e\" stroke-width=\"6\"/>\n  <text x=\"220\" y=\"270\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Small Intestine</text>\n  <path d=\"M 145 350 Q 110 340 100 320 M 145 350 Q 110 365 105 385\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"4\"/>\n  <text x=\"60\" y=\"340\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#475569\">Caeca</text>\n  <ellipse cx=\"150\" cy=\"395\" rx=\"16\" ry=\"22\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/>\n  <text x=\"220\" y=\"398\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\">Cloaca (Common Vent)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.2: Alimentary Canal and Digestive Organs of the Domestic Fowl</em></p>\n</div>\n\n---\n\n### Unit 4: Breeds, Husbandry & Comparative Morphology\n\n#### 1. Rabbit Production (*Oryctolagus cuniculus*)\n* **Commercial Breeds:** California White (white body with black nose, ears, feet, tail), Flemish Giant (heaviest meat breed), New Zealand White/Red, and Angora (fine wool fiber).\n* **Selection Criteria for Breeding Stock:** Mature adult body frame, fur density, large litter size ($6\\\\text{--}10\\\\text{ kits}$), mothering ability, and high feed conversion ratio.\n* **Common Pathologies:** Coccidiosis (intestinal protozoan causing diarrhea), ear mange (caused by *Psoroptes cuniculi* mites forming crusty scabs), and snuffles (bacterial respiratory cold caused by *Pasteurella multocida*).\n\n#### 2. Small Ruminants: Sheep and Goats\n* **Indigenous & Commercial Sheep Breeds:**\n  * **Indigenous:** West African Dwarf Sheep (compact, short-legged, highly tolerant to trypanosomiasis / tsetse fly challenge), Nungua Blackhead, Ouda Fulani (long-legged savanna breed), and Yankasa.\n  * **Exotic:** Australian Merino, Spanish Merino (fine wool), and Finnish Landrace.\n* **Morphological Differences: Goat vs. Sheep**\n| Morphological Marker | Domestic Goat (*Capra hircus*) | Domestic Sheep (*Ovis aries*) |\n| :--- | :--- | :--- |\n| **Tail Orientation** | Short tail held erect, pointing upwards. | Longer tail hanging limply downwards. |\n| **Beard Presence** | Present in both mature bucks (males) and does. | Present only on mature rams (males). |\n| **Heel Structure** | Possesses rubbery friction pads for climbing rocks. | Lacks specialized rubbery friction pads. |\n| **Body Odor** | Mature bucks emit an intense, musky odor. | Rams lack an offensive musky odor. |\n| **Interdigital Glands** | Glands between toes are absent. | Specialized sweat/scent glands present between toes. |\n| **Feeding Behavior** | Agile **browsers**; prefer shrubs, tree leaves, and twigs. | Ground **grazers**; prefer low-growing grass and clovers. |\n* **Why Goats Are Unsuited to Intensive Confinement:** Goats are energetic, curious browsers; tight indoor confinement causes psychological distress, drastically lowers feed intake, increases parasitic worm infestation, and leads to hoof rot.\n\n#### 3. Cattle Production (*Bos taurus* / *Bos indicus*)\n* **Dairy Breeds:** Friesian / Holstein (highest milk volume, black-and-white markings), Jersey (high butterfat content, golden-fawn color), Ayrshire, and White Fulani (dual-purpose zebu).\n* **Beef Breeds:** Aberdeen Angus (solid black, compact, high marbling), Hereford, West African Shorthorn (WAS), N'Dama (humpless, trypano-tolerant forest cattle), Muturu, and Sokoto Gudali.\n* **Conformation Contrast: Dairy vs. Beef Cattle**\n| Conformation Metric | Dairy Cattle (Milk Type) | Beef Cattle (Meat Type) |\n| :--- | :--- | :--- |\n| **Body Silhouette** | Distinct **wedge-shaped (triangular)** frame. | **Rectangular, blocky, square-shaped** body frame. |\n| **Muscular Fleshing** | Lean, angular frame; visible ribs and hip bones. | Deep, heavily fleshed thighs, loin, and rounded rump. |\n| **Udder Development** | Large, capacious, well-attached symmetrical udder. | Small, tight, poorly developed udder. |\n| **Limbs & Neck** | Long, slender legs and thin, refined neck. | Short, stout, thickset muscular legs and short neck. |\n\n#### 4. Commercial Poultry Production\n* **Utility Classes:**\n  * **Layers:** Bred specifically for high egg yields ($280\\\\text{--}320\\\\text{ eggs/year}$). *Examples:* Single Comb White Leghorn, ISA Brown, Lohmann Brown.\n  * **Broilers:** Reared for rapid meat accretion ($2.0\\\\text{--}2.5\\\\text{ kg}$ in $6\\\\text{ weeks}$). *Examples:* Cornish Cross, Cobb 500, Ross 308.\n  * **Dual-Purpose:** Yield both acceptable meat carcasses and steady table eggs. *Examples:* Rhode Island Red, Plymouth Rock, New Hampshire Red.\n* **Diagnostic Signs of a Good Layer vs. Cull Hen:**\n  * **Good Layer:** Broad span between pelvic bones ($3\\\\text{--}4\\\\text{ fingers}$); warm, moist, pliable, oval vent; bright red, waxy, swollen comb and wattles; bleached pale shanks.\n  * **Poor / Cull Hen:** Narrow pelvic bone span ($1\\\\text{--}2\\\\text{ fingers}$); dry, puckered, yellow vent; pale, shrunken, scaly comb; dark yellow pigmented shanks.\n* **Poultry Pen Siting & Biosecurity Protocols:** Pens must be sited downwind, at least $50\\\\text{--}100\\\\text{ meters}$ away from residential homes to prevent ammonia gas inhalation, excessive noise, and airborne transfer of zoonotic pathogens like Newcastle virus and Avian Influenza.\n\n---\n\n### Unit 5: Domestic Turkey Husbandry (*Meleagris gallopavo*) & Avian Health\n* **Curriculum Standard:** NaCCA `B7.2.4.1.1`\n* **Core Concept:** Large avian meat production, commercial turkey breeds, and viral pox control.\n\n#### 1. Biology and Commercial Value of Turkeys\nDomestic turkeys (*Meleagris gallopavo*) are heavy gallinaceous birds cultivated primarily for premium holiday table meat, offering exceptionally high dressing percentages and lean white breast protein.\n\n#### 2. Major Commercial Turkey Breeds\n| Breed Name | Body Size & Weight Class | Plumage (Feather) Color | Leg (Shank) Color | Eggshell Appearance | Commercial Utility |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Broad-Breasted Bronze** | Very Heavy Frame | Metallic Brown / Bronze | Greenish-Grey | Creamy / Tinted | High-efficiency meat production |\n| **Broad-Breasted White** | Heavy Frame | Pure White | Pale Pinkish / White | Speckled Brown | Clean commercial carcass meat |\n| **Black Norfolk** | Medium to Heavy Frame | Short, Solid Black | Greenish-Grey | Speckled Brown | Dual meat and egg production |\n| **Beltsville Small White** | Small to Medium Frame | Solid White | Pinkish-White | Tinted / Light Brown | Small-carcass meat and high fertility |\n\n* **Reproductive Challenge of Heavy Meat Breeds:** Because Broad-Breasted Bronze and Broad-Breasted White turkeys have been selected for massive chest musculature, mature toms cannot mount hens naturally without causing injury; commercial flocks rely on artificial insemination ($\\\\text{AI}$).\n\n#### 3. Diagnostic Morphology of the Turkey Head and Neck\n* **Snood:** An elongated, fleshy erectile process attached above the base of the beak that engorges with blood during male sexual displays.\n* **Caruncles:** Bulbous, fleshy protuberances covering the unfeathered head and neck, shifting from vivid red to deep blue with emotional arousal.\n* **Dewlap:** A longitudinal flap of bare, erectile skin extending under the throat and neck.\n\n<div style=\"text-align: center; margin: 2rem 0;\">\n<svg width=\"600\" height=\"360\" viewBox=\"0 0 600 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"turkeyFeathers\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"50%\" stop-color=\"#451a03\"/>\n      <stop offset=\"100%\" stop-color=\"#1c1917\"/>\n    </linearGradient>\n    <linearGradient id=\"caruncleGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#dc2626\"/>\n      <stop offset=\"100%\" stop-color=\"#2563eb\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"600\" height=\"360\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"300\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EXTERNAL MORPHOLOGY OF THE DOMESTIC TURKEY</text>\n  <path d=\"M 420 180 C 470 120 540 100 550 160 C 560 210 500 240 430 220 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"330\" cy=\"210\" rx=\"115\" ry=\"75\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"2\"/>\n  <path d=\"M 260 170 C 230 130 200 90 185 85 C 170 80 150 95 160 125 C 175 165 210 205 240 225 Z\" fill=\"url(#turkeyFeathers)\" stroke=\"#1c1917\" stroke-width=\"1.5\"/>\n  <ellipse cx=\"155\" cy=\"90\" rx=\"24\" ry=\"18\" fill=\"url(#caruncleGrad)\" stroke=\"#991b1b\" stroke-width=\"1.5\"/>\n  <path d=\"M 140 85 L 115 95 L 140 102 Z\" fill=\"#ca8a04\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n  <path d=\"M 148 78 Q 130 95 132 125 Q 136 140 144 145\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <circle cx=\"150\" cy=\"86\" r=\"3.5\" fill=\"#0f172a\"/>\n  <line x1=\"290\" y1=\"275\" x2=\"280\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"260\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"280\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"280\" y1=\"330\" x2=\"298\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"355\" y1=\"275\" x2=\"350\" y2=\"330\" stroke=\"#475569\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"330\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"350\" y2=\"340\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"350\" y1=\"330\" x2=\"368\" y2=\"335\" stroke=\"#475569\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n  <line x1=\"132\" y1=\"115\" x2=\"80\" y2=\"115\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"118\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#dc2626\" text-anchor=\"end\">Snood (Erectile Process)</text>\n  <line x1=\"155\" y1=\"105\" x2=\"80\" y2=\"150\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"75\" y=\"154\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"end\">Caruncles &amp; Dewlap</text>\n  <line x1=\"330\" y1=\"150\" x2=\"330\" y2=\"90\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"330\" y=\"85\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Plump, Heavy Muscled Breast</text>\n  <line x1=\"520\" y1=\"130\" x2=\"520\" y2=\"80\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"520\" y=\"75\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Broad Fan Tail</text>\n  <line x1=\"350\" y1=\"310\" x2=\"440\" y2=\"310\" stroke=\"#0f172a\" stroke-width=\"1\"/>\n  <text x=\"445\" y=\"314\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#475569\">Greenish-Grey Shanks (Legs)</text>\n</svg>\n<p style=\"font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;\"><em>Figure 4.3: External Morphological Profile and Diagnostic Landmarks of the Domestic Turkey (Meleagris gallopavo)</em></p>\n</div>\n\n#### 4. Pathology Spotlight: Fowl Pox (Avian Pox)\n* **Causative Pathogen:** *Avipoxvirus* (spread mechanically by biting mosquitoes and direct contact through broken skin).\n* **Clinical Forms:**\n  1. **Cutaneous (Dry Pox):** Nodular, wart-like proliferative crusts and scabs on unfeathered skin areas (comb, wattles, snood, eyelids, and shanks).\n  2. **Diphtheritic (Wet Pox):** Yellowish, necrotic, fibrinous plaques lining the mouth, pharynx, larynx, and trachea, causing respiratory distress and asphyxiation.\n* **Prevention & Control:** Routine wing-web stick vaccination with live attenuated fowl pox vaccine at $6\\\\text{--}10\\\\text{ weeks}$ of age, chemical mosquito abatement, and strict quarantine of affected birds.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s6_1",
-        "questionPrompt": "Classify the following domestic animals into Ruminants or Non-Ruminants, and justify each classification: Sheep, Pig, Rabbit, Cattle, Horse.",
-        "stepByStepSolution": "Sheep: Ruminant — Possesses a complex 4-chambered stomach; chews the cud (regurgitates partially digested boluses).\nPig: Non-Ruminant (Monogastric) — Possesses a single, simple acid-secreting stomach chamber.\nRabbit: Non-Ruminant (Hindgut Fermenter) — Possesses a single simple stomach, relying on an enlarged caecum for cellulose breakdown.\nCattle: Ruminant — True polygastric herbivore possessing rumen, reticulum, omasum, and abomasum chambers.\nHorse: Non-Ruminant (Hindgut Fermenter) — Single stomach; digests cellulose in the caecum and colon.",
-        "examinerTip": "Examiner Tip: Note that while rabbits and horses eat grass, they are NOT ruminants because they do not have a four-chambered stomach and do not chew the cud."
+        "id": "ex_b7_s2_anim_01",
+        "questionPrompt": "Compare how a cow (ruminant), a rabbit (hindgut monogastric), and a domestic fowl (avian) break down cellulose and absorb nutrients from plant diets. Tabulate their anatomical sites of fermentation and state why the cow is the most efficient.",
+        "stepByStepSolution": "Step 1: Identify the anatomical site of cellulose fermentation for each animal — Cow: Foregut fermentation in the massive Rumen (prior to the true stomach); Rabbit: Hindgut fermentation in the enlarged Caecum (after the stomach and small intestine); Domestic Fowl: Minor fermentation in paired Caeca.\nStep 2: Compare microbial protein utilization — In the cow, symbiotic microbes ferment grass in the rumen; the microbes then pass into the abomasum and small intestine where they are digested as high-quality protein. In the rabbit, fermentation happens past the small intestine; to absorb microbial protein, rabbits must practice coprophagy (re-ingesting soft caecal pellets/caecotrophes). In the fowl, caecal fermentation contributes only minimal energy.\nStep 3: Justify the superior efficiency of the cow — The cow is most efficient because microbial foregut fermentation occurs upstream of the enzymatic stomach and absorption sites, allowing complete digestion and absorption of both volatile fatty acids and microbial protein without requiring coprophagy.",
+        "examinerTip": "Examiner Tip: Always state the position of the fermentation site relative to the enzymatic stomach (foregut vs. hindgut) when comparing herbivorous digestive strategies."
+      },
+      {
+        "id": "ex_b7_s2_anim_02",
+        "questionPrompt": "During a poultry farm inspection: (a) Student A examines a hen with a 1-finger pelvic bone span, dry yellow vent, and shrunken pale comb. Formulate an agronomic recommendation for this bird. (b) Student B observes turkeys with wart-like crusty scabs on their combs, snoods, and eyelids. Identify the disease, state the causative agent, and outline two immediate biosecurity actions.",
+        "stepByStepSolution": "Step 1: Diagnose the layer hen — A hen displaying a narrow pelvic span (1-finger), shrunken pale comb, and pigmented yellow vent has ceased ovulating and laying eggs (it is a non-productive cull hen).\nStep 2: Provide recommendation for the hen — The farmer should cull (remove and slaughter/market) this hen immediately, as it consumes costly feed without yielding eggs.\nStep 3: Identify the turkey disease — The wart-like nodular scabs on unfeathered facial structures indicate Cutaneous Fowl Pox, caused by the Avipoxvirus.\nStep 4: Formulate biosecurity interventions — (1) Isolate infected turkeys immediately and treat eye lesions with mild antiseptic ointments. (2) Drain standing water around poultry houses to eliminate mosquito vectors, and vaccinate all healthy unaffected birds via wing-web stick.",
+        "examinerTip": "Examiner Tip: Distinguish between the dry cutaneous form (scabs on comb/snood) and the wet diphtheritic form (yellow plaques in the trachea) of Avian Fowl Pox."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s6_1",
+        "id": "B7_ANIM_MCQ_01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following farm animals is a small ruminant native to West Africa?",
+        "prompt": "Which of the following farm animals is classified scientifically as a polygastric (ruminant) animal?",
         "options": [
-          "West African Dwarf goat",
-          "Commercial broiler chicken",
-          "Large White pig",
-          "New Zealand White rabbit"
+          "A. Domestic pig",
+          "B. Sheep",
+          "C. Rabbit",
+          "D. Domestic fowl"
         ],
-        "correctAnswer": "West African Dwarf goat",
-        "hint": "It is a small polygastric animal known for high trypanosomiasis resistance.",
-        "workedSolution": "The West African Dwarf goat and Djallonké sheep are indigenous small ruminants possessing four-chambered stomachs and adapted to humid West African ecologies.",
+        "correctAnswer": "B. Sheep",
+        "hint": "Ruminants possess a four-chambered stomach and chew the cud.",
+        "workedSolution": "Sheep are polygastric ruminants equipped with a four-chambered stomach (rumen, reticulum, omasum, abomasum) for fermenting plant cellulose.",
         "points": 1
       },
       {
-        "id": "q_b7_s6_2",
+        "id": "B7_ANIM_MCQ_02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In the domestic fowl, mechanical grinding of tough grains and whole seeds is performed by the:",
+        "options": [
+          "A. Crop",
+          "B. Proventriculus",
+          "C. Gizzard (Ventriculus)",
+          "D. Caeca"
+        ],
+        "correctAnswer": "C. Gizzard (Ventriculus)",
+        "hint": "This organ is thick, muscular, and contains swallowed small stones and grit.",
+        "workedSolution": "The gizzard (ventriculus) has thick muscular walls and grit that churn together to pulverize hard seeds and grains mechanically.",
+        "points": 1
+      },
+      {
+        "id": "B7_TURK_01",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a heavy commercial breed of turkey characterized by metallic brown feathers and greenish-grey shanks?",
+        "options": [
+          "A. Beltsville Small White",
+          "B. Broad-Breasted Bronze",
+          "C. Rhode Island Red",
+          "D. White Leghorn"
+        ],
+        "correctAnswer": "B. Broad-Breasted Bronze",
+        "hint": "The breed name contains the color \"Bronze\".",
+        "workedSolution": "The Broad-Breasted Bronze is a heavy commercial meat turkey recognized by its metallic bronze plumage and greenish-grey shanks.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_MCQ_03",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why are domestic cattle classified as polygastric animals while domestic pigs are monogastric?",
+        "prompt": "Which of the following morphological characteristics distinguishes a dairy cow from a beef cow?",
         "options": [
-          "Cattle eat meat while pigs eat grass",
-          "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
-          "Pigs can fly while cattle cannot",
-          "Cattle have four hearts while pigs have one"
+          "A. Rectangular blocky body with heavy muscle fleshing",
+          "B. Wedge-shaped triangular body with a large, capacious udder",
+          "C. Short stout legs with a thick neck",
+          "D. Absence of an abomasum"
         ],
-        "correctAnswer": "Cattle possess a four-chambered stomach, whereas pigs possess a single simple stomach",
-        "hint": "Poly = many; Mono = single; Gastric = stomach.",
-        "workedSolution": "Cattle have a complex four-chambered digestive tract (rumen, reticulum, omasum, abomasum) for microbial cellulose fermentation, whereas pigs have a single simple glandular stomach.",
+        "correctAnswer": "B. Wedge-shaped triangular body with a large, capacious udder",
+        "hint": "Dairy cattle channel energy into milk synthesis rather than body fat and meat.",
+        "workedSolution": "Dairy cattle exhibit a lean, angular, wedge-shaped body silhouette with a well-developed udder, whereas beef cattle possess a blocky, rectangular meat frame.",
+        "points": 1
+      },
+      {
+        "id": "B7_ANIM_MCQ_04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A practical anatomical difference between domestic goats and domestic sheep is that:",
+        "options": [
+          "A. Sheep tails point erect while goat tails hang downwards",
+          "B. Goat tails point erect while sheep tails hang downwards",
+          "C. Goats chew the cud but sheep do not",
+          "D. Sheep have single stomachs while goats have four-chambered stomachs"
+        ],
+        "correctAnswer": "B. Goat tails point erect while sheep tails hang downwards",
+        "hint": "Look closely at tail orientation and behavioral browsing habits.",
+        "workedSolution": "Domestic goats carry their short tails erect (pointing upwards), whereas domestic sheep have longer tails that hang limply downwards.",
+        "points": 1
+      },
+      {
+        "id": "B7_TURK_03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which avian viral disease produces nodular, wart-like crusty scabs on the unfeathered skin of the head, comb, and snood?",
+        "options": [
+          "A. Coccidiosis",
+          "B. Fowl Pox (Avian Pox)",
+          "C. Gumboro disease",
+          "D. Anthrax"
+        ],
+        "correctAnswer": "B. Fowl Pox (Avian Pox)",
+        "hint": "It is caused by an Avipoxvirus and spread by biting mosquitoes.",
+        "workedSolution": "Fowl pox is a contagious viral disease caused by an Avipoxvirus that manifests as wart-like nodular scabs on unfeathered facial and head areas.",
+        "points": 1
+      },
+      {
+        "id": "B7_TURK_02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A major commercial breeding challenge common to both Broad-Breasted Bronze and Broad-Breasted White turkeys is their:",
+        "options": [
+          "A. High susceptibility to bovine trypanosomiasis",
+          "B. Poor natural mating performance due to heavy chest muscling and weight",
+          "C. Inability to synthesize digestive pepsin",
+          "D. Complete absence of feathers at maturity"
+        ],
+        "correctAnswer": "B. Poor natural mating performance due to heavy chest muscling and weight",
+        "hint": "Extreme breast muscling prevents toms from mounting hens naturally without injury.",
+        "workedSolution": "Due to extreme body mass and heavy breast muscling, giant broad-breasted turkeys experience poor natural mating rates and require artificial insemination.",
         "points": 1
       }
     ]
