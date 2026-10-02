@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.624Z"
+    "updatedAt": "2026-10-02T21:49:25.431Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.626Z"
+    "updatedAt": "2026-10-02T21:49:25.432Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.626Z"
+    "updatedAt": "2026-10-02T21:49:25.432Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.626Z"
+    "updatedAt": "2026-10-02T21:49:25.432Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.626Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.626Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -16905,7 +16905,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
       "b7": {
         "levelTitle": "Basic 7 (JHS 1) • The Solar System: Inner Planets, Planetary Characteristics & Orbital Dynamics",
         "summary": "Explore the architecture of the solar system, terrestrial traits of Mercury, Venus, Earth, and Mars, why Earth sustains life, and the physical consequences of planetary rotation and revolution under NaCCA B7 standards.",
-        "notes": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### Overview & Celestial Inventory\nThe **solar system** consists of our central star, the Sun, and all celestial bodies gravitationally bound in orbital motion around it: eight major planets, recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), natural satellites (moons), and countless millions of interplanetary debris including asteroids, comets, and meteoroids.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Orbital Architecture of the Inner Solar System\n\nBelow is a scale vector diagram depicting the elliptical orbits of Mercury, Venus, Earth, and Mars around the Sun, bounded by the Asteroid Belt:\n\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"25%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><radialGradient id=\"earthColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#1e3a8a\"/></radialGradient><radialGradient id=\"marsColor\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"55%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"venusColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"60%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#a16207\"/></radialGradient><radialGradient id=\"mercColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"65%\" stop-color=\"#94a3b8\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><linearGradient id=\"spaceBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#0b1329\"/><stop offset=\"100%\" stop-color=\"#030712\"/></linearGradient></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"url(#spaceBack)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"45\" cy=\"40\" r=\"1\"/><circle cx=\"120\" cy=\"80\" r=\"1.2\"/><circle cx=\"230\" cy=\"35\" r=\"0.8\"/><circle cx=\"680\" cy=\"60\" r=\"1.5\"/><circle cx=\"710\" cy=\"140\" r=\"0.8\"/><circle cx=\"60\" cy=\"390\" r=\"1.2\"/><circle cx=\"190\" cy=\"410\" r=\"0.8\"/><circle cx=\"640\" cy=\"380\" r=\"1.2\"/><circle cx=\"700\" cy=\"330\" r=\"1\"/><circle cx=\"520\" cy=\"30\" r=\"1.5\"/><circle cx=\"400\" cy=\"20\" r=\"1\"/></g><ellipse cx=\"380\" cy=\"220\" rx=\"90\" ry=\"38\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"150\" ry=\"62\" fill=\"none\" stroke=\"#eab308\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"215\" ry=\"90\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"275\" ry=\"118\" fill=\"none\" stroke=\"#f87171\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"340\" ry=\"150\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"7\" stroke-dasharray=\"2 8\" opacity=\"0.4\"/><text x=\"380\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\">ASTEROID BELT (BOUNDARY TO GAS GIANTS)</text><circle cx=\"380\" cy=\"220\" r=\"34\" fill=\"url(#sunGlow)\"/><circle cx=\"380\" cy=\"220\" r=\"42\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.5\" opacity=\"0.4\"/><text x=\"380\" y=\"224\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(305, 198)\"><circle cx=\"0\" cy=\"0\" r=\"6\" fill=\"url(#mercColor)\" stroke=\"#64748b\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"-8\" x2=\"-30\" y2=\"-35\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"-35\" y=\"-40\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(250, 255)\"><circle cx=\"0\" cy=\"0\" r=\"11\" fill=\"url(#venusColor)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><line x1=\"0\" y1=\"13\" x2=\"-30\" y2=\"45\" stroke=\"#eab308\" stroke-width=\"1\"/><text x=\"-35\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(545, 160)\"><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#earthColor)\" stroke=\"#60a5fa\" stroke-width=\"1\"/><circle cx=\"16\" cy=\"-10\" r=\"3\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-15\" x2=\"25\" y2=\"-40\" stroke=\"#60a5fa\" stroke-width=\"1\"/><text x=\"30\" y=\"-42\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth (with Moon)</text></g><g transform=\"translate(600, 275)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#marsColor)\" stroke=\"#dc2626\" stroke-width=\"1\"/><line x1=\"0\" y1=\"10\" x2=\"25\" y2=\"35\" stroke=\"#f87171\" stroke-width=\"1\"/><text x=\"30\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars (Red Planet)</text></g><path d=\"M 480 320 Q 560 305 630 330\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><polygon points=\"635,330 622,324 624,335\" fill=\"#f59e0b\"/><text x=\"545\" y=\"345\" font-family=\"sans-serif\" font-size=\"10\" font-style=\"italic\" fill=\"#fcd34d\">Elliptical Orbital Vector (Counterclockwise)</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
+        "notes": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### The Solar System: Overview of Celestial Bodies\nThe solar system is a vast, gravitationally bound cosmic family centered around our local star, the Sun. Revolving around the Sun in elliptical paths are eight major planets arranged in sequence: the four inner rocky worlds (Mercury, Venus, Earth, and Mars), followed by the Asteroid Belt, and the four outer giant worlds (Jupiter, Saturn, Uranus, and Neptune). The system also houses officially recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), hundreds of planetary moons, and millions of wandering asteroids, glowing comets, and meteoroids. While this curriculum unit pays special attention to the physical characteristics and movements of the four inner terrestrial planets, understanding the complete layout of our cosmic neighborhood provides the essential foundation for all astronomical study.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Complete Orbital Architecture of the Solar System\n\nComprehensive vector diagram illustrating the Sun, all eight major planets in their sequential elliptical orbits, the dividing Asteroid Belt, an incoming comet, and a meteor trail:\n\n<svg width=\"820\" height=\"480\" viewBox=\"0 0 820 480\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlowFull\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"20%\" stop-color=\"#fef08a\"/><stop offset=\"55%\" stop-color=\"#f59e0b\"/><stop offset=\"85%\" stop-color=\"#ea580c\"/><stop offset=\"100%\" stop-color=\"#c2410c\"/></radialGradient><radialGradient id=\"mercGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"100%\" stop-color=\"#64748b\"/></radialGradient><radialGradient id=\"venusGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"65%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#854d0e\"/></radialGradient><radialGradient id=\"earthGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"85%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"jupGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#ffedd5\"/><stop offset=\"40%\" stop-color=\"#fb923c\"/><stop offset=\"70%\" stop-color=\"#c2410c\"/><stop offset=\"100%\" stop-color=\"#7c2d12\"/></radialGradient><radialGradient id=\"satGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fef9c3\"/><stop offset=\"50%\" stop-color=\"#fde047\"/><stop offset=\"80%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"uranGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#cffafe\"/><stop offset=\"60%\" stop-color=\"#22d3ee\"/><stop offset=\"100%\" stop-color=\"#0891b2\"/></radialGradient><radialGradient id=\"nepGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"60%\" stop-color=\"#3b82f6\"/><stop offset=\"100%\" stop-color=\"#1d4ed8\"/></radialGradient><linearGradient id=\"spaceCanvas\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#080f26\"/><stop offset=\"100%\" stop-color=\"#020617\"/></linearGradient><linearGradient id=\"cometTail\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#ffffff\" stop-opacity=\"0.9\"/><stop offset=\"40%\" stop-color=\"#38bdf8\" stop-opacity=\"0.6\"/><stop offset=\"100%\" stop-color=\"#0284c7\" stop-opacity=\"0\"/></linearGradient><linearGradient id=\"meteorTail\" x1=\"100%\" y1=\"0%\" x2=\"0%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fed7aa\" stop-opacity=\"0.9\"/><stop offset=\"100%\" stop-color=\"#ea580c\" stop-opacity=\"0\"/></linearGradient></defs><rect width=\"820\" height=\"480\" rx=\"14\" fill=\"url(#spaceCanvas)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"35\" cy=\"35\" r=\"0.9\"/><circle cx=\"90\" cy=\"80\" r=\"1.2\"/><circle cx=\"160\" cy=\"45\" r=\"0.8\"/><circle cx=\"240\" cy=\"30\" r=\"1.4\"/><circle cx=\"580\" cy=\"35\" r=\"1\"/><circle cx=\"670\" cy=\"70\" r=\"1.3\"/><circle cx=\"750\" cy=\"40\" r=\"0.8\"/><circle cx=\"790\" cy=\"110\" r=\"1.1\"/><circle cx=\"50\" cy=\"420\" r=\"1.2\"/><circle cx=\"110\" cy=\"450\" r=\"0.8\"/><circle cx=\"220\" cy=\"430\" r=\"1.1\"/><circle cx=\"690\" cy=\"440\" r=\"1.3\"/><circle cx=\"760\" cy=\"410\" r=\"0.9\"/><circle cx=\"720\" cy=\"280\" r=\"1\"/><circle cx=\"45\" cy=\"240\" r=\"1.1\"/></g><g id=\"celestial_debris\"><path d=\"M 100 65 L 180 115\" stroke=\"url(#cometTail)\" stroke-width=\"4\" stroke-linecap=\"round\" opacity=\"0.85\"/><circle cx=\"100\" cy=\"65\" r=\"3.5\" fill=\"#ffffff\"/><text x=\"105\" y=\"55\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#7dd3fc\">Comet</text><path d=\"M 630 380 L 580 415\" stroke=\"url(#meteorTail)\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.8\"/><circle cx=\"630\" cy=\"380\" r=\"1.8\" fill=\"#fed7aa\"/><text x=\"635\" y=\"375\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#fdba74\">Meteoroid</text></g><g id=\"planetary_orbits\" fill=\"none\" stroke-width=\"1.1\" opacity=\"0.55\"><ellipse cx=\"410\" cy=\"240\" rx=\"60\" ry=\"24\" stroke=\"#94a3b8\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"95\" ry=\"38\" stroke=\"#eab308\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"135\" ry=\"54\" stroke=\"#60a5fa\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"175\" ry=\"70\" stroke=\"#f87171\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"220\" ry=\"88\" stroke=\"#cbd5e1\" stroke-width=\"5\" stroke-dasharray=\"2 6\" opacity=\"0.45\"/><ellipse cx=\"410\" cy=\"240\" rx=\"265\" ry=\"106\" stroke=\"#fb923c\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"315\" ry=\"126\" stroke=\"#fde047\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"360\" ry=\"144\" stroke=\"#22d3ee\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"395\" ry=\"158\" stroke=\"#60a5fa\" stroke-dasharray=\"4 3\"/></g><text x=\"410\" y=\"145\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\" letter-spacing=\"1.5\">ASTEROID BELT (INNER / OUTER DIVIDING LINE)</text><circle cx=\"410\" cy=\"240\" r=\"26\" fill=\"url(#sunGlowFull)\"/><circle cx=\"410\" cy=\"240\" r=\"32\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.2\" opacity=\"0.5\"/><text x=\"410\" y=\"244\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(365, 224)\"><circle cx=\"0\" cy=\"0\" r=\"4.5\" fill=\"url(#mercGrad)\" stroke=\"#94a3b8\" stroke-width=\"0.6\"/><line x1=\"0\" y1=\"-6\" x2=\"-18\" y2=\"-22\" stroke=\"#94a3b8\" stroke-width=\"0.8\"/><text x=\"-22\" y=\"-26\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(335, 258)\"><circle cx=\"0\" cy=\"0\" r=\"7\" fill=\"url(#venusGrad)\" stroke=\"#ca8a04\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"9\" x2=\"-15\" y2=\"25\" stroke=\"#eab308\" stroke-width=\"0.8\"/><text x=\"-18\" y=\"35\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(515, 206)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#earthGrad)\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><circle cx=\"11\" cy=\"-6\" r=\"2\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-10\" x2=\"15\" y2=\"-25\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><text x=\"18\" y=\"-28\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth</text></g><g transform=\"translate(555, 280)\"><circle cx=\"0\" cy=\"0\" r=\"5.5\" fill=\"url(#marsGrad)\" stroke=\"#dc2626\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"8\" x2=\"15\" y2=\"22\" stroke=\"#f87171\" stroke-width=\"0.8\"/><text x=\"18\" y=\"32\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars</text></g><g transform=\"translate(640, 190)\"><circle cx=\"0\" cy=\"0\" r=\"17\" fill=\"url(#jupGrad)\" stroke=\"#c2410c\" stroke-width=\"1\"/><ellipse cx=\"6\" cy=\"4\" rx=\"4\" ry=\"2.5\" fill=\"#7c2d12\" opacity=\"0.75\"/><line x1=\"0\" y1=\"-20\" x2=\"20\" y2=\"-35\" stroke=\"#fb923c\" stroke-width=\"0.8\"/><text x=\"24\" y=\"-38\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fed7aa\">5. Jupiter</text></g><g transform=\"translate(130, 290)\"><ellipse cx=\"0\" cy=\"0\" rx=\"24\" ry=\"7\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.8\" opacity=\"0.85\"/><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#satGrad)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"0\" rx=\"24\" ry=\"7\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1\" opacity=\"0.6\"/><line x1=\"0\" y1=\"16\" x2=\"-15\" y2=\"32\" stroke=\"#fde047\" stroke-width=\"0.8\"/><text x=\"-18\" y=\"42\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fef08a\">6. Saturn</text></g><g transform=\"translate(745, 210)\"><circle cx=\"0\" cy=\"0\" r=\"10\" fill=\"url(#uranGrad)\" stroke=\"#0891b2\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"0\" rx=\"14\" ry=\"4\" transform=\"rotate(75)\" fill=\"none\" stroke=\"#a5f3fc\" stroke-width=\"0.8\" opacity=\"0.7\"/><line x1=\"0\" y1=\"-13\" x2=\"15\" y2=\"-26\" stroke=\"#22d3ee\" stroke-width=\"0.8\"/><text x=\"18\" y=\"-29\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#a5f3fc\">7. Uranus</text></g><g transform=\"translate(85, 175)\"><circle cx=\"0\" cy=\"0\" r=\"10\" fill=\"url(#nepGrad)\" stroke=\"#1d4ed8\" stroke-width=\"1\"/><line x1=\"0\" y1=\"-13\" x2=\"-18\" y2=\"-26\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><text x=\"-22\" y=\"-29\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#93c5fd\">8. Neptune</text></g><path d=\"M 470 330 Q 550 320 620 345\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.8\" stroke-dasharray=\"4 3\"/><polygon points=\"625,345 613,340 615,350\" fill=\"#f59e0b\"/><text x=\"545\" y=\"360\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#fde047\">Counterclockwise Orbital Vector</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
         "workedExamples": [
           {
             "id": "ex_b7_s8_1",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -19621,66 +19621,2587 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Measure ecological energy flow and biotic/abiotic interactions through ecosystem population dynamics models. Students construct food chains and trophic webs, calculate energy dissipation across pyramids of biomass, and simulate ecological community resilience.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Ecosystem Components, Habitats & Organism Adaptations",
-        "summary": "Differentiate terrestrial and aquatic ecosystems, analyze biotic/abiotic factors, and explore specialized adaptations.",
-        "notes": "### Ecosystems, Ecological Niches & Environmental Adaptations\n* **NaCCA Curriculum Code:** `B7.3.3.1`\n* **Core Competency:** Differentiate biotic and abiotic components of ecosystems and identify physical adaptations of organisms to their habitats.\n\n#### 1. The Structure of an Ecosystem\nAn ecosystem is a self-sustaining ecological community comprising living (**biotic**) organisms interacting with their non-living physical (**abiotic**) environment:\n* **Biotic Components:**\n  * *Producers (Autotrophs):* Green plants and algae that synthesize organic food via photosynthesis.\n  * *Consumers (Heterotrophs):* Primary consumers (herbivores), secondary/tertiary consumers (carnivores, omnivores).\n  * *Decomposers (Saprotrophs):* Bacteria and fungi that recycle nutrients from dead organic matter.\n* **Abiotic Factors:** Sunlight, temperature, rainfall, humidity, soil pH, salinity, dissolved oxygen.\n\n#### 2. Major Habitat Types & Adaptations\n* **Terrestrial Habitats:**\n  * *Tropical Rainforest:* High canopy trees with buttress roots for structural stability; climbing epiphytes and lianas; arboreal animals with prehensile tails.\n  * *Savanna Grassland:* Drought-tolerant deciduous trees with thick fire-resistant bark; deep taproots; animals adapted for rapid running (herbivores and carnivores).\n* **Aquatic Habitats:**\n  * *Freshwater (Ponds, Rivers):* Submerged plants (*Ceratophyllum*) with flexible stems and dissected leaves; floating plants (*Pistia*) with spongy, aerenchymous air-filled tissues.\n  * *Marine / Estuarine (Mangroves):* Halophytic mangrove trees possessing specialized aerial breathing roots (**pneumatophores**) to access oxygen in waterlogged anaerobic mud, and salt-excreting leaf glands.",
+        "levelTitle": "Basic 7 (JHS 1) • Ecosystem Components, Biological Interactions & Biome Adaptations",
+        "summary": "Comprehensive exploration of ecosystem hierarchy, biotic and abiotic factors, scientific measurement instruments, symbiotic interactions (predation, parasitism, mutualism, commensalism, competition), and structural adaptations of flora and fauna across aquatic, desert, savannah, and tropical rainforest biomes.",
+        "notes": "# CARD 09: ECOSYSTEM (COMPONENTS, BIOLOGICAL INTERACTIONS & ADAPTATIONS)\n**Strand 3: Systems** | **Sub-Strand 3: Ecosystem**  \n**Content Standard: B7.3.3.1** | **Indicator: B7.3.3.1.1**  \n**Curriculum Alignment: NaCCA Common Core Programme (Ghana Basic 7 / JHS 1)**\n\n---\n\n## 1. Ecological Fundamentals & Organizational Hierarchy\n\nEcology (derived from the Greek *oikos*, meaning \"household\" or \"home\", and *logos*, meaning \"study\") is the scientific study of the interactions that determine the distribution, abundance, and co-existence of living organisms and their relationships with the non-living physical and chemical environment.\n\nAn **ecosystem** represents the fundamental structural and functional unit of ecology. It is defined as a discrete, self-sustaining biological entity wherein living organisms (**biotic community**) interact dynamically with each other and with their non-living physical surroundings (**abiotic environment**) through continuous energy transfers and biogeochemical nutrient cycling.\n\n### 1.1 Hierarchical Levels of Ecological Organization\n\nEcologists categorize biological complexity into distinct, nested levels of organization:\n\n1. **Organism (Individual):**  \n   The basic unit of ecological study. A single, distinct living entity possessing genetic material, cellular organization, and physiological processes capable of independent survival and reproduction (e.g., an individual African elephant (*Loxodonta africana*), a tilapia fish, or a maize plant).\n\n2. **Species:**  \n   A group of natural populations whose individual members share common morphological, anatomical, and genetic traits, and possess the biological capacity to interbreed freely under natural conditions to produce viable, fertile offspring (e.g., *Homo sapiens*, *Oreochromis niloticus*).\n\n3. **Population:**  \n   The total number of individuals belonging to the exact same species occupying a designated geographic area at a specific point in time and capable of interbreeding (e.g., the population of kob antelopes in Shai Hills Resource Reserve, or the mudfish population in Lake Bosumtwi).\n\n4. **Biological Community:**  \n   An assemblage of interacting populations of different species cohabiting a shared physical environment or geographical area at the same time. Unlike a population, a community is inherently multispecific and involves complex inter-species ecological networks (e.g., the community of hardwood mahogany trees, epiphytic orchids, colobus monkeys, driver ants, and wood-decay fungi in Kakum National Park).\n\n5. **Ecosystem:**  \n   The integrated natural unit formed by the combination of the biological community (biotic factors) and the non-living physical habitat (abiotic factors), linked together by food webs and chemical nutrient cycles (e.g., a coastal mangrove swamp along the Volta estuary).\n\n6. **Biome:**  \n   A broad regional or subcontinental ecological zone characterized by distinctive macroclimates, soil conditions, and dominant vegetation types (e.g., the Guinea Savannah, Tropical Rainforest, or Coastal Scrub and Grassland of Ghana).\n\n7. **Ecosphere (Biosphere):**  \n   The global ecological system encompassing all living beings on Earth together with the atmospheric (troposphere), terrestrial (lithosphere), and aquatic (hydrosphere) zones that sustain life.\n\n---\n\n## 2. Classification of Ecosystems\n\nEcosystems occur in an immense variety of sizes and settings, ranging from microscopic micro-ecosystems (such as the interior of a decomposing fallen log on a forest floor) to macro-ecosystems (such as the Atlantic Ocean). They are classified based on origin and environmental medium:\n\n### 2.1 Classification by Origin and Human Intervention\n\n- **Natural Ecosystems:**  \n  Self-regulating biological entities that originate, evolve, and sustain themselves entirely through natural biological, geological, and atmospheric processes without human engineering or continual intervention.  \n  *Examples:* The moist evergreen rainforest of Ankasa Conservation Area, the savannah woodlands of Mole National Park, freshwater crater lakes like Lake Bosumtwi, and offshore marine reefs.\n\n- **Artificial (Man-Made / Anthropogenic) Ecosystems:**  \n  Habitats intentionally constructed, altered, or managed by human beings to meet agricultural, domestic, municipal, or recreational objectives. These systems are biologically simplified, unstable without human input, and require continuous energy inputs (fertilizers, supplemental feed, weeding, aeration).  \n  *Examples:* Commercial tilapia aquaculture fish ponds, irrigated rice paddies in Asutsuare, botanical gardens, municipal zoological parks, urban flower gardens, and artificial reservoirs (e.g., Lake Volta behind the Akosombo Dam).\n\n### 2.2 Classification by Environmental Medium\n\n- **Aquatic Ecosystems (Water-Based):**  \n  Covering over 70% of the Earth's surface, aquatic environments are buffered against sudden temperature fluctuations due to water's high specific heat capacity. Water buoyancy reduces gravitational stress on skeletal frames and provides a ready medium for gamete dispersal.  \n  - *Freshwater Habitats:* Low salinity (< 0.5 parts per thousand [ppt]). Subdivided into lentic (standing water: ponds, lakes, swamps) and lotic (flowing water: springs, streams, rivers). Organisms include water lilies (*Nymphaea*), duckweeds, tilapia, catfishes, freshwater snails, and dragonfly nymphs.  \n  - *Marine Habitats:* High salinity (~35 ppt). Oceans, coral reefs, and deep-sea abyssal plains. Organisms include sharks, mackerels, sea turtles, octopuses, and macroscopic kelp/algae.  \n  - *Estuarine / Brackish Habitats:* Ecotones where freshwater rivers meet the saline ocean (e.g., Keta Lagoon, Densu Delta). Salinity fluctuates dynamically between 0.5 and 30 ppt with oceanic tides. Dominated by red and black mangroves (*Rhizophora mangle*, *Avicennia germinans*) and mudskippers.\n\n- **Terrestrial Ecosystems (Land-Based):**  \n  Environments situated on solid continental landmasses. Terrestrial organisms face higher gravity, temperature extremes, rapid evaporation, and the risk of desiccation.  \n  - Major biomes include Tropical Rainforests, Tropical Moist Deciduous Forests, Guinea and Sudan Savannahs, Arid Deserts, Temperate Grasslands, Boreal Taiga, and Tundra.\n\n---\n\n## 3. Structural Components of an Ecosystem\n\nEvery functioning ecosystem comprises two intimately connected components: the **Biotic Component** and the **Abiotic Component**.\n\n<svg width=\"740\" height=\"380\" viewBox=\"0 0 740 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"sunSky\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#bae6fd\"/>\n      <stop offset=\"100%\" stop-color=\"#e0f2fe\"/>\n    </linearGradient>\n    <linearGradient id=\"soilGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"100%\" stop-color=\"#451a03\"/>\n    </linearGradient>\n    <linearGradient id=\"waterGrad\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\"/>\n      <stop offset=\"70%\" stop-color=\"#f59e0b\"/>\n      <stop offset=\"100%\" stop-color=\"#d97706\"/>\n    </radialGradient>\n  </defs>\n  <rect width=\"740\" height=\"380\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"28\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STRUCTURAL ARCHITECTURE OF AN ECOSYSTEM</text>\n  <text x=\"370\" y=\"46\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Interplay: Abiotic Physical Drivers ↔ Biotic Biological Communities</text>\n  \n  <!-- Sky background -->\n  <rect x=\"40\" y=\"65\" width=\"660\" height=\"200\" fill=\"url(#sunSky)\" rx=\"8\"/>\n  \n  <!-- Sun (Abiotic driver) -->\n  <circle cx=\"95\" cy=\"115\" r=\"32\" fill=\"url(#sunGlow)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n  <line x1=\"95\" y1=\"75\" x2=\"95\" y2=\"60\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"95\" y1=\"155\" x2=\"95\" y2=\"170\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"55\" y1=\"115\" x2=\"40\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"135\" y1=\"115\" x2=\"150\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"67\" y1=\"87\" x2=\"56\" y2=\"76\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"123\" y1=\"143\" x2=\"134\" y2=\"154\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <text x=\"95\" y=\"119\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Solar Energy</text>\n  \n  <!-- Atmospheric gases indicator -->\n  <rect x=\"170\" y=\"80\" width=\"130\" height=\"42\" rx=\"6\" fill=\"#ffffff\" fill-opacity=\"0.85\" stroke=\"#38bdf8\" stroke-width=\"1\"/>\n  <text x=\"235\" y=\"96\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Atmospheric Gases</text>\n  <text x=\"235\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#475569\" text-anchor=\"middle\">CO₂ for Photosynthesis • O₂ for Respiration</text>\n  \n  <!-- Soil profile -->\n  <rect x=\"40\" y=\"265\" width=\"460\" height=\"95\" fill=\"url(#soilGrad)\" rx=\"0 0 0 8\"/>\n  <text x=\"140\" y=\"350\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fef08a\">Terrestrial Soil Zone (Nutrients &amp; Decomposers)</text>\n  \n  <!-- Aquatic profile -->\n  <path d=\"M 500 265 L 700 265 L 700 360 L 500 360 Z\" fill=\"url(#waterGrad)\"/>\n  <text x=\"600\" y=\"348\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Aquatic Zone (Dissolved O₂ &amp; Salts)</text>\n  \n  <!-- Producer Tree -->\n  <path d=\"M 215 265 L 215 175 Q 215 155 240 145 Q 265 155 265 175 L 265 265 Z\" fill=\"#854d0e\"/>\n  <circle cx=\"240\" cy=\"140\" r=\"48\" fill=\"#15803d\" stroke=\"#166534\" stroke-width=\"1.5\"/>\n  <circle cx=\"215\" cy=\"155\" r=\"30\" fill=\"#16a34a\" stroke=\"#166534\" stroke-width=\"1\"/>\n  <circle cx=\"265\" cy=\"155\" r=\"30\" fill=\"#16a34a\" stroke=\"#166534\" stroke-width=\"1\"/>\n  <text x=\"240\" y=\"140\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Autotrophic Producer</text>\n  <text x=\"240\" y=\"154\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#dcfce7\" text-anchor=\"middle\">(Photosynthetic Green Plant)</text>\n  \n  <!-- Consumer Animal -->\n  <ellipse cx=\"380\" cy=\"235\" rx=\"36\" ry=\"20\" fill=\"#b45309\" stroke=\"#78350f\"/>\n  <circle cx=\"415\" cy=\"223\" r=\"14\" fill=\"#b45309\" stroke=\"#78350f\"/>\n  <line x1=\"365\" y1=\"255\" x2=\"360\" y2=\"275\" stroke=\"#78350f\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <line x1=\"395\" y1=\"255\" x2=\"400\" y2=\"275\" stroke=\"#78350f\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <text x=\"380\" y=\"238\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Primary Consumer</text>\n  <text x=\"380\" y=\"249\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#fef3c7\" text-anchor=\"middle\">(Herbivorous Mammal)</text>\n  \n  <!-- Soil Decomposers & minerals -->\n  <ellipse cx=\"120\" cy=\"290\" rx=\"28\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#64748b\"/>\n  <text x=\"120\" y=\"294\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Rock / Minerals</text>\n  <circle cx=\"280\" cy=\"305\" r=\"4\" fill=\"#fef08a\"/>\n  <circle cx=\"300\" cy=\"315\" r=\"3.5\" fill=\"#fef08a\"/>\n  <circle cx=\"260\" cy=\"320\" r=\"4\" fill=\"#fef08a\"/>\n  <text x=\"280\" y=\"335\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" fill=\"#fef08a\" text-anchor=\"middle\">Decomposers (Bacteria &amp; Fungi)</text>\n  \n  <!-- Aquatic Organisms -->\n  <ellipse cx=\"585\" cy=\"290\" rx=\"24\" ry=\"9\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n  <polygon points=\"609,290 622,284 622,296\" fill=\"#dc2626\"/>\n  <circle cx=\"572\" cy=\"288\" r=\"2\" fill=\"#ffffff\"/>\n  <text x=\"585\" y=\"307\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Aquatic Consumer (Fish)</text>\n  \n  <!-- Wind / Atmosphere arrow -->\n  <path d=\"M 330 140 Q 370 120 420 135\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\" stroke-dasharray=\"4\"/>\n  <polygon points=\"423,136 415,130 417,141\" fill=\"#0284c7\"/>\n  <text x=\"375\" y=\"125\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Wind &amp; Climate Driver</text>\n  \n  <!-- Callout tags -->\n  <rect x=\"520\" y=\"80\" width=\"165\" height=\"52\" rx=\"6\" fill=\"#ecfdf5\" stroke=\"#10b981\" stroke-width=\"1.2\"/>\n  <text x=\"602\" y=\"98\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#065f46\" text-anchor=\"middle\">Biotic Elements</text>\n  <text x=\"602\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#047857\" text-anchor=\"middle\">• Autotrophs (Producers)</text>\n  <text x=\"602\" y=\"124\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#047857\" text-anchor=\"middle\">• Heterotrophs &amp; Saprotrophs</text>\n  \n  <rect x=\"520\" y=\"145\" width=\"165\" height=\"52\" rx=\"6\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"1.2\"/>\n  <text x=\"602\" y=\"163\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">Abiotic Elements</text>\n  <text x=\"602\" y=\"177\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"middle\">• Solar Energy, Temp, H₂O</text>\n  <text x=\"602\" y=\"189\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"middle\">• Soil Minerals, pH, Salinity</text>\n</svg>\n\n### 3.1 The Biotic Component (Living Biological Communities)\n\nThe biotic component includes all living cellular organisms residing within the ecosystem, categorized into three distinct trophic levels based on their mode of nutrition:\n\n1. **Autotrophs (Producers):**  \n   Self-feeding organisms capable of synthesizing energy-rich organic carbohydrates from simple inorganic molecules (carbon dioxide and water) using solar radiation through photosynthesis, or chemical energy through chemosynthesis. In terrestrial ecosystems, vascular green plants (trees, shrubs, grasses) predominate; in aquatic habitats, microscopic phytoplankton, cyanobacteria, and macro-algae form the foundational base of primary productivity.\n\n2. **Heterotrophs (Consumers):**  \n   Organisms that cannot manufacture their own food and must ingest other organisms or organic matter to acquire biochemical energy:  \n   - *Primary Consumers (Herbivores):* Feed exclusively on living plant tissues (e.g., grasshoppers, cattle, fruit bats, zooplankton).  \n   - *Secondary Consumers (Primary Carnivores):* Feed on herbivores (e.g., frogs consuming insects, lizards feeding on crickets).  \n   - *Tertiary and Quaternary Consumers (Top Carnivores):* Apex predators feeding on smaller carnivores (e.g., martial eagles, lions, leopards, killer whales).  \n   - *Omnivores:* Organisms whose diet spans multiple trophic levels, feeding on both plant and animal matter (e.g., humans, chimpanzees, domestic fowls, bush pigs).\n\n3. **Saprotrophs & Detritivores (Decomposers):**  \n   Essential biological recyclers that break down complex organic compounds found in dead biological matter (cadavers, fallen leaves, feces):  \n   - *Detritivores:* Ingest particulate detritus and fragment it mechanically (e.g., earthworms, millipedes, dung beetles).  \n   - *Decomposers (True Saprotrophs):* Fungi and heterotrophic bacteria that secrete extracellular digestive enzymes directly onto decaying substrates, hydrolyzing complex biopolymers into soluble mineral ions (nitrates, phosphates, potassium, sulfates) that return to the soil or water to be reabsorbed by autotrophs. Without decomposers, primary productivity would collapse due to mineral nutrient exhaustion.\n\n---\n\n## 4. Abiotic Factors & Ecological Measuring Instruments\n\nAbiotic factors constitute the non-living physical, climatic, chemical, and edaphic (soil-related) drivers that delineate the boundaries within which organisms can survive, grow, and reproduce.\n\n### 4.1 Major Abiotic Factors\n\n- **Solar Radiation & Light Intensity:** The primary energy source driving planetary photosynthesis, photoperiodic flowering, and animal circadian rhythms.  \n- **Ambient Temperature:** Regulates biochemical enzyme kinetics. Extreme temperatures denature cellular enzymes or freeze intra-cellular fluids.  \n- **Water & Moisture Availability:** Water is the universal biological solvent required for metabolic biochemical reactions, cellular turgor pressure, and transpiration.  \n- **Atmospheric Pressure & Wind Speed:** Wind influences evapotranspiration rates, seeds/pollen dispersal, and physical mechanical stress on vegetation.  \n- **Edaphic Variables (Soil Factors):** Soil texture, porosity, organic humus content, and soil pH directly govern mineral nutrient availability.  \n- **Aquatic Chemical Variables:** Salinity, water turbidity (clarity), and Dissolved Oxygen (DO) dictate aquatic species survival.\n\n### 4.2 Scientific Instruments for Measuring Abiotic Factors\n\nThe following isolated reference table outlines the scientific instruments, operational principles, and ecological applications required by the NaCCA syllabus:\n\n| Abiotic Parameter | Dedicated Scientific Instrument | Operating Principle & Field Ecological Application |\n| :--- | :--- | :--- |\n| **Ambient Air & Water Temperature** | Liquid-in-glass / Digital Thermometer | Relies on the predictable volumetric thermal expansion of mercury/alcohol or electronic thermocouple resistance to measure kinetic warmth in degrees Celsius. |\n| **Solar Light Intensity** | Photometer / Lux Meter | Employs a photovoltaic silicon diode that converts incoming photon energy into an electric current calibrated in lux or foot-candles. |\n| **Relative Atmospheric Humidity** | Hygrometer / Whirling Psychrometer | Compares dry-bulb and wet-bulb thermometer readings; evaporative cooling of the wet bulb indicates the moisture saturation deficit of the ambient air. |\n| **Wind Speed (Velocity)** | Cup Anemometer | Measures the angular rotational velocity of 3 or 4 hemispherical cups mounted horizontally on a vertical spindle; calibrated in m/s or km/h. |\n| **Wind Direction** | Wind Vane (Weathercock) | An asymmetric aerodynamic pointer rotates on a low-friction vertical pivot to align parallel with prevailing air currents, indicating wind source. |\n| **Atmospheric Pressure** | Fortin Mercury / Aneroid Barometer | Measures the deflection of an evacuated corrugated metallic chamber (bellows) or height of a mercury column caused by the weight of the air column. |\n| **Precipitation (Rainfall)** | Standard Graduated Rain Gauge | A funnel collector with an aperture of fixed diameter directs captured rainwater into an internal calibrated cylinder, measured in millimeters (mm). |\n| **Soil Reaction (pH / Acidity)** | Digital Soil pH Probe / Colorimetric Strips | Determines active hydrogen ion concentration in soil suspension; crucial because soil pH governs mineral ion solubility and uptake. |\n| **Soil Moisture Content** | Soil Tensiometer / Moisture Meter | Measures the negative hydrostatic pressure (soil water suction tension) exerted by dry soil against a porous ceramic cup filled with water. |\n| **Aquatic Salinity** | Salinometer / Optical Refractometer | Measures the angle of light refraction as it passes through a water drop, or measures electrical conductivity between electrodes (parts per thousand, ppt). |\n| **Dissolved Oxygen (DO)** | Clark Polarographic DO Meter / Winkler Probe | Measures current flow produced by electrochemical reduction of oxygen molecules diffusing through a selective Teflon membrane into an electrolyte solution. |\n| **Water Turbidity (Clarity)** | Secchi Disc | A 20-cm weighted circular metal disc with alternating black and white quadrants lowered on a calibrated rope to the depth where it disappears from optical view. |\n| **Atmospheric Carbon Dioxide** | Infrared Gas Analyzer (IRGA) | Quantifies CO₂ gas concentration (ppm) based on selective absorption of specific wavelengths of infrared radiation passing through an optical air chamber. |\n\n---\n\n## 5. Biological Interactions & Trophic Interdependence\n\nWithin any biological community, no organism lives in complete isolation. Species participate in intricate ecological interactions that dictate community structure, population densities, and evolutionary adaptations.\n\n### 5.1 The Principle of Biological Interdependence\n\nPlants and animals maintain a reciprocal chemical relationship essential for life:\n\n- **Photosynthesis:** 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (driven by sunlight and chlorophyll in chloroplasts)\n- **Aerobic Respiration:** C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 36–38 ATP (catalyzed by mitochondrial enzymes)\n\n- Autotrophic plants absorb the gaseous carbon dioxide byproduct released by animals, decomposing matter, and combustion, utilizing it during the Calvin cycle to synthesize glucose and releasing gaseous oxygen.\n- Animals and aerobic microorganisms breathe in this oxygen to drive mitochondrial oxidative phosphorylation, releasing carbon dioxide back into the troposphere.\n- Furthermore, animals deposit nitrogenous and phosphatic wastes (urine, dung) and carcasses that decomposers convert into soluble inorganic nitrates and orthophosphates for plant root uptake.\n\n### 5.2 Primary Symbiotic & Ecological Interactions\n\nEcologists classify inter-specific interactions according to the positive (+), negative (-), or neutral (0) effects exerted on the fitness of each interacting population:\n\n| Interaction Type | Trophic / Ecological Mechanism | Cost / Benefit Notation | Canonical Field Example in Ghana & West Africa |\n| :--- | :--- | :---: | :--- |\n| **Predation** | A free-living carnivorous organism (the predator) actively stalks, captures, kills, and consumes all or part of another organism (the prey). | **(+, -)**<br>Predator benefits;<br>prey is killed | Martial eagles hunting rock hyraxes; praying mantises ambushing grasshoppers; African leopards preying on bushbucks. |\n| **Herbivory** | A specialized feeding interaction where a primary consumer ingests autotrophic plant biomass (leaves, shoots, bark, roots) without typically killing the whole plant instantly. | **(+, -)**<br>Herbivore gains nutrition;<br>plant loses photosynthetic tissue | Variegated grasshoppers (*Zonocerus variegatus*) defoliating cassava farms; African savannah elephants stripping baobab bark. |\n| **Parasitism** | An intimate, prolonged association where one organism (the parasite) derives nutrition and physiological shelter at the direct metabolic expense of another (the host), weakening it without instant death. | **(+, -)**<br>Parasite gains nutrition/habitat;<br>host suffers pathology | *Plasmodium falciparum* (malaria parasite) in human red blood cells; tapeworms (*Taenia solium*) in pig/human intestines; ticks on cattle. |\n| **Competition** | An antagonistic interaction that occurs when two or more individuals or populations attempt to utilize the same limiting environmental resource (light, water, soil nitrogen, territory, nesting cavities, mates). | **(-, -)**<br>Both competitors suffer reduced growth, vigor, or reproductive fitness | Weeds (*Chromolaena odorata* / Acheampong weed) competing with young cocoa saplings for soil nitrates and sunlight; lions and spotted hyenas competing for ungulate carcasses. |\n| **Commensalism** | A non-obligatory symbiotic interaction where one organism benefits (securing food scraps, mechanical support, locomotion, or shelter) while the host species is neither aided nor noticeably harmed. | **(+, 0)**<br>Commensal benefits;<br>host remains unaffected | Cattle egrets (*Bubulcus ibis*) foraging on insects flushed out by grazing cattle; remora fish attaching via dorsal suckers to marine sharks for free transport and scraps; epiphytic ferns rooted on high tree boles. |\n| **Mutualism** | A reciprocal symbiotic partnership where both interacting species derive substantial physiological, nutritional, or reproductive benefits that enhance their ecological fitness. | **(+, +)**<br>Both interacting partners benefit significantly | Entomophilous pollination: honeybees collecting floral nectar and pollen while simultaneously transferring pollen grains to fertilize plant ovaries; nitrogen-fixing *Rhizobium* bacteria residing in root nodules of cowpea legumes. |\n\n---\n\n## 6. Structural Adaptations Across Major Biomes\n\n<svg width=\"720\" height=\"340\" viewBox=\"0 0 720 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cactusSkin\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#16a34a\"/>\n      <stop offset=\"100%\" stop-color=\"#14532d\"/>\n    </linearGradient>\n    <linearGradient id=\"waterFlow\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#bae6fd\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"360\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPARATIVE MORPHOLOGICAL ADAPTATIONS</text>\n  <text x=\"360\" y=\"40\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10.5\" fill=\"#64748b\" text-anchor=\"middle\">Desert Xerophyte (Water Scarcity) vs. Aquatic Hydrophyte (Water Abundance &amp; Buoyancy)</text>\n\n  <!-- Panel 1: Desert Xerophyte -->\n  <g transform=\"translate(35, 52)\">\n    <rect width=\"310\" height=\"268\" rx=\"10\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/>\n    <text x=\"155\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">DESERT XEROPHYTE (Cactus / Euphorbia)</text>\n    \n    <!-- Sandy substrate -->\n    <rect x=\"15\" y=\"200\" width=\"280\" height=\"55\" fill=\"#fef08a\" rx=\"4\"/>\n    <text x=\"155\" y=\"245\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9.5\" fill=\"#a16207\" text-anchor=\"middle\">Dry, Highly Porous Arid Sand Substrate</text>\n    \n    <!-- Central Cactus Stem -->\n    <path d=\"M 135 200 C 125 105 185 105 175 200 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Left Arm -->\n    <path d=\"M 140 155 C 110 155 110 120 128 120 C 132 120 136 132 140 142 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"1.5\"/>\n    <!-- Right Arm -->\n    <path d=\"M 170 165 C 200 165 200 130 182 130 C 178 130 174 142 170 152 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"1.5\"/>\n    <!-- Rib lines -->\n    <line x1=\"155\" y1=\"110\" x2=\"155\" y2=\"200\" stroke=\"#166534\" stroke-width=\"1.5\"/>\n    <!-- Spines -->\n    <line x1=\"145\" y1=\"125\" x2=\"135\" y2=\"120\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"145\" y1=\"160\" x2=\"133\" y2=\"158\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"165\" y1=\"130\" x2=\"175\" y2=\"125\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"165\" y1=\"170\" x2=\"177\" y2=\"167\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    \n    <!-- Deep Taproot & Lateral roots -->\n    <path d=\"M 155 200 L 155 235 M 155 210 Q 130 220 100 222 M 155 210 Q 180 220 210 222\" stroke=\"#78350f\" stroke-width=\"2\" fill=\"none\"/>\n    \n    <!-- Feature tags -->\n    <text x=\"65\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\">Spines (Reduced Leaves)</text>\n    <text x=\"65\" y=\"102\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#713f12\">• Minimize surface area</text>\n    <text x=\"65\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#713f12\">• Deter thirsty herbivores</text>\n    <line x1=\"90\" y1=\"115\" x2=\"135\" y2=\"135\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n    \n    <text x=\"215\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\">Swollen Succulent Stem</text>\n    <text x=\"215\" y=\"102\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#14532d\">• Water storage mucilage</text>\n    <text x=\"215\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#14532d\">• Performs photosynthesis</text>\n    <line x1=\"220\" y1=\"115\" x2=\"175\" y2=\"135\" stroke=\"#15803d\" stroke-width=\"1\"/>\n    \n    <rect x=\"25\" y=\"215\" width=\"60\" height=\"28\" rx=\"4\" fill=\"#ffffff\" fill-opacity=\"0.9\" stroke=\"#b45309\" stroke-width=\"0.8\"/>\n    <text x=\"55\" y=\"227\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Deep Taproot</text>\n    <text x=\"55\" y=\"238\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"7\" fill=\"#78350f\" text-anchor=\"middle\">Underground water</text>\n  </g>\n\n  <!-- Panel 2: Aquatic Hydrophyte -->\n  <g transform=\"translate(375, 52)\">\n    <rect width=\"310\" height=\"268\" rx=\"10\" fill=\"#f0f9ff\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <text x=\"155\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">AQUATIC HYDROPHYTE (Water Lily / Nymphaea)</text>\n    \n    <!-- Water profile -->\n    <rect x=\"15\" y=\"95\" width=\"280\" height=\"135\" fill=\"url(#waterFlow)\" opacity=\"0.35\" rx=\"4\"/>\n    <line x1=\"15\" y1=\"95\" x2=\"295\" y2=\"95\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <text x=\"255\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Water Surface</text>\n    \n    <!-- Floating leaves -->\n    <path d=\"M 65 95 C 65 85 125 85 125 95 C 125 100 105 100 95 95 Z\" fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <path d=\"M 165 95 C 165 85 225 85 225 95 C 225 100 205 100 195 95 Z\" fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <!-- Flower -->\n    <circle cx=\"145\" cy=\"86\" r=\"9\" fill=\"#f472b6\" stroke=\"#db2777\"/>\n    <circle cx=\"145\" cy=\"86\" r=\"3.5\" fill=\"#fef08a\"/>\n    \n    <!-- Flexible petiole/stem with aerenchyma -->\n    <path d=\"M 95 95 Q 85 155 115 225\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"3\"/>\n    <path d=\"M 195 95 Q 205 155 175 225\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"3\"/>\n    \n    <!-- Rhizome anchored in muddy bottom -->\n    <rect x=\"15\" y=\"225\" width=\"280\" height=\"30\" fill=\"#78350f\" rx=\"0 0 4 4\"/>\n    <path d=\"M 95 225 L 195 225\" stroke=\"#451a03\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <text x=\"155\" y=\"245\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" fill=\"#fef08a\" text-anchor=\"middle\">Muddy Benthic Substrate (Poorly Oxygenated)</text>\n    \n    <!-- Feature tags -->\n    <text x=\"40\" y=\"60\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\">Broad Floating Leaf Blades</text>\n    <text x=\"40\" y=\"72\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Upper stomata for gas exchange</text>\n    <text x=\"40\" y=\"82\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Thick waxy cuticle repels water</text>\n    \n    <text x=\"215\" y=\"145\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\">Aerenchyma Tissues</text>\n    <text x=\"215\" y=\"157\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Internal air spaces create buoyancy</text>\n    <text x=\"215\" y=\"167\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Delivers O₂ down to submerged roots</text>\n    <line x1=\"210\" y1=\"150\" x2=\"185\" y2=\"155\" stroke=\"#0369a1\" stroke-width=\"1\"/>\n    \n    <text x=\"40\" y=\"185\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\">Flexible Submerged Stem</text>\n    <text x=\"40\" y=\"197\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Bends freely with water currents</text>\n    <line x1=\"75\" y1=\"180\" x2=\"95\" y2=\"165\" stroke=\"#0369a1\" stroke-width=\"1\"/>\n  </g>\n</svg>\n\n### 6.1 Adaptation vs. Acclimatization\n\nA critical distinction emphasized in the NaCCA curriculum is the fundamental difference between evolutionary adaptation and physiological acclimatization:\n\n- **Adaptation:**  \n  A genetically determined morphological, physiological, anatomical, or behavioral characteristic that has evolved through natural selection over multiple successive generations, enhancing an organism's probability of survival and successful reproduction in a specific environmental habitat. Adaptations are permanent, inheritable in DNA, and cannot be acquired or discarded instantaneously by an individual within its lifetime (e.g., the succulent stem and spines of a desert cactus, the streamlined fuselage and vascular gills of a mackerel).\n\n- **Acclimatization:**  \n  A reversible, non-heritable physiological or behavioral adjustment made by an individual organism during its lifetime in response to temporary changes in local environmental conditions. When the environmental stressor is removed, the organism reverts to its baseline state (e.g., a human producing more red blood cells when traveling to high altitudes with low atmospheric oxygen, or plants producing extra anthocyanin pigments to protect against temporary excessive ultraviolet exposure).\n\n### 6.2 Structural Adaptations by Ecological Biome\n\n| Biome / Habitat | Morphological & Physiological Adaptations in Plants (Flora) | Morphological, Physiological & Behavioral Adaptations in Animals (Fauna) |\n| :--- | :--- | :--- |\n| **Aquatic Biomes (Freshwater & Marine)** | • **Aerenchyma Tissues:** Extensive internal spongy intercellular air lacunae that provide hydrostatic buoyancy to hold leaves at the surface and channel atmospheric oxygen down to benthic roots in anoxic mud.<br>• **Broad, Flat Leaves:** Large lamina maximize exposure to solar radiation while floating.<br>• **Upper Epidermal Stomata:** Stomata positioned exclusively on the upper adaxial leaf surface exposed to the air for efficient gas exchange.<br>• **Thick Waxy Cuticle on Leaves:** Repels water droplets, prevents clogging of stomata, and protects against fungal/bacterial decay.<br>• **Flexible Stems & Reduced Vascular Tissue:** Long, pliable petioles bend with wave currents without snapping; xylem vessels are minimal since water is available all around. | • **Streamlined Body Form:** Fusiform, laterally compressed silhouettes reduce water drag and turbulence during locomotion.<br>• **Vascularized Branchial Gills:** Delicate, highly vascularized gill filaments utilize countercurrent oxygen exchange to extract dissolved oxygen directly from water.<br>• **Locomotory Fins & Webbed Digits:** Pectoral, dorsal, and caudal fins provide thrust, steering, and hydrodynamic stability; webbed feet in water birds (e.g., ducks) increase surface area for paddling.<br>• **Swim Bladder (Air Bladder):** Hydrostatic gas-filled organ that enables osteichthyan fishes to achieve neutral buoyancy at varying water depths.<br>• **Lateral Line System:** Mechanoreceptive sensory canal detecting subtle water vibrations and pressure waves created by prey or predators. |\n| **Desert Biomes (Xeric Arid Habitats)** | • **Spines & Reduced Leaves:** Leaves reduced to sharp, sclerenchymatous spines or scales, drastically minimizing surface-area-to-volume ratio to cut transpirational moisture loss, while protecting against thirsty herbivores.<br>• **Succulent Stems:** Swollen stems with parenchymatous mucilage tissues store massive volumes of water; cortex cells contain chloroplasts to take over photosynthesis.<br>• **Deep Taproots & Extensive Surface Root Nets:** Phraetophytic taproots penetrate deeply into subsoil aquifers, while extensive radial lateral roots rapidly absorb transient dew and flash rainwater.<br>• **Sunken Stomata & CAM Photosynthesis:** Stomata recessed in epidermal pits lined with trichomes to trap humid micro-air; stomata open only at night (Crassulacean Acid Metabolism) to avoid daylight evaporation. | • **Water Conservation Physiology:** Concentrated, hypertonic urine (via long loops of Henle in the kidney) and dry, desiccated fecal pellets minimize excretory water loss.<br>• **Metabolic Water Storage:** Camels store fat in localized dorsal humps; aerobic oxidation of this fat yields metabolic water (1 g fat yields approximately 1.07 g water), while avoiding insulating blubber across the rest of the body.<br>• **Nocturnal & Fossorial Habits:** Burrowing underground during scorching daylight hours to avoid heat, emerging to forage only in cool night temperatures.<br>• **Impervious Integument:** Moisture-sealed reptilian keratinized scales or waxy insect exoskeletons prevent cutaneous water vapor evaporation. |\n| **Savannah Grasslands** | • **Narrow, Linear Leaves:** Reduces surface area exposed to intense solar irradiance, lowering transpiration.<br>• **Extensive Fibrous Root Mats:** Densely interwoven roots hold thin topsoils, rapidly absorb brief seasonal rainwater, and survive periodic savannah bushfires.<br>• **Underground Storage Organs:** Corms, rhizomes, and lignotubers lie dormant beneath the soil surface, resprouting rapidly following fire or rain.<br>• **Thick Fire-Resistant Bark:** Woody species (e.g., Shea butter tree *Vitellaria paradoxa*, Baobab *Adansonia digitata*) possess thick, corky bark insulating cambium tissues from seasonal bushfires. | • **Cursorial Locomotion (High-Speed Running):** Long, slender limbs with reduced digits allow ungulates (gazelles, antelopes) to escape carnivores across open grasslands.<br>• **Cryptic Camouflage Coloration:** Tawny, yellowish-brown coats with disruptive stripes or spots (zebras, leopards, lions) blend into dry savannah grasses.<br>• **Hypsodont Dentition:** High-crowned molar teeth with hard enamel ridges withstand abrasive wear caused by silica-rich grass blades.<br>• **Gregarious Herding Behavior:** Large social herds (wildebeests, zebras) confuse predators and provide collective vigilance. |\n| **Tropical Rainforests** | • **Broad Evergreen Leaves with Drip Tips:** Leaves feature elongated, downward-pointing apices (\"drip tips\") that rapidly channel torrential rainwater off lamina, preventing waterlogging and inhibiting fungal/epiphytic colonization.<br>• **High Canopy Stratification:** Distinct vertical layers (Emergent layer 40-50m, Canopy 30m, Understory 15m, Shrub layer, Forest floor). Understory plants have large leaves rich in chlorophyll to capture faint, filtered sunlight.<br>• **Flared Buttress Roots:** Massive, plank-like wooden buttresses flare outward from the base of tall tree trunks to stabilize colossal tree heights in shallow, nutrient-poor tropical soils.<br>• **Epiphytic Growth Habit:** Plants like orchids and ferns germinate on high canopy branches, accessing sunlight without needing independent trunk wood. | • **Arboreal Locomotion:** Prehensile tails, opposable digits, and sharp curved claws allow primates, tree pangolins, and chameleons to forage in the high canopy.<br>• **Vocal Communication:** Dense foliage limits vision; animals utilize loud vocalizations (hornbills, chimpanzee pant-hoots, tree frogs) to communicate over long distances.<br>• **Aposematic (Warning) Coloration:** Bright, vibrant dermal pigmentation in poisonous organisms (tree frogs, caterpillars) warns visual predators of toxic alkaloid secretions. |\n\n---\n\n## 7. Worked Examples\n\n### Worked Example 1: Ecological Abiotic Parameter Investigation & Diagnosis\n**Scenario:**  \nA fish farmer operating commercial earthen tilapia (*Oreochromis niloticus*) aquaculture ponds in the Eastern Region of Ghana observes that fish are gasping for air at the water surface at dawn, and several fish have died. An agricultural extension officer brings an ecological field monitoring kit to test the water.\n\n**Task:**  \n1. Identify the three most critical abiotic parameters the officer must immediately evaluate, and state the dedicated scientific instrument required for each.  \n2. The officer records the following data at 06:00 AM:\n   - Water Temperature: 28°C\n   - Dissolved Oxygen (DO): 1.2 mg/L (Normal requirement for tilapia is ≥ 5.0 mg/L)\n   - Water pH: 6.2 (Optimal range is 6.5–8.5)\n   - Secchi Disc Visibility Depth: 12 cm (Healthy pond range is 30–45 cm)\n3. Provide a biological diagnosis explaining why the fish are gasping at the surface, why this crisis peaks specifically at dawn, and recommend two corrective management actions.\n\n**Step-by-Step Solution:**\n\n1. **Identification of Parameters and Dedicated Instruments:**\n   - **Dissolved Oxygen (DO):** Clark Polarographic Dissolved Oxygen (DO) Probe / Meter.\n   - **Water Acidity / Reaction (pH):** Digital Waterproof Field pH Meter (or calibrated colorimetric pH indicator strips).\n   - **Water Turbidity / Phytoplankton Density:** Standard Secchi Disc.\n   - *(Alternative valid parameter: Water Temperature via Digital Immersion Thermometer).*\n\n2. **Data Analysis and Biological Diagnosis:**\n   - **Diagnosis:** The pond is suffering from severe **aquatic hypoxia** (critical dissolved oxygen deficiency) triggered by **cultural eutrophication** (excessive algal bloom).\n   - **Evidence:**\n     - The Secchi disc depth of only 12 cm indicates high water turbidity caused by an overgrowth of microscopic phytoplankton (algal bloom), fueled by excess fish feed and organic waste.\n     - The Dissolved Oxygen level of 1.2 mg/L is far below the physiological threshold (5.0 mg/L) required to support normal respiration in tilapia, causing cellular suffocation.\n   - **Explanation of Dawn Peak:**  \n     During daylight hours, microscopic algae produce oxygen through photosynthesis. However, throughout the night, photosynthesis ceases completely due to the absence of sunlight. Both the dense algal population and the fish continuously consume dissolved oxygen via aerobic cellular respiration. Consequently, dissolved oxygen reaches its absolute minimum immediately before sunrise (dawn).\n\n3. **Corrective Management Recommendations:**\n   - **Immediate Emergency Action:** Mechanically aerate the pond using electric paddlewheel aerators, or pump fresh, oxygenated borehole water into the pond to elevate dissolved oxygen levels.\n   - **Preventative Long-Term Action:** Immediately reduce daily feeding rations to eliminate decomposing uneaten feed, and periodically flush bottom sludge to prevent organic matter accumulation.\n\n---\n\n### Worked Example 2: Symbiotic Interaction & Trophic Web Analysis\n**Scenario:**  \nAn agricultural science student surveys a community agro-ecosystem in Ghana containing maize plants (*Zea mays*), cowpea legumes (*Vigna unguiculata*), weeds (*Chromolaena odorata*), stem borer larvae, ladybug beetles, parasitic wasps (*Trichogramma*), and nodule-inhabiting bacteria.\n\n**Task:**  \nClassify the following four biological associations into their precise ecological interaction type, state the cost/benefit notation ((+, -), (+, +), (+, 0), or (-, -)), and justify the classification:\n1. *Rhizobium* bacteria residing inside root nodules of the cowpea legume.\n2. Weeds (*Chromolaena odorata*) growing closely alongside young maize crops in the same plot.\n3. Stem borer moth larvae chewing and burrowing inside the vascular maize stems.\n4. Adult female parasitic wasps laying eggs inside stem borer eggs, where the developing wasp larvae consume the host eggs from within.\n\n**Step-by-Step Solution:**\n\n1. **Cowpea Legumes and *Rhizobium* Bacteria:**\n   - **Interaction Type:** **Mutualism**\n   - **Cost/Benefit Notation:** **(+, +)**\n   - **Justification:**  \n     *Rhizobium* bacteria possess the enzyme nitrogenase, which fixes inert atmospheric nitrogen (N₂) into soluble ammonium (NH₄⁺) that the cowpea uses to synthesize amino acids and proteins. In return, the cowpea plant supplies the bacteria with carbohydrates (malate and sucrose) synthesized during photosynthesis, as well as an oxygen-regulated micro-environment inside protective root nodules. Both species experience substantial fitness gains.\n\n2. **Weeds (*Chromolaena odorata*) and Maize Crops:**\n   - **Interaction Type:** **Interspecific Competition**\n   - **Cost/Benefit Notation:** **(-, -)**\n   - **Justification:**  \n     Both the weed and the crop exploit the same finite environmental resources: soil mineral nitrates, phosphates, moisture, and incident sunlight. The presence of the weed reduces the nutrient and light availability for the maize, while the shading canopy of the maize similarly restricts the weed. Both species suffer a net reduction in vegetative growth rate compared to growing in isolation.\n\n3. **Stem Borer Larvae and Maize Plants:**\n   - **Interaction Type:** **Herbivory / Predatory Parasitism**\n   - **Cost/Benefit Notation:** **(+, -)**\n   - **Justification:**  \n     The stem borer larva acts as an herbivorous pest, deriving caloric nutrition and structural shelter by tunneling through the vascular bundles (xylem and phloem) of the host plant. The maize plant experiences reduced water transport, mechanical lodging, and stunted grain yield.\n\n4. **Parasitic Wasps (*Trichogramma*) and Stem Borer Eggs:**\n   - **Interaction Type:** **Parasitoidism (Specialized Predatory Parasitism)**\n   - **Cost/Benefit Notation:** **(+, -)**\n   - **Justification:**  \n     The female wasp benefits by providing its offspring with a protected, nutrient-rich nursery. The developing wasp larva consumes the host tissues internally, inevitably causing the complete death of the host stem borer egg. It acts as an effective natural biological control agent.\n\n---\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s9_1",
-            "title": "Worked Example: Adaptations of Mangrove Trees to Coastal Swamps",
-            "problem": "Mangrove swamps are characterized by high salinity and oxygen-depleted, waterlogged mud. Explain two specific structural adaptations that allow red and black mangrove trees to thrive in this habitat.",
-            "steps": [
-              "Adaptation 1: Pneumatophores (Breathing Roots) — Waterlogged coastal mud contains virtually zero dissolved oxygen. Black mangroves develop specialized pencil-like roots called pneumatophores that grow vertically upward above the high tide water surface, possessing porous lenticels for atmospheric gas exchange.",
-              "Adaptation 2: Stilt Roots (Prop Roots) — Red mangroves develop branching stilt roots that arch outward from the main trunk into the soft, shifting tidal mud, anchoring the tree securely against wave action and tidal currents while filtering out excess toxic salts."
-            ],
-            "finalAnswer": "Examiner Tip: State the environmental challenge (lack of oxygen in mud, soft shifting soil) and pair it with the corresponding anatomical adaptation."
+            "id": "WE_B7_ECO_01",
+            "title": "Aquatic Abiotic Parameter Investigation & Ecological Diagnosis",
+            "problem": "A commercial earthen tilapia pond in the Eastern Region of Ghana exhibits fish gasping at dawn and rising mortality. Given water measurements of Temp 28°C, DO 1.2 mg/L, pH 6.2, and Secchi depth 12 cm, identify the dedicated measuring instruments, diagnose the biological cause, explain the dawn peak, and recommend two corrective actions.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_ECO_02",
+            "title": "Symbiotic Interactions & Trophic Dynamics Matrix",
+            "problem": "Classify and justify the ecological interaction type and cost/benefit notation (+, -, 0) for: (1) Rhizobium bacteria in cowpea root nodules, (2) Chromolaena odorata weeds competing with maize, (3) Stem borer larvae in maize stems, (4) Trichogramma parasitoid wasps in stem borer eggs.",
+            "steps": [],
+            "finalAnswer": ""
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s9_1",
+              "id": "B7_ECO_F01",
               "difficulty": "low",
-              "prompt": "The non-living physical and chemical factors in an ecosystem (such as sunlight, rainfall, and soil pH) are termed:",
+              "prompt": "A natural unit composed of living organisms interacting with their non-living physical environment is called an:",
               "options": [
-                "Biotic factors",
-                "Abiotic factors",
-                "Symbiotic factors",
-                "Trophic factors"
+                "A. Organism",
+                "B. Ecosystem",
+                "C. Population",
+                "D. Ecosphere"
               ],
-              "correctAnswer": "Abiotic factors",
-              "hint": "The prefix 'a-' means without or non-living.",
-              "workedSolution": "Abiotic factors are the non-living chemical and physical variables (temperature, light, moisture, minerals) that shape the ecological environment.",
+              "correctAnswer": "B. Ecosystem",
+              "hint": "An ecosystem is defined as a community of living organisms interacting with the non-living components of their environment to form a stable system.",
+              "workedSolution": "An ecosystem is defined as a community of living organisms interacting with the non-living components of their environment to form a stable system.",
               "points": 1,
-              "learningCompetency": "B7.3.3.1",
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F02",
+              "difficulty": "low",
+              "prompt": "The scientific study of the distribution, abundance, and interactions of living organisms with their environment is:",
+              "options": [
+                "A. Anatomy",
+                "B. Ecology",
+                "C. Geology",
+                "D. Astronomy"
+              ],
+              "correctAnswer": "B. Ecology",
+              "hint": "Ecology is the scientific discipline dedicated to studying how organisms interact with one another and with their physical surroundings.",
+              "workedSolution": "Ecology is the scientific discipline dedicated to studying how organisms interact with one another and with their physical surroundings.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F03",
+              "difficulty": "low",
+              "prompt": "A group of organisms of the same kind that can interbreed in nature to produce fertile offspring is a:",
+              "options": [
+                "A. Community",
+                "B. Species",
+                "C. Habitat",
+                "D. Biome"
+              ],
+              "correctAnswer": "B. Species",
+              "hint": "A species consists of organisms capable of interbreeding and producing fertile offspring.",
+              "workedSolution": "A species consists of organisms capable of interbreeding and producing fertile offspring.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F04",
+              "difficulty": "low",
+              "prompt": "All the individuals of the same species living together in a specific geographic area at a given time make up a:",
+              "options": [
+                "A. Population",
+                "B. Community",
+                "C. Ecosystem",
+                "D. Biome"
+              ],
+              "correctAnswer": "A. Population",
+              "hint": "A population is the total number of individuals of the same species occupying a defined habitat at a specific time.",
+              "workedSolution": "A population is the total number of individuals of the same species occupying a defined habitat at a specific time.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F05",
+              "difficulty": "low",
+              "prompt": "All the different populations of living organisms that inhabit and interact within a particular habitat form a:",
+              "options": [
+                "A. Family",
+                "B. Community",
+                "C. Species",
+                "D. Genus"
+              ],
+              "correctAnswer": "B. Community",
+              "hint": "A biological community is made up of all the various populations of different species sharing a common habitat.",
+              "workedSolution": "A biological community is made up of all the various populations of different species sharing a common habitat.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F06",
+              "difficulty": "low",
+              "prompt": "The specific physical environment or dwelling place where an organism naturally lives and finds food is its:",
+              "options": [
+                "A. Niche",
+                "B. Habitat",
+                "C. Territory",
+                "D. Community"
+              ],
+              "correctAnswer": "B. Habitat",
+              "hint": "A habitat is the natural home or environment of a plant, animal, or other organism.",
+              "workedSolution": "A habitat is the natural home or environment of a plant, animal, or other organism.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F07",
+              "difficulty": "low",
+              "prompt": "The part of the earth and its atmosphere that supports living organisms is termed the:",
+              "options": [
+                "A. Stratosphere",
+                "B. Ecosphere (Biosphere)",
+                "C. Lithosphere",
+                "D. Hydrosphere"
+              ],
+              "correctAnswer": "B. Ecosphere (Biosphere)",
+              "hint": "The ecosphere or biosphere encompasses the zones of the earth and atmosphere that support life.",
+              "workedSolution": "The ecosphere or biosphere encompasses the zones of the earth and atmosphere that support life.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F08",
+              "difficulty": "low",
+              "prompt": "Living organisms within an ecosystem are referred to as:",
+              "options": [
+                "A. Abiotic factors",
+                "B. Biotic factors",
+                "C. Climatic factors",
+                "D. Edaphic factors"
+              ],
+              "correctAnswer": "B. Biotic factors",
+              "hint": "Biotic factors represent all the living components, including plants, animals, and microorganisms, in an ecosystem.",
+              "workedSolution": "Biotic factors represent all the living components, including plants, animals, and microorganisms, in an ecosystem.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F09",
+              "difficulty": "low",
+              "prompt": "Non-living physical and chemical components of an ecosystem are termed:",
+              "options": [
+                "A. Biotic factors",
+                "B. Abiotic factors",
+                "C. Symbiotic factors",
+                "D. Trophic factors"
+              ],
+              "correctAnswer": "B. Abiotic factors",
+              "hint": "Abiotic factors are the non-living physical and chemical elements, such as water, temperature, and light.",
+              "workedSolution": "Abiotic factors are the non-living physical and chemical elements, such as water, temperature, and light.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F10",
+              "difficulty": "low",
+              "prompt": "Which of the following is an abiotic factor in an ecosystem?",
+              "options": [
+                "A. Tilapia fish",
+                "B. Water lily",
+                "C. Sunlight",
+                "D. Earthworm"
+              ],
+              "correctAnswer": "C. Sunlight",
+              "hint": "Sunlight is a non-living, physical abiotic factor essential for photosynthesis.",
+              "workedSolution": "Sunlight is a non-living, physical abiotic factor essential for photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F11",
+              "difficulty": "low",
+              "prompt": "Which of the following is a biotic factor in a school garden ecosystem?",
+              "options": [
+                "A. Soil pH",
+                "B. Earthworm",
+                "C. Air temperature",
+                "D. Humidity"
+              ],
+              "correctAnswer": "B. Earthworm",
+              "hint": "An earthworm is a living organism and therefore a biotic factor.",
+              "workedSolution": "An earthworm is a living organism and therefore a biotic factor.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F12",
+              "difficulty": "low",
+              "prompt": "Which of the following ecosystems is an artificial (man-made) ecosystem?",
+              "options": [
+                "A. Tropical rainforest",
+                "B. Lake Bosumtwi",
+                "C. Cultivated fish pond",
+                "D. Atlantic Ocean"
+              ],
+              "correctAnswer": "C. Cultivated fish pond",
+              "hint": "A fish pond is constructed and maintained by humans, making it an artificial ecosystem.",
+              "workedSolution": "A fish pond is constructed and maintained by humans, making it an artificial ecosystem.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F13",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a freshwater aquatic habitat?",
+              "options": [
+                "A. Open ocean",
+                "B. Sea coast",
+                "C. River",
+                "D. Salt marsh"
+              ],
+              "correctAnswer": "C. River",
+              "hint": "Rivers contain salt-free fresh water, unlike oceans and seas.",
+              "workedSolution": "Rivers contain salt-free fresh water, unlike oceans and seas.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F14",
+              "difficulty": "low",
+              "prompt": "Which of the following is a marine aquatic habitat?",
+              "options": [
+                "A. Lake",
+                "B. Pond",
+                "C. Ocean",
+                "D. Stream"
+              ],
+              "correctAnswer": "C. Ocean",
+              "hint": "Oceans are large bodies of saline (salty) water classified as marine habitats.",
+              "workedSolution": "Oceans are large bodies of saline (salty) water classified as marine habitats.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F15",
+              "difficulty": "low",
+              "prompt": "Which instrument is used to measure atmospheric temperature in an ecosystem?",
+              "options": [
+                "A. Barometer",
+                "B. Thermometer",
+                "C. Anemometer",
+                "D. Hygrometer"
+              ],
+              "correctAnswer": "B. Thermometer",
+              "hint": "A thermometer measures degrees of heat or environmental temperature.",
+              "workedSolution": "A thermometer measures degrees of heat or environmental temperature.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F16",
+              "difficulty": "low",
+              "prompt": "Which scientific instrument is used to measure wind speed?",
+              "options": [
+                "A. Hygrometer",
+                "B. Barometer",
+                "C. Anemometer",
+                "D. Photometer"
+              ],
+              "correctAnswer": "C. Anemometer",
+              "hint": "An anemometer is used in field studies to determine wind speed.",
+              "workedSolution": "An anemometer is used in field studies to determine wind speed.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F17",
+              "difficulty": "low",
+              "prompt": "Which instrument measures relative humidity in the air?",
+              "options": [
+                "A. Hygrometer",
+                "B. Thermometer",
+                "C. Barometer",
+                "D. Salinometer"
+              ],
+              "correctAnswer": "A. Hygrometer",
+              "hint": "A hygrometer measures atmospheric moisture content and relative humidity.",
+              "workedSolution": "A hygrometer measures atmospheric moisture content and relative humidity.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F18",
+              "difficulty": "low",
+              "prompt": "Atmospheric air pressure is measured using a:",
+              "options": [
+                "A. Barometer",
+                "B. Tensiometer",
+                "C. Anemometer",
+                "D. Lux meter"
+              ],
+              "correctAnswer": "A. Barometer",
+              "hint": "A barometer measures the atmospheric pressure exerted by the air.",
+              "workedSolution": "A barometer measures the atmospheric pressure exerted by the air.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F19",
+              "difficulty": "low",
+              "prompt": "Which instrument is used to determine light intensity in a forest undergrowth?",
+              "options": [
+                "A. Anemometer",
+                "B. Light meter (Photometer / Lux meter)",
+                "C. Rain gauge",
+                "D. Barometer"
+              ],
+              "correctAnswer": "B. Light meter (Photometer / Lux meter)",
+              "hint": "A light meter or lux meter quantifies the intensity of solar illumination.",
+              "workedSolution": "A light meter or lux meter quantifies the intensity of solar illumination.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F20",
+              "difficulty": "low",
+              "prompt": "Which instrument is used to measure the acidity or alkalinity of agricultural soil?",
+              "options": [
+                "A. Salinometer",
+                "B. pH meter or pH test strips",
+                "C. Tensiometer",
+                "D. Barometer"
+              ],
+              "correctAnswer": "B. pH meter or pH test strips",
+              "hint": "A pH meter or colorimetric strip measures the hydrogen ion concentration of the soil.",
+              "workedSolution": "A pH meter or colorimetric strip measures the hydrogen ion concentration of the soil.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F21",
+              "difficulty": "low",
+              "prompt": "A feeding interaction where an animal catches, kills, and eats another animal is called:",
+              "options": [
+                "A. Mutualism",
+                "B. Predation",
+                "C. Commensalism",
+                "D. Parasitism"
+              ],
+              "correctAnswer": "B. Predation",
+              "hint": "Predation involves a predator hunting, capturing, and consuming prey.",
+              "workedSolution": "Predation involves a predator hunting, capturing, and consuming prey.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F22",
+              "difficulty": "low",
+              "prompt": "In a relationship between a hawk and a field mouse, the hawk is the:",
+              "options": [
+                "A. Prey",
+                "B. Host",
+                "C. Predator",
+                "D. Parasite"
+              ],
+              "correctAnswer": "C. Predator",
+              "hint": "The hawk hunts and feeds on the mouse, making it the predator.",
+              "workedSolution": "The hawk hunts and feeds on the mouse, making it the predator.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F23",
+              "difficulty": "low",
+              "prompt": "The animal that is hunted and eaten by a predator is the:",
+              "options": [
+                "A. Host",
+                "B. Prey",
+                "C. Parasite",
+                "D. Producer"
+              ],
+              "correctAnswer": "B. Prey",
+              "hint": "The victim captured and consumed in a predatory relationship is the prey.",
+              "workedSolution": "The victim captured and consumed in a predatory relationship is the prey.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F24",
+              "difficulty": "low",
+              "prompt": "An interaction where one organism lives on or inside another, deriving nourishment while harming it, is:",
+              "options": [
+                "A. Commensalism",
+                "B. Mutualism",
+                "C. Parasitism",
+                "D. Predation"
+              ],
+              "correctAnswer": "C. Parasitism",
+              "hint": "Parasitism is a relationship where a parasite benefits at the expense of a living host.",
+              "workedSolution": "Parasitism is a relationship where a parasite benefits at the expense of a living host.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F25",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an internal parasite in humans?",
+              "options": [
+                "A. Tapeworm",
+                "B. Remora fish",
+                "C. Earthworm",
+                "D. Honeybee"
+              ],
+              "correctAnswer": "A. Tapeworm",
+              "hint": "Tapeworms reside inside host intestines, absorbing digested nutrients and causing harm.",
+              "workedSolution": "Tapeworms reside inside host intestines, absorbing digested nutrients and causing harm.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F26",
+              "difficulty": "low",
+              "prompt": "A relationship where both interacting organisms benefit from each other is called:",
+              "options": [
+                "A. Parasitism",
+                "B. Competition",
+                "C. Mutualism",
+                "D. Commensalism"
+              ],
+              "correctAnswer": "C. Mutualism",
+              "hint": "Mutualism is a symbiotic relationship in which both partners gain survival advantages.",
+              "workedSolution": "Mutualism is a symbiotic relationship in which both partners gain survival advantages.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F27",
+              "difficulty": "low",
+              "prompt": "The partnership between flowering plants and pollinating butterflies is an example of:",
+              "options": [
+                "A. Predation",
+                "B. Mutualism",
+                "C. Parasitism",
+                "D. Competition"
+              ],
+              "correctAnswer": "B. Mutualism",
+              "hint": "Butterflies obtain nectar while helping the plant transfer pollen, an example of mutualism.",
+              "workedSolution": "Butterflies obtain nectar while helping the plant transfer pollen, an example of mutualism.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F28",
+              "difficulty": "low",
+              "prompt": "A relationship where one organism benefits while the other is neither harmed nor helped is:",
+              "options": [
+                "A. Mutualism",
+                "B. Parasitism",
+                "C. Commensalism",
+                "D. Predation"
+              ],
+              "correctAnswer": "C. Commensalism",
+              "hint": "Commensalism describes an association where one party gains an advantage without affecting the other.",
+              "workedSolution": "Commensalism describes an association where one party gains an advantage without affecting the other.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F29",
+              "difficulty": "low",
+              "prompt": "The interaction between a remora fish riding on a shark to feed on leftover food without harming the shark is:",
+              "options": [
+                "A. Predation",
+                "B. Commensalism",
+                "C. Parasitism",
+                "D. Competition"
+              ],
+              "correctAnswer": "B. Commensalism",
+              "hint": "The remora benefits from food and mobility, while the shark remains unaffected (commensalism).",
+              "workedSolution": "The remora benefits from food and mobility, while the shark remains unaffected (commensalism).",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F30",
+              "difficulty": "low",
+              "prompt": "When two maize plants in the same plot compete for soil nutrients and sunlight, this interaction is:",
+              "options": [
+                "A. Mutualism",
+                "B. Competition",
+                "C. Predation",
+                "D. Commensalism"
+              ],
+              "correctAnswer": "B. Competition",
+              "hint": "Competition happens when multiple organisms require the same limited resources.",
+              "workedSolution": "Competition happens when multiple organisms require the same limited resources.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F31",
+              "difficulty": "low",
+              "prompt": "What gas do autotrophic plants take in from animals to carry out photosynthesis?",
+              "options": [
+                "A. Oxygen",
+                "B. Carbon dioxide",
+                "C. Nitrogen",
+                "D. Hydrogen"
+              ],
+              "correctAnswer": "B. Carbon dioxide",
+              "hint": "Plants take in carbon dioxide released during animal respiration to synthesize glucose.",
+              "workedSolution": "Plants take in carbon dioxide released during animal respiration to synthesize glucose.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F32",
+              "difficulty": "low",
+              "prompt": "What vital gas do photosynthetic plants release into the atmosphere for animal respiration?",
+              "options": [
+                "A. Carbon dioxide",
+                "B. Oxygen",
+                "C. Methane",
+                "D. Chlorine"
+              ],
+              "correctAnswer": "B. Oxygen",
+              "hint": "Oxygen is produced as a byproduct of photosynthesis and used by animals in aerobic respiration.",
+              "workedSolution": "Oxygen is produced as a byproduct of photosynthesis and used by animals in aerobic respiration.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F33",
+              "difficulty": "low",
+              "prompt": "A hereditary physical or behavioral trait that helps an organism survive in its habitat is called an:",
+              "options": [
+                "A. Acclimatization",
+                "B. Adaptation",
+                "C. Infection",
+                "D. Ingestion"
+              ],
+              "correctAnswer": "B. Adaptation",
+              "hint": "An adaptation is an inherited feature that enhances an organism's survival in its environment.",
+              "workedSolution": "An adaptation is an inherited feature that enhances an organism's survival in its environment.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F34",
+              "difficulty": "low",
+              "prompt": "Reversible, short-term physiological adjustments made by an individual organism to environmental changes are called:",
+              "options": [
+                "A. Acclimatization",
+                "B. Adaptation",
+                "C. Evolution",
+                "D. Mutation"
+              ],
+              "correctAnswer": "A. Acclimatization",
+              "hint": "Acclimatization involves temporary, reversible adjustments during an individual's lifetime.",
+              "workedSolution": "Acclimatization involves temporary, reversible adjustments during an individual's lifetime.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F35",
+              "difficulty": "low",
+              "prompt": "Which body shape allows fish to swim easily through water by reducing drag?",
+              "options": [
+                "A. Flat rectangular",
+                "B. Streamlined",
+                "C. Spherical",
+                "D. Irregular"
+              ],
+              "correctAnswer": "B. Streamlined",
+              "hint": "A streamlined body shape minimizes resistance and drag while moving through water.",
+              "workedSolution": "A streamlined body shape minimizes resistance and drag while moving through water.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F36",
+              "difficulty": "low",
+              "prompt": "Which respiratory organ allows fish to extract dissolved oxygen directly from water?",
+              "options": [
+                "A. Lungs",
+                "B. Gills",
+                "C. Trachea",
+                "D. Spiracles"
+              ],
+              "correctAnswer": "B. Gills",
+              "hint": "Gills have vascular filaments adapted to absorb oxygen dissolved in water.",
+              "workedSolution": "Gills have vascular filaments adapted to absorb oxygen dissolved in water.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F37",
+              "difficulty": "low",
+              "prompt": "What feature helps swimming birds like ducks move efficiently through water?",
+              "options": [
+                "A. Sharp claws",
+                "B. Webbed feet",
+                "C. Heavy bones",
+                "D. Curled beaks"
+              ],
+              "correctAnswer": "B. Webbed feet",
+              "hint": "Webbed feet act like paddles to push water efficiently during swimming.",
+              "workedSolution": "Webbed feet act like paddles to push water efficiently during swimming.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F38",
+              "difficulty": "low",
+              "prompt": "Why do the floating leaves of water lilies have a waxy cuticle on their upper surfaces?",
+              "options": [
+                "A. To attract swimming fish",
+                "B. To repel water and prevent the leaf from rotting or sinking",
+                "C. To absorb muddy minerals",
+                "D. To freeze the leaf"
+              ],
+              "correctAnswer": "B. To repel water and prevent the leaf from rotting or sinking",
+              "hint": "A waxy cuticle repels standing water, keeping the stomata clear and preventing decay.",
+              "workedSolution": "A waxy cuticle repels standing water, keeping the stomata clear and preventing decay.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F39",
+              "difficulty": "low",
+              "prompt": "What structural modification helps cacti reduce water loss through transpiration in deserts?",
+              "options": [
+                "A. Broad thin leaves",
+                "B. Leaves reduced to sharp spines",
+                "C. Stems without water",
+                "D. Flowers that bloom underground"
+              ],
+              "correctAnswer": "B. Leaves reduced to sharp spines",
+              "hint": "Spines minimize leaf surface area, limiting water loss through transpiration.",
+              "workedSolution": "Spines minimize leaf surface area, limiting water loss through transpiration.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F40",
+              "difficulty": "low",
+              "prompt": "In a cactus, which plant part is green and swollen to store water and carry out photosynthesis?",
+              "options": [
+                "A. Flower",
+                "B. Stem",
+                "C. Root",
+                "D. Spine"
+              ],
+              "correctAnswer": "B. Stem",
+              "hint": "The fleshy green stem stores water in succulent tissues and conducts photosynthesis.",
+              "workedSolution": "The fleshy green stem stores water in succulent tissues and conducts photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F41",
+              "difficulty": "low",
+              "prompt": "Which animal stores fat in its hump to help survive prolonged periods without food in desert conditions?",
+              "options": [
+                "A. Lion",
+                "B. Camel",
+                "C. Zebra",
+                "D. Hippo"
+              ],
+              "correctAnswer": "B. Camel",
+              "hint": "Camels store fat in their humps, which can be metabolized for energy and metabolic water.",
+              "workedSolution": "Camels store fat in their humps, which can be metabolized for energy and metabolic water.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F42",
+              "difficulty": "low",
+              "prompt": "Why do many small desert animals live in deep underground burrows during the daytime?",
+              "options": [
+                "A. To escape extreme daytime heat and conserve moisture",
+                "B. To swim in underground rivers",
+                "C. To hunt fish",
+                "D. To freeze their bodies"
+              ],
+              "correctAnswer": "A. To escape extreme daytime heat and conserve moisture",
+              "hint": "Burrows stay significantly cooler than the desert surface, protecting animals from heat.",
+              "workedSolution": "Burrows stay significantly cooler than the desert surface, protecting animals from heat.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F43",
+              "difficulty": "low",
+              "prompt": "Why do savannah grassland animals often have brown or tan coloration?",
+              "options": [
+                "A. To absorb extra heat",
+                "B. As camouflage to blend in with dry grasses and avoid detection",
+                "C. To frighten away insects",
+                "D. Because they bathe in mud daily"
+              ],
+              "correctAnswer": "B. As camouflage to blend in with dry grasses and avoid detection",
+              "hint": "Earth-toned coats provide camouflage against dry, tall savannah grasses.",
+              "workedSolution": "Earth-toned coats provide camouflage against dry, tall savannah grasses.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F44",
+              "difficulty": "low",
+              "prompt": "Which adaptation allows many herbivorous grassland animals to escape predators and bushfires?",
+              "options": [
+                "A. Slow walking speed",
+                "B. Fast running ability",
+                "C. Climbing underground",
+                "D. Swimming in mud"
+              ],
+              "correctAnswer": "B. Fast running ability",
+              "hint": "Speed and endurance allow open-plains herbivores to outrun predators and flee fires.",
+              "workedSolution": "Speed and endurance allow open-plains herbivores to outrun predators and flee fires.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F45",
+              "difficulty": "low",
+              "prompt": "Why do trees in cold boreal forests have a conical shape with downward-sloping branches?",
+              "options": [
+                "A. To catch flying birds",
+                "B. To allow heavy winter snow to slide off without breaking branches",
+                "C. To block the wind completely",
+                "D. To absorb rain quickly"
+              ],
+              "correctAnswer": "B. To allow heavy winter snow to slide off without breaking branches",
+              "hint": "Downward-sloping, flexible branches shed heavy snow to prevent limbs from snapping.",
+              "workedSolution": "Downward-sloping, flexible branches shed heavy snow to prevent limbs from snapping.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F46",
+              "difficulty": "low",
+              "prompt": "What type of leaves do pine trees in boreal coniferous forests possess?",
+              "options": [
+                "A. Broad flat leaves",
+                "B. Needle-like leaves",
+                "C. Soft fleshy leaves",
+                "D. Leaves with no veins"
+              ],
+              "correctAnswer": "B. Needle-like leaves",
+              "hint": "Needle-shaped leaves reduce surface area, helping retain water and resist freezing winds.",
+              "workedSolution": "Needle-shaped leaves reduce surface area, helping retain water and resist freezing winds.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F47",
+              "difficulty": "low",
+              "prompt": "What behavior helps certain animals in cold regions survive winter by entering a dormant, low-energy state?",
+              "options": [
+                "A. Hibernation",
+                "B. Transpiration",
+                "C. Germination",
+                "D. Emulsification"
+              ],
+              "correctAnswer": "A. Hibernation",
+              "hint": "Hibernation lowers body temperature and metabolic rate to conserve energy through winter.",
+              "workedSolution": "Hibernation lowers body temperature and metabolic rate to conserve energy through winter.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F48",
+              "difficulty": "low",
+              "prompt": "Why do aquatic plants possess air-filled spaces (aerenchyma) in their stems and leaves?",
+              "options": [
+                "A. To store poisonous gases",
+                "B. To provide buoyancy that keeps the plant floating toward sunlight",
+                "C. To make the plant heavy enough to sink",
+                "D. To produce seeds underwater"
+              ],
+              "correctAnswer": "B. To provide buoyancy that keeps the plant floating toward sunlight",
+              "hint": "Internal air cavities give buoyancy, allowing leaves to float near the surface for light.",
+              "workedSolution": "Internal air cavities give buoyancy, allowing leaves to float near the surface for light.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F49",
+              "difficulty": "low",
+              "prompt": "What feature on the head crest of whales and dolphins allows them to breathe atmospheric air?",
+              "options": [
+                "A. Gills",
+                "B. Blowholes",
+                "C. Spiracles",
+                "D. Beaks"
+              ],
+              "correctAnswer": "B. Blowholes",
+              "hint": "Blowholes allow marine mammals to inhale atmospheric air while remaining mostly submerged.",
+              "workedSolution": "Blowholes allow marine mammals to inhale atmospheric air while remaining mostly submerged.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_F50",
+              "difficulty": "low",
+              "prompt": "Why do plants growing on the dark floor of tropical rainforests typically have very broad leaves?",
+              "options": [
+                "A. To capture as much filtered, low-intensity sunlight as possible",
+                "B. To collect falling rain",
+                "C. To prevent animals from walking on them",
+                "D. To store sand"
+              ],
+              "correctAnswer": "A. To capture as much filtered, low-intensity sunlight as possible",
+              "hint": "Broad leaves maximize surface area to capture limited light beneath dense forest canopies.",
+              "workedSolution": "Broad leaves maximize surface area to capture limited light beneath dense forest canopies.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s9_2",
+              "id": "B7_ECO_I01",
               "difficulty": "medium",
-              "prompt": "Which structural feature enables floating water lettuce (Pistia) to remain buoyant on the surface of freshwater ponds?",
+              "prompt": "Why is an aquatic habitat generally more thermally stable than an adjacent terrestrial land habitat?",
               "options": [
-                "Thick heavy wooden stems",
-                "Aerenchyma tissues filled with air spaces",
-                "Large taproots anchored in deep rocks",
-                "Spines that inject venom into fish"
+                "A. Water reflects all heat back into outer space",
+                "B. Water has a high specific heat capacity, meaning it absorbs and loses heat slowly without rapid temperature swings",
+                "C. Land has no atmosphere",
+                "D. Aquatic plants produce cold water"
               ],
-              "correctAnswer": "Aerenchyma tissues filled with air spaces",
-              "hint": "Internal air pockets provide biological buoyancy.",
-              "workedSolution": "Floating aquatic macrophytes contain spongy aerenchyma tissue containing large intercellular air pockets that provide buoyancy, keeping leaves at the water surface for photosynthesis.",
+              "correctAnswer": "B. Water has a high specific heat capacity, meaning it absorbs and loses heat slowly without rapid temperature swings",
+              "hint": "Because water has a high specific heat capacity, aquatic systems resist sharp, sudden temperature swings.",
+              "workedSolution": "Because water has a high specific heat capacity, aquatic systems resist sharp, sudden temperature swings.",
               "points": 1,
-              "learningCompetency": "B7.3.3.1",
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I02",
+              "difficulty": "medium",
+              "prompt": "How does competition between two closely related bird species sharing the same forest habitat lead to niche differentiation?",
+              "options": [
+                "A. One species turns into a plant",
+                "B. Natural selection favors species feeding on different food types or at different canopy levels to reduce direct competition",
+                "C. Both species stop eating food",
+                "D. The birds lose their wings"
+              ],
+              "correctAnswer": "B. Natural selection favors species feeding on different food types or at different canopy levels to reduce direct competition",
+              "hint": "Resource partitioning allows competing species to utilize different food sizes, heights, or times to coexist.",
+              "workedSolution": "Resource partitioning allows competing species to utilize different food sizes, heights, or times to coexist.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I03",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the mutualistic relationship between stinging ants and acacia trees?",
+              "options": [
+                "A. The tree absorbs the ants for nitrogen",
+                "B. The tree provides shelter (hollow thorns) and nectar, while the ants defend the tree from herbivores and encroaching vines",
+                "C. The ants eat all the leaves until the tree dies",
+                "D. The ants build nests on dead bark with no interaction"
+              ],
+              "correctAnswer": "B. The tree provides shelter (hollow thorns) and nectar, while the ants defend the tree from herbivores and encroaching vines",
+              "hint": "Acacia trees provide food and shelter, while resident ants aggressively defend the tree against herbivores.",
+              "workedSolution": "Acacia trees provide food and shelter, while resident ants aggressively defend the tree against herbivores.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I04",
+              "difficulty": "medium",
+              "prompt": "Why do the submerged stems of aquatic plants remain narrow and flexible rather than thick and woody?",
+              "options": [
+                "A. They have no access to minerals",
+                "B. Flexible stems bend with water currents and waves without snapping under hydraulic drag",
+                "C. Aquatic stems are made of pure water",
+                "D. Fish chew them into thin threads"
+              ],
+              "correctAnswer": "B. Flexible stems bend with water currents and waves without snapping under hydraulic drag",
+              "hint": "Flexibility allows aquatic plants to yield to moving water currents, avoiding structural breakage.",
+              "workedSolution": "Flexibility allows aquatic plants to yield to moving water currents, avoiding structural breakage.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I05",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of a salinometer in evaluating an estuarine ecosystem?",
+              "options": [
+                "A. Measuring water temperature",
+                "B. Measuring dissolved salt concentration to monitor shifts between fresh and marine waters",
+                "C. Counting the number of fish",
+                "D. Determining water depth"
+              ],
+              "correctAnswer": "B. Measuring dissolved salt concentration to monitor shifts between fresh and marine waters",
+              "hint": "A salinometer measures dissolved salt levels to track salinity gradients where rivers meet the sea.",
+              "workedSolution": "A salinometer measures dissolved salt levels to track salinity gradients where rivers meet the sea.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I06",
+              "difficulty": "medium",
+              "prompt": "How does an intestinal tapeworm adapt morphologically to survive inside its human host?",
+              "options": [
+                "A. It possesses a streamlined shell for swimming",
+                "B. It has hooks and suckers (scolex) to anchor to the intestinal wall and absorbs pre-digested nutrients through its body surface without a digestive tract",
+                "C. It chews food with sharp mandibles",
+                "D. It develops lungs to breathe"
+              ],
+              "correctAnswer": "B. It has hooks and suckers (scolex) to anchor to the intestinal wall and absorbs pre-digested nutrients through its body surface without a digestive tract",
+              "hint": "Hooks and suckers prevent dislodgement, while its outer tegument absorbs pre-digested nutrients directly.",
+              "workedSolution": "Hooks and suckers prevent dislodgement, while its outer tegument absorbs pre-digested nutrients directly.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I07",
+              "difficulty": "medium",
+              "prompt": "Why do leaves of tropical rainforest canopy trees feature pointed 'drip tips'?",
+              "options": [
+                "A. To sting herbivorous insects",
+                "B. To drain heavy rainwater quickly off the leaf surface, preventing fungal growth and physical leaf damage",
+                "C. To collect water droplets for root storage",
+                "D. To absorb sunlight from the side"
+              ],
+              "correctAnswer": "B. To drain heavy rainwater quickly off the leaf surface, preventing fungal growth and physical leaf damage",
+              "hint": "Drip tips shed excess rainwater rapidly, which inhibits the growth of epiphyllous fungi and algae.",
+              "workedSolution": "Drip tips shed excess rainwater rapidly, which inhibits the growth of epiphyllous fungi and algae.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I08",
+              "difficulty": "medium",
+              "prompt": "What is the difference between a predator-prey interaction and a host-parasite interaction?",
+              "options": [
+                "A. Predators are always smaller than prey; parasites are larger than hosts",
+                "B. Predators kill their prey immediately to consume it, while parasites generally keep their host alive to continue drawing nutrients",
+                "C. Parasitism benefits both organisms, while predation benefits neither",
+                "D. Both interactions have identical outcomes"
+              ],
+              "correctAnswer": "B. Predators kill their prey immediately to consume it, while parasites generally keep their host alive to continue drawing nutrients",
+              "hint": "Predators kill their prey for food, whereas parasites typically derive sustained nourishment without immediate host death.",
+              "workedSolution": "Predators kill their prey for food, whereas parasites typically derive sustained nourishment without immediate host death.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I09",
+              "difficulty": "medium",
+              "prompt": "Why do desert reptiles produce pasty, semi-solid uric acid instead of dilute liquid urine?",
+              "options": [
+                "A. Uric acid is cold",
+                "B. Excreting nitrogenous waste as insoluble uric acid requires minimal water, conserving body fluid in arid environments",
+                "C. They have no kidneys",
+                "D. Water dissolves their scales"
+              ],
+              "correctAnswer": "B. Excreting nitrogenous waste as insoluble uric acid requires minimal water, conserving body fluid in arid environments",
+              "hint": "Excreting concentrated uric acid allows desert reptiles to clear nitrogenous waste with minimal water loss.",
+              "workedSolution": "Excreting concentrated uric acid allows desert reptiles to clear nitrogenous waste with minimal water loss.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I10",
+              "difficulty": "medium",
+              "prompt": "How do deep taproots benefit perennial shrubs in dry savannahs and desert borders?",
+              "options": [
+                "A. They store pure air",
+                "B. They penetrate deep into the subsoil to access underground water tables during extended dry seasons",
+                "C. They anchor the plant so animals cannot eat the leaves",
+                "D. They turn sand into clay"
+              ],
+              "correctAnswer": "B. They penetrate deep into the subsoil to access underground water tables during extended dry seasons",
+              "hint": "Deep root systems reach subterranean moisture reserves that persist far below dry surface soil.",
+              "workedSolution": "Deep root systems reach subterranean moisture reserves that persist far below dry surface soil.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I11",
+              "difficulty": "medium",
+              "prompt": "What would happen to the population of predatory red foxes if the population of their primary prey, hares, crashed due to disease?",
+              "options": [
+                "A. The fox population would increase rapidly",
+                "B. The fox population would decline due to food scarcity and starvation",
+                "C. Foxes would immediately turn into herbivores",
+                "D. The foxes would leave the planet"
+              ],
+              "correctAnswer": "B. The fox population would decline due to food scarcity and starvation",
+              "hint": "Predator populations depend on prey abundance; a sharp crash in prey numbers leads to a decline in predators.",
+              "workedSolution": "Predator populations depend on prey abundance; a sharp crash in prey numbers leads to a decline in predators.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I12",
+              "difficulty": "medium",
+              "prompt": "Why is the soil in a tropical rainforest often nutrient-poor despite dense, lush vegetation?",
+              "options": [
+                "A. Rainforest plants do not absorb nutrients",
+                "B. High heat and moisture drive rapid decomposition, and dense root systems absorb released minerals immediately, while heavy rains leach remaining nutrients",
+                "C. Decomposers do not live in rainforests",
+                "D. Rainforest soil is made of pure rock"
+              ],
+              "correctAnswer": "B. High heat and moisture drive rapid decomposition, and dense root systems absorb released minerals immediately, while heavy rains leach remaining nutrients",
+              "hint": "Nutrients are taken up rapidly by dense root mats or leached by heavy rainfall, keeping topsoils nutrient-poor.",
+              "workedSolution": "Nutrients are taken up rapidly by dense root mats or leached by heavy rainfall, keeping topsoils nutrient-poor.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I13",
+              "difficulty": "medium",
+              "prompt": "What is the function of hollow bones in flying and swimming birds like ducks?",
+              "options": [
+                "A. Storing water",
+                "B. Reducing body weight and increasing buoyancy without sacrificing skeletal strength",
+                "C. Producing digestive enzymes",
+                "D. Absorbing sunlight"
+              ],
+              "correctAnswer": "B. Reducing body weight and increasing buoyancy without sacrificing skeletal strength",
+              "hint": "Pneumatized, hollow bones lower skeletal mass, aiding both flight efficiency and water buoyancy.",
+              "workedSolution": "Pneumatized, hollow bones lower skeletal mass, aiding both flight efficiency and water buoyancy.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I14",
+              "difficulty": "medium",
+              "prompt": "Why is agricultural land (such as a cocoa plantation or maize farm) classified as an artificial ecosystem?",
+              "options": [
+                "A. It does not contain living organisms",
+                "B. It was established by humans and requires human management, weeding, and fertilizer inputs to persist",
+                "C. It cannot receive rain",
+                "D. It produces synthetic food"
+              ],
+              "correctAnswer": "B. It was established by humans and requires human management, weeding, and fertilizer inputs to persist",
+              "hint": "Farms are human-created, managed systems that rely on human labor and inputs to prevent natural ecological succession.",
+              "workedSolution": "Farms are human-created, managed systems that rely on human labor and inputs to prevent natural ecological succession.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I15",
+              "difficulty": "medium",
+              "prompt": "How does the thick blubber layer under the skin of marine mammals like whales serve as a dual adaptation?",
+              "options": [
+                "A. It acts as an abrasive shell and produces bile",
+                "B. It provides thermal insulation against freezing ocean waters and serves as an energy reserve during migration",
+                "C. It absorbs dissolved oxygen from the water",
+                "D. It helps them sink to the ocean floor"
+              ],
+              "correctAnswer": "B. It provides thermal insulation against freezing ocean waters and serves as an energy reserve during migration",
+              "hint": "Adipose blubber reduces heat loss in cold water and stores metabolic energy for long journeys.",
+              "workedSolution": "Adipose blubber reduces heat loss in cold water and stores metabolic energy for long journeys.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I16",
+              "difficulty": "medium",
+              "prompt": "What ecological advantage do grassland plants gain from having deep, extensive root networks?",
+              "options": [
+                "A. They prevent other plants from growing nearby",
+                "B. They anchor plants against strong winds, access deep moisture, and allow rapid regrowth after surface fires or grazing",
+                "C. They produce flowers underground",
+                "D. They turn the soil acidic"
+              ],
+              "correctAnswer": "B. They anchor plants against strong winds, access deep moisture, and allow rapid regrowth after surface fires or grazing",
+              "hint": "Deep roots stabilize soil, draw water, and store carbohydrates that enable fast regrowth after fires.",
+              "workedSolution": "Deep roots stabilize soil, draw water, and store carbohydrates that enable fast regrowth after fires.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I17",
+              "difficulty": "medium",
+              "prompt": "Why do decomposers like bacteria and fungi play an indispensable role in maintaining a balanced ecosystem?",
+              "options": [
+                "A. They hunt living herbivores for food",
+                "B. They break down dead organic matter and wastes, recycling bound nutrients into the soil for plant uptake",
+                "C. They stop plants from growing too tall",
+                "D. They remove oxygen from the air"
+              ],
+              "correctAnswer": "B. They break down dead organic matter and wastes, recycling bound nutrients into the soil for plant uptake",
+              "hint": "Decomposers break down dead biomass, recycling essential minerals and returning nutrients to the soil.",
+              "workedSolution": "Decomposers break down dead biomass, recycling essential minerals and returning nutrients to the soil.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I18",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes an example of acclimatization rather than evolutionary adaptation?",
+              "options": [
+                "A. A cactus developing sharp spines over thousands of years",
+                "B. A human developing an increased red blood cell count after living at high altitude for three weeks",
+                "C. Ducks possessing webbed feet",
+                "D. Pine trees bearing needle-shaped leaves"
+              ],
+              "correctAnswer": "B. A human developing an increased red blood cell count after living at high altitude for three weeks",
+              "hint": "Elevating red blood cell count in response to low oxygen is a reversible physiological adjustment (acclimatization).",
+              "workedSolution": "Elevating red blood cell count in response to low oxygen is a reversible physiological adjustment (acclimatization).",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I19",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of a tensiometer in field crop production?",
+              "options": [
+                "A. Measuring wind speed",
+                "B. Measuring soil moisture tension to determine when crops require irrigation",
+                "C. Measuring air pressure",
+                "D. Measuring sunlight intensity"
+              ],
+              "correctAnswer": "B. Measuring soil moisture tension to determine when crops require irrigation",
+              "hint": "A tensiometer measures soil water suction, showing how tightly water is held and when to irrigate.",
+              "workedSolution": "A tensiometer measures soil water suction, showing how tightly water is held and when to irrigate.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I20",
+              "difficulty": "medium",
+              "prompt": "Why are epiphytic orchids living on tree branches considered commensals rather than parasites?",
+              "options": [
+                "A. They suck sap from the tree's veins",
+                "B. They use the tree solely for structural physical support to reach sunlight, absorbing moisture from air without taking nutrients from the tree",
+                "C. They kill the tree within a week",
+                "D. They provide food to the tree's roots"
+              ],
+              "correctAnswer": "B. They use the tree solely for structural physical support to reach sunlight, absorbing moisture from air without taking nutrients from the tree",
+              "hint": "Epiphytes use host trees only for perching support, photosynthesizing independently without harming host tissues.",
+              "workedSolution": "Epiphytes use host trees only for perching support, photosynthesizing independently without harming host tissues.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I21",
+              "difficulty": "medium",
+              "prompt": "How does seasonal migration protect boreal forest birds during freezing winter months?",
+              "options": [
+                "A. It allows them to learn how to swim",
+                "B. Flying to warmer latitudes avoids sub-zero temperatures and food scarcity, returning when resources rebound in spring",
+                "C. It changes their feathers into fur",
+                "D. It turns their blood into ice"
+              ],
+              "correctAnswer": "B. Flying to warmer latitudes avoids sub-zero temperatures and food scarcity, returning when resources rebound in spring",
+              "hint": "Migrating to warmer regions allows birds to escape extreme cold and find reliable food supplies.",
+              "workedSolution": "Migrating to warmer regions allows birds to escape extreme cold and find reliable food supplies.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I22",
+              "difficulty": "medium",
+              "prompt": "Why do plants with broad leaves struggle to survive in arid desert environments without artificial irrigation?",
+              "options": [
+                "A. Desert soil is too cold",
+                "B. Broad leaf blades have large surface areas packed with stomata, leading to high transpirational water loss that exceeds root uptake",
+                "C. Spines eat broad leaves",
+                "D. Broad leaves cannot absorb sunlight"
+              ],
+              "correctAnswer": "B. Broad leaf blades have large surface areas packed with stomata, leading to high transpirational water loss that exceeds root uptake",
+              "hint": "Large leaf surface areas lose excessive water via transpiration, leading to desiccation in dry soil.",
+              "workedSolution": "Large leaf surface areas lose excessive water via transpiration, leading to desiccation in dry soil.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I23",
+              "difficulty": "medium",
+              "prompt": "What would occur in a natural lake ecosystem if agricultural fertilizer runoff washed in, causing high nitrogen and phosphorus levels?",
+              "options": [
+                "A. All water plants would stop growing",
+                "B. Rapid algal growth would trigger eutrophication, depleting dissolved oxygen and killing fish",
+                "C. Water would turn into salt",
+                "D. Fish would grow legs"
+              ],
+              "correctAnswer": "B. Rapid algal growth would trigger eutrophication, depleting dissolved oxygen and killing fish",
+              "hint": "Nutrient pollution sparks algal blooms; dying algae are consumed by bacteria, which strips dissolved oxygen from the water.",
+              "workedSolution": "Nutrient pollution sparks algal blooms; dying algae are consumed by bacteria, which strips dissolved oxygen from the water.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I24",
+              "difficulty": "medium",
+              "prompt": "Why are grasses able to survive frequent bushfires in the savannah grassland biome?",
+              "options": [
+                "A. Grasses are made of metal",
+                "B. Their growing points (meristems) and rhizomes remain protected at or below ground level, enabling rapid sprouting after fires",
+                "C. Fires do not burn grass",
+                "D. Grasses produce water during fires"
+              ],
+              "correctAnswer": "B. Their growing points (meristems) and rhizomes remain protected at or below ground level, enabling rapid sprouting after fires",
+              "hint": "Underground root crowns and basal meristems escape surface heat, allowing grasses to regenerate after fires.",
+              "workedSolution": "Underground root crowns and basal meristems escape surface heat, allowing grasses to regenerate after fires.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I25",
+              "difficulty": "medium",
+              "prompt": "How does the waxy coating on desert succulents like cacti help them conserve moisture?",
+              "options": [
+                "A. It acts as an impermeable barrier that reduces cuticular transpiration and prevents water evaporation",
+                "B. It makes the plant invisible to insects",
+                "C. It absorbs water from dry sand",
+                "D. It produces rainfall"
+              ],
+              "correctAnswer": "A. It acts as an impermeable barrier that reduces cuticular transpiration and prevents water evaporation",
+              "hint": "A thick, lipid-rich waxy cuticle creates a barrier that limits non-stomatal water evaporation.",
+              "workedSolution": "A thick, lipid-rich waxy cuticle creates a barrier that limits non-stomatal water evaporation.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I26",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes an example of herbivory?",
+              "options": [
+                "A. A lion killing a zebra",
+                "B. A caterpillar eating the leaves of a cocoyam plant",
+                "C. A tick sucking blood from a dog",
+                "D. A fungus growing on a fallen log"
+              ],
+              "correctAnswer": "B. A caterpillar eating the leaves of a cocoyam plant",
+              "hint": "Herbivory refers to an animal eating the tissues of living primary producers (plants).",
+              "workedSolution": "Herbivory refers to an animal eating the tissues of living primary producers (plants).",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I27",
+              "difficulty": "medium",
+              "prompt": "Why do animals in the dense undergrowth of tropical rainforests rely heavily on vocal calls and scent marking rather than visual signals?",
+              "options": [
+                "A. Rainforest animals are completely blind",
+                "B. Dense, multi-layered foliage restricts long-distance visibility, making sound and scent more effective communication channels",
+                "C. Sound travels faster in the dark",
+                "D. Animals have no colors"
+              ],
+              "correctAnswer": "B. Dense, multi-layered foliage restricts long-distance visibility, making sound and scent more effective communication channels",
+              "hint": "Thick, multi-tiered foliage blocks line-of-sight vision, so animals communicate with calls and scent.",
+              "workedSolution": "Thick, multi-tiered foliage blocks line-of-sight vision, so animals communicate with calls and scent.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I28",
+              "difficulty": "medium",
+              "prompt": "How does an Infrared Gas Analyzer (IRGA) contribute to ecological field studies?",
+              "options": [
+                "A. It measures wind direction",
+                "B. It measures concentrations of carbon dioxide gas, helping assess plant photosynthetic and respiratory rates",
+                "C. It catches flying insects",
+                "D. It measures soil compaction"
+              ],
+              "correctAnswer": "B. It measures concentrations of carbon dioxide gas, helping assess plant photosynthetic and respiratory rates",
+              "hint": "An IRGA measures CO₂ absorption, quantifying carbon uptake in photosynthesis and release in respiration.",
+              "workedSolution": "An IRGA measures CO₂ absorption, quantifying carbon uptake in photosynthesis and release in respiration.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I29",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor limiting the growth of tall trees in the cold, windy Arctic tundra?",
+              "options": [
+                "A. Too much rain",
+                "B. Permafrost (permanently frozen subsoil) that blocks deep root growth, short growing seasons, and drying winds",
+                "C. Heavy shade from clouds",
+                "D. Lack of carbon dioxide"
+              ],
+              "correctAnswer": "B. Permafrost (permanently frozen subsoil) that blocks deep root growth, short growing seasons, and drying winds",
+              "hint": "Frozen permafrost limits deep rooting, while short summers prevent trees from maturing.",
+              "workedSolution": "Frozen permafrost limits deep rooting, while short summers prevent trees from maturing.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I30",
+              "difficulty": "medium",
+              "prompt": "Why do seeds of many tropical forest fruits have fleshy, sweet pulp?",
+              "options": [
+                "A. To poison passing animals",
+                "B. To attract fruit-eating birds and mammals that ingest the fruit and disperse the seeds away from the parent tree",
+                "C. To prevent seeds from ever falling",
+                "D. To keep the tree heavy"
+              ],
+              "correctAnswer": "B. To attract fruit-eating birds and mammals that ingest the fruit and disperse the seeds away from the parent tree",
+              "hint": "Sweet pulp attracts frugivores that eat the fruit and distribute the seeds in their droppings.",
+              "workedSolution": "Sweet pulp attracts frugivores that eat the fruit and distribute the seeds in their droppings.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I31",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger faced by freshwater fish placed into a marine (ocean) environment?",
+              "options": [
+                "A. Water enters their cells and bursts them",
+                "B. High external salinity draws water out of their body tissues by osmosis, leading to severe dehydration",
+                "C. The fish freeze instantly",
+                "D. Salt turns their gills into wood"
+              ],
+              "correctAnswer": "B. High external salinity draws water out of their body tissues by osmosis, leading to severe dehydration",
+              "hint": "The hypertonic salt water draws water out of freshwater fish osmotically, causing fatal dehydration.",
+              "workedSolution": "The hypertonic salt water draws water out of freshwater fish osmotically, causing fatal dehydration.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I32",
+              "difficulty": "medium",
+              "prompt": "How do buttress roots help tall emergent trees survive in tropical rainforests?",
+              "options": [
+                "A. They absorb sunlight from the air",
+                "B. They form wide, plank-like wooden buttresses that stabilize tall trunks against wind in shallow, weathered topsoils",
+                "C. They store pure sugar",
+                "D. They produce flowers underground"
+              ],
+              "correctAnswer": "B. They form wide, plank-like wooden buttresses that stabilize tall trunks against wind in shallow, weathered topsoils",
+              "hint": "Broad buttresses distribute mechanical strain, stabilizing tall emergent trees anchored in shallow soils.",
+              "workedSolution": "Broad buttresses distribute mechanical strain, stabilizing tall emergent trees anchored in shallow soils.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I33",
+              "difficulty": "medium",
+              "prompt": "What role do scavengers like vultures and hyenas play in an ecosystem?",
+              "options": [
+                "A. They produce food through photosynthesis",
+                "B. They consume carcasses of dead animals, clearing rotting flesh and helping recycle biological nutrients",
+                "C. They pollute the air",
+                "D. They destroy plant roots"
+              ],
+              "correctAnswer": "B. They consume carcasses of dead animals, clearing rotting flesh and helping recycle biological nutrients",
+              "hint": "Scavengers feed on carrion, speeding up decomposition and reducing potential disease reservoirs.",
+              "workedSolution": "Scavengers feed on carrion, speeding up decomposition and reducing potential disease reservoirs.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I34",
+              "difficulty": "medium",
+              "prompt": "Why are predator populations almost always smaller in total numbers than their prey populations in a healthy ecosystem?",
+              "options": [
+                "A. Predators do not reproduce",
+                "B. Energy is lost as heat at each trophic step; it takes many prey organisms to support a single predator",
+                "C. Prey animals are always larger than predators",
+                "D. Predators eat plants when hungry"
+              ],
+              "correctAnswer": "B. Energy is lost as heat at each trophic step; it takes many prey organisms to support a single predator",
+              "hint": "Trophic energy loss means only about 10% of energy transfers between levels, limiting top predator numbers.",
+              "workedSolution": "Trophic energy loss means only about 10% of energy transfers between levels, limiting top predator numbers.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I35",
+              "difficulty": "medium",
+              "prompt": "How do camel footpads adapt them to walking across loose desert sand dunes?",
+              "options": [
+                "A. They have sharp needles that dig into rock",
+                "B. Broad, flat, leathery pads spread their body weight over a larger surface area, preventing them from sinking into sand",
+                "C. They have rubber suction cups",
+                "D. They float on air"
+              ],
+              "correctAnswer": "B. Broad, flat, leathery pads spread their body weight over a larger surface area, preventing them from sinking into sand",
+              "hint": "Wide footpads distribute weight and reduce contact pressure, keeping camels from sinking in loose sand.",
+              "workedSolution": "Wide footpads distribute weight and reduce contact pressure, keeping camels from sinking in loose sand.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I36",
+              "difficulty": "medium",
+              "prompt": "What is the consequence of removing an apex predator from a natural forest ecosystem?",
+              "options": [
+                "A. All other animals live forever",
+                "B. Herbivore populations can surge, leading to overgrazing, loss of vegetation, and habitat degradation (trophic cascade)",
+                "C. The forest stops receiving rain",
+                "D. Plants stop photosynthesizing"
+              ],
+              "correctAnswer": "B. Herbivore populations can surge, leading to overgrazing, loss of vegetation, and habitat degradation (trophic cascade)",
+              "hint": "Losing top predators can allow herbivores to overpopulate, leading to overgrazing and broader ecosystem damage.",
+              "workedSolution": "Losing top predators can allow herbivores to overpopulate, leading to overgrazing and broader ecosystem damage.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I37",
+              "difficulty": "medium",
+              "prompt": "Why do marine fish drink seawater continuously while freshwater fish avoid drinking water?",
+              "options": [
+                "A. Marine fish are always thirsty",
+                "B. Marine fish lose water osmotically to the salty sea, so they must drink water and pump out excess salts through their gills",
+                "C. Freshwater fish have no mouths",
+                "D. Marine fish cannot swim without drinking"
+              ],
+              "correctAnswer": "B. Marine fish lose water osmotically to the salty sea, so they must drink water and pump out excess salts through their gills",
+              "hint": "In hypertonic oceans, marine fish lose water across their gills, so they drink seawater and actively excrete salt.",
+              "workedSolution": "In hypertonic oceans, marine fish lose water across their gills, so they drink seawater and actively excrete salt.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I38",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes an adaptation of desert rodents like the kangaroo rat to survive without drinking liquid water?",
+              "options": [
+                "A. They absorb water from stones",
+                "B. They obtain metabolic water from the cellular breakdown of dry seeds and produce highly concentrated urine",
+                "C. They drink ocean water",
+                "D. They hibernate during the rainy season"
+              ],
+              "correctAnswer": "B. They obtain metabolic water from the cellular breakdown of dry seeds and produce highly concentrated urine",
+              "hint": "Efficient kidneys and water derived from fat and carbohydrate metabolism allow them to live on dry seeds.",
+              "workedSolution": "Efficient kidneys and water derived from fat and carbohydrate metabolism allow them to live on dry seeds.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I39",
+              "difficulty": "medium",
+              "prompt": "Why is interspecific competition often less intense than intraspecific competition?",
+              "options": [
+                "A. Different species do not live in the same forest",
+                "B. Different species often have slightly different ecological niches, whereas members of the same species compete for identical resources",
+                "C. Animals of the same species never fight",
+                "D. Interspecific competition only occurs in water"
+              ],
+              "correctAnswer": "B. Different species often have slightly different ecological niches, whereas members of the same species compete for identical resources",
+              "hint": "Members of the same species share identical resource requirements, making intraspecific competition more direct.",
+              "workedSolution": "Members of the same species share identical resource requirements, making intraspecific competition more direct.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I40",
+              "difficulty": "medium",
+              "prompt": "How does the needle shape of pine leaves reduce water loss in freezing boreal winters?",
+              "options": [
+                "A. It allows the leaf to drop off",
+                "B. A low surface-area-to-volume ratio combined with sunken stomata and a thick cuticle minimizes winter evaporation",
+                "C. Needle leaves are made of ice",
+                "D. Needle leaves produce heat"
+              ],
+              "correctAnswer": "B. A low surface-area-to-volume ratio combined with sunken stomata and a thick cuticle minimizes winter evaporation",
+              "hint": "Compact needle geometries and sunken stomata limit cuticular water loss during freezing weather.",
+              "workedSolution": "Compact needle geometries and sunken stomata limit cuticular water loss during freezing weather.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I41",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of mycorrhizal fungi in forest ecosystems?",
+              "options": [
+                "A. Killing tree roots",
+                "B. Forming mutualistic partnerships with roots to help trees absorb water and minerals in exchange for photosynthetic sugars",
+                "C. Eating green leaves",
+                "D. Preventing rainfall"
+              ],
+              "correctAnswer": "B. Forming mutualistic partnerships with roots to help trees absorb water and minerals in exchange for photosynthetic sugars",
+              "hint": "Mycorrhizae expand root absorption networks for water and phosphorus in return for plant carbohydrates.",
+              "workedSolution": "Mycorrhizae expand root absorption networks for water and phosphorus in return for plant carbohydrates.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I42",
+              "difficulty": "medium",
+              "prompt": "Why do some desert plants practice drought dormancy by shedding their leaves at the onset of the dry season?",
+              "options": [
+                "A. The leaves are too heavy to carry",
+                "B. Dropping foliage halts transpirational water loss, allowing the plant to survive on water stored in stems",
+                "C. Animals eat only green leaves",
+                "D. Shed leaves turn into sand"
+              ],
+              "correctAnswer": "B. Dropping foliage halts transpirational water loss, allowing the plant to survive on water stored in stems",
+              "hint": "Shedding leaves removes the primary surfaces for transpiration, conserving water through dry periods.",
+              "workedSolution": "Shedding leaves removes the primary surfaces for transpiration, conserving water through dry periods.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I43",
+              "difficulty": "medium",
+              "prompt": "How does camouflage provide survival advantages to both predators and prey in a savannah ecosystem?",
+              "options": [
+                "A. It changes their body temperature",
+                "B. It helps prey avoid detection by hunters, while allowing predators to stalk prey without being noticed",
+                "C. It speeds up digestion",
+                "D. It replaces the need for food"
+              ],
+              "correctAnswer": "B. It helps prey avoid detection by hunters, while allowing predators to stalk prey without being noticed",
+              "hint": "Concealing coloration protects prey from discovery and allows predators to get close before striking.",
+              "workedSolution": "Concealing coloration protects prey from discovery and allows predators to get close before striking.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I44",
+              "difficulty": "medium",
+              "prompt": "What ecological condition occurs when an introduced invasive weed has no natural herbivores in a new habitat?",
+              "options": [
+                "A. The weed dies immediately",
+                "B. The weed can spread rapidly, outcompeting native plants for nutrients, space, and sunlight",
+                "C. The weed turns into an animal",
+                "D. Native plants eat the weed"
+              ],
+              "correctAnswer": "B. The weed can spread rapidly, outcompeting native plants for nutrients, space, and sunlight",
+              "hint": "Without natural herbivores or pathogens, invasive plants can expand unchecked and displace native flora.",
+              "workedSolution": "Without natural herbivores or pathogens, invasive plants can expand unchecked and displace native flora.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I45",
+              "difficulty": "medium",
+              "prompt": "Why do many rainforest canopy animals have prehensile tails?",
+              "options": [
+                "A. To catch flying insects",
+                "B. To act as a fifth grasping limb that provides grip and stability while moving through the trees",
+                "C. To keep their heads warm",
+                "D. To swim in canopy pools"
+              ],
+              "correctAnswer": "B. To act as a fifth grasping limb that provides grip and stability while moving through the trees",
+              "hint": "Prehensile tails anchor arboreal animals to branches, preventing falls as they navigate the canopy.",
+              "workedSolution": "Prehensile tails anchor arboreal animals to branches, preventing falls as they navigate the canopy.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I46",
+              "difficulty": "medium",
+              "prompt": "How do nitrogen-fixing bacteria in root nodules of leguminous plants exhibit mutualism?",
+              "options": [
+                "A. They absorb all the plant's water",
+                "B. They convert atmospheric nitrogen into usable nitrates for the plant, receiving carbohydrates and housing in return",
+                "C. They kill surrounding weeds",
+                "D. They produce flowers"
+              ],
+              "correctAnswer": "B. They convert atmospheric nitrogen into usable nitrates for the plant, receiving carbohydrates and housing in return",
+              "hint": "Rhizobium bacteria trade fixed nitrogen for plant-synthesized sugars and protective nodule housing.",
+              "workedSolution": "Rhizobium bacteria trade fixed nitrogen for plant-synthesized sugars and protective nodule housing.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I47",
+              "difficulty": "medium",
+              "prompt": "Why do desert animals often have large ears with dense blood vessel networks (like the fennec fox)?",
+              "options": [
+                "A. To hear flying insects miles away",
+                "B. Circulating warm blood through large, uninsulated ears radiates excess body heat to help cool the body",
+                "C. To shade their eyes",
+                "D. To store drinking water"
+              ],
+              "correctAnswer": "B. Circulating warm blood through large, uninsulated ears radiates excess body heat to help cool the body",
+              "hint": "Large vascularized ear surfaces act as radiators, dissipating body heat into the air.",
+              "workedSolution": "Large vascularized ear surfaces act as radiators, dissipating body heat into the air.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I48",
+              "difficulty": "medium",
+              "prompt": "What is the biological advantage of producing light, feathery parachutes on seeds in open grassland habitats?",
+              "options": [
+                "A. To keep the seeds warm",
+                "B. To allow winds to carry seeds across long distances, dispersing offspring away from the parent plant",
+                "C. To prevent birds from eating seeds",
+                "D. To absorb rain from clouds"
+              ],
+              "correctAnswer": "B. To allow winds to carry seeds across long distances, dispersing offspring away from the parent plant",
+              "hint": "Feathery appendages create aerodynamic drag, allowing wind currents to disperse seeds widely.",
+              "workedSolution": "Feathery appendages create aerodynamic drag, allowing wind currents to disperse seeds widely.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I49",
+              "difficulty": "medium",
+              "prompt": "Why do alpine and polar animals tend to have shorter ears, limbs, and tails than related species in warm climates (Allen's rule)?",
+              "options": [
+                "A. Cold weather freezes their limbs off",
+                "B. Shorter extremities reduce surface area relative to body volume, minimizing heat loss in freezing environments",
+                "C. They do not need to walk",
+                "D. They grow faster"
+              ],
+              "correctAnswer": "B. Shorter extremities reduce surface area relative to body volume, minimizing heat loss in freezing environments",
+              "hint": "Reduced extremity size minimizes heat-dissipating surface area, helping animals stay warm in cold climates.",
+              "workedSolution": "Reduced extremity size minimizes heat-dissipating surface area, helping animals stay warm in cold climates.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_I50",
+              "difficulty": "medium",
+              "prompt": "What is the ecological term for the functional role and position a species occupies within its ecosystem?",
+              "options": [
+                "A. Habitat",
+                "B. Ecological niche",
+                "C. Biome",
+                "D. Population size"
+              ],
+              "correctAnswer": "B. Ecological niche",
+              "hint": "An ecological niche includes a species' habitat use, diet, resource consumption, and interactions with other organisms.",
+              "workedSolution": "An ecological niche includes a species' habitat use, diet, resource consumption, and interactions with other organisms.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_ECO_A01",
+              "difficulty": "hard",
+              "prompt": "Why do succulent desert plants use Crassulacean Acid Metabolism (CAM photosynthesis) as a physiological adaptation?",
+              "options": [
+                "A. To produce sugar in the dark without sunlight",
+                "B. They open stomata only at night to capture CO₂ as organic acids, keeping stomata closed during hot daylight hours to limit transpirational water loss",
+                "C. To absorb water through their flowers",
+                "D. To convert sand into starch"
+              ],
+              "correctAnswer": "B. They open stomata only at night to capture CO₂ as organic acids, keeping stomata closed during hot daylight hours to limit transpirational water loss",
+              "hint": "CAM plants open stomata at cooler, humid night times to fix carbon, minimizing daytime transpirational water loss.",
+              "workedSolution": "CAM plants open stomata at cooler, humid night times to fix carbon, minimizing daytime transpirational water loss.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A02",
+              "difficulty": "hard",
+              "prompt": "How does competitive exclusion (Gause's Principle) shape biological communities where two species have identical ecological niches?",
+              "options": [
+                "A. Both species interbreed to form a new species",
+                "B. One species will use resources more efficiently, outcompeting and driving the other to local extinction or forcing niche differentiation",
+                "C. Both species stop eating food",
+                "D. The habitat expands automatically"
+              ],
+              "correctAnswer": "B. One species will use resources more efficiently, outcompeting and driving the other to local extinction or forcing niche differentiation",
+              "hint": "Two competing species with identical niche requirements cannot stably coexist; one will eventually outcompete the other.",
+              "workedSolution": "Two competing species with identical niche requirements cannot stably coexist; one will eventually outcompete the other.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A03",
+              "difficulty": "hard",
+              "prompt": "Why does primary ecological succession on bare volcanic rock take much longer than secondary succession following a bushfire?",
+              "options": [
+                "A. Volcanic rock is too hot for plants",
+                "B. Primary succession must build soil from scratch through rock weathering and pioneer lichens, whereas secondary succession starts with an existing soil seed bank",
+                "C. Bushfires kill all bacteria permanently",
+                "D. Secondary succession requires no rain"
+              ],
+              "correctAnswer": "B. Primary succession must build soil from scratch through rock weathering and pioneer lichens, whereas secondary succession starts with an existing soil seed bank",
+              "hint": "Primary succession starts without soil, requiring decades of pioneer colonization to build topsoil before higher plants can grow.",
+              "workedSolution": "Primary succession starts without soil, requiring decades of pioneer colonization to build topsoil before higher plants can grow.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A04",
+              "difficulty": "hard",
+              "prompt": "How does the counter-current heat exchange system in penguin legs and whale flippers prevent hypothermia?",
+              "options": [
+                "A. Blood turns into antifreeze liquid",
+                "B. Warm arterial blood from the core transfers heat to cool venous blood returning from extremities, retaining warmth in the body core",
+                "C. Feet produce fire chemically",
+                "D. Arteries close completely in winter"
+              ],
+              "correctAnswer": "B. Warm arterial blood from the core transfers heat to cool venous blood returning from extremities, retaining warmth in the body core",
+              "hint": "Closely aligned arteries and veins exchange heat, warming returning blood and reducing heat loss at peripheral surfaces.",
+              "workedSolution": "Closely aligned arteries and veins exchange heat, warming returning blood and reducing heat loss at peripheral surfaces.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A05",
+              "difficulty": "hard",
+              "prompt": "Why do mangrove trees growing in saline intertidal zones develop aerial roots called pneumatophores?",
+              "options": [
+                "A. To catch swimming crabs",
+                "B. Waterlogged, muddy soils lack oxygen; upward-growing pneumatophores take in atmospheric air through lenticels for root respiration",
+                "C. To produce seeds in the air",
+                "D. To shade their trunks"
+              ],
+              "correctAnswer": "B. Waterlogged, muddy soils lack oxygen; upward-growing pneumatophores take in atmospheric air through lenticels for root respiration",
+              "hint": "Pneumatophores rise above waterlogged mud, using lenticels to breathe in oxygen-poor, flooded soils.",
+              "workedSolution": "Pneumatophores rise above waterlogged mud, using lenticels to breathe in oxygen-poor, flooded soils.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A06",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor limiting net primary productivity (NPP) in the open ocean (pelagic zone) despite abundant sunlight?",
+              "options": [
+                "A. High water pressure",
+                "B. Deficiencies of critical dissolved mineral nutrients, particularly iron, nitrogen, and phosphorus, in the photic zone",
+                "C. Too much dissolved salt",
+                "D. The water is too cold"
+              ],
+              "correctAnswer": "B. Deficiencies of critical dissolved mineral nutrients, particularly iron, nitrogen, and phosphorus, in the photic zone",
+              "hint": "While light is abundant at the surface, lack of upwelling leaves the open ocean deficient in bioavailable nutrients.",
+              "workedSolution": "While light is abundant at the surface, lack of upwelling leaves the open ocean deficient in bioavailable nutrients.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A07",
+              "difficulty": "hard",
+              "prompt": "How does bioaccumulation and biomagnification of persistent pesticides (like DDT) affect top predators in an aquatic food chain?",
+              "options": [
+                "A. Toxins break down into harmless sugars",
+                "B. Fat-soluble toxins are not easily excreted, concentrating at higher trophic levels and reaching toxic doses in apex predators",
+                "C. Herbivores absorb all the chemicals",
+                "D. Fish become immune to all diseases"
+              ],
+              "correctAnswer": "B. Fat-soluble toxins are not easily excreted, concentrating at higher trophic levels and reaching toxic doses in apex predators",
+              "hint": "Non-biodegradable toxins accumulate in fat tissues and become more concentrated with each successive trophic step.",
+              "workedSolution": "Non-biodegradable toxins accumulate in fat tissues and become more concentrated with each successive trophic step.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A08",
+              "difficulty": "hard",
+              "prompt": "Why does a sudden drop in dissolved oxygen (DO) cause fish kills in freshwater ponds during hot, stagnant weather?",
+              "options": [
+                "A. Warm water dissolves less oxygen, and high temperatures increase fish metabolic demand for oxygen beyond what is available",
+                "B. Cold water kills fish gills",
+                "C. Fish stop breathing in summer",
+                "D. Heat turns water into acid"
+              ],
+              "correctAnswer": "A. Warm water dissolves less oxygen, and high temperatures increase fish metabolic demand for oxygen beyond what is available",
+              "hint": "Warm water has a lower oxygen-carrying capacity, while fish metabolic rates and oxygen demands rise with temperature.",
+              "workedSolution": "Warm water has a lower oxygen-carrying capacity, while fish metabolic rates and oxygen demands rise with temperature.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A09",
+              "difficulty": "hard",
+              "prompt": "What is the evolutionary benefit of aposematic (warning) coloration in toxic insects like monarch caterpillars?",
+              "options": [
+                "A. To blend into green leaves",
+                "B. Bright, conspicuous patterns warn predators of foul taste or toxicity, helping predators learn to avoid that species",
+                "C. To absorb extra solar heat",
+                "D. To frighten other caterpillars"
+              ],
+              "correctAnswer": "B. Bright, conspicuous patterns warn predators of foul taste or toxicity, helping predators learn to avoid that species",
+              "hint": "Conspicuous color patterns signal toxicity, helping predators learn avoidance and reducing attacks on the species.",
+              "workedSolution": "Conspicuous color patterns signal toxicity, helping predators learn avoidance and reducing attacks on the species.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A10",
+              "difficulty": "hard",
+              "prompt": "Why do tropical rainforest emergent trees develop high leaf turgor and osmotic adjustments in their upper crowns?",
+              "options": [
+                "A. The canopy receives no rain",
+                "B. Upper canopies face high solar radiation, wind, and evaporative demands, requiring high osmotic pressure to lift water against gravity",
+                "C. The roots are dead",
+                "D. Leaves are made of wood"
+              ],
+              "correctAnswer": "B. Upper canopies face high solar radiation, wind, and evaporative demands, requiring high osmotic pressure to lift water against gravity",
+              "hint": "Treetops experience high vapor pressure deficits, requiring strong negative water potentials to pull water upward.",
+              "workedSolution": "Treetops experience high vapor pressure deficits, requiring strong negative water potentials to pull water upward.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A11",
+              "difficulty": "hard",
+              "prompt": "How do deep-sea hydrothermal vent ecosystems sustain rich communities of giant tube worms without sunlight?",
+              "options": [
+                "A. Animals feed on fallen dead trees",
+                "B. Chemosynthetic bacteria oxidize hydrogen sulfide and methane from vents to produce organic matter, serving as primary producers",
+                "C. Animals live on volcanic heat alone",
+                "D. They use starlight"
+              ],
+              "correctAnswer": "B. Chemosynthetic bacteria oxidize hydrogen sulfide and methane from vents to produce organic matter, serving as primary producers",
+              "hint": "Chemoautotrophic bacteria oxidize chemical compounds from vents, forming the base of sunlight-free food webs.",
+              "workedSolution": "Chemoautotrophic bacteria oxidize chemical compounds from vents, forming the base of sunlight-free food webs.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A12",
+              "difficulty": "hard",
+              "prompt": "What role does the Lotka-Volterra predator-prey model describe in natural ecosystems?",
+              "options": [
+                "A. That predators eat all prey until both go extinct",
+                "B. Coupled, cyclical oscillations where prey increases drive predator gains, which then reduce prey numbers and lead to predator declines",
+                "C. That plants control animals",
+                "D. That populations remain completely static"
+              ],
+              "correctAnswer": "B. Coupled, cyclical oscillations where prey increases drive predator gains, which then reduce prey numbers and lead to predator declines",
+              "hint": "Predator and prey populations follow linked, oscillating cycles driven by predation pressure and food availability.",
+              "workedSolution": "Predator and prey populations follow linked, oscillating cycles driven by predation pressure and food availability.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A13",
+              "difficulty": "hard",
+              "prompt": "Why are lichens classified as pioneer species in primary succession on bare rock surfaces?",
+              "options": [
+                "A. They eat other plants",
+                "B. They are hardy mutualisms of fungi and algae that survive on bare rock, secreting organic acids that weather rock into primitive soil",
+                "C. They require deep soil",
+                "D. They grow only in water"
+              ],
+              "correctAnswer": "B. They are hardy mutualisms of fungi and algae that survive on bare rock, secreting organic acids that weather rock into primitive soil",
+              "hint": "Lichens tolerate bare rock and exude acids that break down minerals, starting soil formation.",
+              "workedSolution": "Lichens tolerate bare rock and exude acids that break down minerals, starting soil formation.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A14",
+              "difficulty": "hard",
+              "prompt": "How does resource partitioning allow multiple warbler bird species to forage in the same spruce tree without competitive exclusion?",
+              "options": [
+                "A. The birds fight to the death",
+                "B. Each species forages in distinct zones of the tree (top exterior, middle interior, or bottom), targeting different insect prey",
+                "C. They change their diet to spruce needles",
+                "D. Some species forage only at night"
+              ],
+              "correctAnswer": "B. Each species forages in distinct zones of the tree (top exterior, middle interior, or bottom), targeting different insect prey",
+              "hint": "Spatial partitioning of the tree canopy divides the foraging habitat, reducing direct competition.",
+              "workedSolution": "Spatial partitioning of the tree canopy divides the foraging habitat, reducing direct competition.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A15",
+              "difficulty": "hard",
+              "prompt": "Why does clearing an old-growth tropical rainforest lead to permanent ecosystem degradation?",
+              "options": [
+                "A. Trees cannot grow in sunshine",
+                "B. Most ecosystem nutrients are held in living plant biomass; clear-cutting removes the nutrient bank and exposes shallow topsoils to heavy leaching",
+                "C. The ground turns into liquid",
+                "D. Animals destroy the rain"
+              ],
+              "correctAnswer": "B. Most ecosystem nutrients are held in living plant biomass; clear-cutting removes the nutrient bank and exposes shallow topsoils to heavy leaching",
+              "hint": "Nutrients in rainforests are held largely in biomass; clearing and rain quickly leach the remaining thin topsoil.",
+              "workedSolution": "Nutrients in rainforests are held largely in biomass; clearing and rain quickly leach the remaining thin topsoil.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A16",
+              "difficulty": "hard",
+              "prompt": "What is the biological mechanism of allelopathy used by certain invasive plants?",
+              "options": [
+                "A. Producing attractive sweet fruits",
+                "B. Releasing toxic secondary biochemicals from roots or leaves into the soil to inhibit seed germination of neighboring competitors",
+                "C. Climbing over other plants",
+                "D. Absorbing all carbon dioxide"
+              ],
+              "correctAnswer": "B. Releasing toxic secondary biochemicals from roots or leaves into the soil to inhibit seed germination of neighboring competitors",
+              "hint": "Allelopathic plants release chemicals into the soil that suppress germination and growth in competing species.",
+              "workedSolution": "Allelopathic plants release chemicals into the soil that suppress germination and growth in competing species.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A17",
+              "difficulty": "hard",
+              "prompt": "Why do freshwater fish maintain an extensive active-transport system in their gill epithelia?",
+              "options": [
+                "A. To pump salt out of their bodies",
+                "B. Living in a hypotonic medium causes ion loss; gill ionocytes actively pump sodium and chloride ions from water into their blood",
+                "C. To pump water out of the stomach",
+                "D. To breathe atmospheric air"
+              ],
+              "correctAnswer": "B. Living in a hypotonic medium causes ion loss; gill ionocytes actively pump sodium and chloride ions from water into their blood",
+              "hint": "Freshwater fish lose ions to their dilute environment, using gill cells to actively pump salts back into the blood.",
+              "workedSolution": "Freshwater fish lose ions to their dilute environment, using gill cells to actively pump salts back into the blood.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A18",
+              "difficulty": "hard",
+              "prompt": "How does the removal of a keystone species (such as sea otters in a kelp forest) disrupt the entire community?",
+              "options": [
+                "A. Sea otters eat the kelp",
+                "B. Without sea otters to prey on sea urchins, urchin populations explode, overgrazing the kelp and destroying the habitat for other marine life",
+                "C. The water turns into fresh water",
+                "D. All fish leave the ocean"
+              ],
+              "correctAnswer": "B. Without sea otters to prey on sea urchins, urchin populations explode, overgrazing the kelp and destroying the habitat for other marine life",
+              "hint": "Keystone predators check herbivore populations; their loss can cause overgrazing and habitat collapse.",
+              "workedSolution": "Keystone predators check herbivore populations; their loss can cause overgrazing and habitat collapse.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A19",
+              "difficulty": "hard",
+              "prompt": "What physiological adaptation allows freeze-tolerant wood frogs to survive sub-zero winters in boreal regions?",
+              "options": [
+                "A. They build warm nests underground",
+                "B. They accumulate high concentrations of glucose and urea in tissues to act as cryoprotectants, preventing intracellular ice crystallization",
+                "C. Their blood circulates boiling water",
+                "D. They develop thick fur"
+              ],
+              "correctAnswer": "B. They accumulate high concentrations of glucose and urea in tissues to act as cryoprotectants, preventing intracellular ice crystallization",
+              "hint": "High tissue glucose levels act as natural antifreeze, preventing cell damage while extracellular fluids freeze.",
+              "workedSolution": "High tissue glucose levels act as natural antifreeze, preventing cell damage while extracellular fluids freeze.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A20",
+              "difficulty": "hard",
+              "prompt": "Why does secondary succession progress much more rapidly toward a climax community than primary succession?",
+              "options": [
+                "A. Secondary succession requires no plants",
+                "B. The presence of pre-existing, intact soil containing organic matter, seed banks, and microbial communities speeds plant establishment",
+                "C. Bushfires make soil cold",
+                "D. Animals plant seeds in straight rows"
+              ],
+              "correctAnswer": "B. The presence of pre-existing, intact soil containing organic matter, seed banks, and microbial communities speeds plant establishment",
+              "hint": "Secondary succession starts with developed soil, nutrients, and viable seeds, allowing faster revegetation.",
+              "workedSolution": "Secondary succession starts with developed soil, nutrients, and viable seeds, allowing faster revegetation.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A21",
+              "difficulty": "hard",
+              "prompt": "What is the function of antifreeze glycoproteins in the blood of Antarctic icefish?",
+              "options": [
+                "A. Digesting frozen krill",
+                "B. Binding to microscopic ice crystals to depress their freezing point and prevent ice expansion in circulatory fluids",
+                "C. Producing body heat like a mammal",
+                "D. Turning blood white"
+              ],
+              "correctAnswer": "B. Binding to microscopic ice crystals to depress their freezing point and prevent ice expansion in circulatory fluids",
+              "hint": "Antifreeze proteins bind nascent ice crystals, inhibiting growth and keeping body fluids liquid below 0°C.",
+              "workedSolution": "Antifreeze proteins bind nascent ice crystals, inhibiting growth and keeping body fluids liquid below 0°C.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A22",
+              "difficulty": "hard",
+              "prompt": "How does the structural architecture of the acacia tree thorn provide an ecological niche for mutualistic ants?",
+              "options": [
+                "A. Thorns are filled with poisonous water",
+                "B. Enlarged, swollen thorn bases provide hollow, protected nesting chambers (domatia) for rearing ant larvae",
+                "C. Thorns capture falling leaves",
+                "D. Thorns make sound in the wind"
+              ],
+              "correctAnswer": "B. Enlarged, swollen thorn bases provide hollow, protected nesting chambers (domatia) for rearing ant larvae",
+              "hint": "Swollen thorn bases provide hollow living cavities (domatia) for nesting ant colonies.",
+              "workedSolution": "Swollen thorn bases provide hollow living cavities (domatia) for nesting ant colonies.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A23",
+              "difficulty": "hard",
+              "prompt": "Why is the top-predator biomass in a pyramid of biomass significantly smaller than producer biomass?",
+              "options": [
+                "A. Producers are made of stone",
+                "B. Due to second-law thermodynamic inefficiencies, about 90% of available energy is lost as metabolic heat and waste at each trophic transfer",
+                "C. Top predators stop eating food",
+                "D. Decomposers eat all the predators"
+              ],
+              "correctAnswer": "B. Due to second-law thermodynamic inefficiencies, about 90% of available energy is lost as metabolic heat and waste at each trophic transfer",
+              "hint": "Energy loss at each trophic step limits the total biomass that higher trophic levels can support.",
+              "workedSolution": "Energy loss at each trophic step limits the total biomass that higher trophic levels can support.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A24",
+              "difficulty": "hard",
+              "prompt": "How do deep-rooted halophytic plants survive high salt concentrations in coastal salt marshes?",
+              "options": [
+                "A. They absorb only pure rainwater",
+                "B. They accumulate compatible organic solutes in their vacuoles to maintain osmotic balance and excrete excess salts through leaf glands",
+                "C. They turn salt into sugar",
+                "D. Their roots have plastic sheaths"
+              ],
+              "correctAnswer": "B. They accumulate compatible organic solutes in their vacuoles to maintain osmotic balance and excrete excess salts through leaf glands",
+              "hint": "Halophytes accumulate solutes to retain cellular water and use salt glands to excrete excess ions.",
+              "workedSolution": "Halophytes accumulate solutes to retain cellular water and use salt glands to excrete excess ions.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A25",
+              "difficulty": "hard",
+              "prompt": "What accounts for the high biodiversity in the canopy layer of tropical rainforests?",
+              "options": [
+                "A. The canopy is completely dry",
+                "B. Abundant sunlight, diverse microhabitats, and high primary productivity create varied ecological niches for specialized species",
+                "C. The forest floor has no soil",
+                "D. Ground animals cannot reproduce"
+              ],
+              "correctAnswer": "B. Abundant sunlight, diverse microhabitats, and high primary productivity create varied ecological niches for specialized species",
+              "hint": "Direct solar energy and structural complexity create diverse niches for specialized canopy organisms.",
+              "workedSolution": "Direct solar energy and structural complexity create diverse niches for specialized canopy organisms.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A26",
+              "difficulty": "hard",
+              "prompt": "Why does an ecological tension zone (ecotone) between a forest and a grassland often support higher species richness than either biome alone?",
+              "options": [
+                "A. Ecotones have no predators",
+                "B. Edge effects provide overlapping environmental conditions, allowing species from both neighboring communities to use edge resources",
+                "C. Ecotones are artificial",
+                "D. Animals cannot leave ecotones"
+              ],
+              "correctAnswer": "B. Edge effects provide overlapping environmental conditions, allowing species from both neighboring communities to use edge resources",
+              "hint": "Ecotones blend physical conditions and resources from adjacent habitats, fostering high edge-zone diversity.",
+              "workedSolution": "Ecotones blend physical conditions and resources from adjacent habitats, fostering high edge-zone diversity.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A27",
+              "difficulty": "hard",
+              "prompt": "How does brood parasitism in cuckoo birds demonstrate behavioral co-evolution?",
+              "options": [
+                "A. Cuckoos build nests for other birds",
+                "B. Cuckoos lay eggs that mimic host egg colors in host nests, while host species evolve sensory abilities to detect and reject foreign eggs",
+                "C. Cuckoos feed all birds in the forest",
+                "D. Cuckoos raise host chicks"
+              ],
+              "correctAnswer": "B. Cuckoos lay eggs that mimic host egg colors in host nests, while host species evolve sensory abilities to detect and reject foreign eggs",
+              "hint": "Egg mimicry by parasites and egg-rejection behaviors by hosts drive an evolutionary arms race.",
+              "workedSolution": "Egg mimicry by parasites and egg-rejection behaviors by hosts drive an evolutionary arms race.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A28",
+              "difficulty": "hard",
+              "prompt": "Why do the leaves of desert xerophytes often have stomata sunken into deep crypts lined with fine epidermal hairs?",
+              "options": [
+                "A. To trap insects",
+                "B. Crypts and trichome hairs trap still, humid air around stomatal pores, reducing the water-vapor concentration gradient and transpiration",
+                "C. To absorb dew directly into the veins",
+                "D. To shade the stem"
+              ],
+              "correctAnswer": "B. Crypts and trichome hairs trap still, humid air around stomatal pores, reducing the water-vapor concentration gradient and transpiration",
+              "hint": "Sunken crypts and hairs create a humid boundary layer that reduces transpirational vapor loss.",
+              "workedSolution": "Sunken crypts and hairs create a humid boundary layer that reduces transpirational vapor loss.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A29",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor limiting tree growth at the alpine tree line on high mountains?",
+              "options": [
+                "A. Lack of carbon dioxide",
+                "B. Low mean temperatures during the growing season limit cell division and wood lignification, exacerbated by freezing winds",
+                "C. Heavy rain",
+                "D. Too much soil depth"
+              ],
+              "correctAnswer": "B. Low mean temperatures during the growing season limit cell division and wood lignification, exacerbated by freezing winds",
+              "hint": "Low seasonal temperatures and short growing windows prevent trees from producing new cells and lignifying wood.",
+              "workedSolution": "Low seasonal temperatures and short growing windows prevent trees from producing new cells and lignifying wood.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A30",
+              "difficulty": "hard",
+              "prompt": "How does phenotypic plasticity allow an individual plant to acclimatize to shading by taller neighbors?",
+              "options": [
+                "A. By mutating its DNA sequence overnight",
+                "B. By altering stem elongation (etiolation) and expanding specific leaf area through hormonal responses to low red-to-far-red light ratios",
+                "C. By dropping all its roots",
+                "D. By turning into an animal"
+              ],
+              "correctAnswer": "B. By altering stem elongation (etiolation) and expanding specific leaf area through hormonal responses to low red-to-far-red light ratios",
+              "hint": "Phytochrome shade-avoidance signaling drives rapid stem elongation and broader leaf growth to seek light.",
+              "workedSolution": "Phytochrome shade-avoidance signaling drives rapid stem elongation and broader leaf growth to seek light.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A31",
+              "difficulty": "hard",
+              "prompt": "Why do desert sand vipers and sidewinder rattlesnakes move via lateral sidewinding locomotion across sand dunes?",
+              "options": [
+                "A. They are blind in front",
+                "B. Sidewinding minimizes body contact with scorching surface sand and provides traction on shifting, loose slopes",
+                "C. Sidewinding makes them run faster than birds",
+                "D. Their bodies are rigid"
+              ],
+              "correctAnswer": "B. Sidewinding minimizes body contact with scorching surface sand and provides traction on shifting, loose slopes",
+              "hint": "Sidewinding reduces physical contact with hot sand and prevents slipping on loose dunes.",
+              "workedSolution": "Sidewinding reduces physical contact with hot sand and prevents slipping on loose dunes.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A32",
+              "difficulty": "hard",
+              "prompt": "What is the ecological significance of biological soil crusts (cryptogamic crusts) in arid desert biomes?",
+              "options": [
+                "A. They dissolve sand into water",
+                "B. Cyanobacteria, lichens, and mosses bind soil particles, stabilize dunes against wind erosion, and fix atmospheric nitrogen",
+                "C. They eat cactus roots",
+                "D. They reflect all sunlight"
+              ],
+              "correctAnswer": "B. Cyanobacteria, lichens, and mosses bind soil particles, stabilize dunes against wind erosion, and fix atmospheric nitrogen",
+              "hint": "Biological crusts stabilize fragile desert soils against wind and fix atmospheric nitrogen.",
+              "workedSolution": "Biological crusts stabilize fragile desert soils against wind and fix atmospheric nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A33",
+              "difficulty": "hard",
+              "prompt": "Why does thermal stratification in temperate lakes during summer lead to oxygen depletion in the bottom hypolimnion layer?",
+              "options": [
+                "A. Fish swim down to breathe all the oxygen",
+                "B. A warm epilimnion floats on the cold, dense hypolimnion; the thermocline blocks mixing, while bottom decomposers consume oxygen",
+                "C. Deep water turns into steam",
+                "D. Aquatic plants produce oxygen only in deep mud"
+              ],
+              "correctAnswer": "B. A warm epilimnion floats on the cold, dense hypolimnion; the thermocline blocks mixing, while bottom decomposers consume oxygen",
+              "hint": "The density boundary prevents aeration of bottom waters, where decaying organic matter consumes oxygen.",
+              "workedSolution": "The density boundary prevents aeration of bottom waters, where decaying organic matter consumes oxygen.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A34",
+              "difficulty": "hard",
+              "prompt": "How does Batesian mimicry protect a harmless hoverfly that displays black and yellow warning stripes like a stinging wasp?",
+              "options": [
+                "A. The hoverfly develops a real venomous stinger",
+                "B. Predators that have learned to avoid painful wasp stings mistake the harmless hoverfly for a wasp and avoid attacking it",
+                "C. Wasps protect hoverflies from birds",
+                "D. Hoverflies produce buzzing sounds that break glass"
+              ],
+              "correctAnswer": "B. Predators that have learned to avoid painful wasp stings mistake the harmless hoverfly for a wasp and avoid attacking it",
+              "hint": "Harmless mimics gain protection because predators associate their warning coloration with a dangerous model.",
+              "workedSolution": "Harmless mimics gain protection because predators associate their warning coloration with a dangerous model.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A35",
+              "difficulty": "hard",
+              "prompt": "Why do coniferous trees retain green needles year-round, while temperate deciduous trees drop their leaves in autumn?",
+              "options": [
+                "A. Deciduous trees do not need sunlight",
+                "B. Conifers conserve nutrients in poor soils by avoiding rebuilding an entire canopy each spring, beginning photosynthesis immediately when temperatures rise",
+                "C. Conifer needles are made of wood",
+                "D. Deciduous leaves are poisonous to winter air"
+              ],
+              "correctAnswer": "B. Conifers conserve nutrients in poor soils by avoiding rebuilding an entire canopy each spring, beginning photosynthesis immediately when temperatures rise",
+              "hint": "Evergreen needles avoid the heavy nutrient cost of regrowing foliage and can photosynthesize during warm winter spells.",
+              "workedSolution": "Evergreen needles avoid the heavy nutrient cost of regrowing foliage and can photosynthesize during warm winter spells.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A36",
+              "difficulty": "hard",
+              "prompt": "What is the physiological role of thermal huddling behavior in emperor penguins during Antarctic winter blizzards?",
+              "options": [
+                "A. To sleep faster",
+                "B. Reducing collective exposed surface area to lower individual metabolic heat loss by up to 50%",
+                "C. To melt snow beneath their feet",
+                "D. To scare off predators"
+              ],
+              "correctAnswer": "B. Reducing collective exposed surface area to lower individual metabolic heat loss by up to 50%",
+              "hint": "Huddling reduces exposed individual surface area, cutting radiative and convective heat loss in freezing winds.",
+              "workedSolution": "Huddling reduces exposed individual surface area, cutting radiative and convective heat loss in freezing winds.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A37",
+              "difficulty": "hard",
+              "prompt": "Why do some desert ephemeral annual plants complete their entire life cycle (germination, flowering, seed set) in three weeks?",
+              "options": [
+                "A. They are impatient",
+                "B. They escape drought by exploiting short windows of seasonal rainfall, leaving desiccation-resistant seeds that stay dormant until the next rains",
+                "C. Seeds cannot live in dry soil",
+                "D. Animals eat all adult plants in summer"
+              ],
+              "correctAnswer": "B. They escape drought by exploiting short windows of seasonal rainfall, leaving desiccation-resistant seeds that stay dormant until the next rains",
+              "hint": "Ephemeral plants complete their life cycles while surface moisture lasts, avoiding prolonged dry periods as dormant seeds.",
+              "workedSolution": "Ephemeral plants complete their life cycles while surface moisture lasts, avoiding prolonged dry periods as dormant seeds.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A38",
+              "difficulty": "hard",
+              "prompt": "How does vertical stratification in a tropical rainforest maintain high species richness?",
+              "options": [
+                "A. Animals fight only on the ground",
+                "B. Discrete vertical layers (emergent, canopy, understory, and forest floor) offer distinct microclimatic gradients and ecological niches",
+                "C. Plants produce different colored wood",
+                "D. The forest floor is completely dark and sterile"
+              ],
+              "correctAnswer": "B. Discrete vertical layers (emergent, canopy, understory, and forest floor) offer distinct microclimatic gradients and ecological niches",
+              "hint": "Vertical light and moisture gradients create specialized niches from the emergent canopy down to the forest floor.",
+              "workedSolution": "Vertical light and moisture gradients create specialized niches from the emergent canopy down to the forest floor.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A39",
+              "difficulty": "hard",
+              "prompt": "Why do seaweeds inhabiting intertidal rocky shores produce gelatinous, flexible alginates in their cell walls?",
+              "options": [
+                "A. To poison grazing snails",
+                "B. To retain internal moisture during low-tide air exposure and flex under breaking waves without shattering",
+                "C. To absorb sunlight underwater",
+                "D. To freeze the surrounding sea"
+              ],
+              "correctAnswer": "B. To retain internal moisture during low-tide air exposure and flex under breaking waves without shattering",
+              "hint": "Mucilaginous alginates slow desiccation at low tide and give the thallus flexibility in heavy surf.",
+              "workedSolution": "Mucilaginous alginates slow desiccation at low tide and give the thallus flexibility in heavy surf.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A40",
+              "difficulty": "hard",
+              "prompt": "What is the evolutionary function of floral nectar guides that reflect ultraviolet wavelengths invisible to humans?",
+              "options": [
+                "A. To absorb solar heat",
+                "B. Directing UV-sensitive insect pollinators straight to the flower's nectar glands and reproductive organs",
+                "C. To blind herbivorous birds",
+                "D. To scare caterpillars"
+              ],
+              "correctAnswer": "B. Directing UV-sensitive insect pollinators straight to the flower's nectar glands and reproductive organs",
+              "hint": "UV patterns guide trichromatic insects like bees directly to floral rewards, aiding efficient pollination.",
+              "workedSolution": "UV patterns guide trichromatic insects like bees directly to floral rewards, aiding efficient pollination.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A41",
+              "difficulty": "hard",
+              "prompt": "Why does a desert tortoise excrete uric acid in dry seasons, but excrete liquid urea during rainy months?",
+              "options": [
+                "A. Its kidneys stop working in rain",
+                "B. Physiological plasticity allows it to conserve water via uric acid during droughts, shifting to urea when drinking water is abundant to purge accumulated salts",
+                "C. Tortoises eat only stones in summer",
+                "D. Rain dissolves the tortoise's shell"
+              ],
+              "correctAnswer": "B. Physiological plasticity allows it to conserve water via uric acid during droughts, shifting to urea when drinking water is abundant to purge accumulated salts",
+              "hint": "Plastic nitrogen excretion balances water conservation during droughts with waste flushing when water is available.",
+              "workedSolution": "Plastic nitrogen excretion balances water conservation during droughts with waste flushing when water is available.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A42",
+              "difficulty": "hard",
+              "prompt": "How do carnivorous plants (like sundews and pitcher plants) adapt to nutrient-poor, waterlogged bogs?",
+              "options": [
+                "A. They get energy from insects instead of sunlight",
+                "B. They perform normal photosynthesis for energy, but trap and digest insects to obtain nitrogen and phosphorus missing from waterlogged soils",
+                "C. Their roots absorb gold",
+                "D. They eat other plants' leaves"
+              ],
+              "correctAnswer": "B. They perform normal photosynthesis for energy, but trap and digest insects to obtain nitrogen and phosphorus missing from waterlogged soils",
+              "hint": "Carnivory supplies nitrogen and phosphorus needed for protein synthesis in acidic, nutrient-deficient bogs.",
+              "workedSolution": "Carnivory supplies nitrogen and phosphorus needed for protein synthesis in acidic, nutrient-deficient bogs.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A43",
+              "difficulty": "hard",
+              "prompt": "What causes the seasonal turnover (mixing) of water in temperate dimictic lakes during autumn?",
+              "options": [
+                "A. Strong earthquakes",
+                "B. Surface water cools to 4°C (maximum density of water) and sinks, displacing lighter bottom water and circulating oxygen and nutrients",
+                "C. Fish swimming in circles",
+                "D. Cold rain pushing lake water out"
+              ],
+              "correctAnswer": "B. Surface water cools to 4°C (maximum density of water) and sinks, displacing lighter bottom water and circulating oxygen and nutrients",
+              "hint": "Surface cooling to 4°C makes top water dense, driving turnover that mixes nutrients and oxygen throughout the water column.",
+              "workedSolution": "Surface cooling to 4°C makes top water dense, driving turnover that mixes nutrients and oxygen throughout the water column.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A44",
+              "difficulty": "hard",
+              "prompt": "Why do zebras and wildebeests undertake seasonal mass migrations across the Serengeti plains?",
+              "options": [
+                "A. To escape human hunters only",
+                "B. Tracking seasonal rainfall patterns and fresh grass flushes to meet high nutritional and water needs",
+                "C. Because they cannot sleep in one spot",
+                "D. To find salt mines"
+              ],
+              "correctAnswer": "B. Tracking seasonal rainfall patterns and fresh grass flushes to meet high nutritional and water needs",
+              "hint": "Migrating herds follow regional rainfall gradients to find fresh grazing forage and surface water.",
+              "workedSolution": "Migrating herds follow regional rainfall gradients to find fresh grazing forage and surface water.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A45",
+              "difficulty": "hard",
+              "prompt": "How does endosymbiosis between reef-building stony corals and zooxanthellae algae support productive coral reef ecosystems in nutrient-poor waters?",
+              "options": [
+                "A. Corals eat the algae for food",
+                "B. Algae live inside coral tissues and photosynthesize, providing glucose and glycerol to the coral host in exchange for shelter and metabolic waste nutrients (N and P)",
+                "C. Algae produce calcium carbonate directly",
+                "D. Corals use algae as eyes"
+              ],
+              "correctAnswer": "B. Algae live inside coral tissues and photosynthesize, providing glucose and glycerol to the coral host in exchange for shelter and metabolic waste nutrients (N and P)",
+              "hint": "Symbiotic algae recycle metabolic wastes into sugars, allowing reef structures to grow in nutrient-poor waters.",
+              "workedSolution": "Symbiotic algae recycle metabolic wastes into sugars, allowing reef structures to grow in nutrient-poor waters.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A46",
+              "difficulty": "hard",
+              "prompt": "Why do seeds of certain savannah trees require scorching by a bushfire before they can germinate?",
+              "options": [
+                "A. Fire turns the seed into a plant instantly",
+                "B. Intense heat cracks tough, impermeable seed coats (scarification) and clears competing ground cover, preparing a fertile post-fire seedbed",
+                "C. The seeds are made of coal",
+                "D. Ash feeds the seeds with water"
+              ],
+              "correctAnswer": "B. Intense heat cracks tough, impermeable seed coats (scarification) and clears competing ground cover, preparing a fertile post-fire seedbed",
+              "hint": "Thermal scarification breaks physical seed dormancy, timing germination to coincide with clear ground and post-fire ash.",
+              "workedSolution": "Thermal scarification breaks physical seed dormancy, timing germination to coincide with clear ground and post-fire ash.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A47",
+              "difficulty": "hard",
+              "prompt": "How does the lateral line sensory system help pelagic schooling fish coordinate movement and avoid predators?",
+              "options": [
+                "A. It produces light",
+                "B. Specialized mechanoreceptive hair cells detect subtle pressure changes and water displacements produced by neighboring fish and predators",
+                "C. It tastes the salinity of seawater",
+                "D. It generates an electric shock"
+              ],
+              "correctAnswer": "B. Specialized mechanoreceptive hair cells detect subtle pressure changes and water displacements produced by neighboring fish and predators",
+              "hint": "Neuromast receptors in the lateral line detect water pressure waves, helping schools swim together and evade attacks.",
+              "workedSolution": "Neuromast receptors in the lateral line detect water pressure waves, helping schools swim together and evade attacks.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A48",
+              "difficulty": "hard",
+              "prompt": "Why do high-altitude Andean and Tibetan humans exhibit distinct physiological traits for living in low atmospheric oxygen?",
+              "options": [
+                "A. They have no lungs",
+                "B. Evolutionary adaptations like larger lung capacities, higher resting ventilation rates, and enhanced capillary density improve oxygen delivery",
+                "C. They stop producing red blood cells",
+                "D. Their bodies absorb oxygen through the skin"
+              ],
+              "correctAnswer": "B. Evolutionary adaptations like larger lung capacities, higher resting ventilation rates, and enhanced capillary density improve oxygen delivery",
+              "hint": "High-altitude populations have evolved adaptations like expanded lung volume and capillary networks to cope with low oxygen.",
+              "workedSolution": "High-altitude populations have evolved adaptations like expanded lung volume and capillary networks to cope with low oxygen.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A49",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor limiting the maximum height to which tall redwood trees can transport water to canopy foliage?",
+              "options": [
+                "A. Sunlight strength",
+                "B. Gravity and xylem conduit friction create high hydrostatic tension; at around 120–130 meters, water columns reach cavitation limits (xylem embolism)",
+                "C. Roots running out of soil",
+                "D. Wind blowing leaves off"
+              ],
+              "correctAnswer": "B. Gravity and xylem conduit friction create high hydrostatic tension; at around 120–130 meters, water columns reach cavitation limits (xylem embolism)",
+              "hint": "Gravity and frictional resistance cap the negative water potential trees can maintain before air bubbles (embolisms) break the water columns.",
+              "workedSolution": "Gravity and frictional resistance cap the negative water potential trees can maintain before air bubbles (embolisms) break the water columns.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_ECO_A50",
+              "difficulty": "hard",
+              "prompt": "Which combination of factors demonstrates an ecosystem maintaining dynamic biological equilibrium (homeostasis)?",
+              "options": [
+                "A. All herbivores die, leaving only plants",
+                "B. Continuous nutrient recycling by decomposers, balanced predator-prey population oscillations, and negative feedback loops stabilizing community composition",
+                "C. Continuous immigration of new predators until prey is gone",
+                "D. A single dominant tree species replacing all other organisms"
+              ],
+              "correctAnswer": "B. Continuous nutrient recycling by decomposers, balanced predator-prey population oscillations, and negative feedback loops stabilizing community composition",
+              "hint": "Ecosystem balance relies on ongoing nutrient cycling, self-correcting population feedbacks, and community stability.",
+              "workedSolution": "Ecosystem balance relies on ongoing nutrient cycling, self-correcting population feedbacks, and community stability.",
+              "points": 1,
+              "learningCompetency": "B7.3.3.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -19803,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -19999,7 +22520,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -20195,7 +22716,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -20392,7 +22913,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -20590,7 +23111,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -20788,7 +23309,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -20981,7 +23502,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -21176,7 +23697,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -21371,7 +23892,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -21567,7 +24088,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -21764,7 +24285,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-02T21:25:48.627Z"
+    "updatedAt": "2026-10-02T21:49:25.433Z"
   }
 ];
 
@@ -37417,7 +39938,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "The Solar System & Space Dynamics (Inner/Outer Planets, Gravitation & Satellites)",
     "order": 22,
     "notes": {
-      "summaryMarkdown": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### Overview & Celestial Inventory\nThe **solar system** consists of our central star, the Sun, and all celestial bodies gravitationally bound in orbital motion around it: eight major planets, recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), natural satellites (moons), and countless millions of interplanetary debris including asteroids, comets, and meteoroids.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Orbital Architecture of the Inner Solar System\n\nBelow is a scale vector diagram depicting the elliptical orbits of Mercury, Venus, Earth, and Mars around the Sun, bounded by the Asteroid Belt:\n\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"25%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><radialGradient id=\"earthColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#1e3a8a\"/></radialGradient><radialGradient id=\"marsColor\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"55%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"venusColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"60%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#a16207\"/></radialGradient><radialGradient id=\"mercColor\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"65%\" stop-color=\"#94a3b8\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><linearGradient id=\"spaceBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#0b1329\"/><stop offset=\"100%\" stop-color=\"#030712\"/></linearGradient></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"url(#spaceBack)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"45\" cy=\"40\" r=\"1\"/><circle cx=\"120\" cy=\"80\" r=\"1.2\"/><circle cx=\"230\" cy=\"35\" r=\"0.8\"/><circle cx=\"680\" cy=\"60\" r=\"1.5\"/><circle cx=\"710\" cy=\"140\" r=\"0.8\"/><circle cx=\"60\" cy=\"390\" r=\"1.2\"/><circle cx=\"190\" cy=\"410\" r=\"0.8\"/><circle cx=\"640\" cy=\"380\" r=\"1.2\"/><circle cx=\"700\" cy=\"330\" r=\"1\"/><circle cx=\"520\" cy=\"30\" r=\"1.5\"/><circle cx=\"400\" cy=\"20\" r=\"1\"/></g><ellipse cx=\"380\" cy=\"220\" rx=\"90\" ry=\"38\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"150\" ry=\"62\" fill=\"none\" stroke=\"#eab308\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"215\" ry=\"90\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"275\" ry=\"118\" fill=\"none\" stroke=\"#f87171\" stroke-width=\"1.2\" stroke-dasharray=\"3 3\" opacity=\"0.6\"/><ellipse cx=\"380\" cy=\"220\" rx=\"340\" ry=\"150\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"7\" stroke-dasharray=\"2 8\" opacity=\"0.4\"/><text x=\"380\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\">ASTEROID BELT (BOUNDARY TO GAS GIANTS)</text><circle cx=\"380\" cy=\"220\" r=\"34\" fill=\"url(#sunGlow)\"/><circle cx=\"380\" cy=\"220\" r=\"42\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.5\" opacity=\"0.4\"/><text x=\"380\" y=\"224\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(305, 198)\"><circle cx=\"0\" cy=\"0\" r=\"6\" fill=\"url(#mercColor)\" stroke=\"#64748b\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"-8\" x2=\"-30\" y2=\"-35\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"-35\" y=\"-40\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(250, 255)\"><circle cx=\"0\" cy=\"0\" r=\"11\" fill=\"url(#venusColor)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><line x1=\"0\" y1=\"13\" x2=\"-30\" y2=\"45\" stroke=\"#eab308\" stroke-width=\"1\"/><text x=\"-35\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(545, 160)\"><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#earthColor)\" stroke=\"#60a5fa\" stroke-width=\"1\"/><circle cx=\"16\" cy=\"-10\" r=\"3\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-15\" x2=\"25\" y2=\"-40\" stroke=\"#60a5fa\" stroke-width=\"1\"/><text x=\"30\" y=\"-42\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth (with Moon)</text></g><g transform=\"translate(600, 275)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#marsColor)\" stroke=\"#dc2626\" stroke-width=\"1\"/><line x1=\"0\" y1=\"10\" x2=\"25\" y2=\"35\" stroke=\"#f87171\" stroke-width=\"1\"/><text x=\"30\" y=\"45\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars (Red Planet)</text></g><path d=\"M 480 320 Q 560 305 630 330\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><polygon points=\"635,330 622,324 624,335\" fill=\"#f59e0b\"/><text x=\"545\" y=\"345\" font-family=\"sans-serif\" font-size=\"10\" font-style=\"italic\" fill=\"#fcd34d\">Elliptical Orbital Vector (Counterclockwise)</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
+      "summaryMarkdown": "# The Solar System: Inner Terrestrial Planets & Planetary Dynamics\n\n**Curriculum Indicator:** `B7.3.2.1.1` & `B7.3.2.1.2` (NaCCA Common Core Programme)  \n**Strand 3:** Systems | **Sub-Strand 2:** The Solar System (Inner / Terrestrial Planets & Planetary Dynamics)\n\n---\n\n## 1. Architecture of the Solar System\n\n### The Solar System: Overview of Celestial Bodies\nThe solar system is a vast, gravitationally bound cosmic family centered around our local star, the Sun. Revolving around the Sun in elliptical paths are eight major planets arranged in sequence: the four inner rocky worlds (Mercury, Venus, Earth, and Mars), followed by the Asteroid Belt, and the four outer giant worlds (Jupiter, Saturn, Uranus, and Neptune). The system also houses officially recognized dwarf planets (such as Pluto, Ceres, Makemake, Haumea, and Eris), hundreds of planetary moons, and millions of wandering asteroids, glowing comets, and meteoroids. While this curriculum unit pays special attention to the physical characteristics and movements of the four inner terrestrial planets, understanding the complete layout of our cosmic neighborhood provides the essential foundation for all astronomical study.\n\n### Planetary Sequence by Distance from the Sun\nIn increasing order of distance outward from the Sun, the eight recognized planets are:\n1. **Mercury** (Closest, terrestrial world)\n2. **Venus** (Second, runaway greenhouse world)\n3. **Earth** (Third, our living blue planet)\n4. **Mars** (Fourth, the red terrestrial desert)\n5. **Jupiter** (Fifth, largest gas giant)\n6. **Saturn** (Sixth, ringed gas giant)\n7. **Uranus** (Seventh, tilted ice giant)\n8. **Neptune** (Eighth, outermost stormy ice giant)\n\n### The Asteroid Belt: The Natural Boundary\nThe **Asteroid Belt** is a broad interplanetary doughnut-shaped ring of rocky, metallic, and carbonaceous fragments situated between the orbits of **Mars** and **Jupiter** (approximately 2.2 to 3.2 AU from the Sun). It acts as a clear natural boundary separating the four dense, rocky **inner planets** from the four massive **outer gas and ice giants**.\n\n### Defining Characteristics of Inner (Terrestrial) Planets\n* **Composition:** Composed primarily of solid silicate rock, minerals, and heavy metallic nickel-iron cores.\n* **Density & Crust:** Possess high average densities (3.9 to 5.5 g/cm³) and solid, cratered geological surfaces.\n* **Ring Systems:** Possess **zero** planetary ring systems around them.\n* **Moons (Satellites):** Possess very few or no natural satellites (Mercury has 0, Venus has 0, Earth has 1, Mars has 2).\n* **Orbital Speed:** Travel in smaller orbital ellipses with much higher orbital velocities (e.g., Mercury speeds around the Sun at ≈ 47.4 km/s) compared to outer planets.\n\n---\n\n### Figure 8.1: Complete Orbital Architecture of the Solar System\n\nComprehensive vector diagram illustrating the Sun, all eight major planets in their sequential elliptical orbits, the dividing Asteroid Belt, an incoming comet, and a meteor trail:\n\n<svg width=\"820\" height=\"480\" viewBox=\"0 0 820 480\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunGlowFull\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#ffffff\"/><stop offset=\"20%\" stop-color=\"#fef08a\"/><stop offset=\"55%\" stop-color=\"#f59e0b\"/><stop offset=\"85%\" stop-color=\"#ea580c\"/><stop offset=\"100%\" stop-color=\"#c2410c\"/></radialGradient><radialGradient id=\"mercGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#e2e8f0\"/><stop offset=\"100%\" stop-color=\"#64748b\"/></radialGradient><radialGradient id=\"venusGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fef08a\"/><stop offset=\"65%\" stop-color=\"#eab308\"/><stop offset=\"100%\" stop-color=\"#854d0e\"/></radialGradient><radialGradient id=\"earthGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"50%\" stop-color=\"#2563eb\"/><stop offset=\"85%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fca5a5\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient><radialGradient id=\"jupGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#ffedd5\"/><stop offset=\"40%\" stop-color=\"#fb923c\"/><stop offset=\"70%\" stop-color=\"#c2410c\"/><stop offset=\"100%\" stop-color=\"#7c2d12\"/></radialGradient><radialGradient id=\"satGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fef9c3\"/><stop offset=\"50%\" stop-color=\"#fde047\"/><stop offset=\"80%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"uranGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#cffafe\"/><stop offset=\"60%\" stop-color=\"#22d3ee\"/><stop offset=\"100%\" stop-color=\"#0891b2\"/></radialGradient><radialGradient id=\"nepGrad\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#93c5fd\"/><stop offset=\"60%\" stop-color=\"#3b82f6\"/><stop offset=\"100%\" stop-color=\"#1d4ed8\"/></radialGradient><linearGradient id=\"spaceCanvas\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#020617\"/><stop offset=\"50%\" stop-color=\"#080f26\"/><stop offset=\"100%\" stop-color=\"#020617\"/></linearGradient><linearGradient id=\"cometTail\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#ffffff\" stop-opacity=\"0.9\"/><stop offset=\"40%\" stop-color=\"#38bdf8\" stop-opacity=\"0.6\"/><stop offset=\"100%\" stop-color=\"#0284c7\" stop-opacity=\"0\"/></linearGradient><linearGradient id=\"meteorTail\" x1=\"100%\" y1=\"0%\" x2=\"0%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#fed7aa\" stop-opacity=\"0.9\"/><stop offset=\"100%\" stop-color=\"#ea580c\" stop-opacity=\"0\"/></linearGradient></defs><rect width=\"820\" height=\"480\" rx=\"14\" fill=\"url(#spaceCanvas)\" stroke=\"#1e293b\" stroke-width=\"2\"/><g fill=\"#ffffff\" opacity=\"0.55\"><circle cx=\"35\" cy=\"35\" r=\"0.9\"/><circle cx=\"90\" cy=\"80\" r=\"1.2\"/><circle cx=\"160\" cy=\"45\" r=\"0.8\"/><circle cx=\"240\" cy=\"30\" r=\"1.4\"/><circle cx=\"580\" cy=\"35\" r=\"1\"/><circle cx=\"670\" cy=\"70\" r=\"1.3\"/><circle cx=\"750\" cy=\"40\" r=\"0.8\"/><circle cx=\"790\" cy=\"110\" r=\"1.1\"/><circle cx=\"50\" cy=\"420\" r=\"1.2\"/><circle cx=\"110\" cy=\"450\" r=\"0.8\"/><circle cx=\"220\" cy=\"430\" r=\"1.1\"/><circle cx=\"690\" cy=\"440\" r=\"1.3\"/><circle cx=\"760\" cy=\"410\" r=\"0.9\"/><circle cx=\"720\" cy=\"280\" r=\"1\"/><circle cx=\"45\" cy=\"240\" r=\"1.1\"/></g><g id=\"celestial_debris\"><path d=\"M 100 65 L 180 115\" stroke=\"url(#cometTail)\" stroke-width=\"4\" stroke-linecap=\"round\" opacity=\"0.85\"/><circle cx=\"100\" cy=\"65\" r=\"3.5\" fill=\"#ffffff\"/><text x=\"105\" y=\"55\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#7dd3fc\">Comet</text><path d=\"M 630 380 L 580 415\" stroke=\"url(#meteorTail)\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.8\"/><circle cx=\"630\" cy=\"380\" r=\"1.8\" fill=\"#fed7aa\"/><text x=\"635\" y=\"375\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#fdba74\">Meteoroid</text></g><g id=\"planetary_orbits\" fill=\"none\" stroke-width=\"1.1\" opacity=\"0.55\"><ellipse cx=\"410\" cy=\"240\" rx=\"60\" ry=\"24\" stroke=\"#94a3b8\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"95\" ry=\"38\" stroke=\"#eab308\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"135\" ry=\"54\" stroke=\"#60a5fa\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"175\" ry=\"70\" stroke=\"#f87171\" stroke-dasharray=\"3 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"220\" ry=\"88\" stroke=\"#cbd5e1\" stroke-width=\"5\" stroke-dasharray=\"2 6\" opacity=\"0.45\"/><ellipse cx=\"410\" cy=\"240\" rx=\"265\" ry=\"106\" stroke=\"#fb923c\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"315\" ry=\"126\" stroke=\"#fde047\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"360\" ry=\"144\" stroke=\"#22d3ee\" stroke-dasharray=\"4 3\"/><ellipse cx=\"410\" cy=\"240\" rx=\"395\" ry=\"158\" stroke=\"#60a5fa\" stroke-dasharray=\"4 3\"/></g><text x=\"410\" y=\"145\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\" text-anchor=\"middle\" letter-spacing=\"1.5\">ASTEROID BELT (INNER / OUTER DIVIDING LINE)</text><circle cx=\"410\" cy=\"240\" r=\"26\" fill=\"url(#sunGlowFull)\"/><circle cx=\"410\" cy=\"240\" r=\"32\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.2\" opacity=\"0.5\"/><text x=\"410\" y=\"244\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">SUN</text><g transform=\"translate(365, 224)\"><circle cx=\"0\" cy=\"0\" r=\"4.5\" fill=\"url(#mercGrad)\" stroke=\"#94a3b8\" stroke-width=\"0.6\"/><line x1=\"0\" y1=\"-6\" x2=\"-18\" y2=\"-22\" stroke=\"#94a3b8\" stroke-width=\"0.8\"/><text x=\"-22\" y=\"-26\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#cbd5e1\">1. Mercury</text></g><g transform=\"translate(335, 258)\"><circle cx=\"0\" cy=\"0\" r=\"7\" fill=\"url(#venusGrad)\" stroke=\"#ca8a04\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"9\" x2=\"-15\" y2=\"25\" stroke=\"#eab308\" stroke-width=\"0.8\"/><text x=\"-18\" y=\"35\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fef08a\">2. Venus</text></g><g transform=\"translate(515, 206)\"><circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"url(#earthGrad)\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><circle cx=\"11\" cy=\"-6\" r=\"2\" fill=\"#cbd5e1\"/><line x1=\"0\" y1=\"-10\" x2=\"15\" y2=\"-25\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><text x=\"18\" y=\"-28\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#93c5fd\">3. Earth</text></g><g transform=\"translate(555, 280)\"><circle cx=\"0\" cy=\"0\" r=\"5.5\" fill=\"url(#marsGrad)\" stroke=\"#dc2626\" stroke-width=\"0.8\"/><line x1=\"0\" y1=\"8\" x2=\"15\" y2=\"22\" stroke=\"#f87171\" stroke-width=\"0.8\"/><text x=\"18\" y=\"32\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#fca5a5\">4. Mars</text></g><g transform=\"translate(640, 190)\"><circle cx=\"0\" cy=\"0\" r=\"17\" fill=\"url(#jupGrad)\" stroke=\"#c2410c\" stroke-width=\"1\"/><ellipse cx=\"6\" cy=\"4\" rx=\"4\" ry=\"2.5\" fill=\"#7c2d12\" opacity=\"0.75\"/><line x1=\"0\" y1=\"-20\" x2=\"20\" y2=\"-35\" stroke=\"#fb923c\" stroke-width=\"0.8\"/><text x=\"24\" y=\"-38\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fed7aa\">5. Jupiter</text></g><g transform=\"translate(130, 290)\"><ellipse cx=\"0\" cy=\"0\" rx=\"24\" ry=\"7\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.8\" opacity=\"0.85\"/><circle cx=\"0\" cy=\"0\" r=\"13\" fill=\"url(#satGrad)\" stroke=\"#ca8a04\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"0\" rx=\"24\" ry=\"7\" transform=\"rotate(-18)\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1\" opacity=\"0.6\"/><line x1=\"0\" y1=\"16\" x2=\"-15\" y2=\"32\" stroke=\"#fde047\" stroke-width=\"0.8\"/><text x=\"-18\" y=\"42\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fef08a\">6. Saturn</text></g><g transform=\"translate(745, 210)\"><circle cx=\"0\" cy=\"0\" r=\"10\" fill=\"url(#uranGrad)\" stroke=\"#0891b2\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"0\" rx=\"14\" ry=\"4\" transform=\"rotate(75)\" fill=\"none\" stroke=\"#a5f3fc\" stroke-width=\"0.8\" opacity=\"0.7\"/><line x1=\"0\" y1=\"-13\" x2=\"15\" y2=\"-26\" stroke=\"#22d3ee\" stroke-width=\"0.8\"/><text x=\"18\" y=\"-29\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#a5f3fc\">7. Uranus</text></g><g transform=\"translate(85, 175)\"><circle cx=\"0\" cy=\"0\" r=\"10\" fill=\"url(#nepGrad)\" stroke=\"#1d4ed8\" stroke-width=\"1\"/><line x1=\"0\" y1=\"-13\" x2=\"-18\" y2=\"-26\" stroke=\"#60a5fa\" stroke-width=\"0.8\"/><text x=\"-22\" y=\"-29\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#93c5fd\">8. Neptune</text></g><path d=\"M 470 330 Q 550 320 620 345\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"1.8\" stroke-dasharray=\"4 3\"/><polygon points=\"625,345 613,340 615,350\" fill=\"#f59e0b\"/><text x=\"545\" y=\"360\" font-family=\"sans-serif\" font-size=\"9\" font-style=\"italic\" fill=\"#fde047\">Counterclockwise Orbital Vector</text></svg>\n\n---\n\n## 2. Physical Characteristics of the Inner (Terrestrial) Planets\n\n### Comparative Planetary Analysis\n\nThe four terrestrial worlds share a solid silicate mantle and crust, but atmospheric pressure, thermal regimes, volcanism, and distances from the Sun make each world radically distinct.\n\n| Planet Name | Position from Sun | Mean Distance from Sun | Known Natural Satellites | Atmosphere & Thermal Properties | Surface & Geological Landscape |\n| :--- | :---: | :---: | :---: | :--- | :--- |\n| **Mercury** | 1st | ≈ 58 million km | **0** (No moons) | Extremely thin, tenuous exosphere; experiences extreme temperature swings from scorchingly hot daylight (430°C) to freezing night (-180°C). | Heavily cratered, barren rock resembling Earth's Moon; weak global magnetic field; slow rotation (59 Earth days per day). |\n| **Venus** | 2nd | ≈ 108 million km | **0** (No moons) | Thick, crushing atmosphere composed of 96% carbon dioxide (CO₂) with dense sulfuric acid clouds; traps heat in a runaway greenhouse effect. | **Hottest planet in the solar system** (≈ 465°C, hot enough to melt lead); similar in size to Earth; displays retrograde (clockwise) rotation. |\n| **Earth** | 3rd | ≈ 150 million km | **1** (The Moon, which creates oceanic tides) | Rich in nitrogen (78%) and oxygen (21%); possesses an ozone layer (O₃) shielding life from solar UV radiation. | **Only planet known to harbor life**; liquid water covers ≈ 71% of surface; diverse terrain (mountains, valleys, plateaus); tilted on its axis at 23.5°. |\n| **Mars** | 4th | ≈ 228 million km | **2** small moons (Phobos & Deimos) | Thin atmosphere predominantly of carbon dioxide; cold desert temperatures with polar caps of water ice and frozen carbon dioxide. | Distinct reddish surface rich in iron-oxide rust; features gigantic extinct volcanoes (Olympus Mons), vast canyons (Valles Marineris), and dust storms. |\n\n### Why Planet Earth Sustains Living Organisms\nEarth is uniquely positioned within the Solar System to support biological life due to five critical factors:\n1. **Abundance of Liquid Water:** Over 71% of Earth's surface is covered by liquid oceans, acting as a universal biological solvent and planetary thermal buffer.\n2. **Atmospheric Composition:** An atmosphere containing 21% free molecular oxygen (O₂) for aerobic respiration and vital greenhouse gases (CO₂, H₂O) that maintain a livable global mean temperature (15°C).\n3. **The 'Goldilocks' Habitable Zone:** Situated at the ideal distance (≈ 150 million km or 1 Astronomical Unit) from the Sun, where radiant energy allows water to exist simultaneously as solid, liquid, and gas.\n4. **Stratospheric Ozone Shield (O₃):** Absorbs and filters out mutagenic, lethal solar ultraviolet (UV-B and UV-C) rays.\n5. **Geomagnetic Magnetosphere:** Generated by Earth's molten metallic outer core, shielding our atmosphere and biosphere from ionizing cosmic rays and the solar wind.\n\n---\n\n### Figure 8.2: Relative Size Scale of the Four Terrestrial Planets\n\nBelow is the comparative scale diagram highlighting the relative equatorial diameters of Mercury, Venus, Earth, and Mars:\n\n<svg width=\"680\" height=\"220\" viewBox=\"0 0 680 220\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"mercRel\" cx=\"40%\" cy=\"40%\" r=\"60%\"><stop offset=\"0%\" stop-color=\"#cbd5e1\"/><stop offset=\"100%\" stop-color=\"#475569\"/></radialGradient><radialGradient id=\"venusRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#fde047\"/><stop offset=\"60%\" stop-color=\"#ca8a04\"/><stop offset=\"100%\" stop-color=\"#713f12\"/></radialGradient><radialGradient id=\"earthRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#1d4ed8\"/><stop offset=\"80%\" stop-color=\"#15803d\"/><stop offset=\"100%\" stop-color=\"#0f172a\"/></radialGradient><radialGradient id=\"marsRel\" cx=\"35%\" cy=\"35%\" r=\"65%\"><stop offset=\"0%\" stop-color=\"#f87171\"/><stop offset=\"60%\" stop-color=\"#dc2626\"/><stop offset=\"100%\" stop-color=\"#7f1d1d\"/></radialGradient></defs><rect width=\"680\" height=\"220\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"340\" y=\"28\" font-family=\"sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">RELATIVE SIZE SCALE OF THE TERRESTRIAL PLANETS</text><g transform=\"translate(80, 110)\"><circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"url(#mercRel)\" stroke=\"#334155\" stroke-width=\"1.2\"/><text x=\"0\" y=\"45\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mercury</text><text x=\"0\" y=\"60\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">4,880 km</text></g><g transform=\"translate(230, 110)\"><circle cx=\"0\" cy=\"0\" r=\"47\" fill=\"url(#venusRel)\" stroke=\"#a16207\" stroke-width=\"1.5\"/><text x=\"0\" y=\"72\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Venus</text><text x=\"0\" y=\"87\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,104 km</text></g><g transform=\"translate(400, 110)\"><circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"url(#earthRel)\" stroke=\"#1e40af\" stroke-width=\"1.5\"/><text x=\"0\" y=\"75\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Earth</text><text x=\"0\" y=\"90\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">12,742 km</text></g><g transform=\"translate(560, 110)\"><circle cx=\"0\" cy=\"0\" r=\"27\" fill=\"url(#marsRel)\" stroke=\"#991b1b\" stroke-width=\"1.2\"/><text x=\"0\" y=\"52\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Mars</text><text x=\"0\" y=\"67\" font-family=\"sans-serif\" font-size=\"10\" fill=\"#64748b\" text-anchor=\"middle\">6,779 km</text></g></svg>\n\n---\n\n## 3. Orbital Dynamics: Rotation vs. Revolution\n\n### Fundamental Concepts\n* **Planetary Rotation:** The spinning motion of an astronomical body around its own internal imaginary polar axis connecting the North and South Poles. Earth rotates from **West to East** (counterclockwise when viewed looking down at the North Pole), completing one full rotation in approximately **24 hours** (one solar day).\n* **Planetary Revolution:** The continuous orbital journey of an astronomical body traveling around the central Sun along an elongated, elliptical trajectory called an **orbit**. Earth revolves around the Sun at ≈ 29.8 km/s, completing one full circuit in **365.25 days** (one solar year).\n\n### Orbital Movement of Mercury and Venus\n* **Elliptical Orbital Paths:** Both planets travel along elliptical pathways that are slightly eccentric rather than perfect circles, obeying Kepler's laws of planetary motion.\n* **Direction of Motion:** Mercury and Venus orbit the Sun in the same counterclockwise direction as Earth when viewed from above the solar north pole.\n* **Orbital Speed Differences:** Mercury, being closest to the Sun's immense gravitational well, races along at an average speed of 47.4 km/s, completing an orbit in only **88 Earth days**. Venus orbits farther out at 35.0 km/s, completing its revolution in **225 Earth days**.\n* **Retrograde Rotation of Venus:** Uniquely among terrestrial worlds, Venus rotates clockwise on its axis (**retrograde rotation**) very slowly (243 Earth days per rotation), meaning a single solar day on Venus is longer than its orbital year!\n\n---\n\n### Comparative Distinctions: Rotation versus Revolution\n\n| Comparative Metric | Planetary Rotation | Planetary Revolution |\n| :--- | :--- | :--- |\n| **Definition** | Spinning of an object around its own internal polar axis. | Movement of an object around another celestial body along an elliptical orbit. |\n| **Axis / Path** | Rotates on an internal axis tilted at 23.5° from the orbital perpendicular. | Revolves in an external elliptical plane around the Sun. |\n| **Time Completed** | 24 hours (1 solar day). | 365¼ days (365.25 days = 1 solar year). |\n| **Observable Phenomena** | • Alternate cycle of Day and Night<br>• Changing directions and lengths of daytime shadows<br>• Deflection of winds and ocean currents (Coriolis effect)<br>• Shift in swinging planes of a Foucault pendulum | • Annual cycle of the Four Seasons (Spring, Summer, Autumn, Winter)<br>• Apparent northward and southward migration of the Sun across the Equator<br>• Varying lengths of day and night throughout the year<br>• Addition of a Leap Year day every 4 years (0.25 × 4 = 1 day) |\n\n---\n\n### Figure 8.3: Illustration of Planetary Rotation and Orbital Revolution\n\nBelow is the comparative dynamic model illustrating how diurnal axial rotation produces day and night, while tilted orbital revolution drives seasonal variations across Earth:\n\n<svg width=\"740\" height=\"340\" viewBox=\"0 0 740 340\" xmlns=\"http://www.w3.org/2000/svg\"><defs><radialGradient id=\"sunRays\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#fff\"/><stop offset=\"30%\" stop-color=\"#fde047\"/><stop offset=\"70%\" stop-color=\"#f97316\"/><stop offset=\"100%\" stop-color=\"#ea580c\"/></radialGradient><linearGradient id=\"dayNight\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"50%\" stop-color=\"#60a5fa\"/><stop offset=\"50%\" stop-color=\"#0f172a\"/></linearGradient></defs><rect width=\"740\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><g transform=\"translate(50, 40)\"><rect width=\"290\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"145\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY ROTATION (24 Hours)</text><line x1=\"20\" y1=\"130\" x2=\"70\" y2=\"130\" stroke=\"#f59e0b\" stroke-width=\"4\" stroke-linecap=\"round\"/><line x1=\"20\" y1=\"115\" x2=\"65\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><line x1=\"20\" y1=\"145\" x2=\"65\" y2=\"145\" stroke=\"#f59e0b\" stroke-width=\"2.5\"/><text x=\"40\" y=\"100\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#d97706\">Sunlight</text><line x1=\"115\" y1=\"50\" x2=\"175\" y2=\"210\" stroke=\"#dc2626\" stroke-width=\"2.5\" stroke-dasharray=\"4 2\"/><text x=\"105\" y=\"45\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">North Pole</text><text x=\"180\" y=\"225\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">South Pole</text><circle cx=\"145\" cy=\"130\" r=\"50\" fill=\"url(#dayNight)\" stroke=\"#1e293b\" stroke-width=\"2\"/><path d=\"M 105 155 Q 145 175 185 155\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2.5\"/><polygon points=\"188,155 178,150 180,162\" fill=\"#fde047Client\" fill-opacity=\"1\"/><text x=\"120\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\">Day</text><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#94a3b8\">Night</text><text x=\"145\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Spin on Tilted Axis → Day &amp; Night</text></g><g transform=\"translate(390, 40)\"><rect width=\"300\" height=\"260\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"150\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORBITAL REVOLUTION (365.25 Days)</text><ellipse cx=\"150\" cy=\"140\" rx=\"115\" ry=\"65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><circle cx=\"150\" cy=\"140\" r=\"26\" fill=\"url(#sunRays)\"/><text x=\"150\" y=\"144\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Sun</text><circle cx=\"150\" cy=\"75\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"58\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">June (Northern Summer)</text><circle cx=\"150\" cy=\"205\" r=\"12\" fill=\"#2563eb\" stroke=\"#1e3a8a\" stroke-width=\"1.2\"/><text x=\"150\" y=\"228\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e3a8a\" text-anchor=\"middle\">December (Northern Winter)</text><circle cx=\"35\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><circle cx=\"265\" cy=\"140\" r=\"10\" fill=\"#3b82f6\"/><path d=\"M 70 95 Q 50 115 45 130\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"45,135 40,123 50,126\" fill=\"#0284c7\"/><text x=\"150\" y=\"248\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Elliptical Journey → 4 Seasons</text></g></svg>\n\n---\n\n## 4. Observable Phenomena Caused by Earth's Movements\n\n### Phenomena Resulting from Axial Rotation (24 Hours)\n1. **The Day and Night Cycle:** Because Earth is an opaque sphere, only the hemisphere facing the Sun receives direct illumination (Daytime), while the opposite hemisphere lies in shadow (Night). Continuous west-to-east spinning shifts countries across the terminator line every 24 hours.\n2. **Diurnal Shadow Transitions:** As the Sun appears to traverse the sky from East to West, ground shadows cast by vertical objects transition predictably: long shadows pointing west at sunrise, shortest shadows pointing north/south at solar noon, and long shadows pointing east before sunset.\n3. **The Coriolis Effect:** Earth's rotational velocity varies by latitude (fastest at the Equator ≈ 1670 km/h, zero at the poles). This difference deflects moving wind masses and ocean currents to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere.\n\n### Phenomena Resulting from Orbital Revolution (365.25 Days)\n1. **The Four Seasons:** Earth's rotational axis is tilted at an angle of 23.5° relative to the plane of its orbit. As Earth orbits the Sun, whichever hemisphere is tilted *toward* the Sun receives more direct, concentrated solar radiation and experiences longer daylight hours (Summer), while the hemisphere tilted *away* receives oblique rays and experiences shorter days (Winter).\n2. **Leap Year Mechanics:** A true solar year lasts 365 days and 6 hours (365.25 days). Standard civil calendars count exactly 365 days. The leftover 0.25 day (6 hours) accumulates over four consecutive years into one full day (0.25 × 4 = 1.0 day = 24 hours), which is added as February 29th every leap year.",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -39953,48 +42474,2422 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Ecosystems & Environmental Interdependence (Habitats, Trophic Levels, Food Webs & Pyramids)",
     "order": 25,
     "notes": {
-      "summaryMarkdown": "### Ecosystems, Ecological Niches & Environmental Adaptations\n* **NaCCA Curriculum Code:** `B7.3.3.1`\n* **Core Competency:** Differentiate biotic and abiotic components of ecosystems and identify physical adaptations of organisms to their habitats.\n\n#### 1. The Structure of an Ecosystem\nAn ecosystem is a self-sustaining ecological community comprising living (**biotic**) organisms interacting with their non-living physical (**abiotic**) environment:\n* **Biotic Components:**\n  * *Producers (Autotrophs):* Green plants and algae that synthesize organic food via photosynthesis.\n  * *Consumers (Heterotrophs):* Primary consumers (herbivores), secondary/tertiary consumers (carnivores, omnivores).\n  * *Decomposers (Saprotrophs):* Bacteria and fungi that recycle nutrients from dead organic matter.\n* **Abiotic Factors:** Sunlight, temperature, rainfall, humidity, soil pH, salinity, dissolved oxygen.\n\n#### 2. Major Habitat Types & Adaptations\n* **Terrestrial Habitats:**\n  * *Tropical Rainforest:* High canopy trees with buttress roots for structural stability; climbing epiphytes and lianas; arboreal animals with prehensile tails.\n  * *Savanna Grassland:* Drought-tolerant deciduous trees with thick fire-resistant bark; deep taproots; animals adapted for rapid running (herbivores and carnivores).\n* **Aquatic Habitats:**\n  * *Freshwater (Ponds, Rivers):* Submerged plants (*Ceratophyllum*) with flexible stems and dissected leaves; floating plants (*Pistia*) with spongy, aerenchymous air-filled tissues.\n  * *Marine / Estuarine (Mangroves):* Halophytic mangrove trees possessing specialized aerial breathing roots (**pneumatophores**) to access oxygen in waterlogged anaerobic mud, and salt-excreting leaf glands.",
+      "summaryMarkdown": "# CARD 09: ECOSYSTEM (COMPONENTS, BIOLOGICAL INTERACTIONS & ADAPTATIONS)\n**Strand 3: Systems** | **Sub-Strand 3: Ecosystem**  \n**Content Standard: B7.3.3.1** | **Indicator: B7.3.3.1.1**  \n**Curriculum Alignment: NaCCA Common Core Programme (Ghana Basic 7 / JHS 1)**\n\n---\n\n## 1. Ecological Fundamentals & Organizational Hierarchy\n\nEcology (derived from the Greek *oikos*, meaning \"household\" or \"home\", and *logos*, meaning \"study\") is the scientific study of the interactions that determine the distribution, abundance, and co-existence of living organisms and their relationships with the non-living physical and chemical environment.\n\nAn **ecosystem** represents the fundamental structural and functional unit of ecology. It is defined as a discrete, self-sustaining biological entity wherein living organisms (**biotic community**) interact dynamically with each other and with their non-living physical surroundings (**abiotic environment**) through continuous energy transfers and biogeochemical nutrient cycling.\n\n### 1.1 Hierarchical Levels of Ecological Organization\n\nEcologists categorize biological complexity into distinct, nested levels of organization:\n\n1. **Organism (Individual):**  \n   The basic unit of ecological study. A single, distinct living entity possessing genetic material, cellular organization, and physiological processes capable of independent survival and reproduction (e.g., an individual African elephant (*Loxodonta africana*), a tilapia fish, or a maize plant).\n\n2. **Species:**  \n   A group of natural populations whose individual members share common morphological, anatomical, and genetic traits, and possess the biological capacity to interbreed freely under natural conditions to produce viable, fertile offspring (e.g., *Homo sapiens*, *Oreochromis niloticus*).\n\n3. **Population:**  \n   The total number of individuals belonging to the exact same species occupying a designated geographic area at a specific point in time and capable of interbreeding (e.g., the population of kob antelopes in Shai Hills Resource Reserve, or the mudfish population in Lake Bosumtwi).\n\n4. **Biological Community:**  \n   An assemblage of interacting populations of different species cohabiting a shared physical environment or geographical area at the same time. Unlike a population, a community is inherently multispecific and involves complex inter-species ecological networks (e.g., the community of hardwood mahogany trees, epiphytic orchids, colobus monkeys, driver ants, and wood-decay fungi in Kakum National Park).\n\n5. **Ecosystem:**  \n   The integrated natural unit formed by the combination of the biological community (biotic factors) and the non-living physical habitat (abiotic factors), linked together by food webs and chemical nutrient cycles (e.g., a coastal mangrove swamp along the Volta estuary).\n\n6. **Biome:**  \n   A broad regional or subcontinental ecological zone characterized by distinctive macroclimates, soil conditions, and dominant vegetation types (e.g., the Guinea Savannah, Tropical Rainforest, or Coastal Scrub and Grassland of Ghana).\n\n7. **Ecosphere (Biosphere):**  \n   The global ecological system encompassing all living beings on Earth together with the atmospheric (troposphere), terrestrial (lithosphere), and aquatic (hydrosphere) zones that sustain life.\n\n---\n\n## 2. Classification of Ecosystems\n\nEcosystems occur in an immense variety of sizes and settings, ranging from microscopic micro-ecosystems (such as the interior of a decomposing fallen log on a forest floor) to macro-ecosystems (such as the Atlantic Ocean). They are classified based on origin and environmental medium:\n\n### 2.1 Classification by Origin and Human Intervention\n\n- **Natural Ecosystems:**  \n  Self-regulating biological entities that originate, evolve, and sustain themselves entirely through natural biological, geological, and atmospheric processes without human engineering or continual intervention.  \n  *Examples:* The moist evergreen rainforest of Ankasa Conservation Area, the savannah woodlands of Mole National Park, freshwater crater lakes like Lake Bosumtwi, and offshore marine reefs.\n\n- **Artificial (Man-Made / Anthropogenic) Ecosystems:**  \n  Habitats intentionally constructed, altered, or managed by human beings to meet agricultural, domestic, municipal, or recreational objectives. These systems are biologically simplified, unstable without human input, and require continuous energy inputs (fertilizers, supplemental feed, weeding, aeration).  \n  *Examples:* Commercial tilapia aquaculture fish ponds, irrigated rice paddies in Asutsuare, botanical gardens, municipal zoological parks, urban flower gardens, and artificial reservoirs (e.g., Lake Volta behind the Akosombo Dam).\n\n### 2.2 Classification by Environmental Medium\n\n- **Aquatic Ecosystems (Water-Based):**  \n  Covering over 70% of the Earth's surface, aquatic environments are buffered against sudden temperature fluctuations due to water's high specific heat capacity. Water buoyancy reduces gravitational stress on skeletal frames and provides a ready medium for gamete dispersal.  \n  - *Freshwater Habitats:* Low salinity (< 0.5 parts per thousand [ppt]). Subdivided into lentic (standing water: ponds, lakes, swamps) and lotic (flowing water: springs, streams, rivers). Organisms include water lilies (*Nymphaea*), duckweeds, tilapia, catfishes, freshwater snails, and dragonfly nymphs.  \n  - *Marine Habitats:* High salinity (~35 ppt). Oceans, coral reefs, and deep-sea abyssal plains. Organisms include sharks, mackerels, sea turtles, octopuses, and macroscopic kelp/algae.  \n  - *Estuarine / Brackish Habitats:* Ecotones where freshwater rivers meet the saline ocean (e.g., Keta Lagoon, Densu Delta). Salinity fluctuates dynamically between 0.5 and 30 ppt with oceanic tides. Dominated by red and black mangroves (*Rhizophora mangle*, *Avicennia germinans*) and mudskippers.\n\n- **Terrestrial Ecosystems (Land-Based):**  \n  Environments situated on solid continental landmasses. Terrestrial organisms face higher gravity, temperature extremes, rapid evaporation, and the risk of desiccation.  \n  - Major biomes include Tropical Rainforests, Tropical Moist Deciduous Forests, Guinea and Sudan Savannahs, Arid Deserts, Temperate Grasslands, Boreal Taiga, and Tundra.\n\n---\n\n## 3. Structural Components of an Ecosystem\n\nEvery functioning ecosystem comprises two intimately connected components: the **Biotic Component** and the **Abiotic Component**.\n\n<svg width=\"740\" height=\"380\" viewBox=\"0 0 740 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"sunSky\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#bae6fd\"/>\n      <stop offset=\"100%\" stop-color=\"#e0f2fe\"/>\n    </linearGradient>\n    <linearGradient id=\"soilGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\"/>\n      <stop offset=\"100%\" stop-color=\"#451a03\"/>\n    </linearGradient>\n    <linearGradient id=\"waterGrad\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n    <radialGradient id=\"sunGlow\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\"/>\n      <stop offset=\"70%\" stop-color=\"#f59e0b\"/>\n      <stop offset=\"100%\" stop-color=\"#d97706\"/>\n    </radialGradient>\n  </defs>\n  <rect width=\"740\" height=\"380\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"370\" y=\"28\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STRUCTURAL ARCHITECTURE OF AN ECOSYSTEM</text>\n  <text x=\"370\" y=\"46\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Continuous Interplay: Abiotic Physical Drivers ↔ Biotic Biological Communities</text>\n  \n  <!-- Sky background -->\n  <rect x=\"40\" y=\"65\" width=\"660\" height=\"200\" fill=\"url(#sunSky)\" rx=\"8\"/>\n  \n  <!-- Sun (Abiotic driver) -->\n  <circle cx=\"95\" cy=\"115\" r=\"32\" fill=\"url(#sunGlow)\" stroke=\"#d97706\" stroke-width=\"2\"/>\n  <line x1=\"95\" y1=\"75\" x2=\"95\" y2=\"60\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"95\" y1=\"155\" x2=\"95\" y2=\"170\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"55\" y1=\"115\" x2=\"40\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"135\" y1=\"115\" x2=\"150\" y2=\"115\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"67\" y1=\"87\" x2=\"56\" y2=\"76\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <line x1=\"123\" y1=\"143\" x2=\"134\" y2=\"154\" stroke=\"#f59e0b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n  <text x=\"95\" y=\"119\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Solar Energy</text>\n  \n  <!-- Atmospheric gases indicator -->\n  <rect x=\"170\" y=\"80\" width=\"130\" height=\"42\" rx=\"6\" fill=\"#ffffff\" fill-opacity=\"0.85\" stroke=\"#38bdf8\" stroke-width=\"1\"/>\n  <text x=\"235\" y=\"96\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Atmospheric Gases</text>\n  <text x=\"235\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#475569\" text-anchor=\"middle\">CO₂ for Photosynthesis • O₂ for Respiration</text>\n  \n  <!-- Soil profile -->\n  <rect x=\"40\" y=\"265\" width=\"460\" height=\"95\" fill=\"url(#soilGrad)\" rx=\"0 0 0 8\"/>\n  <text x=\"140\" y=\"350\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#fef08a\">Terrestrial Soil Zone (Nutrients &amp; Decomposers)</text>\n  \n  <!-- Aquatic profile -->\n  <path d=\"M 500 265 L 700 265 L 700 360 L 500 360 Z\" fill=\"url(#waterGrad)\"/>\n  <text x=\"600\" y=\"348\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Aquatic Zone (Dissolved O₂ &amp; Salts)</text>\n  \n  <!-- Producer Tree -->\n  <path d=\"M 215 265 L 215 175 Q 215 155 240 145 Q 265 155 265 175 L 265 265 Z\" fill=\"#854d0e\"/>\n  <circle cx=\"240\" cy=\"140\" r=\"48\" fill=\"#15803d\" stroke=\"#166534\" stroke-width=\"1.5\"/>\n  <circle cx=\"215\" cy=\"155\" r=\"30\" fill=\"#16a34a\" stroke=\"#166534\" stroke-width=\"1\"/>\n  <circle cx=\"265\" cy=\"155\" r=\"30\" fill=\"#16a34a\" stroke=\"#166534\" stroke-width=\"1\"/>\n  <text x=\"240\" y=\"140\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Autotrophic Producer</text>\n  <text x=\"240\" y=\"154\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#dcfce7\" text-anchor=\"middle\">(Photosynthetic Green Plant)</text>\n  \n  <!-- Consumer Animal -->\n  <ellipse cx=\"380\" cy=\"235\" rx=\"36\" ry=\"20\" fill=\"#b45309\" stroke=\"#78350f\"/>\n  <circle cx=\"415\" cy=\"223\" r=\"14\" fill=\"#b45309\" stroke=\"#78350f\"/>\n  <line x1=\"365\" y1=\"255\" x2=\"360\" y2=\"275\" stroke=\"#78350f\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <line x1=\"395\" y1=\"255\" x2=\"400\" y2=\"275\" stroke=\"#78350f\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <text x=\"380\" y=\"238\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Primary Consumer</text>\n  <text x=\"380\" y=\"249\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#fef3c7\" text-anchor=\"middle\">(Herbivorous Mammal)</text>\n  \n  <!-- Soil Decomposers & minerals -->\n  <ellipse cx=\"120\" cy=\"290\" rx=\"28\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#64748b\"/>\n  <text x=\"120\" y=\"294\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Rock / Minerals</text>\n  <circle cx=\"280\" cy=\"305\" r=\"4\" fill=\"#fef08a\"/>\n  <circle cx=\"300\" cy=\"315\" r=\"3.5\" fill=\"#fef08a\"/>\n  <circle cx=\"260\" cy=\"320\" r=\"4\" fill=\"#fef08a\"/>\n  <text x=\"280\" y=\"335\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" fill=\"#fef08a\" text-anchor=\"middle\">Decomposers (Bacteria &amp; Fungi)</text>\n  \n  <!-- Aquatic Organisms -->\n  <ellipse cx=\"585\" cy=\"290\" rx=\"24\" ry=\"9\" fill=\"#f87171\" stroke=\"#dc2626\"/>\n  <polygon points=\"609,290 622,284 622,296\" fill=\"#dc2626\"/>\n  <circle cx=\"572\" cy=\"288\" r=\"2\" fill=\"#ffffff\"/>\n  <text x=\"585\" y=\"307\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Aquatic Consumer (Fish)</text>\n  \n  <!-- Wind / Atmosphere arrow -->\n  <path d=\"M 330 140 Q 370 120 420 135\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"2\" stroke-dasharray=\"4\"/>\n  <polygon points=\"423,136 415,130 417,141\" fill=\"#0284c7\"/>\n  <text x=\"375\" y=\"125\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Wind &amp; Climate Driver</text>\n  \n  <!-- Callout tags -->\n  <rect x=\"520\" y=\"80\" width=\"165\" height=\"52\" rx=\"6\" fill=\"#ecfdf5\" stroke=\"#10b981\" stroke-width=\"1.2\"/>\n  <text x=\"602\" y=\"98\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#065f46\" text-anchor=\"middle\">Biotic Elements</text>\n  <text x=\"602\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#047857\" text-anchor=\"middle\">• Autotrophs (Producers)</text>\n  <text x=\"602\" y=\"124\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#047857\" text-anchor=\"middle\">• Heterotrophs &amp; Saprotrophs</text>\n  \n  <rect x=\"520\" y=\"145\" width=\"165\" height=\"52\" rx=\"6\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"1.2\"/>\n  <text x=\"602\" y=\"163\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#92400e\" text-anchor=\"middle\">Abiotic Elements</text>\n  <text x=\"602\" y=\"177\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"middle\">• Solar Energy, Temp, H₂O</text>\n  <text x=\"602\" y=\"189\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"middle\">• Soil Minerals, pH, Salinity</text>\n</svg>\n\n### 3.1 The Biotic Component (Living Biological Communities)\n\nThe biotic component includes all living cellular organisms residing within the ecosystem, categorized into three distinct trophic levels based on their mode of nutrition:\n\n1. **Autotrophs (Producers):**  \n   Self-feeding organisms capable of synthesizing energy-rich organic carbohydrates from simple inorganic molecules (carbon dioxide and water) using solar radiation through photosynthesis, or chemical energy through chemosynthesis. In terrestrial ecosystems, vascular green plants (trees, shrubs, grasses) predominate; in aquatic habitats, microscopic phytoplankton, cyanobacteria, and macro-algae form the foundational base of primary productivity.\n\n2. **Heterotrophs (Consumers):**  \n   Organisms that cannot manufacture their own food and must ingest other organisms or organic matter to acquire biochemical energy:  \n   - *Primary Consumers (Herbivores):* Feed exclusively on living plant tissues (e.g., grasshoppers, cattle, fruit bats, zooplankton).  \n   - *Secondary Consumers (Primary Carnivores):* Feed on herbivores (e.g., frogs consuming insects, lizards feeding on crickets).  \n   - *Tertiary and Quaternary Consumers (Top Carnivores):* Apex predators feeding on smaller carnivores (e.g., martial eagles, lions, leopards, killer whales).  \n   - *Omnivores:* Organisms whose diet spans multiple trophic levels, feeding on both plant and animal matter (e.g., humans, chimpanzees, domestic fowls, bush pigs).\n\n3. **Saprotrophs & Detritivores (Decomposers):**  \n   Essential biological recyclers that break down complex organic compounds found in dead biological matter (cadavers, fallen leaves, feces):  \n   - *Detritivores:* Ingest particulate detritus and fragment it mechanically (e.g., earthworms, millipedes, dung beetles).  \n   - *Decomposers (True Saprotrophs):* Fungi and heterotrophic bacteria that secrete extracellular digestive enzymes directly onto decaying substrates, hydrolyzing complex biopolymers into soluble mineral ions (nitrates, phosphates, potassium, sulfates) that return to the soil or water to be reabsorbed by autotrophs. Without decomposers, primary productivity would collapse due to mineral nutrient exhaustion.\n\n---\n\n## 4. Abiotic Factors & Ecological Measuring Instruments\n\nAbiotic factors constitute the non-living physical, climatic, chemical, and edaphic (soil-related) drivers that delineate the boundaries within which organisms can survive, grow, and reproduce.\n\n### 4.1 Major Abiotic Factors\n\n- **Solar Radiation & Light Intensity:** The primary energy source driving planetary photosynthesis, photoperiodic flowering, and animal circadian rhythms.  \n- **Ambient Temperature:** Regulates biochemical enzyme kinetics. Extreme temperatures denature cellular enzymes or freeze intra-cellular fluids.  \n- **Water & Moisture Availability:** Water is the universal biological solvent required for metabolic biochemical reactions, cellular turgor pressure, and transpiration.  \n- **Atmospheric Pressure & Wind Speed:** Wind influences evapotranspiration rates, seeds/pollen dispersal, and physical mechanical stress on vegetation.  \n- **Edaphic Variables (Soil Factors):** Soil texture, porosity, organic humus content, and soil pH directly govern mineral nutrient availability.  \n- **Aquatic Chemical Variables:** Salinity, water turbidity (clarity), and Dissolved Oxygen (DO) dictate aquatic species survival.\n\n### 4.2 Scientific Instruments for Measuring Abiotic Factors\n\nThe following isolated reference table outlines the scientific instruments, operational principles, and ecological applications required by the NaCCA syllabus:\n\n| Abiotic Parameter | Dedicated Scientific Instrument | Operating Principle & Field Ecological Application |\n| :--- | :--- | :--- |\n| **Ambient Air & Water Temperature** | Liquid-in-glass / Digital Thermometer | Relies on the predictable volumetric thermal expansion of mercury/alcohol or electronic thermocouple resistance to measure kinetic warmth in degrees Celsius. |\n| **Solar Light Intensity** | Photometer / Lux Meter | Employs a photovoltaic silicon diode that converts incoming photon energy into an electric current calibrated in lux or foot-candles. |\n| **Relative Atmospheric Humidity** | Hygrometer / Whirling Psychrometer | Compares dry-bulb and wet-bulb thermometer readings; evaporative cooling of the wet bulb indicates the moisture saturation deficit of the ambient air. |\n| **Wind Speed (Velocity)** | Cup Anemometer | Measures the angular rotational velocity of 3 or 4 hemispherical cups mounted horizontally on a vertical spindle; calibrated in m/s or km/h. |\n| **Wind Direction** | Wind Vane (Weathercock) | An asymmetric aerodynamic pointer rotates on a low-friction vertical pivot to align parallel with prevailing air currents, indicating wind source. |\n| **Atmospheric Pressure** | Fortin Mercury / Aneroid Barometer | Measures the deflection of an evacuated corrugated metallic chamber (bellows) or height of a mercury column caused by the weight of the air column. |\n| **Precipitation (Rainfall)** | Standard Graduated Rain Gauge | A funnel collector with an aperture of fixed diameter directs captured rainwater into an internal calibrated cylinder, measured in millimeters (mm). |\n| **Soil Reaction (pH / Acidity)** | Digital Soil pH Probe / Colorimetric Strips | Determines active hydrogen ion concentration in soil suspension; crucial because soil pH governs mineral ion solubility and uptake. |\n| **Soil Moisture Content** | Soil Tensiometer / Moisture Meter | Measures the negative hydrostatic pressure (soil water suction tension) exerted by dry soil against a porous ceramic cup filled with water. |\n| **Aquatic Salinity** | Salinometer / Optical Refractometer | Measures the angle of light refraction as it passes through a water drop, or measures electrical conductivity between electrodes (parts per thousand, ppt). |\n| **Dissolved Oxygen (DO)** | Clark Polarographic DO Meter / Winkler Probe | Measures current flow produced by electrochemical reduction of oxygen molecules diffusing through a selective Teflon membrane into an electrolyte solution. |\n| **Water Turbidity (Clarity)** | Secchi Disc | A 20-cm weighted circular metal disc with alternating black and white quadrants lowered on a calibrated rope to the depth where it disappears from optical view. |\n| **Atmospheric Carbon Dioxide** | Infrared Gas Analyzer (IRGA) | Quantifies CO₂ gas concentration (ppm) based on selective absorption of specific wavelengths of infrared radiation passing through an optical air chamber. |\n\n---\n\n## 5. Biological Interactions & Trophic Interdependence\n\nWithin any biological community, no organism lives in complete isolation. Species participate in intricate ecological interactions that dictate community structure, population densities, and evolutionary adaptations.\n\n### 5.1 The Principle of Biological Interdependence\n\nPlants and animals maintain a reciprocal chemical relationship essential for life:\n\n- **Photosynthesis:** 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (driven by sunlight and chlorophyll in chloroplasts)\n- **Aerobic Respiration:** C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 36–38 ATP (catalyzed by mitochondrial enzymes)\n\n- Autotrophic plants absorb the gaseous carbon dioxide byproduct released by animals, decomposing matter, and combustion, utilizing it during the Calvin cycle to synthesize glucose and releasing gaseous oxygen.\n- Animals and aerobic microorganisms breathe in this oxygen to drive mitochondrial oxidative phosphorylation, releasing carbon dioxide back into the troposphere.\n- Furthermore, animals deposit nitrogenous and phosphatic wastes (urine, dung) and carcasses that decomposers convert into soluble inorganic nitrates and orthophosphates for plant root uptake.\n\n### 5.2 Primary Symbiotic & Ecological Interactions\n\nEcologists classify inter-specific interactions according to the positive (+), negative (-), or neutral (0) effects exerted on the fitness of each interacting population:\n\n| Interaction Type | Trophic / Ecological Mechanism | Cost / Benefit Notation | Canonical Field Example in Ghana & West Africa |\n| :--- | :--- | :---: | :--- |\n| **Predation** | A free-living carnivorous organism (the predator) actively stalks, captures, kills, and consumes all or part of another organism (the prey). | **(+, -)**<br>Predator benefits;<br>prey is killed | Martial eagles hunting rock hyraxes; praying mantises ambushing grasshoppers; African leopards preying on bushbucks. |\n| **Herbivory** | A specialized feeding interaction where a primary consumer ingests autotrophic plant biomass (leaves, shoots, bark, roots) without typically killing the whole plant instantly. | **(+, -)**<br>Herbivore gains nutrition;<br>plant loses photosynthetic tissue | Variegated grasshoppers (*Zonocerus variegatus*) defoliating cassava farms; African savannah elephants stripping baobab bark. |\n| **Parasitism** | An intimate, prolonged association where one organism (the parasite) derives nutrition and physiological shelter at the direct metabolic expense of another (the host), weakening it without instant death. | **(+, -)**<br>Parasite gains nutrition/habitat;<br>host suffers pathology | *Plasmodium falciparum* (malaria parasite) in human red blood cells; tapeworms (*Taenia solium*) in pig/human intestines; ticks on cattle. |\n| **Competition** | An antagonistic interaction that occurs when two or more individuals or populations attempt to utilize the same limiting environmental resource (light, water, soil nitrogen, territory, nesting cavities, mates). | **(-, -)**<br>Both competitors suffer reduced growth, vigor, or reproductive fitness | Weeds (*Chromolaena odorata* / Acheampong weed) competing with young cocoa saplings for soil nitrates and sunlight; lions and spotted hyenas competing for ungulate carcasses. |\n| **Commensalism** | A non-obligatory symbiotic interaction where one organism benefits (securing food scraps, mechanical support, locomotion, or shelter) while the host species is neither aided nor noticeably harmed. | **(+, 0)**<br>Commensal benefits;<br>host remains unaffected | Cattle egrets (*Bubulcus ibis*) foraging on insects flushed out by grazing cattle; remora fish attaching via dorsal suckers to marine sharks for free transport and scraps; epiphytic ferns rooted on high tree boles. |\n| **Mutualism** | A reciprocal symbiotic partnership where both interacting species derive substantial physiological, nutritional, or reproductive benefits that enhance their ecological fitness. | **(+, +)**<br>Both interacting partners benefit significantly | Entomophilous pollination: honeybees collecting floral nectar and pollen while simultaneously transferring pollen grains to fertilize plant ovaries; nitrogen-fixing *Rhizobium* bacteria residing in root nodules of cowpea legumes. |\n\n---\n\n## 6. Structural Adaptations Across Major Biomes\n\n<svg width=\"720\" height=\"340\" viewBox=\"0 0 720 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cactusSkin\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#16a34a\"/>\n      <stop offset=\"100%\" stop-color=\"#14532d\"/>\n    </linearGradient>\n    <linearGradient id=\"waterFlow\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#bae6fd\"/>\n      <stop offset=\"100%\" stop-color=\"#0284c7\"/>\n    </linearGradient>\n  </defs>\n  <rect width=\"720\" height=\"340\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n  <text x=\"360\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPARATIVE MORPHOLOGICAL ADAPTATIONS</text>\n  <text x=\"360\" y=\"40\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"10.5\" fill=\"#64748b\" text-anchor=\"middle\">Desert Xerophyte (Water Scarcity) vs. Aquatic Hydrophyte (Water Abundance &amp; Buoyancy)</text>\n\n  <!-- Panel 1: Desert Xerophyte -->\n  <g transform=\"translate(35, 52)\">\n    <rect width=\"310\" height=\"268\" rx=\"10\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/>\n    <text x=\"155\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">DESERT XEROPHYTE (Cactus / Euphorbia)</text>\n    \n    <!-- Sandy substrate -->\n    <rect x=\"15\" y=\"200\" width=\"280\" height=\"55\" fill=\"#fef08a\" rx=\"4\"/>\n    <text x=\"155\" y=\"245\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9.5\" fill=\"#a16207\" text-anchor=\"middle\">Dry, Highly Porous Arid Sand Substrate</text>\n    \n    <!-- Central Cactus Stem -->\n    <path d=\"M 135 200 C 125 105 185 105 175 200 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"2\"/>\n    <!-- Left Arm -->\n    <path d=\"M 140 155 C 110 155 110 120 128 120 C 132 120 136 132 140 142 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"1.5\"/>\n    <!-- Right Arm -->\n    <path d=\"M 170 165 C 200 165 200 130 182 130 C 178 130 174 142 170 152 Z\" fill=\"url(#cactusSkin)\" stroke=\"#14532d\" stroke-width=\"1.5\"/>\n    <!-- Rib lines -->\n    <line x1=\"155\" y1=\"110\" x2=\"155\" y2=\"200\" stroke=\"#166534\" stroke-width=\"1.5\"/>\n    <!-- Spines -->\n    <line x1=\"145\" y1=\"125\" x2=\"135\" y2=\"120\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"145\" y1=\"160\" x2=\"133\" y2=\"158\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"165\" y1=\"130\" x2=\"175\" y2=\"125\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    <line x1=\"165\" y1=\"170\" x2=\"177\" y2=\"167\" stroke=\"#ca8a04\" stroke-width=\"2\"/>\n    \n    <!-- Deep Taproot & Lateral roots -->\n    <path d=\"M 155 200 L 155 235 M 155 210 Q 130 220 100 222 M 155 210 Q 180 220 210 222\" stroke=\"#78350f\" stroke-width=\"2\" fill=\"none\"/>\n    \n    <!-- Feature tags -->\n    <text x=\"65\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\">Spines (Reduced Leaves)</text>\n    <text x=\"65\" y=\"102\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#713f12\">• Minimize surface area</text>\n    <text x=\"65\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#713f12\">• Deter thirsty herbivores</text>\n    <line x1=\"90\" y1=\"115\" x2=\"135\" y2=\"135\" stroke=\"#854d0e\" stroke-width=\"1\"/>\n    \n    <text x=\"215\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\">Swollen Succulent Stem</text>\n    <text x=\"215\" y=\"102\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#14532d\">• Water storage mucilage</text>\n    <text x=\"215\" y=\"112\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#14532d\">• Performs photosynthesis</text>\n    <line x1=\"220\" y1=\"115\" x2=\"175\" y2=\"135\" stroke=\"#15803d\" stroke-width=\"1\"/>\n    \n    <rect x=\"25\" y=\"215\" width=\"60\" height=\"28\" rx=\"4\" fill=\"#ffffff\" fill-opacity=\"0.9\" stroke=\"#b45309\" stroke-width=\"0.8\"/>\n    <text x=\"55\" y=\"227\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">Deep Taproot</text>\n    <text x=\"55\" y=\"238\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"7\" fill=\"#78350f\" text-anchor=\"middle\">Underground water</text>\n  </g>\n\n  <!-- Panel 2: Aquatic Hydrophyte -->\n  <g transform=\"translate(375, 52)\">\n    <rect width=\"310\" height=\"268\" rx=\"10\" fill=\"#f0f9ff\" stroke=\"#0284c7\" stroke-width=\"1.2\"/>\n    <text x=\"155\" y=\"24\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">AQUATIC HYDROPHYTE (Water Lily / Nymphaea)</text>\n    \n    <!-- Water profile -->\n    <rect x=\"15\" y=\"95\" width=\"280\" height=\"135\" fill=\"url(#waterFlow)\" opacity=\"0.35\" rx=\"4\"/>\n    <line x1=\"15\" y1=\"95\" x2=\"295\" y2=\"95\" stroke=\"#0284c7\" stroke-width=\"2\"/>\n    <text x=\"255\" y=\"90\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Water Surface</text>\n    \n    <!-- Floating leaves -->\n    <path d=\"M 65 95 C 65 85 125 85 125 95 C 125 100 105 100 95 95 Z\" fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <path d=\"M 165 95 C 165 85 225 85 225 95 C 225 100 205 100 195 95 Z\" fill=\"#22c55e\" stroke=\"#15803d\" stroke-width=\"1.5\"/>\n    <!-- Flower -->\n    <circle cx=\"145\" cy=\"86\" r=\"9\" fill=\"#f472b6\" stroke=\"#db2777\"/>\n    <circle cx=\"145\" cy=\"86\" r=\"3.5\" fill=\"#fef08a\"/>\n    \n    <!-- Flexible petiole/stem with aerenchyma -->\n    <path d=\"M 95 95 Q 85 155 115 225\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"3\"/>\n    <path d=\"M 195 95 Q 205 155 175 225\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"3\"/>\n    \n    <!-- Rhizome anchored in muddy bottom -->\n    <rect x=\"15\" y=\"225\" width=\"280\" height=\"30\" fill=\"#78350f\" rx=\"0 0 4 4\"/>\n    <path d=\"M 95 225 L 195 225\" stroke=\"#451a03\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n    <text x=\"155\" y=\"245\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" fill=\"#fef08a\" text-anchor=\"middle\">Muddy Benthic Substrate (Poorly Oxygenated)</text>\n    \n    <!-- Feature tags -->\n    <text x=\"40\" y=\"60\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#15803d\">Broad Floating Leaf Blades</text>\n    <text x=\"40\" y=\"72\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Upper stomata for gas exchange</text>\n    <text x=\"40\" y=\"82\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Thick waxy cuticle repels water</text>\n    \n    <text x=\"215\" y=\"145\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\">Aerenchyma Tissues</text>\n    <text x=\"215\" y=\"157\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Internal air spaces create buoyancy</text>\n    <text x=\"215\" y=\"167\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Delivers O₂ down to submerged roots</text>\n    <line x1=\"210\" y1=\"150\" x2=\"185\" y2=\"155\" stroke=\"#0369a1\" stroke-width=\"1\"/>\n    \n    <text x=\"40\" y=\"185\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0369a1\">Flexible Submerged Stem</text>\n    <text x=\"40\" y=\"197\" font-family=\"system-ui, -apple-system, sans-serif\" font-size=\"8\" fill=\"#475569\">• Bends freely with water currents</text>\n    <line x1=\"75\" y1=\"180\" x2=\"95\" y2=\"165\" stroke=\"#0369a1\" stroke-width=\"1\"/>\n  </g>\n</svg>\n\n### 6.1 Adaptation vs. Acclimatization\n\nA critical distinction emphasized in the NaCCA curriculum is the fundamental difference between evolutionary adaptation and physiological acclimatization:\n\n- **Adaptation:**  \n  A genetically determined morphological, physiological, anatomical, or behavioral characteristic that has evolved through natural selection over multiple successive generations, enhancing an organism's probability of survival and successful reproduction in a specific environmental habitat. Adaptations are permanent, inheritable in DNA, and cannot be acquired or discarded instantaneously by an individual within its lifetime (e.g., the succulent stem and spines of a desert cactus, the streamlined fuselage and vascular gills of a mackerel).\n\n- **Acclimatization:**  \n  A reversible, non-heritable physiological or behavioral adjustment made by an individual organism during its lifetime in response to temporary changes in local environmental conditions. When the environmental stressor is removed, the organism reverts to its baseline state (e.g., a human producing more red blood cells when traveling to high altitudes with low atmospheric oxygen, or plants producing extra anthocyanin pigments to protect against temporary excessive ultraviolet exposure).\n\n### 6.2 Structural Adaptations by Ecological Biome\n\n| Biome / Habitat | Morphological & Physiological Adaptations in Plants (Flora) | Morphological, Physiological & Behavioral Adaptations in Animals (Fauna) |\n| :--- | :--- | :--- |\n| **Aquatic Biomes (Freshwater & Marine)** | • **Aerenchyma Tissues:** Extensive internal spongy intercellular air lacunae that provide hydrostatic buoyancy to hold leaves at the surface and channel atmospheric oxygen down to benthic roots in anoxic mud.<br>• **Broad, Flat Leaves:** Large lamina maximize exposure to solar radiation while floating.<br>• **Upper Epidermal Stomata:** Stomata positioned exclusively on the upper adaxial leaf surface exposed to the air for efficient gas exchange.<br>• **Thick Waxy Cuticle on Leaves:** Repels water droplets, prevents clogging of stomata, and protects against fungal/bacterial decay.<br>• **Flexible Stems & Reduced Vascular Tissue:** Long, pliable petioles bend with wave currents without snapping; xylem vessels are minimal since water is available all around. | • **Streamlined Body Form:** Fusiform, laterally compressed silhouettes reduce water drag and turbulence during locomotion.<br>• **Vascularized Branchial Gills:** Delicate, highly vascularized gill filaments utilize countercurrent oxygen exchange to extract dissolved oxygen directly from water.<br>• **Locomotory Fins & Webbed Digits:** Pectoral, dorsal, and caudal fins provide thrust, steering, and hydrodynamic stability; webbed feet in water birds (e.g., ducks) increase surface area for paddling.<br>• **Swim Bladder (Air Bladder):** Hydrostatic gas-filled organ that enables osteichthyan fishes to achieve neutral buoyancy at varying water depths.<br>• **Lateral Line System:** Mechanoreceptive sensory canal detecting subtle water vibrations and pressure waves created by prey or predators. |\n| **Desert Biomes (Xeric Arid Habitats)** | • **Spines & Reduced Leaves:** Leaves reduced to sharp, sclerenchymatous spines or scales, drastically minimizing surface-area-to-volume ratio to cut transpirational moisture loss, while protecting against thirsty herbivores.<br>• **Succulent Stems:** Swollen stems with parenchymatous mucilage tissues store massive volumes of water; cortex cells contain chloroplasts to take over photosynthesis.<br>• **Deep Taproots & Extensive Surface Root Nets:** Phraetophytic taproots penetrate deeply into subsoil aquifers, while extensive radial lateral roots rapidly absorb transient dew and flash rainwater.<br>• **Sunken Stomata & CAM Photosynthesis:** Stomata recessed in epidermal pits lined with trichomes to trap humid micro-air; stomata open only at night (Crassulacean Acid Metabolism) to avoid daylight evaporation. | • **Water Conservation Physiology:** Concentrated, hypertonic urine (via long loops of Henle in the kidney) and dry, desiccated fecal pellets minimize excretory water loss.<br>• **Metabolic Water Storage:** Camels store fat in localized dorsal humps; aerobic oxidation of this fat yields metabolic water (1 g fat yields approximately 1.07 g water), while avoiding insulating blubber across the rest of the body.<br>• **Nocturnal & Fossorial Habits:** Burrowing underground during scorching daylight hours to avoid heat, emerging to forage only in cool night temperatures.<br>• **Impervious Integument:** Moisture-sealed reptilian keratinized scales or waxy insect exoskeletons prevent cutaneous water vapor evaporation. |\n| **Savannah Grasslands** | • **Narrow, Linear Leaves:** Reduces surface area exposed to intense solar irradiance, lowering transpiration.<br>• **Extensive Fibrous Root Mats:** Densely interwoven roots hold thin topsoils, rapidly absorb brief seasonal rainwater, and survive periodic savannah bushfires.<br>• **Underground Storage Organs:** Corms, rhizomes, and lignotubers lie dormant beneath the soil surface, resprouting rapidly following fire or rain.<br>• **Thick Fire-Resistant Bark:** Woody species (e.g., Shea butter tree *Vitellaria paradoxa*, Baobab *Adansonia digitata*) possess thick, corky bark insulating cambium tissues from seasonal bushfires. | • **Cursorial Locomotion (High-Speed Running):** Long, slender limbs with reduced digits allow ungulates (gazelles, antelopes) to escape carnivores across open grasslands.<br>• **Cryptic Camouflage Coloration:** Tawny, yellowish-brown coats with disruptive stripes or spots (zebras, leopards, lions) blend into dry savannah grasses.<br>• **Hypsodont Dentition:** High-crowned molar teeth with hard enamel ridges withstand abrasive wear caused by silica-rich grass blades.<br>• **Gregarious Herding Behavior:** Large social herds (wildebeests, zebras) confuse predators and provide collective vigilance. |\n| **Tropical Rainforests** | • **Broad Evergreen Leaves with Drip Tips:** Leaves feature elongated, downward-pointing apices (\"drip tips\") that rapidly channel torrential rainwater off lamina, preventing waterlogging and inhibiting fungal/epiphytic colonization.<br>• **High Canopy Stratification:** Distinct vertical layers (Emergent layer 40-50m, Canopy 30m, Understory 15m, Shrub layer, Forest floor). Understory plants have large leaves rich in chlorophyll to capture faint, filtered sunlight.<br>• **Flared Buttress Roots:** Massive, plank-like wooden buttresses flare outward from the base of tall tree trunks to stabilize colossal tree heights in shallow, nutrient-poor tropical soils.<br>• **Epiphytic Growth Habit:** Plants like orchids and ferns germinate on high canopy branches, accessing sunlight without needing independent trunk wood. | • **Arboreal Locomotion:** Prehensile tails, opposable digits, and sharp curved claws allow primates, tree pangolins, and chameleons to forage in the high canopy.<br>• **Vocal Communication:** Dense foliage limits vision; animals utilize loud vocalizations (hornbills, chimpanzee pant-hoots, tree frogs) to communicate over long distances.<br>• **Aposematic (Warning) Coloration:** Bright, vibrant dermal pigmentation in poisonous organisms (tree frogs, caterpillars) warns visual predators of toxic alkaloid secretions. |\n\n---\n\n## 7. Worked Examples\n\n### Worked Example 1: Ecological Abiotic Parameter Investigation & Diagnosis\n**Scenario:**  \nA fish farmer operating commercial earthen tilapia (*Oreochromis niloticus*) aquaculture ponds in the Eastern Region of Ghana observes that fish are gasping for air at the water surface at dawn, and several fish have died. An agricultural extension officer brings an ecological field monitoring kit to test the water.\n\n**Task:**  \n1. Identify the three most critical abiotic parameters the officer must immediately evaluate, and state the dedicated scientific instrument required for each.  \n2. The officer records the following data at 06:00 AM:\n   - Water Temperature: 28°C\n   - Dissolved Oxygen (DO): 1.2 mg/L (Normal requirement for tilapia is ≥ 5.0 mg/L)\n   - Water pH: 6.2 (Optimal range is 6.5–8.5)\n   - Secchi Disc Visibility Depth: 12 cm (Healthy pond range is 30–45 cm)\n3. Provide a biological diagnosis explaining why the fish are gasping at the surface, why this crisis peaks specifically at dawn, and recommend two corrective management actions.\n\n**Step-by-Step Solution:**\n\n1. **Identification of Parameters and Dedicated Instruments:**\n   - **Dissolved Oxygen (DO):** Clark Polarographic Dissolved Oxygen (DO) Probe / Meter.\n   - **Water Acidity / Reaction (pH):** Digital Waterproof Field pH Meter (or calibrated colorimetric pH indicator strips).\n   - **Water Turbidity / Phytoplankton Density:** Standard Secchi Disc.\n   - *(Alternative valid parameter: Water Temperature via Digital Immersion Thermometer).*\n\n2. **Data Analysis and Biological Diagnosis:**\n   - **Diagnosis:** The pond is suffering from severe **aquatic hypoxia** (critical dissolved oxygen deficiency) triggered by **cultural eutrophication** (excessive algal bloom).\n   - **Evidence:**\n     - The Secchi disc depth of only 12 cm indicates high water turbidity caused by an overgrowth of microscopic phytoplankton (algal bloom), fueled by excess fish feed and organic waste.\n     - The Dissolved Oxygen level of 1.2 mg/L is far below the physiological threshold (5.0 mg/L) required to support normal respiration in tilapia, causing cellular suffocation.\n   - **Explanation of Dawn Peak:**  \n     During daylight hours, microscopic algae produce oxygen through photosynthesis. However, throughout the night, photosynthesis ceases completely due to the absence of sunlight. Both the dense algal population and the fish continuously consume dissolved oxygen via aerobic cellular respiration. Consequently, dissolved oxygen reaches its absolute minimum immediately before sunrise (dawn).\n\n3. **Corrective Management Recommendations:**\n   - **Immediate Emergency Action:** Mechanically aerate the pond using electric paddlewheel aerators, or pump fresh, oxygenated borehole water into the pond to elevate dissolved oxygen levels.\n   - **Preventative Long-Term Action:** Immediately reduce daily feeding rations to eliminate decomposing uneaten feed, and periodically flush bottom sludge to prevent organic matter accumulation.\n\n---\n\n### Worked Example 2: Symbiotic Interaction & Trophic Web Analysis\n**Scenario:**  \nAn agricultural science student surveys a community agro-ecosystem in Ghana containing maize plants (*Zea mays*), cowpea legumes (*Vigna unguiculata*), weeds (*Chromolaena odorata*), stem borer larvae, ladybug beetles, parasitic wasps (*Trichogramma*), and nodule-inhabiting bacteria.\n\n**Task:**  \nClassify the following four biological associations into their precise ecological interaction type, state the cost/benefit notation ((+, -), (+, +), (+, 0), or (-, -)), and justify the classification:\n1. *Rhizobium* bacteria residing inside root nodules of the cowpea legume.\n2. Weeds (*Chromolaena odorata*) growing closely alongside young maize crops in the same plot.\n3. Stem borer moth larvae chewing and burrowing inside the vascular maize stems.\n4. Adult female parasitic wasps laying eggs inside stem borer eggs, where the developing wasp larvae consume the host eggs from within.\n\n**Step-by-Step Solution:**\n\n1. **Cowpea Legumes and *Rhizobium* Bacteria:**\n   - **Interaction Type:** **Mutualism**\n   - **Cost/Benefit Notation:** **(+, +)**\n   - **Justification:**  \n     *Rhizobium* bacteria possess the enzyme nitrogenase, which fixes inert atmospheric nitrogen (N₂) into soluble ammonium (NH₄⁺) that the cowpea uses to synthesize amino acids and proteins. In return, the cowpea plant supplies the bacteria with carbohydrates (malate and sucrose) synthesized during photosynthesis, as well as an oxygen-regulated micro-environment inside protective root nodules. Both species experience substantial fitness gains.\n\n2. **Weeds (*Chromolaena odorata*) and Maize Crops:**\n   - **Interaction Type:** **Interspecific Competition**\n   - **Cost/Benefit Notation:** **(-, -)**\n   - **Justification:**  \n     Both the weed and the crop exploit the same finite environmental resources: soil mineral nitrates, phosphates, moisture, and incident sunlight. The presence of the weed reduces the nutrient and light availability for the maize, while the shading canopy of the maize similarly restricts the weed. Both species suffer a net reduction in vegetative growth rate compared to growing in isolation.\n\n3. **Stem Borer Larvae and Maize Plants:**\n   - **Interaction Type:** **Herbivory / Predatory Parasitism**\n   - **Cost/Benefit Notation:** **(+, -)**\n   - **Justification:**  \n     The stem borer larva acts as an herbivorous pest, deriving caloric nutrition and structural shelter by tunneling through the vascular bundles (xylem and phloem) of the host plant. The maize plant experiences reduced water transport, mechanical lodging, and stunted grain yield.\n\n4. **Parasitic Wasps (*Trichogramma*) and Stem Borer Eggs:**\n   - **Interaction Type:** **Parasitoidism (Specialized Predatory Parasitism)**\n   - **Cost/Benefit Notation:** **(+, -)**\n   - **Justification:**  \n     The female wasp benefits by providing its offspring with a protected, nutrient-rich nursery. The developing wasp larva consumes the host tissues internally, inevitably causing the complete death of the host stem borer egg. It acts as an effective natural biological control agent.\n\n---\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s9_1",
-        "questionPrompt": "Mangrove swamps are characterized by high salinity and oxygen-depleted, waterlogged mud. Explain two specific structural adaptations that allow red and black mangrove trees to thrive in this habitat.",
-        "stepByStepSolution": "Adaptation 1: Pneumatophores (Breathing Roots) — Waterlogged coastal mud contains virtually zero dissolved oxygen. Black mangroves develop specialized pencil-like roots called pneumatophores that grow vertically upward above the high tide water surface, possessing porous lenticels for atmospheric gas exchange.\nAdaptation 2: Stilt Roots (Prop Roots) — Red mangroves develop branching stilt roots that arch outward from the main trunk into the soft, shifting tidal mud, anchoring the tree securely against wave action and tidal currents while filtering out excess toxic salts.",
-        "examinerTip": "Examiner Tip: State the environmental challenge (lack of oxygen in mud, soft shifting soil) and pair it with the corresponding anatomical adaptation."
+        "id": "WE_B7_ECO_01",
+        "questionPrompt": "A commercial earthen tilapia pond in the Eastern Region of Ghana exhibits fish gasping at dawn and rising mortality. Given water measurements of Temp 28°C, DO 1.2 mg/L, pH 6.2, and Secchi depth 12 cm, identify the dedicated measuring instruments, diagnose the biological cause, explain the dawn peak, and recommend two corrective actions.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_ECO_02",
+        "questionPrompt": "Classify and justify the ecological interaction type and cost/benefit notation (+, -, 0) for: (1) Rhizobium bacteria in cowpea root nodules, (2) Chromolaena odorata weeds competing with maize, (3) Stem borer larvae in maize stems, (4) Trichogramma parasitoid wasps in stem borer eggs.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s9_1",
+        "id": "B7_ECO_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The non-living physical and chemical factors in an ecosystem (such as sunlight, rainfall, and soil pH) are termed:",
+        "prompt": "A natural unit composed of living organisms interacting with their non-living physical environment is called an:",
         "options": [
-          "Biotic factors",
-          "Abiotic factors",
-          "Symbiotic factors",
-          "Trophic factors"
+          "A. Organism",
+          "B. Ecosystem",
+          "C. Population",
+          "D. Ecosphere"
         ],
-        "correctAnswer": "Abiotic factors",
-        "hint": "The prefix 'a-' means without or non-living.",
-        "workedSolution": "Abiotic factors are the non-living chemical and physical variables (temperature, light, moisture, minerals) that shape the ecological environment.",
+        "correctAnswer": "B. Ecosystem",
+        "hint": "An ecosystem is defined as a community of living organisms interacting with the non-living components of their environment to form a stable system.",
+        "workedSolution": "An ecosystem is defined as a community of living organisms interacting with the non-living components of their environment to form a stable system.",
         "points": 1
       },
       {
-        "id": "q_b7_s9_2",
+        "id": "B7_ECO_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The scientific study of the distribution, abundance, and interactions of living organisms with their environment is:",
+        "options": [
+          "A. Anatomy",
+          "B. Ecology",
+          "C. Geology",
+          "D. Astronomy"
+        ],
+        "correctAnswer": "B. Ecology",
+        "hint": "Ecology is the scientific discipline dedicated to studying how organisms interact with one another and with their physical surroundings.",
+        "workedSolution": "Ecology is the scientific discipline dedicated to studying how organisms interact with one another and with their physical surroundings.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A group of organisms of the same kind that can interbreed in nature to produce fertile offspring is a:",
+        "options": [
+          "A. Community",
+          "B. Species",
+          "C. Habitat",
+          "D. Biome"
+        ],
+        "correctAnswer": "B. Species",
+        "hint": "A species consists of organisms capable of interbreeding and producing fertile offspring.",
+        "workedSolution": "A species consists of organisms capable of interbreeding and producing fertile offspring.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "All the individuals of the same species living together in a specific geographic area at a given time make up a:",
+        "options": [
+          "A. Population",
+          "B. Community",
+          "C. Ecosystem",
+          "D. Biome"
+        ],
+        "correctAnswer": "A. Population",
+        "hint": "A population is the total number of individuals of the same species occupying a defined habitat at a specific time.",
+        "workedSolution": "A population is the total number of individuals of the same species occupying a defined habitat at a specific time.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "All the different populations of living organisms that inhabit and interact within a particular habitat form a:",
+        "options": [
+          "A. Family",
+          "B. Community",
+          "C. Species",
+          "D. Genus"
+        ],
+        "correctAnswer": "B. Community",
+        "hint": "A biological community is made up of all the various populations of different species sharing a common habitat.",
+        "workedSolution": "A biological community is made up of all the various populations of different species sharing a common habitat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The specific physical environment or dwelling place where an organism naturally lives and finds food is its:",
+        "options": [
+          "A. Niche",
+          "B. Habitat",
+          "C. Territory",
+          "D. Community"
+        ],
+        "correctAnswer": "B. Habitat",
+        "hint": "A habitat is the natural home or environment of a plant, animal, or other organism.",
+        "workedSolution": "A habitat is the natural home or environment of a plant, animal, or other organism.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The part of the earth and its atmosphere that supports living organisms is termed the:",
+        "options": [
+          "A. Stratosphere",
+          "B. Ecosphere (Biosphere)",
+          "C. Lithosphere",
+          "D. Hydrosphere"
+        ],
+        "correctAnswer": "B. Ecosphere (Biosphere)",
+        "hint": "The ecosphere or biosphere encompasses the zones of the earth and atmosphere that support life.",
+        "workedSolution": "The ecosphere or biosphere encompasses the zones of the earth and atmosphere that support life.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Living organisms within an ecosystem are referred to as:",
+        "options": [
+          "A. Abiotic factors",
+          "B. Biotic factors",
+          "C. Climatic factors",
+          "D. Edaphic factors"
+        ],
+        "correctAnswer": "B. Biotic factors",
+        "hint": "Biotic factors represent all the living components, including plants, animals, and microorganisms, in an ecosystem.",
+        "workedSolution": "Biotic factors represent all the living components, including plants, animals, and microorganisms, in an ecosystem.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Non-living physical and chemical components of an ecosystem are termed:",
+        "options": [
+          "A. Biotic factors",
+          "B. Abiotic factors",
+          "C. Symbiotic factors",
+          "D. Trophic factors"
+        ],
+        "correctAnswer": "B. Abiotic factors",
+        "hint": "Abiotic factors are the non-living physical and chemical elements, such as water, temperature, and light.",
+        "workedSolution": "Abiotic factors are the non-living physical and chemical elements, such as water, temperature, and light.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an abiotic factor in an ecosystem?",
+        "options": [
+          "A. Tilapia fish",
+          "B. Water lily",
+          "C. Sunlight",
+          "D. Earthworm"
+        ],
+        "correctAnswer": "C. Sunlight",
+        "hint": "Sunlight is a non-living, physical abiotic factor essential for photosynthesis.",
+        "workedSolution": "Sunlight is a non-living, physical abiotic factor essential for photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a biotic factor in a school garden ecosystem?",
+        "options": [
+          "A. Soil pH",
+          "B. Earthworm",
+          "C. Air temperature",
+          "D. Humidity"
+        ],
+        "correctAnswer": "B. Earthworm",
+        "hint": "An earthworm is a living organism and therefore a biotic factor.",
+        "workedSolution": "An earthworm is a living organism and therefore a biotic factor.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following ecosystems is an artificial (man-made) ecosystem?",
+        "options": [
+          "A. Tropical rainforest",
+          "B. Lake Bosumtwi",
+          "C. Cultivated fish pond",
+          "D. Atlantic Ocean"
+        ],
+        "correctAnswer": "C. Cultivated fish pond",
+        "hint": "A fish pond is constructed and maintained by humans, making it an artificial ecosystem.",
+        "workedSolution": "A fish pond is constructed and maintained by humans, making it an artificial ecosystem.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a freshwater aquatic habitat?",
+        "options": [
+          "A. Open ocean",
+          "B. Sea coast",
+          "C. River",
+          "D. Salt marsh"
+        ],
+        "correctAnswer": "C. River",
+        "hint": "Rivers contain salt-free fresh water, unlike oceans and seas.",
+        "workedSolution": "Rivers contain salt-free fresh water, unlike oceans and seas.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a marine aquatic habitat?",
+        "options": [
+          "A. Lake",
+          "B. Pond",
+          "C. Ocean",
+          "D. Stream"
+        ],
+        "correctAnswer": "C. Ocean",
+        "hint": "Oceans are large bodies of saline (salty) water classified as marine habitats.",
+        "workedSolution": "Oceans are large bodies of saline (salty) water classified as marine habitats.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which instrument is used to measure atmospheric temperature in an ecosystem?",
+        "options": [
+          "A. Barometer",
+          "B. Thermometer",
+          "C. Anemometer",
+          "D. Hygrometer"
+        ],
+        "correctAnswer": "B. Thermometer",
+        "hint": "A thermometer measures degrees of heat or environmental temperature.",
+        "workedSolution": "A thermometer measures degrees of heat or environmental temperature.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which scientific instrument is used to measure wind speed?",
+        "options": [
+          "A. Hygrometer",
+          "B. Barometer",
+          "C. Anemometer",
+          "D. Photometer"
+        ],
+        "correctAnswer": "C. Anemometer",
+        "hint": "An anemometer is used in field studies to determine wind speed.",
+        "workedSolution": "An anemometer is used in field studies to determine wind speed.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which instrument measures relative humidity in the air?",
+        "options": [
+          "A. Hygrometer",
+          "B. Thermometer",
+          "C. Barometer",
+          "D. Salinometer"
+        ],
+        "correctAnswer": "A. Hygrometer",
+        "hint": "A hygrometer measures atmospheric moisture content and relative humidity.",
+        "workedSolution": "A hygrometer measures atmospheric moisture content and relative humidity.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Atmospheric air pressure is measured using a:",
+        "options": [
+          "A. Barometer",
+          "B. Tensiometer",
+          "C. Anemometer",
+          "D. Lux meter"
+        ],
+        "correctAnswer": "A. Barometer",
+        "hint": "A barometer measures the atmospheric pressure exerted by the air.",
+        "workedSolution": "A barometer measures the atmospheric pressure exerted by the air.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which instrument is used to determine light intensity in a forest undergrowth?",
+        "options": [
+          "A. Anemometer",
+          "B. Light meter (Photometer / Lux meter)",
+          "C. Rain gauge",
+          "D. Barometer"
+        ],
+        "correctAnswer": "B. Light meter (Photometer / Lux meter)",
+        "hint": "A light meter or lux meter quantifies the intensity of solar illumination.",
+        "workedSolution": "A light meter or lux meter quantifies the intensity of solar illumination.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which instrument is used to measure the acidity or alkalinity of agricultural soil?",
+        "options": [
+          "A. Salinometer",
+          "B. pH meter or pH test strips",
+          "C. Tensiometer",
+          "D. Barometer"
+        ],
+        "correctAnswer": "B. pH meter or pH test strips",
+        "hint": "A pH meter or colorimetric strip measures the hydrogen ion concentration of the soil.",
+        "workedSolution": "A pH meter or colorimetric strip measures the hydrogen ion concentration of the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A feeding interaction where an animal catches, kills, and eats another animal is called:",
+        "options": [
+          "A. Mutualism",
+          "B. Predation",
+          "C. Commensalism",
+          "D. Parasitism"
+        ],
+        "correctAnswer": "B. Predation",
+        "hint": "Predation involves a predator hunting, capturing, and consuming prey.",
+        "workedSolution": "Predation involves a predator hunting, capturing, and consuming prey.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a relationship between a hawk and a field mouse, the hawk is the:",
+        "options": [
+          "A. Prey",
+          "B. Host",
+          "C. Predator",
+          "D. Parasite"
+        ],
+        "correctAnswer": "C. Predator",
+        "hint": "The hawk hunts and feeds on the mouse, making it the predator.",
+        "workedSolution": "The hawk hunts and feeds on the mouse, making it the predator.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The animal that is hunted and eaten by a predator is the:",
+        "options": [
+          "A. Host",
+          "B. Prey",
+          "C. Parasite",
+          "D. Producer"
+        ],
+        "correctAnswer": "B. Prey",
+        "hint": "The victim captured and consumed in a predatory relationship is the prey.",
+        "workedSolution": "The victim captured and consumed in a predatory relationship is the prey.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An interaction where one organism lives on or inside another, deriving nourishment while harming it, is:",
+        "options": [
+          "A. Commensalism",
+          "B. Mutualism",
+          "C. Parasitism",
+          "D. Predation"
+        ],
+        "correctAnswer": "C. Parasitism",
+        "hint": "Parasitism is a relationship where a parasite benefits at the expense of a living host.",
+        "workedSolution": "Parasitism is a relationship where a parasite benefits at the expense of a living host.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an internal parasite in humans?",
+        "options": [
+          "A. Tapeworm",
+          "B. Remora fish",
+          "C. Earthworm",
+          "D. Honeybee"
+        ],
+        "correctAnswer": "A. Tapeworm",
+        "hint": "Tapeworms reside inside host intestines, absorbing digested nutrients and causing harm.",
+        "workedSolution": "Tapeworms reside inside host intestines, absorbing digested nutrients and causing harm.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A relationship where both interacting organisms benefit from each other is called:",
+        "options": [
+          "A. Parasitism",
+          "B. Competition",
+          "C. Mutualism",
+          "D. Commensalism"
+        ],
+        "correctAnswer": "C. Mutualism",
+        "hint": "Mutualism is a symbiotic relationship in which both partners gain survival advantages.",
+        "workedSolution": "Mutualism is a symbiotic relationship in which both partners gain survival advantages.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The partnership between flowering plants and pollinating butterflies is an example of:",
+        "options": [
+          "A. Predation",
+          "B. Mutualism",
+          "C. Parasitism",
+          "D. Competition"
+        ],
+        "correctAnswer": "B. Mutualism",
+        "hint": "Butterflies obtain nectar while helping the plant transfer pollen, an example of mutualism.",
+        "workedSolution": "Butterflies obtain nectar while helping the plant transfer pollen, an example of mutualism.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A relationship where one organism benefits while the other is neither harmed nor helped is:",
+        "options": [
+          "A. Mutualism",
+          "B. Parasitism",
+          "C. Commensalism",
+          "D. Predation"
+        ],
+        "correctAnswer": "C. Commensalism",
+        "hint": "Commensalism describes an association where one party gains an advantage without affecting the other.",
+        "workedSolution": "Commensalism describes an association where one party gains an advantage without affecting the other.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The interaction between a remora fish riding on a shark to feed on leftover food without harming the shark is:",
+        "options": [
+          "A. Predation",
+          "B. Commensalism",
+          "C. Parasitism",
+          "D. Competition"
+        ],
+        "correctAnswer": "B. Commensalism",
+        "hint": "The remora benefits from food and mobility, while the shark remains unaffected (commensalism).",
+        "workedSolution": "The remora benefits from food and mobility, while the shark remains unaffected (commensalism).",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "When two maize plants in the same plot compete for soil nutrients and sunlight, this interaction is:",
+        "options": [
+          "A. Mutualism",
+          "B. Competition",
+          "C. Predation",
+          "D. Commensalism"
+        ],
+        "correctAnswer": "B. Competition",
+        "hint": "Competition happens when multiple organisms require the same limited resources.",
+        "workedSolution": "Competition happens when multiple organisms require the same limited resources.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What gas do autotrophic plants take in from animals to carry out photosynthesis?",
+        "options": [
+          "A. Oxygen",
+          "B. Carbon dioxide",
+          "C. Nitrogen",
+          "D. Hydrogen"
+        ],
+        "correctAnswer": "B. Carbon dioxide",
+        "hint": "Plants take in carbon dioxide released during animal respiration to synthesize glucose.",
+        "workedSolution": "Plants take in carbon dioxide released during animal respiration to synthesize glucose.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What vital gas do photosynthetic plants release into the atmosphere for animal respiration?",
+        "options": [
+          "A. Carbon dioxide",
+          "B. Oxygen",
+          "C. Methane",
+          "D. Chlorine"
+        ],
+        "correctAnswer": "B. Oxygen",
+        "hint": "Oxygen is produced as a byproduct of photosynthesis and used by animals in aerobic respiration.",
+        "workedSolution": "Oxygen is produced as a byproduct of photosynthesis and used by animals in aerobic respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A hereditary physical or behavioral trait that helps an organism survive in its habitat is called an:",
+        "options": [
+          "A. Acclimatization",
+          "B. Adaptation",
+          "C. Infection",
+          "D. Ingestion"
+        ],
+        "correctAnswer": "B. Adaptation",
+        "hint": "An adaptation is an inherited feature that enhances an organism's survival in its environment.",
+        "workedSolution": "An adaptation is an inherited feature that enhances an organism's survival in its environment.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Reversible, short-term physiological adjustments made by an individual organism to environmental changes are called:",
+        "options": [
+          "A. Acclimatization",
+          "B. Adaptation",
+          "C. Evolution",
+          "D. Mutation"
+        ],
+        "correctAnswer": "A. Acclimatization",
+        "hint": "Acclimatization involves temporary, reversible adjustments during an individual's lifetime.",
+        "workedSolution": "Acclimatization involves temporary, reversible adjustments during an individual's lifetime.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which body shape allows fish to swim easily through water by reducing drag?",
+        "options": [
+          "A. Flat rectangular",
+          "B. Streamlined",
+          "C. Spherical",
+          "D. Irregular"
+        ],
+        "correctAnswer": "B. Streamlined",
+        "hint": "A streamlined body shape minimizes resistance and drag while moving through water.",
+        "workedSolution": "A streamlined body shape minimizes resistance and drag while moving through water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which respiratory organ allows fish to extract dissolved oxygen directly from water?",
+        "options": [
+          "A. Lungs",
+          "B. Gills",
+          "C. Trachea",
+          "D. Spiracles"
+        ],
+        "correctAnswer": "B. Gills",
+        "hint": "Gills have vascular filaments adapted to absorb oxygen dissolved in water.",
+        "workedSolution": "Gills have vascular filaments adapted to absorb oxygen dissolved in water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What feature helps swimming birds like ducks move efficiently through water?",
+        "options": [
+          "A. Sharp claws",
+          "B. Webbed feet",
+          "C. Heavy bones",
+          "D. Curled beaks"
+        ],
+        "correctAnswer": "B. Webbed feet",
+        "hint": "Webbed feet act like paddles to push water efficiently during swimming.",
+        "workedSolution": "Webbed feet act like paddles to push water efficiently during swimming.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do the floating leaves of water lilies have a waxy cuticle on their upper surfaces?",
+        "options": [
+          "A. To attract swimming fish",
+          "B. To repel water and prevent the leaf from rotting or sinking",
+          "C. To absorb muddy minerals",
+          "D. To freeze the leaf"
+        ],
+        "correctAnswer": "B. To repel water and prevent the leaf from rotting or sinking",
+        "hint": "A waxy cuticle repels standing water, keeping the stomata clear and preventing decay.",
+        "workedSolution": "A waxy cuticle repels standing water, keeping the stomata clear and preventing decay.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What structural modification helps cacti reduce water loss through transpiration in deserts?",
+        "options": [
+          "A. Broad thin leaves",
+          "B. Leaves reduced to sharp spines",
+          "C. Stems without water",
+          "D. Flowers that bloom underground"
+        ],
+        "correctAnswer": "B. Leaves reduced to sharp spines",
+        "hint": "Spines minimize leaf surface area, limiting water loss through transpiration.",
+        "workedSolution": "Spines minimize leaf surface area, limiting water loss through transpiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a cactus, which plant part is green and swollen to store water and carry out photosynthesis?",
+        "options": [
+          "A. Flower",
+          "B. Stem",
+          "C. Root",
+          "D. Spine"
+        ],
+        "correctAnswer": "B. Stem",
+        "hint": "The fleshy green stem stores water in succulent tissues and conducts photosynthesis.",
+        "workedSolution": "The fleshy green stem stores water in succulent tissues and conducts photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which animal stores fat in its hump to help survive prolonged periods without food in desert conditions?",
+        "options": [
+          "A. Lion",
+          "B. Camel",
+          "C. Zebra",
+          "D. Hippo"
+        ],
+        "correctAnswer": "B. Camel",
+        "hint": "Camels store fat in their humps, which can be metabolized for energy and metabolic water.",
+        "workedSolution": "Camels store fat in their humps, which can be metabolized for energy and metabolic water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do many small desert animals live in deep underground burrows during the daytime?",
+        "options": [
+          "A. To escape extreme daytime heat and conserve moisture",
+          "B. To swim in underground rivers",
+          "C. To hunt fish",
+          "D. To freeze their bodies"
+        ],
+        "correctAnswer": "A. To escape extreme daytime heat and conserve moisture",
+        "hint": "Burrows stay significantly cooler than the desert surface, protecting animals from heat.",
+        "workedSolution": "Burrows stay significantly cooler than the desert surface, protecting animals from heat.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do savannah grassland animals often have brown or tan coloration?",
+        "options": [
+          "A. To absorb extra heat",
+          "B. As camouflage to blend in with dry grasses and avoid detection",
+          "C. To frighten away insects",
+          "D. Because they bathe in mud daily"
+        ],
+        "correctAnswer": "B. As camouflage to blend in with dry grasses and avoid detection",
+        "hint": "Earth-toned coats provide camouflage against dry, tall savannah grasses.",
+        "workedSolution": "Earth-toned coats provide camouflage against dry, tall savannah grasses.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which adaptation allows many herbivorous grassland animals to escape predators and bushfires?",
+        "options": [
+          "A. Slow walking speed",
+          "B. Fast running ability",
+          "C. Climbing underground",
+          "D. Swimming in mud"
+        ],
+        "correctAnswer": "B. Fast running ability",
+        "hint": "Speed and endurance allow open-plains herbivores to outrun predators and flee fires.",
+        "workedSolution": "Speed and endurance allow open-plains herbivores to outrun predators and flee fires.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do trees in cold boreal forests have a conical shape with downward-sloping branches?",
+        "options": [
+          "A. To catch flying birds",
+          "B. To allow heavy winter snow to slide off without breaking branches",
+          "C. To block the wind completely",
+          "D. To absorb rain quickly"
+        ],
+        "correctAnswer": "B. To allow heavy winter snow to slide off without breaking branches",
+        "hint": "Downward-sloping, flexible branches shed heavy snow to prevent limbs from snapping.",
+        "workedSolution": "Downward-sloping, flexible branches shed heavy snow to prevent limbs from snapping.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What type of leaves do pine trees in boreal coniferous forests possess?",
+        "options": [
+          "A. Broad flat leaves",
+          "B. Needle-like leaves",
+          "C. Soft fleshy leaves",
+          "D. Leaves with no veins"
+        ],
+        "correctAnswer": "B. Needle-like leaves",
+        "hint": "Needle-shaped leaves reduce surface area, helping retain water and resist freezing winds.",
+        "workedSolution": "Needle-shaped leaves reduce surface area, helping retain water and resist freezing winds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What behavior helps certain animals in cold regions survive winter by entering a dormant, low-energy state?",
+        "options": [
+          "A. Hibernation",
+          "B. Transpiration",
+          "C. Germination",
+          "D. Emulsification"
+        ],
+        "correctAnswer": "A. Hibernation",
+        "hint": "Hibernation lowers body temperature and metabolic rate to conserve energy through winter.",
+        "workedSolution": "Hibernation lowers body temperature and metabolic rate to conserve energy through winter.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do aquatic plants possess air-filled spaces (aerenchyma) in their stems and leaves?",
+        "options": [
+          "A. To store poisonous gases",
+          "B. To provide buoyancy that keeps the plant floating toward sunlight",
+          "C. To make the plant heavy enough to sink",
+          "D. To produce seeds underwater"
+        ],
+        "correctAnswer": "B. To provide buoyancy that keeps the plant floating toward sunlight",
+        "hint": "Internal air cavities give buoyancy, allowing leaves to float near the surface for light.",
+        "workedSolution": "Internal air cavities give buoyancy, allowing leaves to float near the surface for light.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What feature on the head crest of whales and dolphins allows them to breathe atmospheric air?",
+        "options": [
+          "A. Gills",
+          "B. Blowholes",
+          "C. Spiracles",
+          "D. Beaks"
+        ],
+        "correctAnswer": "B. Blowholes",
+        "hint": "Blowholes allow marine mammals to inhale atmospheric air while remaining mostly submerged.",
+        "workedSolution": "Blowholes allow marine mammals to inhale atmospheric air while remaining mostly submerged.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do plants growing on the dark floor of tropical rainforests typically have very broad leaves?",
+        "options": [
+          "A. To capture as much filtered, low-intensity sunlight as possible",
+          "B. To collect falling rain",
+          "C. To prevent animals from walking on them",
+          "D. To store sand"
+        ],
+        "correctAnswer": "A. To capture as much filtered, low-intensity sunlight as possible",
+        "hint": "Broad leaves maximize surface area to capture limited light beneath dense forest canopies.",
+        "workedSolution": "Broad leaves maximize surface area to capture limited light beneath dense forest canopies.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which structural feature enables floating water lettuce (Pistia) to remain buoyant on the surface of freshwater ponds?",
+        "prompt": "Why is an aquatic habitat generally more thermally stable than an adjacent terrestrial land habitat?",
         "options": [
-          "Thick heavy wooden stems",
-          "Aerenchyma tissues filled with air spaces",
-          "Large taproots anchored in deep rocks",
-          "Spines that inject venom into fish"
+          "A. Water reflects all heat back into outer space",
+          "B. Water has a high specific heat capacity, meaning it absorbs and loses heat slowly without rapid temperature swings",
+          "C. Land has no atmosphere",
+          "D. Aquatic plants produce cold water"
         ],
-        "correctAnswer": "Aerenchyma tissues filled with air spaces",
-        "hint": "Internal air pockets provide biological buoyancy.",
-        "workedSolution": "Floating aquatic macrophytes contain spongy aerenchyma tissue containing large intercellular air pockets that provide buoyancy, keeping leaves at the water surface for photosynthesis.",
+        "correctAnswer": "B. Water has a high specific heat capacity, meaning it absorbs and loses heat slowly without rapid temperature swings",
+        "hint": "Because water has a high specific heat capacity, aquatic systems resist sharp, sudden temperature swings.",
+        "workedSolution": "Because water has a high specific heat capacity, aquatic systems resist sharp, sudden temperature swings.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does competition between two closely related bird species sharing the same forest habitat lead to niche differentiation?",
+        "options": [
+          "A. One species turns into a plant",
+          "B. Natural selection favors species feeding on different food types or at different canopy levels to reduce direct competition",
+          "C. Both species stop eating food",
+          "D. The birds lose their wings"
+        ],
+        "correctAnswer": "B. Natural selection favors species feeding on different food types or at different canopy levels to reduce direct competition",
+        "hint": "Resource partitioning allows competing species to utilize different food sizes, heights, or times to coexist.",
+        "workedSolution": "Resource partitioning allows competing species to utilize different food sizes, heights, or times to coexist.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the mutualistic relationship between stinging ants and acacia trees?",
+        "options": [
+          "A. The tree absorbs the ants for nitrogen",
+          "B. The tree provides shelter (hollow thorns) and nectar, while the ants defend the tree from herbivores and encroaching vines",
+          "C. The ants eat all the leaves until the tree dies",
+          "D. The ants build nests on dead bark with no interaction"
+        ],
+        "correctAnswer": "B. The tree provides shelter (hollow thorns) and nectar, while the ants defend the tree from herbivores and encroaching vines",
+        "hint": "Acacia trees provide food and shelter, while resident ants aggressively defend the tree against herbivores.",
+        "workedSolution": "Acacia trees provide food and shelter, while resident ants aggressively defend the tree against herbivores.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do the submerged stems of aquatic plants remain narrow and flexible rather than thick and woody?",
+        "options": [
+          "A. They have no access to minerals",
+          "B. Flexible stems bend with water currents and waves without snapping under hydraulic drag",
+          "C. Aquatic stems are made of pure water",
+          "D. Fish chew them into thin threads"
+        ],
+        "correctAnswer": "B. Flexible stems bend with water currents and waves without snapping under hydraulic drag",
+        "hint": "Flexibility allows aquatic plants to yield to moving water currents, avoiding structural breakage.",
+        "workedSolution": "Flexibility allows aquatic plants to yield to moving water currents, avoiding structural breakage.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of a salinometer in evaluating an estuarine ecosystem?",
+        "options": [
+          "A. Measuring water temperature",
+          "B. Measuring dissolved salt concentration to monitor shifts between fresh and marine waters",
+          "C. Counting the number of fish",
+          "D. Determining water depth"
+        ],
+        "correctAnswer": "B. Measuring dissolved salt concentration to monitor shifts between fresh and marine waters",
+        "hint": "A salinometer measures dissolved salt levels to track salinity gradients where rivers meet the sea.",
+        "workedSolution": "A salinometer measures dissolved salt levels to track salinity gradients where rivers meet the sea.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an intestinal tapeworm adapt morphologically to survive inside its human host?",
+        "options": [
+          "A. It possesses a streamlined shell for swimming",
+          "B. It has hooks and suckers (scolex) to anchor to the intestinal wall and absorbs pre-digested nutrients through its body surface without a digestive tract",
+          "C. It chews food with sharp mandibles",
+          "D. It develops lungs to breathe"
+        ],
+        "correctAnswer": "B. It has hooks and suckers (scolex) to anchor to the intestinal wall and absorbs pre-digested nutrients through its body surface without a digestive tract",
+        "hint": "Hooks and suckers prevent dislodgement, while its outer tegument absorbs pre-digested nutrients directly.",
+        "workedSolution": "Hooks and suckers prevent dislodgement, while its outer tegument absorbs pre-digested nutrients directly.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do leaves of tropical rainforest canopy trees feature pointed 'drip tips'?",
+        "options": [
+          "A. To sting herbivorous insects",
+          "B. To drain heavy rainwater quickly off the leaf surface, preventing fungal growth and physical leaf damage",
+          "C. To collect water droplets for root storage",
+          "D. To absorb sunlight from the side"
+        ],
+        "correctAnswer": "B. To drain heavy rainwater quickly off the leaf surface, preventing fungal growth and physical leaf damage",
+        "hint": "Drip tips shed excess rainwater rapidly, which inhibits the growth of epiphyllous fungi and algae.",
+        "workedSolution": "Drip tips shed excess rainwater rapidly, which inhibits the growth of epiphyllous fungi and algae.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the difference between a predator-prey interaction and a host-parasite interaction?",
+        "options": [
+          "A. Predators are always smaller than prey; parasites are larger than hosts",
+          "B. Predators kill their prey immediately to consume it, while parasites generally keep their host alive to continue drawing nutrients",
+          "C. Parasitism benefits both organisms, while predation benefits neither",
+          "D. Both interactions have identical outcomes"
+        ],
+        "correctAnswer": "B. Predators kill their prey immediately to consume it, while parasites generally keep their host alive to continue drawing nutrients",
+        "hint": "Predators kill their prey for food, whereas parasites typically derive sustained nourishment without immediate host death.",
+        "workedSolution": "Predators kill their prey for food, whereas parasites typically derive sustained nourishment without immediate host death.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do desert reptiles produce pasty, semi-solid uric acid instead of dilute liquid urine?",
+        "options": [
+          "A. Uric acid is cold",
+          "B. Excreting nitrogenous waste as insoluble uric acid requires minimal water, conserving body fluid in arid environments",
+          "C. They have no kidneys",
+          "D. Water dissolves their scales"
+        ],
+        "correctAnswer": "B. Excreting nitrogenous waste as insoluble uric acid requires minimal water, conserving body fluid in arid environments",
+        "hint": "Excreting concentrated uric acid allows desert reptiles to clear nitrogenous waste with minimal water loss.",
+        "workedSolution": "Excreting concentrated uric acid allows desert reptiles to clear nitrogenous waste with minimal water loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do deep taproots benefit perennial shrubs in dry savannahs and desert borders?",
+        "options": [
+          "A. They store pure air",
+          "B. They penetrate deep into the subsoil to access underground water tables during extended dry seasons",
+          "C. They anchor the plant so animals cannot eat the leaves",
+          "D. They turn sand into clay"
+        ],
+        "correctAnswer": "B. They penetrate deep into the subsoil to access underground water tables during extended dry seasons",
+        "hint": "Deep root systems reach subterranean moisture reserves that persist far below dry surface soil.",
+        "workedSolution": "Deep root systems reach subterranean moisture reserves that persist far below dry surface soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What would happen to the population of predatory red foxes if the population of their primary prey, hares, crashed due to disease?",
+        "options": [
+          "A. The fox population would increase rapidly",
+          "B. The fox population would decline due to food scarcity and starvation",
+          "C. Foxes would immediately turn into herbivores",
+          "D. The foxes would leave the planet"
+        ],
+        "correctAnswer": "B. The fox population would decline due to food scarcity and starvation",
+        "hint": "Predator populations depend on prey abundance; a sharp crash in prey numbers leads to a decline in predators.",
+        "workedSolution": "Predator populations depend on prey abundance; a sharp crash in prey numbers leads to a decline in predators.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the soil in a tropical rainforest often nutrient-poor despite dense, lush vegetation?",
+        "options": [
+          "A. Rainforest plants do not absorb nutrients",
+          "B. High heat and moisture drive rapid decomposition, and dense root systems absorb released minerals immediately, while heavy rains leach remaining nutrients",
+          "C. Decomposers do not live in rainforests",
+          "D. Rainforest soil is made of pure rock"
+        ],
+        "correctAnswer": "B. High heat and moisture drive rapid decomposition, and dense root systems absorb released minerals immediately, while heavy rains leach remaining nutrients",
+        "hint": "Nutrients are taken up rapidly by dense root mats or leached by heavy rainfall, keeping topsoils nutrient-poor.",
+        "workedSolution": "Nutrients are taken up rapidly by dense root mats or leached by heavy rainfall, keeping topsoils nutrient-poor.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of hollow bones in flying and swimming birds like ducks?",
+        "options": [
+          "A. Storing water",
+          "B. Reducing body weight and increasing buoyancy without sacrificing skeletal strength",
+          "C. Producing digestive enzymes",
+          "D. Absorbing sunlight"
+        ],
+        "correctAnswer": "B. Reducing body weight and increasing buoyancy without sacrificing skeletal strength",
+        "hint": "Pneumatized, hollow bones lower skeletal mass, aiding both flight efficiency and water buoyancy.",
+        "workedSolution": "Pneumatized, hollow bones lower skeletal mass, aiding both flight efficiency and water buoyancy.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is agricultural land (such as a cocoa plantation or maize farm) classified as an artificial ecosystem?",
+        "options": [
+          "A. It does not contain living organisms",
+          "B. It was established by humans and requires human management, weeding, and fertilizer inputs to persist",
+          "C. It cannot receive rain",
+          "D. It produces synthetic food"
+        ],
+        "correctAnswer": "B. It was established by humans and requires human management, weeding, and fertilizer inputs to persist",
+        "hint": "Farms are human-created, managed systems that rely on human labor and inputs to prevent natural ecological succession.",
+        "workedSolution": "Farms are human-created, managed systems that rely on human labor and inputs to prevent natural ecological succession.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the thick blubber layer under the skin of marine mammals like whales serve as a dual adaptation?",
+        "options": [
+          "A. It acts as an abrasive shell and produces bile",
+          "B. It provides thermal insulation against freezing ocean waters and serves as an energy reserve during migration",
+          "C. It absorbs dissolved oxygen from the water",
+          "D. It helps them sink to the ocean floor"
+        ],
+        "correctAnswer": "B. It provides thermal insulation against freezing ocean waters and serves as an energy reserve during migration",
+        "hint": "Adipose blubber reduces heat loss in cold water and stores metabolic energy for long journeys.",
+        "workedSolution": "Adipose blubber reduces heat loss in cold water and stores metabolic energy for long journeys.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What ecological advantage do grassland plants gain from having deep, extensive root networks?",
+        "options": [
+          "A. They prevent other plants from growing nearby",
+          "B. They anchor plants against strong winds, access deep moisture, and allow rapid regrowth after surface fires or grazing",
+          "C. They produce flowers underground",
+          "D. They turn the soil acidic"
+        ],
+        "correctAnswer": "B. They anchor plants against strong winds, access deep moisture, and allow rapid regrowth after surface fires or grazing",
+        "hint": "Deep roots stabilize soil, draw water, and store carbohydrates that enable fast regrowth after fires.",
+        "workedSolution": "Deep roots stabilize soil, draw water, and store carbohydrates that enable fast regrowth after fires.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do decomposers like bacteria and fungi play an indispensable role in maintaining a balanced ecosystem?",
+        "options": [
+          "A. They hunt living herbivores for food",
+          "B. They break down dead organic matter and wastes, recycling bound nutrients into the soil for plant uptake",
+          "C. They stop plants from growing too tall",
+          "D. They remove oxygen from the air"
+        ],
+        "correctAnswer": "B. They break down dead organic matter and wastes, recycling bound nutrients into the soil for plant uptake",
+        "hint": "Decomposers break down dead biomass, recycling essential minerals and returning nutrients to the soil.",
+        "workedSolution": "Decomposers break down dead biomass, recycling essential minerals and returning nutrients to the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes an example of acclimatization rather than evolutionary adaptation?",
+        "options": [
+          "A. A cactus developing sharp spines over thousands of years",
+          "B. A human developing an increased red blood cell count after living at high altitude for three weeks",
+          "C. Ducks possessing webbed feet",
+          "D. Pine trees bearing needle-shaped leaves"
+        ],
+        "correctAnswer": "B. A human developing an increased red blood cell count after living at high altitude for three weeks",
+        "hint": "Elevating red blood cell count in response to low oxygen is a reversible physiological adjustment (acclimatization).",
+        "workedSolution": "Elevating red blood cell count in response to low oxygen is a reversible physiological adjustment (acclimatization).",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of a tensiometer in field crop production?",
+        "options": [
+          "A. Measuring wind speed",
+          "B. Measuring soil moisture tension to determine when crops require irrigation",
+          "C. Measuring air pressure",
+          "D. Measuring sunlight intensity"
+        ],
+        "correctAnswer": "B. Measuring soil moisture tension to determine when crops require irrigation",
+        "hint": "A tensiometer measures soil water suction, showing how tightly water is held and when to irrigate.",
+        "workedSolution": "A tensiometer measures soil water suction, showing how tightly water is held and when to irrigate.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are epiphytic orchids living on tree branches considered commensals rather than parasites?",
+        "options": [
+          "A. They suck sap from the tree's veins",
+          "B. They use the tree solely for structural physical support to reach sunlight, absorbing moisture from air without taking nutrients from the tree",
+          "C. They kill the tree within a week",
+          "D. They provide food to the tree's roots"
+        ],
+        "correctAnswer": "B. They use the tree solely for structural physical support to reach sunlight, absorbing moisture from air without taking nutrients from the tree",
+        "hint": "Epiphytes use host trees only for perching support, photosynthesizing independently without harming host tissues.",
+        "workedSolution": "Epiphytes use host trees only for perching support, photosynthesizing independently without harming host tissues.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does seasonal migration protect boreal forest birds during freezing winter months?",
+        "options": [
+          "A. It allows them to learn how to swim",
+          "B. Flying to warmer latitudes avoids sub-zero temperatures and food scarcity, returning when resources rebound in spring",
+          "C. It changes their feathers into fur",
+          "D. It turns their blood into ice"
+        ],
+        "correctAnswer": "B. Flying to warmer latitudes avoids sub-zero temperatures and food scarcity, returning when resources rebound in spring",
+        "hint": "Migrating to warmer regions allows birds to escape extreme cold and find reliable food supplies.",
+        "workedSolution": "Migrating to warmer regions allows birds to escape extreme cold and find reliable food supplies.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do plants with broad leaves struggle to survive in arid desert environments without artificial irrigation?",
+        "options": [
+          "A. Desert soil is too cold",
+          "B. Broad leaf blades have large surface areas packed with stomata, leading to high transpirational water loss that exceeds root uptake",
+          "C. Spines eat broad leaves",
+          "D. Broad leaves cannot absorb sunlight"
+        ],
+        "correctAnswer": "B. Broad leaf blades have large surface areas packed with stomata, leading to high transpirational water loss that exceeds root uptake",
+        "hint": "Large leaf surface areas lose excessive water via transpiration, leading to desiccation in dry soil.",
+        "workedSolution": "Large leaf surface areas lose excessive water via transpiration, leading to desiccation in dry soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What would occur in a natural lake ecosystem if agricultural fertilizer runoff washed in, causing high nitrogen and phosphorus levels?",
+        "options": [
+          "A. All water plants would stop growing",
+          "B. Rapid algal growth would trigger eutrophication, depleting dissolved oxygen and killing fish",
+          "C. Water would turn into salt",
+          "D. Fish would grow legs"
+        ],
+        "correctAnswer": "B. Rapid algal growth would trigger eutrophication, depleting dissolved oxygen and killing fish",
+        "hint": "Nutrient pollution sparks algal blooms; dying algae are consumed by bacteria, which strips dissolved oxygen from the water.",
+        "workedSolution": "Nutrient pollution sparks algal blooms; dying algae are consumed by bacteria, which strips dissolved oxygen from the water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are grasses able to survive frequent bushfires in the savannah grassland biome?",
+        "options": [
+          "A. Grasses are made of metal",
+          "B. Their growing points (meristems) and rhizomes remain protected at or below ground level, enabling rapid sprouting after fires",
+          "C. Fires do not burn grass",
+          "D. Grasses produce water during fires"
+        ],
+        "correctAnswer": "B. Their growing points (meristems) and rhizomes remain protected at or below ground level, enabling rapid sprouting after fires",
+        "hint": "Underground root crowns and basal meristems escape surface heat, allowing grasses to regenerate after fires.",
+        "workedSolution": "Underground root crowns and basal meristems escape surface heat, allowing grasses to regenerate after fires.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the waxy coating on desert succulents like cacti help them conserve moisture?",
+        "options": [
+          "A. It acts as an impermeable barrier that reduces cuticular transpiration and prevents water evaporation",
+          "B. It makes the plant invisible to insects",
+          "C. It absorbs water from dry sand",
+          "D. It produces rainfall"
+        ],
+        "correctAnswer": "A. It acts as an impermeable barrier that reduces cuticular transpiration and prevents water evaporation",
+        "hint": "A thick, lipid-rich waxy cuticle creates a barrier that limits non-stomatal water evaporation.",
+        "workedSolution": "A thick, lipid-rich waxy cuticle creates a barrier that limits non-stomatal water evaporation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes an example of herbivory?",
+        "options": [
+          "A. A lion killing a zebra",
+          "B. A caterpillar eating the leaves of a cocoyam plant",
+          "C. A tick sucking blood from a dog",
+          "D. A fungus growing on a fallen log"
+        ],
+        "correctAnswer": "B. A caterpillar eating the leaves of a cocoyam plant",
+        "hint": "Herbivory refers to an animal eating the tissues of living primary producers (plants).",
+        "workedSolution": "Herbivory refers to an animal eating the tissues of living primary producers (plants).",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do animals in the dense undergrowth of tropical rainforests rely heavily on vocal calls and scent marking rather than visual signals?",
+        "options": [
+          "A. Rainforest animals are completely blind",
+          "B. Dense, multi-layered foliage restricts long-distance visibility, making sound and scent more effective communication channels",
+          "C. Sound travels faster in the dark",
+          "D. Animals have no colors"
+        ],
+        "correctAnswer": "B. Dense, multi-layered foliage restricts long-distance visibility, making sound and scent more effective communication channels",
+        "hint": "Thick, multi-tiered foliage blocks line-of-sight vision, so animals communicate with calls and scent.",
+        "workedSolution": "Thick, multi-tiered foliage blocks line-of-sight vision, so animals communicate with calls and scent.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an Infrared Gas Analyzer (IRGA) contribute to ecological field studies?",
+        "options": [
+          "A. It measures wind direction",
+          "B. It measures concentrations of carbon dioxide gas, helping assess plant photosynthetic and respiratory rates",
+          "C. It catches flying insects",
+          "D. It measures soil compaction"
+        ],
+        "correctAnswer": "B. It measures concentrations of carbon dioxide gas, helping assess plant photosynthetic and respiratory rates",
+        "hint": "An IRGA measures CO₂ absorption, quantifying carbon uptake in photosynthesis and release in respiration.",
+        "workedSolution": "An IRGA measures CO₂ absorption, quantifying carbon uptake in photosynthesis and release in respiration.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting the growth of tall trees in the cold, windy Arctic tundra?",
+        "options": [
+          "A. Too much rain",
+          "B. Permafrost (permanently frozen subsoil) that blocks deep root growth, short growing seasons, and drying winds",
+          "C. Heavy shade from clouds",
+          "D. Lack of carbon dioxide"
+        ],
+        "correctAnswer": "B. Permafrost (permanently frozen subsoil) that blocks deep root growth, short growing seasons, and drying winds",
+        "hint": "Frozen permafrost limits deep rooting, while short summers prevent trees from maturing.",
+        "workedSolution": "Frozen permafrost limits deep rooting, while short summers prevent trees from maturing.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do seeds of many tropical forest fruits have fleshy, sweet pulp?",
+        "options": [
+          "A. To poison passing animals",
+          "B. To attract fruit-eating birds and mammals that ingest the fruit and disperse the seeds away from the parent tree",
+          "C. To prevent seeds from ever falling",
+          "D. To keep the tree heavy"
+        ],
+        "correctAnswer": "B. To attract fruit-eating birds and mammals that ingest the fruit and disperse the seeds away from the parent tree",
+        "hint": "Sweet pulp attracts frugivores that eat the fruit and distribute the seeds in their droppings.",
+        "workedSolution": "Sweet pulp attracts frugivores that eat the fruit and distribute the seeds in their droppings.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger faced by freshwater fish placed into a marine (ocean) environment?",
+        "options": [
+          "A. Water enters their cells and bursts them",
+          "B. High external salinity draws water out of their body tissues by osmosis, leading to severe dehydration",
+          "C. The fish freeze instantly",
+          "D. Salt turns their gills into wood"
+        ],
+        "correctAnswer": "B. High external salinity draws water out of their body tissues by osmosis, leading to severe dehydration",
+        "hint": "The hypertonic salt water draws water out of freshwater fish osmotically, causing fatal dehydration.",
+        "workedSolution": "The hypertonic salt water draws water out of freshwater fish osmotically, causing fatal dehydration.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do buttress roots help tall emergent trees survive in tropical rainforests?",
+        "options": [
+          "A. They absorb sunlight from the air",
+          "B. They form wide, plank-like wooden buttresses that stabilize tall trunks against wind in shallow, weathered topsoils",
+          "C. They store pure sugar",
+          "D. They produce flowers underground"
+        ],
+        "correctAnswer": "B. They form wide, plank-like wooden buttresses that stabilize tall trunks against wind in shallow, weathered topsoils",
+        "hint": "Broad buttresses distribute mechanical strain, stabilizing tall emergent trees anchored in shallow soils.",
+        "workedSolution": "Broad buttresses distribute mechanical strain, stabilizing tall emergent trees anchored in shallow soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role do scavengers like vultures and hyenas play in an ecosystem?",
+        "options": [
+          "A. They produce food through photosynthesis",
+          "B. They consume carcasses of dead animals, clearing rotting flesh and helping recycle biological nutrients",
+          "C. They pollute the air",
+          "D. They destroy plant roots"
+        ],
+        "correctAnswer": "B. They consume carcasses of dead animals, clearing rotting flesh and helping recycle biological nutrients",
+        "hint": "Scavengers feed on carrion, speeding up decomposition and reducing potential disease reservoirs.",
+        "workedSolution": "Scavengers feed on carrion, speeding up decomposition and reducing potential disease reservoirs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are predator populations almost always smaller in total numbers than their prey populations in a healthy ecosystem?",
+        "options": [
+          "A. Predators do not reproduce",
+          "B. Energy is lost as heat at each trophic step; it takes many prey organisms to support a single predator",
+          "C. Prey animals are always larger than predators",
+          "D. Predators eat plants when hungry"
+        ],
+        "correctAnswer": "B. Energy is lost as heat at each trophic step; it takes many prey organisms to support a single predator",
+        "hint": "Trophic energy loss means only about 10% of energy transfers between levels, limiting top predator numbers.",
+        "workedSolution": "Trophic energy loss means only about 10% of energy transfers between levels, limiting top predator numbers.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do camel footpads adapt them to walking across loose desert sand dunes?",
+        "options": [
+          "A. They have sharp needles that dig into rock",
+          "B. Broad, flat, leathery pads spread their body weight over a larger surface area, preventing them from sinking into sand",
+          "C. They have rubber suction cups",
+          "D. They float on air"
+        ],
+        "correctAnswer": "B. Broad, flat, leathery pads spread their body weight over a larger surface area, preventing them from sinking into sand",
+        "hint": "Wide footpads distribute weight and reduce contact pressure, keeping camels from sinking in loose sand.",
+        "workedSolution": "Wide footpads distribute weight and reduce contact pressure, keeping camels from sinking in loose sand.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the consequence of removing an apex predator from a natural forest ecosystem?",
+        "options": [
+          "A. All other animals live forever",
+          "B. Herbivore populations can surge, leading to overgrazing, loss of vegetation, and habitat degradation (trophic cascade)",
+          "C. The forest stops receiving rain",
+          "D. Plants stop photosynthesizing"
+        ],
+        "correctAnswer": "B. Herbivore populations can surge, leading to overgrazing, loss of vegetation, and habitat degradation (trophic cascade)",
+        "hint": "Losing top predators can allow herbivores to overpopulate, leading to overgrazing and broader ecosystem damage.",
+        "workedSolution": "Losing top predators can allow herbivores to overpopulate, leading to overgrazing and broader ecosystem damage.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do marine fish drink seawater continuously while freshwater fish avoid drinking water?",
+        "options": [
+          "A. Marine fish are always thirsty",
+          "B. Marine fish lose water osmotically to the salty sea, so they must drink water and pump out excess salts through their gills",
+          "C. Freshwater fish have no mouths",
+          "D. Marine fish cannot swim without drinking"
+        ],
+        "correctAnswer": "B. Marine fish lose water osmotically to the salty sea, so they must drink water and pump out excess salts through their gills",
+        "hint": "In hypertonic oceans, marine fish lose water across their gills, so they drink seawater and actively excrete salt.",
+        "workedSolution": "In hypertonic oceans, marine fish lose water across their gills, so they drink seawater and actively excrete salt.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes an adaptation of desert rodents like the kangaroo rat to survive without drinking liquid water?",
+        "options": [
+          "A. They absorb water from stones",
+          "B. They obtain metabolic water from the cellular breakdown of dry seeds and produce highly concentrated urine",
+          "C. They drink ocean water",
+          "D. They hibernate during the rainy season"
+        ],
+        "correctAnswer": "B. They obtain metabolic water from the cellular breakdown of dry seeds and produce highly concentrated urine",
+        "hint": "Efficient kidneys and water derived from fat and carbohydrate metabolism allow them to live on dry seeds.",
+        "workedSolution": "Efficient kidneys and water derived from fat and carbohydrate metabolism allow them to live on dry seeds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is interspecific competition often less intense than intraspecific competition?",
+        "options": [
+          "A. Different species do not live in the same forest",
+          "B. Different species often have slightly different ecological niches, whereas members of the same species compete for identical resources",
+          "C. Animals of the same species never fight",
+          "D. Interspecific competition only occurs in water"
+        ],
+        "correctAnswer": "B. Different species often have slightly different ecological niches, whereas members of the same species compete for identical resources",
+        "hint": "Members of the same species share identical resource requirements, making intraspecific competition more direct.",
+        "workedSolution": "Members of the same species share identical resource requirements, making intraspecific competition more direct.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the needle shape of pine leaves reduce water loss in freezing boreal winters?",
+        "options": [
+          "A. It allows the leaf to drop off",
+          "B. A low surface-area-to-volume ratio combined with sunken stomata and a thick cuticle minimizes winter evaporation",
+          "C. Needle leaves are made of ice",
+          "D. Needle leaves produce heat"
+        ],
+        "correctAnswer": "B. A low surface-area-to-volume ratio combined with sunken stomata and a thick cuticle minimizes winter evaporation",
+        "hint": "Compact needle geometries and sunken stomata limit cuticular water loss during freezing weather.",
+        "workedSolution": "Compact needle geometries and sunken stomata limit cuticular water loss during freezing weather.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of mycorrhizal fungi in forest ecosystems?",
+        "options": [
+          "A. Killing tree roots",
+          "B. Forming mutualistic partnerships with roots to help trees absorb water and minerals in exchange for photosynthetic sugars",
+          "C. Eating green leaves",
+          "D. Preventing rainfall"
+        ],
+        "correctAnswer": "B. Forming mutualistic partnerships with roots to help trees absorb water and minerals in exchange for photosynthetic sugars",
+        "hint": "Mycorrhizae expand root absorption networks for water and phosphorus in return for plant carbohydrates.",
+        "workedSolution": "Mycorrhizae expand root absorption networks for water and phosphorus in return for plant carbohydrates.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do some desert plants practice drought dormancy by shedding their leaves at the onset of the dry season?",
+        "options": [
+          "A. The leaves are too heavy to carry",
+          "B. Dropping foliage halts transpirational water loss, allowing the plant to survive on water stored in stems",
+          "C. Animals eat only green leaves",
+          "D. Shed leaves turn into sand"
+        ],
+        "correctAnswer": "B. Dropping foliage halts transpirational water loss, allowing the plant to survive on water stored in stems",
+        "hint": "Shedding leaves removes the primary surfaces for transpiration, conserving water through dry periods.",
+        "workedSolution": "Shedding leaves removes the primary surfaces for transpiration, conserving water through dry periods.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does camouflage provide survival advantages to both predators and prey in a savannah ecosystem?",
+        "options": [
+          "A. It changes their body temperature",
+          "B. It helps prey avoid detection by hunters, while allowing predators to stalk prey without being noticed",
+          "C. It speeds up digestion",
+          "D. It replaces the need for food"
+        ],
+        "correctAnswer": "B. It helps prey avoid detection by hunters, while allowing predators to stalk prey without being noticed",
+        "hint": "Concealing coloration protects prey from discovery and allows predators to get close before striking.",
+        "workedSolution": "Concealing coloration protects prey from discovery and allows predators to get close before striking.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What ecological condition occurs when an introduced invasive weed has no natural herbivores in a new habitat?",
+        "options": [
+          "A. The weed dies immediately",
+          "B. The weed can spread rapidly, outcompeting native plants for nutrients, space, and sunlight",
+          "C. The weed turns into an animal",
+          "D. Native plants eat the weed"
+        ],
+        "correctAnswer": "B. The weed can spread rapidly, outcompeting native plants for nutrients, space, and sunlight",
+        "hint": "Without natural herbivores or pathogens, invasive plants can expand unchecked and displace native flora.",
+        "workedSolution": "Without natural herbivores or pathogens, invasive plants can expand unchecked and displace native flora.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do many rainforest canopy animals have prehensile tails?",
+        "options": [
+          "A. To catch flying insects",
+          "B. To act as a fifth grasping limb that provides grip and stability while moving through the trees",
+          "C. To keep their heads warm",
+          "D. To swim in canopy pools"
+        ],
+        "correctAnswer": "B. To act as a fifth grasping limb that provides grip and stability while moving through the trees",
+        "hint": "Prehensile tails anchor arboreal animals to branches, preventing falls as they navigate the canopy.",
+        "workedSolution": "Prehensile tails anchor arboreal animals to branches, preventing falls as they navigate the canopy.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do nitrogen-fixing bacteria in root nodules of leguminous plants exhibit mutualism?",
+        "options": [
+          "A. They absorb all the plant's water",
+          "B. They convert atmospheric nitrogen into usable nitrates for the plant, receiving carbohydrates and housing in return",
+          "C. They kill surrounding weeds",
+          "D. They produce flowers"
+        ],
+        "correctAnswer": "B. They convert atmospheric nitrogen into usable nitrates for the plant, receiving carbohydrates and housing in return",
+        "hint": "Rhizobium bacteria trade fixed nitrogen for plant-synthesized sugars and protective nodule housing.",
+        "workedSolution": "Rhizobium bacteria trade fixed nitrogen for plant-synthesized sugars and protective nodule housing.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do desert animals often have large ears with dense blood vessel networks (like the fennec fox)?",
+        "options": [
+          "A. To hear flying insects miles away",
+          "B. Circulating warm blood through large, uninsulated ears radiates excess body heat to help cool the body",
+          "C. To shade their eyes",
+          "D. To store drinking water"
+        ],
+        "correctAnswer": "B. Circulating warm blood through large, uninsulated ears radiates excess body heat to help cool the body",
+        "hint": "Large vascularized ear surfaces act as radiators, dissipating body heat into the air.",
+        "workedSolution": "Large vascularized ear surfaces act as radiators, dissipating body heat into the air.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological advantage of producing light, feathery parachutes on seeds in open grassland habitats?",
+        "options": [
+          "A. To keep the seeds warm",
+          "B. To allow winds to carry seeds across long distances, dispersing offspring away from the parent plant",
+          "C. To prevent birds from eating seeds",
+          "D. To absorb rain from clouds"
+        ],
+        "correctAnswer": "B. To allow winds to carry seeds across long distances, dispersing offspring away from the parent plant",
+        "hint": "Feathery appendages create aerodynamic drag, allowing wind currents to disperse seeds widely.",
+        "workedSolution": "Feathery appendages create aerodynamic drag, allowing wind currents to disperse seeds widely.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do alpine and polar animals tend to have shorter ears, limbs, and tails than related species in warm climates (Allen's rule)?",
+        "options": [
+          "A. Cold weather freezes their limbs off",
+          "B. Shorter extremities reduce surface area relative to body volume, minimizing heat loss in freezing environments",
+          "C. They do not need to walk",
+          "D. They grow faster"
+        ],
+        "correctAnswer": "B. Shorter extremities reduce surface area relative to body volume, minimizing heat loss in freezing environments",
+        "hint": "Reduced extremity size minimizes heat-dissipating surface area, helping animals stay warm in cold climates.",
+        "workedSolution": "Reduced extremity size minimizes heat-dissipating surface area, helping animals stay warm in cold climates.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the ecological term for the functional role and position a species occupies within its ecosystem?",
+        "options": [
+          "A. Habitat",
+          "B. Ecological niche",
+          "C. Biome",
+          "D. Population size"
+        ],
+        "correctAnswer": "B. Ecological niche",
+        "hint": "An ecological niche includes a species' habitat use, diet, resource consumption, and interactions with other organisms.",
+        "workedSolution": "An ecological niche includes a species' habitat use, diet, resource consumption, and interactions with other organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do succulent desert plants use Crassulacean Acid Metabolism (CAM photosynthesis) as a physiological adaptation?",
+        "options": [
+          "A. To produce sugar in the dark without sunlight",
+          "B. They open stomata only at night to capture CO₂ as organic acids, keeping stomata closed during hot daylight hours to limit transpirational water loss",
+          "C. To absorb water through their flowers",
+          "D. To convert sand into starch"
+        ],
+        "correctAnswer": "B. They open stomata only at night to capture CO₂ as organic acids, keeping stomata closed during hot daylight hours to limit transpirational water loss",
+        "hint": "CAM plants open stomata at cooler, humid night times to fix carbon, minimizing daytime transpirational water loss.",
+        "workedSolution": "CAM plants open stomata at cooler, humid night times to fix carbon, minimizing daytime transpirational water loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does competitive exclusion (Gause's Principle) shape biological communities where two species have identical ecological niches?",
+        "options": [
+          "A. Both species interbreed to form a new species",
+          "B. One species will use resources more efficiently, outcompeting and driving the other to local extinction or forcing niche differentiation",
+          "C. Both species stop eating food",
+          "D. The habitat expands automatically"
+        ],
+        "correctAnswer": "B. One species will use resources more efficiently, outcompeting and driving the other to local extinction or forcing niche differentiation",
+        "hint": "Two competing species with identical niche requirements cannot stably coexist; one will eventually outcompete the other.",
+        "workedSolution": "Two competing species with identical niche requirements cannot stably coexist; one will eventually outcompete the other.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does primary ecological succession on bare volcanic rock take much longer than secondary succession following a bushfire?",
+        "options": [
+          "A. Volcanic rock is too hot for plants",
+          "B. Primary succession must build soil from scratch through rock weathering and pioneer lichens, whereas secondary succession starts with an existing soil seed bank",
+          "C. Bushfires kill all bacteria permanently",
+          "D. Secondary succession requires no rain"
+        ],
+        "correctAnswer": "B. Primary succession must build soil from scratch through rock weathering and pioneer lichens, whereas secondary succession starts with an existing soil seed bank",
+        "hint": "Primary succession starts without soil, requiring decades of pioneer colonization to build topsoil before higher plants can grow.",
+        "workedSolution": "Primary succession starts without soil, requiring decades of pioneer colonization to build topsoil before higher plants can grow.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the counter-current heat exchange system in penguin legs and whale flippers prevent hypothermia?",
+        "options": [
+          "A. Blood turns into antifreeze liquid",
+          "B. Warm arterial blood from the core transfers heat to cool venous blood returning from extremities, retaining warmth in the body core",
+          "C. Feet produce fire chemically",
+          "D. Arteries close completely in winter"
+        ],
+        "correctAnswer": "B. Warm arterial blood from the core transfers heat to cool venous blood returning from extremities, retaining warmth in the body core",
+        "hint": "Closely aligned arteries and veins exchange heat, warming returning blood and reducing heat loss at peripheral surfaces.",
+        "workedSolution": "Closely aligned arteries and veins exchange heat, warming returning blood and reducing heat loss at peripheral surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do mangrove trees growing in saline intertidal zones develop aerial roots called pneumatophores?",
+        "options": [
+          "A. To catch swimming crabs",
+          "B. Waterlogged, muddy soils lack oxygen; upward-growing pneumatophores take in atmospheric air through lenticels for root respiration",
+          "C. To produce seeds in the air",
+          "D. To shade their trunks"
+        ],
+        "correctAnswer": "B. Waterlogged, muddy soils lack oxygen; upward-growing pneumatophores take in atmospheric air through lenticels for root respiration",
+        "hint": "Pneumatophores rise above waterlogged mud, using lenticels to breathe in oxygen-poor, flooded soils.",
+        "workedSolution": "Pneumatophores rise above waterlogged mud, using lenticels to breathe in oxygen-poor, flooded soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting net primary productivity (NPP) in the open ocean (pelagic zone) despite abundant sunlight?",
+        "options": [
+          "A. High water pressure",
+          "B. Deficiencies of critical dissolved mineral nutrients, particularly iron, nitrogen, and phosphorus, in the photic zone",
+          "C. Too much dissolved salt",
+          "D. The water is too cold"
+        ],
+        "correctAnswer": "B. Deficiencies of critical dissolved mineral nutrients, particularly iron, nitrogen, and phosphorus, in the photic zone",
+        "hint": "While light is abundant at the surface, lack of upwelling leaves the open ocean deficient in bioavailable nutrients.",
+        "workedSolution": "While light is abundant at the surface, lack of upwelling leaves the open ocean deficient in bioavailable nutrients.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does bioaccumulation and biomagnification of persistent pesticides (like DDT) affect top predators in an aquatic food chain?",
+        "options": [
+          "A. Toxins break down into harmless sugars",
+          "B. Fat-soluble toxins are not easily excreted, concentrating at higher trophic levels and reaching toxic doses in apex predators",
+          "C. Herbivores absorb all the chemicals",
+          "D. Fish become immune to all diseases"
+        ],
+        "correctAnswer": "B. Fat-soluble toxins are not easily excreted, concentrating at higher trophic levels and reaching toxic doses in apex predators",
+        "hint": "Non-biodegradable toxins accumulate in fat tissues and become more concentrated with each successive trophic step.",
+        "workedSolution": "Non-biodegradable toxins accumulate in fat tissues and become more concentrated with each successive trophic step.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a sudden drop in dissolved oxygen (DO) cause fish kills in freshwater ponds during hot, stagnant weather?",
+        "options": [
+          "A. Warm water dissolves less oxygen, and high temperatures increase fish metabolic demand for oxygen beyond what is available",
+          "B. Cold water kills fish gills",
+          "C. Fish stop breathing in summer",
+          "D. Heat turns water into acid"
+        ],
+        "correctAnswer": "A. Warm water dissolves less oxygen, and high temperatures increase fish metabolic demand for oxygen beyond what is available",
+        "hint": "Warm water has a lower oxygen-carrying capacity, while fish metabolic rates and oxygen demands rise with temperature.",
+        "workedSolution": "Warm water has a lower oxygen-carrying capacity, while fish metabolic rates and oxygen demands rise with temperature.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the evolutionary benefit of aposematic (warning) coloration in toxic insects like monarch caterpillars?",
+        "options": [
+          "A. To blend into green leaves",
+          "B. Bright, conspicuous patterns warn predators of foul taste or toxicity, helping predators learn to avoid that species",
+          "C. To absorb extra solar heat",
+          "D. To frighten other caterpillars"
+        ],
+        "correctAnswer": "B. Bright, conspicuous patterns warn predators of foul taste or toxicity, helping predators learn to avoid that species",
+        "hint": "Conspicuous color patterns signal toxicity, helping predators learn avoidance and reducing attacks on the species.",
+        "workedSolution": "Conspicuous color patterns signal toxicity, helping predators learn avoidance and reducing attacks on the species.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do tropical rainforest emergent trees develop high leaf turgor and osmotic adjustments in their upper crowns?",
+        "options": [
+          "A. The canopy receives no rain",
+          "B. Upper canopies face high solar radiation, wind, and evaporative demands, requiring high osmotic pressure to lift water against gravity",
+          "C. The roots are dead",
+          "D. Leaves are made of wood"
+        ],
+        "correctAnswer": "B. Upper canopies face high solar radiation, wind, and evaporative demands, requiring high osmotic pressure to lift water against gravity",
+        "hint": "Treetops experience high vapor pressure deficits, requiring strong negative water potentials to pull water upward.",
+        "workedSolution": "Treetops experience high vapor pressure deficits, requiring strong negative water potentials to pull water upward.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do deep-sea hydrothermal vent ecosystems sustain rich communities of giant tube worms without sunlight?",
+        "options": [
+          "A. Animals feed on fallen dead trees",
+          "B. Chemosynthetic bacteria oxidize hydrogen sulfide and methane from vents to produce organic matter, serving as primary producers",
+          "C. Animals live on volcanic heat alone",
+          "D. They use starlight"
+        ],
+        "correctAnswer": "B. Chemosynthetic bacteria oxidize hydrogen sulfide and methane from vents to produce organic matter, serving as primary producers",
+        "hint": "Chemoautotrophic bacteria oxidize chemical compounds from vents, forming the base of sunlight-free food webs.",
+        "workedSolution": "Chemoautotrophic bacteria oxidize chemical compounds from vents, forming the base of sunlight-free food webs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What role does the Lotka-Volterra predator-prey model describe in natural ecosystems?",
+        "options": [
+          "A. That predators eat all prey until both go extinct",
+          "B. Coupled, cyclical oscillations where prey increases drive predator gains, which then reduce prey numbers and lead to predator declines",
+          "C. That plants control animals",
+          "D. That populations remain completely static"
+        ],
+        "correctAnswer": "B. Coupled, cyclical oscillations where prey increases drive predator gains, which then reduce prey numbers and lead to predator declines",
+        "hint": "Predator and prey populations follow linked, oscillating cycles driven by predation pressure and food availability.",
+        "workedSolution": "Predator and prey populations follow linked, oscillating cycles driven by predation pressure and food availability.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are lichens classified as pioneer species in primary succession on bare rock surfaces?",
+        "options": [
+          "A. They eat other plants",
+          "B. They are hardy mutualisms of fungi and algae that survive on bare rock, secreting organic acids that weather rock into primitive soil",
+          "C. They require deep soil",
+          "D. They grow only in water"
+        ],
+        "correctAnswer": "B. They are hardy mutualisms of fungi and algae that survive on bare rock, secreting organic acids that weather rock into primitive soil",
+        "hint": "Lichens tolerate bare rock and exude acids that break down minerals, starting soil formation.",
+        "workedSolution": "Lichens tolerate bare rock and exude acids that break down minerals, starting soil formation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does resource partitioning allow multiple warbler bird species to forage in the same spruce tree without competitive exclusion?",
+        "options": [
+          "A. The birds fight to the death",
+          "B. Each species forages in distinct zones of the tree (top exterior, middle interior, or bottom), targeting different insect prey",
+          "C. They change their diet to spruce needles",
+          "D. Some species forage only at night"
+        ],
+        "correctAnswer": "B. Each species forages in distinct zones of the tree (top exterior, middle interior, or bottom), targeting different insect prey",
+        "hint": "Spatial partitioning of the tree canopy divides the foraging habitat, reducing direct competition.",
+        "workedSolution": "Spatial partitioning of the tree canopy divides the foraging habitat, reducing direct competition.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does clearing an old-growth tropical rainforest lead to permanent ecosystem degradation?",
+        "options": [
+          "A. Trees cannot grow in sunshine",
+          "B. Most ecosystem nutrients are held in living plant biomass; clear-cutting removes the nutrient bank and exposes shallow topsoils to heavy leaching",
+          "C. The ground turns into liquid",
+          "D. Animals destroy the rain"
+        ],
+        "correctAnswer": "B. Most ecosystem nutrients are held in living plant biomass; clear-cutting removes the nutrient bank and exposes shallow topsoils to heavy leaching",
+        "hint": "Nutrients in rainforests are held largely in biomass; clearing and rain quickly leach the remaining thin topsoil.",
+        "workedSolution": "Nutrients in rainforests are held largely in biomass; clearing and rain quickly leach the remaining thin topsoil.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological mechanism of allelopathy used by certain invasive plants?",
+        "options": [
+          "A. Producing attractive sweet fruits",
+          "B. Releasing toxic secondary biochemicals from roots or leaves into the soil to inhibit seed germination of neighboring competitors",
+          "C. Climbing over other plants",
+          "D. Absorbing all carbon dioxide"
+        ],
+        "correctAnswer": "B. Releasing toxic secondary biochemicals from roots or leaves into the soil to inhibit seed germination of neighboring competitors",
+        "hint": "Allelopathic plants release chemicals into the soil that suppress germination and growth in competing species.",
+        "workedSolution": "Allelopathic plants release chemicals into the soil that suppress germination and growth in competing species.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do freshwater fish maintain an extensive active-transport system in their gill epithelia?",
+        "options": [
+          "A. To pump salt out of their bodies",
+          "B. Living in a hypotonic medium causes ion loss; gill ionocytes actively pump sodium and chloride ions from water into their blood",
+          "C. To pump water out of the stomach",
+          "D. To breathe atmospheric air"
+        ],
+        "correctAnswer": "B. Living in a hypotonic medium causes ion loss; gill ionocytes actively pump sodium and chloride ions from water into their blood",
+        "hint": "Freshwater fish lose ions to their dilute environment, using gill cells to actively pump salts back into the blood.",
+        "workedSolution": "Freshwater fish lose ions to their dilute environment, using gill cells to actively pump salts back into the blood.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the removal of a keystone species (such as sea otters in a kelp forest) disrupt the entire community?",
+        "options": [
+          "A. Sea otters eat the kelp",
+          "B. Without sea otters to prey on sea urchins, urchin populations explode, overgrazing the kelp and destroying the habitat for other marine life",
+          "C. The water turns into fresh water",
+          "D. All fish leave the ocean"
+        ],
+        "correctAnswer": "B. Without sea otters to prey on sea urchins, urchin populations explode, overgrazing the kelp and destroying the habitat for other marine life",
+        "hint": "Keystone predators check herbivore populations; their loss can cause overgrazing and habitat collapse.",
+        "workedSolution": "Keystone predators check herbivore populations; their loss can cause overgrazing and habitat collapse.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What physiological adaptation allows freeze-tolerant wood frogs to survive sub-zero winters in boreal regions?",
+        "options": [
+          "A. They build warm nests underground",
+          "B. They accumulate high concentrations of glucose and urea in tissues to act as cryoprotectants, preventing intracellular ice crystallization",
+          "C. Their blood circulates boiling water",
+          "D. They develop thick fur"
+        ],
+        "correctAnswer": "B. They accumulate high concentrations of glucose and urea in tissues to act as cryoprotectants, preventing intracellular ice crystallization",
+        "hint": "High tissue glucose levels act as natural antifreeze, preventing cell damage while extracellular fluids freeze.",
+        "workedSolution": "High tissue glucose levels act as natural antifreeze, preventing cell damage while extracellular fluids freeze.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does secondary succession progress much more rapidly toward a climax community than primary succession?",
+        "options": [
+          "A. Secondary succession requires no plants",
+          "B. The presence of pre-existing, intact soil containing organic matter, seed banks, and microbial communities speeds plant establishment",
+          "C. Bushfires make soil cold",
+          "D. Animals plant seeds in straight rows"
+        ],
+        "correctAnswer": "B. The presence of pre-existing, intact soil containing organic matter, seed banks, and microbial communities speeds plant establishment",
+        "hint": "Secondary succession starts with developed soil, nutrients, and viable seeds, allowing faster revegetation.",
+        "workedSolution": "Secondary succession starts with developed soil, nutrients, and viable seeds, allowing faster revegetation.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the function of antifreeze glycoproteins in the blood of Antarctic icefish?",
+        "options": [
+          "A. Digesting frozen krill",
+          "B. Binding to microscopic ice crystals to depress their freezing point and prevent ice expansion in circulatory fluids",
+          "C. Producing body heat like a mammal",
+          "D. Turning blood white"
+        ],
+        "correctAnswer": "B. Binding to microscopic ice crystals to depress their freezing point and prevent ice expansion in circulatory fluids",
+        "hint": "Antifreeze proteins bind nascent ice crystals, inhibiting growth and keeping body fluids liquid below 0°C.",
+        "workedSolution": "Antifreeze proteins bind nascent ice crystals, inhibiting growth and keeping body fluids liquid below 0°C.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the structural architecture of the acacia tree thorn provide an ecological niche for mutualistic ants?",
+        "options": [
+          "A. Thorns are filled with poisonous water",
+          "B. Enlarged, swollen thorn bases provide hollow, protected nesting chambers (domatia) for rearing ant larvae",
+          "C. Thorns capture falling leaves",
+          "D. Thorns make sound in the wind"
+        ],
+        "correctAnswer": "B. Enlarged, swollen thorn bases provide hollow, protected nesting chambers (domatia) for rearing ant larvae",
+        "hint": "Swollen thorn bases provide hollow living cavities (domatia) for nesting ant colonies.",
+        "workedSolution": "Swollen thorn bases provide hollow living cavities (domatia) for nesting ant colonies.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the top-predator biomass in a pyramid of biomass significantly smaller than producer biomass?",
+        "options": [
+          "A. Producers are made of stone",
+          "B. Due to second-law thermodynamic inefficiencies, about 90% of available energy is lost as metabolic heat and waste at each trophic transfer",
+          "C. Top predators stop eating food",
+          "D. Decomposers eat all the predators"
+        ],
+        "correctAnswer": "B. Due to second-law thermodynamic inefficiencies, about 90% of available energy is lost as metabolic heat and waste at each trophic transfer",
+        "hint": "Energy loss at each trophic step limits the total biomass that higher trophic levels can support.",
+        "workedSolution": "Energy loss at each trophic step limits the total biomass that higher trophic levels can support.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do deep-rooted halophytic plants survive high salt concentrations in coastal salt marshes?",
+        "options": [
+          "A. They absorb only pure rainwater",
+          "B. They accumulate compatible organic solutes in their vacuoles to maintain osmotic balance and excrete excess salts through leaf glands",
+          "C. They turn salt into sugar",
+          "D. Their roots have plastic sheaths"
+        ],
+        "correctAnswer": "B. They accumulate compatible organic solutes in their vacuoles to maintain osmotic balance and excrete excess salts through leaf glands",
+        "hint": "Halophytes accumulate solutes to retain cellular water and use salt glands to excrete excess ions.",
+        "workedSolution": "Halophytes accumulate solutes to retain cellular water and use salt glands to excrete excess ions.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What accounts for the high biodiversity in the canopy layer of tropical rainforests?",
+        "options": [
+          "A. The canopy is completely dry",
+          "B. Abundant sunlight, diverse microhabitats, and high primary productivity create varied ecological niches for specialized species",
+          "C. The forest floor has no soil",
+          "D. Ground animals cannot reproduce"
+        ],
+        "correctAnswer": "B. Abundant sunlight, diverse microhabitats, and high primary productivity create varied ecological niches for specialized species",
+        "hint": "Direct solar energy and structural complexity create diverse niches for specialized canopy organisms.",
+        "workedSolution": "Direct solar energy and structural complexity create diverse niches for specialized canopy organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an ecological tension zone (ecotone) between a forest and a grassland often support higher species richness than either biome alone?",
+        "options": [
+          "A. Ecotones have no predators",
+          "B. Edge effects provide overlapping environmental conditions, allowing species from both neighboring communities to use edge resources",
+          "C. Ecotones are artificial",
+          "D. Animals cannot leave ecotones"
+        ],
+        "correctAnswer": "B. Edge effects provide overlapping environmental conditions, allowing species from both neighboring communities to use edge resources",
+        "hint": "Ecotones blend physical conditions and resources from adjacent habitats, fostering high edge-zone diversity.",
+        "workedSolution": "Ecotones blend physical conditions and resources from adjacent habitats, fostering high edge-zone diversity.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does brood parasitism in cuckoo birds demonstrate behavioral co-evolution?",
+        "options": [
+          "A. Cuckoos build nests for other birds",
+          "B. Cuckoos lay eggs that mimic host egg colors in host nests, while host species evolve sensory abilities to detect and reject foreign eggs",
+          "C. Cuckoos feed all birds in the forest",
+          "D. Cuckoos raise host chicks"
+        ],
+        "correctAnswer": "B. Cuckoos lay eggs that mimic host egg colors in host nests, while host species evolve sensory abilities to detect and reject foreign eggs",
+        "hint": "Egg mimicry by parasites and egg-rejection behaviors by hosts drive an evolutionary arms race.",
+        "workedSolution": "Egg mimicry by parasites and egg-rejection behaviors by hosts drive an evolutionary arms race.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do the leaves of desert xerophytes often have stomata sunken into deep crypts lined with fine epidermal hairs?",
+        "options": [
+          "A. To trap insects",
+          "B. Crypts and trichome hairs trap still, humid air around stomatal pores, reducing the water-vapor concentration gradient and transpiration",
+          "C. To absorb dew directly into the veins",
+          "D. To shade the stem"
+        ],
+        "correctAnswer": "B. Crypts and trichome hairs trap still, humid air around stomatal pores, reducing the water-vapor concentration gradient and transpiration",
+        "hint": "Sunken crypts and hairs create a humid boundary layer that reduces transpirational vapor loss.",
+        "workedSolution": "Sunken crypts and hairs create a humid boundary layer that reduces transpirational vapor loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting tree growth at the alpine tree line on high mountains?",
+        "options": [
+          "A. Lack of carbon dioxide",
+          "B. Low mean temperatures during the growing season limit cell division and wood lignification, exacerbated by freezing winds",
+          "C. Heavy rain",
+          "D. Too much soil depth"
+        ],
+        "correctAnswer": "B. Low mean temperatures during the growing season limit cell division and wood lignification, exacerbated by freezing winds",
+        "hint": "Low seasonal temperatures and short growing windows prevent trees from producing new cells and lignifying wood.",
+        "workedSolution": "Low seasonal temperatures and short growing windows prevent trees from producing new cells and lignifying wood.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does phenotypic plasticity allow an individual plant to acclimatize to shading by taller neighbors?",
+        "options": [
+          "A. By mutating its DNA sequence overnight",
+          "B. By altering stem elongation (etiolation) and expanding specific leaf area through hormonal responses to low red-to-far-red light ratios",
+          "C. By dropping all its roots",
+          "D. By turning into an animal"
+        ],
+        "correctAnswer": "B. By altering stem elongation (etiolation) and expanding specific leaf area through hormonal responses to low red-to-far-red light ratios",
+        "hint": "Phytochrome shade-avoidance signaling drives rapid stem elongation and broader leaf growth to seek light.",
+        "workedSolution": "Phytochrome shade-avoidance signaling drives rapid stem elongation and broader leaf growth to seek light.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do desert sand vipers and sidewinder rattlesnakes move via lateral sidewinding locomotion across sand dunes?",
+        "options": [
+          "A. They are blind in front",
+          "B. Sidewinding minimizes body contact with scorching surface sand and provides traction on shifting, loose slopes",
+          "C. Sidewinding makes them run faster than birds",
+          "D. Their bodies are rigid"
+        ],
+        "correctAnswer": "B. Sidewinding minimizes body contact with scorching surface sand and provides traction on shifting, loose slopes",
+        "hint": "Sidewinding reduces physical contact with hot sand and prevents slipping on loose dunes.",
+        "workedSolution": "Sidewinding reduces physical contact with hot sand and prevents slipping on loose dunes.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ecological significance of biological soil crusts (cryptogamic crusts) in arid desert biomes?",
+        "options": [
+          "A. They dissolve sand into water",
+          "B. Cyanobacteria, lichens, and mosses bind soil particles, stabilize dunes against wind erosion, and fix atmospheric nitrogen",
+          "C. They eat cactus roots",
+          "D. They reflect all sunlight"
+        ],
+        "correctAnswer": "B. Cyanobacteria, lichens, and mosses bind soil particles, stabilize dunes against wind erosion, and fix atmospheric nitrogen",
+        "hint": "Biological crusts stabilize fragile desert soils against wind and fix atmospheric nitrogen.",
+        "workedSolution": "Biological crusts stabilize fragile desert soils against wind and fix atmospheric nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does thermal stratification in temperate lakes during summer lead to oxygen depletion in the bottom hypolimnion layer?",
+        "options": [
+          "A. Fish swim down to breathe all the oxygen",
+          "B. A warm epilimnion floats on the cold, dense hypolimnion; the thermocline blocks mixing, while bottom decomposers consume oxygen",
+          "C. Deep water turns into steam",
+          "D. Aquatic plants produce oxygen only in deep mud"
+        ],
+        "correctAnswer": "B. A warm epilimnion floats on the cold, dense hypolimnion; the thermocline blocks mixing, while bottom decomposers consume oxygen",
+        "hint": "The density boundary prevents aeration of bottom waters, where decaying organic matter consumes oxygen.",
+        "workedSolution": "The density boundary prevents aeration of bottom waters, where decaying organic matter consumes oxygen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Batesian mimicry protect a harmless hoverfly that displays black and yellow warning stripes like a stinging wasp?",
+        "options": [
+          "A. The hoverfly develops a real venomous stinger",
+          "B. Predators that have learned to avoid painful wasp stings mistake the harmless hoverfly for a wasp and avoid attacking it",
+          "C. Wasps protect hoverflies from birds",
+          "D. Hoverflies produce buzzing sounds that break glass"
+        ],
+        "correctAnswer": "B. Predators that have learned to avoid painful wasp stings mistake the harmless hoverfly for a wasp and avoid attacking it",
+        "hint": "Harmless mimics gain protection because predators associate their warning coloration with a dangerous model.",
+        "workedSolution": "Harmless mimics gain protection because predators associate their warning coloration with a dangerous model.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do coniferous trees retain green needles year-round, while temperate deciduous trees drop their leaves in autumn?",
+        "options": [
+          "A. Deciduous trees do not need sunlight",
+          "B. Conifers conserve nutrients in poor soils by avoiding rebuilding an entire canopy each spring, beginning photosynthesis immediately when temperatures rise",
+          "C. Conifer needles are made of wood",
+          "D. Deciduous leaves are poisonous to winter air"
+        ],
+        "correctAnswer": "B. Conifers conserve nutrients in poor soils by avoiding rebuilding an entire canopy each spring, beginning photosynthesis immediately when temperatures rise",
+        "hint": "Evergreen needles avoid the heavy nutrient cost of regrowing foliage and can photosynthesize during warm winter spells.",
+        "workedSolution": "Evergreen needles avoid the heavy nutrient cost of regrowing foliage and can photosynthesize during warm winter spells.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physiological role of thermal huddling behavior in emperor penguins during Antarctic winter blizzards?",
+        "options": [
+          "A. To sleep faster",
+          "B. Reducing collective exposed surface area to lower individual metabolic heat loss by up to 50%",
+          "C. To melt snow beneath their feet",
+          "D. To scare off predators"
+        ],
+        "correctAnswer": "B. Reducing collective exposed surface area to lower individual metabolic heat loss by up to 50%",
+        "hint": "Huddling reduces exposed individual surface area, cutting radiative and convective heat loss in freezing winds.",
+        "workedSolution": "Huddling reduces exposed individual surface area, cutting radiative and convective heat loss in freezing winds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do some desert ephemeral annual plants complete their entire life cycle (germination, flowering, seed set) in three weeks?",
+        "options": [
+          "A. They are impatient",
+          "B. They escape drought by exploiting short windows of seasonal rainfall, leaving desiccation-resistant seeds that stay dormant until the next rains",
+          "C. Seeds cannot live in dry soil",
+          "D. Animals eat all adult plants in summer"
+        ],
+        "correctAnswer": "B. They escape drought by exploiting short windows of seasonal rainfall, leaving desiccation-resistant seeds that stay dormant until the next rains",
+        "hint": "Ephemeral plants complete their life cycles while surface moisture lasts, avoiding prolonged dry periods as dormant seeds.",
+        "workedSolution": "Ephemeral plants complete their life cycles while surface moisture lasts, avoiding prolonged dry periods as dormant seeds.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does vertical stratification in a tropical rainforest maintain high species richness?",
+        "options": [
+          "A. Animals fight only on the ground",
+          "B. Discrete vertical layers (emergent, canopy, understory, and forest floor) offer distinct microclimatic gradients and ecological niches",
+          "C. Plants produce different colored wood",
+          "D. The forest floor is completely dark and sterile"
+        ],
+        "correctAnswer": "B. Discrete vertical layers (emergent, canopy, understory, and forest floor) offer distinct microclimatic gradients and ecological niches",
+        "hint": "Vertical light and moisture gradients create specialized niches from the emergent canopy down to the forest floor.",
+        "workedSolution": "Vertical light and moisture gradients create specialized niches from the emergent canopy down to the forest floor.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do seaweeds inhabiting intertidal rocky shores produce gelatinous, flexible alginates in their cell walls?",
+        "options": [
+          "A. To poison grazing snails",
+          "B. To retain internal moisture during low-tide air exposure and flex under breaking waves without shattering",
+          "C. To absorb sunlight underwater",
+          "D. To freeze the surrounding sea"
+        ],
+        "correctAnswer": "B. To retain internal moisture during low-tide air exposure and flex under breaking waves without shattering",
+        "hint": "Mucilaginous alginates slow desiccation at low tide and give the thallus flexibility in heavy surf.",
+        "workedSolution": "Mucilaginous alginates slow desiccation at low tide and give the thallus flexibility in heavy surf.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the evolutionary function of floral nectar guides that reflect ultraviolet wavelengths invisible to humans?",
+        "options": [
+          "A. To absorb solar heat",
+          "B. Directing UV-sensitive insect pollinators straight to the flower's nectar glands and reproductive organs",
+          "C. To blind herbivorous birds",
+          "D. To scare caterpillars"
+        ],
+        "correctAnswer": "B. Directing UV-sensitive insect pollinators straight to the flower's nectar glands and reproductive organs",
+        "hint": "UV patterns guide trichromatic insects like bees directly to floral rewards, aiding efficient pollination.",
+        "workedSolution": "UV patterns guide trichromatic insects like bees directly to floral rewards, aiding efficient pollination.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a desert tortoise excrete uric acid in dry seasons, but excrete liquid urea during rainy months?",
+        "options": [
+          "A. Its kidneys stop working in rain",
+          "B. Physiological plasticity allows it to conserve water via uric acid during droughts, shifting to urea when drinking water is abundant to purge accumulated salts",
+          "C. Tortoises eat only stones in summer",
+          "D. Rain dissolves the tortoise's shell"
+        ],
+        "correctAnswer": "B. Physiological plasticity allows it to conserve water via uric acid during droughts, shifting to urea when drinking water is abundant to purge accumulated salts",
+        "hint": "Plastic nitrogen excretion balances water conservation during droughts with waste flushing when water is available.",
+        "workedSolution": "Plastic nitrogen excretion balances water conservation during droughts with waste flushing when water is available.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do carnivorous plants (like sundews and pitcher plants) adapt to nutrient-poor, waterlogged bogs?",
+        "options": [
+          "A. They get energy from insects instead of sunlight",
+          "B. They perform normal photosynthesis for energy, but trap and digest insects to obtain nitrogen and phosphorus missing from waterlogged soils",
+          "C. Their roots absorb gold",
+          "D. They eat other plants' leaves"
+        ],
+        "correctAnswer": "B. They perform normal photosynthesis for energy, but trap and digest insects to obtain nitrogen and phosphorus missing from waterlogged soils",
+        "hint": "Carnivory supplies nitrogen and phosphorus needed for protein synthesis in acidic, nutrient-deficient bogs.",
+        "workedSolution": "Carnivory supplies nitrogen and phosphorus needed for protein synthesis in acidic, nutrient-deficient bogs.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the seasonal turnover (mixing) of water in temperate dimictic lakes during autumn?",
+        "options": [
+          "A. Strong earthquakes",
+          "B. Surface water cools to 4°C (maximum density of water) and sinks, displacing lighter bottom water and circulating oxygen and nutrients",
+          "C. Fish swimming in circles",
+          "D. Cold rain pushing lake water out"
+        ],
+        "correctAnswer": "B. Surface water cools to 4°C (maximum density of water) and sinks, displacing lighter bottom water and circulating oxygen and nutrients",
+        "hint": "Surface cooling to 4°C makes top water dense, driving turnover that mixes nutrients and oxygen throughout the water column.",
+        "workedSolution": "Surface cooling to 4°C makes top water dense, driving turnover that mixes nutrients and oxygen throughout the water column.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do zebras and wildebeests undertake seasonal mass migrations across the Serengeti plains?",
+        "options": [
+          "A. To escape human hunters only",
+          "B. Tracking seasonal rainfall patterns and fresh grass flushes to meet high nutritional and water needs",
+          "C. Because they cannot sleep in one spot",
+          "D. To find salt mines"
+        ],
+        "correctAnswer": "B. Tracking seasonal rainfall patterns and fresh grass flushes to meet high nutritional and water needs",
+        "hint": "Migrating herds follow regional rainfall gradients to find fresh grazing forage and surface water.",
+        "workedSolution": "Migrating herds follow regional rainfall gradients to find fresh grazing forage and surface water.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does endosymbiosis between reef-building stony corals and zooxanthellae algae support productive coral reef ecosystems in nutrient-poor waters?",
+        "options": [
+          "A. Corals eat the algae for food",
+          "B. Algae live inside coral tissues and photosynthesize, providing glucose and glycerol to the coral host in exchange for shelter and metabolic waste nutrients (N and P)",
+          "C. Algae produce calcium carbonate directly",
+          "D. Corals use algae as eyes"
+        ],
+        "correctAnswer": "B. Algae live inside coral tissues and photosynthesize, providing glucose and glycerol to the coral host in exchange for shelter and metabolic waste nutrients (N and P)",
+        "hint": "Symbiotic algae recycle metabolic wastes into sugars, allowing reef structures to grow in nutrient-poor waters.",
+        "workedSolution": "Symbiotic algae recycle metabolic wastes into sugars, allowing reef structures to grow in nutrient-poor waters.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do seeds of certain savannah trees require scorching by a bushfire before they can germinate?",
+        "options": [
+          "A. Fire turns the seed into a plant instantly",
+          "B. Intense heat cracks tough, impermeable seed coats (scarification) and clears competing ground cover, preparing a fertile post-fire seedbed",
+          "C. The seeds are made of coal",
+          "D. Ash feeds the seeds with water"
+        ],
+        "correctAnswer": "B. Intense heat cracks tough, impermeable seed coats (scarification) and clears competing ground cover, preparing a fertile post-fire seedbed",
+        "hint": "Thermal scarification breaks physical seed dormancy, timing germination to coincide with clear ground and post-fire ash.",
+        "workedSolution": "Thermal scarification breaks physical seed dormancy, timing germination to coincide with clear ground and post-fire ash.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the lateral line sensory system help pelagic schooling fish coordinate movement and avoid predators?",
+        "options": [
+          "A. It produces light",
+          "B. Specialized mechanoreceptive hair cells detect subtle pressure changes and water displacements produced by neighboring fish and predators",
+          "C. It tastes the salinity of seawater",
+          "D. It generates an electric shock"
+        ],
+        "correctAnswer": "B. Specialized mechanoreceptive hair cells detect subtle pressure changes and water displacements produced by neighboring fish and predators",
+        "hint": "Neuromast receptors in the lateral line detect water pressure waves, helping schools swim together and evade attacks.",
+        "workedSolution": "Neuromast receptors in the lateral line detect water pressure waves, helping schools swim together and evade attacks.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do high-altitude Andean and Tibetan humans exhibit distinct physiological traits for living in low atmospheric oxygen?",
+        "options": [
+          "A. They have no lungs",
+          "B. Evolutionary adaptations like larger lung capacities, higher resting ventilation rates, and enhanced capillary density improve oxygen delivery",
+          "C. They stop producing red blood cells",
+          "D. Their bodies absorb oxygen through the skin"
+        ],
+        "correctAnswer": "B. Evolutionary adaptations like larger lung capacities, higher resting ventilation rates, and enhanced capillary density improve oxygen delivery",
+        "hint": "High-altitude populations have evolved adaptations like expanded lung volume and capillary networks to cope with low oxygen.",
+        "workedSolution": "High-altitude populations have evolved adaptations like expanded lung volume and capillary networks to cope with low oxygen.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting the maximum height to which tall redwood trees can transport water to canopy foliage?",
+        "options": [
+          "A. Sunlight strength",
+          "B. Gravity and xylem conduit friction create high hydrostatic tension; at around 120–130 meters, water columns reach cavitation limits (xylem embolism)",
+          "C. Roots running out of soil",
+          "D. Wind blowing leaves off"
+        ],
+        "correctAnswer": "B. Gravity and xylem conduit friction create high hydrostatic tension; at around 120–130 meters, water columns reach cavitation limits (xylem embolism)",
+        "hint": "Gravity and frictional resistance cap the negative water potential trees can maintain before air bubbles (embolisms) break the water columns.",
+        "workedSolution": "Gravity and frictional resistance cap the negative water potential trees can maintain before air bubbles (embolisms) break the water columns.",
+        "points": 1
+      },
+      {
+        "id": "B7_ECO_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which combination of factors demonstrates an ecosystem maintaining dynamic biological equilibrium (homeostasis)?",
+        "options": [
+          "A. All herbivores die, leaving only plants",
+          "B. Continuous nutrient recycling by decomposers, balanced predator-prey population oscillations, and negative feedback loops stabilizing community composition",
+          "C. Continuous immigration of new predators until prey is gone",
+          "D. A single dominant tree species replacing all other organisms"
+        ],
+        "correctAnswer": "B. Continuous nutrient recycling by decomposers, balanced predator-prey population oscillations, and negative feedback loops stabilizing community composition",
+        "hint": "Ecosystem balance relies on ongoing nutrient cycling, self-correcting population feedbacks, and community stability.",
+        "workedSolution": "Ecosystem balance relies on ongoing nutrient cycling, self-correcting population feedbacks, and community stability.",
         "points": 1
       }
     ]
