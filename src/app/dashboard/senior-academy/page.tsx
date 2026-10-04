@@ -6337,7 +6337,7 @@ function EnglishMastery({
                                                     <span>{cat}</span>
                                                 </div>
                                                 <div className="space-y-1 pl-1">
-                                                    {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
+                                                    {subs && typeof subs === 'object' && Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                         <div key={subTitle} className="space-y-1">
                                                             <span className="text-[10px] text-slate-400 font-semibold block">{subTitle}</span>
                                                             {Array.isArray(items) && items.map((item: any) => (
@@ -9960,7 +9960,7 @@ if (
                                                 {/* Class Coverage Chips: [ B7 (JHS 1) ] [ B8 (JHS 2) ] [ B9 (JHS 3) ] */}
                                                 {!isExamCard && (
                                                     <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                                                        {(mod.levelsAvailable || ['B7', 'B8', 'B9']).map((lvlKey) => {
+                                                        {(Array.isArray(mod.levelsAvailable) ? mod.levelsAvailable : ['B7', 'B8', 'B9']).map((lvlKey) => {
                                                             const label = lvlKey === 'B7' || lvlKey === 'b7' ? 'B7 (JHS 1)' :
                                                                           lvlKey === 'B8' || lvlKey === 'b8' ? 'B8 (JHS 2)' :
                                                                           lvlKey === 'B9' || lvlKey === 'b9' ? 'B9 (JHS 3)' : lvlKey;
@@ -10126,7 +10126,7 @@ if (
                                                                 </div>
                                                             </AccordionTrigger>
                                                             <AccordionContent className="pt-1 pl-3 space-y-1">
-                                                                {Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
+                                                                {subTopics && typeof subTopics === 'object' && Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
                                                                     <Accordion key={subTitle} type="single" collapsible>
                                                                         <AccordionItem value={subTitle} className="border-none">
                                                                             <AccordionTrigger className="text-xs font-semibold text-slate-400 py-2 hover:text-indigo-300 pl-2 flex items-center justify-between">
@@ -10578,7 +10578,7 @@ function DiscoveryLab({
                                                                 </div>
                                                             </AccordionTrigger>
                                                             <AccordionContent className="pt-1 pl-3 space-y-1">
-                                                                {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
+                                                                {subs && typeof subs === 'object' && Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
                                                                     <Accordion key={subTitle} type="single" collapsible>
                                                                         <AccordionItem value={subTitle} className="border-none">
                                                                             <AccordionTrigger className="text-xs font-semibold text-slate-400 py-2 hover:text-cyan-300 pl-2 flex items-center justify-between">
@@ -11106,7 +11106,7 @@ function AdminConsole({
                                 <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-20 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
                                 <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-20 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
                                 <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    {manualData.hypothesisOptions.map((opt: string, i: number) => (
+                                    {Array.isArray(manualData.hypothesisOptions) && manualData.hypothesisOptions.map((opt: string, i: number) => (
                                         <Input key={i} placeholder={`Hypothesis Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-900 border-slate-800 text-white h-8 rounded-lg text-xs" />
                                     ))}
                                 </div>

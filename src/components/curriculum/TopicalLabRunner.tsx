@@ -321,9 +321,7 @@ export function TopicalLabRunner({
   const [prereqTierTab, setPrereqTierTab] = useState<'foundation' | 'intermediate' | 'advanced'>('foundation');
 
   // State for collapsible worked examples in Tab 1
-  const [expandedExampleIds, setExpandedExampleIds] = useState<Record<string, boolean>>({
-    'we_0': true
-  });
+  const [expandedExampleIds, setExpandedExampleIds] = useState<Record<string, boolean>>({});
 
   // Current level data
   const currentLevelData = useMemo(() => {
@@ -824,7 +822,7 @@ export function TopicalLabRunner({
               </Card>
             ) : (
               <div className="space-y-4">
-                {currentLevelData.workedExamples.map((example: WorkedExample, idx: number) => {
+                {Array.isArray(currentLevelData.workedExamples) && currentLevelData.workedExamples.map((example: WorkedExample, idx: number) => {
                   const idKey = example.id || `${activeLevel}_${idx}`;
                   const isExpanded = !!expandedExampleIds[idKey];
 
@@ -880,25 +878,35 @@ export function TopicalLabRunner({
                             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                               Step-by-Step Breakdown:
                             </span>
-                            <ol className="space-y-2 pl-1">
-                              {example.steps.map((step: string, stepIdx: number) => (
-                                <li key={stepIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                                  <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                                    {stepIdx + 1}
-                                  </span>
-                                  <div className="flex-1">
-                                    <MathRenderer content={step} />
-                                  </div>
-                                </li>
-                              ))}
-                            </ol>
+                            {Array.isArray(example.steps) && example.steps.length > 0 ? (
+                              <ol className="space-y-2 pl-1">
+                                {example.steps.map((step: string, stepIdx: number) => (
+                                  <li key={stepIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
+                                    <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                      {stepIdx + 1}
+                                    </span>
+                                    <div className="flex-1">
+                                      <MathRenderer content={step} />
+                                    </div>
+                                  </li>
+                                ))}
+                              </ol>
+                            ) : (example as any).solution ? (
+                              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                <MathRenderer content={(example as any).solution} />
+                              </div>
+                            ) : (
+                              <p className="text-xs text-slate-400 italic">Detailed solution breakdown is provided in class review.</p>
+                            )}
                           </div>
 
                           {/* Highlighted Final Answer */}
-                          <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
-                            <span className="text-xs font-bold text-emerald-400">Highlighted Final Answer:</span>
-                            <MathRenderer content={example.finalAnswer} className="text-sm font-black text-white" />
-                          </div>
+                          {example.finalAnswer && (
+                            <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+                              <span className="text-xs font-bold text-emerald-400">Highlighted Final Answer:</span>
+                              <MathRenderer content={example.finalAnswer} className="text-sm font-black text-white" />
+                            </div>
+                          )}
                         </div>
                       )}
                     </Card>
