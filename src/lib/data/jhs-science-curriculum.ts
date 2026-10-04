@@ -22337,69 +22337,2603 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Optimize agricultural output and ecological preservation through interactive whole-farm management software. Compares monoculture, mixed cropping, livestock-crop integration, and multi-year crop rotation schedules designed to interrupt pest cycles and maintain soil nitrogen pools.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Traditional & Contemporary Farming Archetypes",
-        "summary": "Analyze land tenure and traditional farming systems (shifting cultivation, land rotation, mixed cropping) and ecological sustainability.",
-        "notes": "### Farming Systems: Traditional Practices & Agro-Ecological Sustainability\n* **NaCCA Curriculum Code:** `B7.3.4.1`\n* **Core Competency:** Identify farming systems in Ghana, assess ecological sustainability, and evaluate land rotation.\n\n#### 1. Traditional Farming Archetypes\n* **Shifting Cultivation:** The farmer clears a patch of virgin forest by slash-and-burn, cultivates crops for 2-3 years until soil fertility declines, then abandons the land and relocates the entire homestead to clear a new forest area. Only feasible where human population density is very low and land is abundant.\n* **Land Rotation (Bush Fallowing):** The farmer clears a plot, crops it for a few seasons, and then leaves the land fallow for several years to regenerate natural vegetation and soil organic matter, while the farmer moves to another plot **without moving the settlement**.\n* **Mixed Cropping (Intercropping):** Cultivating two or more different crop species simultaneously on the same piece of land (e.g., maize intercropped with cowpea or cassava).\n  * *Advantages:* Insurance against total crop failure, diverse food supply, soil cover suppressing weeds, legumes fixing nitrogen for cereal companions.\n* **Monoculture (Continuous Cropping):** Growing a single crop species exclusively on the same plot season after season (e.g., commercial rice or sugarcane plantations).\n  * *Disadvantages:* Rapid depletion of specific soil nutrients, buildup of host-specific insect pests and soil diseases, high reliance on synthetic fertilizers and pesticides.",
-        "workedExamples": [
-          {
-            "id": "ex_b7_s10_1",
-            "title": "Worked Example: Why Shifting Cultivation Is Unsustainable Today",
-            "problem": "Shifting cultivation was widely practiced by traditional Ghanaian farmers centuries ago. Explain two reasons why shifting cultivation is no longer sustainable or practical in modern Ghana.",
-            "steps": [
-              "Reason 1: Rapid Population Growth and Land Pressure — Rapid population growth has increased the demand for arable land, residential housing, and commercial infrastructure. Farmers no longer have access to vast tracts of uncultivated forest land to abandon and relocate settlements.",
-              "Reason 2: Severe Deforestation and Climate Change — Repeatedly burning virgin forest accelerates environmental degradation, destroys biodiversity, causes widespread loss of carbon sinks, and exacerbates seasonal drought.",
-              "Conclusion: Farmers must transition to permanent, intensive soil management systems such as crop rotation, agroforestry, and organic farming."
+          "levelTitle": "Basic 7 (JHS 1) • Farming Systems, Crop Rotation & Agricultural Economics",
+          "summary": "Comprehensive exploration of traditional and modern farming systems (shifting cultivation, land rotation, mixed cropping, mixed farming, organic farming), crop rotation principles and 3-bed design, legume nitrogen fixation, farm record-keeping, and the socio-economic contributions of agriculture in Ghana.",
+          "notes": "# CARD 10: FARMING SYSTEMS & AGRO-ECOLOGY\n**Strand 3: Systems** | **Sub-Strand 4: Farming Systems**  \n**Grade Level:** Basic 7 (JHS 1) | **Content Standard:** `B7.3.4.1`  \n**Curriculum Indicators:** `B7.3.4.1.1`, `B7.3.4.1.2`, `B7.3.4.1.3`  \n**Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n\n---\n\n### Module 1: Introduction to Farming Systems & Extensive Land-Use Practices\nAn agricultural enterprise that organizes land, labor, tools, and technical inputs to cultivate crops, raise livestock, or operate both simultaneously in a coordinated, sustainable manner is defined as a **farming system**.\n\n#### Major Farming Systems in Ghana\n1. **Shifting Cultivation**\n2. **Land Rotation (Bush Fallowing)**\n3. **Crop Rotation**\n4. **Mixed Cropping (Intercropping)**\n5. **Mixed Farming**\n6. **Organic Farming**\n\n#### Comparative Analysis of Extensive Systems\n* **Shifting Cultivation:** An ancient, extensive subsistence practice where a farmer clears virgin or fallow forest by slash-and-burn, cultivates crops for 2–3 years until natural fertility declines, and then abandons both the farm plot and the domestic settlement to relocate the entire family homestead to a fresh, uncultivated area.\n  * *Advantages:* Soil regenerates naturally during prolonged bush fallows; requires minimal or no purchased synthetic fertilizers; utilizes fertile virgin forest soils.\n  * *Disadvantages:* Demographically unsustainable under high modern population growth and land pressure; requires recurrent, labor-intensive rebuilding of family dwellings; accelerates deforestation and exposes bare abandoned soils to severe erosion; produces low yield per hectare.\n* **Land Rotation (Bush Fallowing):** An extensive system where the farmer cultivates a plot until fertility drops, then moves cultivation to an adjacent fallow parcel **while keeping the family settlement and residential home permanently fixed** in one location.\n  * *Advantages:* Fallowed land regains fertility naturally through biological rest; breaks cycles of host-specific pests and pathogens; avoids domestic relocation disruption and expense.\n  * *Disadvantages:* Clearing fresh bush plots drives forest degradation; impractical in densely populated urban/peri-urban belts; discourages capital-intensive investment in permanent farm infrastructure, irrigation, and mechanization.\n\n#### Core Distinctions: Shifting Cultivation vs. Land Rotation\n\n| Comparative Metric | Shifting Cultivation | Land Rotation |\n| :--- | :--- | :--- |\n| **Domestic Settlement** | **Temporary / Migratory**: Family home moves along with the new farm plot. | **Permanent / Fixed**: Farmer remains in a fixed home while shifting field plots. |\n| **Land Pressure Tolerance** | Extremely low; requires vast tracts of unoccupied virgin land. | Moderate; operates within communally owned boundaries or fragmented family holdings. |\n| **Labor Allocation** | High labor required to clear virgin forests and rebuild houses repeatedly. | High labor required to clear bush fallows, but no house-building labor. |\n| **Environmental Impact** | Severe deforestation, loss of primary biodiversity, and accelerated erosion on abandoned soil. | Forest degradation and fragmentation, but contained within a defined agricultural zone. |\n\n---\n\n### Module 2: Crop Rotation: Principles, Rotational Plan & Soil Dynamics\n**Crop rotation** is the agronomic practice of growing a planned sequence of dissimilar crops on the same piece of land across successive planting seasons or years.\n\n#### Underlying Agronomic Principles\n1. **Alternation of Rooting Depths:** Deep-rooting crops (carrots, cassava, pigeon peas) must be followed by shallow-rooting crops (maize, onions, lettuce) so nutrients are drawn from different soil layers without exhausting a single zone.\n2. **Alternation of Nutrient Demands:** Heavy gross feeders that consume high levels of nitrogen and potassium (tomatoes, maize, yams) must be followed by light feeders (leafy vegetables) or soil replenishers.\n3. **Exclusion of Consecutive Botanical Families:** Crops belonging to the same botanical family (e.g. Solanaceae: tomato, pepper, eggplant; or Poaceae: maize, rice, sorghum) must never follow each other on the same bed to prevent family-specific insect pests and soil pathogens from multiplying unchecked.\n4. **Compulsory Inclusion of Legumes:** Every rotational cycle must include nitrogen-fixing leguminous cover crops (cowpeas, groundnuts, soybeans, Mucuna).\n\n#### Why Legumes Are Vital to Rotational Health\n* **Symbiotic Nitrogen Fixation:** Legume root nodules house symbiotic *Rhizobium* bacteria that reduce atmospheric dinitrogen ($N_2$) into plant-absorbable ammonium and nitrates ($NO_3^-$), naturally replenishing soil fertility.\n* **Soil Structural Amelioration:** Decaying root residues increase soil organic matter, porosity, and aggregate stability.\n* **Living Mulch:** Dense foliage shades the soil surface, suppressing weed germination and shielding topsoil from raindrop impact erosion.\n* **Cost Efficiency:** Reduces household expenditure on commercial synthetic nitrogen fertilizers.\n\n#### 3-Year Balanced Crop Rotation Vector Plan\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"bedBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f8fafc\"/><stop offset=\"100%\" stop-color=\"#f1f5f9\"/></linearGradient><marker id=\"shiftArr\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#0284c7\"/></marker></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">3-YEAR BALANCED CROP ROTATION DESIGN</text><text x=\"380\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Systematic Plot Succession: Heavy Feeder (Tomato) → Soil Replenisher (Legume) → Deep Root Feeder (Carrot)</text><rect x=\"40\" y=\"65\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"122\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 1</text><g transform=\"translate(130, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 1: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g><g transform=\"translate(330, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 2: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><g transform=\"translate(530, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 3: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><path d=\"M 215 170 L 215 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 415 170 L 415 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 615 170 L 615 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><rect x=\"40\" y=\"190\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"247\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 2</text><g transform=\"translate(130, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 1: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><g transform=\"translate(330, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 2: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g><g transform=\"translate(530, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 3: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><path d=\"M 215 295 L 215 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 415 295 L 415 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 615 295 L 615 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><rect x=\"40\" y=\"315\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"372\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 3</text><g transform=\"translate(130, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 1: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><g transform=\"translate(330, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 2: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><g transform=\"translate(530, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 3: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g></svg>\n\n---\n\n### Module 3: Integrated & Ecological Systems (Mixed Cropping, Mixed Farming & Organic Agriculture)\n\n#### 1. Mixed Cropping (Intercropping)\nThe practice of growing two or more different crop species simultaneously on the same piece of land during the same growing season (e.g., maize intercropped with cowpea or cassava).\n* *Advantages:* Provides food security and diversified harvests; reduces pest/disease spread because companion plants act as physical barriers; improves soil cover and weed suppression.\n* *Disadvantages:* Crops compete directly for light, water, and nutrients; improper plant spacing causes taller crops to shade shorter crops; makes tractor mechanization and herbicide application difficult.\n\n#### 2. Mixed Farming\nAn integrated agricultural system where crop cultivation and livestock rearing are conducted together on the same farm holding.\n* *Advantages:* Establishes a zero-waste nutrient cycle (crop residues and stover feed livestock, while animal dung and bedding produce farmyard manure to fertilize crop fields); diversifies household income across meat, milk, eggs, and grains; buffers against market price shocks.\n* *Disadvantages:* Demands diverse management skills across agronomy and veterinary care; labor is divided between crops and animals; animals can stray and destroy standing crops if fencing is inadequate.\n\n#### 3. Organic Farming\nAn ecological agricultural system that produces food without synthetic chemical fertilizers, artificial pesticides, genetically modified organisms (GMOs), or prophylactic antibiotics.\n* *Advantages:* Produces food free from synthetic chemical residues; commands premium pricing in certified high-value export markets; protects soil biodiversity, earthworms, and water bodies from chemical runoff.\n* *Disadvantages:* Highly labor-intensive (manual weeding and composting); requires large volumes of organic compost and manures; yields are often lower during the initial 2–3 year biological transition period.\n\n#### Comprehensive Comparison of Farming Systems\n\n| Farming System | Land & Settlement Dynamics | Core Enterprise Focus | Primary Soil Fertility Mechanism | Key Operational Constraint |\n| :--- | :--- | :--- | :--- | :--- |\n| **Shifting Cultivation** | Both farm plot and family settlement relocate to new areas. | Subsistence food crops. | Long natural bush fallowing. | Impractical under high population density and land scarcity. |\n| **Land Rotation** | Farm plots shift while the family home stays in one place. | Subsistence and local cash crops. | Natural bush fallowing. | Causes deforestation and discourages long-term farm investment. |\n| **Crop Rotation** | Permanent land cultivation on fixed, partitioned beds. | Planned sequence of dissimilar crops. | Alternating nutrient demands and nitrogen-fixing legumes. | Requires technical planning and careful record-keeping. |\n| **Mixed Cropping** | Cultivated on a single field during the same season. | Two or more crop species interplanted simultaneously. | Legume intercropping and living mulch cover. | Crop competition for light, water, and nutrients; difficult to mechanize. |\n| **Mixed Farming** | Permanent farm holding with crop fields and animal pens. | Crop cultivation combined with livestock rearing. | Farmyard manure recycling and crop residue feeding. | Demands diverse management skills; risk of livestock crop damage. |\n| **Organic Farming** | Permanent, ecologically managed farm plots. | Chemical-free crops and animals. | Compost, green manures, animal dung, and biological pest control. | Highly labor-intensive; difficult to scale up to large industrial acreage. |\n\n---\n\n### Module 4: Farm Record-Keeping & Socio-Economic Importance of Farming Systems\n\n#### Importance of Farm Records\n* **Financial Management & Profitability:** Tracks input costs (seeds, labor, fuel) against gross sales to calculate net profit or loss.\n* **Credit & Loan Acquisition:** Financial institutions require verified production and cash-flow records as proof of creditworthiness before granting agricultural loans.\n* **Tax Assessment:** Provides clear documentation of net earnings for fair and accurate income tax assessment.\n* **Operational Planning & Budgeting:** Forecasts seasonal capital needs and input requirements.\n* **Performance Tracking:** Evaluates which crop varieties and animal breeds deliver the highest feed conversion and yields.\n\n#### Macroeconomic Role of Farming Systems\n* **Food Security & Rural Livelihoods:** Nourishes farm families and urban populations.\n* **Employment Generation:** Provides direct agricultural and downstream value-chain jobs in processing, logistics, and retail.\n* **National GDP Contribution:** Contributes a major share of the Gross Domestic Product across West African economies.\n* **Industrial Feedstocks:** Supplies essential raw materials (cocoa beans, cotton lint, oil palm, rubber, tobacco) to manufacturing industries.\n* **Foreign Exchange Earnings:** High-value agricultural exports (cocoa, cashew, shea butter, certified organic fruits) generate foreign reserves that stabilize national trade balances.",
+          "workedExamples": [
+            {
+              "id": "WE_B7_FARM_01",
+              "title": "3-Year Crop Rotation Plot Planning & Agronomic Justification",
+              "problem": "A smallholder vegetable farmer in the Greater Accra Region has demarcated three equal garden beds (Bed 1, Bed 2, Bed 3). The farmer wishes to cultivate tomato, cowpea, and carrot across a 3-year cycle. Design a balanced 3-year rotational schedule for the three beds and provide four agronomic justifications explaining why this sequence prevents soil exhaustion and disease accumulation.",
+              "steps": [
+                "Step 1: Assign crops according to agronomic class: Tomato (Heavy feeder / Solanaceae), Cowpea (Nitrogen-fixing legume / Fabaceae), Carrot (Deep-rooted feeder / Apiaceae).",
+                "Step 2: Construct the Year 1 allocation: Bed 1 = Tomato, Bed 2 = Cowpea, Bed 3 = Carrot.",
+                "Step 3: Rotate crops for Year 2: Bed 1 = Carrot, Bed 2 = Tomato, Bed 3 = Cowpea.",
+                "Step 4: Rotate crops for Year 3: Bed 1 = Cowpea, Bed 2 = Carrot, Bed 3 = Tomato.",
+                "Step 5: Justification 1 (Rooting Depths): Deep-rooted carrots feed from the subsoil, while tomatoes and cowpeas feed from the topsoil, preventing depletion of a single horizon.",
+                "Step 6: Justification 2 (Nutrient Demands): Heavy nutrient-demanding tomatoes are succeeded by soil-replenishing cowpeas whose Rhizobium root nodules fix atmospheric nitrogen.",
+                "Step 7: Justification 3 (Disease Interruption): Tomato (Solanaceae), cowpea (Fabaceae), and carrot (Apiaceae) belong to completely distinct botanical families, breaking the life cycle of family-specific soil pathogens and pests like root-knot nematodes.",
+                "Step 8: Justification 4 (Soil Structure): Fibrous root channels and organic legume mulch improve soil aeration, infiltration, and organic matter retention across all three beds."
+              ],
+              "finalAnswer": "Rotation Cycle: Year 1 (Bed 1: Tomato, Bed 2: Cowpea, Bed 3: Carrot) → Year 2 (Bed 1: Carrot, Bed 2: Tomato, Bed 3: Cowpea) → Year 3 (Bed 1: Cowpea, Bed 2: Carrot, Bed 3: Tomato). Four rules fulfilled: alternating root depths, balancing nutrient demands, botanical family exclusion, and mandatory legume nitrogen fixation."
+            },
+            {
+              "id": "WE_B7_FARM_02",
+              "title": "Comparative Agronomic & Economic Evaluation of Farming Systems",
+              "problem": "A peri-urban farming cooperative in Ghana is deciding between practicing traditional Land Rotation, intensive Mixed Farming, or certified Organic Farming. Analyze the three systems across: (1) Land tenure and area requirements, (2) Soil fertility maintenance mechanism, (3) Key economic risk or operational limitation, and (4) Suitability for high-population peri-urban belts.",
+              "steps": [
+                "Step 1: Land Rotation requires large expanses of land to allow 5-7 years of fallowing; fertility is restored naturally via wild bush regeneration; risk is land scarcity and deforestation; completely unsuited for peri-urban areas due to urban sprawl and high land prices.",
+                "Step 2: Mixed Farming operates on a permanent fixed farm holding; fertility is maintained via zero-waste nutrient recycling (crop stover feeds cattle/goats, animal dung fertilizes crop fields); risk is divided labor and potential crop damage by wandering livestock; highly suited for peri-urban zones as diversified milk, meat, and vegetables serve immediate urban market demand.",
+                "Step 3: Organic Farming operates on permanent, ecologically managed plots; fertility is sustained through compost, green manures, and biological controls without synthetic chemicals; risk is high manual labor requirements and early transitional yield drops; well suited for peri-urban zones with access to premium, health-conscious urban consumer markets.",
+                "Step 4: Synthesis: Land rotation is obsolete near cities, whereas mixed farming and organic farming represent viable, sustainable commercial pathways."
+              ],
+              "finalAnswer": "Conclusion: Land rotation is non-viable in peri-urban belts due to land scarcity; Mixed farming offers the highest operational synergy through closed-loop nutrient cycling; Organic farming delivers premium economic returns in high-value urban markets."
+            }
+          ],
+          "practicePool": {
+            "low": [
+              {
+                "id": "B7_FARM_F01",
+                "difficulty": "low",
+                "prompt": "An agricultural enterprise that organizes land, labor, and capital to produce crops, animals, or both is a:",
+                "options": [
+                  "A. Soil system",
+                  "B. Farming system",
+                  "C. Forestry system",
+                  "D. Land tenure"
+                ],
+                "correctAnswer": "B. Farming system",
+                "hint": "A farming system is an agricultural business arrangement managing crops, livestock, or a mixture of both to produce food and income.",
+                "workedSolution": "A farming system is an agricultural business arrangement managing crops, livestock, or a mixture of both to produce food and income.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F02",
+                "difficulty": "low",
+                "prompt": "In which farming system does a farmer cultivate a plot until its fertility falls, then abandon both the farm and the home to relocate elsewhere?",
+                "options": [
+                  "A. Crop rotation",
+                  "B. Shifting cultivation",
+                  "C. Mixed farming",
+                  "D. Organic farming"
+                ],
+                "correctAnswer": "B. Shifting cultivation",
+                "hint": "In shifting cultivation, the farmer moves both the farm plot and the family settlement when soil fertility declines.",
+                "workedSolution": "In shifting cultivation, the farmer moves both the farm plot and the family settlement when soil fertility declines.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F03",
+                "difficulty": "low",
+                "prompt": "In land rotation, what happens when the cultivated plot loses its fertility?",
+                "options": [
+                  "A. The farmer moves to a new town with his family",
+                  "B. The farmer clears a new plot while keeping his family home in the same place",
+                  "C. The farmer stops farming permanently",
+                  "D. The farmer sells all his land"
+                ],
+                "correctAnswer": "B. The farmer clears a new plot while keeping his family home in the same place",
+                "hint": "In land rotation, cultivation shifts to a new piece of land, but the domestic dwelling and settlement remain permanent.",
+                "workedSolution": "In land rotation, cultivation shifts to a new piece of land, but the domestic dwelling and settlement remain permanent.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F04",
+                "difficulty": "low",
+                "prompt": "The practice of growing a planned sequence of different crops on the same piece of land in successive seasons is called:",
+                "options": [
+                  "A. Shifting cultivation",
+                  "B. Crop rotation",
+                  "C. Mixed farming",
+                  "D. Pastoral farming"
+                ],
+                "correctAnswer": "B. Crop rotation",
+                "hint": "Crop rotation is growing dissimilar crops in a structured sequence on the same land across successive seasons.",
+                "workedSolution": "Crop rotation is growing dissimilar crops in a structured sequence on the same land across successive seasons.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F05",
+                "difficulty": "low",
+                "prompt": "Growing two or more different crops simultaneously on the same piece of land during the same season is:",
+                "options": [
+                  "A. Monoculture",
+                  "B. Mixed cropping (intercropping)",
+                  "C. Shifting cultivation",
+                  "D. Land rotation"
+                ],
+                "correctAnswer": "B. Mixed cropping (intercropping)",
+                "hint": "Mixed cropping, or intercropping, is planting multiple crop species on the same field at the same time.",
+                "workedSolution": "Mixed cropping, or intercropping, is planting multiple crop species on the same field at the same time.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F06",
+                "difficulty": "low",
+                "prompt": "A farming system where crop cultivation and livestock rearing are integrated on the same farm is called:",
+                "options": [
+                  "A. Mixed cropping",
+                  "B. Mixed farming",
+                  "C. Crop rotation",
+                  "D. Shifting cultivation"
+                ],
+                "correctAnswer": "B. Mixed farming",
+                "hint": "Mixed farming combines crop production with animal husbandry on one farm.",
+                "workedSolution": "Mixed farming combines crop production with animal husbandry on one farm.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F07",
+                "difficulty": "low",
+                "prompt": "Farming without synthetic chemical fertilizers, artificial pesticides, growth hormones, or GMOs is called:",
+                "options": [
+                  "A. Mixed farming",
+                  "B. Organic farming",
+                  "C. Shifting cultivation",
+                  "D. Commercial cropping"
+                ],
+                "correctAnswer": "B. Organic farming",
+                "hint": "Organic farming produces food relying exclusively on natural inputs, manures, and biological pest controls.",
+                "workedSolution": "Organic farming produces food relying exclusively on natural inputs, manures, and biological pest controls.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F08",
+                "difficulty": "low",
+                "prompt": "Which of the following is a primary advantage of shifting cultivation for a resource-poor farmer?",
+                "options": [
+                  "A. It requires expensive chemical inputs",
+                  "B. Abandoned land regains fertility naturally through bush fallow at little to no cash cost",
+                  "C. It uses large tractors and harvesters",
+                  "D. It prevents land clearing"
+                ],
+                "correctAnswer": "B. Abandoned land regains fertility naturally through bush fallow at little to no cash cost",
+                "hint": "Under shifting cultivation, long natural fallowing restores soil fertility without requiring the farmer to buy synthetic fertilizers.",
+                "workedSolution": "Under shifting cultivation, long natural fallowing restores soil fertility without requiring the farmer to buy synthetic fertilizers.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F09",
+                "difficulty": "low",
+                "prompt": "Why has shifting cultivation become difficult to practice in modern Ghana?",
+                "options": [
+                  "A. People no longer eat crops",
+                  "B. Rapid population growth and urbanization have created high pressure and scarcity of arable land",
+                  "C. Rain no longer falls",
+                  "D. Tools are no longer manufactured"
+                ],
+                "correctAnswer": "B. Rapid population growth and urbanization have created high pressure and scarcity of arable land",
+                "hint": "Rising population densities make extended fallow periods and frequent community relocations impossible.",
+                "workedSolution": "Rising population densities make extended fallow periods and frequent community relocations impossible.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F10",
+                "difficulty": "low",
+                "prompt": "What is the period during which land is left uncultivated to rest and regain natural fertility called?",
+                "options": [
+                  "A. Harvest period",
+                  "B. Fallow period",
+                  "C. Planting season",
+                  "D. Tillage period"
+                ],
+                "correctAnswer": "B. Fallow period",
+                "hint": "A fallow period allows natural biological processes and wild vegetation to regenerate depleted topsoil.",
+                "workedSolution": "A fallow period allows natural biological processes and wild vegetation to regenerate depleted topsoil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F11",
+                "difficulty": "low",
+                "prompt": "Which of the following crop types should be included in every crop rotation plan to add nitrogen to the soil?",
+                "options": [
+                  "A. Tubers",
+                  "B. Legumes",
+                  "C. Cereals",
+                  "D. Grasses"
+                ],
+                "correctAnswer": "B. Legumes",
+                "hint": "Legumes harbor root nodule bacteria that fix atmospheric nitrogen, replenishing soil fertility.",
+                "workedSolution": "Legumes harbor root nodule bacteria that fix atmospheric nitrogen, replenishing soil fertility.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F12",
+                "difficulty": "low",
+                "prompt": "Which of the following is a leguminous crop widely used in crop rotation?",
+                "options": [
+                  "A. Cassava",
+                  "B. Cowpea",
+                  "C. Maize",
+                  "D. Yam"
+                ],
+                "correctAnswer": "B. Cowpea",
+                "hint": "Cowpea is a leguminous plant capable of symbiotic nitrogen fixation.",
+                "workedSolution": "Cowpea is a leguminous plant capable of symbiotic nitrogen fixation.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F13",
+                "difficulty": "low",
+                "prompt": "In a sound crop rotation plan, deep-rooted crops like carrots and cassava should be followed by:",
+                "options": [
+                  "A. Other deep-rooted crops",
+                  "B. Shallow-rooted crops like onions or lettuce",
+                  "C. Tree crops",
+                  "D. No crops at all"
+                ],
+                "correctAnswer": "B. Shallow-rooted crops like onions or lettuce",
+                "hint": "Alternating deep and shallow rooting depths ensures that nutrients are drawn from different soil profiles.",
+                "workedSolution": "Alternating deep and shallow rooting depths ensures that nutrients are drawn from different soil profiles.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F14",
+                "difficulty": "low",
+                "prompt": "Why should crops from the same botanical family (e.g. tomato, pepper, and garden eggs) NOT follow one another in a rotation?",
+                "options": [
+                  "A. They make the soil too cold",
+                  "B. They share similar pests and soil-borne diseases, which would multiply in the soil",
+                  "C. Their roots refuse to grow",
+                  "D. They turn the soil into water"
+                ],
+                "correctAnswer": "B. They share similar pests and soil-borne diseases, which would multiply in the soil",
+                "hint": "Consecutive planting of crops from the same family allows family-specific pests and pathogens to accumulate.",
+                "workedSolution": "Consecutive planting of crops from the same family allows family-specific pests and pathogens to accumulate.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F15",
+                "difficulty": "low",
+                "prompt": "Which crop is an example of a heavy feeder (consumes high levels of nutrients)?",
+                "options": [
+                  "A. Tomato",
+                  "B. Cowpea",
+                  "C. Groundnut",
+                  "D. Clover"
+                ],
+                "correctAnswer": "A. Tomato",
+                "hint": "Tomatoes require high amounts of nitrogen, potassium, and phosphorus to produce foliage and fruit.",
+                "workedSolution": "Tomatoes require high amounts of nitrogen, potassium, and phosphorus to produce foliage and fruit.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F16",
+                "difficulty": "low",
+                "prompt": "How does mixed cropping reduce the risk of total loss for a smallholder farmer?",
+                "options": [
+                  "A. All crops fail together",
+                  "B. If one crop fails due to pests or drought, another companion crop can survive and yield food",
+                  "C. It prevents weeds from ever emerging",
+                  "D. It replaces the need for rain"
+                ],
+                "correctAnswer": "B. If one crop fails due to pests or drought, another companion crop can survive and yield food",
+                "hint": "Crop diversity spreads environmental and biological risks, preventing total household harvest loss.",
+                "workedSolution": "Crop diversity spreads environmental and biological risks, preventing total household harvest loss.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F17",
+                "difficulty": "low",
+                "prompt": "In mixed farming, how do crops directly benefit the farm animals?",
+                "options": [
+                  "A. Crops provide shade only",
+                  "B. Crop residues and by-products (stover, peelings, grains) serve as nutritious feed for livestock",
+                  "C. Crops scare off predators",
+                  "D. Crops clean the animal pens"
+                ],
+                "correctAnswer": "B. Crop residues and by-products (stover, peelings, grains) serve as nutritious feed for livestock",
+                "hint": "Harvested residues like maize stover and bean vines provide low-cost fodder for farm animals.",
+                "workedSolution": "Harvested residues like maize stover and bean vines provide low-cost fodder for farm animals.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F18",
+                "difficulty": "low",
+                "prompt": "In mixed farming, how do farm animals directly benefit the crops?",
+                "options": [
+                  "A. Animals eat all the green crops",
+                  "B. Animal droppings and bedding produce farmyard manure that restores soil fertility",
+                  "C. Animals dig up all the seeds",
+                  "D. Animals prevent the rain from falling"
+                ],
+                "correctAnswer": "B. Animal droppings and bedding produce farmyard manure that restores soil fertility",
+                "hint": "Livestock dung and urine supply organic matter and nutrients to crop fields, closing the nutrient loop.",
+                "workedSolution": "Livestock dung and urine supply organic matter and nutrients to crop fields, closing the nutrient loop.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F19",
+                "difficulty": "low",
+                "prompt": "Which of the following inputs is strictly prohibited in certified organic farming?",
+                "options": [
+                  "A. Compost manure",
+                  "B. Synthetic chemical pesticides",
+                  "C. Animal dung",
+                  "D. Green manure"
+                ],
+                "correctAnswer": "B. Synthetic chemical pesticides",
+                "hint": "Organic farming excludes synthetic chemical fertilizers, herbicides, and pesticides.",
+                "workedSolution": "Organic farming excludes synthetic chemical fertilizers, herbicides, and pesticides.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F20",
+                "difficulty": "low",
+                "prompt": "Why does certified organic produce command higher market prices?",
+                "options": [
+                  "A. It is grown with poisonous chemicals",
+                  "B. It is free from synthetic chemical residues and satisfies health-conscious consumer demand",
+                  "C. It is larger than all other food",
+                  "D. It never spoils"
+                ],
+                "correctAnswer": "B. It is free from synthetic chemical residues and satisfies health-conscious consumer demand",
+                "hint": "Health-conscious domestic and export markets pay premium prices for chemical-free, ecologically grown food.",
+                "workedSolution": "Health-conscious domestic and export markets pay premium prices for chemical-free, ecologically grown food.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F21",
+                "difficulty": "low",
+                "prompt": "Why is keeping accurate farm records important for a farmer applying for a bank loan?",
+                "options": [
+                  "A. To show off family photographs",
+                  "B. Banks require verified records of income, expenditure, and yields to assess creditworthiness",
+                  "C. To prevent rain from damaging the bank",
+                  "D. To avoid owning farm tools"
+                ],
+                "correctAnswer": "B. Banks require verified records of income, expenditure, and yields to assess creditworthiness",
+                "hint": "Financial institutions require production and income records to confirm that a farm generates enough profit to repay loans.",
+                "workedSolution": "Financial institutions require production and income records to confirm that a farm generates enough profit to repay loans.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F22",
+                "difficulty": "low",
+                "prompt": "Which type of farm record tracks the daily births, deaths, egg production, and milk yields on a farm?",
+                "options": [
+                  "A. Production record",
+                  "B. Labor record",
+                  "C. Inventory record",
+                  "D. Tax receipt"
+                ],
+                "correctAnswer": "A. Production record",
+                "hint": "Production records document physical agricultural outputs, including harvest weights, daily egg counts, and births.",
+                "workedSolution": "Production records document physical agricultural outputs, including harvest weights, daily egg counts, and births.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F23",
+                "difficulty": "low",
+                "prompt": "How does agriculture support industrial manufacturing in Ghana?",
+                "options": [
+                  "A. It supplies raw materials such as cocoa beans, cotton, palm oil, and rubber to factories",
+                  "B. It consumes all factory products without paying",
+                  "C. It eliminates the need for electricity",
+                  "D. It manufactures steel"
+                ],
+                "correctAnswer": "A. It supplies raw materials such as cocoa beans, cotton, palm oil, and rubber to factories",
+                "hint": "Farms supply essential agricultural raw materials to agro-processing and manufacturing industries.",
+                "workedSolution": "Farms supply essential agricultural raw materials to agro-processing and manufacturing industries.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F24",
+                "difficulty": "low",
+                "prompt": "Which of the following is a major cash crop cultivated in Ghana primarily for export earnings?",
+                "options": [
+                  "A. Cocoa",
+                  "B. Lettuce",
+                  "C. Watermelon",
+                  "D. Spinach"
+                ],
+                "correctAnswer": "A. Cocoa",
+                "hint": "Cocoa is Ghana's primary agricultural export commodity, earning substantial foreign exchange.",
+                "workedSolution": "Cocoa is Ghana's primary agricultural export commodity, earning substantial foreign exchange.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F25",
+                "difficulty": "low",
+                "prompt": "What is an operational disadvantage of mixed cropping?",
+                "options": [
+                  "A. Different crops compete with one another for light, water, nutrients, and space",
+                  "B. It causes immediate land relocation",
+                  "C. It stops the farmer from harvesting food",
+                  "D. It requires four stomachs"
+                ],
+                "correctAnswer": "A. Different crops compete with one another for light, water, nutrients, and space",
+                "hint": "Intercropped plants compete directly for available soil moisture, nutrients, physical space, and solar radiation.",
+                "workedSolution": "Intercropped plants compete directly for available soil moisture, nutrients, physical space, and solar radiation.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F26",
+                "difficulty": "low",
+                "prompt": "What is an operational disadvantage of mixed farming?",
+                "options": [
+                  "A. Farm animals can wander into fields and damage standing crops if fencing is poor",
+                  "B. Animals refuse to eat crop waste",
+                  "C. Manure kills all crop plants",
+                  "D. Crops cannot grow near animals"
+                ],
+                "correctAnswer": "A. Farm animals can wander into fields and damage standing crops if fencing is poor",
+                "hint": "Livestock must be securely confined or tethered; otherwise, they can trample and consume standing food crops.",
+                "workedSolution": "Livestock must be securely confined or tethered; otherwise, they can trample and consume standing food crops.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F27",
+                "difficulty": "low",
+                "prompt": "Which farming system is most labor-intensive because it relies heavily on manual weeding and composting?",
+                "options": [
+                  "A. Organic farming",
+                  "B. Shifting cultivation",
+                  "C. Monoculture",
+                  "D. Pastoral nomadism"
+                ],
+                "correctAnswer": "A. Organic farming",
+                "hint": "Without synthetic chemical sprays, organic farming requires significant manual labor for weeding and pest management.",
+                "workedSolution": "Without synthetic chemical sprays, organic farming requires significant manual labor for weeding and pest management.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F28",
+                "difficulty": "low",
+                "prompt": "In a 3-bed crop rotation, if Bed 1 has tomato in Year 1 and carrot in Year 2, what should be planted in Year 3?",
+                "options": [
+                  "A. Pepper",
+                  "B. A legume (e.g. cowpea)",
+                  "C. Tomato again",
+                  "D. Garden eggs"
+                ],
+                "correctAnswer": "B. A legume (e.g. cowpea)",
+                "hint": "Following a heavy feeder and a deep root crop, a leguminous crop restores nitrogen before the cycle restarts.",
+                "workedSolution": "Following a heavy feeder and a deep root crop, a leguminous crop restores nitrogen before the cycle restarts.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F29",
+                "difficulty": "low",
+                "prompt": "What bacteria living in legume root nodules are responsible for biological nitrogen fixation?",
+                "options": [
+                  "A. Rhizobium",
+                  "B. Salmonella",
+                  "C. Clostridium",
+                  "D. Streptococcus"
+                ],
+                "correctAnswer": "A. Rhizobium",
+                "hint": "Rhizobium bacteria form mutualistic root nodules on legumes, converting atmospheric nitrogen into nitrates.",
+                "workedSolution": "Rhizobium bacteria form mutualistic root nodules on legumes, converting atmospheric nitrogen into nitrates.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F30",
+                "difficulty": "low",
+                "prompt": "What is an inventory record on a farm used for?",
+                "options": [
+                  "A. Listing all assets, tools, equipment, buildings, and supplies owned by the farm",
+                  "B. Recording rainfall daily",
+                  "C. Listing the names of domestic pets",
+                  "D. Tracking bank loans only"
+                ],
+                "correctAnswer": "A. Listing all assets, tools, equipment, buildings, and supplies owned by the farm",
+                "hint": "A farm inventory lists all physical equipment, structures, livestock, and stored inputs present on the farm.",
+                "workedSolution": "A farm inventory lists all physical equipment, structures, livestock, and stored inputs present on the farm.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F31",
+                "difficulty": "low",
+                "prompt": "How does agriculture help alleviate national unemployment in Ghana?",
+                "options": [
+                  "A. By employing millions of people in farming, processing, marketing, and transportation",
+                  "B. By replacing human workers with robots completely",
+                  "C. By banning foreign trade",
+                  "D. By moving all citizens to cities"
+                ],
+                "correctAnswer": "A. By employing millions of people in farming, processing, marketing, and transportation",
+                "hint": "Agriculture provides direct and indirect jobs across the agricultural value chain, from field production to retail.",
+                "workedSolution": "Agriculture provides direct and indirect jobs across the agricultural value chain, from field production to retail.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F32",
+                "difficulty": "low",
+                "prompt": "A farmer plants maize and cowpea together on the same ridges at the same time. This is an example of:",
+                "options": [
+                  "A. Land rotation",
+                  "B. Mixed cropping",
+                  "C. Shifting cultivation",
+                  "D. Pastoral farming"
+                ],
+                "correctAnswer": "B. Mixed cropping",
+                "hint": "Cultivating cereals and legumes together on the same plot during one season is mixed cropping.",
+                "workedSolution": "Cultivating cereals and legumes together on the same plot during one season is mixed cropping.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F33",
+                "difficulty": "low",
+                "prompt": "Which of the following is an environmental consequence of repeated shifting cultivation in virgin forests?",
+                "options": [
+                  "A. Accelerated deforestation and destruction of native wildlife habitats",
+                  "B. Increase in wild animal numbers",
+                  "C. Formation of permanent ice caps",
+                  "D. Total elimination of weeds"
+                ],
+                "correctAnswer": "A. Accelerated deforestation and destruction of native wildlife habitats",
+                "hint": "Frequent clearing and burning of virgin forests destroys plant biodiversity and fragments natural habitats.",
+                "workedSolution": "Frequent clearing and burning of virgin forests destroys plant biodiversity and fragments natural habitats.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F34",
+                "difficulty": "low",
+                "prompt": "Why does crop rotation help control crop-specific insect pests naturally?",
+                "options": [
+                  "A. Insects drown in irrigation water",
+                  "B. Changing the crop species removes the pest's specific food host, starving the pest population",
+                  "C. Crops produce insecticide gases",
+                  "D. Insects refuse to fly over rotated fields"
+                ],
+                "correctAnswer": "B. Changing the crop species removes the pest's specific food host, starving the pest population",
+                "hint": "Moving host crops denies specialized insect pests a continuous food source, breaking their reproductive cycle.",
+                "workedSolution": "Moving host crops denies specialized insect pests a continuous food source, breaking their reproductive cycle.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F35",
+                "difficulty": "low",
+                "prompt": "Which farming system is described as an ancient subsistence practice where family huts are moved with the fields?",
+                "options": [
+                  "A. Shifting cultivation",
+                  "B. Land rotation",
+                  "C. Crop rotation",
+                  "D. Mixed farming"
+                ],
+                "correctAnswer": "A. Shifting cultivation",
+                "hint": "Shifting cultivation is characterized by the migration of both the farm and the domestic settlement.",
+                "workedSolution": "Shifting cultivation is characterized by the migration of both the farm and the domestic settlement.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F36",
+                "difficulty": "low",
+                "prompt": "What document allows a farmer to calculate whether an enterprise made a net profit or a loss at the end of the year?",
+                "options": [
+                  "A. Farm inventory",
+                  "B. Profit and loss statement / financial account",
+                  "C. Breeding sheet",
+                  "D. Field map"
+                ],
+                "correctAnswer": "B. Profit and loss statement / financial account",
+                "hint": "A profit and loss account balances total revenues against total operating expenses to determine profitability.",
+                "workedSolution": "A profit and loss account balances total revenues against total operating expenses to determine profitability.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F37",
+                "difficulty": "low",
+                "prompt": "Which of the following crops is a shallow feeder that draws nutrients primarily from the topsoil layer?",
+                "options": [
+                  "A. Cassava",
+                  "B. Maize",
+                  "C. Pigeon pea",
+                  "D. Yam"
+                ],
+                "correctAnswer": "B. Maize",
+                "hint": "Maize has a fibrous, relatively shallow root system that feeds mainly in the upper topsoil.",
+                "workedSolution": "Maize has a fibrous, relatively shallow root system that feeds mainly in the upper topsoil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F38",
+                "difficulty": "low",
+                "prompt": "Why does mixed cropping make mechanization (e.g. tractor weeding and combine harvesting) difficult?",
+                "options": [
+                  "A. Tractors refuse to enter mixed fields",
+                  "B. Different plant heights, spacings, and maturity dates obstruct standardized mechanical equipment",
+                  "C. Mixed crops produce too much oil",
+                  "D. Machines can only harvest weeds"
+                ],
+                "correctAnswer": "B. Different plant heights, spacings, and maturity dates obstruct standardized mechanical equipment",
+                "hint": "Variable row widths, multiple canopies, and differing harvest dates prevent standard machine operation.",
+                "workedSolution": "Variable row widths, multiple canopies, and differing harvest dates prevent standard machine operation.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F39",
+                "difficulty": "low",
+                "prompt": "What happens to the soil on an abandoned shifting cultivation plot if heavy rains fall before bush cover re-establishes?",
+                "options": [
+                  "A. The soil turns into gold",
+                  "B. Accelerated surface soil erosion and loss of remaining topsoil nutrients",
+                  "C. The plot instantly turns into a lake",
+                  "D. The soil becomes immune to rain"
+                ],
+                "correctAnswer": "B. Accelerated surface soil erosion and loss of remaining topsoil nutrients",
+                "hint": "Exposed, vegetation-free topsoil on abandoned plots is vulnerable to water erosion and nutrient runoff.",
+                "workedSolution": "Exposed, vegetation-free topsoil on abandoned plots is vulnerable to water erosion and nutrient runoff.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F40",
+                "difficulty": "low",
+                "prompt": "Which farming system relies heavily on compost, farmyard manure, and crop residue recycling instead of NPK fertilizer?",
+                "options": [
+                  "A. Monoculture",
+                  "B. Organic farming",
+                  "C. Plantation farming",
+                  "D. Commercial ranching"
+                ],
+                "correctAnswer": "B. Organic farming",
+                "hint": "Organic farming maintains soil fertility through organic compost, animal dung, and green manure crops.",
+                "workedSolution": "Organic farming maintains soil fertility through organic compost, animal dung, and green manure crops.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F41",
+                "difficulty": "low",
+                "prompt": "Why is land rotation difficult to sustain in peri-urban areas near expanding cities?",
+                "options": [
+                  "A. Urban expansion drives up land values, leaving insufficient acreage for long bush fallow periods",
+                  "B. City dwellers do not eat food",
+                  "C. Cities produce too much rain",
+                  "D. Farm tools are banned near cities"
+                ],
+                "correctAnswer": "A. Urban expansion drives up land values, leaving insufficient acreage for long bush fallow periods",
+                "hint": "Urban sprawl fragments farmland and raises land costs, preventing parcels from resting in extended fallows.",
+                "workedSolution": "Urban sprawl fragments farmland and raises land costs, preventing parcels from resting in extended fallows.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F42",
+                "difficulty": "low",
+                "prompt": "How does keeping farm records help tax authorities?",
+                "options": [
+                  "A. It hides all the farmer's money",
+                  "B. It provides transparent financial evidence for fair and accurate income tax assessment",
+                  "C. It allows the farmer to pay no taxes",
+                  "D. It turns tax into farm tools"
+                ],
+                "correctAnswer": "B. It provides transparent financial evidence for fair and accurate income tax assessment",
+                "hint": "Documented financial statements give revenue authorities verified accounting records for tax assessment.",
+                "workedSolution": "Documented financial statements give revenue authorities verified accounting records for tax assessment.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F43",
+                "difficulty": "low",
+                "prompt": "Which of the following is a cover crop commonly planted in crop rotation to suppress weeds and shield the soil?",
+                "options": [
+                  "A. Mucuna (velvet bean)",
+                  "B. Cocoa",
+                  "C. Oil palm",
+                  "D. Sugarcane"
+                ],
+                "correctAnswer": "A. Mucuna (velvet bean)",
+                "hint": "Mucuna is a fast-growing legume that forms a dense canopy, suppressing weeds and protecting the soil surface.",
+                "workedSolution": "Mucuna is a fast-growing legume that forms a dense canopy, suppressing weeds and protecting the soil surface.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F44",
+                "difficulty": "low",
+                "prompt": "What skill must a farmer have to succeed in mixed farming?",
+                "options": [
+                  "A. Competence in both crop agronomy and animal husbandry",
+                  "B. Knowledge of deep-sea fishing only",
+                  "C. Ability to fly an airplane",
+                  "D. Skills in mining gold"
+                ],
+                "correctAnswer": "A. Competence in both crop agronomy and animal husbandry",
+                "hint": "Managing mixed farms requires combined expertise in crop production, animal feeding, breeding, and disease control.",
+                "workedSolution": "Managing mixed farms requires combined expertise in crop production, animal feeding, breeding, and disease control.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F45",
+                "difficulty": "low",
+                "prompt": "Why is the use of genetically modified (transgenic) crops forbidden in certified organic agriculture?",
+                "options": [
+                  "A. Organic standards require natural biological breeding methods and exclude laboratory genetic modifications",
+                  "B. GMOs do not have roots",
+                  "C. Transgenic seeds are made of plastic",
+                  "D. GMOs cannot grow in soil"
+                ],
+                "correctAnswer": "A. Organic standards require natural biological breeding methods and exclude laboratory genetic modifications",
+                "hint": "Organic principles exclude synthetic and recombinant DNA technologies in favor of natural breeding.",
+                "workedSolution": "Organic principles exclude synthetic and recombinant DNA technologies in favor of natural breeding.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F46",
+                "difficulty": "low",
+                "prompt": "What happens if a farmer fails to keep farm records over several years?",
+                "options": [
+                  "A. The farmer cannot easily track whether the farm is running at a profit or loss, hindering sound planning",
+                  "B. The crops immediately die",
+                  "C. The land turns into an ocean",
+                  "D. Tractors break down automatically"
+                ],
+                "correctAnswer": "A. The farmer cannot easily track whether the farm is running at a profit or loss, hindering sound planning",
+                "hint": "Without records, a farmer cannot monitor business profitability, manage expenses, or budget for the future.",
+                "workedSolution": "Without records, a farmer cannot monitor business profitability, manage expenses, or budget for the future.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F47",
+                "difficulty": "low",
+                "prompt": "How does mixed cropping provide a balanced diet for a farming family throughout the year?",
+                "options": [
+                  "A. It grows only one grain crop",
+                  "B. Companion crops mature at different times, yielding cereals, legumes, and vegetables across multiple months",
+                  "C. It produces meat without animals",
+                  "D. It stops food from spoiling"
+                ],
+                "correctAnswer": "B. Companion crops mature at different times, yielding cereals, legumes, and vegetables across multiple months",
+                "hint": "Staggered harvests of companion crops supply diverse starches, proteins, and vitamins across the year.",
+                "workedSolution": "Staggered harvests of companion crops supply diverse starches, proteins, and vitamins across the year.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F48",
+                "difficulty": "low",
+                "prompt": "Which of the following is an export product derived from Ghana's agricultural farming systems?",
+                "options": [
+                  "A. Shea butter",
+                  "B. Gold bullion",
+                  "C. Petroleum fuel",
+                  "D. Bauxite"
+                ],
+                "correctAnswer": "A. Shea butter",
+                "hint": "Shea butter is an agricultural export derived from processing the nuts of the indigenous shea tree.",
+                "workedSolution": "Shea butter is an agricultural export derived from processing the nuts of the indigenous shea tree.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F49",
+                "difficulty": "low",
+                "prompt": "In a crop rotation scheme, what type of crop should typically follow a gross feeder like maize?",
+                "options": [
+                  "A. Another gross feeder like sorghum",
+                  "B. A legume like cowpea or groundnut to restore soil nitrogen",
+                  "C. Sugarcane",
+                  "D. Weeds"
+                ],
+                "correctAnswer": "B. A legume like cowpea or groundnut to restore soil nitrogen",
+                "hint": "Planting a legume after a nutrient-demanding cereal helps rebuild depleted nitrogen levels in the soil.",
+                "workedSolution": "Planting a legume after a nutrient-demanding cereal helps rebuild depleted nitrogen levels in the soil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_F50",
+                "difficulty": "low",
+                "prompt": "What is the primary socio-economic benefit of farming systems to the rural community?",
+                "options": [
+                  "A. Providing food security and stable household livelihoods",
+                  "B. Producing smoke in the air",
+                  "C. Clearing all trees from the country",
+                  "D. Making all land rocky"
+                ],
+                "correctAnswer": "A. Providing food security and stable household livelihoods",
+                "hint": "Farming systems generate food security, household income, and employment for rural families.",
+                "workedSolution": "Farming systems generate food security, household income, and employment for rural families.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              }
             ],
-            "finalAnswer": "Examiner Tip: State the primary driver: high population density leading to land scarcity."
+            "medium": [
+              {
+                "id": "B7_FARM_I01",
+                "difficulty": "medium",
+                "prompt": "Why does land rotation discourage farmers from investing in permanent irrigation and farm buildings?",
+                "options": [
+                  "A. Farmers do not like concrete structures",
+                  "B. Cultivation shifts to new land parcels every few years, leaving fixed infrastructure underutilized on fallowed plots",
+                  "C. The land turns into water during fallow",
+                  "D. Building materials are toxic to crops"
+                ],
+                "correctAnswer": "B. Cultivation shifts to new land parcels every few years, leaving fixed infrastructure underutilized on fallowed plots",
+                "hint": "Because cropping moves periodically to different parcels, investing in permanent infrastructure on temporary plots is uneconomical.",
+                "workedSolution": "Because cropping moves periodically to different parcels, investing in permanent infrastructure on temporary plots is uneconomical.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I02",
+                "difficulty": "medium",
+                "prompt": "How does alternating deep-rooted crops with shallow-rooted crops in a rotation preserve soil profile structure?",
+                "options": [
+                  "A. It prevents crops from absorbing water",
+                  "B. Deep roots open channels into the subsoil to draw deep minerals, while shallow roots feed on topsoil, preventing depletion of one layer",
+                  "C. Deep roots dissolve the subsoil into sand",
+                  "D. Shallow roots turn the topsoil into rock"
+                ],
+                "correctAnswer": "B. Deep roots open channels into the subsoil to draw deep minerals, while shallow roots feed on topsoil, preventing depletion of one layer",
+                "hint": "Varying root depths balances nutrient extraction across the soil profile and improves aeration through decayed root channels.",
+                "workedSolution": "Varying root depths balances nutrient extraction across the soil profile and improves aeration through decayed root channels.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I03",
+                "difficulty": "medium",
+                "prompt": "Why does mixed cropping reduce the rapid spread of airborne fungal and insect infestations across a field?",
+                "options": [
+                  "A. Non-host companion plants act as physical barriers that intercept spores and confuse host-seeking insect pests",
+                  "B. Mixed crops produce pesticide gases naturally",
+                  "C. Companion plants freeze incoming insects",
+                  "D. Diseases only attack single plants"
+                ],
+                "correctAnswer": "A. Non-host companion plants act as physical barriers that intercept spores and confuse host-seeking insect pests",
+                "hint": "Interspersed non-host plants disrupt the spread of pests and fungal spores, slowing down disease transmission.",
+                "workedSolution": "Interspersed non-host plants disrupt the spread of pests and fungal spores, slowing down disease transmission.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I04",
+                "difficulty": "medium",
+                "prompt": "How does the integration of livestock in mixed farming create a closed-loop nutrient cycle?",
+                "options": [
+                  "A. Animals eat all the soil on the farm",
+                  "B. Crops provide feed for livestock, while animal dung and bedding produce farmyard manure that fertilizes the crop fields",
+                  "C. Crops and animals live in the same pens",
+                  "D. It eliminates the need for water"
+                ],
+                "correctAnswer": "B. Crops provide feed for livestock, while animal dung and bedding produce farmyard manure that fertilizes the crop fields",
+                "hint": "Crop residues feed farm animals, and animal manure fertilizes the soil, recycling nutrients without purchased inputs.",
+                "workedSolution": "Crop residues feed farm animals, and animal manure fertilizes the soil, recycling nutrients without purchased inputs.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I05",
+                "difficulty": "medium",
+                "prompt": "Why is organic farming often associated with lower crop yields during the first three years of transition from conventional farming?",
+                "options": [
+                  "A. Organic seeds cannot grow in soil",
+                  "B. Soil ecology and natural biological nutrient cycles require several seasons to rebuild after synthetic chemical use is stopped",
+                  "C. Weeds kill all the crops immediately",
+                  "D. Organic crops refuse to absorb rainwater"
+                ],
+                "correctAnswer": "B. Soil ecology and natural biological nutrient cycles require several seasons to rebuild after synthetic chemical use is stopped",
+                "hint": "Re-establishing natural soil microbial life and fertility takes several seasons after synthetic fertilizers are withdrawn.",
+                "workedSolution": "Re-establishing natural soil microbial life and fertility takes several seasons after synthetic fertilizers are withdrawn.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I06",
+                "difficulty": "medium",
+                "prompt": "What is the primary agronomic risk of planting maize directly after sorghum on the same piece of land?",
+                "options": [
+                  "A. Both are heavy-feeding cereals from the Poaceae family; shared pests and diseases (like stem borers) accumulate while nitrogen is depleted",
+                  "B. Sorghum leaves poison maize seeds",
+                  "C. The soil turns into stone",
+                  "D. Maize will grow without roots"
+                ],
+                "correctAnswer": "A. Both are heavy-feeding cereals from the Poaceae family; shared pests and diseases (like stem borers) accumulate while nitrogen is depleted",
+                "hint": "Maize and sorghum belong to the same grass family, so shared pests multiply and common nutrient reserves are rapidly depleted.",
+                "workedSolution": "Maize and sorghum belong to the same grass family, so shared pests multiply and common nutrient reserves are rapidly depleted.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I07",
+                "difficulty": "medium",
+                "prompt": "How does keeping a detailed farm labor record assist in farm management?",
+                "options": [
+                  "A. It shows which workers were paid and helps assess the labor efficiency and cost of different operations",
+                  "B. It proves the farmer owns the workers",
+                  "C. It stops the workers from eating food",
+                  "D. It replaces the need for tools"
+                ],
+                "correctAnswer": "A. It shows which workers were paid and helps assess the labor efficiency and cost of different operations",
+                "hint": "Labor records track person-hours and wages, helping farmers monitor labor productivity and reduce costs.",
+                "workedSolution": "Labor records track person-hours and wages, helping farmers monitor labor productivity and reduce costs.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I08",
+                "difficulty": "medium",
+                "prompt": "Why does intercropping tall maize with low-growing melon (egusi) or cowpea reduce weed growth?",
+                "options": [
+                  "A. Melons produce poisonous herbicides",
+                  "B. The spreading leaves of the cover crop form a living mulch that shades the soil surface, blocking light needed by weed seeds",
+                  "C. Maize roots pull out all weeds",
+                  "D. Weeds prefer to grow only near trees"
+                ],
+                "correctAnswer": "B. The spreading leaves of the cover crop form a living mulch that shades the soil surface, blocking light needed by weed seeds",
+                "hint": "Dense, low-growing cover crops shade the soil surface, suppressing weed seed germination and growth.",
+                "workedSolution": "Dense, low-growing cover crops shade the soil surface, suppressing weed seed germination and growth.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I09",
+                "difficulty": "medium",
+                "prompt": "What is the main financial consequence of a farmer failing to track input expenditures like seed, fuel, and wages?",
+                "options": [
+                  "A. The farmer might sell produce below the true cost of production, leading to unexpected financial losses",
+                  "B. Crops stop absorbing water",
+                  "C. The bank gives the farmer free money",
+                  "D. Tractors stop working automatically"
+                ],
+                "correctAnswer": "A. The farmer might sell produce below the true cost of production, leading to unexpected financial losses",
+                "hint": "Without tracking production costs, a farmer may underprice produce and operate at a loss without realizing it.",
+                "workedSolution": "Without tracking production costs, a farmer may underprice produce and operate at a loss without realizing it.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I10",
+                "difficulty": "medium",
+                "prompt": "Why do organic farmers rely heavily on biological pest control instead of synthetic chemical sprays?",
+                "options": [
+                  "A. Biological control uses natural predators and parasitoids, preventing toxic chemical contamination of food and the environment",
+                  "B. Natural predators cost more than chemicals",
+                  "C. Chemical sprays only kill weeds",
+                  "D. Organic farmers have no sprayers"
+                ],
+                "correctAnswer": "A. Biological control uses natural predators and parasitoids, preventing toxic chemical contamination of food and the environment",
+                "hint": "Biological control uses natural enemies to manage pests without leaving chemical residues on crops.",
+                "workedSolution": "Biological control uses natural enemies to manage pests without leaving chemical residues on crops.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I11",
+                "difficulty": "medium",
+                "prompt": "How does shifting cultivation lead to land tenure conflicts in areas with rising populations?",
+                "options": [
+                  "A. Moving farmers encroach onto community boundaries or neighboring family lands as unoccupied virgin forest disappears",
+                  "B. Farmers forget where they parked their tractors",
+                  "C. Huts become too heavy to lift",
+                  "D. Abandoned plots turn into gold mines"
+                ],
+                "correctAnswer": "A. Moving farmers encroach onto community boundaries or neighboring family lands as unoccupied virgin forest disappears",
+                "hint": "As open land becomes scarce, clearing new plots encroaches on boundaries, sparking ownership disputes.",
+                "workedSolution": "As open land becomes scarce, clearing new plots encroaches on boundaries, sparking ownership disputes.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I12",
+                "difficulty": "medium",
+                "prompt": "Why is cowpea an effective green manure crop when incorporated into the soil during flowering?",
+                "options": [
+                  "A. It adds dry wood to the ground",
+                  "B. Its succulent vegetative mass is rich in fixed nitrogen and decomposes quickly, releasing nutrients for the next crop",
+                  "C. It freezes the topsoil",
+                  "D. It prevents earthworms from living"
+                ],
+                "correctAnswer": "B. Its succulent vegetative mass is rich in fixed nitrogen and decomposes quickly, releasing nutrients for the next crop",
+                "hint": "Incorporating nitrogen-rich legumes at flowering adds organic matter that mineralizes quickly into plant-available nutrients.",
+                "workedSolution": "Incorporating nitrogen-rich legumes at flowering adds organic matter that mineralizes quickly into plant-available nutrients.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I13",
+                "difficulty": "medium",
+                "prompt": "What is the role of an asset and liability balance sheet in farm accounting?",
+                "options": [
+                  "A. It records what the farm owns (assets) versus what it owes (liabilities) to calculate the farmer's net worth",
+                  "B. It lists daily egg counts",
+                  "C. It shows the names of customers",
+                  "D. It tracks rainfall"
+                ],
+                "correctAnswer": "A. It records what the farm owns (assets) versus what it owes (liabilities) to calculate the farmer's net worth",
+                "hint": "A balance sheet compares total assets against liabilities to determine the financial net worth of the farm.",
+                "workedSolution": "A balance sheet compares total assets against liabilities to determine the financial net worth of the farm.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I14",
+                "difficulty": "medium",
+                "prompt": "Why does improper planting distance in mixed cropping lead to reduced yields for understory companion crops?",
+                "options": [
+                  "A. Companion crops become lonely",
+                  "B. Overcrowding allows the taller crop canopy to shade shorter crops excessively, reducing photosynthesis",
+                  "C. Taller crops absorb all the rain in the air",
+                  "D. Shorter crops turn into weeds"
+                ],
+                "correctAnswer": "B. Overcrowding allows the taller crop canopy to shade shorter crops excessively, reducing photosynthesis",
+                "hint": "Excessive canopy shading from improperly spaced taller crops starves shorter companion plants of sunlight.",
+                "workedSolution": "Excessive canopy shading from improperly spaced taller crops starves shorter companion plants of sunlight.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I15",
+                "difficulty": "medium",
+                "prompt": "How does mixed farming help buffer a farmer's household against price fluctuations in agricultural markets?",
+                "options": [
+                  "A. The farmer controls all national prices",
+                  "B. Enterprise diversification means low market prices for a crop can be offset by sales of livestock or milk",
+                  "C. Animals produce gold coins",
+                  "D. Food can be stored for 100 years without drying"
+                ],
+                "correctAnswer": "B. Enterprise diversification means low market prices for a crop can be offset by sales of livestock or milk",
+                "hint": "Diversification across crops and livestock provides alternative income streams if one commodity's price drops.",
+                "workedSolution": "Diversification across crops and livestock provides alternative income streams if one commodity's price drops.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I16",
+                "difficulty": "medium",
+                "prompt": "What is the consequence of shortening the fallow period in land rotation from 7 years to 2 years due to land scarcity?",
+                "options": [
+                  "A. Soil fertility fails to recover fully, resulting in progressive soil exhaustion and lower crop yields",
+                  "B. Forest trees grow twice as fast",
+                  "C. Weed seeds disappear completely",
+                  "D. Crops produce double yields"
+                ],
+                "correctAnswer": "A. Soil fertility fails to recover fully, resulting in progressive soil exhaustion and lower crop yields",
+                "hint": "Shortened fallow windows prevent natural biological recovery, leading to soil degradation and declining yields.",
+                "workedSolution": "Shortened fallow windows prevent natural biological recovery, leading to soil degradation and declining yields.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I17",
+                "difficulty": "medium",
+                "prompt": "Why do commercial banks reject agricultural loan applications from farmers who do not keep farm records?",
+                "options": [
+                  "A. Banks only lend to teachers",
+                  "B. Without written records, the bank cannot evaluate farm cash flow, financial management, or repayment capacity",
+                  "C. Banks do not allow crops to be planted with money",
+                  "D. Record-less farms cannot receive rain"
+                ],
+                "correctAnswer": "B. Without written records, the bank cannot evaluate farm cash flow, financial management, or repayment capacity",
+                "hint": "Lenders cannot verify cash flow, repayment ability, or business viability without audited farm records.",
+                "workedSolution": "Lenders cannot verify cash flow, repayment ability, or business viability without audited farm records.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I18",
+                "difficulty": "medium",
+                "prompt": "How does crop rotation help manage parasitic weed seeds like Striga (witchweed) in cereal fields?",
+                "options": [
+                  "A. Striga seeds drown in water",
+                  "B. Rotating cereals with 'trap crops' (like cowpeas or soybeans) stimulates Striga germination without providing a host, killing the weed seedlings",
+                  "C. Striga seeds turn into fertilizer",
+                  "D. Striga weeds only grow on bare rock"
+                ],
+                "correctAnswer": "B. Rotating cereals with 'trap crops' (like cowpeas or soybeans) stimulates Striga germination without providing a host, killing the weed seedlings",
+                "hint": "Legume trap crops trigger suicidal germination of Striga seeds without hosting the parasite, clearing the soil.",
+                "workedSolution": "Legume trap crops trigger suicidal germination of Striga seeds without hosting the parasite, clearing the soil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I19",
+                "difficulty": "medium",
+                "prompt": "What is an operational difficulty of applying selective herbicides on a field under mixed cropping?",
+                "options": [
+                  "A. Herbicides do not work in sunlight",
+                  "B. A herbicide designed to kill broadleaf weeds in a cereal will also injure or kill intercropped broadleaf legumes",
+                  "C. Herbicides turn into fertilizer",
+                  "D. Spraying machines break on mixed plots"
+                ],
+                "correctAnswer": "B. A herbicide designed to kill broadleaf weeds in a cereal will also injure or kill intercropped broadleaf legumes",
+                "hint": "Chemicals targeted at broadleaf weeds in grass crops will damage interplanted broadleaf crops like cowpeas.",
+                "workedSolution": "Chemicals targeted at broadleaf weeds in grass crops will damage interplanted broadleaf crops like cowpeas.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I20",
+                "difficulty": "medium",
+                "prompt": "Why is the use of animal manure from intensive poultry houses restricted in some organic certification programs?",
+                "options": [
+                  "A. Poultry dung contains no nitrogen",
+                  "B. Manure from factory farms may contain residues of prophylactic antibiotics, heavy metals, and chemical feed additives",
+                  "C. Poultry dung dissolves into water",
+                  "D. Organic crops reject bird manure"
+                ],
+                "correctAnswer": "B. Manure from factory farms may contain residues of prophylactic antibiotics, heavy metals, and chemical feed additives",
+                "hint": "Organic standards prohibit inputs contaminated with synthetic feed additives, heavy metals, or antibiotics.",
+                "workedSolution": "Organic standards prohibit inputs contaminated with synthetic feed additives, heavy metals, or antibiotics.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I21",
+                "difficulty": "medium",
+                "prompt": "How does mixed farming help maintain farm productivity during seasons of low rainfall?",
+                "options": [
+                  "A. Animals produce rainfall from their breath",
+                  "B. Deep-rooted forage and browse can withstand dry spells better than annual crops, keeping livestock productive",
+                  "C. Animals stop needing water",
+                  "D. Crops turn into trees"
+                ],
+                "correctAnswer": "B. Deep-rooted forage and browse can withstand dry spells better than annual crops, keeping livestock productive",
+                "hint": "Hardy browse and forage crops survive dry conditions better than annual field crops, sustaining herd income.",
+                "workedSolution": "Hardy browse and forage crops survive dry conditions better than annual field crops, sustaining herd income.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I22",
+                "difficulty": "medium",
+                "prompt": "What is the primary difference between a crop yield record and a crop sales record?",
+                "options": [
+                  "A. Yield records measure physical output harvested; sales records document quantity sold, selling price, and revenue generated",
+                  "B. Yield records track money; sales records track rainfall",
+                  "C. Yield records apply only to animals",
+                  "D. Both records track identical parameters"
+                ],
+                "correctAnswer": "A. Yield records measure physical output harvested; sales records document quantity sold, selling price, and revenue generated",
+                "hint": "Yield records measure physical production (bags/kg), while sales records track financial transactions and revenue.",
+                "workedSolution": "Yield records measure physical production (bags/kg), while sales records track financial transactions and revenue.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I23",
+                "difficulty": "medium",
+                "prompt": "Why do yam farmers in West Africa traditionally intercrop yams with maize and vegetables?",
+                "options": [
+                  "A. To make the field difficult to walk through",
+                  "B. Maize stalks provide early support for climbing yam vines, while leafy vegetables cover the soil and yield food before yams mature",
+                  "C. Maize poisons yam beetles",
+                  "D. Vegetables turn into yams underground"
+                ],
+                "correctAnswer": "B. Maize stalks provide early support for climbing yam vines, while leafy vegetables cover the soil and yield food before yams mature",
+                "hint": "Maize stalks can support climbing yam vines, while companion vegetables provide ground cover and early food.",
+                "workedSolution": "Maize stalks can support climbing yam vines, while companion vegetables provide ground cover and early food.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I24",
+                "difficulty": "medium",
+                "prompt": "How does the practice of slash-and-burn clearing in shifting cultivation contribute to atmospheric carbon emissions?",
+                "options": [
+                  "A. Burning woody forest biomass oxidizes stored biological carbon into carbon dioxide gas, a major greenhouse gas",
+                  "B. Smoke removes oxygen permanently",
+                  "C. Ash turns into carbon monoxide",
+                  "D. Fire freezes the soil"
+                ],
+                "correctAnswer": "A. Burning woody forest biomass oxidizes stored biological carbon into carbon dioxide gas, a major greenhouse gas",
+                "hint": "Burning forest vegetation releases carbon that was stored in plant biomass into the atmosphere as carbon dioxide.",
+                "workedSolution": "Burning forest vegetation releases carbon that was stored in plant biomass into the atmosphere as carbon dioxide.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I25",
+                "difficulty": "medium",
+                "prompt": "Why must an effective crop rotation plan include detailed seasonal record-keeping?",
+                "options": [
+                  "A. To show neighbors the field colors",
+                  "B. To track which crop family occupied each bed in previous years, preventing accidental consecutive replanting of the same family",
+                  "C. To prevent rain from washing seeds away",
+                  "D. Because paper keeps soil fertile"
+                ],
+                "correctAnswer": "B. To track which crop family occupied each bed in previous years, preventing accidental consecutive replanting of the same family",
+                "hint": "Accurate field maps and planting histories ensure that crops from the same family are not replanted in the same bed.",
+                "workedSolution": "Accurate field maps and planting histories ensure that crops from the same family are not replanted in the same bed.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I26",
+                "difficulty": "medium",
+                "prompt": "What is the primary economic advantage of running a certified organic fruit farm for the European export market?",
+                "options": [
+                  "A. Organic fruit requires no packing boxes",
+                  "B. Export markets offer premium pricing for verified, chemical-free organic produce",
+                  "C. Organic fruit ships without transport costs",
+                  "D. Organic trees never need water"
+                ],
+                "correctAnswer": "B. Export markets offer premium pricing for verified, chemical-free organic produce",
+                "hint": "International organic buyers pay premium prices for verified residue-free agricultural produce.",
+                "workedSolution": "International organic buyers pay premium prices for verified residue-free agricultural produce.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I27",
+                "difficulty": "medium",
+                "prompt": "Why are root knot nematodes more easily controlled under crop rotation than under continuous monoculture?",
+                "options": [
+                  "A. Nematodes drown when crops rotate",
+                  "B. Rotating susceptible crops with non-host or antagonistic crops (like marigolds or maize) starves and suppresses nematode populations",
+                  "C. Nematodes turn into earthworms",
+                  "D. Crop rotation freezes the soil"
+                ],
+                "correctAnswer": "B. Rotating susceptible crops with non-host or antagonistic crops (like marigolds or maize) starves and suppresses nematode populations",
+                "hint": "Replacing susceptible host crops with non-hosts breaks the reproductive cycle of soil nematodes.",
+                "workedSolution": "Replacing susceptible host crops with non-hosts breaks the reproductive cycle of soil nematodes.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I28",
+                "difficulty": "medium",
+                "prompt": "How does mixed farming help reduce household food expenditure on a farm?",
+                "options": [
+                  "A. The family stops eating food",
+                  "B. The farm supplies homegrown carbohydrates, vegetables, meat, milk, and eggs directly for family consumption",
+                  "C. Animals buy food from stores",
+                  "D. Crops produce manufactured goods"
+                ],
+                "correctAnswer": "B. The farm supplies homegrown carbohydrates, vegetables, meat, milk, and eggs directly for family consumption",
+                "hint": "Diverse farm production supplies balanced food directly to the household, lowering grocery spending.",
+                "workedSolution": "Diverse farm production supplies balanced food directly to the household, lowering grocery spending.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I29",
+                "difficulty": "medium",
+                "prompt": "What is an operational constraint when preparing farmyard manure on a mixed farm?",
+                "options": [
+                  "A. Manure cannot be touched by air",
+                  "B. Collecting, piling, and transporting bulky manure to distant fields requires substantial manual labor or machinery",
+                  "C. Animals produce too little dung to use",
+                  "D. Manure dissolves in sunlight"
+                ],
+                "correctAnswer": "B. Collecting, piling, and transporting bulky manure to distant fields requires substantial manual labor or machinery",
+                "hint": "Raw manure is heavy and bulky, demanding significant labor and transport to move from pens to fields.",
+                "workedSolution": "Raw manure is heavy and bulky, demanding significant labor and transport to move from pens to fields.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I30",
+                "difficulty": "medium",
+                "prompt": "Why does planting leguminous groundnuts improve the soil for a subsequent maize crop?",
+                "options": [
+                  "A. Groundnuts leave all their seeds behind",
+                  "B. Decaying root nodules and crop residue release fixed nitrogen, enriching the soil with nitrates for the maize",
+                  "C. Groundnuts absorb all water from the ground",
+                  "D. Maize roots eat groundnut shells"
+                ],
+                "correctAnswer": "B. Decaying root nodules and crop residue release fixed nitrogen, enriching the soil with nitrates for the maize",
+                "hint": "Decomposing legume roots and residues release fixed organic nitrogen, enriching the soil for the following crop.",
+                "workedSolution": "Decomposing legume roots and residues release fixed organic nitrogen, enriching the soil for the following crop.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I31",
+                "difficulty": "medium",
+                "prompt": "Why is the use of synthetic chemical growth-promoting antibiotics forbidden in organic animal production?",
+                "options": [
+                  "A. Antibiotics make animals too heavy",
+                  "B. Routine antibiotic use promotes drug-resistant bacterial strains and leaves chemical residues in animal products",
+                  "C. Antibiotics turn milk red",
+                  "D. Organic animals cannot swallow pills"
+                ],
+                "correctAnswer": "B. Routine antibiotic use promotes drug-resistant bacterial strains and leaves chemical residues in animal products",
+                "hint": "Routine antibiotic feeding can select for resistant bacteria and leave residues in meat, milk, and eggs.",
+                "workedSolution": "Routine antibiotic feeding can select for resistant bacteria and leave residues in meat, milk, and eggs.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I32",
+                "difficulty": "medium",
+                "prompt": "What is the primary role of an agricultural depreciation record for farm machinery?",
+                "options": [
+                  "A. Measuring fuel consumption",
+                  "B. Calculating the loss in monetary value of equipment over time due to wear, tear, and age for accurate financial accounting",
+                  "C. Keeping machinery shiny",
+                  "D. Measuring tractor speed"
+                ],
+                "correctAnswer": "B. Calculating the loss in monetary value of equipment over time due to wear, tear, and age for accurate financial accounting",
+                "hint": "Depreciation accounts for wear and tear, spreading the replacement cost of machinery over its working life.",
+                "workedSolution": "Depreciation accounts for wear and tear, spreading the replacement cost of machinery over its working life.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I33",
+                "difficulty": "medium",
+                "prompt": "Why does mixed cropping help improve soil moisture retention compared to bare-row monoculture?",
+                "options": [
+                  "A. Intercropped plants produce water from roots",
+                  "B. Multi-tiered leaf canopies and ground-hugging crops shade the soil, reducing direct surface evaporation",
+                  "C. Mixed crops stop wind completely",
+                  "D. Mixed roots turn soil into clay"
+                ],
+                "correctAnswer": "B. Multi-tiered leaf canopies and ground-hugging crops shade the soil, reducing direct surface evaporation",
+                "hint": "Continuous canopy cover shades the soil surface, cutting evaporative moisture losses from bare soil.",
+                "workedSolution": "Continuous canopy cover shades the soil surface, cutting evaporative moisture losses from bare soil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I34",
+                "difficulty": "medium",
+                "prompt": "How does agricultural export revenue from cocoa benefit Ghana's national economy?",
+                "options": [
+                  "A. It pays for all farm tools in the world",
+                  "B. It generates foreign exchange reserves used to import essential machinery, medicine, and industrial capital goods",
+                  "C. It eliminates local taxes",
+                  "D. It replaces local currency with cocoa beans"
+                ],
+                "correctAnswer": "B. It generates foreign exchange reserves used to import essential machinery, medicine, and industrial capital goods",
+                "hint": "Export earnings provide foreign currency needed to purchase manufactured capital goods and maintain trade balances.",
+                "workedSolution": "Export earnings provide foreign currency needed to purchase manufactured capital goods and maintain trade balances.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I35",
+                "difficulty": "medium",
+                "prompt": "Why is crop rotation considered an effective soil conservation practice against water erosion?",
+                "options": [
+                  "A. Rotating fields keeps beds permanently covered with crops or residues throughout the year, reducing raindrop detachment",
+                  "B. Crops build stone walls around beds",
+                  "C. Rotating crops stops rain from falling",
+                  "D. Only rotated crops can grow roots"
+                ],
+                "correctAnswer": "A. Rotating fields keeps beds permanently covered with crops or residues throughout the year, reducing raindrop detachment",
+                "hint": "Continuous vegetation and rotation with dense cover crops protect topsoil from rainfall impact and runoff.",
+                "workedSolution": "Continuous vegetation and rotation with dense cover crops protect topsoil from rainfall impact and runoff.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I36",
+                "difficulty": "medium",
+                "prompt": "What is the primary management challenge on a mixed farm where crop residues are used for animal feed?",
+                "options": [
+                  "A. Deciding whether to leave residues on the soil to prevent erosion or remove them to feed livestock",
+                  "B. Animals refuse to eat crop waste",
+                  "C. Residues turn into poison when harvested",
+                  "D. Crops cannot produce residues"
+                ],
+                "correctAnswer": "A. Deciding whether to leave residues on the soil to prevent erosion or remove them to feed livestock",
+                "hint": "Farmers must balance removing crop residues for fodder against leaving mulch to protect soil from erosion.",
+                "workedSolution": "Farmers must balance removing crop residues for fodder against leaving mulch to protect soil from erosion.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I37",
+                "difficulty": "medium",
+                "prompt": "Why do organic farms use crop rotations that include green manures rather than relying solely on compost?",
+                "options": [
+                  "A. Green manures require no land",
+                  "B. Compost volume is often insufficient to cover large fields, while in-situ green manures produce large biomass directly on the plot",
+                  "C. Green manures do not need water",
+                  "D. Compost is toxic to organic crops"
+                ],
+                "correctAnswer": "B. Compost volume is often insufficient to cover large fields, while in-situ green manures produce large biomass directly on the plot",
+                "hint": "Growing green manures directly on the plot adds large amounts of organic biomass without the labor of transporting compost.",
+                "workedSolution": "Growing green manures directly on the plot adds large amounts of organic biomass without the labor of transporting compost.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I38",
+                "difficulty": "medium",
+                "prompt": "How does a farm budget help a farmer prepare for an upcoming planting season?",
+                "options": [
+                  "A. It predicts future revenues and plans expected expenses for inputs, labor, and machinery",
+                  "B. It guarantees that rain will fall",
+                  "C. It makes seeds germinate faster",
+                  "D. It replaces the need for weeding"
+                ],
+                "correctAnswer": "A. It predicts future revenues and plans expected expenses for inputs, labor, and machinery",
+                "hint": "A farm budget projects anticipated operating costs and revenues, guiding input purchases and working capital.",
+                "workedSolution": "A farm budget projects anticipated operating costs and revenues, guiding input purchases and working capital.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I39",
+                "difficulty": "medium",
+                "prompt": "Why does land rotation preserve local plant biodiversity better than continuous commercial monoculture?",
+                "options": [
+                  "A. Land rotation uses more chemical sprays",
+                  "B. Fallow parcels allow native forest trees, shrubs, and soil fauna to regenerate between cropping periods",
+                  "C. Land rotation creates paved roads",
+                  "D. Commercial monoculture never uses land"
+                ],
+                "correctAnswer": "B. Fallow parcels allow native forest trees, shrubs, and soil fauna to regenerate between cropping periods",
+                "hint": "Extended natural fallows give native woody species, wild plants, and soil organisms room to re-establish.",
+                "workedSolution": "Extended natural fallows give native woody species, wild plants, and soil organisms room to re-establish.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I40",
+                "difficulty": "medium",
+                "prompt": "What is the consequence of applying fresh, hot poultry manure directly to vegetable seedlings on a mixed farm?",
+                "options": [
+                  "A. Seedlings grow 10 meters tall overnight",
+                  "B. High ammonium levels and soluble salts can scorch roots and kill young seedlings",
+                  "C. Manure turns into water instantly",
+                  "D. Seedlings turn into poultry feed"
+                ],
+                "correctAnswer": "B. High ammonium levels and soluble salts can scorch roots and kill young seedlings",
+                "hint": "Fresh bird manure has high uric acid and salt contents that can burn delicate seedling root systems.",
+                "workedSolution": "Fresh bird manure has high uric acid and salt contents that can burn delicate seedling root systems.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I41",
+                "difficulty": "medium",
+                "prompt": "Why are tree crops like rubber and oil palm not suitable for annual crop rotation schemes?",
+                "options": [
+                  "A. Tree crops have no roots",
+                  "B. They are long-term perennial crops with productive lifespans of 20 to 30 years that cannot be rotated annually",
+                  "C. Tree crops do not absorb nutrients",
+                  "D. They only grow in water"
+                ],
+                "correctAnswer": "B. They are long-term perennial crops with productive lifespans of 20 to 30 years that cannot be rotated annually",
+                "hint": "Perennial plantation trees occupy land for decades, making annual field rotations unworkable.",
+                "workedSolution": "Perennial plantation trees occupy land for decades, making annual field rotations unworkable.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I42",
+                "difficulty": "medium",
+                "prompt": "How do farm records help in breeding selection on a livestock farm?",
+                "options": [
+                  "A. By identifying animals with superior traits like high birth weights, fertility, and disease resistance for breeding",
+                  "B. By painting animal horns different colors",
+                  "C. By making animals produce twins every time",
+                  "D. Records replace the need for feed"
+                ],
+                "correctAnswer": "A. By identifying animals with superior traits like high birth weights, fertility, and disease resistance for breeding",
+                "hint": "Pedigree and performance records identify top-producing animals to select as parents for future generations.",
+                "workedSolution": "Pedigree and performance records identify top-producing animals to select as parents for future generations.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I43",
+                "difficulty": "medium",
+                "prompt": "What is the primary role of agroforestry systems that integrate trees, crops, and pasture?",
+                "options": [
+                  "A. Trees provide timber, shade, and deep-soil nutrient cycling while crops and livestock produce food on the same land",
+                  "B. Trees stop crops from growing",
+                  "C. To replace all farms with forests",
+                  "D. To eliminate wild birds"
+                ],
+                "correctAnswer": "A. Trees provide timber, shade, and deep-soil nutrient cycling while crops and livestock produce food on the same land",
+                "hint": "Agroforestry combines trees, crops, and animals to cycle nutrients, stabilize microclimates, and diversify farm output.",
+                "workedSolution": "Agroforestry combines trees, crops, and animals to cycle nutrients, stabilize microclimates, and diversify farm output.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I44",
+                "difficulty": "medium",
+                "prompt": "Why does intercropping maize with beans improve overall land equivalent ratio (LER)?",
+                "options": [
+                  "A. The combined harvest from the intercropped plot exceeds the yield of either crop grown alone on the same total land area",
+                  "B. It shrinks the size of the farm",
+                  "C. Beans turn into maize plants",
+                  "D. The land becomes completely dry"
+                ],
+                "correctAnswer": "A. The combined harvest from the intercropped plot exceeds the yield of either crop grown alone on the same total land area",
+                "hint": "Complementary resource use allows intercropped fields to produce higher total yield per hectare than separate sole crops.",
+                "workedSolution": "Complementary resource use allows intercropped fields to produce higher total yield per hectare than separate sole crops.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I45",
+                "difficulty": "medium",
+                "prompt": "Why are organic farms inspected and certified annually by independent auditing agencies?",
+                "options": [
+                  "A. To confiscate the farmer's crops",
+                  "B. To verify that no prohibited synthetic chemicals or GMOs were used, maintaining market trust in the organic label",
+                  "C. To count how many workers live on the farm",
+                  "D. To force the farmer to buy tractors"
+                ],
+                "correctAnswer": "B. To verify that no prohibited synthetic chemicals or GMOs were used, maintaining market trust in the organic label",
+                "hint": "Third-party certification verifies compliance with organic standards, protecting consumers from mislabeled produce.",
+                "workedSolution": "Third-party certification verifies compliance with organic standards, protecting consumers from mislabeled produce.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I46",
+                "difficulty": "medium",
+                "prompt": "What is the function of a cash receipt book on a commercial farm?",
+                "options": [
+                  "A. Recording sales transactions and issuing written proof of payments received from customers",
+                  "B. Tracking the depth of plowing",
+                  "C. Listing rainfall amounts",
+                  "D. Storing money inside the pages"
+                ],
+                "correctAnswer": "A. Recording sales transactions and issuing written proof of payments received from customers",
+                "hint": "A receipt book documents payment inflows, providing verification for farm revenue accounting.",
+                "workedSolution": "A receipt book documents payment inflows, providing verification for farm revenue accounting.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I47",
+                "difficulty": "medium",
+                "prompt": "Why does continuous monoculture of cassava on the same plot lead to declining yields over time?",
+                "options": [
+                  "A. Cassava plants do not need soil",
+                  "B. Repeated extraction depletes specific nutrients like potassium, while soil-borne pathogens and pests build up in the soil",
+                  "C. The roots turn into rocks",
+                  "D. Monoculture stops rainfall"
+                ],
+                "correctAnswer": "B. Repeated extraction depletes specific nutrients like potassium, while soil-borne pathogens and pests build up in the soil",
+                "hint": "Growing cassava repeatedly depletes target nutrients and allows root-feeding pests and pathogens to accumulate.",
+                "workedSolution": "Growing cassava repeatedly depletes target nutrients and allows root-feeding pests and pathogens to accumulate.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I48",
+                "difficulty": "medium",
+                "prompt": "How does mixed farming help improve the organic matter content of soils compared to arable-only farms?",
+                "options": [
+                  "A. Farm animals walk on the field to pack it hard",
+                  "B. Regular applications of animal manure return stable humic substances that synthetic fertilizers cannot supply",
+                  "C. Animals eat all the weeds",
+                  "D. Crops stop absorbing nutrients"
+                ],
+                "correctAnswer": "B. Regular applications of animal manure return stable humic substances that synthetic fertilizers cannot supply",
+                "hint": "Farmyard manure adds organic humus, improving soil aggregation and biological activity over time.",
+                "workedSolution": "Farmyard manure adds organic humus, improving soil aggregation and biological activity over time.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I49",
+                "difficulty": "medium",
+                "prompt": "Why do farmers rotate crops between heavy feeders and light feeders?",
+                "options": [
+                  "A. To allow heavily depleted nutrient pools to recover while lighter-feeding crops draw fewer minerals from the soil",
+                  "B. Heavy feeders produce no food",
+                  "C. Light feeders kill all insects",
+                  "D. It stops weeds from flowering"
+                ],
+                "correctAnswer": "A. To allow heavily depleted nutrient pools to recover while lighter-feeding crops draw fewer minerals from the soil",
+                "hint": "Following heavy nutrient consumers with light feeders prevents continuous mining of the same soil mineral reserves.",
+                "workedSolution": "Following heavy nutrient consumers with light feeders prevents continuous mining of the same soil mineral reserves.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_I50",
+                "difficulty": "medium",
+                "prompt": "What is the ultimate goal of adopting sustainable farming systems in agriculture?",
+                "options": [
+                  "A. Maximizing short-term profit while exhausting the land",
+                  "B. Producing adequate food and income today while conserving soil, water, and biodiversity for future generations",
+                  "C. Abandoning all farms to wild forests",
+                  "D. Replacing all crops with livestock"
+                ],
+                "correctAnswer": "B. Producing adequate food and income today while conserving soil, water, and biodiversity for future generations",
+                "hint": "Sustainable farming balances current agricultural yields and income with the long-term conservation of natural resources.",
+                "workedSolution": "Sustainable farming balances current agricultural yields and income with the long-term conservation of natural resources.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              }
+            ],
+            "hard": [
+              {
+                "id": "B7_FARM_A01",
+                "difficulty": "hard",
+                "prompt": "A farmer intercrops maize with cowpeas. If the sole-crop yield of maize is 4.0 t/ha and cowpea is 1.5 t/ha, while the intercropped yields are 3.0 t/ha maize and 0.9 t/ha cowpea, what is the Land Equivalent Ratio (LER)?",
+                "options": [
+                  "A. 0.85",
+                  "B. 1.00",
+                  "C. 1.35",
+                  "D. 1.75"
+                ],
+                "correctAnswer": "C. 1.35",
+                "hint": "LER is calculated as (3.0/4.0) + (0.9/1.5) = 0.75 + 0.60 = 1.35. An LER of 1.35 indicates a 35% yield advantage from intercropping.",
+                "workedSolution": "LER is calculated as (3.0/4.0) + (0.9/1.5) = 0.75 + 0.60 = 1.35. An LER of 1.35 indicates a 35% yield advantage from intercropping.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A02",
+                "difficulty": "hard",
+                "prompt": "Why does a 4-year crop rotation that alternates maize, cowpea, cassava, and fallow break the life cycle of soil-borne nematodes more effectively than chemical nematicides?",
+                "options": [
+                  "A. Rotating non-host crops and bio-fumigant legumes starves nematodes naturally without selecting for pesticide-resistant strains",
+                  "B. Nematodes freeze during crop rotation",
+                  "C. Cassava roots produce pure alcohol that kills nematodes",
+                  "D. Crop rotation removes all moisture from the soil"
+                ],
+                "correctAnswer": "A. Rotating non-host crops and bio-fumigant legumes starves nematodes naturally without selecting for pesticide-resistant strains",
+                "hint": "Non-host rotational crops starve plant-parasitic nematodes across seasons without driving chemical resistance.",
+                "workedSolution": "Non-host rotational crops starve plant-parasitic nematodes across seasons without driving chemical resistance.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A03",
+                "difficulty": "hard",
+                "prompt": "How does the Land Equivalent Ratio (LER) demonstrate whether mixed cropping is agronomically advantageous over sole cropping?",
+                "options": [
+                  "A. If LER is less than 1.0, mixed cropping is advantageous",
+                  "B. An LER greater than 1.0 indicates that intercropping produced more yield from the same land area than growing the crops separately",
+                  "C. LER measures the weight of tractors only",
+                  "D. An LER of zero means maximum crop production"
+                ],
+                "correctAnswer": "B. An LER greater than 1.0 indicates that intercropping produced more yield from the same land area than growing the crops separately",
+                "hint": "An LER > 1.0 shows that intercropping made more efficient use of land and environmental resources than monoculture.",
+                "workedSolution": "An LER > 1.0 shows that intercropping made more efficient use of land and environmental resources than monoculture.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A04",
+                "difficulty": "hard",
+                "prompt": "What is the primary biochemical mechanism by which Rhizobium bacteria fix atmospheric nitrogen in legume root nodules?",
+                "options": [
+                  "A. Producing sulfuric acid",
+                  "B. The nitrogenase enzyme reduces atmospheric dinitrogen (N2) into ammonia (NH3) inside anaerobic nodule bacteroids protected by leghemoglobin",
+                  "C. Bacteria absorb nitrates from clouds",
+                  "D. Roots boil water to release nitrogen"
+                ],
+                "correctAnswer": "B. The nitrogenase enzyme reduces atmospheric dinitrogen (N2) into ammonia (NH3) inside anaerobic nodule bacteroids protected by leghemoglobin",
+                "hint": "Nitrogenase catalyzes the reduction of N2 to NH3 in root nodules, protected from oxygen by leghemoglobin.",
+                "workedSolution": "Nitrogenase catalyzes the reduction of N2 to NH3 in root nodules, protected from oxygen by leghemoglobin.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A05",
+                "difficulty": "hard",
+                "prompt": "Why does shifting cultivation become an ecological driver of desertification when practiced under high population density?",
+                "options": [
+                  "A. Fallow periods are shortened from 15 years to 2–3 years, preventing soil and vegetative recovery and accelerating erosion",
+                  "B. Moving huts dries out the climate",
+                  "C. Crops absorb all groundwater",
+                  "D. Farmers plant cacti on abandoned land"
+                ],
+                "correctAnswer": "A. Fallow periods are shortened from 15 years to 2–3 years, preventing soil and vegetative recovery and accelerating erosion",
+                "hint": "High land pressure forces shortened fallows; incomplete recovery leads to soil exhaustion, erosion, and dryland degradation.",
+                "workedSolution": "High land pressure forces shortened fallows; incomplete recovery leads to soil exhaustion, erosion, and dryland degradation.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A06",
+                "difficulty": "hard",
+                "prompt": "A farm balance sheet shows total assets of GHS 120,000 and total liabilities of GHS 45,000. What is the net worth (owner's equity) of the farm business?",
+                "options": [
+                  "A. GHS 45,000",
+                  "B. GHS 75,000",
+                  "C. GHS 120,000",
+                  "D. GHS 165,000"
+                ],
+                "correctAnswer": "B. GHS 75,000",
+                "hint": "Owner's equity (Net Worth) = Total Assets - Total Liabilities: GHS 120,000 - GHS 45,000 = GHS 75,000.",
+                "workedSolution": "Owner's equity (Net Worth) = Total Assets - Total Liabilities: GHS 120,000 - GHS 45,000 = GHS 75,000.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A07",
+                "difficulty": "hard",
+                "prompt": "How does incorporating deep-rooted agroforestry trees like Faidherbia albida into millet farms improve cereal yields (the 'reverse phenology' effect)?",
+                "options": [
+                  "A. Trees shed their leaves during the rainy season, adding nitrogen-rich mulch and allowing sunlight through, while providing shade in the dry season",
+                  "B. Trees produce millet grains on their branches",
+                  "C. The tree absorbs all the rain",
+                  "D. Trees poison competitive weeds"
+                ],
+                "correctAnswer": "A. Trees shed their leaves during the rainy season, adding nitrogen-rich mulch and allowing sunlight through, while providing shade in the dry season",
+                "hint": "*Faidherbia albida* drops leaves during the wet season, supplying mulch and nitrogen without competing with crops for light.",
+                "workedSolution": "*Faidherbia albida* drops leaves during the wet season, supplying mulch and nitrogen without competing with crops for light.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A08",
+                "difficulty": "hard",
+                "prompt": "Why does intensive monoculture farming lead to high vulnerability to pest outbreaks compared to diverse farming systems?",
+                "options": [
+                  "A. Monoculture crops have no genetic material",
+                  "B. Genetically uniform host plants provide an unbroken food source, allowing specialized pests to multiply rapidly across the field",
+                  "C. Pests avoid eating diverse crops",
+                  "D. Monoculture plots produce more rain"
+                ],
+                "correctAnswer": "B. Genetically uniform host plants provide an unbroken food source, allowing specialized pests to multiply rapidly across the field",
+                "hint": "Uniform monocultures provide continuous food and habitat, allowing specialized pests to multiply without natural barriers.",
+                "workedSolution": "Uniform monocultures provide continuous food and habitat, allowing specialized pests to multiply without natural barriers.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A09",
+                "difficulty": "hard",
+                "prompt": "In a 4-year rotation (Bed 1: Tomato, Bed 2: Cowpea, Bed 3: Carrot, Bed 4: Maize), why is maize placed between carrot and tomato?",
+                "options": [
+                  "A. Maize has bright flowers",
+                  "B. Maize is a fibrous-rooted grass that extracts nutrients from different depths than tap-rooted carrots, and its heavy residue improves soil organic matter before tomatoes",
+                  "C. Maize produces seeds without soil",
+                  "D. Carrots and maize belong to the same family"
+                ],
+                "correctAnswer": "B. Maize is a fibrous-rooted grass that extracts nutrients from different depths than tap-rooted carrots, and its heavy residue improves soil organic matter before tomatoes",
+                "hint": "Maize alternates rooting depth with tap-rooted carrots and leaves organic stover that benefits the next heavy feeder.",
+                "workedSolution": "Maize alternates rooting depth with tap-rooted carrots and leaves organic stover that benefits the next heavy feeder.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A10",
+                "difficulty": "hard",
+                "prompt": "How does composting cattle manure with straw before field application reduce nitrogen loss compared to spreading fresh manure?",
+                "options": [
+                  "A. It freezes the manure",
+                  "B. Controlled aerobic decomposition stabilizes volatile ammonium into organic nitrogen forms, reducing ammonia gas volatilization",
+                  "C. Straw absorbs all nitrogen and turns into rock",
+                  "D. Fresh manure has no nitrogen"
+                ],
+                "correctAnswer": "B. Controlled aerobic decomposition stabilizes volatile ammonium into organic nitrogen forms, reducing ammonia gas volatilization",
+                "hint": "Composting binds volatile ammonia into microbial biomass and humic compounds, cutting nitrogen volatilization.",
+                "workedSolution": "Composting binds volatile ammonia into microbial biomass and humic compounds, cutting nitrogen volatilization.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A11",
+                "difficulty": "hard",
+                "prompt": "Why is the economic value of a crop rotation scheme often higher over 5 years than continuous sole cropping of high-value tomatoes?",
+                "options": [
+                  "A. Tomatoes stop growing after one year",
+                  "B. Continuous tomato cropping leads to soil-borne disease buildup, nematode damage, and rising chemical costs that erode profits",
+                  "C. Crop rotation produces gold bullion",
+                  "D. Tomatoes require no soil nutrients"
+                ],
+                "correctAnswer": "B. Continuous tomato cropping leads to soil-borne disease buildup, nematode damage, and rising chemical costs that erode profits",
+                "hint": "Monoculture tomatoes incur compounding pest and disease losses, whereas rotation maintains yields and lowers pesticide costs.",
+                "workedSolution": "Monoculture tomatoes incur compounding pest and disease losses, whereas rotation maintains yields and lowers pesticide costs.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A12",
+                "difficulty": "hard",
+                "prompt": "What is the primary purpose of calculating an enterprise gross margin in farm record analysis?",
+                "options": [
+                  "A. It measures total gross income minus variable operating costs, evaluating the profitability of a specific crop or livestock enterprise",
+                  "B. It records the farmer's personal age",
+                  "C. It calculates rainfall totals",
+                  "D. It measures tractor engine volume"
+                ],
+                "correctAnswer": "A. It measures total gross income minus variable operating costs, evaluating the profitability of a specific crop or livestock enterprise",
+                "hint": "Gross margin (Gross Revenue - Variable Costs) evaluates the financial efficiency of individual farm enterprises.",
+                "workedSolution": "Gross margin (Gross Revenue - Variable Costs) evaluates the financial efficiency of individual farm enterprises.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A13",
+                "difficulty": "hard",
+                "prompt": "How do leguminous cover crops (like Mucuna pruriens) suppress perennial weeds like speargrass (Imperata cylindrica)?",
+                "options": [
+                  "A. They eat weed roots",
+                  "B. Fast-growing vines form a dense, light-blocking mat that exhausts the rhizome energy reserves of light-demanding weeds",
+                  "C. They produce weed seeds",
+                  "D. They dry up the field"
+                ],
+                "correctAnswer": "B. Fast-growing vines form a dense, light-blocking mat that exhausts the rhizome energy reserves of light-demanding weeds",
+                "hint": "Thick velvet bean vines block sunlight, starving and depleting underground rhizome reserves in shade-intolerant weeds.",
+                "workedSolution": "Thick velvet bean vines block sunlight, starving and depleting underground rhizome reserves in shade-intolerant weeds.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A14",
+                "difficulty": "hard",
+                "prompt": "Why is an organic farming certification transitional period (typically 2 to 3 years) required before a farm can sell produce as 'certified organic'?",
+                "options": [
+                  "A. To allow inspectors to take vacations",
+                  "B. To ensure that past synthetic chemical pesticide and fertilizer residues clear from the soil and biological management stabilizes",
+                  "C. To force the farmer to buy new land",
+                  "D. Because organic seeds take three years to germinate"
+                ],
+                "correctAnswer": "B. To ensure that past synthetic chemical pesticide and fertilizer residues clear from the soil and biological management stabilizes",
+                "hint": "The transition period allows synthetic agrochemical residues to break down and ensures natural systems are established.",
+                "workedSolution": "The transition period allows synthetic agrochemical residues to break down and ensures natural systems are established.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A15",
+                "difficulty": "hard",
+                "prompt": "What is the primary agronomic danger of feeding ruminant animals with wet, frosted forage legumes on a mixed farm?",
+                "options": [
+                  "A. Rapid microbial fermentation produces stable protein foam in the rumen, causing acute frothy bloat and suffocation",
+                  "B. Forage freezes the cow's teeth",
+                  "C. Cows stop producing cud",
+                  "D. Legumes dissolve the abomasum"
+                ],
+                "correctAnswer": "A. Rapid microbial fermentation produces stable protein foam in the rumen, causing acute frothy bloat and suffocation",
+                "hint": "Lush wet legumes ferment rapidly, producing viscous foam that blocks gas release and causes life-threatening bloat.",
+                "workedSolution": "Lush wet legumes ferment rapidly, producing viscous foam that blocks gas release and causes life-threatening bloat.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A16",
+                "difficulty": "hard",
+                "prompt": "How does keeping a farm diary support legal compliance and quality assurance in commercial farming?",
+                "options": [
+                  "A. It documents exact dates, chemical rates, weather conditions, and harvest batches, providing a traceability trail during audits",
+                  "B. It replaces national laws",
+                  "C. It hides illegal activities",
+                  "D. It makes crops grow faster"
+                ],
+                "correctAnswer": "A. It documents exact dates, chemical rates, weather conditions, and harvest batches, providing a traceability trail during audits",
+                "hint": "Daily operational logs verify chemical withdrawal periods, safety protocols, and product traceability for auditors.",
+                "workedSolution": "Daily operational logs verify chemical withdrawal periods, safety protocols, and product traceability for auditors.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A17",
+                "difficulty": "hard",
+                "prompt": "Why does planting cassava after a multi-year legume fallow produce higher tuber yields than planting it directly after maize?",
+                "options": [
+                  "A. Cassava hates maize plants",
+                  "B. The legume fallow restores organic nitrogen and builds soil crumb structure, supporting tuber expansion",
+                  "C. Cassava eats legume leaves",
+                  "D. Maize leaves poison cassava roots"
+                ],
+                "correctAnswer": "B. The legume fallow restores organic nitrogen and builds soil crumb structure, supporting tuber expansion",
+                "hint": "Fallow legumes enrich the soil with nitrogen and improve root-zone physical structure, supporting root tuber growth.",
+                "workedSolution": "Fallow legumes enrich the soil with nitrogen and improve root-zone physical structure, supporting root tuber growth.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A18",
+                "difficulty": "hard",
+                "prompt": "What is the function of an enterprise cash-flow budget in farm financial planning?",
+                "options": [
+                  "A. It projects the timing of cash inflows and outflows across months, identifying potential deficit periods when operating loans are needed",
+                  "B. It records the names of farm animals",
+                  "C. It measures the depth of groundwater",
+                  "D. It counts the number of tractors owned"
+                ],
+                "correctAnswer": "A. It projects the timing of cash inflows and outflows across months, identifying potential deficit periods when operating loans are needed",
+                "hint": "Cash-flow projections identify monthly timing gaps between expenditures and receipts, helping manage liquidity.",
+                "workedSolution": "Cash-flow projections identify monthly timing gaps between expenditures and receipts, helping manage liquidity.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A19",
+                "difficulty": "hard",
+                "prompt": "Why does continuous monoculture of cotton often lead to severe pest resistance compared to strip intercropping with sorghum?",
+                "options": [
+                  "A. Sorghum eats cotton pests",
+                  "B. Continuous sole cropping provides regular host availability and repeated insecticide exposure, selecting for resistant pest biotypes",
+                  "C. Cotton plants produce insecticides",
+                  "D. Sorghum stops the wind"
+                ],
+                "correctAnswer": "B. Continuous sole cropping provides regular host availability and repeated insecticide exposure, selecting for resistant pest biotypes",
+                "hint": "Monoculture and repeated chemical applications apply strong selection pressure, speeding up insecticide resistance.",
+                "workedSolution": "Monoculture and repeated chemical applications apply strong selection pressure, speeding up insecticide resistance.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A20",
+                "difficulty": "hard",
+                "prompt": "How does biochar application enhance the sustainability of sandy soils under land rotation?",
+                "options": [
+                  "A. Biochar adds water directly to the soil",
+                  "B. Porous, highly stable carbon structures improve cation exchange capacity and water retention, reducing nutrient leaching during fallows",
+                  "C. Biochar turns sand into gold",
+                  "D. Biochar stops weed seeds from growing"
+                ],
+                "correctAnswer": "B. Porous, highly stable carbon structures improve cation exchange capacity and water retention, reducing nutrient leaching during fallows",
+                "hint": "Stable biochar carbon adds porous surface area, improving nutrient and moisture retention in coarse soils.",
+                "workedSolution": "Stable biochar carbon adds porous surface area, improving nutrient and moisture retention in coarse soils.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A21",
+                "difficulty": "hard",
+                "prompt": "What is the primary indicator of economic solvency on a commercial farm balance sheet?",
+                "options": [
+                  "A. Total farm assets exceed total liabilities, meaning the farm could pay off all debts if liquidated",
+                  "B. The farm owns five tractors",
+                  "C. The farmer has no debt",
+                  "D. The farm produces only one crop"
+                ],
+                "correctAnswer": "A. Total farm assets exceed total liabilities, meaning the farm could pay off all debts if liquidated",
+                "hint": "Solvency means total assets exceed total liabilities, indicating positive long-term equity.",
+                "workedSolution": "Solvency means total assets exceed total liabilities, indicating positive long-term equity.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A22",
+                "difficulty": "hard",
+                "prompt": "Why are strip cropping systems designed along the contour lines of sloped agricultural land?",
+                "options": [
+                  "A. To make fields look attractive from airplanes",
+                  "B. Alternating dense cover strips with cultivated crops along contours slows runoff velocity and traps sediment, checking soil erosion",
+                  "C. To prevent tractors from tipping over",
+                  "D. Because crops grow better on curves"
+                ],
+                "correctAnswer": "B. Alternating dense cover strips with cultivated crops along contours slows runoff velocity and traps sediment, checking soil erosion",
+                "hint": "Contour strips act as physical barriers that slow surface runoff and trap detached soil particles on slopes.",
+                "workedSolution": "Contour strips act as physical barriers that slow surface runoff and trap detached soil particles on slopes.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A23",
+                "difficulty": "hard",
+                "prompt": "How does the cultivation of Crotalaria (sunn hemp) in rotation with vegetables suppress root-knot nematodes biologically?",
+                "options": [
+                  "A. Crotalaria roots produce pyrrolizidine alkaloids that are nematicidal, acting as a natural soil bio-fumigant",
+                  "B. Sunn hemp eats nematode eggs",
+                  "C. Sunn hemp freezes the ground",
+                  "D. It removes all water from the soil"
+                ],
+                "correctAnswer": "A. Crotalaria roots produce pyrrolizidine alkaloids that are nematicidal, acting as a natural soil bio-fumigant",
+                "hint": "*Crotalaria* exudes allelopathic compounds that suppress nematode reproduction, cleansing the soil naturally.",
+                "workedSolution": "*Crotalaria* exudes allelopathic compounds that suppress nematode reproduction, cleansing the soil naturally.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A24",
+                "difficulty": "hard",
+                "prompt": "What is the economic role of depreciation calculation when assessing annual farm machinery profitability?",
+                "options": [
+                  "A. It accounts for capital asset wear and replacement costs as an operating expense rather than treating machinery as a one-time cash loss",
+                  "B. It increases the market value of old machines",
+                  "C. It stops engines from burning fuel",
+                  "D. It guarantees machinery never breaks"
+                ],
+                "correctAnswer": "A. It accounts for capital asset wear and replacement costs as an operating expense rather than treating machinery as a one-time cash loss",
+                "hint": "Depreciation amortizes equipment purchase costs over its working life, giving an accurate picture of annual profit.",
+                "workedSolution": "Depreciation amortizes equipment purchase costs over its working life, giving an accurate picture of annual profit.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A25",
+                "difficulty": "hard",
+                "prompt": "Why does intercropping deep-rooted pigeon peas with shallow-rooted sorghum lead to higher water use efficiency (WUE)?",
+                "options": [
+                  "A. The crops share identical roots",
+                  "B. The crops draw moisture from different soil horizons without competing for the same root-zone water pool",
+                  "C. Pigeon peas pump water to the surface for sorghum",
+                  "D. Sorghum stops pigeon peas from transpiring"
+                ],
+                "correctAnswer": "B. The crops draw moisture from different soil horizons without competing for the same root-zone water pool",
+                "hint": "Stratified root depths draw moisture from separate soil layers, maximizing total water uptake without interference.",
+                "workedSolution": "Stratified root depths draw moisture from separate soil layers, maximizing total water uptake without interference.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A26",
+                "difficulty": "hard",
+                "prompt": "Why do organic certification rules prohibit using municipal sewage sludge (biosolids) as crop fertilizer?",
+                "options": [
+                  "A. Sludge contains no organic matter",
+                  "B. Urban sludge frequently contains heavy metals, pharmaceutical residues, and industrial chemical contaminants",
+                  "C. Sludge is too cold for plants",
+                  "D. Organic crops reject human waste"
+                ],
+                "correctAnswer": "B. Urban sludge frequently contains heavy metals, pharmaceutical residues, and industrial chemical contaminants",
+                "hint": "Municipal sludge risks introducing heavy metals, pharmaceuticals, and synthetic contaminants into agricultural soils.",
+                "workedSolution": "Municipal sludge risks introducing heavy metals, pharmaceuticals, and synthetic contaminants into agricultural soils.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A27",
+                "difficulty": "hard",
+                "prompt": "How does keeping a breeding record on a sheep farm prevent inbreeding depression?",
+                "options": [
+                  "A. By tracking sire and dam lineages, ensuring close relatives are not mated, which preserves herd vigor and fertility",
+                  "B. By painting ram horns blue",
+                  "C. By separating rams from ewes permanently",
+                  "D. By feeding sheep with corn"
+                ],
+                "correctAnswer": "A. By tracking sire and dam lineages, ensuring close relatives are not mated, which preserves herd vigor and fertility",
+                "hint": "Lineage records prevent mating between close relatives, avoiding inbreeding depression and genetic defects.",
+                "workedSolution": "Lineage records prevent mating between close relatives, avoiding inbreeding depression and genetic defects.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A28",
+                "difficulty": "hard",
+                "prompt": "Why does continuous monoculture of maize require steadily increasing applications of synthetic nitrogen fertilizer to maintain yields?",
+                "options": [
+                  "A. Maize plants learn to ignore fertilizer",
+                  "B. Repeated extraction without organic replenishment depletes native soil organic matter and microbial mineralization capacity",
+                  "C. Synthetic fertilizer turns the soil into sand",
+                  "D. Maize plants produce less roots each year"
+                ],
+                "correctAnswer": "B. Repeated extraction without organic replenishment depletes native soil organic matter and microbial mineralization capacity",
+                "hint": "Continuous cropping depletes natural soil organic matter, leaving crops dependent on synthetic mineral top-dressing.",
+                "workedSolution": "Continuous cropping depletes natural soil organic matter, leaving crops dependent on synthetic mineral top-dressing.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A29",
+                "difficulty": "hard",
+                "prompt": "What is the primary indicator of agricultural liquidity on a farm financial statement?",
+                "options": [
+                  "A. Current Ratio (Current Assets divided by Current Liabilities), which measures the ability to pay short-term bills over the coming year",
+                  "B. Total number of animals owned",
+                  "C. Total area of farm land",
+                  "D. Depth of farm wells"
+                ],
+                "correctAnswer": "A. Current Ratio (Current Assets divided by Current Liabilities), which measures the ability to pay short-term bills over the coming year",
+                "hint": "The current ratio measures short-term liquidity, indicating whether current assets can cover near-term debts.",
+                "workedSolution": "The current ratio measures short-term liquidity, indicating whether current assets can cover near-term debts.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A30",
+                "difficulty": "hard",
+                "prompt": "How does rotational grazing of cattle within fenced paddocks on a mixed farm improve pasture carrying capacity?",
+                "options": [
+                  "A. Cattle eat all the grass down to the roots",
+                  "B. Short, intense grazing followed by recovery rest periods prevents overgrazing and allows pasture plants to rebuild root carbohydrate reserves",
+                  "C. Paddocks prevent grass from transpiring",
+                  "D. Cattle produce less dung in paddocks"
+                ],
+                "correctAnswer": "B. Short, intense grazing followed by recovery rest periods prevents overgrazing and allows pasture plants to rebuild root carbohydrate reserves",
+                "hint": "Short grazing periods followed by rest intervals give forage grasses time to rebuild root reserves and biomass.",
+                "workedSolution": "Short grazing periods followed by rest intervals give forage grasses time to rebuild root reserves and biomass.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A31",
+                "difficulty": "hard",
+                "prompt": "Why does a 3-bed rotation plan involving tomato, cowpea, and carrot help maintain balance across the soil nitrogen pool?",
+                "options": [
+                  "A. Tomato uses large amounts of nitrogen, cowpea restores nitrogen via fixation, and carrot feeds at deeper depths with moderate nutrient demands",
+                  "B. All three crops fix nitrogen",
+                  "C. Carrots destroy all soil nitrogen",
+                  "D. Nitrogen is not needed by vegetables"
+                ],
+                "correctAnswer": "A. Tomato uses large amounts of nitrogen, cowpea restores nitrogen via fixation, and carrot feeds at deeper depths with moderate nutrient demands",
+                "hint": "Heavy feeding by tomatoes is offset by legume nitrogen addition, followed by carrots feeding at deeper levels.",
+                "workedSolution": "Heavy feeding by tomatoes is offset by legume nitrogen addition, followed by carrots feeding at deeper levels.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A32",
+                "difficulty": "hard",
+                "prompt": "What is the primary operational constraint when converting a 100-hectare commercial maize monoculture into an organic production system?",
+                "options": [
+                  "A. Sourcing and applying the massive quantities of compliant organic manure needed to supply nitrogen at that scale",
+                  "B. Organic maize cannot grow on large farms",
+                  "C. Tractors cannot operate on organic farms",
+                  "D. Organic crops reject rain"
+                ],
+                "correctAnswer": "A. Sourcing and applying the massive quantities of compliant organic manure needed to supply nitrogen at that scale",
+                "hint": "Supplying large crop acreages with sufficient organic nitrogen via compost and manure demands huge input volumes and labor.",
+                "workedSolution": "Supplying large crop acreages with sufficient organic nitrogen via compost and manure demands huge input volumes and labor.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A33",
+                "difficulty": "hard",
+                "prompt": "How does the inclusion of fallow periods in traditional farming systems suppress soil fungal pathogens like Fusarium?",
+                "options": [
+                  "A. Fallow soil freezes completely",
+                  "B. In the absence of susceptible host crop roots, fungal resting spores fail to reproduce and decline through natural microbial antagonism",
+                  "C. Fallow land produces chemical fungicides",
+                  "D. Weeds eat all the fungi"
+                ],
+                "correctAnswer": "B. In the absence of susceptible host crop roots, fungal resting spores fail to reproduce and decline through natural microbial antagonism",
+                "hint": "Withholding host crops deprives fungal pathogens of targets, allowing diverse soil microbes to outcompete them.",
+                "workedSolution": "Withholding host crops deprives fungal pathogens of targets, allowing diverse soil microbes to outcompete them.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A34",
+                "difficulty": "hard",
+                "prompt": "What is the primary role of a feed conversion ratio (FCR) record in mixed-farming livestock management?",
+                "options": [
+                  "A. Measuring the kilograms of feed required to produce one kilogram of animal liveweight gain, tracking feeding efficiency",
+                  "B. Measuring how fast animals run",
+                  "C. Counting the number of meals animals eat daily",
+                  "D. Recording the color of feed"
+                ],
+                "correctAnswer": "A. Measuring the kilograms of feed required to produce one kilogram of animal liveweight gain, tracking feeding efficiency",
+                "hint": "FCR calculates feeding efficiency (feed input per unit of gain), showing how effectively animals convert feed into meat.",
+                "workedSolution": "FCR calculates feeding efficiency (feed input per unit of gain), showing how effectively animals convert feed into meat.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A35",
+                "difficulty": "hard",
+                "prompt": "Why does relay cropping (sowing a second crop into an existing standing crop before harvest) maximize seasonal radiation use efficiency?",
+                "options": [
+                  "A. The second crop grows in complete darkness",
+                  "B. It overlaps vegetative canopies, capturing sunlight that would otherwise strike bare soil during the post-harvest gap",
+                  "C. It stops the first crop from ripening",
+                  "D. Relay crops produce light"
+                ],
+                "correctAnswer": "B. It overlaps vegetative canopies, capturing sunlight that would otherwise strike bare soil during the post-harvest gap",
+                "hint": "Relay cropping maintains continuous ground canopy cover, capturing sunlight during transition windows between seasons.",
+                "workedSolution": "Relay cropping maintains continuous ground canopy cover, capturing sunlight during transition windows between seasons.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A36",
+                "difficulty": "hard",
+                "prompt": "Why are synthetic nitrogen fertilizers like urea associated with soil acidification under continuous application?",
+                "options": [
+                  "A. Urea turns into battery acid",
+                  "B. Microbial nitrification of ammonium ions (NH4+) into nitrate releases hydrogen ions (H+), lowering soil pH over time",
+                  "C. Urea evaporates all soil calcium",
+                  "D. Urea stops water infiltration"
+                ],
+                "correctAnswer": "B. Microbial nitrification of ammonium ions (NH4+) into nitrate releases hydrogen ions (H+), lowering soil pH over time",
+                "hint": "Nitrification of ammonium-based fertilizers produces free hydrogen ions, gradually lowering soil pH if unbuffered.",
+                "workedSolution": "Nitrification of ammonium-based fertilizers produces free hydrogen ions, gradually lowering soil pH if unbuffered.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A37",
+                "difficulty": "hard",
+                "prompt": "What is the primary management reason for separating farm business accounts from personal household finances?",
+                "options": [
+                  "A. To hide personal spending from family members",
+                  "B. To ensure business cash is not diverted to household costs, allowing clear evaluation of true farm profitability",
+                  "C. Because banks ban family members from visiting farms",
+                  "D. It eliminates the need to pay for labor"
+                ],
+                "correctAnswer": "B. To ensure business cash is not diverted to household costs, allowing clear evaluation of true farm profitability",
+                "hint": "Separating accounts prevents personal expenses from distorting farm financial records, ensuring accurate profit analysis.",
+                "workedSolution": "Separating accounts prevents personal expenses from distorting farm financial records, ensuring accurate profit analysis.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A38",
+                "difficulty": "hard",
+                "prompt": "How does rotational green manuring with Sesbania rostrata enhance subsequent lowland rice yields in paddy fields?",
+                "options": [
+                  "A. Sesbania stops weeds from floating",
+                  "B. Its stem and root nodules fix nitrogen in waterlogged conditions, adding substantial organic biomass that mineralizes into ammonium in flooded soils",
+                  "C. Sesbania turns paddy water into fresh milk",
+                  "D. It absorbs all water from the paddy"
+                ],
+                "correctAnswer": "B. Its stem and root nodules fix nitrogen in waterlogged conditions, adding substantial organic biomass that mineralizes into ammonium in flooded soils",
+                "hint": "*Sesbania* fixes nitrogen through stem and root nodules in flooded soils, releasing available ammonium for rice.",
+                "workedSolution": "*Sesbania* fixes nitrogen through stem and root nodules in flooded soils, releasing available ammonium for rice.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A39",
+                "difficulty": "hard",
+                "prompt": "Why does a farm enterprise with a high debt-to-asset ratio face high financial vulnerability during drought years?",
+                "options": [
+                  "A. Debt causes drought to last longer",
+                  "B. Fixed debt payments must be serviced regardless of yield; crop failures eliminate operating revenue, risking bankruptcy",
+                  "C. Banks take the rain away",
+                  "D. High debt dissolves the soil"
+                ],
+                "correctAnswer": "B. Fixed debt payments must be serviced regardless of yield; crop failures eliminate operating revenue, risking bankruptcy",
+                "hint": "High debt creates fixed financial obligations that can force foreclosure when drought eliminates seasonal harvest revenues.",
+                "workedSolution": "High debt creates fixed financial obligations that can force foreclosure when drought eliminates seasonal harvest revenues.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A40",
+                "difficulty": "hard",
+                "prompt": "What is the primary agronomic benefit of intercropping maize with a climbing bean rather than a bush bean?",
+                "options": [
+                  "A. Climbing beans use the stiff maize stalk for structural support, utilizing vertical canopy space without needing wooden stakes",
+                  "B. Climbing beans produce no roots",
+                  "C. Bush beans require more rain",
+                  "D. Climbing beans turn maize into a legume"
+                ],
+                "correctAnswer": "A. Climbing beans use the stiff maize stalk for structural support, utilizing vertical canopy space without needing wooden stakes",
+                "hint": "Stiff maize stalks provide natural trellising for climbing beans, maximizing vertical canopy efficiency without staking costs.",
+                "workedSolution": "Stiff maize stalks provide natural trellising for climbing beans, maximizing vertical canopy efficiency without staking costs.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A41",
+                "difficulty": "hard",
+                "prompt": "Why is the application of raw, uncomposted municipal solid waste hazardous on vegetable farms?",
+                "options": [
+                  "A. Waste contains no plant nutrients",
+                  "B. Uncomposted waste may introduce heavy metals, glass splinters, and enteric human pathogens like Salmonella onto leafy vegetables",
+                  "C. Municipal waste turns vegetables into plastic",
+                  "D. Waste cools the soil to freezing"
+                ],
+                "correctAnswer": "B. Uncomposted waste may introduce heavy metals, glass splinters, and enteric human pathogens like Salmonella onto leafy vegetables",
+                "hint": "Raw waste can contaminate fresh vegetables with human pathogens, toxic residues, and sharp physical debris.",
+                "workedSolution": "Raw waste can contaminate fresh vegetables with human pathogens, toxic residues, and sharp physical debris.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A42",
+                "difficulty": "hard",
+                "prompt": "How does calculating the Opportunity Cost of farm capital guide agricultural investment decisions?",
+                "options": [
+                  "A. It evaluates the financial return that was sacrificed by choosing one farm enterprise over the next best alternative",
+                  "B. It records the cost of buying fertilizer only",
+                  "C. It measures how long a tractor can run",
+                  "D. It guarantees zero risk in farming"
+                ],
+                "correctAnswer": "A. It evaluates the financial return that was sacrificed by choosing one farm enterprise over the next best alternative",
+                "hint": "Opportunity cost quantifies the potential returns forgone from the best alternative use of money or land.",
+                "workedSolution": "Opportunity cost quantifies the potential returns forgone from the best alternative use of money or land.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A43",
+                "difficulty": "hard",
+                "prompt": "Why do organic farming systems experience less soil erosion during extreme storm events than conventional monoculture fields?",
+                "options": [
+                  "A. Organic farms are always built on flat tables",
+                  "B. Higher soil organic matter improves crumb structure, water infiltration, and surface cover, reducing runoff velocity",
+                  "C. Rain avoids falling on organic farms",
+                  "D. Organic crops grow without water"
+                ],
+                "correctAnswer": "B. Higher soil organic matter improves crumb structure, water infiltration, and surface cover, reducing runoff velocity",
+                "hint": "Higher organic matter content and continuous cover enhance soil infiltration, reducing runoff and particle detachment.",
+                "workedSolution": "Higher organic matter content and continuous cover enhance soil infiltration, reducing runoff and particle detachment.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A44",
+                "difficulty": "hard",
+                "prompt": "What causes the rapid decline of crop yields under continuous cropping in tropical rainforest soils when fertilizers are omitted?",
+                "options": [
+                  "A. Soil minerals turn into wood",
+                  "B. High heat and heavy rainfall rapidly oxidize thin organic matter and leach soluble base cations (Ca2+, Mg2+, K+) from the root zone",
+                  "C. Forest trees re-grow underground",
+                  "D. Crops stop absorbing sunlight"
+                ],
+                "correctAnswer": "B. High heat and heavy rainfall rapidly oxidize thin organic matter and leach soluble base cations (Ca2+, Mg2+, K+) from the root zone",
+                "hint": "Warm, humid conditions speed up organic matter oxidation, while heavy rainfall leaches base cations from the upper soil.",
+                "workedSolution": "Warm, humid conditions speed up organic matter oxidation, while heavy rainfall leaches base cations from the upper soil.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A45",
+                "difficulty": "hard",
+                "prompt": "Why is crop diversification through mixed farming considered an effective climate change adaptation strategy?",
+                "options": [
+                  "A. It stops global warming immediately",
+                  "B. Multiple crop varieties and livestock species respond differently to weather stresses, reducing total farm failure under climate extremes",
+                  "C. Diversified farms produce no greenhouse gases",
+                  "D. It allows farmers to live without rain"
+                ],
+                "correctAnswer": "B. Multiple crop varieties and livestock species respond differently to weather stresses, reducing total farm failure under climate extremes",
+                "hint": "Multi-species production spreads climate risk; diverse crops and livestock have different drought and heat tolerances.",
+                "workedSolution": "Multi-species production spreads climate risk; diverse crops and livestock have different drought and heat tolerances.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A46",
+                "difficulty": "hard",
+                "prompt": "How does the inclusion of a multi-year grass-clover ley in a crop rotation rebuild depleted soil structure?",
+                "options": [
+                  "A. Grass roots freeze the subsoil",
+                  "B. Extensive fibrous grass roots and microbial mycorrhizae produce glomalin and humic glues that aggregate soil particles into stable crumbs",
+                  "C. Clover leaves turn into rock",
+                  "D. Grazing animals remove all nutrients"
+                ],
+                "correctAnswer": "B. Extensive fibrous grass roots and microbial mycorrhizae produce glomalin and humic glues that aggregate soil particles into stable crumbs",
+                "hint": "Fibrous grass roots and fungal mycorrhizae produce binding agents that aggregate loose soil into stable crumb structures.",
+                "workedSolution": "Fibrous grass roots and fungal mycorrhizae produce binding agents that aggregate loose soil into stable crumb structures.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A47",
+                "difficulty": "hard",
+                "prompt": "What is the primary financial risk of relying exclusively on hired labor without keeping labor productivity records on a large farm?",
+                "options": [
+                  "A. Workers will turn into farmers",
+                  "B. Labor costs can escalate unchecked, and low task completion rates can turn expected enterprise profits into operating losses",
+                  "C. Labor records are required to buy seeds",
+                  "D. Farm machines refuse to work with hired labor"
+                ],
+                "correctAnswer": "B. Labor costs can escalate unchecked, and low task completion rates can turn expected enterprise profits into operating losses",
+                "hint": "Unmonitored labor can lead to wage inflation, wasted person-hours, and unmanaged production expenses.",
+                "workedSolution": "Unmonitored labor can lead to wage inflation, wasted person-hours, and unmanaged production expenses.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A48",
+                "difficulty": "hard",
+                "prompt": "Why do biological pest management strategies in organic farming focus on 'pest suppression' rather than 'total pest eradication'?",
+                "options": [
+                  "A. Organic farmers like having pests in their food",
+                  "B. Maintaining a low pest population provides a necessary food source to keep beneficial predator populations alive and active in the field",
+                  "C. Eradication of pests is forbidden by international trade laws",
+                  "D. Pests cannot be killed by any biological agent"
+                ],
+                "correctAnswer": "B. Maintaining a low pest population provides a necessary food source to keep beneficial predator populations alive and active in the field",
+                "hint": "Maintaining low pest levels sustains resident beneficial predator populations, ensuring continuous biological control.",
+                "workedSolution": "Maintaining low pest levels sustains resident beneficial predator populations, ensuring continuous biological control.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A49",
+                "difficulty": "hard",
+                "prompt": "How does the strategic integration of honeybees (apiculture) into a mixed cropping fruit orchard produce synergistic yields?",
+                "options": [
+                  "A. Bees eat fruit-boring caterpillars only",
+                  "B. Bees provide cross-pollination services that increase fruit set and quality, while collecting nectar to produce honey and wax income",
+                  "C. Bees shade fruit trees from intense sunlight",
+                  "D. Honeybees produce plant fertilizers"
+                ],
+                "correctAnswer": "B. Bees provide cross-pollination services that increase fruit set and quality, while collecting nectar to produce honey and wax income",
+                "hint": "Bees enhance orchard pollination, raising fruit yields and quality while providing honey as a secondary revenue stream.",
+                "workedSolution": "Bees enhance orchard pollination, raising fruit yields and quality while providing honey as a secondary revenue stream.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              },
+              {
+                "id": "B7_FARM_A50",
+                "difficulty": "hard",
+                "prompt": "Which combination of agricultural practices forms the core of Climate-Smart Conservation Agriculture (CA)?",
+                "options": [
+                  "A. Heavy annual plowing, continuous monoculture, and burning all crop residues",
+                  "B. Minimum soil disturbance (zero tillage), continuous permanent organic soil cover (mulch), and diversified crop rotations/associations",
+                  "C. Clearing virgin forests, relying on shifting cultivation, and abandoning farms",
+                  "D. Applying chemical fertilizers exclusively on bare, uncovered soil"
+                ],
+                "correctAnswer": "B. Minimum soil disturbance (zero tillage), continuous permanent organic soil cover (mulch), and diversified crop rotations/associations",
+                "hint": "Conservation Agriculture rests on three agronomic pillars: minimal mechanical soil disturbance, permanent organic soil cover, and diversified crop rotations.",
+                "workedSolution": "Conservation Agriculture rests on three agronomic pillars: minimal mechanical soil disturbance, permanent organic soil cover, and diversified crop rotations.",
+                "points": 1,
+                "learningCompetency": "B7.3.4.1",
+                "type": "objective"
+              }
+            ]
           }
-        ],
-        "practicePool": {
-          "low": [
-            {
-              "id": "q_b7_s10_1",
-              "difficulty": "low",
-              "prompt": "The farming practice of planting two or more different crops simultaneously on the same plot of land is termed:",
-              "options": [
-                "Monoculture",
-                "Mixed cropping (intercropping)",
-                "Pastoral nomadism",
-                "Continuous cropping"
-              ],
-              "correctAnswer": "Mixed cropping (intercropping)",
-              "hint": "Farmers often mix maize with beans.",
-              "workedSolution": "Mixed cropping (or intercropping) is the cultivation of two or more crop varieties simultaneously on the same field to maximize land use and reduce risk of total crop loss.",
-              "points": 1,
-              "learningCompetency": "B7.3.4.1",
-              "type": "objective"
-            }
-          ],
-          "medium": [
-            {
-              "id": "q_b7_s10_2",
-              "difficulty": "medium",
-              "prompt": "What is the primary difference between shifting cultivation and bush fallowing (land rotation)?",
-              "options": [
-                "In shifting cultivation, the farmer never plants crops",
-                "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
-                "Bush fallowing uses tractors while shifting cultivation uses airplanes",
-                "Shifting cultivation is only done in the desert"
-              ],
-              "correctAnswer": "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
-              "hint": "Consider whether the home/village relocates.",
-              "workedSolution": "Under shifting cultivation, the farmer relocates the entire household/homestead to a distant new site. In bush fallowing, the settlement is permanent, and the farmer rotates between surrounding plots.",
-              "points": 1,
-              "learningCompetency": "B7.3.4.1",
-              "type": "objective"
-            }
-          ],
-          "hard": []
-        }
-      },
+        },
       "b8": {
         "levelTitle": "Basic 8 (JHS 2) • Scientific Principles & Design of Crop Rotation Schemes",
         "summary": "Design 3-year and 4-year crop rotation schedules utilizing legumes, deep rooters, shallow feeders, and heavy extractors.",
@@ -45002,7 +47536,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
       }
     ]
   },
-  {
+    {
     "id": "b7_sci_strand3_farming_systems",
     "gradeLevel": "BS7",
     "strandNumber": 3,
@@ -45010,53 +47544,2478 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Farming Systems & Agro-Ecology (Crop Rotation, Mixed Farming & Organic Agriculture)",
     "order": 28,
     "notes": {
-      "summaryMarkdown": "### Farming Systems: Traditional Practices & Agro-Ecological Sustainability\n* **NaCCA Curriculum Code:** `B7.3.4.1`\n* **Core Competency:** Identify farming systems in Ghana, assess ecological sustainability, and evaluate land rotation.\n\n#### 1. Traditional Farming Archetypes\n* **Shifting Cultivation:** The farmer clears a patch of virgin forest by slash-and-burn, cultivates crops for 2-3 years until soil fertility declines, then abandons the land and relocates the entire homestead to clear a new forest area. Only feasible where human population density is very low and land is abundant.\n* **Land Rotation (Bush Fallowing):** The farmer clears a plot, crops it for a few seasons, and then leaves the land fallow for several years to regenerate natural vegetation and soil organic matter, while the farmer moves to another plot **without moving the settlement**.\n* **Mixed Cropping (Intercropping):** Cultivating two or more different crop species simultaneously on the same piece of land (e.g., maize intercropped with cowpea or cassava).\n  * *Advantages:* Insurance against total crop failure, diverse food supply, soil cover suppressing weeds, legumes fixing nitrogen for cereal companions.\n* **Monoculture (Continuous Cropping):** Growing a single crop species exclusively on the same plot season after season (e.g., commercial rice or sugarcane plantations).\n  * *Disadvantages:* Rapid depletion of specific soil nutrients, buildup of host-specific insect pests and soil diseases, high reliance on synthetic fertilizers and pesticides.",
-      "keyTerms": []
+      "summaryMarkdown": "# CARD 10: FARMING SYSTEMS & AGRO-ECOLOGY\n**Strand 3: Systems** | **Sub-Strand 4: Farming Systems**  \n**Grade Level:** Basic 7 (JHS 1) | **Content Standard:** `B7.3.4.1`  \n**Curriculum Indicators:** `B7.3.4.1.1`, `B7.3.4.1.2`, `B7.3.4.1.3`  \n**Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n\n---\n\n### Module 1: Introduction to Farming Systems & Extensive Land-Use Practices\nAn agricultural enterprise that organizes land, labor, tools, and technical inputs to cultivate crops, raise livestock, or operate both simultaneously in a coordinated, sustainable manner is defined as a **farming system**.\n\n#### Major Farming Systems in Ghana\n1. **Shifting Cultivation**\n2. **Land Rotation (Bush Fallowing)**\n3. **Crop Rotation**\n4. **Mixed Cropping (Intercropping)**\n5. **Mixed Farming**\n6. **Organic Farming**\n\n#### Comparative Analysis of Extensive Systems\n* **Shifting Cultivation:** An ancient, extensive subsistence practice where a farmer clears virgin or fallow forest by slash-and-burn, cultivates crops for 2–3 years until natural fertility declines, and then abandons both the farm plot and the domestic settlement to relocate the entire family homestead to a fresh, uncultivated area.\n  * *Advantages:* Soil regenerates naturally during prolonged bush fallows; requires minimal or no purchased synthetic fertilizers; utilizes fertile virgin forest soils.\n  * *Disadvantages:* Demographically unsustainable under high modern population growth and land pressure; requires recurrent, labor-intensive rebuilding of family dwellings; accelerates deforestation and exposes bare abandoned soils to severe erosion; produces low yield per hectare.\n* **Land Rotation (Bush Fallowing):** An extensive system where the farmer cultivates a plot until fertility drops, then moves cultivation to an adjacent fallow parcel **while keeping the family settlement and residential home permanently fixed** in one location.\n  * *Advantages:* Fallowed land regains fertility naturally through biological rest; breaks cycles of host-specific pests and pathogens; avoids domestic relocation disruption and expense.\n  * *Disadvantages:* Clearing fresh bush plots drives forest degradation; impractical in densely populated urban/peri-urban belts; discourages capital-intensive investment in permanent farm infrastructure, irrigation, and mechanization.\n\n#### Core Distinctions: Shifting Cultivation vs. Land Rotation\n\n| Comparative Metric | Shifting Cultivation | Land Rotation |\n| :--- | :--- | :--- |\n| **Domestic Settlement** | **Temporary / Migratory**: Family home moves along with the new farm plot. | **Permanent / Fixed**: Farmer remains in a fixed home while shifting field plots. |\n| **Land Pressure Tolerance** | Extremely low; requires vast tracts of unoccupied virgin land. | Moderate; operates within communally owned boundaries or fragmented family holdings. |\n| **Labor Allocation** | High labor required to clear virgin forests and rebuild houses repeatedly. | High labor required to clear bush fallows, but no house-building labor. |\n| **Environmental Impact** | Severe deforestation, loss of primary biodiversity, and accelerated erosion on abandoned soil. | Forest degradation and fragmentation, but contained within a defined agricultural zone. |\n\n---\n\n### Module 2: Crop Rotation: Principles, Rotational Plan & Soil Dynamics\n**Crop rotation** is the agronomic practice of growing a planned sequence of dissimilar crops on the same piece of land across successive planting seasons or years.\n\n#### Underlying Agronomic Principles\n1. **Alternation of Rooting Depths:** Deep-rooting crops (carrots, cassava, pigeon peas) must be followed by shallow-rooting crops (maize, onions, lettuce) so nutrients are drawn from different soil layers without exhausting a single zone.\n2. **Alternation of Nutrient Demands:** Heavy gross feeders that consume high levels of nitrogen and potassium (tomatoes, maize, yams) must be followed by light feeders (leafy vegetables) or soil replenishers.\n3. **Exclusion of Consecutive Botanical Families:** Crops belonging to the same botanical family (e.g. Solanaceae: tomato, pepper, eggplant; or Poaceae: maize, rice, sorghum) must never follow each other on the same bed to prevent family-specific insect pests and soil pathogens from multiplying unchecked.\n4. **Compulsory Inclusion of Legumes:** Every rotational cycle must include nitrogen-fixing leguminous cover crops (cowpeas, groundnuts, soybeans, Mucuna).\n\n#### Why Legumes Are Vital to Rotational Health\n* **Symbiotic Nitrogen Fixation:** Legume root nodules house symbiotic *Rhizobium* bacteria that reduce atmospheric dinitrogen ($N_2$) into plant-absorbable ammonium and nitrates ($NO_3^-$), naturally replenishing soil fertility.\n* **Soil Structural Amelioration:** Decaying root residues increase soil organic matter, porosity, and aggregate stability.\n* **Living Mulch:** Dense foliage shades the soil surface, suppressing weed germination and shielding topsoil from raindrop impact erosion.\n* **Cost Efficiency:** Reduces household expenditure on commercial synthetic nitrogen fertilizers.\n\n#### 3-Year Balanced Crop Rotation Vector Plan\n<svg width=\"760\" height=\"440\" viewBox=\"0 0 760 440\" xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"bedBack\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#f8fafc\"/><stop offset=\"100%\" stop-color=\"#f1f5f9\"/></linearGradient><marker id=\"shiftArr\" markerWidth=\"7\" markerHeight=\"7\" refX=\"5\" refY=\"3.5\" orient=\"auto\"><polygon points=\"0 0, 7 3.5, 0 7\" fill=\"#0284c7\"/></marker></defs><rect width=\"760\" height=\"440\" rx=\"14\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"28\" font-family=\"sans-serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">3-YEAR BALANCED CROP ROTATION DESIGN</text><text x=\"380\" y=\"46\" font-family=\"sans-serif\" font-size=\"11\" fill=\"#64748b\" text-anchor=\"middle\">Systematic Plot Succession: Heavy Feeder (Tomato) → Soil Replenisher (Legume) → Deep Root Feeder (Carrot)</text><rect x=\"40\" y=\"65\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"122\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 1</text><g transform=\"translate(130, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 1: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g><g transform=\"translate(330, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 2: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><g transform=\"translate(530, 75)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 3: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><path d=\"M 215 170 L 215 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 415 170 L 415 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 615 170 L 615 185\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><rect x=\"40\" y=\"190\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"247\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 2</text><g transform=\"translate(130, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 1: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><g transform=\"translate(330, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 2: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g><g transform=\"translate(530, 200)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 3: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><path d=\"M 215 295 L 215 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 415 295 L 415 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><path d=\"M 615 295 L 615 310\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#shiftArr)\"/><rect x=\"40\" y=\"315\" width=\"680\" height=\"105\" rx=\"8\" fill=\"url(#bedBack)\" stroke=\"#94a3b8\" stroke-width=\"1\"/><text x=\"55\" y=\"372\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1e293b\">YEAR 3</text><g transform=\"translate(130, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><circle cx=\"95\" cy=\"32\" r=\"8\" fill=\"#16a34a\"/><line x1=\"85\" y1=\"35\" x2=\"85\" y2=\"48\" stroke=\"#15803d\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Bed 1: Legume</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#14532d\" text-anchor=\"middle\">(Cowpea / Nitrogen Fixer)</text></g><g transform=\"translate(330, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#ffedd5\" stroke=\"#f97316\" stroke-width=\"1.5\"/><polygon points=\"85,45 78,22 92,22\" fill=\"#ea580c\"/><path d=\"M 85 22 L 85 14 M 81 16 L 89 16\" stroke=\"#15803d\" stroke-width=\"1.5\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#c2410c\" text-anchor=\"middle\">Bed 2: Carrot</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7c2d12\" text-anchor=\"middle\">(Deep Feeder / Root)</text></g><g transform=\"translate(530, 325)\"><rect width=\"170\" height=\"85\" rx=\"6\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><circle cx=\"85\" cy=\"35\" r=\"14\" fill=\"#dc2626\"/><path d=\"M 85 21 L 85 15 M 81 18 L 89 18\" stroke=\"#166534\" stroke-width=\"2\"/><text x=\"85\" y=\"60\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Bed 3: Tomato</text><text x=\"85\" y=\"73\" font-family=\"sans-serif\" font-size=\"9\" fill=\"#7f1d1d\" text-anchor=\"middle\">(Heavy Feeder / Fruit)</text></g></svg>\n\n---\n\n### Module 3: Integrated & Ecological Systems (Mixed Cropping, Mixed Farming & Organic Agriculture)\n\n#### 1. Mixed Cropping (Intercropping)\nThe practice of growing two or more different crop species simultaneously on the same piece of land during the same growing season (e.g., maize intercropped with cowpea or cassava).\n* *Advantages:* Provides food security and diversified harvests; reduces pest/disease spread because companion plants act as physical barriers; improves soil cover and weed suppression.\n* *Disadvantages:* Crops compete directly for light, water, and nutrients; improper plant spacing causes taller crops to shade shorter crops; makes tractor mechanization and herbicide application difficult.\n\n#### 2. Mixed Farming\nAn integrated agricultural system where crop cultivation and livestock rearing are conducted together on the same farm holding.\n* *Advantages:* Establishes a zero-waste nutrient cycle (crop residues and stover feed livestock, while animal dung and bedding produce farmyard manure to fertilize crop fields); diversifies household income across meat, milk, eggs, and grains; buffers against market price shocks.\n* *Disadvantages:* Demands diverse management skills across agronomy and veterinary care; labor is divided between crops and animals; animals can stray and destroy standing crops if fencing is inadequate.\n\n#### 3. Organic Farming\nAn ecological agricultural system that produces food without synthetic chemical fertilizers, artificial pesticides, genetically modified organisms (GMOs), or prophylactic antibiotics.\n* *Advantages:* Produces food free from synthetic chemical residues; commands premium pricing in certified high-value export markets; protects soil biodiversity, earthworms, and water bodies from chemical runoff.\n* *Disadvantages:* Highly labor-intensive (manual weeding and composting); requires large volumes of organic compost and manures; yields are often lower during the initial 2–3 year biological transition period.\n\n#### Comprehensive Comparison of Farming Systems\n\n| Farming System | Land & Settlement Dynamics | Core Enterprise Focus | Primary Soil Fertility Mechanism | Key Operational Constraint |\n| :--- | :--- | :--- | :--- | :--- |\n| **Shifting Cultivation** | Both farm plot and family settlement relocate to new areas. | Subsistence food crops. | Long natural bush fallowing. | Impractical under high population density and land scarcity. |\n| **Land Rotation** | Farm plots shift while the family home stays in one place. | Subsistence and local cash crops. | Natural bush fallowing. | Causes deforestation and discourages long-term farm investment. |\n| **Crop Rotation** | Permanent land cultivation on fixed, partitioned beds. | Planned sequence of dissimilar crops. | Alternating nutrient demands and nitrogen-fixing legumes. | Requires technical planning and careful record-keeping. |\n| **Mixed Cropping** | Cultivated on a single field during the same season. | Two or more crop species interplanted simultaneously. | Legume intercropping and living mulch cover. | Crop competition for light, water, and nutrients; difficult to mechanize. |\n| **Mixed Farming** | Permanent farm holding with crop fields and animal pens. | Crop cultivation combined with livestock rearing. | Farmyard manure recycling and crop residue feeding. | Demands diverse management skills; risk of livestock crop damage. |\n| **Organic Farming** | Permanent, ecologically managed farm plots. | Chemical-free crops and animals. | Compost, green manures, animal dung, and biological pest control. | Highly labor-intensive; difficult to scale up to large industrial acreage. |\n\n---\n\n### Module 4: Farm Record-Keeping & Socio-Economic Importance of Farming Systems\n\n#### Importance of Farm Records\n* **Financial Management & Profitability:** Tracks input costs (seeds, labor, fuel) against gross sales to calculate net profit or loss.\n* **Credit & Loan Acquisition:** Financial institutions require verified production and cash-flow records as proof of creditworthiness before granting agricultural loans.\n* **Tax Assessment:** Provides clear documentation of net earnings for fair and accurate income tax assessment.\n* **Operational Planning & Budgeting:** Forecasts seasonal capital needs and input requirements.\n* **Performance Tracking:** Evaluates which crop varieties and animal breeds deliver the highest feed conversion and yields.\n\n#### Macroeconomic Role of Farming Systems\n* **Food Security & Rural Livelihoods:** Nourishes farm families and urban populations.\n* **Employment Generation:** Provides direct agricultural and downstream value-chain jobs in processing, logistics, and retail.\n* **National GDP Contribution:** Contributes a major share of the Gross Domestic Product across West African economies.\n* **Industrial Feedstocks:** Supplies essential raw materials (cocoa beans, cotton lint, oil palm, rubber, tobacco) to manufacturing industries.\n* **Foreign Exchange Earnings:** High-value agricultural exports (cocoa, cashew, shea butter, certified organic fruits) generate foreign reserves that stabilize national trade balances.",
+      "keyTerms": [
+        "Farming System",
+        "Shifting Cultivation",
+        "Land Rotation",
+        "Bush Fallowing",
+        "Crop Rotation",
+        "Mixed Cropping",
+        "Intercropping",
+        "Mixed Farming",
+        "Organic Farming",
+        "Biological Nitrogen Fixation",
+        "Rhizobium",
+        "Legume",
+        "Heavy Feeder",
+        "Light Feeder",
+        "Deep-Rooted Crop",
+        "Shallow-Rooted Crop",
+        "Cover Crop",
+        "Land Equivalent Ratio (LER)",
+        "Farmyard Manure",
+        "Compost",
+        "Biological Pest Control",
+        "Farm Inventory",
+        "Production Record",
+        "Profit and Loss Statement",
+        "Balance Sheet",
+        "Cash-Flow Budget",
+        "Depreciation",
+        "Climate-Smart Conservation Agriculture"
+      ]
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s10_1",
-        "questionPrompt": "Shifting cultivation was widely practiced by traditional Ghanaian farmers centuries ago. Explain two reasons why shifting cultivation is no longer sustainable or practical in modern Ghana.",
-        "stepByStepSolution": "Reason 1: Rapid Population Growth and Land Pressure — Rapid population growth has increased the demand for arable land, residential housing, and commercial infrastructure. Farmers no longer have access to vast tracts of uncultivated forest land to abandon and relocate settlements.\nReason 2: Severe Deforestation and Climate Change — Repeatedly burning virgin forest accelerates environmental degradation, destroys biodiversity, causes widespread loss of carbon sinks, and exacerbates seasonal drought.\nConclusion: Farmers must transition to permanent, intensive soil management systems such as crop rotation, agroforestry, and organic farming.",
-        "examinerTip": "Examiner Tip: State the primary driver: high population density leading to land scarcity."
+        "id": "WE_B7_FARM_01",
+        "title": "3-Year Crop Rotation Plot Planning & Agronomic Justification",
+        "problem": "A smallholder vegetable farmer in the Greater Accra Region has demarcated three equal garden beds (Bed 1, Bed 2, Bed 3). The farmer wishes to cultivate tomato, cowpea, and carrot across a 3-year cycle. Design a balanced 3-year rotational schedule for the three beds and provide four agronomic justifications explaining why this sequence prevents soil exhaustion and disease accumulation.",
+        "questionPrompt": "A smallholder vegetable farmer in the Greater Accra Region has demarcated three equal garden beds (Bed 1, Bed 2, Bed 3). The farmer wishes to cultivate tomato, cowpea, and carrot across a 3-year cycle. Design a balanced 3-year rotational schedule for the three beds and provide four agronomic justifications explaining why this sequence prevents soil exhaustion and disease accumulation.",
+        "steps": [
+          "Step 1: Assign crops according to agronomic class: Tomato (Heavy feeder / Solanaceae), Cowpea (Nitrogen-fixing legume / Fabaceae), Carrot (Deep-rooted feeder / Apiaceae).",
+          "Step 2: Construct the Year 1 allocation: Bed 1 = Tomato, Bed 2 = Cowpea, Bed 3 = Carrot.",
+          "Step 3: Rotate crops for Year 2: Bed 1 = Carrot, Bed 2 = Tomato, Bed 3 = Cowpea.",
+          "Step 4: Rotate crops for Year 3: Bed 1 = Cowpea, Bed 2 = Carrot, Bed 3 = Tomato.",
+          "Step 5: Justification 1 (Rooting Depths): Deep-rooted carrots feed from the subsoil, while tomatoes and cowpeas feed from the topsoil, preventing depletion of a single horizon.",
+          "Step 6: Justification 2 (Nutrient Demands): Heavy nutrient-demanding tomatoes are succeeded by soil-replenishing cowpeas whose Rhizobium root nodules fix atmospheric nitrogen.",
+          "Step 7: Justification 3 (Disease Interruption): Tomato (Solanaceae), cowpea (Fabaceae), and carrot (Apiaceae) belong to completely distinct botanical families, breaking the life cycle of family-specific soil pathogens and pests like root-knot nematodes.",
+          "Step 8: Justification 4 (Soil Structure): Fibrous root channels and organic legume mulch improve soil aeration, infiltration, and organic matter retention across all three beds."
+        ],
+        "stepByStepSolution": "Step 1: Assign crops according to agronomic class: Tomato (Heavy feeder / Solanaceae), Cowpea (Nitrogen-fixing legume / Fabaceae), Carrot (Deep-rooted feeder / Apiaceae).\n\nStep 2: Construct the Year 1 allocation: Bed 1 = Tomato, Bed 2 = Cowpea, Bed 3 = Carrot.\n\nStep 3: Rotate crops for Year 2: Bed 1 = Carrot, Bed 2 = Tomato, Bed 3 = Cowpea.\n\nStep 4: Rotate crops for Year 3: Bed 1 = Cowpea, Bed 2 = Carrot, Bed 3 = Tomato.\n\nStep 5: Justification 1 (Rooting Depths): Deep-rooted carrots feed from the subsoil, while tomatoes and cowpeas feed from the topsoil, preventing depletion of a single horizon.\n\nStep 6: Justification 2 (Nutrient Demands): Heavy nutrient-demanding tomatoes are succeeded by soil-replenishing cowpeas whose Rhizobium root nodules fix atmospheric nitrogen.\n\nStep 7: Justification 3 (Disease Interruption): Tomato (Solanaceae), cowpea (Fabaceae), and carrot (Apiaceae) belong to completely distinct botanical families, breaking the life cycle of family-specific soil pathogens and pests like root-knot nematodes.\n\nStep 8: Justification 4 (Soil Structure): Fibrous root channels and organic legume mulch improve soil aeration, infiltration, and organic matter retention across all three beds.",
+        "finalAnswer": "Rotation Cycle: Year 1 (Bed 1: Tomato, Bed 2: Cowpea, Bed 3: Carrot) → Year 2 (Bed 1: Carrot, Bed 2: Tomato, Bed 3: Cowpea) → Year 3 (Bed 1: Cowpea, Bed 2: Carrot, Bed 3: Tomato). Four rules fulfilled: alternating root depths, balancing nutrient demands, botanical family exclusion, and mandatory legume nitrogen fixation.",
+        "examinerTip": "Rotation Cycle: Year 1 (Bed 1: Tomato, Bed 2: Cowpea, Bed 3: Carrot) → Year 2 (Bed 1: Carrot, Bed 2: Tomato, Bed 3: Cowpea) → Year 3 (Bed 1: Cowpea, Bed 2: Carrot, Bed 3: Tomato). Four rules fulfilled: alternating root depths, balancing nutrient demands, botanical family exclusion, and mandatory legume nitrogen fixation."
+      },
+      {
+        "id": "WE_B7_FARM_02",
+        "title": "Comparative Agronomic & Economic Evaluation of Farming Systems",
+        "problem": "A peri-urban farming cooperative in Ghana is deciding between practicing traditional Land Rotation, intensive Mixed Farming, or certified Organic Farming. Analyze the three systems across: (1) Land tenure and area requirements, (2) Soil fertility maintenance mechanism, (3) Key economic risk or operational limitation, and (4) Suitability for high-population peri-urban belts.",
+        "questionPrompt": "A peri-urban farming cooperative in Ghana is deciding between practicing traditional Land Rotation, intensive Mixed Farming, or certified Organic Farming. Analyze the three systems across: (1) Land tenure and area requirements, (2) Soil fertility maintenance mechanism, (3) Key economic risk or operational limitation, and (4) Suitability for high-population peri-urban belts.",
+        "steps": [
+          "Step 1: Land Rotation requires large expanses of land to allow 5-7 years of fallowing; fertility is restored naturally via wild bush regeneration; risk is land scarcity and deforestation; completely unsuited for peri-urban areas due to urban sprawl and high land prices.",
+          "Step 2: Mixed Farming operates on a permanent fixed farm holding; fertility is maintained via zero-waste nutrient recycling (crop stover feeds cattle/goats, animal dung fertilizes crop fields); risk is divided labor and potential crop damage by wandering livestock; highly suited for peri-urban zones as diversified milk, meat, and vegetables serve immediate urban market demand.",
+          "Step 3: Organic Farming operates on permanent, ecologically managed plots; fertility is sustained through compost, green manures, and biological controls without synthetic chemicals; risk is high manual labor requirements and early transitional yield drops; well suited for peri-urban zones with access to premium, health-conscious urban consumer markets.",
+          "Step 4: Synthesis: Land rotation is obsolete near cities, whereas mixed farming and organic farming represent viable, sustainable commercial pathways."
+        ],
+        "stepByStepSolution": "Step 1: Land Rotation requires large expanses of land to allow 5-7 years of fallowing; fertility is restored naturally via wild bush regeneration; risk is land scarcity and deforestation; completely unsuited for peri-urban areas due to urban sprawl and high land prices.\n\nStep 2: Mixed Farming operates on a permanent fixed farm holding; fertility is maintained via zero-waste nutrient recycling (crop stover feeds cattle/goats, animal dung fertilizes crop fields); risk is divided labor and potential crop damage by wandering livestock; highly suited for peri-urban zones as diversified milk, meat, and vegetables serve immediate urban market demand.\n\nStep 3: Organic Farming operates on permanent, ecologically managed plots; fertility is sustained through compost, green manures, and biological controls without synthetic chemicals; risk is high manual labor requirements and early transitional yield drops; well suited for peri-urban zones with access to premium, health-conscious urban consumer markets.\n\nStep 4: Synthesis: Land rotation is obsolete near cities, whereas mixed farming and organic farming represent viable, sustainable commercial pathways.",
+        "finalAnswer": "Conclusion: Land rotation is non-viable in peri-urban belts due to land scarcity; Mixed farming offers the highest operational synergy through closed-loop nutrient cycling; Organic farming delivers premium economic returns in high-value urban markets.",
+        "examinerTip": "Conclusion: Land rotation is non-viable in peri-urban belts due to land scarcity; Mixed farming offers the highest operational synergy through closed-loop nutrient cycling; Organic farming delivers premium economic returns in high-value urban markets."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s10_1",
+        "id": "B7_FARM_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The farming practice of planting two or more different crops simultaneously on the same plot of land is termed:",
+        "prompt": "An agricultural enterprise that organizes land, labor, and capital to produce crops, animals, or both is a:",
         "options": [
-          "Monoculture",
-          "Mixed cropping (intercropping)",
-          "Pastoral nomadism",
-          "Continuous cropping"
+          "A. Soil system",
+          "B. Farming system",
+          "C. Forestry system",
+          "D. Land tenure"
         ],
-        "correctAnswer": "Mixed cropping (intercropping)",
-        "hint": "Farmers often mix maize with beans.",
-        "workedSolution": "Mixed cropping (or intercropping) is the cultivation of two or more crop varieties simultaneously on the same field to maximize land use and reduce risk of total crop loss.",
+        "correctAnswer": "B. Farming system",
+        "hint": "A farming system is an agricultural business arrangement managing crops, livestock, or a mixture of both to produce food and income.",
+        "workedSolution": "A farming system is an agricultural business arrangement managing crops, livestock, or a mixture of both to produce food and income.",
         "points": 1
       },
       {
-        "id": "q_b7_s10_2",
+        "id": "B7_FARM_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In which farming system does a farmer cultivate a plot until its fertility falls, then abandon both the farm and the home to relocate elsewhere?",
+        "options": [
+          "A. Crop rotation",
+          "B. Shifting cultivation",
+          "C. Mixed farming",
+          "D. Organic farming"
+        ],
+        "correctAnswer": "B. Shifting cultivation",
+        "hint": "In shifting cultivation, the farmer moves both the farm plot and the family settlement when soil fertility declines.",
+        "workedSolution": "In shifting cultivation, the farmer moves both the farm plot and the family settlement when soil fertility declines.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In land rotation, what happens when the cultivated plot loses its fertility?",
+        "options": [
+          "A. The farmer moves to a new town with his family",
+          "B. The farmer clears a new plot while keeping his family home in the same place",
+          "C. The farmer stops farming permanently",
+          "D. The farmer sells all his land"
+        ],
+        "correctAnswer": "B. The farmer clears a new plot while keeping his family home in the same place",
+        "hint": "In land rotation, cultivation shifts to a new piece of land, but the domestic dwelling and settlement remain permanent.",
+        "workedSolution": "In land rotation, cultivation shifts to a new piece of land, but the domestic dwelling and settlement remain permanent.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The practice of growing a planned sequence of different crops on the same piece of land in successive seasons is called:",
+        "options": [
+          "A. Shifting cultivation",
+          "B. Crop rotation",
+          "C. Mixed farming",
+          "D. Pastoral farming"
+        ],
+        "correctAnswer": "B. Crop rotation",
+        "hint": "Crop rotation is growing dissimilar crops in a structured sequence on the same land across successive seasons.",
+        "workedSolution": "Crop rotation is growing dissimilar crops in a structured sequence on the same land across successive seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Growing two or more different crops simultaneously on the same piece of land during the same season is:",
+        "options": [
+          "A. Monoculture",
+          "B. Mixed cropping (intercropping)",
+          "C. Shifting cultivation",
+          "D. Land rotation"
+        ],
+        "correctAnswer": "B. Mixed cropping (intercropping)",
+        "hint": "Mixed cropping, or intercropping, is planting multiple crop species on the same field at the same time.",
+        "workedSolution": "Mixed cropping, or intercropping, is planting multiple crop species on the same field at the same time.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A farming system where crop cultivation and livestock rearing are integrated on the same farm is called:",
+        "options": [
+          "A. Mixed cropping",
+          "B. Mixed farming",
+          "C. Crop rotation",
+          "D. Shifting cultivation"
+        ],
+        "correctAnswer": "B. Mixed farming",
+        "hint": "Mixed farming combines crop production with animal husbandry on one farm.",
+        "workedSolution": "Mixed farming combines crop production with animal husbandry on one farm.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Farming without synthetic chemical fertilizers, artificial pesticides, growth hormones, or GMOs is called:",
+        "options": [
+          "A. Mixed farming",
+          "B. Organic farming",
+          "C. Shifting cultivation",
+          "D. Commercial cropping"
+        ],
+        "correctAnswer": "B. Organic farming",
+        "hint": "Organic farming produces food relying exclusively on natural inputs, manures, and biological pest controls.",
+        "workedSolution": "Organic farming produces food relying exclusively on natural inputs, manures, and biological pest controls.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a primary advantage of shifting cultivation for a resource-poor farmer?",
+        "options": [
+          "A. It requires expensive chemical inputs",
+          "B. Abandoned land regains fertility naturally through bush fallow at little to no cash cost",
+          "C. It uses large tractors and harvesters",
+          "D. It prevents land clearing"
+        ],
+        "correctAnswer": "B. Abandoned land regains fertility naturally through bush fallow at little to no cash cost",
+        "hint": "Under shifting cultivation, long natural fallowing restores soil fertility without requiring the farmer to buy synthetic fertilizers.",
+        "workedSolution": "Under shifting cultivation, long natural fallowing restores soil fertility without requiring the farmer to buy synthetic fertilizers.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why has shifting cultivation become difficult to practice in modern Ghana?",
+        "options": [
+          "A. People no longer eat crops",
+          "B. Rapid population growth and urbanization have created high pressure and scarcity of arable land",
+          "C. Rain no longer falls",
+          "D. Tools are no longer manufactured"
+        ],
+        "correctAnswer": "B. Rapid population growth and urbanization have created high pressure and scarcity of arable land",
+        "hint": "Rising population densities make extended fallow periods and frequent community relocations impossible.",
+        "workedSolution": "Rising population densities make extended fallow periods and frequent community relocations impossible.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the period during which land is left uncultivated to rest and regain natural fertility called?",
+        "options": [
+          "A. Harvest period",
+          "B. Fallow period",
+          "C. Planting season",
+          "D. Tillage period"
+        ],
+        "correctAnswer": "B. Fallow period",
+        "hint": "A fallow period allows natural biological processes and wild vegetation to regenerate depleted topsoil.",
+        "workedSolution": "A fallow period allows natural biological processes and wild vegetation to regenerate depleted topsoil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following crop types should be included in every crop rotation plan to add nitrogen to the soil?",
+        "options": [
+          "A. Tubers",
+          "B. Legumes",
+          "C. Cereals",
+          "D. Grasses"
+        ],
+        "correctAnswer": "B. Legumes",
+        "hint": "Legumes harbor root nodule bacteria that fix atmospheric nitrogen, replenishing soil fertility.",
+        "workedSolution": "Legumes harbor root nodule bacteria that fix atmospheric nitrogen, replenishing soil fertility.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a leguminous crop widely used in crop rotation?",
+        "options": [
+          "A. Cassava",
+          "B. Cowpea",
+          "C. Maize",
+          "D. Yam"
+        ],
+        "correctAnswer": "B. Cowpea",
+        "hint": "Cowpea is a leguminous plant capable of symbiotic nitrogen fixation.",
+        "workedSolution": "Cowpea is a leguminous plant capable of symbiotic nitrogen fixation.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a sound crop rotation plan, deep-rooted crops like carrots and cassava should be followed by:",
+        "options": [
+          "A. Other deep-rooted crops",
+          "B. Shallow-rooted crops like onions or lettuce",
+          "C. Tree crops",
+          "D. No crops at all"
+        ],
+        "correctAnswer": "B. Shallow-rooted crops like onions or lettuce",
+        "hint": "Alternating deep and shallow rooting depths ensures that nutrients are drawn from different soil profiles.",
+        "workedSolution": "Alternating deep and shallow rooting depths ensures that nutrients are drawn from different soil profiles.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why should crops from the same botanical family (e.g. tomato, pepper, and garden eggs) NOT follow one another in a rotation?",
+        "options": [
+          "A. They make the soil too cold",
+          "B. They share similar pests and soil-borne diseases, which would multiply in the soil",
+          "C. Their roots refuse to grow",
+          "D. They turn the soil into water"
+        ],
+        "correctAnswer": "B. They share similar pests and soil-borne diseases, which would multiply in the soil",
+        "hint": "Consecutive planting of crops from the same family allows family-specific pests and pathogens to accumulate.",
+        "workedSolution": "Consecutive planting of crops from the same family allows family-specific pests and pathogens to accumulate.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which crop is an example of a heavy feeder (consumes high levels of nutrients)?",
+        "options": [
+          "A. Tomato",
+          "B. Cowpea",
+          "C. Groundnut",
+          "D. Clover"
+        ],
+        "correctAnswer": "A. Tomato",
+        "hint": "Tomatoes require high amounts of nitrogen, potassium, and phosphorus to produce foliage and fruit.",
+        "workedSolution": "Tomatoes require high amounts of nitrogen, potassium, and phosphorus to produce foliage and fruit.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does mixed cropping reduce the risk of total loss for a smallholder farmer?",
+        "options": [
+          "A. All crops fail together",
+          "B. If one crop fails due to pests or drought, another companion crop can survive and yield food",
+          "C. It prevents weeds from ever emerging",
+          "D. It replaces the need for rain"
+        ],
+        "correctAnswer": "B. If one crop fails due to pests or drought, another companion crop can survive and yield food",
+        "hint": "Crop diversity spreads environmental and biological risks, preventing total household harvest loss.",
+        "workedSolution": "Crop diversity spreads environmental and biological risks, preventing total household harvest loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In mixed farming, how do crops directly benefit the farm animals?",
+        "options": [
+          "A. Crops provide shade only",
+          "B. Crop residues and by-products (stover, peelings, grains) serve as nutritious feed for livestock",
+          "C. Crops scare off predators",
+          "D. Crops clean the animal pens"
+        ],
+        "correctAnswer": "B. Crop residues and by-products (stover, peelings, grains) serve as nutritious feed for livestock",
+        "hint": "Harvested residues like maize stover and bean vines provide low-cost fodder for farm animals.",
+        "workedSolution": "Harvested residues like maize stover and bean vines provide low-cost fodder for farm animals.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In mixed farming, how do farm animals directly benefit the crops?",
+        "options": [
+          "A. Animals eat all the green crops",
+          "B. Animal droppings and bedding produce farmyard manure that restores soil fertility",
+          "C. Animals dig up all the seeds",
+          "D. Animals prevent the rain from falling"
+        ],
+        "correctAnswer": "B. Animal droppings and bedding produce farmyard manure that restores soil fertility",
+        "hint": "Livestock dung and urine supply organic matter and nutrients to crop fields, closing the nutrient loop.",
+        "workedSolution": "Livestock dung and urine supply organic matter and nutrients to crop fields, closing the nutrient loop.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following inputs is strictly prohibited in certified organic farming?",
+        "options": [
+          "A. Compost manure",
+          "B. Synthetic chemical pesticides",
+          "C. Animal dung",
+          "D. Green manure"
+        ],
+        "correctAnswer": "B. Synthetic chemical pesticides",
+        "hint": "Organic farming excludes synthetic chemical fertilizers, herbicides, and pesticides.",
+        "workedSolution": "Organic farming excludes synthetic chemical fertilizers, herbicides, and pesticides.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why does certified organic produce command higher market prices?",
+        "options": [
+          "A. It is grown with poisonous chemicals",
+          "B. It is free from synthetic chemical residues and satisfies health-conscious consumer demand",
+          "C. It is larger than all other food",
+          "D. It never spoils"
+        ],
+        "correctAnswer": "B. It is free from synthetic chemical residues and satisfies health-conscious consumer demand",
+        "hint": "Health-conscious domestic and export markets pay premium prices for chemical-free, ecologically grown food.",
+        "workedSolution": "Health-conscious domestic and export markets pay premium prices for chemical-free, ecologically grown food.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is keeping accurate farm records important for a farmer applying for a bank loan?",
+        "options": [
+          "A. To show off family photographs",
+          "B. Banks require verified records of income, expenditure, and yields to assess creditworthiness",
+          "C. To prevent rain from damaging the bank",
+          "D. To avoid owning farm tools"
+        ],
+        "correctAnswer": "B. Banks require verified records of income, expenditure, and yields to assess creditworthiness",
+        "hint": "Financial institutions require production and income records to confirm that a farm generates enough profit to repay loans.",
+        "workedSolution": "Financial institutions require production and income records to confirm that a farm generates enough profit to repay loans.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which type of farm record tracks the daily births, deaths, egg production, and milk yields on a farm?",
+        "options": [
+          "A. Production record",
+          "B. Labor record",
+          "C. Inventory record",
+          "D. Tax receipt"
+        ],
+        "correctAnswer": "A. Production record",
+        "hint": "Production records document physical agricultural outputs, including harvest weights, daily egg counts, and births.",
+        "workedSolution": "Production records document physical agricultural outputs, including harvest weights, daily egg counts, and births.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does agriculture support industrial manufacturing in Ghana?",
+        "options": [
+          "A. It supplies raw materials such as cocoa beans, cotton, palm oil, and rubber to factories",
+          "B. It consumes all factory products without paying",
+          "C. It eliminates the need for electricity",
+          "D. It manufactures steel"
+        ],
+        "correctAnswer": "A. It supplies raw materials such as cocoa beans, cotton, palm oil, and rubber to factories",
+        "hint": "Farms supply essential agricultural raw materials to agro-processing and manufacturing industries.",
+        "workedSolution": "Farms supply essential agricultural raw materials to agro-processing and manufacturing industries.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a major cash crop cultivated in Ghana primarily for export earnings?",
+        "options": [
+          "A. Cocoa",
+          "B. Lettuce",
+          "C. Watermelon",
+          "D. Spinach"
+        ],
+        "correctAnswer": "A. Cocoa",
+        "hint": "Cocoa is Ghana's primary agricultural export commodity, earning substantial foreign exchange.",
+        "workedSolution": "Cocoa is Ghana's primary agricultural export commodity, earning substantial foreign exchange.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an operational disadvantage of mixed cropping?",
+        "options": [
+          "A. Different crops compete with one another for light, water, nutrients, and space",
+          "B. It causes immediate land relocation",
+          "C. It stops the farmer from harvesting food",
+          "D. It requires four stomachs"
+        ],
+        "correctAnswer": "A. Different crops compete with one another for light, water, nutrients, and space",
+        "hint": "Intercropped plants compete directly for available soil moisture, nutrients, physical space, and solar radiation.",
+        "workedSolution": "Intercropped plants compete directly for available soil moisture, nutrients, physical space, and solar radiation.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an operational disadvantage of mixed farming?",
+        "options": [
+          "A. Farm animals can wander into fields and damage standing crops if fencing is poor",
+          "B. Animals refuse to eat crop waste",
+          "C. Manure kills all crop plants",
+          "D. Crops cannot grow near animals"
+        ],
+        "correctAnswer": "A. Farm animals can wander into fields and damage standing crops if fencing is poor",
+        "hint": "Livestock must be securely confined or tethered; otherwise, they can trample and consume standing food crops.",
+        "workedSolution": "Livestock must be securely confined or tethered; otherwise, they can trample and consume standing food crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which farming system is most labor-intensive because it relies heavily on manual weeding and composting?",
+        "options": [
+          "A. Organic farming",
+          "B. Shifting cultivation",
+          "C. Monoculture",
+          "D. Pastoral nomadism"
+        ],
+        "correctAnswer": "A. Organic farming",
+        "hint": "Without synthetic chemical sprays, organic farming requires significant manual labor for weeding and pest management.",
+        "workedSolution": "Without synthetic chemical sprays, organic farming requires significant manual labor for weeding and pest management.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a 3-bed crop rotation, if Bed 1 has tomato in Year 1 and carrot in Year 2, what should be planted in Year 3?",
+        "options": [
+          "A. Pepper",
+          "B. A legume (e.g. cowpea)",
+          "C. Tomato again",
+          "D. Garden eggs"
+        ],
+        "correctAnswer": "B. A legume (e.g. cowpea)",
+        "hint": "Following a heavy feeder and a deep root crop, a leguminous crop restores nitrogen before the cycle restarts.",
+        "workedSolution": "Following a heavy feeder and a deep root crop, a leguminous crop restores nitrogen before the cycle restarts.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What bacteria living in legume root nodules are responsible for biological nitrogen fixation?",
+        "options": [
+          "A. Rhizobium",
+          "B. Salmonella",
+          "C. Clostridium",
+          "D. Streptococcus"
+        ],
+        "correctAnswer": "A. Rhizobium",
+        "hint": "Rhizobium bacteria form mutualistic root nodules on legumes, converting atmospheric nitrogen into nitrates.",
+        "workedSolution": "Rhizobium bacteria form mutualistic root nodules on legumes, converting atmospheric nitrogen into nitrates.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an inventory record on a farm used for?",
+        "options": [
+          "A. Listing all assets, tools, equipment, buildings, and supplies owned by the farm",
+          "B. Recording rainfall daily",
+          "C. Listing the names of domestic pets",
+          "D. Tracking bank loans only"
+        ],
+        "correctAnswer": "A. Listing all assets, tools, equipment, buildings, and supplies owned by the farm",
+        "hint": "A farm inventory lists all physical equipment, structures, livestock, and stored inputs present on the farm.",
+        "workedSolution": "A farm inventory lists all physical equipment, structures, livestock, and stored inputs present on the farm.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does agriculture help alleviate national unemployment in Ghana?",
+        "options": [
+          "A. By employing millions of people in farming, processing, marketing, and transportation",
+          "B. By replacing human workers with robots completely",
+          "C. By banning foreign trade",
+          "D. By moving all citizens to cities"
+        ],
+        "correctAnswer": "A. By employing millions of people in farming, processing, marketing, and transportation",
+        "hint": "Agriculture provides direct and indirect jobs across the agricultural value chain, from field production to retail.",
+        "workedSolution": "Agriculture provides direct and indirect jobs across the agricultural value chain, from field production to retail.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A farmer plants maize and cowpea together on the same ridges at the same time. This is an example of:",
+        "options": [
+          "A. Land rotation",
+          "B. Mixed cropping",
+          "C. Shifting cultivation",
+          "D. Pastoral farming"
+        ],
+        "correctAnswer": "B. Mixed cropping",
+        "hint": "Cultivating cereals and legumes together on the same plot during one season is mixed cropping.",
+        "workedSolution": "Cultivating cereals and legumes together on the same plot during one season is mixed cropping.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an environmental consequence of repeated shifting cultivation in virgin forests?",
+        "options": [
+          "A. Accelerated deforestation and destruction of native wildlife habitats",
+          "B. Increase in wild animal numbers",
+          "C. Formation of permanent ice caps",
+          "D. Total elimination of weeds"
+        ],
+        "correctAnswer": "A. Accelerated deforestation and destruction of native wildlife habitats",
+        "hint": "Frequent clearing and burning of virgin forests destroys plant biodiversity and fragments natural habitats.",
+        "workedSolution": "Frequent clearing and burning of virgin forests destroys plant biodiversity and fragments natural habitats.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why does crop rotation help control crop-specific insect pests naturally?",
+        "options": [
+          "A. Insects drown in irrigation water",
+          "B. Changing the crop species removes the pest's specific food host, starving the pest population",
+          "C. Crops produce insecticide gases",
+          "D. Insects refuse to fly over rotated fields"
+        ],
+        "correctAnswer": "B. Changing the crop species removes the pest's specific food host, starving the pest population",
+        "hint": "Moving host crops denies specialized insect pests a continuous food source, breaking their reproductive cycle.",
+        "workedSolution": "Moving host crops denies specialized insect pests a continuous food source, breaking their reproductive cycle.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which farming system is described as an ancient subsistence practice where family huts are moved with the fields?",
+        "options": [
+          "A. Shifting cultivation",
+          "B. Land rotation",
+          "C. Crop rotation",
+          "D. Mixed farming"
+        ],
+        "correctAnswer": "A. Shifting cultivation",
+        "hint": "Shifting cultivation is characterized by the migration of both the farm and the domestic settlement.",
+        "workedSolution": "Shifting cultivation is characterized by the migration of both the farm and the domestic settlement.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What document allows a farmer to calculate whether an enterprise made a net profit or a loss at the end of the year?",
+        "options": [
+          "A. Farm inventory",
+          "B. Profit and loss statement / financial account",
+          "C. Breeding sheet",
+          "D. Field map"
+        ],
+        "correctAnswer": "B. Profit and loss statement / financial account",
+        "hint": "A profit and loss account balances total revenues against total operating expenses to determine profitability.",
+        "workedSolution": "A profit and loss account balances total revenues against total operating expenses to determine profitability.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following crops is a shallow feeder that draws nutrients primarily from the topsoil layer?",
+        "options": [
+          "A. Cassava",
+          "B. Maize",
+          "C. Pigeon pea",
+          "D. Yam"
+        ],
+        "correctAnswer": "B. Maize",
+        "hint": "Maize has a fibrous, relatively shallow root system that feeds mainly in the upper topsoil.",
+        "workedSolution": "Maize has a fibrous, relatively shallow root system that feeds mainly in the upper topsoil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why does mixed cropping make mechanization (e.g. tractor weeding and combine harvesting) difficult?",
+        "options": [
+          "A. Tractors refuse to enter mixed fields",
+          "B. Different plant heights, spacings, and maturity dates obstruct standardized mechanical equipment",
+          "C. Mixed crops produce too much oil",
+          "D. Machines can only harvest weeds"
+        ],
+        "correctAnswer": "B. Different plant heights, spacings, and maturity dates obstruct standardized mechanical equipment",
+        "hint": "Variable row widths, multiple canopies, and differing harvest dates prevent standard machine operation.",
+        "workedSolution": "Variable row widths, multiple canopies, and differing harvest dates prevent standard machine operation.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens to the soil on an abandoned shifting cultivation plot if heavy rains fall before bush cover re-establishes?",
+        "options": [
+          "A. The soil turns into gold",
+          "B. Accelerated surface soil erosion and loss of remaining topsoil nutrients",
+          "C. The plot instantly turns into a lake",
+          "D. The soil becomes immune to rain"
+        ],
+        "correctAnswer": "B. Accelerated surface soil erosion and loss of remaining topsoil nutrients",
+        "hint": "Exposed, vegetation-free topsoil on abandoned plots is vulnerable to water erosion and nutrient runoff.",
+        "workedSolution": "Exposed, vegetation-free topsoil on abandoned plots is vulnerable to water erosion and nutrient runoff.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which farming system relies heavily on compost, farmyard manure, and crop residue recycling instead of NPK fertilizer?",
+        "options": [
+          "A. Monoculture",
+          "B. Organic farming",
+          "C. Plantation farming",
+          "D. Commercial ranching"
+        ],
+        "correctAnswer": "B. Organic farming",
+        "hint": "Organic farming maintains soil fertility through organic compost, animal dung, and green manure crops.",
+        "workedSolution": "Organic farming maintains soil fertility through organic compost, animal dung, and green manure crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is land rotation difficult to sustain in peri-urban areas near expanding cities?",
+        "options": [
+          "A. Urban expansion drives up land values, leaving insufficient acreage for long bush fallow periods",
+          "B. City dwellers do not eat food",
+          "C. Cities produce too much rain",
+          "D. Farm tools are banned near cities"
+        ],
+        "correctAnswer": "A. Urban expansion drives up land values, leaving insufficient acreage for long bush fallow periods",
+        "hint": "Urban sprawl fragments farmland and raises land costs, preventing parcels from resting in extended fallows.",
+        "workedSolution": "Urban sprawl fragments farmland and raises land costs, preventing parcels from resting in extended fallows.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does keeping farm records help tax authorities?",
+        "options": [
+          "A. It hides all the farmer's money",
+          "B. It provides transparent financial evidence for fair and accurate income tax assessment",
+          "C. It allows the farmer to pay no taxes",
+          "D. It turns tax into farm tools"
+        ],
+        "correctAnswer": "B. It provides transparent financial evidence for fair and accurate income tax assessment",
+        "hint": "Documented financial statements give revenue authorities verified accounting records for tax assessment.",
+        "workedSolution": "Documented financial statements give revenue authorities verified accounting records for tax assessment.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a cover crop commonly planted in crop rotation to suppress weeds and shield the soil?",
+        "options": [
+          "A. Mucuna (velvet bean)",
+          "B. Cocoa",
+          "C. Oil palm",
+          "D. Sugarcane"
+        ],
+        "correctAnswer": "A. Mucuna (velvet bean)",
+        "hint": "Mucuna is a fast-growing legume that forms a dense canopy, suppressing weeds and protecting the soil surface.",
+        "workedSolution": "Mucuna is a fast-growing legume that forms a dense canopy, suppressing weeds and protecting the soil surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What skill must a farmer have to succeed in mixed farming?",
+        "options": [
+          "A. Competence in both crop agronomy and animal husbandry",
+          "B. Knowledge of deep-sea fishing only",
+          "C. Ability to fly an airplane",
+          "D. Skills in mining gold"
+        ],
+        "correctAnswer": "A. Competence in both crop agronomy and animal husbandry",
+        "hint": "Managing mixed farms requires combined expertise in crop production, animal feeding, breeding, and disease control.",
+        "workedSolution": "Managing mixed farms requires combined expertise in crop production, animal feeding, breeding, and disease control.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is the use of genetically modified (transgenic) crops forbidden in certified organic agriculture?",
+        "options": [
+          "A. Organic standards require natural biological breeding methods and exclude laboratory genetic modifications",
+          "B. GMOs do not have roots",
+          "C. Transgenic seeds are made of plastic",
+          "D. GMOs cannot grow in soil"
+        ],
+        "correctAnswer": "A. Organic standards require natural biological breeding methods and exclude laboratory genetic modifications",
+        "hint": "Organic principles exclude synthetic and recombinant DNA technologies in favor of natural breeding.",
+        "workedSolution": "Organic principles exclude synthetic and recombinant DNA technologies in favor of natural breeding.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens if a farmer fails to keep farm records over several years?",
+        "options": [
+          "A. The farmer cannot easily track whether the farm is running at a profit or loss, hindering sound planning",
+          "B. The crops immediately die",
+          "C. The land turns into an ocean",
+          "D. Tractors break down automatically"
+        ],
+        "correctAnswer": "A. The farmer cannot easily track whether the farm is running at a profit or loss, hindering sound planning",
+        "hint": "Without records, a farmer cannot monitor business profitability, manage expenses, or budget for the future.",
+        "workedSolution": "Without records, a farmer cannot monitor business profitability, manage expenses, or budget for the future.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does mixed cropping provide a balanced diet for a farming family throughout the year?",
+        "options": [
+          "A. It grows only one grain crop",
+          "B. Companion crops mature at different times, yielding cereals, legumes, and vegetables across multiple months",
+          "C. It produces meat without animals",
+          "D. It stops food from spoiling"
+        ],
+        "correctAnswer": "B. Companion crops mature at different times, yielding cereals, legumes, and vegetables across multiple months",
+        "hint": "Staggered harvests of companion crops supply diverse starches, proteins, and vitamins across the year.",
+        "workedSolution": "Staggered harvests of companion crops supply diverse starches, proteins, and vitamins across the year.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an export product derived from Ghana's agricultural farming systems?",
+        "options": [
+          "A. Shea butter",
+          "B. Gold bullion",
+          "C. Petroleum fuel",
+          "D. Bauxite"
+        ],
+        "correctAnswer": "A. Shea butter",
+        "hint": "Shea butter is an agricultural export derived from processing the nuts of the indigenous shea tree.",
+        "workedSolution": "Shea butter is an agricultural export derived from processing the nuts of the indigenous shea tree.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a crop rotation scheme, what type of crop should typically follow a gross feeder like maize?",
+        "options": [
+          "A. Another gross feeder like sorghum",
+          "B. A legume like cowpea or groundnut to restore soil nitrogen",
+          "C. Sugarcane",
+          "D. Weeds"
+        ],
+        "correctAnswer": "B. A legume like cowpea or groundnut to restore soil nitrogen",
+        "hint": "Planting a legume after a nutrient-demanding cereal helps rebuild depleted nitrogen levels in the soil.",
+        "workedSolution": "Planting a legume after a nutrient-demanding cereal helps rebuild depleted nitrogen levels in the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary socio-economic benefit of farming systems to the rural community?",
+        "options": [
+          "A. Providing food security and stable household livelihoods",
+          "B. Producing smoke in the air",
+          "C. Clearing all trees from the country",
+          "D. Making all land rocky"
+        ],
+        "correctAnswer": "A. Providing food security and stable household livelihoods",
+        "hint": "Farming systems generate food security, household income, and employment for rural families.",
+        "workedSolution": "Farming systems generate food security, household income, and employment for rural families.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the primary difference between shifting cultivation and bush fallowing (land rotation)?",
+        "prompt": "Why does land rotation discourage farmers from investing in permanent irrigation and farm buildings?",
         "options": [
-          "In shifting cultivation, the farmer never plants crops",
-          "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
-          "Bush fallowing uses tractors while shifting cultivation uses airplanes",
-          "Shifting cultivation is only done in the desert"
+          "A. Farmers do not like concrete structures",
+          "B. Cultivation shifts to new land parcels every few years, leaving fixed infrastructure underutilized on fallowed plots",
+          "C. The land turns into water during fallow",
+          "D. Building materials are toxic to crops"
         ],
-        "correctAnswer": "In shifting cultivation, the homestead moves with the farm; in bush fallowing, the settlement remains permanent",
-        "hint": "Consider whether the home/village relocates.",
-        "workedSolution": "Under shifting cultivation, the farmer relocates the entire household/homestead to a distant new site. In bush fallowing, the settlement is permanent, and the farmer rotates between surrounding plots.",
+        "correctAnswer": "B. Cultivation shifts to new land parcels every few years, leaving fixed infrastructure underutilized on fallowed plots",
+        "hint": "Because cropping moves periodically to different parcels, investing in permanent infrastructure on temporary plots is uneconomical.",
+        "workedSolution": "Because cropping moves periodically to different parcels, investing in permanent infrastructure on temporary plots is uneconomical.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does alternating deep-rooted crops with shallow-rooted crops in a rotation preserve soil profile structure?",
+        "options": [
+          "A. It prevents crops from absorbing water",
+          "B. Deep roots open channels into the subsoil to draw deep minerals, while shallow roots feed on topsoil, preventing depletion of one layer",
+          "C. Deep roots dissolve the subsoil into sand",
+          "D. Shallow roots turn the topsoil into rock"
+        ],
+        "correctAnswer": "B. Deep roots open channels into the subsoil to draw deep minerals, while shallow roots feed on topsoil, preventing depletion of one layer",
+        "hint": "Varying root depths balances nutrient extraction across the soil profile and improves aeration through decayed root channels.",
+        "workedSolution": "Varying root depths balances nutrient extraction across the soil profile and improves aeration through decayed root channels.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does mixed cropping reduce the rapid spread of airborne fungal and insect infestations across a field?",
+        "options": [
+          "A. Non-host companion plants act as physical barriers that intercept spores and confuse host-seeking insect pests",
+          "B. Mixed crops produce pesticide gases naturally",
+          "C. Companion plants freeze incoming insects",
+          "D. Diseases only attack single plants"
+        ],
+        "correctAnswer": "A. Non-host companion plants act as physical barriers that intercept spores and confuse host-seeking insect pests",
+        "hint": "Interspersed non-host plants disrupt the spread of pests and fungal spores, slowing down disease transmission.",
+        "workedSolution": "Interspersed non-host plants disrupt the spread of pests and fungal spores, slowing down disease transmission.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the integration of livestock in mixed farming create a closed-loop nutrient cycle?",
+        "options": [
+          "A. Animals eat all the soil on the farm",
+          "B. Crops provide feed for livestock, while animal dung and bedding produce farmyard manure that fertilizes the crop fields",
+          "C. Crops and animals live in the same pens",
+          "D. It eliminates the need for water"
+        ],
+        "correctAnswer": "B. Crops provide feed for livestock, while animal dung and bedding produce farmyard manure that fertilizes the crop fields",
+        "hint": "Crop residues feed farm animals, and animal manure fertilizes the soil, recycling nutrients without purchased inputs.",
+        "workedSolution": "Crop residues feed farm animals, and animal manure fertilizes the soil, recycling nutrients without purchased inputs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is organic farming often associated with lower crop yields during the first three years of transition from conventional farming?",
+        "options": [
+          "A. Organic seeds cannot grow in soil",
+          "B. Soil ecology and natural biological nutrient cycles require several seasons to rebuild after synthetic chemical use is stopped",
+          "C. Weeds kill all the crops immediately",
+          "D. Organic crops refuse to absorb rainwater"
+        ],
+        "correctAnswer": "B. Soil ecology and natural biological nutrient cycles require several seasons to rebuild after synthetic chemical use is stopped",
+        "hint": "Re-establishing natural soil microbial life and fertility takes several seasons after synthetic fertilizers are withdrawn.",
+        "workedSolution": "Re-establishing natural soil microbial life and fertility takes several seasons after synthetic fertilizers are withdrawn.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary agronomic risk of planting maize directly after sorghum on the same piece of land?",
+        "options": [
+          "A. Both are heavy-feeding cereals from the Poaceae family; shared pests and diseases (like stem borers) accumulate while nitrogen is depleted",
+          "B. Sorghum leaves poison maize seeds",
+          "C. The soil turns into stone",
+          "D. Maize will grow without roots"
+        ],
+        "correctAnswer": "A. Both are heavy-feeding cereals from the Poaceae family; shared pests and diseases (like stem borers) accumulate while nitrogen is depleted",
+        "hint": "Maize and sorghum belong to the same grass family, so shared pests multiply and common nutrient reserves are rapidly depleted.",
+        "workedSolution": "Maize and sorghum belong to the same grass family, so shared pests multiply and common nutrient reserves are rapidly depleted.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does keeping a detailed farm labor record assist in farm management?",
+        "options": [
+          "A. It shows which workers were paid and helps assess the labor efficiency and cost of different operations",
+          "B. It proves the farmer owns the workers",
+          "C. It stops the workers from eating food",
+          "D. It replaces the need for tools"
+        ],
+        "correctAnswer": "A. It shows which workers were paid and helps assess the labor efficiency and cost of different operations",
+        "hint": "Labor records track person-hours and wages, helping farmers monitor labor productivity and reduce costs.",
+        "workedSolution": "Labor records track person-hours and wages, helping farmers monitor labor productivity and reduce costs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does intercropping tall maize with low-growing melon (egusi) or cowpea reduce weed growth?",
+        "options": [
+          "A. Melons produce poisonous herbicides",
+          "B. The spreading leaves of the cover crop form a living mulch that shades the soil surface, blocking light needed by weed seeds",
+          "C. Maize roots pull out all weeds",
+          "D. Weeds prefer to grow only near trees"
+        ],
+        "correctAnswer": "B. The spreading leaves of the cover crop form a living mulch that shades the soil surface, blocking light needed by weed seeds",
+        "hint": "Dense, low-growing cover crops shade the soil surface, suppressing weed seed germination and growth.",
+        "workedSolution": "Dense, low-growing cover crops shade the soil surface, suppressing weed seed germination and growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main financial consequence of a farmer failing to track input expenditures like seed, fuel, and wages?",
+        "options": [
+          "A. The farmer might sell produce below the true cost of production, leading to unexpected financial losses",
+          "B. Crops stop absorbing water",
+          "C. The bank gives the farmer free money",
+          "D. Tractors stop working automatically"
+        ],
+        "correctAnswer": "A. The farmer might sell produce below the true cost of production, leading to unexpected financial losses",
+        "hint": "Without tracking production costs, a farmer may underprice produce and operate at a loss without realizing it.",
+        "workedSolution": "Without tracking production costs, a farmer may underprice produce and operate at a loss without realizing it.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do organic farmers rely heavily on biological pest control instead of synthetic chemical sprays?",
+        "options": [
+          "A. Biological control uses natural predators and parasitoids, preventing toxic chemical contamination of food and the environment",
+          "B. Natural predators cost more than chemicals",
+          "C. Chemical sprays only kill weeds",
+          "D. Organic farmers have no sprayers"
+        ],
+        "correctAnswer": "A. Biological control uses natural predators and parasitoids, preventing toxic chemical contamination of food and the environment",
+        "hint": "Biological control uses natural enemies to manage pests without leaving chemical residues on crops.",
+        "workedSolution": "Biological control uses natural enemies to manage pests without leaving chemical residues on crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does shifting cultivation lead to land tenure conflicts in areas with rising populations?",
+        "options": [
+          "A. Moving farmers encroach onto community boundaries or neighboring family lands as unoccupied virgin forest disappears",
+          "B. Farmers forget where they parked their tractors",
+          "C. Huts become too heavy to lift",
+          "D. Abandoned plots turn into gold mines"
+        ],
+        "correctAnswer": "A. Moving farmers encroach onto community boundaries or neighboring family lands as unoccupied virgin forest disappears",
+        "hint": "As open land becomes scarce, clearing new plots encroaches on boundaries, sparking ownership disputes.",
+        "workedSolution": "As open land becomes scarce, clearing new plots encroaches on boundaries, sparking ownership disputes.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is cowpea an effective green manure crop when incorporated into the soil during flowering?",
+        "options": [
+          "A. It adds dry wood to the ground",
+          "B. Its succulent vegetative mass is rich in fixed nitrogen and decomposes quickly, releasing nutrients for the next crop",
+          "C. It freezes the topsoil",
+          "D. It prevents earthworms from living"
+        ],
+        "correctAnswer": "B. Its succulent vegetative mass is rich in fixed nitrogen and decomposes quickly, releasing nutrients for the next crop",
+        "hint": "Incorporating nitrogen-rich legumes at flowering adds organic matter that mineralizes quickly into plant-available nutrients.",
+        "workedSolution": "Incorporating nitrogen-rich legumes at flowering adds organic matter that mineralizes quickly into plant-available nutrients.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of an asset and liability balance sheet in farm accounting?",
+        "options": [
+          "A. It records what the farm owns (assets) versus what it owes (liabilities) to calculate the farmer's net worth",
+          "B. It lists daily egg counts",
+          "C. It shows the names of customers",
+          "D. It tracks rainfall"
+        ],
+        "correctAnswer": "A. It records what the farm owns (assets) versus what it owes (liabilities) to calculate the farmer's net worth",
+        "hint": "A balance sheet compares total assets against liabilities to determine the financial net worth of the farm.",
+        "workedSolution": "A balance sheet compares total assets against liabilities to determine the financial net worth of the farm.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does improper planting distance in mixed cropping lead to reduced yields for understory companion crops?",
+        "options": [
+          "A. Companion crops become lonely",
+          "B. Overcrowding allows the taller crop canopy to shade shorter crops excessively, reducing photosynthesis",
+          "C. Taller crops absorb all the rain in the air",
+          "D. Shorter crops turn into weeds"
+        ],
+        "correctAnswer": "B. Overcrowding allows the taller crop canopy to shade shorter crops excessively, reducing photosynthesis",
+        "hint": "Excessive canopy shading from improperly spaced taller crops starves shorter companion plants of sunlight.",
+        "workedSolution": "Excessive canopy shading from improperly spaced taller crops starves shorter companion plants of sunlight.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does mixed farming help buffer a farmer's household against price fluctuations in agricultural markets?",
+        "options": [
+          "A. The farmer controls all national prices",
+          "B. Enterprise diversification means low market prices for a crop can be offset by sales of livestock or milk",
+          "C. Animals produce gold coins",
+          "D. Food can be stored for 100 years without drying"
+        ],
+        "correctAnswer": "B. Enterprise diversification means low market prices for a crop can be offset by sales of livestock or milk",
+        "hint": "Diversification across crops and livestock provides alternative income streams if one commodity's price drops.",
+        "workedSolution": "Diversification across crops and livestock provides alternative income streams if one commodity's price drops.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the consequence of shortening the fallow period in land rotation from 7 years to 2 years due to land scarcity?",
+        "options": [
+          "A. Soil fertility fails to recover fully, resulting in progressive soil exhaustion and lower crop yields",
+          "B. Forest trees grow twice as fast",
+          "C. Weed seeds disappear completely",
+          "D. Crops produce double yields"
+        ],
+        "correctAnswer": "A. Soil fertility fails to recover fully, resulting in progressive soil exhaustion and lower crop yields",
+        "hint": "Shortened fallow windows prevent natural biological recovery, leading to soil degradation and declining yields.",
+        "workedSolution": "Shortened fallow windows prevent natural biological recovery, leading to soil degradation and declining yields.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do commercial banks reject agricultural loan applications from farmers who do not keep farm records?",
+        "options": [
+          "A. Banks only lend to teachers",
+          "B. Without written records, the bank cannot evaluate farm cash flow, financial management, or repayment capacity",
+          "C. Banks do not allow crops to be planted with money",
+          "D. Record-less farms cannot receive rain"
+        ],
+        "correctAnswer": "B. Without written records, the bank cannot evaluate farm cash flow, financial management, or repayment capacity",
+        "hint": "Lenders cannot verify cash flow, repayment ability, or business viability without audited farm records.",
+        "workedSolution": "Lenders cannot verify cash flow, repayment ability, or business viability without audited farm records.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does crop rotation help manage parasitic weed seeds like Striga (witchweed) in cereal fields?",
+        "options": [
+          "A. Striga seeds drown in water",
+          "B. Rotating cereals with 'trap crops' (like cowpeas or soybeans) stimulates Striga germination without providing a host, killing the weed seedlings",
+          "C. Striga seeds turn into fertilizer",
+          "D. Striga weeds only grow on bare rock"
+        ],
+        "correctAnswer": "B. Rotating cereals with 'trap crops' (like cowpeas or soybeans) stimulates Striga germination without providing a host, killing the weed seedlings",
+        "hint": "Legume trap crops trigger suicidal germination of Striga seeds without hosting the parasite, clearing the soil.",
+        "workedSolution": "Legume trap crops trigger suicidal germination of Striga seeds without hosting the parasite, clearing the soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is an operational difficulty of applying selective herbicides on a field under mixed cropping?",
+        "options": [
+          "A. Herbicides do not work in sunlight",
+          "B. A herbicide designed to kill broadleaf weeds in a cereal will also injure or kill intercropped broadleaf legumes",
+          "C. Herbicides turn into fertilizer",
+          "D. Spraying machines break on mixed plots"
+        ],
+        "correctAnswer": "B. A herbicide designed to kill broadleaf weeds in a cereal will also injure or kill intercropped broadleaf legumes",
+        "hint": "Chemicals targeted at broadleaf weeds in grass crops will damage interplanted broadleaf crops like cowpeas.",
+        "workedSolution": "Chemicals targeted at broadleaf weeds in grass crops will damage interplanted broadleaf crops like cowpeas.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the use of animal manure from intensive poultry houses restricted in some organic certification programs?",
+        "options": [
+          "A. Poultry dung contains no nitrogen",
+          "B. Manure from factory farms may contain residues of prophylactic antibiotics, heavy metals, and chemical feed additives",
+          "C. Poultry dung dissolves into water",
+          "D. Organic crops reject bird manure"
+        ],
+        "correctAnswer": "B. Manure from factory farms may contain residues of prophylactic antibiotics, heavy metals, and chemical feed additives",
+        "hint": "Organic standards prohibit inputs contaminated with synthetic feed additives, heavy metals, or antibiotics.",
+        "workedSolution": "Organic standards prohibit inputs contaminated with synthetic feed additives, heavy metals, or antibiotics.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does mixed farming help maintain farm productivity during seasons of low rainfall?",
+        "options": [
+          "A. Animals produce rainfall from their breath",
+          "B. Deep-rooted forage and browse can withstand dry spells better than annual crops, keeping livestock productive",
+          "C. Animals stop needing water",
+          "D. Crops turn into trees"
+        ],
+        "correctAnswer": "B. Deep-rooted forage and browse can withstand dry spells better than annual crops, keeping livestock productive",
+        "hint": "Hardy browse and forage crops survive dry conditions better than annual field crops, sustaining herd income.",
+        "workedSolution": "Hardy browse and forage crops survive dry conditions better than annual field crops, sustaining herd income.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary difference between a crop yield record and a crop sales record?",
+        "options": [
+          "A. Yield records measure physical output harvested; sales records document quantity sold, selling price, and revenue generated",
+          "B. Yield records track money; sales records track rainfall",
+          "C. Yield records apply only to animals",
+          "D. Both records track identical parameters"
+        ],
+        "correctAnswer": "A. Yield records measure physical output harvested; sales records document quantity sold, selling price, and revenue generated",
+        "hint": "Yield records measure physical production (bags/kg), while sales records track financial transactions and revenue.",
+        "workedSolution": "Yield records measure physical production (bags/kg), while sales records track financial transactions and revenue.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do yam farmers in West Africa traditionally intercrop yams with maize and vegetables?",
+        "options": [
+          "A. To make the field difficult to walk through",
+          "B. Maize stalks provide early support for climbing yam vines, while leafy vegetables cover the soil and yield food before yams mature",
+          "C. Maize poisons yam beetles",
+          "D. Vegetables turn into yams underground"
+        ],
+        "correctAnswer": "B. Maize stalks provide early support for climbing yam vines, while leafy vegetables cover the soil and yield food before yams mature",
+        "hint": "Maize stalks can support climbing yam vines, while companion vegetables provide ground cover and early food.",
+        "workedSolution": "Maize stalks can support climbing yam vines, while companion vegetables provide ground cover and early food.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the practice of slash-and-burn clearing in shifting cultivation contribute to atmospheric carbon emissions?",
+        "options": [
+          "A. Burning woody forest biomass oxidizes stored biological carbon into carbon dioxide gas, a major greenhouse gas",
+          "B. Smoke removes oxygen permanently",
+          "C. Ash turns into carbon monoxide",
+          "D. Fire freezes the soil"
+        ],
+        "correctAnswer": "A. Burning woody forest biomass oxidizes stored biological carbon into carbon dioxide gas, a major greenhouse gas",
+        "hint": "Burning forest vegetation releases carbon that was stored in plant biomass into the atmosphere as carbon dioxide.",
+        "workedSolution": "Burning forest vegetation releases carbon that was stored in plant biomass into the atmosphere as carbon dioxide.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must an effective crop rotation plan include detailed seasonal record-keeping?",
+        "options": [
+          "A. To show neighbors the field colors",
+          "B. To track which crop family occupied each bed in previous years, preventing accidental consecutive replanting of the same family",
+          "C. To prevent rain from washing seeds away",
+          "D. Because paper keeps soil fertile"
+        ],
+        "correctAnswer": "B. To track which crop family occupied each bed in previous years, preventing accidental consecutive replanting of the same family",
+        "hint": "Accurate field maps and planting histories ensure that crops from the same family are not replanted in the same bed.",
+        "workedSolution": "Accurate field maps and planting histories ensure that crops from the same family are not replanted in the same bed.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary economic advantage of running a certified organic fruit farm for the European export market?",
+        "options": [
+          "A. Organic fruit requires no packing boxes",
+          "B. Export markets offer premium pricing for verified, chemical-free organic produce",
+          "C. Organic fruit ships without transport costs",
+          "D. Organic trees never need water"
+        ],
+        "correctAnswer": "B. Export markets offer premium pricing for verified, chemical-free organic produce",
+        "hint": "International organic buyers pay premium prices for verified residue-free agricultural produce.",
+        "workedSolution": "International organic buyers pay premium prices for verified residue-free agricultural produce.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are root knot nematodes more easily controlled under crop rotation than under continuous monoculture?",
+        "options": [
+          "A. Nematodes drown when crops rotate",
+          "B. Rotating susceptible crops with non-host or antagonistic crops (like marigolds or maize) starves and suppresses nematode populations",
+          "C. Nematodes turn into earthworms",
+          "D. Crop rotation freezes the soil"
+        ],
+        "correctAnswer": "B. Rotating susceptible crops with non-host or antagonistic crops (like marigolds or maize) starves and suppresses nematode populations",
+        "hint": "Replacing susceptible host crops with non-hosts breaks the reproductive cycle of soil nematodes.",
+        "workedSolution": "Replacing susceptible host crops with non-hosts breaks the reproductive cycle of soil nematodes.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does mixed farming help reduce household food expenditure on a farm?",
+        "options": [
+          "A. The family stops eating food",
+          "B. The farm supplies homegrown carbohydrates, vegetables, meat, milk, and eggs directly for family consumption",
+          "C. Animals buy food from stores",
+          "D. Crops produce manufactured goods"
+        ],
+        "correctAnswer": "B. The farm supplies homegrown carbohydrates, vegetables, meat, milk, and eggs directly for family consumption",
+        "hint": "Diverse farm production supplies balanced food directly to the household, lowering grocery spending.",
+        "workedSolution": "Diverse farm production supplies balanced food directly to the household, lowering grocery spending.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is an operational constraint when preparing farmyard manure on a mixed farm?",
+        "options": [
+          "A. Manure cannot be touched by air",
+          "B. Collecting, piling, and transporting bulky manure to distant fields requires substantial manual labor or machinery",
+          "C. Animals produce too little dung to use",
+          "D. Manure dissolves in sunlight"
+        ],
+        "correctAnswer": "B. Collecting, piling, and transporting bulky manure to distant fields requires substantial manual labor or machinery",
+        "hint": "Raw manure is heavy and bulky, demanding significant labor and transport to move from pens to fields.",
+        "workedSolution": "Raw manure is heavy and bulky, demanding significant labor and transport to move from pens to fields.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does planting leguminous groundnuts improve the soil for a subsequent maize crop?",
+        "options": [
+          "A. Groundnuts leave all their seeds behind",
+          "B. Decaying root nodules and crop residue release fixed nitrogen, enriching the soil with nitrates for the maize",
+          "C. Groundnuts absorb all water from the ground",
+          "D. Maize roots eat groundnut shells"
+        ],
+        "correctAnswer": "B. Decaying root nodules and crop residue release fixed nitrogen, enriching the soil with nitrates for the maize",
+        "hint": "Decomposing legume roots and residues release fixed organic nitrogen, enriching the soil for the following crop.",
+        "workedSolution": "Decomposing legume roots and residues release fixed organic nitrogen, enriching the soil for the following crop.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the use of synthetic chemical growth-promoting antibiotics forbidden in organic animal production?",
+        "options": [
+          "A. Antibiotics make animals too heavy",
+          "B. Routine antibiotic use promotes drug-resistant bacterial strains and leaves chemical residues in animal products",
+          "C. Antibiotics turn milk red",
+          "D. Organic animals cannot swallow pills"
+        ],
+        "correctAnswer": "B. Routine antibiotic use promotes drug-resistant bacterial strains and leaves chemical residues in animal products",
+        "hint": "Routine antibiotic feeding can select for resistant bacteria and leave residues in meat, milk, and eggs.",
+        "workedSolution": "Routine antibiotic feeding can select for resistant bacteria and leave residues in meat, milk, and eggs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of an agricultural depreciation record for farm machinery?",
+        "options": [
+          "A. Measuring fuel consumption",
+          "B. Calculating the loss in monetary value of equipment over time due to wear, tear, and age for accurate financial accounting",
+          "C. Keeping machinery shiny",
+          "D. Measuring tractor speed"
+        ],
+        "correctAnswer": "B. Calculating the loss in monetary value of equipment over time due to wear, tear, and age for accurate financial accounting",
+        "hint": "Depreciation accounts for wear and tear, spreading the replacement cost of machinery over its working life.",
+        "workedSolution": "Depreciation accounts for wear and tear, spreading the replacement cost of machinery over its working life.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does mixed cropping help improve soil moisture retention compared to bare-row monoculture?",
+        "options": [
+          "A. Intercropped plants produce water from roots",
+          "B. Multi-tiered leaf canopies and ground-hugging crops shade the soil, reducing direct surface evaporation",
+          "C. Mixed crops stop wind completely",
+          "D. Mixed roots turn soil into clay"
+        ],
+        "correctAnswer": "B. Multi-tiered leaf canopies and ground-hugging crops shade the soil, reducing direct surface evaporation",
+        "hint": "Continuous canopy cover shades the soil surface, cutting evaporative moisture losses from bare soil.",
+        "workedSolution": "Continuous canopy cover shades the soil surface, cutting evaporative moisture losses from bare soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does agricultural export revenue from cocoa benefit Ghana's national economy?",
+        "options": [
+          "A. It pays for all farm tools in the world",
+          "B. It generates foreign exchange reserves used to import essential machinery, medicine, and industrial capital goods",
+          "C. It eliminates local taxes",
+          "D. It replaces local currency with cocoa beans"
+        ],
+        "correctAnswer": "B. It generates foreign exchange reserves used to import essential machinery, medicine, and industrial capital goods",
+        "hint": "Export earnings provide foreign currency needed to purchase manufactured capital goods and maintain trade balances.",
+        "workedSolution": "Export earnings provide foreign currency needed to purchase manufactured capital goods and maintain trade balances.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is crop rotation considered an effective soil conservation practice against water erosion?",
+        "options": [
+          "A. Rotating fields keeps beds permanently covered with crops or residues throughout the year, reducing raindrop detachment",
+          "B. Crops build stone walls around beds",
+          "C. Rotating crops stops rain from falling",
+          "D. Only rotated crops can grow roots"
+        ],
+        "correctAnswer": "A. Rotating fields keeps beds permanently covered with crops or residues throughout the year, reducing raindrop detachment",
+        "hint": "Continuous vegetation and rotation with dense cover crops protect topsoil from rainfall impact and runoff.",
+        "workedSolution": "Continuous vegetation and rotation with dense cover crops protect topsoil from rainfall impact and runoff.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary management challenge on a mixed farm where crop residues are used for animal feed?",
+        "options": [
+          "A. Deciding whether to leave residues on the soil to prevent erosion or remove them to feed livestock",
+          "B. Animals refuse to eat crop waste",
+          "C. Residues turn into poison when harvested",
+          "D. Crops cannot produce residues"
+        ],
+        "correctAnswer": "A. Deciding whether to leave residues on the soil to prevent erosion or remove them to feed livestock",
+        "hint": "Farmers must balance removing crop residues for fodder against leaving mulch to protect soil from erosion.",
+        "workedSolution": "Farmers must balance removing crop residues for fodder against leaving mulch to protect soil from erosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do organic farms use crop rotations that include green manures rather than relying solely on compost?",
+        "options": [
+          "A. Green manures require no land",
+          "B. Compost volume is often insufficient to cover large fields, while in-situ green manures produce large biomass directly on the plot",
+          "C. Green manures do not need water",
+          "D. Compost is toxic to organic crops"
+        ],
+        "correctAnswer": "B. Compost volume is often insufficient to cover large fields, while in-situ green manures produce large biomass directly on the plot",
+        "hint": "Growing green manures directly on the plot adds large amounts of organic biomass without the labor of transporting compost.",
+        "workedSolution": "Growing green manures directly on the plot adds large amounts of organic biomass without the labor of transporting compost.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does a farm budget help a farmer prepare for an upcoming planting season?",
+        "options": [
+          "A. It predicts future revenues and plans expected expenses for inputs, labor, and machinery",
+          "B. It guarantees that rain will fall",
+          "C. It makes seeds germinate faster",
+          "D. It replaces the need for weeding"
+        ],
+        "correctAnswer": "A. It predicts future revenues and plans expected expenses for inputs, labor, and machinery",
+        "hint": "A farm budget projects anticipated operating costs and revenues, guiding input purchases and working capital.",
+        "workedSolution": "A farm budget projects anticipated operating costs and revenues, guiding input purchases and working capital.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does land rotation preserve local plant biodiversity better than continuous commercial monoculture?",
+        "options": [
+          "A. Land rotation uses more chemical sprays",
+          "B. Fallow parcels allow native forest trees, shrubs, and soil fauna to regenerate between cropping periods",
+          "C. Land rotation creates paved roads",
+          "D. Commercial monoculture never uses land"
+        ],
+        "correctAnswer": "B. Fallow parcels allow native forest trees, shrubs, and soil fauna to regenerate between cropping periods",
+        "hint": "Extended natural fallows give native woody species, wild plants, and soil organisms room to re-establish.",
+        "workedSolution": "Extended natural fallows give native woody species, wild plants, and soil organisms room to re-establish.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the consequence of applying fresh, hot poultry manure directly to vegetable seedlings on a mixed farm?",
+        "options": [
+          "A. Seedlings grow 10 meters tall overnight",
+          "B. High ammonium levels and soluble salts can scorch roots and kill young seedlings",
+          "C. Manure turns into water instantly",
+          "D. Seedlings turn into poultry feed"
+        ],
+        "correctAnswer": "B. High ammonium levels and soluble salts can scorch roots and kill young seedlings",
+        "hint": "Fresh bird manure has high uric acid and salt contents that can burn delicate seedling root systems.",
+        "workedSolution": "Fresh bird manure has high uric acid and salt contents that can burn delicate seedling root systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are tree crops like rubber and oil palm not suitable for annual crop rotation schemes?",
+        "options": [
+          "A. Tree crops have no roots",
+          "B. They are long-term perennial crops with productive lifespans of 20 to 30 years that cannot be rotated annually",
+          "C. Tree crops do not absorb nutrients",
+          "D. They only grow in water"
+        ],
+        "correctAnswer": "B. They are long-term perennial crops with productive lifespans of 20 to 30 years that cannot be rotated annually",
+        "hint": "Perennial plantation trees occupy land for decades, making annual field rotations unworkable.",
+        "workedSolution": "Perennial plantation trees occupy land for decades, making annual field rotations unworkable.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do farm records help in breeding selection on a livestock farm?",
+        "options": [
+          "A. By identifying animals with superior traits like high birth weights, fertility, and disease resistance for breeding",
+          "B. By painting animal horns different colors",
+          "C. By making animals produce twins every time",
+          "D. Records replace the need for feed"
+        ],
+        "correctAnswer": "A. By identifying animals with superior traits like high birth weights, fertility, and disease resistance for breeding",
+        "hint": "Pedigree and performance records identify top-producing animals to select as parents for future generations.",
+        "workedSolution": "Pedigree and performance records identify top-producing animals to select as parents for future generations.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of agroforestry systems that integrate trees, crops, and pasture?",
+        "options": [
+          "A. Trees provide timber, shade, and deep-soil nutrient cycling while crops and livestock produce food on the same land",
+          "B. Trees stop crops from growing",
+          "C. To replace all farms with forests",
+          "D. To eliminate wild birds"
+        ],
+        "correctAnswer": "A. Trees provide timber, shade, and deep-soil nutrient cycling while crops and livestock produce food on the same land",
+        "hint": "Agroforestry combines trees, crops, and animals to cycle nutrients, stabilize microclimates, and diversify farm output.",
+        "workedSolution": "Agroforestry combines trees, crops, and animals to cycle nutrients, stabilize microclimates, and diversify farm output.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does intercropping maize with beans improve overall land equivalent ratio (LER)?",
+        "options": [
+          "A. The combined harvest from the intercropped plot exceeds the yield of either crop grown alone on the same total land area",
+          "B. It shrinks the size of the farm",
+          "C. Beans turn into maize plants",
+          "D. The land becomes completely dry"
+        ],
+        "correctAnswer": "A. The combined harvest from the intercropped plot exceeds the yield of either crop grown alone on the same total land area",
+        "hint": "Complementary resource use allows intercropped fields to produce higher total yield per hectare than separate sole crops.",
+        "workedSolution": "Complementary resource use allows intercropped fields to produce higher total yield per hectare than separate sole crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are organic farms inspected and certified annually by independent auditing agencies?",
+        "options": [
+          "A. To confiscate the farmer's crops",
+          "B. To verify that no prohibited synthetic chemicals or GMOs were used, maintaining market trust in the organic label",
+          "C. To count how many workers live on the farm",
+          "D. To force the farmer to buy tractors"
+        ],
+        "correctAnswer": "B. To verify that no prohibited synthetic chemicals or GMOs were used, maintaining market trust in the organic label",
+        "hint": "Third-party certification verifies compliance with organic standards, protecting consumers from mislabeled produce.",
+        "workedSolution": "Third-party certification verifies compliance with organic standards, protecting consumers from mislabeled produce.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of a cash receipt book on a commercial farm?",
+        "options": [
+          "A. Recording sales transactions and issuing written proof of payments received from customers",
+          "B. Tracking the depth of plowing",
+          "C. Listing rainfall amounts",
+          "D. Storing money inside the pages"
+        ],
+        "correctAnswer": "A. Recording sales transactions and issuing written proof of payments received from customers",
+        "hint": "A receipt book documents payment inflows, providing verification for farm revenue accounting.",
+        "workedSolution": "A receipt book documents payment inflows, providing verification for farm revenue accounting.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does continuous monoculture of cassava on the same plot lead to declining yields over time?",
+        "options": [
+          "A. Cassava plants do not need soil",
+          "B. Repeated extraction depletes specific nutrients like potassium, while soil-borne pathogens and pests build up in the soil",
+          "C. The roots turn into rocks",
+          "D. Monoculture stops rainfall"
+        ],
+        "correctAnswer": "B. Repeated extraction depletes specific nutrients like potassium, while soil-borne pathogens and pests build up in the soil",
+        "hint": "Growing cassava repeatedly depletes target nutrients and allows root-feeding pests and pathogens to accumulate.",
+        "workedSolution": "Growing cassava repeatedly depletes target nutrients and allows root-feeding pests and pathogens to accumulate.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does mixed farming help improve the organic matter content of soils compared to arable-only farms?",
+        "options": [
+          "A. Farm animals walk on the field to pack it hard",
+          "B. Regular applications of animal manure return stable humic substances that synthetic fertilizers cannot supply",
+          "C. Animals eat all the weeds",
+          "D. Crops stop absorbing nutrients"
+        ],
+        "correctAnswer": "B. Regular applications of animal manure return stable humic substances that synthetic fertilizers cannot supply",
+        "hint": "Farmyard manure adds organic humus, improving soil aggregation and biological activity over time.",
+        "workedSolution": "Farmyard manure adds organic humus, improving soil aggregation and biological activity over time.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do farmers rotate crops between heavy feeders and light feeders?",
+        "options": [
+          "A. To allow heavily depleted nutrient pools to recover while lighter-feeding crops draw fewer minerals from the soil",
+          "B. Heavy feeders produce no food",
+          "C. Light feeders kill all insects",
+          "D. It stops weeds from flowering"
+        ],
+        "correctAnswer": "A. To allow heavily depleted nutrient pools to recover while lighter-feeding crops draw fewer minerals from the soil",
+        "hint": "Following heavy nutrient consumers with light feeders prevents continuous mining of the same soil mineral reserves.",
+        "workedSolution": "Following heavy nutrient consumers with light feeders prevents continuous mining of the same soil mineral reserves.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the ultimate goal of adopting sustainable farming systems in agriculture?",
+        "options": [
+          "A. Maximizing short-term profit while exhausting the land",
+          "B. Producing adequate food and income today while conserving soil, water, and biodiversity for future generations",
+          "C. Abandoning all farms to wild forests",
+          "D. Replacing all crops with livestock"
+        ],
+        "correctAnswer": "B. Producing adequate food and income today while conserving soil, water, and biodiversity for future generations",
+        "hint": "Sustainable farming balances current agricultural yields and income with the long-term conservation of natural resources.",
+        "workedSolution": "Sustainable farming balances current agricultural yields and income with the long-term conservation of natural resources.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A01",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "A farmer intercrops maize with cowpeas. If the sole-crop yield of maize is 4.0 t/ha and cowpea is 1.5 t/ha, while the intercropped yields are 3.0 t/ha maize and 0.9 t/ha cowpea, what is the Land Equivalent Ratio (LER)?",
+        "options": [
+          "A. 0.85",
+          "B. 1.00",
+          "C. 1.35",
+          "D. 1.75"
+        ],
+        "correctAnswer": "C. 1.35",
+        "hint": "LER is calculated as (3.0/4.0) + (0.9/1.5) = 0.75 + 0.60 = 1.35. An LER of 1.35 indicates a 35% yield advantage from intercropping.",
+        "workedSolution": "LER is calculated as (3.0/4.0) + (0.9/1.5) = 0.75 + 0.60 = 1.35. An LER of 1.35 indicates a 35% yield advantage from intercropping.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A02",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does a 4-year crop rotation that alternates maize, cowpea, cassava, and fallow break the life cycle of soil-borne nematodes more effectively than chemical nematicides?",
+        "options": [
+          "A. Rotating non-host crops and bio-fumigant legumes starves nematodes naturally without selecting for pesticide-resistant strains",
+          "B. Nematodes freeze during crop rotation",
+          "C. Cassava roots produce pure alcohol that kills nematodes",
+          "D. Crop rotation removes all moisture from the soil"
+        ],
+        "correctAnswer": "A. Rotating non-host crops and bio-fumigant legumes starves nematodes naturally without selecting for pesticide-resistant strains",
+        "hint": "Non-host rotational crops starve plant-parasitic nematodes across seasons without driving chemical resistance.",
+        "workedSolution": "Non-host rotational crops starve plant-parasitic nematodes across seasons without driving chemical resistance.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A03",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does the Land Equivalent Ratio (LER) demonstrate whether mixed cropping is agronomically advantageous over sole cropping?",
+        "options": [
+          "A. If LER is less than 1.0, mixed cropping is advantageous",
+          "B. An LER greater than 1.0 indicates that intercropping produced more yield from the same land area than growing the crops separately",
+          "C. LER measures the weight of tractors only",
+          "D. An LER of zero means maximum crop production"
+        ],
+        "correctAnswer": "B. An LER greater than 1.0 indicates that intercropping produced more yield from the same land area than growing the crops separately",
+        "hint": "An LER > 1.0 shows that intercropping made more efficient use of land and environmental resources than monoculture.",
+        "workedSolution": "An LER > 1.0 shows that intercropping made more efficient use of land and environmental resources than monoculture.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A04",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary biochemical mechanism by which Rhizobium bacteria fix atmospheric nitrogen in legume root nodules?",
+        "options": [
+          "A. Producing sulfuric acid",
+          "B. The nitrogenase enzyme reduces atmospheric dinitrogen (N2) into ammonia (NH3) inside anaerobic nodule bacteroids protected by leghemoglobin",
+          "C. Bacteria absorb nitrates from clouds",
+          "D. Roots boil water to release nitrogen"
+        ],
+        "correctAnswer": "B. The nitrogenase enzyme reduces atmospheric dinitrogen (N2) into ammonia (NH3) inside anaerobic nodule bacteroids protected by leghemoglobin",
+        "hint": "Nitrogenase catalyzes the reduction of N2 to NH3 in root nodules, protected from oxygen by leghemoglobin.",
+        "workedSolution": "Nitrogenase catalyzes the reduction of N2 to NH3 in root nodules, protected from oxygen by leghemoglobin.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A05",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does shifting cultivation become an ecological driver of desertification when practiced under high population density?",
+        "options": [
+          "A. Fallow periods are shortened from 15 years to 2–3 years, preventing soil and vegetative recovery and accelerating erosion",
+          "B. Moving huts dries out the climate",
+          "C. Crops absorb all groundwater",
+          "D. Farmers plant cacti on abandoned land"
+        ],
+        "correctAnswer": "A. Fallow periods are shortened from 15 years to 2–3 years, preventing soil and vegetative recovery and accelerating erosion",
+        "hint": "High land pressure forces shortened fallows; incomplete recovery leads to soil exhaustion, erosion, and dryland degradation.",
+        "workedSolution": "High land pressure forces shortened fallows; incomplete recovery leads to soil exhaustion, erosion, and dryland degradation.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A06",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "A farm balance sheet shows total assets of GHS 120,000 and total liabilities of GHS 45,000. What is the net worth (owner's equity) of the farm business?",
+        "options": [
+          "A. GHS 45,000",
+          "B. GHS 75,000",
+          "C. GHS 120,000",
+          "D. GHS 165,000"
+        ],
+        "correctAnswer": "B. GHS 75,000",
+        "hint": "Owner's equity (Net Worth) = Total Assets - Total Liabilities: GHS 120,000 - GHS 45,000 = GHS 75,000.",
+        "workedSolution": "Owner's equity (Net Worth) = Total Assets - Total Liabilities: GHS 120,000 - GHS 45,000 = GHS 75,000.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A07",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does incorporating deep-rooted agroforestry trees like Faidherbia albida into millet farms improve cereal yields (the 'reverse phenology' effect)?",
+        "options": [
+          "A. Trees shed their leaves during the rainy season, adding nitrogen-rich mulch and allowing sunlight through, while providing shade in the dry season",
+          "B. Trees produce millet grains on their branches",
+          "C. The tree absorbs all the rain",
+          "D. Trees poison competitive weeds"
+        ],
+        "correctAnswer": "A. Trees shed their leaves during the rainy season, adding nitrogen-rich mulch and allowing sunlight through, while providing shade in the dry season",
+        "hint": "*Faidherbia albida* drops leaves during the wet season, supplying mulch and nitrogen without competing with crops for light.",
+        "workedSolution": "*Faidherbia albida* drops leaves during the wet season, supplying mulch and nitrogen without competing with crops for light.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A08",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does intensive monoculture farming lead to high vulnerability to pest outbreaks compared to diverse farming systems?",
+        "options": [
+          "A. Monoculture crops have no genetic material",
+          "B. Genetically uniform host plants provide an unbroken food source, allowing specialized pests to multiply rapidly across the field",
+          "C. Pests avoid eating diverse crops",
+          "D. Monoculture plots produce more rain"
+        ],
+        "correctAnswer": "B. Genetically uniform host plants provide an unbroken food source, allowing specialized pests to multiply rapidly across the field",
+        "hint": "Uniform monocultures provide continuous food and habitat, allowing specialized pests to multiply without natural barriers.",
+        "workedSolution": "Uniform monocultures provide continuous food and habitat, allowing specialized pests to multiply without natural barriers.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A09",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "In a 4-year rotation (Bed 1: Tomato, Bed 2: Cowpea, Bed 3: Carrot, Bed 4: Maize), why is maize placed between carrot and tomato?",
+        "options": [
+          "A. Maize has bright flowers",
+          "B. Maize is a fibrous-rooted grass that extracts nutrients from different depths than tap-rooted carrots, and its heavy residue improves soil organic matter before tomatoes",
+          "C. Maize produces seeds without soil",
+          "D. Carrots and maize belong to the same family"
+        ],
+        "correctAnswer": "B. Maize is a fibrous-rooted grass that extracts nutrients from different depths than tap-rooted carrots, and its heavy residue improves soil organic matter before tomatoes",
+        "hint": "Maize alternates rooting depth with tap-rooted carrots and leaves organic stover that benefits the next heavy feeder.",
+        "workedSolution": "Maize alternates rooting depth with tap-rooted carrots and leaves organic stover that benefits the next heavy feeder.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A10",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does composting cattle manure with straw before field application reduce nitrogen loss compared to spreading fresh manure?",
+        "options": [
+          "A. It freezes the manure",
+          "B. Controlled aerobic decomposition stabilizes volatile ammonium into organic nitrogen forms, reducing ammonia gas volatilization",
+          "C. Straw absorbs all nitrogen and turns into rock",
+          "D. Fresh manure has no nitrogen"
+        ],
+        "correctAnswer": "B. Controlled aerobic decomposition stabilizes volatile ammonium into organic nitrogen forms, reducing ammonia gas volatilization",
+        "hint": "Composting binds volatile ammonia into microbial biomass and humic compounds, cutting nitrogen volatilization.",
+        "workedSolution": "Composting binds volatile ammonia into microbial biomass and humic compounds, cutting nitrogen volatilization.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A11",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why is the economic value of a crop rotation scheme often higher over 5 years than continuous sole cropping of high-value tomatoes?",
+        "options": [
+          "A. Tomatoes stop growing after one year",
+          "B. Continuous tomato cropping leads to soil-borne disease buildup, nematode damage, and rising chemical costs that erode profits",
+          "C. Crop rotation produces gold bullion",
+          "D. Tomatoes require no soil nutrients"
+        ],
+        "correctAnswer": "B. Continuous tomato cropping leads to soil-borne disease buildup, nematode damage, and rising chemical costs that erode profits",
+        "hint": "Monoculture tomatoes incur compounding pest and disease losses, whereas rotation maintains yields and lowers pesticide costs.",
+        "workedSolution": "Monoculture tomatoes incur compounding pest and disease losses, whereas rotation maintains yields and lowers pesticide costs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A12",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary purpose of calculating an enterprise gross margin in farm record analysis?",
+        "options": [
+          "A. It measures total gross income minus variable operating costs, evaluating the profitability of a specific crop or livestock enterprise",
+          "B. It records the farmer's personal age",
+          "C. It calculates rainfall totals",
+          "D. It measures tractor engine volume"
+        ],
+        "correctAnswer": "A. It measures total gross income minus variable operating costs, evaluating the profitability of a specific crop or livestock enterprise",
+        "hint": "Gross margin (Gross Revenue - Variable Costs) evaluates the financial efficiency of individual farm enterprises.",
+        "workedSolution": "Gross margin (Gross Revenue - Variable Costs) evaluates the financial efficiency of individual farm enterprises.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A13",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How do leguminous cover crops (like Mucuna pruriens) suppress perennial weeds like speargrass (Imperata cylindrica)?",
+        "options": [
+          "A. They eat weed roots",
+          "B. Fast-growing vines form a dense, light-blocking mat that exhausts the rhizome energy reserves of light-demanding weeds",
+          "C. They produce weed seeds",
+          "D. They dry up the field"
+        ],
+        "correctAnswer": "B. Fast-growing vines form a dense, light-blocking mat that exhausts the rhizome energy reserves of light-demanding weeds",
+        "hint": "Thick velvet bean vines block sunlight, starving and depleting underground rhizome reserves in shade-intolerant weeds.",
+        "workedSolution": "Thick velvet bean vines block sunlight, starving and depleting underground rhizome reserves in shade-intolerant weeds.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A14",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why is an organic farming certification transitional period (typically 2 to 3 years) required before a farm can sell produce as 'certified organic'?",
+        "options": [
+          "A. To allow inspectors to take vacations",
+          "B. To ensure that past synthetic chemical pesticide and fertilizer residues clear from the soil and biological management stabilizes",
+          "C. To force the farmer to buy new land",
+          "D. Because organic seeds take three years to germinate"
+        ],
+        "correctAnswer": "B. To ensure that past synthetic chemical pesticide and fertilizer residues clear from the soil and biological management stabilizes",
+        "hint": "The transition period allows synthetic agrochemical residues to break down and ensures natural systems are established.",
+        "workedSolution": "The transition period allows synthetic agrochemical residues to break down and ensures natural systems are established.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A15",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary agronomic danger of feeding ruminant animals with wet, frosted forage legumes on a mixed farm?",
+        "options": [
+          "A. Rapid microbial fermentation produces stable protein foam in the rumen, causing acute frothy bloat and suffocation",
+          "B. Forage freezes the cow's teeth",
+          "C. Cows stop producing cud",
+          "D. Legumes dissolve the abomasum"
+        ],
+        "correctAnswer": "A. Rapid microbial fermentation produces stable protein foam in the rumen, causing acute frothy bloat and suffocation",
+        "hint": "Lush wet legumes ferment rapidly, producing viscous foam that blocks gas release and causes life-threatening bloat.",
+        "workedSolution": "Lush wet legumes ferment rapidly, producing viscous foam that blocks gas release and causes life-threatening bloat.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A16",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does keeping a farm diary support legal compliance and quality assurance in commercial farming?",
+        "options": [
+          "A. It documents exact dates, chemical rates, weather conditions, and harvest batches, providing a traceability trail during audits",
+          "B. It replaces national laws",
+          "C. It hides illegal activities",
+          "D. It makes crops grow faster"
+        ],
+        "correctAnswer": "A. It documents exact dates, chemical rates, weather conditions, and harvest batches, providing a traceability trail during audits",
+        "hint": "Daily operational logs verify chemical withdrawal periods, safety protocols, and product traceability for auditors.",
+        "workedSolution": "Daily operational logs verify chemical withdrawal periods, safety protocols, and product traceability for auditors.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A17",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does planting cassava after a multi-year legume fallow produce higher tuber yields than planting it directly after maize?",
+        "options": [
+          "A. Cassava hates maize plants",
+          "B. The legume fallow restores organic nitrogen and builds soil crumb structure, supporting tuber expansion",
+          "C. Cassava eats legume leaves",
+          "D. Maize leaves poison cassava roots"
+        ],
+        "correctAnswer": "B. The legume fallow restores organic nitrogen and builds soil crumb structure, supporting tuber expansion",
+        "hint": "Fallow legumes enrich the soil with nitrogen and improve root-zone physical structure, supporting root tuber growth.",
+        "workedSolution": "Fallow legumes enrich the soil with nitrogen and improve root-zone physical structure, supporting root tuber growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A18",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the function of an enterprise cash-flow budget in farm financial planning?",
+        "options": [
+          "A. It projects the timing of cash inflows and outflows across months, identifying potential deficit periods when operating loans are needed",
+          "B. It records the names of farm animals",
+          "C. It measures the depth of groundwater",
+          "D. It counts the number of tractors owned"
+        ],
+        "correctAnswer": "A. It projects the timing of cash inflows and outflows across months, identifying potential deficit periods when operating loans are needed",
+        "hint": "Cash-flow projections identify monthly timing gaps between expenditures and receipts, helping manage liquidity.",
+        "workedSolution": "Cash-flow projections identify monthly timing gaps between expenditures and receipts, helping manage liquidity.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A19",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does continuous monoculture of cotton often lead to severe pest resistance compared to strip intercropping with sorghum?",
+        "options": [
+          "A. Sorghum eats cotton pests",
+          "B. Continuous sole cropping provides regular host availability and repeated insecticide exposure, selecting for resistant pest biotypes",
+          "C. Cotton plants produce insecticides",
+          "D. Sorghum stops the wind"
+        ],
+        "correctAnswer": "B. Continuous sole cropping provides regular host availability and repeated insecticide exposure, selecting for resistant pest biotypes",
+        "hint": "Monoculture and repeated chemical applications apply strong selection pressure, speeding up insecticide resistance.",
+        "workedSolution": "Monoculture and repeated chemical applications apply strong selection pressure, speeding up insecticide resistance.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A20",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does biochar application enhance the sustainability of sandy soils under land rotation?",
+        "options": [
+          "A. Biochar adds water directly to the soil",
+          "B. Porous, highly stable carbon structures improve cation exchange capacity and water retention, reducing nutrient leaching during fallows",
+          "C. Biochar turns sand into gold",
+          "D. Biochar stops weed seeds from growing"
+        ],
+        "correctAnswer": "B. Porous, highly stable carbon structures improve cation exchange capacity and water retention, reducing nutrient leaching during fallows",
+        "hint": "Stable biochar carbon adds porous surface area, improving nutrient and moisture retention in coarse soils.",
+        "workedSolution": "Stable biochar carbon adds porous surface area, improving nutrient and moisture retention in coarse soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A21",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary indicator of economic solvency on a commercial farm balance sheet?",
+        "options": [
+          "A. Total farm assets exceed total liabilities, meaning the farm could pay off all debts if liquidated",
+          "B. The farm owns five tractors",
+          "C. The farmer has no debt",
+          "D. The farm produces only one crop"
+        ],
+        "correctAnswer": "A. Total farm assets exceed total liabilities, meaning the farm could pay off all debts if liquidated",
+        "hint": "Solvency means total assets exceed total liabilities, indicating positive long-term equity.",
+        "workedSolution": "Solvency means total assets exceed total liabilities, indicating positive long-term equity.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A22",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why are strip cropping systems designed along the contour lines of sloped agricultural land?",
+        "options": [
+          "A. To make fields look attractive from airplanes",
+          "B. Alternating dense cover strips with cultivated crops along contours slows runoff velocity and traps sediment, checking soil erosion",
+          "C. To prevent tractors from tipping over",
+          "D. Because crops grow better on curves"
+        ],
+        "correctAnswer": "B. Alternating dense cover strips with cultivated crops along contours slows runoff velocity and traps sediment, checking soil erosion",
+        "hint": "Contour strips act as physical barriers that slow surface runoff and trap detached soil particles on slopes.",
+        "workedSolution": "Contour strips act as physical barriers that slow surface runoff and trap detached soil particles on slopes.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A23",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does the cultivation of Crotalaria (sunn hemp) in rotation with vegetables suppress root-knot nematodes biologically?",
+        "options": [
+          "A. Crotalaria roots produce pyrrolizidine alkaloids that are nematicidal, acting as a natural soil bio-fumigant",
+          "B. Sunn hemp eats nematode eggs",
+          "C. Sunn hemp freezes the ground",
+          "D. It removes all water from the soil"
+        ],
+        "correctAnswer": "A. Crotalaria roots produce pyrrolizidine alkaloids that are nematicidal, acting as a natural soil bio-fumigant",
+        "hint": "*Crotalaria* exudes allelopathic compounds that suppress nematode reproduction, cleansing the soil naturally.",
+        "workedSolution": "*Crotalaria* exudes allelopathic compounds that suppress nematode reproduction, cleansing the soil naturally.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A24",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the economic role of depreciation calculation when assessing annual farm machinery profitability?",
+        "options": [
+          "A. It accounts for capital asset wear and replacement costs as an operating expense rather than treating machinery as a one-time cash loss",
+          "B. It increases the market value of old machines",
+          "C. It stops engines from burning fuel",
+          "D. It guarantees machinery never breaks"
+        ],
+        "correctAnswer": "A. It accounts for capital asset wear and replacement costs as an operating expense rather than treating machinery as a one-time cash loss",
+        "hint": "Depreciation amortizes equipment purchase costs over its working life, giving an accurate picture of annual profit.",
+        "workedSolution": "Depreciation amortizes equipment purchase costs over its working life, giving an accurate picture of annual profit.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A25",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does intercropping deep-rooted pigeon peas with shallow-rooted sorghum lead to higher water use efficiency (WUE)?",
+        "options": [
+          "A. The crops share identical roots",
+          "B. The crops draw moisture from different soil horizons without competing for the same root-zone water pool",
+          "C. Pigeon peas pump water to the surface for sorghum",
+          "D. Sorghum stops pigeon peas from transpiring"
+        ],
+        "correctAnswer": "B. The crops draw moisture from different soil horizons without competing for the same root-zone water pool",
+        "hint": "Stratified root depths draw moisture from separate soil layers, maximizing total water uptake without interference.",
+        "workedSolution": "Stratified root depths draw moisture from separate soil layers, maximizing total water uptake without interference.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A26",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why do organic certification rules prohibit using municipal sewage sludge (biosolids) as crop fertilizer?",
+        "options": [
+          "A. Sludge contains no organic matter",
+          "B. Urban sludge frequently contains heavy metals, pharmaceutical residues, and industrial chemical contaminants",
+          "C. Sludge is too cold for plants",
+          "D. Organic crops reject human waste"
+        ],
+        "correctAnswer": "B. Urban sludge frequently contains heavy metals, pharmaceutical residues, and industrial chemical contaminants",
+        "hint": "Municipal sludge risks introducing heavy metals, pharmaceuticals, and synthetic contaminants into agricultural soils.",
+        "workedSolution": "Municipal sludge risks introducing heavy metals, pharmaceuticals, and synthetic contaminants into agricultural soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A27",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does keeping a breeding record on a sheep farm prevent inbreeding depression?",
+        "options": [
+          "A. By tracking sire and dam lineages, ensuring close relatives are not mated, which preserves herd vigor and fertility",
+          "B. By painting ram horns blue",
+          "C. By separating rams from ewes permanently",
+          "D. By feeding sheep with corn"
+        ],
+        "correctAnswer": "A. By tracking sire and dam lineages, ensuring close relatives are not mated, which preserves herd vigor and fertility",
+        "hint": "Lineage records prevent mating between close relatives, avoiding inbreeding depression and genetic defects.",
+        "workedSolution": "Lineage records prevent mating between close relatives, avoiding inbreeding depression and genetic defects.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A28",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does continuous monoculture of maize require steadily increasing applications of synthetic nitrogen fertilizer to maintain yields?",
+        "options": [
+          "A. Maize plants learn to ignore fertilizer",
+          "B. Repeated extraction without organic replenishment depletes native soil organic matter and microbial mineralization capacity",
+          "C. Synthetic fertilizer turns the soil into sand",
+          "D. Maize plants produce less roots each year"
+        ],
+        "correctAnswer": "B. Repeated extraction without organic replenishment depletes native soil organic matter and microbial mineralization capacity",
+        "hint": "Continuous cropping depletes natural soil organic matter, leaving crops dependent on synthetic mineral top-dressing.",
+        "workedSolution": "Continuous cropping depletes natural soil organic matter, leaving crops dependent on synthetic mineral top-dressing.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A29",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary indicator of agricultural liquidity on a farm financial statement?",
+        "options": [
+          "A. Current Ratio (Current Assets divided by Current Liabilities), which measures the ability to pay short-term bills over the coming year",
+          "B. Total number of animals owned",
+          "C. Total area of farm land",
+          "D. Depth of farm wells"
+        ],
+        "correctAnswer": "A. Current Ratio (Current Assets divided by Current Liabilities), which measures the ability to pay short-term bills over the coming year",
+        "hint": "The current ratio measures short-term liquidity, indicating whether current assets can cover near-term debts.",
+        "workedSolution": "The current ratio measures short-term liquidity, indicating whether current assets can cover near-term debts.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A30",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does rotational grazing of cattle within fenced paddocks on a mixed farm improve pasture carrying capacity?",
+        "options": [
+          "A. Cattle eat all the grass down to the roots",
+          "B. Short, intense grazing followed by recovery rest periods prevents overgrazing and allows pasture plants to rebuild root carbohydrate reserves",
+          "C. Paddocks prevent grass from transpiring",
+          "D. Cattle produce less dung in paddocks"
+        ],
+        "correctAnswer": "B. Short, intense grazing followed by recovery rest periods prevents overgrazing and allows pasture plants to rebuild root carbohydrate reserves",
+        "hint": "Short grazing periods followed by rest intervals give forage grasses time to rebuild root reserves and biomass.",
+        "workedSolution": "Short grazing periods followed by rest intervals give forage grasses time to rebuild root reserves and biomass.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A31",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does a 3-bed rotation plan involving tomato, cowpea, and carrot help maintain balance across the soil nitrogen pool?",
+        "options": [
+          "A. Tomato uses large amounts of nitrogen, cowpea restores nitrogen via fixation, and carrot feeds at deeper depths with moderate nutrient demands",
+          "B. All three crops fix nitrogen",
+          "C. Carrots destroy all soil nitrogen",
+          "D. Nitrogen is not needed by vegetables"
+        ],
+        "correctAnswer": "A. Tomato uses large amounts of nitrogen, cowpea restores nitrogen via fixation, and carrot feeds at deeper depths with moderate nutrient demands",
+        "hint": "Heavy feeding by tomatoes is offset by legume nitrogen addition, followed by carrots feeding at deeper levels.",
+        "workedSolution": "Heavy feeding by tomatoes is offset by legume nitrogen addition, followed by carrots feeding at deeper levels.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A32",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary operational constraint when converting a 100-hectare commercial maize monoculture into an organic production system?",
+        "options": [
+          "A. Sourcing and applying the massive quantities of compliant organic manure needed to supply nitrogen at that scale",
+          "B. Organic maize cannot grow on large farms",
+          "C. Tractors cannot operate on organic farms",
+          "D. Organic crops reject rain"
+        ],
+        "correctAnswer": "A. Sourcing and applying the massive quantities of compliant organic manure needed to supply nitrogen at that scale",
+        "hint": "Supplying large crop acreages with sufficient organic nitrogen via compost and manure demands huge input volumes and labor.",
+        "workedSolution": "Supplying large crop acreages with sufficient organic nitrogen via compost and manure demands huge input volumes and labor.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A33",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does the inclusion of fallow periods in traditional farming systems suppress soil fungal pathogens like Fusarium?",
+        "options": [
+          "A. Fallow soil freezes completely",
+          "B. In the absence of susceptible host crop roots, fungal resting spores fail to reproduce and decline through natural microbial antagonism",
+          "C. Fallow land produces chemical fungicides",
+          "D. Weeds eat all the fungi"
+        ],
+        "correctAnswer": "B. In the absence of susceptible host crop roots, fungal resting spores fail to reproduce and decline through natural microbial antagonism",
+        "hint": "Withholding host crops deprives fungal pathogens of targets, allowing diverse soil microbes to outcompete them.",
+        "workedSolution": "Withholding host crops deprives fungal pathogens of targets, allowing diverse soil microbes to outcompete them.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A34",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary role of a feed conversion ratio (FCR) record in mixed-farming livestock management?",
+        "options": [
+          "A. Measuring the kilograms of feed required to produce one kilogram of animal liveweight gain, tracking feeding efficiency",
+          "B. Measuring how fast animals run",
+          "C. Counting the number of meals animals eat daily",
+          "D. Recording the color of feed"
+        ],
+        "correctAnswer": "A. Measuring the kilograms of feed required to produce one kilogram of animal liveweight gain, tracking feeding efficiency",
+        "hint": "FCR calculates feeding efficiency (feed input per unit of gain), showing how effectively animals convert feed into meat.",
+        "workedSolution": "FCR calculates feeding efficiency (feed input per unit of gain), showing how effectively animals convert feed into meat.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A35",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does relay cropping (sowing a second crop into an existing standing crop before harvest) maximize seasonal radiation use efficiency?",
+        "options": [
+          "A. The second crop grows in complete darkness",
+          "B. It overlaps vegetative canopies, capturing sunlight that would otherwise strike bare soil during the post-harvest gap",
+          "C. It stops the first crop from ripening",
+          "D. Relay crops produce light"
+        ],
+        "correctAnswer": "B. It overlaps vegetative canopies, capturing sunlight that would otherwise strike bare soil during the post-harvest gap",
+        "hint": "Relay cropping maintains continuous ground canopy cover, capturing sunlight during transition windows between seasons.",
+        "workedSolution": "Relay cropping maintains continuous ground canopy cover, capturing sunlight during transition windows between seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A36",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why are synthetic nitrogen fertilizers like urea associated with soil acidification under continuous application?",
+        "options": [
+          "A. Urea turns into battery acid",
+          "B. Microbial nitrification of ammonium ions (NH4+) into nitrate releases hydrogen ions (H+), lowering soil pH over time",
+          "C. Urea evaporates all soil calcium",
+          "D. Urea stops water infiltration"
+        ],
+        "correctAnswer": "B. Microbial nitrification of ammonium ions (NH4+) into nitrate releases hydrogen ions (H+), lowering soil pH over time",
+        "hint": "Nitrification of ammonium-based fertilizers produces free hydrogen ions, gradually lowering soil pH if unbuffered.",
+        "workedSolution": "Nitrification of ammonium-based fertilizers produces free hydrogen ions, gradually lowering soil pH if unbuffered.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A37",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary management reason for separating farm business accounts from personal household finances?",
+        "options": [
+          "A. To hide personal spending from family members",
+          "B. To ensure business cash is not diverted to household costs, allowing clear evaluation of true farm profitability",
+          "C. Because banks ban family members from visiting farms",
+          "D. It eliminates the need to pay for labor"
+        ],
+        "correctAnswer": "B. To ensure business cash is not diverted to household costs, allowing clear evaluation of true farm profitability",
+        "hint": "Separating accounts prevents personal expenses from distorting farm financial records, ensuring accurate profit analysis.",
+        "workedSolution": "Separating accounts prevents personal expenses from distorting farm financial records, ensuring accurate profit analysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A38",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does rotational green manuring with Sesbania rostrata enhance subsequent lowland rice yields in paddy fields?",
+        "options": [
+          "A. Sesbania stops weeds from floating",
+          "B. Its stem and root nodules fix nitrogen in waterlogged conditions, adding substantial organic biomass that mineralizes into ammonium in flooded soils",
+          "C. Sesbania turns paddy water into fresh milk",
+          "D. It absorbs all water from the paddy"
+        ],
+        "correctAnswer": "B. Its stem and root nodules fix nitrogen in waterlogged conditions, adding substantial organic biomass that mineralizes into ammonium in flooded soils",
+        "hint": "*Sesbania* fixes nitrogen through stem and root nodules in flooded soils, releasing available ammonium for rice.",
+        "workedSolution": "*Sesbania* fixes nitrogen through stem and root nodules in flooded soils, releasing available ammonium for rice.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A39",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why does a farm enterprise with a high debt-to-asset ratio face high financial vulnerability during drought years?",
+        "options": [
+          "A. Debt causes drought to last longer",
+          "B. Fixed debt payments must be serviced regardless of yield; crop failures eliminate operating revenue, risking bankruptcy",
+          "C. Banks take the rain away",
+          "D. High debt dissolves the soil"
+        ],
+        "correctAnswer": "B. Fixed debt payments must be serviced regardless of yield; crop failures eliminate operating revenue, risking bankruptcy",
+        "hint": "High debt creates fixed financial obligations that can force foreclosure when drought eliminates seasonal harvest revenues.",
+        "workedSolution": "High debt creates fixed financial obligations that can force foreclosure when drought eliminates seasonal harvest revenues.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A40",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary agronomic benefit of intercropping maize with a climbing bean rather than a bush bean?",
+        "options": [
+          "A. Climbing beans use the stiff maize stalk for structural support, utilizing vertical canopy space without needing wooden stakes",
+          "B. Climbing beans produce no roots",
+          "C. Bush beans require more rain",
+          "D. Climbing beans turn maize into a legume"
+        ],
+        "correctAnswer": "A. Climbing beans use the stiff maize stalk for structural support, utilizing vertical canopy space without needing wooden stakes",
+        "hint": "Stiff maize stalks provide natural trellising for climbing beans, maximizing vertical canopy efficiency without staking costs.",
+        "workedSolution": "Stiff maize stalks provide natural trellising for climbing beans, maximizing vertical canopy efficiency without staking costs.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A41",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why is the application of raw, uncomposted municipal solid waste hazardous on vegetable farms?",
+        "options": [
+          "A. Waste contains no plant nutrients",
+          "B. Uncomposted waste may introduce heavy metals, glass splinters, and enteric human pathogens like Salmonella onto leafy vegetables",
+          "C. Municipal waste turns vegetables into plastic",
+          "D. Waste cools the soil to freezing"
+        ],
+        "correctAnswer": "B. Uncomposted waste may introduce heavy metals, glass splinters, and enteric human pathogens like Salmonella onto leafy vegetables",
+        "hint": "Raw waste can contaminate fresh vegetables with human pathogens, toxic residues, and sharp physical debris.",
+        "workedSolution": "Raw waste can contaminate fresh vegetables with human pathogens, toxic residues, and sharp physical debris.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A42",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does calculating the Opportunity Cost of farm capital guide agricultural investment decisions?",
+        "options": [
+          "A. It evaluates the financial return that was sacrificed by choosing one farm enterprise over the next best alternative",
+          "B. It records the cost of buying fertilizer only",
+          "C. It measures how long a tractor can run",
+          "D. It guarantees zero risk in farming"
+        ],
+        "correctAnswer": "A. It evaluates the financial return that was sacrificed by choosing one farm enterprise over the next best alternative",
+        "hint": "Opportunity cost quantifies the potential returns forgone from the best alternative use of money or land.",
+        "workedSolution": "Opportunity cost quantifies the potential returns forgone from the best alternative use of money or land.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A43",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why do organic farming systems experience less soil erosion during extreme storm events than conventional monoculture fields?",
+        "options": [
+          "A. Organic farms are always built on flat tables",
+          "B. Higher soil organic matter improves crumb structure, water infiltration, and surface cover, reducing runoff velocity",
+          "C. Rain avoids falling on organic farms",
+          "D. Organic crops grow without water"
+        ],
+        "correctAnswer": "B. Higher soil organic matter improves crumb structure, water infiltration, and surface cover, reducing runoff velocity",
+        "hint": "Higher organic matter content and continuous cover enhance soil infiltration, reducing runoff and particle detachment.",
+        "workedSolution": "Higher organic matter content and continuous cover enhance soil infiltration, reducing runoff and particle detachment.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A44",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What causes the rapid decline of crop yields under continuous cropping in tropical rainforest soils when fertilizers are omitted?",
+        "options": [
+          "A. Soil minerals turn into wood",
+          "B. High heat and heavy rainfall rapidly oxidize thin organic matter and leach soluble base cations (Ca2+, Mg2+, K+) from the root zone",
+          "C. Forest trees re-grow underground",
+          "D. Crops stop absorbing sunlight"
+        ],
+        "correctAnswer": "B. High heat and heavy rainfall rapidly oxidize thin organic matter and leach soluble base cations (Ca2+, Mg2+, K+) from the root zone",
+        "hint": "Warm, humid conditions speed up organic matter oxidation, while heavy rainfall leaches base cations from the upper soil.",
+        "workedSolution": "Warm, humid conditions speed up organic matter oxidation, while heavy rainfall leaches base cations from the upper soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A45",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why is crop diversification through mixed farming considered an effective climate change adaptation strategy?",
+        "options": [
+          "A. It stops global warming immediately",
+          "B. Multiple crop varieties and livestock species respond differently to weather stresses, reducing total farm failure under climate extremes",
+          "C. Diversified farms produce no greenhouse gases",
+          "D. It allows farmers to live without rain"
+        ],
+        "correctAnswer": "B. Multiple crop varieties and livestock species respond differently to weather stresses, reducing total farm failure under climate extremes",
+        "hint": "Multi-species production spreads climate risk; diverse crops and livestock have different drought and heat tolerances.",
+        "workedSolution": "Multi-species production spreads climate risk; diverse crops and livestock have different drought and heat tolerances.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A46",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does the inclusion of a multi-year grass-clover ley in a crop rotation rebuild depleted soil structure?",
+        "options": [
+          "A. Grass roots freeze the subsoil",
+          "B. Extensive fibrous grass roots and microbial mycorrhizae produce glomalin and humic glues that aggregate soil particles into stable crumbs",
+          "C. Clover leaves turn into rock",
+          "D. Grazing animals remove all nutrients"
+        ],
+        "correctAnswer": "B. Extensive fibrous grass roots and microbial mycorrhizae produce glomalin and humic glues that aggregate soil particles into stable crumbs",
+        "hint": "Fibrous grass roots and fungal mycorrhizae produce binding agents that aggregate loose soil into stable crumb structures.",
+        "workedSolution": "Fibrous grass roots and fungal mycorrhizae produce binding agents that aggregate loose soil into stable crumb structures.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A47",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "What is the primary financial risk of relying exclusively on hired labor without keeping labor productivity records on a large farm?",
+        "options": [
+          "A. Workers will turn into farmers",
+          "B. Labor costs can escalate unchecked, and low task completion rates can turn expected enterprise profits into operating losses",
+          "C. Labor records are required to buy seeds",
+          "D. Farm machines refuse to work with hired labor"
+        ],
+        "correctAnswer": "B. Labor costs can escalate unchecked, and low task completion rates can turn expected enterprise profits into operating losses",
+        "hint": "Unmonitored labor can lead to wage inflation, wasted person-hours, and unmanaged production expenses.",
+        "workedSolution": "Unmonitored labor can lead to wage inflation, wasted person-hours, and unmanaged production expenses.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A48",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Why do biological pest management strategies in organic farming focus on 'pest suppression' rather than 'total pest eradication'?",
+        "options": [
+          "A. Organic farmers like having pests in their food",
+          "B. Maintaining a low pest population provides a necessary food source to keep beneficial predator populations alive and active in the field",
+          "C. Eradication of pests is forbidden by international trade laws",
+          "D. Pests cannot be killed by any biological agent"
+        ],
+        "correctAnswer": "B. Maintaining a low pest population provides a necessary food source to keep beneficial predator populations alive and active in the field",
+        "hint": "Maintaining low pest levels sustains resident beneficial predator populations, ensuring continuous biological control.",
+        "workedSolution": "Maintaining low pest levels sustains resident beneficial predator populations, ensuring continuous biological control.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A49",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "How does the strategic integration of honeybees (apiculture) into a mixed cropping fruit orchard produce synergistic yields?",
+        "options": [
+          "A. Bees eat fruit-boring caterpillars only",
+          "B. Bees provide cross-pollination services that increase fruit set and quality, while collecting nectar to produce honey and wax income",
+          "C. Bees shade fruit trees from intense sunlight",
+          "D. Honeybees produce plant fertilizers"
+        ],
+        "correctAnswer": "B. Bees provide cross-pollination services that increase fruit set and quality, while collecting nectar to produce honey and wax income",
+        "hint": "Bees enhance orchard pollination, raising fruit yields and quality while providing honey as a secondary revenue stream.",
+        "workedSolution": "Bees enhance orchard pollination, raising fruit yields and quality while providing honey as a secondary revenue stream.",
+        "points": 1
+      },
+      {
+        "id": "B7_FARM_A50",
+        "difficulty": "hard",
+        "type": "objective",
+        "prompt": "Which combination of agricultural practices forms the core of Climate-Smart Conservation Agriculture (CA)?",
+        "options": [
+          "A. Heavy annual plowing, continuous monoculture, and burning all crop residues",
+          "B. Minimum soil disturbance (zero tillage), continuous permanent organic soil cover (mulch), and diversified crop rotations/associations",
+          "C. Clearing virgin forests, relying on shifting cultivation, and abandoning farms",
+          "D. Applying chemical fertilizers exclusively on bare, uncovered soil"
+        ],
+        "correctAnswer": "B. Minimum soil disturbance (zero tillage), continuous permanent organic soil cover (mulch), and diversified crop rotations/associations",
+        "hint": "Conservation Agriculture rests on three agronomic pillars: minimal mechanical soil disturbance, permanent organic soil cover, and diversified crop rotations.",
+        "workedSolution": "Conservation Agriculture rests on three agronomic pillars: minimal mechanical soil disturbance, permanent organic soil cover, and diversified crop rotations.",
         "points": 1
       }
     ]
   },
-  {
+{
     "id": "b8_sci_strand3_farming_systems",
     "gradeLevel": "BS8",
     "strandNumber": 3,
