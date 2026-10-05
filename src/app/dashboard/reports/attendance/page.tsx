@@ -503,7 +503,7 @@ export default function AttendanceReportsPage() {
         const trend = Object.values(dailyGroups)
             .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
 
-                // Calculate Class Register Compliance across active classes
+                // Calculate Class Register Compliance across active classes with enrolled students
         let classCompliance: any = null;
         if (selectedClassId === 'all' && classes && classes.length > 0) {
             const submittedClassIds = new Set<string>();
@@ -517,12 +517,32 @@ export default function AttendanceReportsPage() {
                 });
             }
 
-            const submittedClasses = classes.filter((c: any) => submittedClassIds.has(c.id));
-            const pendingClasses = classes.filter((c: any) => !submittedClassIds.has(c.id));
-            const complianceRate = Math.round((submittedClasses.length / classes.length) * 100);
+            // Count enrolled students per class
+            const enrolledPerClass = new Map<string, number>();
+            if (Array.isArray(students) && students.length > 0) {
+                students.forEach((s: any) => {
+                    if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
+                        if (s.classId) {
+                            enrolledPerClass.set(s.classId, (enrolledPerClass.get(s.classId) || 0) + 1);
+                        }
+                    }
+                });
+            }
+
+            // Only require attendance from classes that have enrolled students
+            const activeClassesWithStudents = classes.filter((c: any) => {
+                if (enrolledPerClass.size === 0) return true;
+                return (enrolledPerClass.get(c.id) || 0) > 0;
+            });
+
+            const submittedClasses = activeClassesWithStudents.filter((c: any) => submittedClassIds.has(c.id));
+            const pendingClasses = activeClassesWithStudents.filter((c: any) => !submittedClassIds.has(c.id));
+            const complianceRate = activeClassesWithStudents.length > 0
+                ? Math.round((submittedClasses.length / activeClassesWithStudents.length) * 100)
+                : 100;
 
             classCompliance = {
-                total: classes.length,
+                total: activeClassesWithStudents.length,
                 submittedCount: submittedClasses.length,
                 pendingCount: pendingClasses.length,
                 complianceRate,

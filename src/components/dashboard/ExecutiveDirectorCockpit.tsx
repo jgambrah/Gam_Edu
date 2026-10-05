@@ -539,18 +539,36 @@ export function ExecutiveDirectorCockpit({
       (dashboardSummary?.attendance as any).submittedClassIds.forEach((id: string) => submittedIds.add(id));
     }
 
-    const submittedClasses = classes.filter((c: any) => submittedIds.has(c.id));
-    const pendingClasses = classes.filter((c: any) => !submittedIds.has(c.id));
+    // Count active enrolled students per class from roster
+    const activeRosterByClass = new Map<string, number>();
+    if (Array.isArray(students) && students.length > 0) {
+      students.forEach((s: any) => {
+        if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
+          if (s.classId) {
+            activeRosterByClass.set(s.classId, (activeRosterByClass.get(s.classId) || 0) + 1);
+          }
+        }
+      });
+    }
+
+    // A class only expects attendance if it has at least 1 active student enrolled
+    const activeClassesWithStudents = classes.filter((c: any) => {
+      if (activeRosterByClass.size === 0) return true;
+      return (activeRosterByClass.get(c.id) || 0) > 0;
+    });
+
+    const submittedClasses = activeClassesWithStudents.filter((c: any) => submittedIds.has(c.id));
+    const pendingClasses = activeClassesWithStudents.filter((c: any) => !submittedIds.has(c.id));
 
     return {
-      total: classes.length,
+      total: activeClassesWithStudents.length,
       submittedCount: submittedClasses.length,
       pendingCount: pendingClasses.length,
       submittedClasses,
       pendingClasses,
       hasData: submittedClasses.length > 0
     };
-  }, [classes, attendance, dashboardSummary?.attendance]);
+  }, [classes, attendance, students, dashboardSummary?.attendance]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || dashboardSummary?.staff?.total || (dashboardSummary?.staff?.presentToday ? Number(dashboardSummary.staff.presentToday) : 0);
