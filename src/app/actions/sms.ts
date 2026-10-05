@@ -85,7 +85,7 @@ async function verifyCallerAuthorization(db: any, auth: any, idToken: string, ta
  * Parses and normalizes phone numbers into E.164-compatible Ghana format (233...).
  * Handles multiple numbers separated by commas, slashes, semicolons, etc.
  */
-export function extractAndFormatPhoneNumbers(rawPhone: any): string[] {
+function extractAndFormatPhoneNumbers(rawPhone: any): string[] {
   if (!rawPhone) return [];
   const parts = String(rawPhone).split(/[,/;\&|]+/);
   const results: string[] = [];
@@ -119,7 +119,7 @@ function formatPhoneNumber(phone: string): string {
  * 3. parents collection where studentIds array-contains student document ID
  * 4. parents collection where studentIds array-contains student admission number
  */
-export async function resolveParentPhonesForStudent(db: any, schoolId: string, studentId: string, studentName?: string) {
+async function resolveParentPhonesForStudent(db: any, schoolId: string, studentId: string, studentName?: string) {
   const candidatePhones: string[] = [];
   let studentDocId = studentId;
   let studentData: any = null;
@@ -204,7 +204,7 @@ export async function resolveParentPhonesForStudent(db: any, schoolId: string, s
   };
 }
 
-export interface SendPaymentSMSParams {
+export type SendPaymentSMSParams = {
   schoolId: string;
   studentId: string;
   studentName: string;
@@ -216,7 +216,7 @@ export interface SendPaymentSMSParams {
   idToken?: string;
   senderName?: string;
   senderRole?: string;
-}
+};
 
 /**
  * Automatically dispatches an SMS notification to the parent when a fee payment is recorded.
@@ -364,7 +364,7 @@ export async function sendPaymentSMSNotificationAction(params: SendPaymentSMSPar
   }
 }
 
-export interface BulkPaymentSMSParams {
+export type BulkPaymentSMSParams = {
   schoolId: string;
   payments: Array<{
     studentId: string;
@@ -376,7 +376,7 @@ export interface BulkPaymentSMSParams {
     remainingBalance?: number;
   }>;
   idToken?: string;
-}
+};
 
 /**
  * Processes automated payment SMS receipts for a bulk batch of processed student payments.
