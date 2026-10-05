@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
+import { sendBulkPaymentSMSNotificationAction } from '@/app/actions/sms';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 
@@ -288,6 +289,7 @@ export default function BulkDailyReceiptsPage() {
                 payAmount: number;
                 description: string;
                 receiptId: string;
+                remainingBalance?: number;
             }[] = [];
 
             for (const bill of billsToPay) {
@@ -337,12 +339,15 @@ export default function BulkDailyReceiptsPage() {
                 totalCollected += payAmount;
                 processedCount++;
 
+                const remBal = Math.max(0, bill.billedAmount - newAmountPaid - (bill.waiverAmount || 0));
+
                 paymentsToNotify.push({
                     studentId: bill.studentId,
                     studentName: bill.studentName,
                     payAmount,
                     description: finalDescription,
-                    receiptId
+                    receiptId,
+                    remainingBalance: remBal
                 });
             }
 
@@ -352,8 +357,31 @@ export default function BulkDailyReceiptsPage() {
 
             await batch.commit();
 
-            // Notify parents for each processed payment asynchronously via DM and SMS
+            // Dispatch automated SMS receipts via server action for all processed payments
             const currentToken = await user.getIdToken().catch(() => undefined);
+            if (currentToken && paymentsToNotify.length > 0) {
+                sendBulkPaymentSMSNotificationAction({
+                    schoolId,
+                    payments: paymentsToNotify.map(p => ({
+                        studentId: p.studentId,
+                        studentName: p.studentName,
+                        paymentAmount: p.payAmount,
+                        feeType: p.description,
+                        receiptId: p.receiptId,
+                        paymentMethod: 'Cash',
+                        remainingBalance: (p as any).remainingBalance
+                    })),
+                    idToken: currentToken
+                }).then(res => {
+                    if (res?.success) {
+                        console.log(`[Bulk SMS] Dispatched ${res.successCount} SMS receipts out of ${res.total}`);
+                    }
+                }).catch(err => {
+                    console.error('[Bulk SMS] Background dispatch error:', err);
+                });
+            }
+
+            // Also trigger in-app DMs for parents
             paymentsToNotify.forEach(p => {
                 sendPaymentNotificationToParent({
                     firestore,
@@ -367,13 +395,14 @@ export default function BulkDailyReceiptsPage() {
                     senderUid: user.uid,
                     senderName: user.displayName || user.email || 'Accountant',
                     senderRole: 'Accountant',
-                    idToken: currentToken
+                    idToken: currentToken,
+                    remainingBalance: (p as any).remainingBalance
                 }).catch(err => {
-                    console.error(`Failed to send parent notification for student ${p.studentName}:`, err);
+                    console.warn(`[Bulk DM] In-app DM skipped for ${p.studentName}:`, err);
                 });
             });
 
-            toast({ title: "Payments Processed! 🎉", description: `Successfully received GH₵${totalCollected.toFixed(2)} from ${processedCount} students.` });
+            toast({ title: "Payments Processed! ??", description: `Successfully received GHS ${totalCollected.toFixed(2)} from ${processedCount} students.` });
             
             setPendingBills([]);
             setPaymentData({});

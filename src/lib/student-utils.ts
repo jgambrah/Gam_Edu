@@ -1,7 +1,7 @@
-
-import type { Student } from '@/lib/types';
+﻿import type { Student } from '@/lib/types';
 import { doc, collection, runTransaction, serverTimestamp, query, where, getDocs, addDoc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
+import { sendPaymentSMSNotificationAction } from '@/app/actions/sms';
 
 /**
  * Formats student name with ID for display
@@ -50,7 +50,6 @@ export function searchStudent(student: Student, searchTerm: string): boolean {
 export function formatStudentBadge(student: Student): string {
   return `${student.firstName} ${student.lastName.charAt(0)}. - ${formatStudentId(student)}`;
 }
-
 
 /**
  * Atomically increments and returns the next student ID.
@@ -122,8 +121,6 @@ export async function generateNextReceiptId(firestore: Firestore, schoolId: stri
   return `RCT-${year}-${paddedNumber}`;
 }
 
-import { sendSchoolSMSAction } from '@/app/actions/sms';
-
 export interface PaymentNotificationConfig {
   firestore: Firestore;
   schoolId: string;
@@ -141,7 +138,9 @@ export interface PaymentNotificationConfig {
 }
 
 /**
- * Sends a direct message notification to the linked parent(s) of a student when a payment is recorded.
+ * Sends notifications to the parent(s) of a student when a payment is recorded:
+ * 1. An automated SMS payment receipt via the school's configured gateway (Arkesel/Hubtel).
+ * 2. An in-app direct message if the parent has an active app account.
  */
 export async function sendPaymentNotificationToParent(config: PaymentNotificationConfig): Promise<{ success: boolean; parentCount: number; error?: string }> {
   const {
@@ -158,168 +157,11 @@ export async function sendPaymentNotificationToParent(config: PaymentNotificatio
     senderRole = 'Staff'
   } = config;
 
+  let parentCount = 0;
+
+  // 1. Dispatch SMS payment notification via Server Action (handles phone resolution, gateway routing, and audit logging)
+  let smsResult: any = null;
   try {
-    // 1. Fetch school name
-    const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
-    const schoolName = schoolDoc.data()?.name || 'our school';
-
-    let parentCount = 0;
-    const candidatePhones: Array<{ name: string; phone: string }> = [];
-
-    // 2. Query parents linked to the student in the parents collection (for in-app Direct Messaging)
-    try {
-      const parentsQuery = query(
-        collection(firestore, 'parents'),
-        where('schoolId', '==', schoolId),
-        where('studentIds', 'array-contains', studentId)
-      );
-      const parentsSnap = await getDocs(parentsQuery);
-
-      if (!parentsSnap.empty) {
-        for (const parentDoc of parentsSnap.docs) {
-          const parentData = parentDoc.data();
-          const parentId = parentDoc.id;
-          const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
-
-          const rawPhone = parentData.phone || parentData.phoneNumber || parentData.telephone || parentData.contactNumber;
-          if (rawPhone) {
-            candidatePhones.push({ name: parentName, phone: String(rawPhone).trim() });
-          }
-
-          // 3. Find if there's an existing 1-on-1 chat
-          const chatsQuery = query(
-            collection(firestore, 'direct_messages'),
-            where('schoolId', '==', schoolId),
-            where('participants', 'array-contains', parentId)
-          );
-          const chatsSnap = await getDocs(chatsQuery);
-          
-          let chatId = '';
-          const existingChat = chatsSnap.docs.find(d => {
-            const data = d.data();
-            return !data.isGroup && data.participants.includes(senderUid);
-          });
-
-          if (existingChat) {
-            chatId = existingChat.id;
-          } else {
-            // Create new direct chat
-            const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
-              participants: [senderUid, parentId],
-              participantDetails: {
-                [senderUid]: { name: senderName, role: senderRole, photoURL: null },
-                [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
-              },
-              lastMessage: 'Receipt acknowledged',
-              lastMessageTime: serverTimestamp(),
-              unreadCount: { [parentId]: 1, [senderUid]: 0 },
-              schoolId,
-              isGroup: false
-            });
-            chatId = newChatRef.id;
-          }
-
-          // 4. Construct direct message content
-          const msgText = `Dear ${parentName},\n\n` +
-            `This is to acknowledge the receipt of your payment of GH₵${paymentAmount.toFixed(2)} ` +
-            `towards ${feeType} for your ward, ${studentName}.\n\n` +
-            `Receipt Reference: ${receiptId}\n` +
-            `Payment Method: ${paymentMethod}\n\n` +
-            `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
-            `Best regards,\n` +
-            `${senderName} (${senderRole})\n` +
-            `${schoolName}`;
-
-          // 5. Send in-app message
-          await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), {
-            text: msgText,
-            senderId: senderUid,
-            createdAt: serverTimestamp(),
-            type: 'text',
-            status: 'sent'
-          });
-
-          // 6. Update direct_messages metadata
-          const chatRef = doc(firestore, 'direct_messages', chatId);
-          const chatUpdate: any = {
-            lastMessage: `Payment acknowledged: GH₵${paymentAmount.toFixed(2)}`,
-            lastMessageTime: serverTimestamp()
-          };
-          
-          chatUpdate[`unreadCount.${parentId}`] = increment(1);
-          await updateDoc(chatRef, chatUpdate);
-
-          parentCount++;
-        }
-      }
-    } catch (parentErr) {
-      console.warn('Could not query parents collection for in-app DM:', parentErr);
-    }
-
-    // 3. Fallback/Supplement: Always check student document for registered parent/guardian phone numbers
-    if (studentId) {
-      try {
-        let studentData: any = null;
-        const studentDirectSnap = await getDoc(doc(firestore, 'students', studentId));
-        if (studentDirectSnap.exists()) {
-          studentData = studentDirectSnap.data();
-        } else {
-          // In case studentId passed is admission number / code
-          const q1 = query(
-            collection(firestore, 'students'),
-            where('schoolId', '==', schoolId),
-            where('studentId', '==', studentId)
-          );
-          const snap1 = await getDocs(q1);
-          if (!snap1.empty) {
-            studentData = snap1.docs[0].data();
-          } else {
-            const q2 = query(
-              collection(firestore, 'students'),
-              where('schoolId', '==', schoolId),
-              where('uid', '==', studentId)
-            );
-            const snap2 = await getDocs(q2);
-            if (!snap2.empty) {
-              studentData = snap2.docs[0].data();
-            }
-          }
-        }
-
-        if (studentData) {
-          const possiblePhones = [
-            studentData.parentPhone,
-            studentData.guardianPhone,
-            studentData.emergencyPhone,
-            studentData.phone,
-            studentData.parent1?.phone,
-            studentData.parent2?.phone,
-            studentData.emergencyContact?.phone,
-            studentData.contactNumber,
-            studentData.telephone,
-            studentData.fatherPhone,
-            studentData.motherPhone,
-            studentData.smsPhone
-          ];
-
-          for (const rawP of possiblePhones) {
-            if (rawP && typeof rawP === 'string' && rawP.trim().length > 0) {
-              const cleanP = rawP.trim();
-              if (!candidatePhones.some(c => c.phone.replace(/\s+/g, '') === cleanP.replace(/\s+/g, ''))) {
-                candidatePhones.push({
-                  name: studentData.parentName || studentData.guardianName || studentData.parent1?.name || 'Parent',
-                  phone: cleanP
-                });
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch student parent phone for SMS receipt:', err);
-      }
-    }
-
-    // 4. Dispatch SMS receipt to connected school SMS API (Arkesel / Hubtel)
     let token = config.idToken;
     if (!token && typeof window !== 'undefined') {
       try {
@@ -330,37 +172,140 @@ export async function sendPaymentNotificationToParent(config: PaymentNotificatio
       }
     }
 
-    if (token && candidatePhones.length > 0) {
-      const balanceSnippet = config.remainingBalance !== undefined && config.remainingBalance > 0
-        ? ` Bal: GH₵${config.remainingBalance.toFixed(2)}.`
-        : (config.remainingBalance === 0 ? ` Paid in full.` : '');
-
-      for (const { name, phone } of candidatePhones) {
-        const smsContent = `Receipt Ref: ${receiptId}. Payment of GH₵${paymentAmount.toFixed(2)} received for ${studentName} (${feeType}). Method: ${paymentMethod}.${balanceSnippet} Thank you! - ${schoolName}`;
-
-        sendSchoolSMSAction(schoolId, phone, smsContent, token).then(res => {
-          if (res?.success) {
-            console.log(`[SMS Payment Receipt] Sent to ${phone} for ${studentName}`);
-          } else {
-            console.warn(`[SMS Payment Receipt] Skipped/Status: ${res?.error}`);
-          }
-        }).catch(err => {
-          console.error(`[SMS Payment Receipt] Dispatch error:`, err);
-        });
+    if (token) {
+      smsResult = await sendPaymentSMSNotificationAction({
+        schoolId,
+        studentId,
+        studentName,
+        paymentAmount,
+        feeType,
+        receiptId,
+        paymentMethod,
+        remainingBalance: config.remainingBalance,
+        idToken: token,
+        senderName,
+        senderRole
+      });
+      if (smsResult?.success) {
+        parentCount = Math.max(parentCount, smsResult.count || 1);
+        console.log(`[SMS Payment Receipt] Dispatched for ${studentName} (${receiptId})`);
+      } else if (smsResult?.skipped) {
+        console.info(`[SMS Payment Receipt] ${smsResult.error}`);
+      } else if (smsResult?.error) {
+        console.warn(`[SMS Payment Receipt] Delivery error: ${smsResult.error}`);
       }
     } else {
-      if (candidatePhones.length === 0) {
-        console.warn(`[SMS Payment Receipt] No phone number found for student ${studentId} (${studentName}).`);
-      }
-      if (!token) {
-        console.warn(`[SMS Payment Receipt] Authentication token not available to dispatch SMS.`);
+      console.warn(`[SMS Payment Receipt] Auth token not available to dispatch SMS.`);
+    }
+  } catch (smsError) {
+    console.error(`[SMS Payment Receipt] Exception during dispatch:`, smsError);
+  }
+
+  // 2. In-app Direct Messaging (Non-blocking: isolated in separate try/catch)
+  try {
+    const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
+    const schoolName = schoolDoc.data()?.name || 'our school';
+
+    // Find parent docs either by studentIds array or by student.parentId
+    const parentsToNotify: Array<{ id: string; data: any }> = [];
+
+    // Query by studentIds
+    const parentsQuery = query(
+      collection(firestore, 'parents'),
+      where('schoolId', '==', schoolId),
+      where('studentIds', 'array-contains', studentId)
+    );
+    const parentsSnap = await getDocs(parentsQuery);
+    parentsSnap.forEach(d => parentsToNotify.push({ id: d.id, data: d.data() }));
+
+    // If none found by array-contains, check student doc parentId
+    if (parentsToNotify.length === 0) {
+      const studentSnap = await getDoc(doc(firestore, 'students', studentId));
+      if (studentSnap.exists()) {
+        const pId = studentSnap.data()?.parentId;
+        if (pId) {
+          const parentSnap = await getDoc(doc(firestore, 'parents', pId));
+          if (parentSnap.exists()) {
+            parentsToNotify.push({ id: parentSnap.id, data: parentSnap.data() });
+          }
+        }
       }
     }
 
-    return { success: true, parentCount: Math.max(parentCount, candidatePhones.length) };
-  } catch (error: any) {
-    console.error('Error sending payment notification:', error);
-    return { success: false, parentCount: 0, error: error.message };
-  }
-}
+    // Query direct messages where current sender is a participant (obeys security rules)
+    let userChats: any[] = [];
+    if (parentsToNotify.length > 0) {
+      try {
+        const chatsQuery = query(
+          collection(firestore, 'direct_messages'),
+          where('schoolId', '==', schoolId),
+          where('participants', 'array-contains', senderUid)
+        );
+        const chatsSnap = await getDocs(chatsQuery);
+        userChats = chatsSnap.docs;
+      } catch (chatQErr) {
+        console.warn('[Payment DM] Could not query direct_messages:', chatQErr);
+      }
+    }
 
+    for (const { id: parentId, data: parentData } of parentsToNotify) {
+      const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
+
+      let chatId = '';
+      const existingChat = userChats.find(d => {
+        const data = d.data();
+        return !data.isGroup && data.participants?.includes(parentId);
+      });
+
+      if (existingChat) {
+        chatId = existingChat.id;
+      } else {
+        const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
+          participants: [senderUid, parentId],
+          participantDetails: {
+            [senderUid]: { name: senderName, role: senderRole, photoURL: null },
+            [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
+          },
+          lastMessage: 'Receipt acknowledged',
+          lastMessageTime: serverTimestamp(),
+          unreadCount: { [parentId]: 1, [senderUid]: 0 },
+          schoolId,
+          isGroup: false
+        });
+        chatId = newChatRef.id;
+      }
+
+      const msgText = `Dear ${parentName},\n\n` +
+        `This is to acknowledge the receipt of your payment of GHS ${paymentAmount.toFixed(2)} ` +
+        `towards ${feeType} for your ward, ${studentName}.\n\n` +
+        `Receipt Reference: ${receiptId}\n` +
+        `Payment Method: ${paymentMethod}\n\n` +
+        `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
+        `Best regards,\n` +
+        `${senderName} (${senderRole})\n` +
+        `${schoolName}`;
+
+      await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), {
+        text: msgText,
+        senderId: senderUid,
+        createdAt: serverTimestamp(),
+        type: 'text',
+        status: 'sent'
+      });
+
+      const chatRef = doc(firestore, 'direct_messages', chatId);
+      const chatUpdate: any = {
+        lastMessage: `Payment acknowledged: GHS ${paymentAmount.toFixed(2)}`,
+        lastMessageTime: serverTimestamp()
+      };
+      chatUpdate[`unreadCount.${parentId}`] = increment(1);
+      await updateDoc(chatRef, chatUpdate);
+
+      parentCount++;
+    }
+  } catch (parentErr) {
+    console.warn('[Payment DM] In-app direct message skipped:', parentErr);
+  }
+
+  return { success: true, parentCount };
+}
