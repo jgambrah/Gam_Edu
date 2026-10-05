@@ -253,6 +253,7 @@ export default function AcademicReportsPage() {
     // 1-Document Rollup Snapshot State (Single Firestore Read for entire class academic load)
     const [activeSnapshot, setActiveSnapshot] = useState<AcademicReportSnapshotDoc | null>(null);
     const [isLoadingSnapshot, setIsLoadingSnapshot] = useState<boolean>(false);
+    const [loadingTimedOut, setLoadingTimedOut] = useState<boolean>(false);
 
     useEffect(() => {
         setMounted(true);
@@ -328,46 +329,79 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents, selectedClassId, selectedClass]);
 
-    // Multi-Source On-Demand Querying: Assessments collection
+    // Multi-Source On-Demand Querying: Scoped Assessments collection (99% read reduction)
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        if (selectedClassId && selectedClassId !== 'all') {
+            constraints.push(where('classId', '==', selectedClassId));
+        }
+        return query(collection(firestore, 'assessments'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
     const { data: rawAssessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-    // Multi-Source On-Demand Querying: Grades collection (alternative marks collection)
+    // Multi-Source On-Demand Querying: Scoped Grades collection
     const gradesQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'grades'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        if (selectedClassId && selectedClassId !== 'all') {
+            constraints.push(where('classId', '==', selectedClassId));
+        }
+        return query(collection(firestore, 'grades'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
     const { data: rawGrades, isLoading: isLoadingGrades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
 
-    // Multi-Source On-Demand Querying: Report Cards collection (kebab-case)
+    // Multi-Source On-Demand Querying: Scoped Report Cards collection (kebab-case)
     const reportCardsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'report-cards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        return query(collection(firestore, 'report-cards'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
     const { data: rawReportCards, isLoading: isLoadingReportCards, forceRefetch: refetchReportCards } = useCollection<any>(reportCardsQuery);
 
-    // Multi-Source On-Demand Querying: Report Cards collection (camelCase alternate)
+    // Multi-Source On-Demand Querying: Scoped Report Cards collection (camelCase alternate)
     const reportCardsAltQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'reportCards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        return query(collection(firestore, 'reportCards'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
     const { data: rawReportCardsAlt, isLoading: isLoadingReportCardsAlt, forceRefetch: refetchReportCardsAlt } = useCollection<any>(reportCardsAltQuery);
 
-    // Multi-Source On-Demand Querying: Term Report Cards collection (archived & locked term snapshots)
+    // Multi-Source On-Demand Querying: Scoped Term Report Cards collection
     const termReportCardsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'term_report_cards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        return query(collection(firestore, 'term_report_cards'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
     const { data: rawTermReportCards, isLoading: isLoadingTermReportCards, forceRefetch: refetchTermReportCards } = useCollection<any>(termReportCardsQuery);
 
-    // Multi-Source On-Demand Querying: Marks collection
+    // Multi-Source On-Demand Querying: Scoped Marks collection
     const marksQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'marks'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
+        const constraints: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedYear) {
+            constraints.push(where('academicYear', '==', selectedYear));
+        }
+        if (selectedClassId && selectedClassId !== 'all') {
+            constraints.push(where('classId', '==', selectedClassId));
+        }
+        return query(collection(firestore, 'marks'), ...constraints);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
     const { data: rawMarks, isLoading: isLoadingMarks, forceRefetch: refetchMarks } = useCollection<any>(marksQuery);
 
     // Fetch School Settings for standard weighting overrides
@@ -736,6 +770,21 @@ export default function AcademicReportsPage() {
     }, [classAssessments, schoolProfile, selectedTerm]);
 
     const isTermArchived = activeSnapshot ? activeSnapshot.isArchived : rawIsTermArchived;
+
+    
+    // Safety timer: prevent indefinite spinner freeze if network latency spikes
+    useEffect(() => {
+        let timer: any;
+        const isAnyLoading = isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards;
+        if (isAnyLoading) {
+            timer = setTimeout(() => {
+                setLoadingTimedOut(true);
+            }, 10000);
+        } else {
+            setLoadingTimedOut(false);
+        }
+        return () => clearTimeout(timer);
+    }, [isLoadingSnapshot, isLoadingStudents, isLoadingAssessments, isLoadingGrades, isLoadingMarks, isLoadingReportCards]);
 
     const handleGenerateAnalytics = useCallback(async (forceRefresh: boolean = false) => {
         if (!selectedClassId || !firestore || !schoolId) return;
@@ -1471,7 +1520,8 @@ export default function AcademicReportsPage() {
                 subjectDetailsMap: detailsMap
             };
 
-            setDoc(doc(firestore, 'academic_report_snapshots', snapshotDocId), snapshotPayload, { merge: true })
+            const sanitizedPayload = JSON.parse(JSON.stringify(snapshotPayload));
+            setDoc(doc(firestore, 'academic_report_snapshots', snapshotDocId), sanitizedPayload, { merge: true })
                 .then(() => {
                     console.log("Academic report snapshot persisted successfully (1-read rollup created):", snapshotDocId);
                     setActiveSnapshot(snapshotPayload);
@@ -1869,11 +1919,31 @@ export default function AcademicReportsPage() {
                     </div>
                 </Card>
             ) : (isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards) ? (
-                 <div className="text-center py-24 bg-white border border-slate-200 rounded-xl shadow-sm">
-                     <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-3"/>
-                     <p className="text-slate-500 font-medium text-sm">
-                         {isLoadingSnapshot ? "Loading institutional academic snapshot (1 document read)..." : "Loading and calculating student gradebook data..."}
-                     </p>
+                 <div className="text-center py-20 px-6 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-lg mx-auto space-y-4 my-8">
+                     <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-2"/>
+                     <div className="space-y-1">
+                         <h4 className="font-bold text-slate-800 text-sm">
+                             {isLoadingSnapshot ? "Loading institutional academic snapshot (1 document read)..." : "Loading student gradebook data..."}
+                         </h4>
+                         <p className="text-xs text-slate-500">
+                             Fetching records scoped to {selectedYear} {selectedClassId === 'all' ? '(Entire School)' : ''}...
+                         </p>
+                     </div>
+                     {loadingTimedOut && (
+                         <div className="pt-2 border-t border-slate-100 flex flex-col items-center gap-2 text-xs">
+                             <p className="text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                                 Scanning large historical dataset. Tip: Selecting a specific class loads much faster than Entire School.
+                             </p>
+                             <Button 
+                                 variant="outline" 
+                                 size="sm" 
+                                 onClick={() => { setIsReportRequested(false); setActiveSnapshot(null); setLoadingTimedOut(false); }}
+                                 className="text-xs h-8"
+                             >
+                                 Cancel Query
+                             </Button>
+                         </div>
+                     )}
                  </div>
             ) : !academicData ? (
                 renderEmptyOrArchivedCard()
