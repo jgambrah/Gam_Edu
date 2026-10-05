@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, query, where, deleteDoc, serverTimestamp, updateDoc, addDoc, setDoc } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
@@ -343,8 +343,8 @@ const stopSchema = z.object({
   name: z.string().min(1, 'Stop name is required.'),
   address: z.string().min(1, 'Address is required.'),
   order: z.coerce.number().min(1, 'Order must be at least 1.'),
-  pickupTime: z.string().optional(),
-  dropoffTime: z.string().optional(),
+  pickupTime: z.string().optional().default(''),
+  dropoffTime: z.string().optional().default(''),
   assignedStudentIds: z.array(z.string()).default([]),
 });
 
@@ -353,7 +353,7 @@ const routeSchema = z.object({
   busId: z.string().min(1, 'A bus must be selected.'),
   driverId: z.string().min(1, 'A driver must be selected.'),
   dailyRate: z.coerce.number().min(0, 'Daily rate must be at least 0.'),
-  termlyRate: z.coerce.number().min(0, 'Termly rate must be at least 0.').optional(),
+  termlyRate: z.coerce.number().min(0, 'Termly rate must be at least 0.').default(0),
   stops: z.array(stopSchema).min(1, 'At least one stop is required.'),
 });
 
@@ -385,7 +385,7 @@ function RouteManagementDialog({
             driverId: '',
             dailyRate: 0,
             termlyRate: 0,
-            stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
+            stops: [{ name: '', address: '', order: 1, pickupTime: '07:15 AM', dropoffTime: '04:00 PM', assignedStudentIds: [] }],
         },
     });
 
@@ -393,12 +393,22 @@ function RouteManagementDialog({
         if (open) {
             if (editingRoute) {
                 form.reset({
-                    name: editingRoute.name,
-                    busId: editingRoute.busId,
-                    driverId: editingRoute.driverId,
-                    dailyRate: editingRoute.dailyRate || 0,
-                    termlyRate: editingRoute.termlyRate || 0,
-                    stops: editingRoute.stops || [],
+                    name: editingRoute.name || '',
+                    busId: editingRoute.busId || '',
+                    driverId: editingRoute.driverId || '',
+                    dailyRate: editingRoute.dailyRate ?? 0,
+                    termlyRate: editingRoute.termlyRate ?? 0,
+                    stops: (editingRoute.stops && editingRoute.stops.length > 0)
+                        ? editingRoute.stops.map(s => ({
+                            id: s.id || '',
+                            name: s.name || '',
+                            address: s.address || '',
+                            order: s.order || 1,
+                            pickupTime: s.pickupTime || '',
+                            dropoffTime: s.dropoffTime || '',
+                            assignedStudentIds: s.assignedStudentIds || [],
+                        }))
+                        : [{ name: '', address: '', order: 1, pickupTime: '07:15 AM', dropoffTime: '04:00 PM', assignedStudentIds: [] }],
                 });
             } else {
                 form.reset({
@@ -423,33 +433,48 @@ function RouteManagementDialog({
         setIsSubmitting(true);
         
         try {
-            const stopsWithIds = values.stops.map(stop => ({
-                ...stop, 
-                id: stop.id || doc(collection(firestore, 'temp')).id 
+            const stopsWithIds = values.stops.map((stop, idx) => ({
+                id: stop.id || doc(collection(firestore, 'temp')).id,
+                name: (stop.name || '').trim(),
+                address: (stop.address || '').trim(),
+                order: Number(stop.order) || (idx + 1),
+                pickupTime: stop.pickupTime || '',
+                dropoffTime: stop.dropoffTime || '',
+                assignedStudentIds: Array.isArray(stop.assignedStudentIds) ? stop.assignedStudentIds : []
             }));
+
+            const cleanPayload = {
+                name: (values.name || '').trim(),
+                busId: values.busId,
+                driverId: values.driverId,
+                dailyRate: Number(values.dailyRate) || 0,
+                termlyRate: Number(values.termlyRate) || 0,
+                stops: stopsWithIds,
+                schoolId,
+                updatedAt: serverTimestamp()
+            };
 
             if (editingRoute) {
                 const routeRef = doc(firestore, 'routes', editingRoute.id);
-                await updateDocumentNonBlocking(routeRef, { 
-                    ...values, 
-                    stops: stopsWithIds, 
-                    updatedAt: serverTimestamp() 
-                });
-                toast({ title: 'Route Updated' });
+                await updateDoc(routeRef, cleanPayload);
+                toast({ title: 'Route Updated Successfully' });
             } else {
-                await addDocumentNonBlocking(collection(firestore, 'routes'), {
-                    ...values, 
-                    stops: stopsWithIds, 
-                    schoolId,
+                await addDoc(collection(firestore, 'routes'), {
+                    ...cleanPayload,
                     createdAt: serverTimestamp()
                 });
-                toast({ title: 'Route Created' });
+                toast({ title: 'Route Created Successfully' });
             }
             
             onRouteChange();
             onOpenChange(false);
-        } catch (e) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Failed to save route.' });
+        } catch (e: any) {
+            console.error('Failed to save route:', e);
+            toast({ 
+                variant: 'destructive', 
+                title: 'Error Saving Route', 
+                description: e?.message || 'Failed to save route. Please check your inputs.' 
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -493,7 +518,7 @@ function RouteManagementDialog({
                                     <FormLabel className="text-xs font-black uppercase text-slate-400">Assign Bus</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl><SelectTrigger className="h-11 rounded-xl border-2"><SelectValue placeholder="Select a bus" /></SelectTrigger></FormControl>
-                                        <SelectContent>{buses?.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{buses?.map(b => <SelectItem key={b.id} value={b.id}>{b.name || b.licensePlate || ('Bus ' + b.id.slice(0, 5))}</SelectItem>)}</SelectContent>
                                     </Select>
                                     <FormMessage />
                                 </FormItem>
@@ -503,7 +528,7 @@ function RouteManagementDialog({
                                     <FormLabel className="text-xs font-black uppercase text-slate-400">Assign Driver</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl><SelectTrigger className="h-11 rounded-xl border-2"><SelectValue placeholder="Select a driver" /></SelectTrigger></FormControl>
-                                        <SelectContent>{drivers?.map(d => <SelectItem key={d.uid} value={d.uid}>{d.firstName} {d.lastName}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{drivers?.map(d => <SelectItem key={d.uid || d.id} value={d.uid || d.id}>{d.firstName ? (d.firstName + ' ' + (d.lastName || '')).trim() : (d.name || d.fullName || d.email || 'Driver')}</SelectItem>)}</SelectContent>
                                     </Select>
                                     <FormMessage />
                                 </FormItem>
@@ -610,7 +635,7 @@ function DailyTransportManifest({
         const student = students?.find(s => s.uid === studentId || s.id === studentId);
         if (!student) return false;
         const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
-        return fullName.includes(q) || (student.otherNames && student.otherNames.toLowerCase().includes(q));
+        return fullName.includes(q) || ((student as any).otherNames && (student as any).otherNames.toLowerCase().includes(q));
       }) || [];
 
       if (stopMatches || matchingStudents.length > 0) {
