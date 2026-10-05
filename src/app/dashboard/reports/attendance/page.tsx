@@ -60,7 +60,7 @@ export interface CompactAttendanceSnapshotRecord {
         lastName?: string;
         studentId?: string;
         [key: string]: any;
-    };
+    } | null;
     classId: string;
     className?: string;
     date: string | Timestamp | { seconds: number; nanoseconds: number } | any;
@@ -340,7 +340,31 @@ export default function AttendanceReportsPage() {
         const fromDate = startOfDay(dateRange.from);
         const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-        const filtered = (recordsSource as any[])
+        // Unpack daily sheets if any exist in the record source
+        const unpackedRecords: any[] = [];
+        for (const item of (recordsSource as any[])) {
+            if (!item) continue;
+            if (item.records && typeof item.records === 'object' && !Array.isArray(item.records)) {
+                for (const [stId, stRecord] of Object.entries(item.records as Record<string, any>)) {
+                    if (!stRecord) continue;
+                    unpackedRecords.push({
+                        id: `${item.id}_${stId}`,
+                        studentId: stId || stRecord.studentId || '',
+                        studentName: stRecord.studentName || '',
+                        student: stRecord.student || null,
+                        classId: item.classId || '',
+                        className: item.className || '',
+                        date: item.date,
+                        status: stRecord.status || 'Present',
+                        notes: stRecord.notes || ''
+                    });
+                }
+            } else {
+                unpackedRecords.push(item);
+            }
+        }
+
+        const filtered = unpackedRecords
             .filter(record => {
                 if (!record) return false;
                 
@@ -349,11 +373,14 @@ export default function AttendanceReportsPage() {
                     recordDate = record.date.toDate();
                 } else if (record.date?.seconds) {
                     recordDate = new Date(record.date.seconds * 1000);
+                } else if (record.date?._seconds) {
+                    recordDate = new Date(record.date._seconds * 1000);
                 } else if (record.date) {
                     recordDate = new Date(record.date);
                 }
 
-                if (recordDate && (recordDate < fromDate || recordDate > toDate)) return false;
+                if (!recordDate || isNaN(recordDate.getTime())) return false;
+                if (recordDate < fromDate || recordDate > toDate) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
                 
                 const student = record.student || studentMap.get(record.studentId);
@@ -372,6 +399,8 @@ export default function AttendanceReportsPage() {
                     recordDate = record.date.toDate();
                 } else if (record.date?.seconds) {
                     recordDate = new Date(record.date.seconds * 1000);
+                } else if (record.date?._seconds) {
+                    recordDate = new Date(record.date._seconds * 1000);
                 } else if (record.date) {
                     recordDate = new Date(record.date);
                 } else {
@@ -517,33 +546,76 @@ export default function AttendanceReportsPage() {
 
             const classMap = new Map((classes || []).map((c: any) => [c.id, c.name]));
 
-            const compactRecords: CompactAttendanceSnapshotRecord[] = snapAttendance.docs.map(doc => {
+            const compactRecords: CompactAttendanceSnapshotRecord[] = [];
+            snapAttendance.docs.forEach(doc => {
                 const data = doc.data();
-                const studentInfo = studentMap.get(data.studentId);
                 let dateVal = data.date;
                 if (data.date?.toDate) {
                     dateVal = data.date.toDate().toISOString();
                 } else if (data.date instanceof Date) {
                     dateVal = data.date.toISOString();
+                } else if (data.date?.seconds) {
+                    dateVal = new Date(data.date.seconds * 1000).toISOString();
+                } else if (data.date?._seconds) {
+                    dateVal = new Date(data.date._seconds * 1000).toISOString();
+                } else if (typeof data.date === 'string') {
+                    dateVal = data.date;
+                } else {
+                    dateVal = new Date().toISOString();
                 }
 
-                return {
-                    id: doc.id,
-                    studentId: data.studentId || '',
-                    studentName: data.studentName || (studentInfo ? `${studentInfo.firstName} ${studentInfo.lastName}`.trim() : 'Student'),
-                    student: studentInfo || (data.student ? {
-                        id: data.student.id,
-                        uid: data.student.uid,
-                        firstName: data.student.firstName,
-                        lastName: data.student.lastName,
-                        studentId: data.student.studentId
-                    } : undefined),
-                    classId: data.classId || '',
-                    className: classMap.get(data.classId) || data.className || 'Unknown Class',
-                    date: dateVal,
-                    status: data.status || 'Present',
-                    notes: data.notes || ''
-                };
+                if (data.records && typeof data.records === 'object' && !Array.isArray(data.records)) {
+                    // Daily class attendance sheet
+                    for (const [stId, stRecord] of Object.entries(data.records as Record<string, any>)) {
+                        if (!stRecord) continue;
+                        const studentInfo = studentMap.get(stId) || studentMap.get(stRecord.studentId);
+                        const studentName = stRecord.studentName || (studentInfo ? `${studentInfo.firstName} ${studentInfo.lastName}`.trim() : 'Student');
+                        compactRecords.push({
+                            id: `${doc.id}_${stId}`,
+                            studentId: stId || stRecord.studentId || '',
+                            studentName: studentName,
+                            student: studentInfo ? {
+                                id: studentInfo.id || '',
+                                uid: studentInfo.uid || '',
+                                firstName: studentInfo.firstName || '',
+                                lastName: studentInfo.lastName || '',
+                                studentId: studentInfo.studentId || ''
+                            } : null,
+                            classId: data.classId || '',
+                            className: classMap.get(data.classId) || data.className || 'Unknown Class',
+                            date: dateVal,
+                            status: stRecord.status || 'Present',
+                            notes: stRecord.notes || ''
+                        });
+                    }
+                } else {
+                    // Individual student attendance record
+                    const studentInfo = studentMap.get(data.studentId);
+                    const studentName = data.studentName || (studentInfo ? `${studentInfo.firstName} ${studentInfo.lastName}`.trim() : 'Student');
+                    compactRecords.push({
+                        id: doc.id,
+                        studentId: data.studentId || '',
+                        studentName: studentName,
+                        student: studentInfo ? {
+                            id: studentInfo.id || '',
+                            uid: studentInfo.uid || '',
+                            firstName: studentInfo.firstName || '',
+                            lastName: studentInfo.lastName || '',
+                            studentId: studentInfo.studentId || ''
+                        } : (data.student ? {
+                            id: data.student.id || '',
+                            uid: data.student.uid || '',
+                            firstName: data.student.firstName || '',
+                            lastName: data.student.lastName || '',
+                            studentId: data.student.studentId || ''
+                        } : null),
+                        classId: data.classId || '',
+                        className: classMap.get(data.classId) || data.className || 'Unknown Class',
+                        date: dateVal,
+                        status: data.status || 'Present',
+                        notes: data.notes || ''
+                    });
+                }
             });
 
             const snapshotDocId = `${schoolId}_${classToSync}`;
@@ -551,7 +623,7 @@ export default function AttendanceReportsPage() {
                 ? 'All Classes' 
                 : (classes?.find((c: any) => c.id === classToSync)?.name || 'Selected Class');
 
-            const newSnapshot: AttendanceReportSnapshotDoc = {
+            const newSnapshot: AttendanceReportSnapshotDoc = JSON.parse(JSON.stringify({
                 id: snapshotDocId,
                 schoolId,
                 classId: classToSync,
@@ -559,7 +631,7 @@ export default function AttendanceReportsPage() {
                 updatedAt: new Date().toISOString(),
                 recordCount: compactRecords.length,
                 records: compactRecords
-            };
+            }));
 
             const snapRef = doc(firestore, 'attendance_report_snapshots', snapshotDocId);
             await setDoc(snapRef, newSnapshot, { merge: true });
@@ -578,6 +650,7 @@ export default function AttendanceReportsPage() {
                 title: "Compilation Failed",
                 description: errorMsg
             });
+            setIsReportRequested(true);
         } finally {
             setIsCompilingSnapshot(false);
         }
@@ -601,9 +674,10 @@ export default function AttendanceReportsPage() {
             return;
         }
 
+        setIsReportRequested(true);
+
         // Check if snapshot is already loaded for this class
         if (activeSnapshot && activeSnapshot.classId === selectedClassId) {
-            setIsReportRequested(true);
             toast({
                 title: "Filtered In-Memory (0 Reads)",
                 description: `Applied ${format(dateRange.from, 'MMM d')} - ${format(dateRange.to || dateRange.from, 'MMM d')} to active snapshot without database queries.`
@@ -622,7 +696,6 @@ export default function AttendanceReportsPage() {
             if (snapDoc.exists()) {
                 const data = snapDoc.data() as AttendanceReportSnapshotDoc;
                 setActiveSnapshot(data);
-                setIsReportRequested(true);
                 toast({
                     title: "1-Read Snapshot Loaded",
                     description: `Loaded ${data.records?.length || 0} attendance records in 1 document read. Period changes operate with 0 additional reads.`
@@ -638,7 +711,6 @@ export default function AttendanceReportsPage() {
                 title: "Snapshot Load Failed",
                 description: sanitizeErrorMessage(error)
             });
-            // Fallback to legacy query if snapshot fails
             setIsReportRequested(true);
         } finally {
             setIsLoadingSnapshot(false);
