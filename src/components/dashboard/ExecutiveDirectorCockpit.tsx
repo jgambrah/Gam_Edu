@@ -34,6 +34,7 @@ export function ExecutiveDirectorCockpit({
   debtAgingStats = {},
   dashboardSummary,
   attendanceRate = 83,
+  attendance = [],
   todayPresentCount,
   activeStudentsCount,
   studentTeacherRatio = 20.3,
@@ -519,6 +520,37 @@ export function ExecutiveDirectorCockpit({
     }
     return "96.4";
   }, [totalActiveStudents, studentsPresentCount, attendanceRate]);
+
+  // Dynamic Class Register Compliance (Which classes took attendance today vs pending)
+  const classRegisterStats = useMemo(() => {
+    if (!classes || classes.length === 0) {
+      return { total: 0, submittedCount: 0, pendingCount: 0, submittedClasses: [], pendingClasses: [], hasData: false };
+    }
+
+    const submittedIds = new Set<string>();
+    
+    if (Array.isArray(attendance)) {
+      for (const r of attendance) {
+        if (r.classId) submittedIds.add(r.classId);
+      }
+    }
+
+    if (Array.isArray((dashboardSummary?.attendance as any)?.submittedClassIds)) {
+      (dashboardSummary?.attendance as any).submittedClassIds.forEach((id: string) => submittedIds.add(id));
+    }
+
+    const submittedClasses = classes.filter((c: any) => submittedIds.has(c.id));
+    const pendingClasses = classes.filter((c: any) => !submittedIds.has(c.id));
+
+    return {
+      total: classes.length,
+      submittedCount: submittedClasses.length,
+      pendingCount: pendingClasses.length,
+      submittedClasses,
+      pendingClasses,
+      hasData: submittedClasses.length > 0
+    };
+  }, [classes, attendance, dashboardSummary?.attendance]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || dashboardSummary?.staff?.total || (dashboardSummary?.staff?.presentToday ? Number(dashboardSummary.staff.presentToday) : 0);
@@ -1417,7 +1449,18 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Class Registers:</span>
-                  <span className="font-semibold text-slate-800">{classes?.length || 14} Active Classes</span>
+                  {classRegisterStats.hasData ? (
+                    <span className={`font-bold flex items-center gap-1.5 ${classRegisterStats.pendingCount > 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
+                      <span>{classRegisterStats.submittedCount} of {classRegisterStats.total} Submitted</span>
+                      {classRegisterStats.pendingCount > 0 && (
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded-full border border-amber-300">
+                          {classRegisterStats.pendingCount} Pending
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-slate-800">{classes?.length || 14} Active Classes</span>
+                  )}
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Staff Verification:</span>
@@ -1552,12 +1595,46 @@ export function ExecutiveDirectorCockpit({
                       <p className="font-black text-base text-emerald-700">{dynamicAttendancePct}%</p>
                     </div>
                   </div>
-                  <p className="text-slate-600 text-xs">Class attendance submissions pending morning verification:</p>
-                  <div className="p-3 bg-amber-50 rounded-xl text-amber-800 text-xs space-y-1">
-                    <p className="font-bold">{classes?.length || 14} Class sheets registered</p>
-                    <p className="text-[10px]">{telemetry.pendingStaffCheckins} Staff check-ins pending</p>
+                  {/* Register Submission Compliance */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-700">Daily Register Compliance:</span>
+                      <span className={`font-bold ${classRegisterStats.pendingCount === 0 ? 'text-emerald-700' : 'text-amber-700'}`}>
+                        {classRegisterStats.submittedCount} of {classRegisterStats.total} Classes Submitted
+                      </span>
+                    </div>
+
+                    {classRegisterStats.pendingClasses.length > 0 ? (
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-2">
+                        <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                          <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                          <span>{classRegisterStats.pendingClasses.length} Classroom Register{classRegisterStats.pendingClasses.length > 1 ? 's' : ''} Still Pending Today:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {classRegisterStats.pendingClasses.map((cls: any) => (
+                            <span key={cls.id} className="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-[11px] bg-amber-100 text-amber-900 border border-amber-300">
+                              ⚠️ {cls.name}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-[10px] text-amber-700 italic">
+                          Teachers for these classrooms have not yet taken or submitted morning roll-call.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                        <span className="font-semibold">All {classRegisterStats.total} active classes have submitted morning attendance!</span>
+                      </div>
+                    )}
                   </div>
-                  <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('attendance'); }} className="w-full bg-amber-600 text-white font-bold rounded-xl">
+
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-xs space-y-1">
+                    <p className="font-semibold text-slate-800">Staff Verification</p>
+                    <p className="text-[11px] text-amber-700">{telemetry.pendingStaffCheckins} Staff check-ins pending</p>
+                  </div>
+
+                  <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('attendance'); }} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm">
                     Open Attendance Management Desk
                   </Button>
                 </div>

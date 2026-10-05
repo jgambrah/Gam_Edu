@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList, BarChart3, PackageCheck, Zap, RefreshCw, Database } from 'lucide-react';
+import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, CheckCircle2, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList, BarChart3, PackageCheck, Zap, RefreshCw, Database } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -326,7 +326,7 @@ export default function AttendanceReportsPage() {
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
-    const { filteredData, summaryStats, trendData, pieData } = useMemo(() => {
+    const { filteredData, summaryStats, trendData, pieData, classCompliance } = useMemo(() => {
         const recordsSource = activeSnapshot ? activeSnapshot.records : rawAttendance;
 
         if (!recordsSource || !classes || !dateRange?.from) {
@@ -503,7 +503,35 @@ export default function AttendanceReportsPage() {
         const trend = Object.values(dailyGroups)
             .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
 
-        return { filteredData: dedupedFiltered, summaryStats: summary, trendData: trend, pieData: pie };
+                // Calculate Class Register Compliance across active classes
+        let classCompliance: any = null;
+        if (selectedClassId === 'all' && classes && classes.length > 0) {
+            const submittedClassIds = new Set<string>();
+            dedupedFiltered.forEach((r: any) => {
+                if (r.classId) submittedClassIds.add(r.classId);
+            });
+
+            if (Array.isArray(recordsSource)) {
+                recordsSource.forEach((item: any) => {
+                    if (item && item.classId) submittedClassIds.add(item.classId);
+                });
+            }
+
+            const submittedClasses = classes.filter((c: any) => submittedClassIds.has(c.id));
+            const pendingClasses = classes.filter((c: any) => !submittedClassIds.has(c.id));
+            const complianceRate = Math.round((submittedClasses.length / classes.length) * 100);
+
+            classCompliance = {
+                total: classes.length,
+                submittedCount: submittedClasses.length,
+                pendingCount: pendingClasses.length,
+                complianceRate,
+                submittedClasses,
+                pendingClasses,
+            };
+        }
+
+        return { filteredData: dedupedFiltered, summaryStats: summary, trendData: trend, pieData: pie, classCompliance };
     }, [activeSnapshot, rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
 
     const reportStatus: ReportStatus = useMemo(() => {
@@ -1028,6 +1056,61 @@ export default function AttendanceReportsPage() {
             {/* SUCCESS STATE */}
             {reportStatus === 'SUCCESS' && summaryStats && (
                 <>
+                    {/* REGISTER COMPLIANCE AUDIT BANNER (When All Classes is selected) */}
+                    {classCompliance && (
+                        <Card className={`mb-6 border rounded-2xl overflow-hidden shadow-sm transition-all ${
+                            classCompliance.pendingCount > 0 
+                                ? 'border-amber-300 bg-gradient-to-r from-amber-50/90 via-amber-50/40 to-white' 
+                                : 'border-emerald-300 bg-gradient-to-r from-emerald-50/90 via-emerald-50/40 to-white'
+                        }`}>
+                            <CardContent className="p-4 sm:p-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div className="flex items-start sm:items-center gap-3">
+                                        <div className={`p-2.5 rounded-xl shrink-0 ${
+                                            classCompliance.pendingCount > 0 
+                                                ? 'bg-amber-100 text-amber-800 border border-amber-200' 
+                                                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                        }`}>
+                                            {classCompliance.pendingCount > 0 ? (
+                                                <AlertCircle className="h-5 w-5" />
+                                            ) : (
+                                                <CheckCircle2 className="h-5 w-5" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="font-black text-sm sm:text-base text-slate-900">
+                                                    Class Register Compliance: {classCompliance.submittedCount} of {classCompliance.total} Classes Submitted ({classCompliance.complianceRate}%)
+                                                </h4>
+                                            </div>
+                                            <p className="text-xs text-slate-600 mt-0.5">
+                                                {classCompliance.pendingCount > 0 ? (
+                                                    <>
+                                                        The stats below reflect the <strong>{summaryStats.total}</strong> student records logged across submitted registers. 
+                                                        <span className="font-bold text-amber-800"> {classCompliance.pendingCount} class register{classCompliance.pendingCount > 1 ? 's' : ''} {classCompliance.pendingCount > 1 ? 'are' : 'is'} still pending.</span>
+                                                    </>
+                                                ) : (
+                                                    "All active classes have successfully conducted and submitted attendance registers for this period."
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {classCompliance.pendingCount > 0 && (
+                                    <div className="mt-3 pt-3 border-t border-amber-200/80 flex flex-wrap items-center gap-2 text-xs">
+                                        <span className="font-bold text-amber-900 uppercase text-[10px] tracking-wider">Unsubmitted Registers:</span>
+                                        {classCompliance.pendingClasses.map((cls: any) => (
+                                            <Badge key={cls.id} variant="outline" className="bg-amber-100 text-amber-900 border-amber-300 font-bold px-2 py-0.5 shadow-none">
+                                                ⚠️ {cls.name}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {/* SUMMARY STAT CARDS */}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                         <Card className="border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-emerald-100/30 shadow-sm overflow-hidden group">

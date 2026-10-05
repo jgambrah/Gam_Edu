@@ -412,10 +412,12 @@ export const onAttendanceWrite = onDocumentWritten(
 
     let present = 0, absent = 0, late = 0;
     const absentIds: string[] = [];
+    const submittedClassIds = new Set<string>();
 
     snap.forEach(doc => {
       if (doc.id.startsWith('att-')) return;
       const d = doc.data();
+      if (d.classId) submittedClassIds.add(d.classId);
       if (typeof d.presentCount === 'number') {
         present += d.presentCount;
         absent += (d.absentCount || 0);
@@ -440,7 +442,7 @@ export const onAttendanceWrite = onDocumentWritten(
     await SUMMARY(schoolId).set({
       schoolId,
       lastUpdated: FieldValue.serverTimestamp(),
-      attendance: { date: dateStr, totalPresent: present, totalAbsent: absent, totalLate: late, attendanceRate: rate, absentStudentIds: absentIds },
+      attendance: { date: dateStr, totalPresent: present, totalAbsent: absent, totalLate: late, attendanceRate: rate, absentStudentIds: absentIds, submittedClassIds: Array.from(submittedClassIds) },
     }, { merge: true });
   }
 );

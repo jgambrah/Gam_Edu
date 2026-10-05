@@ -11,6 +11,7 @@ export interface AttendanceSummary {
   totalLate: number;
   attendanceRate: number;
   absentStudentIds: string[];
+  submittedClassIds?: string[];
 }
 
 export interface FinancialSummary {
