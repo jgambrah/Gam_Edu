@@ -867,15 +867,23 @@ export default function AcademicReportsPage() {
         return 'classEx';
     };
 
+    // Check if the currently selected academic year and term matches the school's active/current session
+    const isCurrentSession = useMemo(() => {
+        const activeYear = schoolProfile?.academicYear || schoolProfile?.activeAcademicYear;
+        const activeTerm = schoolProfile?.term || schoolProfile?.activeTerm || schoolProfile?.currentTermId;
+        if (!activeYear || !selectedYear) return false;
+        const matchYear = isYearMatch(selectedYear, activeYear);
+        const matchTerm = !activeTerm || !selectedTerm || isTermMatch(selectedTerm, activeTerm);
+        return Boolean(matchYear && matchTerm);
+    }, [schoolProfile, selectedYear, selectedTerm]);
+
     // Effective students for the selected class/session:
-    // Combines current class roster with any students who have marks in classAssessments
+    // In historical sessions (or when assessments exist), only include students who actually have assessment marks for that class/term
+    // In current sessions, also include current class roster to highlight students who haven't taken assessments yet
     const effectiveStudents = useMemo(() => {
         const studentMap = new Map<string, any>();
-        (students || []).forEach(s => {
-            const pid = getStudentId(s);
-            if (pid) studentMap.set(pid, s);
-        });
 
+        // 1. First, collect all students who actually have assessment marks in this class for this year & term
         classAssessments.forEach((a: any) => {
             const matched = resolveStudentForMark(a);
             if (matched) {
@@ -897,8 +905,19 @@ export default function AcademicReportsPage() {
             }
         });
 
+        // 2. Only include current class roster students if it is the CURRENT active session (or if no assessments exist yet)
+        // For past/historical terms, do NOT add newly promoted students from lower grades who have zero marks!
+        if (isCurrentSession || classAssessments.length === 0) {
+            (students || []).forEach(s => {
+                const pid = getStudentId(s);
+                if (pid && !studentMap.has(pid)) {
+                    studentMap.set(pid, s);
+                }
+            });
+        }
+
         return Array.from(studentMap.values());
-    }, [students, classAssessments, resolveStudentForMark, selectedClassId]);
+    }, [students, classAssessments, resolveStudentForMark, selectedClassId, isCurrentSession]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject & category)
     const rawAcademicData = useMemo(() => {
