@@ -51,6 +51,12 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
 
     let text = content;
 
+    // Defensive normalization: Ensure display math ($) enclosing LaTeX environments (e.g. \begin{aligned})
+    // are placed on their own lines. In remark-math, non-newline tokens following $ on the first line
+    // are parsed as code-fence metadata, which strips the environment tag and breaks KaTeX parsing.
+    text = text.replace(/\$\$(\s*\\begin\{[a-zA-Z*]+\})/g, '$$\n$1');
+    text = text.replace(/(\\end\{[a-zA-Z*]+\}\s*)\$\$/g, '$1\n$$');
+
     // Safety fallback: if content contains pre-rendered KaTeX HTML tags
     // (from previous buggy compiles or legacy database saves), extract the raw TeX
     if (text.includes('annotation encoding="application/x-tex"')) {
