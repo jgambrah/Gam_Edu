@@ -340,27 +340,49 @@ export default function AttendanceReportsPage() {
         const fromDate = startOfDay(dateRange.from);
         const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-        // Unpack daily sheets if any exist in the record source
+        // Unpack daily sheets if any exist in the record source (supports both studentsMap and records schemas)
         const unpackedRecords: any[] = [];
         for (const item of (recordsSource as any[])) {
             if (!item) continue;
-            if (item.records && typeof item.records === 'object' && !Array.isArray(item.records)) {
-                for (const [stId, stRecord] of Object.entries(item.records as Record<string, any>)) {
+            const sheetMap = item.studentsMap || item.records;
+            if (sheetMap && typeof sheetMap === 'object' && !Array.isArray(sheetMap)) {
+                for (const [stId, stRecord] of Object.entries(sheetMap as Record<string, any>)) {
                     if (!stRecord) continue;
+                    const studentInfo = studentMap.get(stId) || studentMap.get(stRecord.studentId);
+                    const sName = stRecord.studentName || (studentInfo ? `${studentInfo.firstName || ''} ${studentInfo.lastName || ''}`.trim() : 'Student');
                     unpackedRecords.push({
                         id: `${item.id}_${stId}`,
                         studentId: stId || stRecord.studentId || '',
-                        studentName: stRecord.studentName || '',
-                        student: stRecord.student || null,
+                        studentName: sName,
+                        student: studentInfo ? {
+                            id: studentInfo.id || stId,
+                            uid: studentInfo.uid || stId,
+                            firstName: studentInfo.firstName || '',
+                            lastName: studentInfo.lastName || '',
+                            studentId: studentInfo.studentId || studentInfo.admissionNumber || ''
+                        } : (stRecord.student || null),
                         classId: item.classId || '',
-                        className: item.className || '',
+                        className: item.className || classMap.get(item.classId) || 'Unknown Class',
                         date: item.date,
                         status: stRecord.status || 'Present',
                         notes: stRecord.notes || ''
                     });
                 }
-            } else {
-                unpackedRecords.push(item);
+            } else if (item.studentId || item.student) {
+                const studentInfo = studentMap.get(item.studentId);
+                const sName = item.studentName || (studentInfo ? `${studentInfo.firstName || ''} ${studentInfo.lastName || ''}`.trim() : 'Student');
+                unpackedRecords.push({
+                    ...item,
+                    studentName: sName,
+                    student: studentInfo ? {
+                        id: studentInfo.id || item.studentId,
+                        uid: studentInfo.uid || item.studentId,
+                        firstName: studentInfo.firstName || '',
+                        lastName: studentInfo.lastName || '',
+                        studentId: studentInfo.studentId || studentInfo.admissionNumber || ''
+                    } : (item.student || null),
+                    className: item.className || classMap.get(item.classId) || 'Unknown Class'
+                });
             }
         }
 
@@ -416,13 +438,25 @@ export default function AttendanceReportsPage() {
             })
             .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
 
+        // Deduplicate records by studentId + YYYY-MM-DD
+        const dedupSeen = new Set<string>();
+        const dedupedFiltered: any[] = [];
+        for (const record of filtered) {
+            const dateStr = record.dateObj.toISOString().split('T')[0];
+            const dedupKey = `${record.studentId || record.id}_${dateStr}`;
+            if (!dedupSeen.has(dedupKey)) {
+                dedupSeen.add(dedupKey);
+                dedupedFiltered.push(record);
+            }
+        }
+
         const counts = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
-        filtered.forEach(r => { 
+        dedupedFiltered.forEach(r => { 
             const statusKey = r.status as keyof typeof counts;
             if (counts.hasOwnProperty(statusKey)) counts[statusKey]++;
         });
         
-        const total = filtered.length;
+        const total = dedupedFiltered.length;
         const rate = total > 0 ? ((counts.Present + counts.Late) / total) * 100 : 0;
 
         const summary = {
@@ -448,7 +482,7 @@ export default function AttendanceReportsPage() {
             Excused: number
         }> = {};
 
-        filtered.forEach(r => {
+        dedupedFiltered.forEach(r => {
             const dateStr = format(r.dateObj, 'MMM dd');
             if (!dailyGroups[dateStr]) {
                 dailyGroups[dateStr] = { 
@@ -469,7 +503,7 @@ export default function AttendanceReportsPage() {
         const trend = Object.values(dailyGroups)
             .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
 
-        return { filteredData: filtered, summaryStats: summary, trendData: trend, pieData: pie };
+        return { filteredData: dedupedFiltered, summaryStats: summary, trendData: trend, pieData: pie };
     }, [activeSnapshot, rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
 
     const reportStatus: ReportStatus = useMemo(() => {
@@ -564,9 +598,10 @@ export default function AttendanceReportsPage() {
                     dateVal = new Date().toISOString();
                 }
 
-                if (data.records && typeof data.records === 'object' && !Array.isArray(data.records)) {
-                    // Daily class attendance sheet
-                    for (const [stId, stRecord] of Object.entries(data.records as Record<string, any>)) {
+                const sheetMap = data.studentsMap || data.records;
+                if (sheetMap && typeof sheetMap === 'object' && !Array.isArray(sheetMap)) {
+                    // Daily class attendance sheet (supports both studentsMap and records)
+                    for (const [stId, stRecord] of Object.entries(sheetMap as Record<string, any>)) {
                         if (!stRecord) continue;
                         const studentInfo = studentMap.get(stId) || studentMap.get(stRecord.studentId);
                         const studentName = stRecord.studentName || (studentInfo ? `${studentInfo.firstName} ${studentInfo.lastName}`.trim() : 'Student');
@@ -675,6 +710,12 @@ export default function AttendanceReportsPage() {
         }
 
         setIsReportRequested(true);
+
+        if (selectedClassId === 'all') {
+            // For 'All Classes', use live date-scoped querying to guarantee fresh, unaggregated data across all classrooms
+            setActiveSnapshot(null);
+            return;
+        }
 
         // Check if snapshot is already loaded for this class
         if (activeSnapshot && activeSnapshot.classId === selectedClassId) {
