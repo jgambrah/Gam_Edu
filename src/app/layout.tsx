@@ -50,6 +50,18 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Event snippet for Page view conversion page */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              gtag('event', 'conversion', {
+                  'send_to': 'AW-18497577658/E_YlCOPBlJMdELrFqvRE',
+                  'value': 1.0,
+                  'currency': 'USD'
+              });
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Comic+Neue:wght@400;700&family=Fredoka:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
