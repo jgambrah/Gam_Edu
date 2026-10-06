@@ -2016,7 +2016,45 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             const targetStudentId = record.studentId || (record as any).studentDocId || (record as any).student_id;
             if (targetStudentId) {
                 const idToken = await user.getIdToken();
-                const remBal = Math.max(0, record.billedAmount - (updatedAmountPaid || 0) - (record.waiverAmount || 0));
+
+                // Compute student's overall outstanding balance across all active financial records (Opening Balance, Current Bills, etc.)
+                let overallRemainingBalance: number | undefined = undefined;
+                try {
+                    const sKeys = Array.from(new Set([
+                        targetStudentId,
+                        record.studentId,
+                        (record as any).studentUid,
+                        (record as any).uid
+                    ].filter(Boolean)));
+                    
+                    const qAll = query(
+                        collection(firestore, 'financialRecords'),
+                        where('schoolId', '==', schoolId),
+                        where('studentId', 'in', sKeys.slice(0, 10))
+                    );
+                    const allSnap = await getDocs(qAll);
+                    if (!allSnap.empty) {
+                        let totalB = 0;
+                        let totalP = 0;
+                        let totalW = 0;
+                        allSnap.docs.forEach(docSnap => {
+                            const r = docSnap.data();
+                            if (r.status === 'Pending Reversal' || r.status === 'Void' || r.isArchived) return;
+                            totalB += Number(r.billedAmount ?? r.amount ?? 0);
+                            totalP += Number(r.amountPaid ?? 0);
+                            totalW += Number(r.waiverAmount ?? 0);
+                        });
+                        const netBal = totalB - totalP - totalW;
+                        overallRemainingBalance = netBal > 0.009 ? parseFloat(netBal.toFixed(2)) : 0;
+                    }
+                } catch (calcErr) {
+                    console.warn("Could not query all student financial records for overall balance, falling back:", calcErr);
+                }
+
+                if (overallRemainingBalance === undefined) {
+                    overallRemainingBalance = Math.max(0, record.billedAmount - (updatedAmountPaid || 0) - (record.waiverAmount || 0));
+                }
+
                 sendPaymentNotificationToParent({
                     firestore,
                     schoolId,
@@ -2030,7 +2068,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     senderName: user.displayName || user.email || 'Staff',
                     senderRole: 'Accountant',
                     idToken,
-                    remainingBalance: remBal
+                    remainingBalance: overallRemainingBalance
                 }).catch(err => {
                     console.error("Failed to send parent payment notification:", err);
                 });

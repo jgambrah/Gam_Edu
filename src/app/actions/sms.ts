@@ -268,11 +268,68 @@ export async function sendPaymentSMSNotificationAction(params: SendPaymentSMSPar
       return { success: false, skipped: true, error: `No parent phone number on file for ${studentName}.` };
     }
 
+    // 2.5 Resolve student's true overall school fees balance across all records (Arrears, Current Bills, etc.)
+    let resolvedBalance: number | undefined = remainingBalance;
+    try {
+      const studentKeys = Array.from(new Set([
+        studentId,
+        resolution.studentDocId,
+        resolution.studentData?.uid,
+        resolution.studentData?.studentId,
+        resolution.studentData?.admissionNumber,
+        resolution.studentData?.admissionNo,
+        resolution.studentData?.id
+      ].filter(Boolean))) as string[];
+
+      if (studentKeys.length > 0) {
+        // Query financialRecords for this student and school to compute overall outstanding debt
+        let recordsSnap = await db.collection('financialRecords')
+          .where('schoolId', '==', schoolId)
+          .where('studentId', 'in', studentKeys.slice(0, 10))
+          .get();
+
+        if (recordsSnap.empty) {
+          // Fallback query if schoolId was omitted on some legacy records
+          const fallbackSnap = await db.collection('financialRecords')
+            .where('studentId', 'in', studentKeys.slice(0, 10))
+            .get();
+          if (!fallbackSnap.empty) {
+            recordsSnap = fallbackSnap;
+          }
+        }
+
+        if (!recordsSnap.empty) {
+          let totalBilled = 0;
+          let totalPaid = 0;
+          let totalWaivers = 0;
+
+          recordsSnap.docs.forEach((docSnap: any) => {
+            const r = docSnap.data();
+            if (r.schoolId && r.schoolId !== schoolId) return;
+            if (r.status === 'Pending Reversal' || r.status === 'Void' || r.isArchived) return;
+
+            const billed = Number(r.billedAmount ?? r.amount ?? 0);
+            const paid = Number(r.amountPaid ?? 0);
+            const waiver = Number(r.waiverAmount ?? 0);
+
+            totalBilled += billed;
+            totalPaid += paid;
+            totalWaivers += waiver;
+          });
+
+          const netRemaining = totalBilled - totalPaid - totalWaivers;
+          resolvedBalance = netRemaining > 0.009 ? parseFloat(netRemaining.toFixed(2)) : 0;
+        }
+      }
+    } catch (balErr) {
+      console.warn('[Payment SMS] Could not query overall student financialRecords, falling back to passed balance:', balErr);
+    }
+
     // 3. Format SMS message (Ghana standard GSM-7, no unicode quote corruption)
     const cleanSchool = (smsConfig.senderId || smsConfig.schoolName || 'School').trim();
-    const balSnippet = (remainingBalance !== undefined && remainingBalance > 0)
-      ? ` Bal: GHS ${remainingBalance.toFixed(2)}.`
-      : (remainingBalance === 0 ? ` Paid in full.` : '');
+    const balSnippet = (resolvedBalance !== undefined && resolvedBalance > 0.009)
+      ? ` Bal: GHS ${resolvedBalance.toFixed(2)}.`
+      : (resolvedBalance === 0 ? ` Paid in full.` : '');
     const cleanFee = (feeType || 'Fees').trim();
     const cleanMethod = (paymentMethod || 'Cash').trim();
 
@@ -336,7 +393,7 @@ export async function sendPaymentSMSNotificationAction(params: SendPaymentSMSPar
         paymentAmount,
         paymentMethod: cleanMethod,
         feeType: cleanFee,
-        remainingBalance: remainingBalance ?? null,
+        remainingBalance: resolvedBalance ?? remainingBalance ?? null,
         recipients: phones,
         message,
         provider: smsConfig.provider,
