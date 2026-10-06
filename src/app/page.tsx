@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { useAuth, useFirestore } from '@/firebase'; 
+import { useAuth, useFirestore } from '@/firebase';
+import { submitSchoolLead } from '@/app/actions/leads'; 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,6 +60,7 @@ export default function LandingAndDemoPage() {
   const [phone, setPhone] = useState('+233 ');
   const [location, setLocation] = useState('');
   const [primaryInterest, setPrimaryInterest] = useState('Full School Management');
+  const [leadEmail, setLeadEmail] = useState('');
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [isLeadSubmitted, setIsLeadSubmitted] = useState(false);
 
@@ -116,20 +118,21 @@ export default function LandingAndDemoPage() {
 
     setIsSubmittingLead(true);
     try {
-      if (firestore) {
-        await addDoc(collection(firestore, 'demo_requests'), {
-          fullName: fullName.trim(),
-          schoolName: schoolName.trim(),
-          phone: phone.trim(),
-          location: location.trim(),
-          primaryInterest,
-          createdAt: serverTimestamp(),
-          source: 'b2b_google_ads_landing',
-          status: 'new'
-        });
+      // 1. Submit to server action (Saves to Firestore 'leads' for CEO Command Center & dispatches Resend email alert)
+      const res = await submitSchoolLead({
+        schoolName: schoolName.trim(),
+        contactName: fullName.trim(),
+        email: leadEmail.trim() || undefined,
+        phone: phone.trim(),
+        location: location.trim(),
+        primaryInterest
+      });
+
+      if (res?.error) {
+        console.warn("submitSchoolLead warning:", res.error);
       }
 
-      // Fire Google Conversion Tag if available
+      // 2. Fire Google Ads Conversion Tag
       if (typeof window !== 'undefined' && (window as any).gtag) {
         try {
           (window as any).gtag('event', 'generate_lead', {
@@ -606,6 +609,24 @@ export default function LandingAndDemoPage() {
                             className="bg-slate-950/90 border-slate-700 text-white placeholder:text-slate-500 h-11 rounded-xl pl-14 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-sm"
                           />
                         </div>
+                      </div>
+
+                      {/* Official Email Address (Optional) */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="lead-email" className="text-xs font-bold text-slate-200">
+                            Official Email Address
+                          </Label>
+                          <span className="text-[10px] text-slate-400 font-medium">Optional</span>
+                        </div>
+                        <Input
+                          id="lead-email"
+                          type="email"
+                          placeholder="headteacher@school.edu.gh / gmail.com"
+                          value={leadEmail}
+                          onChange={(e) => setLeadEmail(e.target.value)}
+                          className="bg-slate-950/90 border-slate-700 text-white placeholder:text-slate-500 h-11 rounded-xl focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-sm"
+                        />
                       </div>
 
                       {/* School Location / City */}
