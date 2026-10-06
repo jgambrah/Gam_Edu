@@ -28,24 +28,66 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   
-  const [role, setRole] = useState<Role>(null);
-  const [profile, setProfile] = useState<any>(null);
+  // Initialize from sessionStorage to prevent any flash of unauthenticated or restricted state on navigation
+  const [role, setRole] = useState<Role>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('gam_cached_role');
+        return cached ? (cached as Role) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [profile, setProfile] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('gam_cached_profile');
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const refreshRole = useCallback(() => setRefreshTrigger(prev => prev + 1), []);
 
   useEffect(() => {
-    async function fetchRole(currentUser: User) {
+    let isCancelled = false;
+
+    async function fetchRole(currentUser: User, attempt = 1): Promise<void> {
       if (!firestore) return;
 
+      // Keep loading indicator true while actively verifying
       setLoading(true);
+
       try {
+        // --- FAST-PATH 0: Check Custom Claims on currentUser token ---
+        try {
+          const tokenResult = await currentUser.getIdTokenResult();
+          const claimRole = tokenResult?.claims?.role as Role;
+          if (claimRole && !isCancelled) {
+            setRole(claimRole);
+            try {
+              sessionStorage.setItem('gam_cached_role', claimRole);
+            } catch {}
+          }
+        } catch {
+          // Token claims check is optional
+        }
+
         // --- 0. SUPER ADMIN / SCHOOL OWNER CHECK ---
         const isSuperAdminUser = currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID;
         const isMercyAdminUser = currentUser.email?.toLowerCase() === MERCY_ADMIN_EMAIL || currentUser.uid === MERCY_ADMIN_UID;
 
         if (isSuperAdminUser || isMercyAdminUser) {
+          if (isCancelled) return;
           setRole('Director');
           let staffData: any = null;
           const staffRef = doc(firestore, 'staff', currentUser.uid);
@@ -94,27 +136,59 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
             console.warn("[RoleContext] Admin record sync warning:", syncErr);
           }
 
-          setProfile({
+          const directorProfile = {
             firstName: staffData?.firstName || (isMercyAdminUser ? 'Mercy' : 'Super'),
             lastName: staffData?.lastName || (isMercyAdminUser ? 'Atampoka Adongo' : 'Admin'),
             email: currentUser.email,
             role: 'Director',
             schoolId: finalSchoolId,
             ...(staffData || {})
-          });
-          setLoading(false);
+          };
+
+          if (!isCancelled) {
+            setProfile(directorProfile);
+            try {
+              sessionStorage.setItem('gam_cached_role', 'Director');
+              sessionStorage.setItem('gam_cached_profile', JSON.stringify(directorProfile));
+            } catch {}
+            setLoading(false);
+          }
           return;
         }
 
-        // --- 1. CHECK SPECIFIC COLLECTIONS FIRST (Detailed Profiles) ---
-        
-        // Try Staff by UID
+        // --- 1. DIRECT DOCUMENT FETCHES (Fastest, O(1), immune to collection query rules) ---
+
+        // A. Check users/{currentUser.uid}
+        const userRef = doc(firestore, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (data?.role) {
+            if (isCancelled) return;
+            setRole(data.role as Role);
+            setProfile(data);
+            try {
+              sessionStorage.setItem('gam_cached_role', data.role);
+              sessionStorage.setItem('gam_cached_profile', JSON.stringify(data));
+            } catch {}
+            setLoading(false);
+            return;
+          }
+        }
+
+        // B. Check staff/{currentUser.uid}
         const staffRef = doc(firestore, 'staff', currentUser.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
           const data = staffSnap.data();
+          if (isCancelled) return;
           setRole(data.role as Role); 
           setProfile(data);
+          try {
+            sessionStorage.setItem('gam_cached_role', data.role);
+            sessionStorage.setItem('gam_cached_profile', JSON.stringify(data));
+          } catch {}
+
           if (data.role && data.schoolId) {
             try {
               await setDoc(doc(firestore, 'users', currentUser.uid), {
@@ -133,32 +207,67 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Try Staff by Email fallback
-        if (currentUser.email) {
+        // C. Check students/{currentUser.uid}
+        const studentRef = doc(firestore, 'students', currentUser.uid);
+        const studentSnap = await getDoc(studentRef);
+        if (studentSnap.exists()) {
+          if (isCancelled) return;
+          setRole('Student');
+          setProfile(studentSnap.data());
           try {
-            const staffEmailQ = query(collection(firestore, 'staff'), where('email', '==', currentUser.email.toLowerCase()));
+            sessionStorage.setItem('gam_cached_role', 'Student');
+            sessionStorage.setItem('gam_cached_profile', JSON.stringify(studentSnap.data()));
+          } catch {}
+          setLoading(false);
+          return;
+        }
+
+        // D. Check parents/{currentUser.uid}
+        const parentRef = doc(firestore, 'parents', currentUser.uid);
+        const parentSnap = await getDoc(parentRef);
+        if (parentSnap.exists()) {
+          if (isCancelled) return;
+          setRole('Parent');
+          setProfile(parentSnap.data());
+          try {
+            sessionStorage.setItem('gam_cached_role', 'Parent');
+            sessionStorage.setItem('gam_cached_profile', JSON.stringify(parentSnap.data()));
+          } catch {}
+          setLoading(false);
+          return;
+        }
+
+        // --- 2. FALLBACK QUERIES BY EMAIL (For accounts linked by email address) ---
+        if (currentUser.email) {
+          const cleanEmail = currentUser.email.toLowerCase().trim();
+
+          // Try Staff by Email fallback
+          try {
+            const staffEmailQ = query(collection(firestore, 'staff'), where('email', '==', cleanEmail));
             const staffEmailSnap = await getDocs(staffEmailQ);
             if (!staffEmailSnap.empty) {
               const staffDoc = staffEmailSnap.docs[0];
               const data = staffDoc.data();
+              if (isCancelled) return;
               setRole(data.role as Role);
               setProfile(data);
+              try {
+                sessionStorage.setItem('gam_cached_role', data.role);
+                sessionStorage.setItem('gam_cached_profile', JSON.stringify(data));
+              } catch {}
 
               if (data.role && data.schoolId) {
                 try {
-                  // 1. Sync to users/{currentUser.uid} so Firestore Security Rules (getUserRole(), getUserSchoolId())
-                  // recognize the staff member immediately on all school collection requests
                   await setDoc(doc(firestore, 'users', currentUser.uid), {
                     uid: currentUser.uid,
                     role: data.role,
                     schoolId: data.schoolId,
-                    email: currentUser.email.toLowerCase(),
+                    email: cleanEmail,
                     firstName: data.firstName || '',
                     lastName: data.lastName || '',
                     staffDocId: staffDoc.id,
                   }, { merge: true });
 
-                  // 2. Also ensure staff/{currentUser.uid} exists if staff was originally created with an auto-ID
                   if (staffDoc.id !== currentUser.uid) {
                     await setDoc(doc(firestore, 'staff', currentUser.uid), {
                       ...data,
@@ -177,57 +286,28 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           } catch (e) {
             console.warn("[RoleContext] Staff query by email failed:", e);
           }
-        }
 
-        // Try Students
-        const studentRef = doc(firestore, 'students', currentUser.uid);
-        const studentSnap = await getDoc(studentRef);
-        if (studentSnap.exists()) {
-          setRole('Student');
-          setProfile(studentSnap.data());
-          setLoading(false);
-          return;
-        }
-
-        // Try Parents (CRITICAL for studentIds)
-        const parentRef = doc(firestore, 'parents', currentUser.uid);
-        const parentSnap = await getDoc(parentRef);
-        if (parentSnap.exists()) {
-          setRole('Parent');
-          setProfile(parentSnap.data());
-          setLoading(false);
-          return;
-        }
-        
-        // --- 2. FALLBACK: USERS MAPPING ---
-        const userRef = doc(firestore, 'users', currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-             const data = userSnap.data();
-             if(data.role) {
-                setRole(data.role as Role);
-                setProfile(data);
-                setLoading(false);
-                return;
-             }
-        }
-
-        // Try users collection by Email fallback
-        if (currentUser.email) {
+          // Try users collection by Email fallback
           try {
-            const userEmailQ = query(collection(firestore, 'users'), where('email', '==', currentUser.email.toLowerCase()));
+            const userEmailQ = query(collection(firestore, 'users'), where('email', '==', cleanEmail));
             const userEmailSnap = await getDocs(userEmailQ);
             if (!userEmailSnap.empty) {
               const data = userEmailSnap.docs[0].data();
               if (data.role) {
+                if (isCancelled) return;
                 setRole(data.role as Role);
                 setProfile(data);
+                try {
+                  sessionStorage.setItem('gam_cached_role', data.role);
+                  sessionStorage.setItem('gam_cached_profile', JSON.stringify(data));
+                } catch {}
+
                 if (data.schoolId) {
                   setDoc(doc(firestore, 'users', currentUser.uid), {
                     uid: currentUser.uid,
                     role: data.role,
                     schoolId: data.schoolId,
-                    email: currentUser.email.toLowerCase(),
+                    email: cleanEmail,
                   }, { merge: true }).catch(() => {});
                 }
                 setLoading(false);
@@ -239,15 +319,36 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        setRole(null);
-        setProfile(null);
+        // --- RETRY RESILIENCE ---
+        // If no role was found on this attempt, allow up to 3 retry attempts with exponential delay
+        // to give Firestore authentication token binding enough time to synchronize on initial login.
+        if (attempt < 3 && !isCancelled) {
+          const delayMs = attempt * 400;
+          console.info(`[RoleContext] Verification attempt ${attempt} pending. Retrying in ${delayMs}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          return fetchRole(currentUser, attempt + 1);
+        }
+
+        if (!isCancelled) {
+          setRole(null);
+          setProfile(null);
+        }
 
       } catch (error) {
-        console.error("[RoleContext] Error:", error);
-        setRole(null);
-        setProfile(null);
+        console.error(`[RoleContext] Error on attempt ${attempt}:`, error);
+        if (attempt < 3 && !isCancelled) {
+          const delayMs = attempt * 400;
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          return fetchRole(currentUser, attempt + 1);
+        }
+        if (!isCancelled) {
+          setRole(null);
+          setProfile(null);
+        }
       } finally {
-        setLoading(false);
+        if (attempt >= 3 && !isCancelled) {
+          setLoading(false);
+        }
       }
     }
 
@@ -256,10 +357,18 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     } else if (user) {
       fetchRole(user);
     } else {
+      try {
+        sessionStorage.removeItem('gam_cached_role');
+        sessionStorage.removeItem('gam_cached_profile');
+      } catch {}
       setRole(null);
       setProfile(null);
       setLoading(false);
     }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [user, isUserLoading, firestore, refreshTrigger]);
 
   return (

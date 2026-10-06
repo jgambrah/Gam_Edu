@@ -171,7 +171,10 @@ export default function LandingAndDemoPage() {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      if (userCred.user) {
+        await userCred.user.getIdToken(true);
+      }
       toast({ title: "Welcome back!", description: "Opening your school dashboard..." });
       router.push('/dashboard');
     } catch (error: any) {
@@ -208,7 +211,10 @@ export default function LandingAndDemoPage() {
     setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const res = await signInWithPopup(auth, provider);
+      if (res.user) {
+        await res.user.getIdToken(true);
+      }
       toast({ title: "Welcome back!", description: "Logging you in via Google..." });
       router.push('/dashboard');
     } catch (error: any) {
