@@ -31,7 +31,7 @@ const GHANA_TESTIMONIALS = [
   {
     name: "Sarah Osei-Bonsu",
     role: "Headmistress, Future Leaders International",
-    text: "The 30,000+ NaCCA & BECE question bank transformed our mock examinations. Teachers assemble standard exam papers in minutes with WAEC schemes.",
+    text: "The 30,000+ NaCCA & BECE question bank transformed our mock examinations. Teachers assemble standard exam papers in minutes with comprehensive marking schemes.",
     city: "East Legon, Accra"
   },
   {
@@ -328,7 +328,7 @@ export default function LandingAndDemoPage() {
                 <span>Purpose-Built for Ghanaian Basic & JHS Schools</span>
               </Badge>
               <Badge variant="outline" className="text-slate-400 border-slate-700 text-xs px-2.5 py-0.5 font-medium">
-                NaCCA & WAEC Aligned
+                NaCCA Aligned • BECE Exam Standard
               </Badge>
             </div>
 
@@ -343,7 +343,7 @@ export default function LandingAndDemoPage() {
               <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
                 Engineered for proprietors, headteachers, and administrators across Ghana. 
                 Collect fees directly through <strong>MTN MoMo & Telecel Cash</strong>, access 
-                <strong> 30,000+ NaCCA & BECE examination past questions</strong>, and track staff attendance with 
+                <strong> 30,000+ NaCCA-aligned practice questions and standard BECE-style mock items</strong>, and track staff attendance with 
                 geofenced GPS verification.
               </p>
             </div>
@@ -387,11 +387,11 @@ export default function LandingAndDemoPage() {
                         30,000+ NaCCA & BECE Question Bank
                       </h4>
                       <Badge className="text-[9px] font-bold bg-amber-500/20 text-amber-300 border-amber-500/30 py-0">
-                        WAEC Rubrics
+                        Standard Marking Rubrics
                       </Badge>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                      Complete with WAEC Chief Examiner marking rubrics and step-by-step worked solutions for basic and secondary schools. Teachers assemble term papers in minutes.
+                      Engineered to match national exam standards, featuring comprehensive step-by-step worked solutions and rigorous marking schemes for basic and JHS schools. Teachers assemble termly test papers in minutes.
                     </p>
                   </div>
                 </div>
@@ -711,27 +711,33 @@ export default function LandingAndDemoPage() {
         </div>
       </main>
 
-      {/* --- FOOTER --- */}
-      <footer className="w-full border-t border-slate-800/80 py-8 bg-slate-950 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <AppLogo className="h-6 w-6 rounded-lg opacity-80" />
-            <span className="font-bold text-slate-400">GAM Edu</span>
-            <span>&copy; {new Date().getFullYear()} GAM IT Solutions. All rights reserved.</span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-400 font-medium">
-            <span>Accra • Kumasi • Takoradi</span>
-            <span>•</span>
-            <a href="tel:+233244750903" className="hover:text-white transition-colors">
-              +233 24 475 0903
-            </a>
-            <span>•</span>
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              className="hover:text-indigo-400 transition-colors underline"
-            >
-              School Portal Sign In
-            </button>
+            {/* --- FOOTER --- */}
+      <footer className="w-full border-t border-slate-800/80 py-8 bg-slate-950 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <p className="text-[11px] leading-relaxed text-slate-500 max-w-4xl mx-auto text-center border-b border-slate-900 pb-3">
+            Disclaimer: GAM Edu is an independent educational platform aligned with NaCCA curriculum guidelines and BECE assessment formats. WAEC and BECE trademarks belong to their respective holders and imply no direct endorsement or affiliation.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
+            <div className="flex items-center gap-2">
+              <AppLogo className="h-6 w-6 rounded-lg opacity-80" />
+              <span className="font-bold text-slate-400">GAM Edu</span>
+              <span>&copy; {new Date().getFullYear()} GAM IT Solutions. All rights reserved.</span>
+            </div>
+            <div className="flex items-center gap-4 text-slate-400 font-medium">
+              <span>Accra • Kumasi • Takoradi</span>
+              <span>•</span>
+              <a href="tel:+233244750903" className="hover:text-white transition-colors">
+                +233 24 475 0903
+              </a>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => setIsLoginModalOpen(true)}
+                className="hover:text-indigo-400 transition-colors underline cursor-pointer"
+              >
+                School Portal Sign In
+              </button>
+            </div>
           </div>
         </div>
       </footer>
