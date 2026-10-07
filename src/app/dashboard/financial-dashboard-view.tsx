@@ -74,8 +74,7 @@ export function FinancialDashboardView({
   const revenueStats = useMemo(() => {
     const isSummaryToday = (() => {
       const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
-                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
-                          dashboardSummary?.lastUpdated;
+                          (dashboardSummary?.financials as any)?.lastPaymentDate;
       if (!lastPayment) return false;
       const d = safeParseDate(lastPayment);
       const todayMidnight = new Date();

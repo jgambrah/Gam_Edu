@@ -1150,18 +1150,13 @@ function AdminDashboard({
 
     const isSummaryToday = (() => {
       const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
-                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
-                          dashboardSummary?.lastUpdated;
+                          (dashboardSummary?.financials as any)?.lastPaymentDate;
       if (!lastPayment) return false;
       const d = safeParseDate(lastPayment);
       return !!(d && d >= startOfToday);
     })();
     const rawSummaryToday = Number(dashboardSummary?.financials?.totalCollectedToday || 0);
-    const summaryToday = isSummaryToday
-      ? rawSummaryToday
-      : (rawSummaryToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= startOfToday
-          ? rawSummaryToday
-          : 0);
+    const summaryToday = isSummaryToday ? rawSummaryToday : 0;
 
     if (dashboardSummary?.financials?.totalBilled !== undefined && dashboardSummary.financials.totalBilled > 0) {
       return {
@@ -3633,18 +3628,13 @@ function DirectorDashboard({
     }
     const isSummaryToday = (() => {
       const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
-                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
-                          dashboardSummary?.lastUpdated;
+                          (dashboardSummary?.financials as any)?.lastPaymentDate;
       if (!lastPayment) return false;
       const d = safeParseDate(lastPayment);
       return !!(d && d >= startOfToday);
     })();
     const rawSummaryToday = Number(summaryCollectedToday ?? 0);
-    const finalSummaryToday = isSummaryToday
-      ? rawSummaryToday
-      : (rawSummaryToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= startOfToday
-          ? rawSummaryToday
-          : 0);
+    const finalSummaryToday = isSummaryToday ? rawSummaryToday : 0;
     return Math.max(clientTotal, finalSummaryToday, openTillsCash || 0);
   }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, dashboardSummary?.lastUpdated, startOfToday, openTillsCash]);
 
@@ -12255,23 +12245,24 @@ export default function DashboardClient() {
       if (!t || !t.id || seenTillIds.has(t.id)) return sum;
       seenTillIds.add(t.id);
 
-      const bal = Number(t.actualCashCounted ?? t.expectedBalance ?? t.closingBalance ?? t.currentBalance ?? 0);
-      if (bal <= 0) return sum;
-
-      // 1. If the till is actively Open, its current balance is live register cash
-      if (t.status === 'Open') {
-        return sum + bal;
-      }
-
-      // 2. If PendingApproval or Closed, check if it was opened or closed today
       const dateOpened = safeParseDate(t.dateOpened);
       const dateClosed = safeParseDate(t.dateClosed);
-      const isToday = (dateOpened && dateOpened >= startOfToday) || (dateClosed && dateClosed >= startOfToday);
-      if (isToday) {
-        return sum + bal;
+
+      // A till only reflects today's collections if it was opened TODAY or closed TODAY
+      const wasOpenedToday = !!(dateOpened && dateOpened >= startOfToday);
+      const wasClosedToday = !!(dateClosed && dateClosed >= startOfToday);
+
+      if (!wasOpenedToday && !wasClosedToday) {
+        // Till opened on a previous day and left open: its carryover cash was collected before today
+        return sum;
       }
 
-      return sum;
+      // Net cash collected during today's session = (drawer cash) - (opening float)
+      const openingFloat = Number(t.openingBalance || 0);
+      const grossDrawer = Number(t.actualCashCounted ?? t.closingBalance ?? t.expectedBalance ?? t.currentBalance ?? 0);
+      const netCollectedToday = Math.max(0, grossDrawer - openingFloat);
+
+      return sum + netCollectedToday;
     }, 0);
   }, [tills, pendingTills, closedTills, startOfToday]);
 

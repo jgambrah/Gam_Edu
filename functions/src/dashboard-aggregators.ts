@@ -127,6 +127,7 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
   let totalCollectedToday = 0;
   let totalCollectedThisMonth = 0;
   let totalCollectedThisTerm = 0;
+  let latestPaymentMs = 0;
   let lastPaymentAmount = 0;
   let lastPaymentAt: Timestamp | null = null;
 
@@ -235,7 +236,8 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
     if (dateVal) {
       const pTs = dateVal as Timestamp;
       pMs = pTs.toMillis?.() ?? new Date(dateVal).getTime();
-      if (pMs >= todayMs && amount > lastPaymentAmount) {
+      if (pMs > latestPaymentMs) {
+        latestPaymentMs = pMs;
         lastPaymentAmount = amount;
         lastPaymentAt = pTs;
       }

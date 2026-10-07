@@ -162,19 +162,15 @@ export function ExecutiveDirectorCockpit({
     // Validate whether dashboardSummary.financials last payment actually belongs to today (>= todayMidnight)
     const isSummaryPaymentFromToday = (() => {
       const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
-                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
-                          dashboardSummary?.lastUpdated;
+                          (dashboardSummary?.financials as any)?.lastPaymentDate;
       if (!lastPayment) return false;
       const d = safeParseDate(lastPayment);
       return !!(d && d >= todayMidnight);
     })();
 
     const rawSummaryCollectedToday = Number(dashboardSummary?.financials?.totalCollectedToday || 0);
-    const validSummaryCollectedToday = isSummaryPaymentFromToday
-      ? rawSummaryCollectedToday
-      : (rawSummaryCollectedToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= todayMidnight
-          ? rawSummaryCollectedToday
-          : 0);
+    // Never fall back to dashboardSummary.lastUpdated, as that is updated by non-financial events (attendance, sync, etc.)
+    const validSummaryCollectedToday = isSummaryPaymentFromToday ? rawSummaryCollectedToday : 0;
 
     if (dashboardSummary?.financials) {
       const f = dashboardSummary.financials;
@@ -197,13 +193,23 @@ export function ExecutiveDirectorCockpit({
   }, [dashboardSummary, unifiedMetrics, todayMidnight]);
 
   const todayCashCollected = useMemo(() => {
+    // 1. Authoritative: If live payments have been processed and todayCount > 0, use unifiedMetrics directly
+    if (unifiedMetrics.todayCount > 0 && unifiedMetrics.collectedToday > 0) {
+      return {
+        total: unifiedMetrics.collectedToday,
+        count: unifiedMetrics.todayCount,
+      };
+    }
+
+    // 2. Verified candidates across summary, live drawer collections today, and financials prop
     const total = Math.max(
-      Number(openTillsCash) || 0,
-      Number(financials?.collectedToday) || 0,
+      Number(unifiedMetrics.collectedToday) || 0,
       Number(financialSummary.collectedToday) || 0,
-      Number(unifiedMetrics.collectedToday) || 0
+      Number(financials?.collectedToday) || 0,
+      Number(openTillsCash) || 0
     );
 
+    // 3. Count reflects true transactions logged today, or 0 if no collections logged
     const count = (unifiedMetrics.todayCount > 0)
       ? unifiedMetrics.todayCount
       : (total > 0 ? 1 : 0);
