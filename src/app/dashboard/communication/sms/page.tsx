@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { useFirestore, useCollection, useMemoFirebase, useDoc, useUser } from '@/firebase';
-import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { useState, useMemo, useEffect } from 'react';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { sendSchoolSMSAction, sendSchoolBulkSMSAction } from '@/app/actions/sms'; 
+import { sendSchoolBulkSMSAction } from '@/app/actions/sms'; 
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,9 +13,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
-  Loader2, Send, Users, Filter, Search, AlertCircle, Sparkles, 
-  CheckCircle2, MessageSquare, Check, X, ShieldAlert, BadgeInfo,
-  Layers, Settings, Sparkle, AlertTriangle
+  Loader2, Send, Users, Filter, Search, Sparkles, 
+  CheckCircle2, MessageSquare, Check, BadgeInfo,
+  Layers, Settings, Sparkle, AlertTriangle, GraduationCap, Briefcase, Phone
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateSMSDraftAction } from '@/app/actions/sms-ai';
@@ -38,44 +38,73 @@ interface ParentRecipient {
   studentIds?: string[];
 }
 
+interface UniversalRecipient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  phone: string;
+  email?: string;
+  role: string;
+  type: 'parent' | 'staff';
+}
+
 const QUICK_SMS_TEMPLATES = [
+  {
+    title: "Staff Briefing",
+    topic: "General Staff Briefing & Academic Coordination",
+    targetType: "staff",
+    text: "Dear Colleague, kindly be reminded of our upcoming general staff briefing scheduled for tomorrow at 8:00 AM in the staff room. Agenda: Termly milestones and academic updates. Thank you.",
+    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/50 hover:bg-emerald-100/40"
+  },
+  {
+    title: "Marks Submission",
+    topic: "Continuous Assessment & Exam Scores Deadline",
+    targetType: "staff",
+    text: "Dear Teacher, this is a reminder that continuous assessments, test scores, and terminal remarks must be submitted and finalized on the portal before Friday 4:00 PM. Management.",
+    badgeColor: "bg-purple-50 text-purple-700 border-purple-200/50 hover:bg-purple-100/40"
+  },
   {
     title: "Fees Reminder",
     topic: "Outstanding Fee Statement Notice",
+    targetType: "parent",
     text: "Dear Parent, this is a friendly reminder that school fees for this term are overdue. Please visit the accounts dashboard to view statement details and settle outstanding arrears. Thank you.",
     badgeColor: "bg-amber-50 text-amber-700 border-amber-200/50 hover:bg-amber-100/40"
   },
   {
     title: "Weather Alert",
     topic: "School Operations Suspended due to Inclement Weather",
-    text: "Dear Parent, due to heavy rainfall and active flood warnings, school operations will be suspended tomorrow. Classes will run online via the student portal. Stay safe.",
+    targetType: "all",
+    text: "Dear Parent/Staff, due to heavy rainfall and flood alerts, regular on-campus school operations will be suspended tomorrow. Classes will run online via the student portal. Stay safe.",
     badgeColor: "bg-blue-50 text-blue-700 border-blue-200/50 hover:bg-blue-100/40"
   },
   {
     title: "PTA Meeting",
     topic: "General PTA Assembly Invitation",
+    targetType: "parent",
     text: "Dear Parent, you are cordially invited to our General PTA Assembly this Saturday at 10:00 AM in the school hall. We will align on administrative schedules. Warm regards.",
     badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200/50 hover:bg-indigo-100/40"
   },
   {
     title: "Urgent Notice",
     topic: "General School Operations Update",
-    text: "Dear Parent, please review the urgent administrative notice posted on the general dashboard regarding calendar adjustments and event dates. School Management.",
+    targetType: "all",
+    text: "Dear Parent/Colleague, please review the urgent administrative notice posted on the portal regarding calendar adjustments and event dates. School Management.",
     badgeColor: "bg-rose-50 text-rose-700 border-rose-200/50 hover:bg-rose-100/40"
   }
 ];
 
 export default function BulkSMSPage() {
   const { user } = useUser();
-  const { role, profile } = useRole();
+  const { profile } = useRole();
   const schoolName = profile?.schoolName || 'Sunny Side Academy';
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [message, setMessage] = useState('');
-  const [targetGroup, setTargetGroup] = useState('all'); 
-  const [selectedParents, setSelectedParents] = useState<string[]>([]); 
+  const [targetGroup, setTargetGroup] = useState('staff_all'); 
+  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); 
   const [channel, setChannel] = useState<'sms' | 'whatsapp'>('sms');
   const [mode, setMode] = useState<'bulk' | 'manual'>('bulk'); 
 
@@ -85,8 +114,9 @@ export default function BulkSMSPage() {
   const [aiTone, setAiTone] = useState<'formal' | 'urgent' | 'friendly'>('formal');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Manual Selection Search State
+  // Manual Selection Search & Sub-Filter State
   const [manualSearch, setManualSearch] = useState('');
+  const [manualAudienceFilter, setManualAudienceFilter] = useState<'all' | 'staff' | 'teachers' | 'parents'>('all');
 
   // Transmission Progress Console States
   const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -97,72 +127,209 @@ export default function BulkSMSPage() {
   const [broadcastLogs, setBroadcastLogs] = useState<string[]>([]);
   const [isBroadcastCompleted, setIsBroadcastCompleted] = useState(false);
 
-  // School Settings for API Keys Verification
-  const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
-  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef as any);
+  // --- FIRESTORE QUERIES ---
+  // 1. Staff Members (Teachers, Administrators, Support Staff)
+  const staffQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: rawStaff, isLoading: isLoadingStaff } = useCollection<any>(staffQuery);
 
-  // Data Fetching
-  const parentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: parents } = useCollection<ParentRecipient>(parentsQuery);
+  // 2. Parents
+  const parentsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: parents, isLoading: isLoadingParents } = useCollection<ParentRecipient>(parentsQuery);
 
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // 3. Students
+  const studentsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
   const { data: students } = useCollection<Student>(studentsQuery);
   
-  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // 4. Classes
+  const classesQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  const financialRecordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null, [firestore, schoolId]);
+  // 5. Debtors / Financial Records
+  const financialRecordsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null,
+    [firestore, schoolId]
+  );
   const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // Filter Logic (Bulk Targets)
-  const bulkTargets = useMemo(() => {
+  // --- NORMALIZE STAFF RECORDS ---
+  const staffList = useMemo(() => {
+    if (!rawStaff) return [];
+    return rawStaff
+      .filter((s: any) => s.status !== 'Inactive' && s.active !== false)
+      .map((s: any) => {
+        const firstName = s.firstName || (s.name ? String(s.name).split(' ')[0] : 'Staff');
+        const lastName = s.lastName || (s.name ? String(s.name).split(' ').slice(1).join(' ') : 'Member');
+        const displayName = `${s.firstName || ''} ${s.lastName || ''}`.trim() || s.displayName || s.name || s.email || 'Staff Member';
+        const rawPhone = s.phone || s.phoneNumber || s.mobile || s.contact || s.telephone || '';
+        const phone = String(rawPhone || '').trim();
+        const role = s.role || 'Staff';
+
+        return {
+          id: s.id,
+          firstName,
+          lastName,
+          displayName,
+          phone,
+          email: s.email || '',
+          role,
+          type: 'staff' as const,
+        };
+      });
+  }, [rawStaff]);
+
+  // Teachers Only (Teaching Faculty)
+  const teachersList = useMemo(() => {
+    return staffList.filter((s) => {
+      const r = (s.role || '').toLowerCase();
+      return r === 'teacher' || r === 'faculty' || r === 'instructor' || r === 'educator';
+    });
+  }, [staffList]);
+
+  // Non-Teaching Staff (Support Staff, Admin, Drivers, Security, Cooks, etc.)
+  const nonTeachingStaffList = useMemo(() => {
+    return staffList.filter((s) => {
+      const r = (s.role || '').toLowerCase();
+      return !(r === 'teacher' || r === 'faculty' || r === 'instructor' || r === 'educator');
+    });
+  }, [staffList]);
+
+  // --- NORMALIZE PARENT RECORDS ---
+  const parentsList = useMemo(() => {
     if (!parents || !students) return [];
-
     const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
+    
+    return parents
+      .filter(p => p.studentIds?.some((sid: string) => activeStudentIds.has(sid)))
+      .map(p => ({
+        id: p.id,
+        firstName: p.firstName || '',
+        lastName: p.lastName || '',
+        displayName: `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Parent',
+        phone: String(p.phone || '').trim(),
+        email: p.email || '',
+        studentIds: p.studentIds,
+        role: 'Parent',
+        type: 'parent' as const,
+      }));
+  }, [parents, students]);
 
+  // --- BULK AUDIENCE RESOLUTION ---
+  const bulkTargets: UniversalRecipient[] = useMemo(() => {
+    // 1. Staff Segments
+    if (targetGroup === 'staff_all') {
+      return staffList;
+    }
+
+    if (targetGroup === 'staff_teachers') {
+      return teachersList;
+    }
+
+    if (targetGroup === 'staff_non_teaching') {
+      return nonTeachingStaffList;
+    }
+
+    // 2. Parent Segments
     if (targetGroup === 'all') {
-        return parents.filter(p => p.studentIds?.some((sid: string) => activeStudentIds.has(sid)));
+      return parentsList;
     }
     
     if (targetGroup === 'debtors') {
-        if (!financialRecords) return [];
-        
-        const debtorStudentIds = new Set(financialRecords
-            .filter(r => (r.status === 'Unpaid' || r.status === 'Overdue') && activeStudentIds.has(r.studentId))
-            .map(r => r.studentId));
-            
-        return parents.filter(p => 
-            p.studentIds?.some((sid: string) => debtorStudentIds.has(sid))
-        );
+      if (!financialRecords || !students || !parents) return [];
+      const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
+      const debtorStudentIds = new Set(
+        financialRecords
+          .filter(r => (r.status === 'Unpaid' || r.status === 'Overdue') && activeStudentIds.has(r.studentId))
+          .map(r => r.studentId)
+      );
+          
+      return parentsList.filter(p => p.studentIds?.some((sid: string) => debtorStudentIds.has(sid)));
     }
     
     if (targetGroup.startsWith('class_')) {
-        const classId = targetGroup.replace('class_', '');
-        const studentIdsInClass = students.filter(s => s.classId === classId && s.enrollmentStatus !== 'Inactive').map(s => s.uid);
-        return parents.filter(p => p.studentIds?.some((sid: string) => studentIdsInClass.includes(sid)));
+      const classId = targetGroup.replace('class_', '');
+      if (!students) return [];
+      const studentIdsInClass = students.filter(s => s.classId === classId && s.enrollmentStatus !== 'Inactive').map(s => s.uid);
+      return parentsList.filter(p => p.studentIds?.some((sid: string) => studentIdsInClass.includes(sid)));
     }
     
     return [];
-  }, [parents, students, targetGroup, financialRecords]);
+  }, [targetGroup, staffList, teachersList, nonTeachingStaffList, parentsList, financialRecords, students, parents]);
 
-  // Filter Logic (Manual Selection)
-  const filteredManualParents = useMemo(() => {
-    if (!parents || !students) return [];
-    const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
-    const activeParents = parents.filter(p => p.studentIds?.some((sid: string) => activeStudentIds.has(sid)));
+  // --- UNIFIED DIRECTORY FOR MANUAL SELECTION ---
+  const allManualCandidates: UniversalRecipient[] = useMemo(() => {
+    return [...staffList, ...parentsList];
+  }, [staffList, parentsList]);
 
-    if (!manualSearch.trim()) return activeParents;
-    const searchTerm = manualSearch.toLowerCase();
-    return activeParents.filter(p =>
-      (p.firstName?.toLowerCase() || '').includes(searchTerm) ||
-      (p.lastName?.toLowerCase() || '').includes(searchTerm) ||
-      (p.phone || '').includes(searchTerm)
+  // Filtered Manual Directory
+  const filteredManualDirectory = useMemo(() => {
+    let list = allManualCandidates;
+
+    // Audience Sub-filter
+    if (manualAudienceFilter === 'staff') {
+      list = list.filter(r => r.type === 'staff');
+    } else if (manualAudienceFilter === 'teachers') {
+      list = list.filter(r => {
+        const role = (r.role || '').toLowerCase();
+        return r.type === 'staff' && (role === 'teacher' || role === 'faculty' || role === 'instructor' || role === 'educator');
+      });
+    } else if (manualAudienceFilter === 'parents') {
+      list = list.filter(r => r.type === 'parent');
+    }
+
+    // Search query filter
+    if (!manualSearch.trim()) return list;
+    const term = manualSearch.toLowerCase().trim();
+    return list.filter(r =>
+      r.displayName.toLowerCase().includes(term) ||
+      (r.phone || '').includes(term) ||
+      (r.email || '').toLowerCase().includes(term) ||
+      (r.role || '').toLowerCase().includes(term)
     );
-  }, [parents, students, manualSearch]);
+  }, [allManualCandidates, manualAudienceFilter, manualSearch]);
 
-  // Final Selected Recipient List
-  const finalRecipients = mode === 'bulk' ? bulkTargets : parents?.filter(p => selectedParents.includes(p.id)) || [];
+  // Final Selected Recipient List for Transmission
+  const finalRecipients: UniversalRecipient[] = useMemo(() => {
+    if (mode === 'bulk') {
+      return bulkTargets;
+    }
+    const selectedSet = new Set(selectedRecipients);
+    return allManualCandidates.filter(r => selectedSet.has(r.id));
+  }, [mode, bulkTargets, selectedRecipients, allManualCandidates]);
 
+  // Toggle individual selection
+  const toggleRecipient = (id: string) => {
+    setSelectedRecipients(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  // Toggle select all visible
+  const toggleSelectAllFiltered = () => {
+    const visibleIds = filteredManualDirectory.map(r => r.id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedRecipients.includes(id));
+    if (allSelected) {
+      setSelectedRecipients(prev => prev.filter(id => !visibleIds.includes(id)));
+    } else {
+      setSelectedRecipients(prev => Array.from(new Set([...prev, ...visibleIds])));
+    }
+  };
+
+  // Check gateway availability
+  const isConfigured = true;
+
+  // --- SEND CAMPAIGN DISPATCH HANDLER ---
   const handleSend = async () => {
     if (finalRecipients.length === 0 || !schoolId) return;
 
@@ -174,133 +341,133 @@ export default function BulkSMSPage() {
     setBroadcastStatusText("Initiating institutional gateway dispatches...");
     setBroadcastLogs([
       `[INFO] Starting bulk campaign dispatches via ${channel.toUpperCase()}...`,
-      `[INFO] Targeting ${finalRecipients.length} parental numbers.`
+      `[INFO] Target count: ${finalRecipients.length} recipients (${targetGroup.startsWith('staff') ? 'Staff & Faculty' : 'General Audience'}).`
     ]);
 
     let count = 0;
     let failCount = 0;
 
     if (channel === 'sms') {
-        const validRecipients = finalRecipients.filter(p => p.phone);
-        const skipRecipients = finalRecipients.filter(p => !p.phone);
+      const validRecipients = finalRecipients.filter(p => p.phone && p.phone.trim().length >= 7);
+      const skipRecipients = finalRecipients.filter(p => !p.phone || p.phone.trim().length < 7);
 
-        // Process skipped entries first
-        skipRecipients.forEach(parent => {
-            const parentName = `${parent.firstName} ${parent.lastName}`;
-            setBroadcastLogs(prev => [...prev, `[SKIP] Parent ${parentName} has no registered phone number.`]);
-        });
-        failCount += skipRecipients.length;
+      // Process skipped entries first
+      skipRecipients.forEach(rec => {
+        setBroadcastLogs(prev => [...prev, `[SKIP] ${rec.role || 'Member'} "${rec.displayName}" has no valid registered phone number.`]);
+      });
+      failCount += skipRecipients.length;
 
-        if (validRecipients.length > 0) {
-            const phones = validRecipients.map(p => p.phone);
-            try {
-                setBroadcastStatusText(`Delivering bulk SMS to ${validRecipients.length} parents...`);
-                const idToken = await user?.getIdToken();
-                const res = await sendSchoolBulkSMSAction(schoolId, phones, message, idToken);
-                
-                if (res.success) {
-                    count += validRecipients.length;
-                    setBroadcastLogs(prev => [
-                        ...prev, 
-                        `[SUCCESS] Bulk SMS broadcast successfully accepted by Arkesel for ${validRecipients.length} numbers.`
-                    ]);
-                } else {
-                    failCount += validRecipients.length;
-                    setBroadcastLogs(prev => [
-                        ...prev, 
-                        `[ERROR] Bulk SMS broadcast failed: ${res.error || 'Gateway Reject'}`
-                    ]);
-                }
-            } catch (err: any) {
-                failCount += validRecipients.length;
-                setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error: ${err.message}`]);
-            }
+      if (validRecipients.length > 0) {
+        const phones = validRecipients.map(p => p.phone);
+        try {
+          setBroadcastStatusText(`Delivering bulk SMS to ${validRecipients.length} recipients...`);
+          const idToken = await user?.getIdToken();
+          const res = await sendSchoolBulkSMSAction(schoolId, phones, message, idToken);
+          
+          if (res.success) {
+            count += validRecipients.length;
+            setBroadcastLogs(prev => [
+              ...prev, 
+              `[SUCCESS] Bulk SMS broadcast successfully accepted by Arkesel/Hubtel gateway for ${validRecipients.length} numbers.`
+            ]);
+          } else {
+            failCount += validRecipients.length;
+            setBroadcastLogs(prev => [
+              ...prev, 
+              `[ERROR] Bulk SMS broadcast failed: ${res.error || 'Gateway Reject'}`
+            ]);
+          }
+        } catch (err: any) {
+          failCount += validRecipients.length;
+          setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error: ${err.message}`]);
         }
-        
-        // Complete the progress instantly for bulk single-call action
-        setBroadcastProgress(100);
-        setBroadcastCurrent(finalRecipients.length);
+      }
+      
+      // Complete progress for bulk single-call action
+      setBroadcastProgress(100);
+      setBroadcastCurrent(finalRecipients.length);
     } else {
-        // Run sequential loop for WhatsApp
-        for (let i = 0; i < finalRecipients.length; i++) {
-            const parent = finalRecipients[i];
-            const phone = parent.phone;
-            const parentName = `${parent.firstName} ${parent.lastName}`;
+      // Run sequential loop for WhatsApp
+      for (let i = 0; i < finalRecipients.length; i++) {
+        const recipient = finalRecipients[i];
+        const phone = recipient.phone;
+        const name = recipient.displayName;
 
-            setBroadcastCurrent(i + 1);
-            setBroadcastProgress(Math.round(((i + 1) / finalRecipients.length) * 100));
-            setBroadcastStatusText(`Delivering message to ${parentName}...`);
+        setBroadcastCurrent(i + 1);
+        setBroadcastProgress(Math.round(((i + 1) / finalRecipients.length) * 100));
+        setBroadcastStatusText(`Delivering message to ${name}...`);
 
-            if (phone) {
-                try {
-                    const res = await sendSchoolWhatsApp(schoolId, phone, message);
-                    if (res.success) {
-                        count++;
-                        setBroadcastLogs(prev => [...prev, `[SUCCESS] WhatsApp delivered to ${parentName} (${phone})`]);
-                    } else {
-                        failCount++;
-                        setBroadcastLogs(prev => [...prev, `[ERROR] WhatsApp failed for ${parentName}: ${res.error || 'Gateway Timeout'}`]);
-                    }
-                } catch (err: any) {
-                    failCount++;
-                    setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error for ${parentName}: ${err.message}`]);
-                }
+        if (phone && phone.trim().length >= 7) {
+          try {
+            const res = await sendSchoolWhatsApp(schoolId, phone, message);
+            if (res.success) {
+              count++;
+              setBroadcastLogs(prev => [...prev, `[SUCCESS] WhatsApp delivered to ${name} (${phone})`]);
             } else {
-                failCount++;
-                setBroadcastLogs(prev => [...prev, `[SKIP] Parent ${parentName} has no registered phone number.`]);
+              failCount++;
+              setBroadcastLogs(prev => [...prev, `[ERROR] WhatsApp failed for ${name}: ${res.error || 'Gateway Timeout'}`]);
             }
+          } catch (err: any) {
+            failCount++;
+            setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error for ${name}: ${err.message}`]);
+          }
+        } else {
+          failCount++;
+          setBroadcastLogs(prev => [...prev, `[SKIP] ${recipient.role || 'Member'} "${name}" has no valid registered phone number.`]);
         }
+      }
     }
 
     setIsBroadcastCompleted(true);
     setBroadcastStatusText("Campaign dispatches completed.");
     setBroadcastLogs(prev => [
       ...prev,
-      `[INFO] Transmission sequence finished. Delivered: ${count}, Failed: ${failCount}`
+      `[INFO] Transmission sequence finished. Delivered: ${count}, Skipped/Failed: ${failCount}`
     ]);
-    
-    toast({ 
-        title: "Broadcast Complete", 
-        description: `Successfully sent ${count} messages via ${channel.toUpperCase()}.` 
+
+    toast({
+      title: "Campaign Broadcast Dispatched",
+      description: `Delivered to ${count} recipient${count !== 1 ? 's' : ''}. (${failCount} skipped/failed)`,
     });
-    setMessage('');
-    setSelectedParents([]);
   };
 
-  const toggleParent = (id: string) => {
-      setSelectedParents(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-  };
-
+  // AI Generator Trigger
   const handleAiGenerate = async () => {
+    if (!aiTopic.trim()) return;
     setIsGenerating(true);
     try {
-      const res = await generateSMSDraftAction(aiTopic, aiTone);
+      const audienceDescription = targetGroup.startsWith('staff_teachers')
+        ? 'teaching staff and academic faculty'
+        : targetGroup.startsWith('staff')
+          ? 'school staff and workforce members'
+          : 'parents and guardians of students';
+
+      const res = await generateSMSDraftAction(
+        `${schoolName}: ${aiTopic} (Target audience: ${audienceDescription})`, 
+        aiTone
+      );
       if (res.success && res.text) {
-          setMessage(res.text);
-          setIsAiOpen(false);
-          toast({ title: 'AI Assistant', description: 'Draft copywriter alert generated!' });
+        setMessage(res.text);
+        setIsAiOpen(false);
+        setAiTopic('');
+        toast({ title: "Draft Generated", description: "AI copy populated into the message composer." });
       } else {
-          toast({ variant: 'destructive', title: 'AI Error', description: 'Could not generate draft.' });
+        toast({ variant: 'destructive', title: "Generation Failed", description: res.error || "Unable to draft message" });
       }
     } catch (err: any) {
-      toast({ variant: 'destructive', title: 'AI Error', description: err.message });
+      toast({ variant: 'destructive', title: "AI Error", description: err.message });
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const isConfigured = channel === 'sms' 
-    ? schoolSettings?.enableSms 
-    : schoolSettings?.enableWhatsApp;
-
   return (
-    <div className="space-y-6 p-4 sm:p-6 max-w-6xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
+    <div className="space-y-6 pb-12 animate-in fade-in duration-300">
         
-        {/* Standardized Institutional Hero Banner */}
+        {/* HERO BANNER */}
         <SectionHeroBanner
-            eyebrow={`${schoolName.toUpperCase()} • COMMUNICATION & TELEMETRY`}
-            title="Communication Gateway Hub"
-            subtitle="Dispatch bulk text alerts or rich instant messages directly to your student body's parent base. Instantly target specific classes, overdue debtors, or search individual recipient tags."
+            title="Institutional SMS & Telemetry Hub"
+            subtitle="Broadcast real-time announcements, emergency alerts, fee reminders, or staff briefs with verified carrier routing."
             icon={Send}
             badge={{
                 label: isConfigured ? "Hubtel / Arkesel Integrated" : "Gateway Active",
@@ -313,7 +480,8 @@ export default function BulkSMSPage() {
             ]}
             stats={[
                 { label: 'Targeted Recipients', value: finalRecipients.length },
-                { label: 'Registered Parents', value: parents?.length || 0 },
+                { label: 'Active Staff & Faculty', value: staffList.length },
+                { label: 'Registered Parents', value: parentsList.length },
             ]}
             actions={
                 <div className="flex items-center gap-2">
@@ -419,7 +587,7 @@ export default function BulkSMSPage() {
                         Step 2: Choose Target Audience
                       </CardTitle>
                       <CardDescription className="text-xs font-semibold text-slate-400">
-                        Filter parents by academic groups or search individually.
+                        Filter staff alone, teachers only, parents, or select individual members.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -429,6 +597,7 @@ export default function BulkSMSPage() {
                               <TabsTrigger value="manual" className="rounded-lg py-2 text-xs font-black uppercase tracking-wider">Individual Selection</TabsTrigger>
                           </TabsList>
 
+                          {/* TAB 1: BULK SEGMENTS */}
                           <TabsContent value="bulk" className="space-y-4 outline-none">
                               <div className="space-y-2">
                                   <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
@@ -439,11 +608,47 @@ export default function BulkSMSPage() {
                                       <SelectTrigger className="h-11 rounded-xl border border-slate-200 text-xs font-semibold bg-slate-50/50">
                                         <SelectValue />
                                       </SelectTrigger>
-                                      <SelectContent className="rounded-xl">
-                                          <SelectItem value="all" className="text-xs">All Registered Parents ({parents?.length || 0})</SelectItem>
-                                          <SelectItem value="debtors" className="text-xs">Outstanding Debtors ({financialRecords?.length || 0} bills pending)</SelectItem>
+                                      <SelectContent className="rounded-xl max-h-[360px]">
+                                          {/* --- STAFF & FACULTY SEGMENTS --- */}
+                                          <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50/80 rounded-lg mx-1 my-1 flex items-center gap-1.5">
+                                            <Briefcase className="h-3 w-3" />
+                                            Staff & Faculty Groups
+                                          </div>
+                                          
+                                          <SelectItem value="staff_all" className="text-xs font-semibold cursor-pointer pl-3">
+                                            👥 All School Staff ({staffList.length} members)
+                                          </SelectItem>
+                                          
+                                          <SelectItem value="staff_teachers" className="text-xs font-semibold cursor-pointer pl-3">
+                                            👨‍🏫 Teachers Only ({teachersList.length} educators)
+                                          </SelectItem>
+                                          
+                                          <SelectItem value="staff_non_teaching" className="text-xs font-semibold cursor-pointer pl-3">
+                                            🛠️ Non-Teaching Staff Only ({nonTeachingStaffList.length} staff)
+                                          </SelectItem>
+
+                                          {/* --- PARENTS & GUARDIANS SEGMENTS --- */}
+                                          <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600 bg-slate-100 rounded-lg mx-1 mt-2.5 mb-1 flex items-center gap-1.5">
+                                            <Users className="h-3 w-3" />
+                                            Parents & Guardians
+                                          </div>
+                                          
+                                          <SelectItem value="all" className="text-xs font-semibold cursor-pointer pl-3">
+                                            👨‍👩‍👦 All Registered Parents ({parentsList.length})
+                                          </SelectItem>
+                                          
+                                          <SelectItem value="debtors" className="text-xs font-semibold cursor-pointer pl-3">
+                                            💳 Outstanding Debtors ({financialRecords?.length || 0} bills pending)
+                                          </SelectItem>
+                                          
+                                          {classes && classes.length > 0 && (
+                                            <div className="px-3 py-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider pl-3 mt-1.5">
+                                              Filter Parents by Class
+                                            </div>
+                                          )}
+                                          
                                           {classes?.map(c => (
-                                            <SelectItem key={c.id} value={`class_${c.id}`} className="text-xs">
+                                            <SelectItem key={c.id} value={`class_${c.id}`} className="text-xs font-medium cursor-pointer pl-4">
                                               Class: {c.name}
                                             </SelectItem>
                                           ))}
@@ -452,62 +657,149 @@ export default function BulkSMSPage() {
                               </div>
 
                               {/* Target estimation card */}
-                              <div className="bg-slate-50 rounded-2xl p-4.5 border border-slate-100 flex items-center gap-4.5">
+                              <div className="bg-slate-50 rounded-2xl p-4.5 border border-slate-100 flex items-center gap-4">
                                   <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-650 flex items-center justify-center shrink-0">
                                     <BadgeInfo className="h-5 w-5" />
                                   </div>
-                                  <div>
+                                  <div className="min-w-0">
                                     <h4 className="text-xs font-black uppercase tracking-tight text-slate-700">Estimated Target Size</h4>
                                     <p className="text-[11px] font-bold text-slate-500 mt-0.5">
-                                      This segment targets approximately <span className="text-indigo-600 font-extrabold">{bulkTargets.length} parents</span>.
+                                      This segment targets approximately{' '}
+                                      <span className="text-indigo-600 font-extrabold">
+                                        {bulkTargets.length}{' '}
+                                        {targetGroup === 'staff_teachers' 
+                                          ? 'teachers' 
+                                          : targetGroup.startsWith('staff') 
+                                            ? 'staff members' 
+                                            : 'parents'}
+                                      </span>.
                                     </p>
                                   </div>
                               </div>
                           </TabsContent>
 
+                          {/* TAB 2: INDIVIDUAL SELECTION */}
                           <TabsContent value="manual" className="space-y-4 outline-none">
-                              <div className="relative">
-                                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                  <Input
-                                      placeholder="Search parents by name or phone..."
-                                      value={manualSearch}
-                                      onChange={(e) => setManualSearch(e.target.value)}
-                                      className="pl-10 h-10 rounded-xl text-xs font-semibold border-slate-200"
-                                  />
+                              {/* Audience sub-filter pills */}
+                              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                                  <Button
+                                      type="button"
+                                      variant={manualAudienceFilter === 'all' ? 'default' : 'outline'}
+                                      size="sm"
+                                      onClick={() => setManualAudienceFilter('all')}
+                                      className={cn(
+                                        "h-7 text-[10px] font-black uppercase tracking-wider rounded-lg px-2.5",
+                                        manualAudienceFilter === 'all' ? "bg-slate-850 text-white" : "border-slate-200 text-slate-600"
+                                      )}
+                                  >
+                                      All Directory ({allManualCandidates.length})
+                                  </Button>
+                                  <Button
+                                      type="button"
+                                      variant={manualAudienceFilter === 'staff' ? 'default' : 'outline'}
+                                      size="sm"
+                                      onClick={() => setManualAudienceFilter('staff')}
+                                      className={cn(
+                                        "h-7 text-[10px] font-black uppercase tracking-wider rounded-lg px-2.5",
+                                        manualAudienceFilter === 'staff' ? "bg-indigo-600 text-white" : "border-slate-200 text-slate-600"
+                                      )}
+                                  >
+                                      Staff Alone ({staffList.length})
+                                  </Button>
+                                  <Button
+                                      type="button"
+                                      variant={manualAudienceFilter === 'teachers' ? 'default' : 'outline'}
+                                      size="sm"
+                                      onClick={() => setManualAudienceFilter('teachers')}
+                                      className={cn(
+                                        "h-7 text-[10px] font-black uppercase tracking-wider rounded-lg px-2.5",
+                                        manualAudienceFilter === 'teachers' ? "bg-emerald-600 text-white" : "border-slate-200 text-slate-600"
+                                      )}
+                                  >
+                                      Teachers Only ({teachersList.length})
+                                  </Button>
+                                  <Button
+                                      type="button"
+                                      variant={manualAudienceFilter === 'parents' ? 'default' : 'outline'}
+                                      size="sm"
+                                      onClick={() => setManualAudienceFilter('parents')}
+                                      className={cn(
+                                        "h-7 text-[10px] font-black uppercase tracking-wider rounded-lg px-2.5",
+                                        manualAudienceFilter === 'parents' ? "bg-blue-600 text-white" : "border-slate-200 text-slate-600"
+                                      )}
+                                  >
+                                      Parents ({parentsList.length})
+                                  </Button>
                               </div>
 
-                              <div className="border border-slate-150 rounded-2xl h-[260px] overflow-y-auto p-2.5 space-y-1.5 bg-slate-50/20">
-                                  {filteredManualParents.length === 0 ? (
+                              <div className="flex items-center gap-2">
+                                  <div className="relative flex-1">
+                                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                      <Input
+                                          placeholder="Search by name, role, or phone..."
+                                          value={manualSearch}
+                                          onChange={(e) => setManualSearch(e.target.value)}
+                                          className="pl-10 h-10 rounded-xl text-xs font-semibold border-slate-200"
+                                      />
+                                  </div>
+                                  <Button 
+                                      type="button" 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={toggleSelectAllFiltered}
+                                      className="text-[10px] font-bold uppercase tracking-wider h-10 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 shrink-0"
+                                  >
+                                      Select Visible
+                                  </Button>
+                              </div>
+
+                              <div className="border border-slate-150 rounded-2xl h-[280px] overflow-y-auto p-2 space-y-1.5 bg-slate-50/20">
+                                  {filteredManualDirectory.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center text-center p-4 text-slate-400 gap-2">
                                       <Search className="h-8 w-8 opacity-30" />
-                                      <p className="text-xs font-bold text-slate-450">No parents match search criteria.</p>
+                                      <p className="text-xs font-bold text-slate-450">No recipients match search criteria.</p>
                                     </div>
                                   ) : (
-                                    filteredManualParents.map(p => {
-                                        const isSelected = selectedParents.includes(p.id);
-                                        const avatarChar = p.firstName?.[0] || 'P';
+                                    filteredManualDirectory.map(r => {
+                                        const isSelected = selectedRecipients.includes(r.id);
+                                        const avatarChar = r.firstName?.[0] || (r.type === 'staff' ? 'S' : 'P');
+                                        const isTeacher = r.type === 'staff' && (r.role.toLowerCase() === 'teacher' || r.role.toLowerCase() === 'faculty');
+                                        const hasPhone = r.phone && r.phone.trim().length >= 7;
+
                                         return (
                                             <div 
-                                                key={p.id} 
+                                                key={r.id} 
                                                 className={cn(
-                                                  "flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl cursor-pointer border transition-all duration-200",
+                                                  "flex items-center justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer border transition-all duration-200",
                                                   isSelected ? "bg-white border-indigo-200 shadow-sm" : "bg-transparent border-transparent"
                                                 )}
-                                                onClick={() => toggleParent(p.id)}
+                                                onClick={() => toggleRecipient(r.id)}
                                             >
                                                 <div className="flex items-center space-x-3 min-w-0">
                                                     <Checkbox checked={isSelected} className="rounded-md" />
-                                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-650 shrink-0 uppercase">
+                                                    <div className={cn(
+                                                      "h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 uppercase",
+                                                      isTeacher ? "bg-emerald-100 text-emerald-700" : r.type === 'staff' ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-700"
+                                                    )}>
                                                       {avatarChar}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="text-xs font-bold text-slate-700 truncate">{p.firstName} {p.lastName}</p>
-                                                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">{p.phone}</p>
+                                                        <p className="text-xs font-bold text-slate-800 truncate">{r.displayName}</p>
+                                                        <p className={cn("text-[10px] font-mono mt-0.5", hasPhone ? "text-slate-400" : "text-amber-500 font-bold")}>
+                                                          {hasPhone ? r.phone : "⚠️ No Phone"}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded border">
-                                                  Parent
-                                                </span>
+                                                <Badge className={cn(
+                                                  "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border shadow-none",
+                                                  isTeacher 
+                                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                                                    : r.type === 'staff'
+                                                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                                      : "bg-slate-100 text-slate-600 border-slate-200"
+                                                )}>
+                                                  {r.role || (r.type === 'staff' ? 'Staff' : 'Parent')}
+                                                </Badge>
                                             </div>
                                         );
                                     })
@@ -516,7 +808,7 @@ export default function BulkSMSPage() {
                               
                               <div className="flex justify-between items-center bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100 text-xs shrink-0">
                                   <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Manual Target Total</span>
-                                  <span className="font-extrabold text-indigo-650">{selectedParents.length} parent{selectedParents.length !== 1 ? 's' : ''} selected</span>
+                                  <span className="font-extrabold text-indigo-650">{selectedRecipients.length} recipient{selectedRecipients.length !== 1 ? 's' : ''} selected</span>
                               </div>
                           </TabsContent>
                       </Tabs>
@@ -539,33 +831,22 @@ export default function BulkSMSPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-5">
-                        {/* Selected channel stats */}
-                        <div className="grid grid-cols-2 gap-3.5">
-                            <div className={cn(
-                              "p-3 rounded-2xl border text-center relative",
-                              channel === 'sms' ? "bg-blue-50/40 border-blue-100 text-blue-700" : "bg-emerald-50/40 border-emerald-100 text-emerald-700"
-                            )}>
-                              <p className="text-[9px] font-black uppercase opacity-75 tracking-wider leading-none">Gateway</p>
-                              <p className="text-xs font-extrabold mt-1.5 uppercase tracking-wide leading-none">{channel}</p>
-                            </div>
-                            <div className="p-3 rounded-2xl border border-slate-100 bg-slate-50/30 text-center">
-                              <p className="text-[9px] font-black uppercase text-slate-400 tracking-wider leading-none">Total Recipients</p>
-                              <p className="text-xs font-extrabold text-slate-800 mt-1.5 leading-none">{finalRecipients.length}</p>
-                            </div>
-                        </div>
-
-                        {/* Templates Chips */}
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Quick Presets</label>
+                        
+                        {/* QUICK TEMPLATES BADGES */}
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                              <Sparkles className="h-3 w-3 text-indigo-500" />
+                              Quick Announcement Templates
+                            </label>
                             <div className="flex flex-wrap gap-1.5">
-                                {QUICK_SMS_TEMPLATES.map(tpl => (
+                                {QUICK_SMS_TEMPLATES.map((tpl, idx) => (
                                     <button
-                                        key={tpl.title}
+                                        key={idx}
                                         type="button"
                                         onClick={() => setMessage(tpl.text)}
                                         className={cn(
-                                            "px-2.5 py-1 rounded-lg border text-[8px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95",
-                                            tpl.badgeColor
+                                          "text-[10px] font-black px-2.5 py-1 rounded-lg border transition-all cursor-pointer",
+                                          tpl.badgeColor
                                         )}
                                     >
                                         {tpl.title}
@@ -587,7 +868,13 @@ export default function BulkSMSPage() {
                                 </Button>
                             </div>
                             <Textarea 
-                                placeholder="Dear Parent, we would like to notify you that..." 
+                                placeholder={
+                                  targetGroup.startsWith('staff_teachers')
+                                    ? "Dear Teacher, please be informed that..."
+                                    : targetGroup.startsWith('staff')
+                                      ? "Dear Staff Member, please be informed that..."
+                                      : "Dear Parent, we would like to notify you that..."
+                                } 
                                 value={message}
                                 onChange={e => setMessage(e.target.value)}
                                 rows={6}
@@ -627,14 +914,14 @@ export default function BulkSMSPage() {
                             )}
                         >
                             <Send className="mr-2 h-4 w-4 shrink-0"/>
-                            Send Campaign via {channel}
+                            Send Campaign to {finalRecipients.length} Recipient{finalRecipients.length !== 1 ? 's' : ''} ({channel})
                         </Button>
                     </CardContent>
                 </Card>
             </div>
         </div>
 
-        {/* --- AI message generator dialog --- */}
+        {/* --- AI MESSAGE GENERATOR DIALOG --- */}
         <Dialog open={isAiOpen} onOpenChange={setIsAiOpen}>
           <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden rounded-[2rem] border-0 shadow-2xl bg-white">
             <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-6 pb-8 text-white relative">
@@ -644,14 +931,18 @@ export default function BulkSMSPage() {
                     AI SMS Message Copier
                   </DialogTitle>
                 </DialogHeader>
-                <p className="text-purple-200 text-xs font-semibold mt-1">Generate polished messages matching school guidelines.</p>
+                <p className="text-purple-200 text-xs font-semibold mt-1">Generate polished announcements for staff or parents.</p>
             </div>
 
             <div className="p-6 space-y-4">
                 <div className="space-y-1.5">
                     <Label className="text-[10px] font-black uppercase tracking-wider text-slate-450">Announcements Prompt Topic</Label>
                     <Input 
-                      placeholder="e.g. Closure next Monday due to regional assembly assembly..." 
+                      placeholder={
+                        targetGroup.startsWith('staff')
+                          ? "e.g. Staff meeting tomorrow at 8 AM regarding curriculum..."
+                          : "e.g. Closure next Monday due to regional assembly..."
+                      } 
                       value={aiTopic} 
                       onChange={e => setAiTopic(e.target.value)} 
                       className="h-10 rounded-xl text-xs font-semibold border-slate-200"
