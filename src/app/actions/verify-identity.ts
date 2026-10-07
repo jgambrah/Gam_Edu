@@ -22,7 +22,6 @@ export async function verifyStaffIdentityAction(profilePicBase64: string, liveSe
         { media: { url: `data:image/jpeg;base64,${cleanLiveSelfie}` } }
       ],
       output: { schema: IdentitySchema },
-      config: { temperature: 0.1 } // Low temp for strict comparison
     });
 
     if (!output) throw new Error("AI did not return a valid response.");

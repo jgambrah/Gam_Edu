@@ -90,9 +90,6 @@ const campusAssistantFlow = ai.defineFlow(
   async (input) => {
     const { output } = await assistantPrompt(input, {
         model: 'googleai/gemini-3-flash-preview',
-        config: {
-            temperature: 0.5,
-        }
     });
     
     if (!output) {

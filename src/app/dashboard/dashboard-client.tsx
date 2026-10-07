@@ -12245,24 +12245,24 @@ export default function DashboardClient() {
       if (!t || !t.id || seenTillIds.has(t.id)) return sum;
       seenTillIds.add(t.id);
 
-      const dateOpened = safeParseDate(t.dateOpened);
-      const dateClosed = safeParseDate(t.dateClosed);
-
-      // A till only reflects today's collections if it was opened TODAY or closed TODAY
-      const wasOpenedToday = !!(dateOpened && dateOpened >= startOfToday);
-      const wasClosedToday = !!(dateClosed && dateClosed >= startOfToday);
-
-      if (!wasOpenedToday && !wasClosedToday) {
-        // Till opened on a previous day and left open: its carryover cash was collected before today
-        return sum;
-      }
-
-      // Net cash collected during today's session = (drawer cash) - (opening float)
       const openingFloat = Number(t.openingBalance || 0);
       const grossDrawer = Number(t.actualCashCounted ?? t.closingBalance ?? t.expectedBalance ?? t.currentBalance ?? 0);
-      const netCollectedToday = Math.max(0, grossDrawer - openingFloat);
+      const netCollected = Math.max(0, grossDrawer - openingFloat);
 
-      return sum + netCollectedToday;
+      // 1. If the till is actively Open, it is the live register currently active at the counter
+      if (t.status === 'Open') {
+        return sum + netCollected;
+      }
+
+      // 2. If PendingApproval or Closed, only include if closed today
+      const dateOpened = safeParseDate(t.dateOpened);
+      const dateClosed = safeParseDate(t.dateClosed);
+      const isToday = (dateClosed && dateClosed >= startOfToday) || (dateOpened && dateOpened >= startOfToday);
+      if (isToday) {
+        return sum + netCollected;
+      }
+
+      return sum;
     }, 0);
   }, [tills, pendingTills, closedTills, startOfToday]);
 

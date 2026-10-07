@@ -48,7 +48,6 @@ export async function generateClassInsightsAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
-      config: { temperature: 0.4 }
     });
 
     const text = response.text;
@@ -98,7 +97,6 @@ export async function generateBudgetInsightsAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
-      config: { temperature: 0.4 }
     });
 
     const text = response.text;
@@ -155,7 +153,6 @@ export async function generateStaffAppraisalAction(
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       config: { 
-        temperature: 0.5,
         responseMimeType: 'application/json'
       }
     });
@@ -217,7 +214,6 @@ export async function generateSchoolExecutiveBriefingAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
-      config: { temperature: 0.4 }
     });
 
     const text = response.text;
@@ -269,7 +265,6 @@ export async function generateLessonEnhancementsAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
-      config: { temperature: 0.5 }
     });
 
     const text = response.text;
@@ -326,7 +321,6 @@ export async function generateStudentAlertSupportAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
-      config: { temperature: 0.6 }
     });
 
     const text = response.text;

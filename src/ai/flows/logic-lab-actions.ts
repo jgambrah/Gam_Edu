@@ -46,7 +46,6 @@ export async function interpretBlockCodeAction(blocks: string[], schoolId: strin
 
     const response = await ai.generate({
       prompt: prompt,
-      config: { temperature: 0 },
     });
 
     return { success: true, output: response.text.trim() };
@@ -94,7 +93,6 @@ export async function getCodeCoachResponseAction(input: {
 
     const response = await ai.generate({
       prompt: prompt,
-      config: { temperature: 0.5 },
     });
 
     return { success: true, text: response.text };

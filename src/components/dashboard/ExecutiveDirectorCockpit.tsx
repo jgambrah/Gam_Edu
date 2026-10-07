@@ -193,23 +193,20 @@ export function ExecutiveDirectorCockpit({
   }, [dashboardSummary, unifiedMetrics, todayMidnight]);
 
   const todayCashCollected = useMemo(() => {
-    // 1. Authoritative: If live payments have been processed and todayCount > 0, use unifiedMetrics directly
-    if (unifiedMetrics.todayCount > 0 && unifiedMetrics.collectedToday > 0) {
-      return {
-        total: unifiedMetrics.collectedToday,
-        count: unifiedMetrics.todayCount,
-      };
-    }
+    const tillCash = Number(openTillsCash) || 0;
+    const directPaymentsCash = Number(unifiedMetrics.collectedToday) || 0;
+    const summaryCash = Number(financialSummary.collectedToday) || 0;
+    const passedFinancialsCash = Number(financials?.collectedToday) || 0;
 
-    // 2. Verified candidates across summary, live drawer collections today, and financials prop
+    // Use Math.max across all validated live revenue channels so active cash till collections are never suppressed
     const total = Math.max(
-      Number(unifiedMetrics.collectedToday) || 0,
-      Number(financialSummary.collectedToday) || 0,
-      Number(financials?.collectedToday) || 0,
-      Number(openTillsCash) || 0
+      tillCash,
+      directPaymentsCash,
+      summaryCash,
+      passedFinancialsCash
     );
 
-    // 3. Count reflects true transactions logged today, or 0 if no collections logged
+    // Count reflects verified transactions logged today
     const count = (unifiedMetrics.todayCount > 0)
       ? unifiedMetrics.todayCount
       : (total > 0 ? 1 : 0);

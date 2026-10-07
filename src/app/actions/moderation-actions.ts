@@ -36,7 +36,6 @@ export async function moderateMessageAction(messageText: string) {
       model: 'googleai/gemini-3-flash-preview',
       prompt: prompt,
       output: { schema: ModerationResultSchema },
-      config: { temperature: 0.1 }
     });
 
     if (!output) {

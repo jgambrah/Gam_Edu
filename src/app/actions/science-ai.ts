@@ -18,7 +18,6 @@ export async function generateScienceFactAction(schoolId: string, topic?: string
       model: 'googleai/gemini-3-flash-preview', 
       prompt: promptText,
       config: {
-        temperature: 0.7,
         maxOutputTokens: 256,
       },
     });

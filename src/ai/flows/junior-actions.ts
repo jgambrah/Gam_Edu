@@ -218,7 +218,6 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
         { text: prompt },
         { media: { url: input.imageDataUri } },
       ],
-      config: { temperature: 0.1 }
     });
 
     const isYes = text.toUpperCase().includes('YES');

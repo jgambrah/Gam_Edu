@@ -89,7 +89,6 @@ export async function generateTimetable(input: any) {
                 model: 'googleai/gemini-3-flash-preview',
                 prompt: promptText,
                 output: { schema: TimetableOutputSchema },
-                config: { temperature: 0.0 } // 0.0 forces strict logic over creativity
             });
 
             if (output && output.schedule) {

@@ -51,7 +51,6 @@ export async function generateDebateResponse(input: z.infer<typeof DebateInputSc
 
     const response = await ai.generate({
       prompt: prompt,
-      config: { temperature: 0.7 },
     });
 
     return { success: true, text: response.text };
