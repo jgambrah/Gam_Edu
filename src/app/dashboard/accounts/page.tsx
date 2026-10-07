@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
@@ -4531,15 +4532,24 @@ export default function AccountsPage() {
     return [];
   }, [isLedgerLoaded, categoryCollections, dashboardSummary]);
 
-  const topDebtors = useMemo(() => {
+  const [debtorSearchQuery, setDebtorSearchQuery] = useState('');
+
+  const allDebtorsList = useMemo(() => {
       if (!isLedgerLoaded) return [];
-      const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
-      const exceeding = studentFinancials.filter(sf => sf.balance >= actualThreshold);
-      if (exceeding.length > 0) {
-          return exceeding;
-      }
-      return studentFinancials.filter(sf => sf.balance > 0.01).slice(0, 5);
-  }, [isLedgerLoaded, studentFinancials, schoolSettings]);
+      return studentFinancials
+          .filter(sf => sf.balance > 0.01)
+          .sort((a, b) => b.balance - a.balance);
+  }, [isLedgerLoaded, studentFinancials]);
+
+  const topDebtors = useMemo(() => {
+      if (!debtorSearchQuery.trim()) return allDebtorsList;
+      const q = debtorSearchQuery.toLowerCase().trim();
+      return allDebtorsList.filter(({ student }) => {
+          const name = `${student.firstName || ''} ${student.lastName || ''}`.toLowerCase();
+          const adm = (student.studentId || (student as any).admissionNumber || (student as any).admissionNo || '').toLowerCase();
+          return name.includes(q) || adm.includes(q);
+      });
+  }, [allDebtorsList, debtorSearchQuery]);
 
   const getOldestOverdueDays = useCallback((studentRecords: FinancialRecord[]) => {
       const unpaidOrOverdue = studentRecords.filter(r => 
@@ -5388,14 +5398,32 @@ export default function AccountsPage() {
                             </TabsContent>
 
                             <TabsContent value="debtors" className="mt-0 space-y-4 animate-in fade-in-50">
-                                <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
-                                    <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                        <AlertTriangle className="h-4 w-4 text-rose-500" /> Actionable Aged Debt Reminders
-                                    </h4>
-                                    <p className="text-xs text-slate-500 leading-normal">
-                                        The following students have the largest outstanding balances. Click the SMS button to send parent reminder messages including safe payment portal instructions.
-                                    </p>
+                                <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                            <AlertTriangle className="h-4 w-4 text-rose-500" /> Actionable Aged Debt Reminders ({allDebtorsList.length} Students Owed)
+                                        </h4>
+                                        <p className="text-xs text-slate-500 leading-normal">
+                                            Showing all students with outstanding balances. Click Send Reminder beside any student, or use the Bulk SMS Hub to notify all parents at once.
+                                        </p>
+                                    </div>
+                                    <Link href="/dashboard/communication/sms">
+                                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 rounded-xl h-8 px-3 shrink-0">
+                                            <Send className="h-3.5 w-3.5" /> Broadcast via Bulk SMS
+                                        </Button>
+                                    </Link>
                                 </div>
+                                {isLedgerLoaded && allDebtorsList.length > 0 && (
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                                        <Input
+                                            placeholder="Search debtors by student name or admission number..."
+                                            value={debtorSearchQuery}
+                                            onChange={(e) => setDebtorSearchQuery(e.target.value)}
+                                            className="pl-9 h-9 text-xs rounded-xl border-slate-200"
+                                        />
+                                    </div>
+                                )}
                                 
                                 {!isLedgerLoaded ? (
                                     <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
@@ -5431,7 +5459,7 @@ export default function AccountsPage() {
                                         </Button>
                                     </div>
                                 ) : (
-                                    <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
+                                    <div className="grid gap-3 max-h-[520px] overflow-y-auto pr-1">
                                         {topDebtors.map(({ student, balance, records: studentRecs }) => {
                                             const sKey = student.uid || student.id || student.studentId;
                                             const overdueDays = getOldestOverdueDays(studentRecs);

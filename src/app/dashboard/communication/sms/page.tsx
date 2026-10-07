@@ -47,9 +47,18 @@ interface UniversalRecipient {
   email?: string;
   role: string;
   type: 'parent' | 'staff';
+  wardNames?: string;
+  totalArrears?: number;
 }
 
 const QUICK_SMS_TEMPLATES = [
+  {
+    title: "Fees Reminder (With Names & Amount)",
+    topic: "Outstanding Fee Statement with Exact Balance",
+    targetType: "parent",
+    text: "Dear Parent, kindly note that your ward {student_name} has an outstanding fee balance of GH₵ {amount_owed}. Please log in to your portal or visit the accounts office to settle. Thank you. - {school_name}",
+    badgeColor: "bg-amber-100 text-amber-900 border-amber-300 font-extrabold hover:bg-amber-200/50"
+  },
   {
     title: "Staff Briefing",
     topic: "General Staff Briefing & Academic Coordination",
@@ -247,14 +256,45 @@ export default function BulkSMSPage() {
     
     if (targetGroup === 'debtors') {
       if (!financialRecords || !students || !parents) return [];
-      const activeStudentIds = new Set(students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => s.uid));
-      const debtorStudentIds = new Set(
-        financialRecords
-          .filter(r => (r.status === 'Unpaid' || r.status === 'Overdue') && activeStudentIds.has(r.studentId))
-          .map(r => r.studentId)
+      const activeStudentMap = new Map(
+        students.filter(s => s.enrollmentStatus !== 'Inactive').map(s => [s.uid, `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student'])
       );
-          
-      return parentsList.filter(p => p.studentIds?.some((sid: string) => debtorStudentIds.has(sid)));
+
+      // Compute total unpaid debt per student
+      const studentDebtMap = new Map<string, number>();
+      financialRecords.forEach(r => {
+        if ((r.status === 'Unpaid' || r.status === 'Overdue') && activeStudentMap.has(r.studentId)) {
+          const debt = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+          if (debt > 0.01) {
+            studentDebtMap.set(r.studentId, (studentDebtMap.get(r.studentId) || 0) + debt);
+          }
+        }
+      });
+
+      return parentsList
+        .filter(p => p.studentIds?.some(sid => studentDebtMap.has(sid)))
+        .map(p => {
+          const owingWards = (p.studentIds || [])
+            .filter(sid => studentDebtMap.has(sid))
+            .map(sid => ({
+              name: activeStudentMap.get(sid) || 'Student',
+              balance: studentDebtMap.get(sid) || 0,
+            }));
+
+          const totalDebt = owingWards.reduce((sum, w) => sum + w.balance, 0);
+          let wardNamesStr = '';
+          if (owingWards.length === 1) {
+            wardNamesStr = owingWards[0].name;
+          } else if (owingWards.length > 1) {
+            wardNamesStr = owingWards.map(w => `${w.name} (GH₵${w.balance.toFixed(2)})`).join(' & ');
+          }
+
+          return {
+            ...p,
+            wardNames: wardNamesStr,
+            totalArrears: totalDebt,
+          };
+        });
     }
     
     if (targetGroup.startsWith('class_')) {
@@ -357,29 +397,73 @@ export default function BulkSMSPage() {
       });
       failCount += skipRecipients.length;
 
-      if (validRecipients.length > 0) {
-        const phones = validRecipients.map(p => p.phone);
-        try {
-          setBroadcastStatusText(`Delivering bulk SMS to ${validRecipients.length} recipients...`);
-          const idToken = await user?.getIdToken();
-          const res = await sendSchoolBulkSMSAction(schoolId, phones, message, idToken);
-          
-          if (res.success) {
-            count += validRecipients.length;
-            setBroadcastLogs(prev => [
-              ...prev, 
-              `[SUCCESS] Bulk SMS broadcast successfully accepted by Arkesel/Hubtel gateway for ${validRecipients.length} numbers.`
-            ]);
-          } else {
-            failCount += validRecipients.length;
-            setBroadcastLogs(prev => [
-              ...prev, 
-              `[ERROR] Bulk SMS broadcast failed: ${res.error || 'Gateway Reject'}`
-            ]);
+      // Deduplicate by clean phone number to ensure parents with multiple children receive ONE combined message
+      const seenPhones = new Set<string>();
+      const dedupedValidRecipients = validRecipients.filter(rec => {
+        const cleanPhone = rec.phone.replace(/[\s\-\(\)\+]/g, '');
+        if (seenPhones.has(cleanPhone)) return false;
+        seenPhones.add(cleanPhone);
+        return true;
+      });
+
+      if (dedupedValidRecipients.length > 0) {
+        const hasPersonalizedTags = /\{(student_name|student_names|amount_owed|total_balance|parent_name|school_name)\}/i.test(message);
+        const idToken = await user?.getIdToken();
+
+        if (hasPersonalizedTags) {
+          // Send personalized individual SMS with exact student names and balance
+          for (let i = 0; i < dedupedValidRecipients.length; i++) {
+            const rec = dedupedValidRecipients[i];
+            const personalMsg = message
+              .replace(/\{student_name\}/gi, rec.wardNames || 'your ward')
+              .replace(/\{student_names\}/gi, rec.wardNames || 'your ward')
+              .replace(/\{amount_owed\}/gi, rec.totalArrears !== undefined ? rec.totalArrears.toFixed(2) : '0.00')
+              .replace(/\{total_balance\}/gi, rec.totalArrears !== undefined ? rec.totalArrears.toFixed(2) : '0.00')
+              .replace(/\{parent_name\}/gi, rec.displayName || 'Parent')
+              .replace(/\{school_name\}/gi, schoolName);
+
+            setBroadcastCurrent(i + 1);
+            setBroadcastProgress(Math.round(((i + 1) / dedupedValidRecipients.length) * 100));
+            setBroadcastStatusText(`Delivering personalized SMS to ${rec.displayName}...`);
+
+            try {
+              const res = await sendSchoolBulkSMSAction(schoolId, [rec.phone], personalMsg, idToken);
+              if (res.success) {
+                count++;
+                setBroadcastLogs(prev => [...prev, `[SUCCESS] SMS delivered to ${rec.displayName} (${rec.phone})`]);
+              } else {
+                failCount++;
+                setBroadcastLogs(prev => [...prev, `[ERROR] Failed for ${rec.displayName}: ${res.error || 'Gateway reject'}`]);
+              }
+            } catch (err: any) {
+              failCount++;
+              setBroadcastLogs(prev => [...prev, `[FATAL] Error for ${rec.displayName}: ${err.message}`]);
+            }
           }
-        } catch (err: any) {
-          failCount += validRecipients.length;
-          setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error: ${err.message}`]);
+        } else {
+          // Uniform campaign broadcast in a single fast call
+          const phones = dedupedValidRecipients.map(p => p.phone);
+          try {
+            setBroadcastStatusText(`Delivering bulk SMS to ${dedupedValidRecipients.length} recipients...`);
+            const res = await sendSchoolBulkSMSAction(schoolId, phones, message, idToken);
+            
+            if (res.success) {
+              count += dedupedValidRecipients.length;
+              setBroadcastLogs(prev => [
+                ...prev, 
+                `[SUCCESS] Bulk SMS broadcast successfully accepted by Arkesel/Hubtel gateway for ${dedupedValidRecipients.length} numbers.`
+              ]);
+            } else {
+              failCount += dedupedValidRecipients.length;
+              setBroadcastLogs(prev => [
+                ...prev, 
+                `[ERROR] Bulk SMS broadcast failed: ${res.error || 'Gateway Reject'}`
+              ]);
+            }
+          } catch (err: any) {
+            failCount += dedupedValidRecipients.length;
+            setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error: ${err.message}`]);
+          }
         }
       }
       
@@ -387,9 +471,19 @@ export default function BulkSMSPage() {
       setBroadcastProgress(100);
       setBroadcastCurrent(finalRecipients.length);
     } else {
+      // Deduplicate recipients by clean phone number so parents with multiple children receive 1 WhatsApp
+      const seenPhones = new Set<string>();
+      const dedupedRecipients = finalRecipients.filter(rec => {
+        const cleanPhone = (rec.phone || '').replace(/[\s\-\(\)\+]/g, '');
+        if (!cleanPhone) return true;
+        if (seenPhones.has(cleanPhone)) return false;
+        seenPhones.add(cleanPhone);
+        return true;
+      });
+
       // Run sequential loop for WhatsApp
-      for (let i = 0; i < finalRecipients.length; i++) {
-        const recipient = finalRecipients[i];
+      for (let i = 0; i < dedupedRecipients.length; i++) {
+        const recipient = dedupedRecipients[i];
         const phone = recipient.phone;
         const name = recipient.displayName;
 
@@ -398,8 +492,16 @@ export default function BulkSMSPage() {
         setBroadcastStatusText(`Delivering message to ${name}...`);
 
         if (phone && phone.trim().length >= 7) {
+          const personalMsg = message
+            .replace(/\{student_name\}/gi, recipient.wardNames || 'your ward')
+            .replace(/\{student_names\}/gi, recipient.wardNames || 'your ward')
+            .replace(/\{amount_owed\}/gi, recipient.totalArrears !== undefined ? recipient.totalArrears.toFixed(2) : '0.00')
+            .replace(/\{total_balance\}/gi, recipient.totalArrears !== undefined ? recipient.totalArrears.toFixed(2) : '0.00')
+            .replace(/\{parent_name\}/gi, recipient.displayName || 'Parent')
+            .replace(/\{school_name\}/gi, schoolName);
+
           try {
-            const res = await sendSchoolWhatsApp(schoolId, phone, message);
+            const res = await sendSchoolWhatsApp(schoolId, phone, personalMsg);
             if (res.success) {
               count++;
               setBroadcastLogs(prev => [...prev, `[SUCCESS] WhatsApp delivered to ${name} (${phone})`]);
@@ -857,7 +959,17 @@ export default function BulkSMSPage() {
                         
                         <div className="space-y-1.5">
                             <div className="flex justify-between items-center">
-                                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Message Content</label>
+                                <div className="flex flex-col gap-1">
+  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Message Content</label>
+  {targetGroup === 'debtors' && (
+    <div className="flex flex-wrap gap-1 text-[9px] font-bold text-slate-500">
+      <span className="text-indigo-600 font-extrabold uppercase">Dynamic Tags:</span>
+      <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded cursor-pointer border border-indigo-200/60" onClick={() => setMessage(prev => prev + ' {student_name}')}>{'{student_name}'}</span>
+      <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded cursor-pointer border border-amber-200/60" onClick={() => setMessage(prev => prev + ' {amount_owed}')}>{'{amount_owed}'}</span>
+      <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded cursor-pointer border border-slate-200" onClick={() => setMessage(prev => prev + ' {school_name}')}>{'{school_name}'}</span>
+    </div>
+  )}
+</div>
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
