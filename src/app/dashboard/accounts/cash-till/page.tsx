@@ -142,11 +142,12 @@ const closeTillSchema = z.object({
     path: ["discrepancyNote"]
 });
 
-function CloseTillDialog({ open, onOpenChange, expectedBalance, activeTill, onSubmitComplete }: {
+function CloseTillDialog({ open, onOpenChange, expectedBalance, activeTill, transactionCount, onSubmitComplete }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     expectedBalance: number;
     activeTill: Till;
+    transactionCount?: number;
     onSubmitComplete: () => void;
 }) {
     const firestore = useFirestore();
@@ -185,6 +186,7 @@ function CloseTillDialog({ open, onOpenChange, expectedBalance, activeTill, onSu
                 discrepancy: discrepancy,
                 discrepancyNote: values.discrepancyNote || '',
                 closingBalance: values.actualCashCounted,
+                transactionCount: transactionCount ?? (activeTill as any)?.transactionCount ?? 0,
             });
 
             toast({ title: "Till Submitted", description: "Till closing report has been submitted for approval." });

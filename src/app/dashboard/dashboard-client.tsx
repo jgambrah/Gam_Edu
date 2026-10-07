@@ -230,6 +230,7 @@ function AdminDashboard({
   // ─── Aggregated summary doc (Director-only optimisation) ───
   dashboardSummary,
   openTillsCash = 0,
+  openTillsTransactionsCount = 0,
   financialsMode = 'on-demand',
   onLoadFinancials,
   onSwitchOnDemand,
@@ -1552,6 +1553,7 @@ function AdminDashboard({
               onNavigateTab={(tab: string, subTab?: string) => { setActiveTab(tab as any); if (subTab) setStudentSubTab(subTab as any); }}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
+              openTillsTransactionsCount={openTillsTransactionsCount}
               financialsMode={financialsMode}
               onLoadFinancials={onLoadFinancials}
               onSwitchOnDemand={onSwitchOnDemand}
@@ -2484,6 +2486,7 @@ function DirectorDashboard({
   activeTab: passedActiveTab,
   setActiveTab: passedSetActiveTab,
   openTillsCash = 0,
+  openTillsTransactionsCount = 0,
   financialsMode = 'on-demand',
   onLoadFinancials,
   onSwitchOnDemand,
@@ -4096,6 +4099,7 @@ function DirectorDashboard({
               onNavigateTab={(tab: string, subTab?: string) => { setActiveTab(tab as any); if (subTab) setStudentSubTab(subTab as any); }}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
+              openTillsTransactionsCount={openTillsTransactionsCount}
               financialsMode={financialsMode}
               onLoadFinancials={onLoadFinancials}
               onSwitchOnDemand={onSwitchOnDemand}
@@ -12236,34 +12240,60 @@ export default function DashboardClient() {
     return startOfDay(currentDayDate);
   }, [currentDayDate]);
 
-  const openTillsCash = useMemo(() => {
+  const { openTillsCash, openTillsTransactionsCount } = useMemo(() => {
     const combinedTills = [...(tills || []), ...(pendingTills || []), ...(closedTills || [])];
-    if (combinedTills.length === 0) return 0;
+    if (combinedTills.length === 0) return { openTillsCash: 0, openTillsTransactionsCount: 0 };
 
     const seenTillIds = new Set<string>();
-    return combinedTills.reduce((sum: number, t: any) => {
-      if (!t || !t.id || seenTillIds.has(t.id)) return sum;
+    let totalCash = 0;
+    let totalTxCount = 0;
+
+    combinedTills.forEach((t: any) => {
+      if (!t || !t.id || seenTillIds.has(t.id)) return;
       seenTillIds.add(t.id);
+
+      // CRITICAL: Exclude automated system / virtual online webhook records (e.g. online-${schoolId})
+      // These are virtual gateway records with accountantId === 'SYSTEM', NOT physical cash register drawers.
+      if (t.accountantId === 'SYSTEM' || (t.id && String(t.id).startsWith('online-')) || t.isOnlineTill) {
+        return;
+      }
 
       const openingFloat = Number(t.openingBalance || 0);
       const grossDrawer = Number(t.actualCashCounted ?? t.closingBalance ?? t.expectedBalance ?? t.currentBalance ?? 0);
       const netCollected = Math.max(0, grossDrawer - openingFloat);
+      const txCount = Number(t.transactionCount || (t.transactions && Array.isArray(t.transactions) ? t.transactions.length : 0));
 
-      // 1. If the till is actively Open, it is the live register currently active at the counter
+      // 1. If the till is actively Open, it is the physical live register currently active at the counter
       if (t.status === 'Open') {
-        return sum + netCollected;
+        totalCash += netCollected;
+        totalTxCount += txCount;
+        return;
       }
 
-      // 2. If PendingApproval or Closed, only include if closed today
+      // 2. If PendingApproval, it is today's cashier audit report submitted for Director review
       const dateOpened = safeParseDate(t.dateOpened);
       const dateClosed = safeParseDate(t.dateClosed);
-      const isToday = (dateClosed && dateClosed >= startOfToday) || (dateOpened && dateOpened >= startOfToday);
-      if (isToday) {
-        return sum + netCollected;
+      if (t.status === 'PendingApproval') {
+        const isToday = (dateClosed && dateClosed >= startOfToday) || (dateOpened && dateOpened >= startOfToday);
+        if (isToday) {
+          totalCash += netCollected;
+          totalTxCount += txCount;
+        }
+        return;
       }
 
-      return sum;
-    }, 0);
+      // 3. If Closed, only include if closed today
+      if (t.status === 'Closed') {
+        const isClosedToday = !!(dateClosed && dateClosed >= startOfToday);
+        if (isClosedToday) {
+          totalCash += netCollected;
+          totalTxCount += txCount;
+        }
+        return;
+      }
+    });
+
+    return { openTillsCash: totalCash, openTillsTransactionsCount: totalTxCount };
   }, [tills, pendingTills, closedTills, startOfToday]);
 
   // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
@@ -12587,6 +12617,7 @@ export default function DashboardClient() {
       submissions={submissions ?? []}
       medicalLogs={medicalLogs ?? []}
       openTillsCash={openTillsCash}
+      openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
       onLoadFinancials={loadFinancialsOnDemand}
       onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
@@ -12631,6 +12662,7 @@ export default function DashboardClient() {
       loadingSatisfaction={loadingSatisfaction} 
       dashboardSummary={dashboardSummary} 
       openTillsCash={openTillsCash}
+      openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
       onLoadFinancials={() => setFinancialsMode('full')}
       onSwitchOnDemand={() => setFinancialsMode('on-demand')}

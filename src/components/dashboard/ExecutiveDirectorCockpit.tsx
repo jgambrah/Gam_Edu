@@ -48,6 +48,7 @@ export function ExecutiveDirectorCockpit({
   selectedCampus: externalSelectedCampus,
   onSelectCampus: externalOnSelectCampus,
   openTillsCash = 0,
+  openTillsTransactionsCount = 0,
   financialsMode = 'on-demand',
   onLoadFinancials,
   onSwitchOnDemand,
@@ -206,16 +207,18 @@ export function ExecutiveDirectorCockpit({
       passedFinancialsCash
     );
 
-    // Count reflects verified transactions logged today
-    const count = (unifiedMetrics.todayCount > 0)
-      ? unifiedMetrics.todayCount
-      : (total > 0 ? 1 : 0);
+    // Count reflects verified transactions logged today across till and direct receipts
+    const count = Math.max(
+      Number(unifiedMetrics.todayCount) || 0,
+      Number(openTillsTransactionsCount) || 0,
+      total > 0 ? 1 : 0
+    );
 
     return {
       total,
       count,
     };
-  }, [openTillsCash, financials?.collectedToday, financialSummary.collectedToday, unifiedMetrics.collectedToday, unifiedMetrics.todayCount]);
+  }, [openTillsCash, openTillsTransactionsCount, financials?.collectedToday, financialSummary.collectedToday, unifiedMetrics.collectedToday, unifiedMetrics.todayCount]);
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
