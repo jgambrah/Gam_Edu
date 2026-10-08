@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.981Z"
+    "updatedAt": "2026-10-08T15:40:56.573Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.982Z"
+    "updatedAt": "2026-10-08T15:40:56.580Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.982Z"
+    "updatedAt": "2026-10-08T15:40:56.580Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.982Z"
+    "updatedAt": "2026-10-08T15:40:56.580Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.982Z"
+    "updatedAt": "2026-10-08T15:40:56.580Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.982Z"
+    "updatedAt": "2026-10-08T15:40:56.580Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.581Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.581Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22324,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.581Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25064,7 +25064,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27840,7 +27840,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30603,7 +30603,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33402,7 +33402,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33600,7 +33600,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -36384,7 +36384,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -39133,7 +39133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -39146,67 +39146,2619 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Connect scientific theory to national industrialization, traditional Ghanaian technologies, and modern global STEM career pathways. Students examine indigenous manufacturing (shea butter processing, pottery, soap making), evaluate contemporary Ghanaian inventors, and map academic pathways in STEM.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Indigenous Ghanaian Technologies & Applied Science",
-        "summary": "Analyze the scientific principles underlying indigenous Ghanaian technologies: traditional soap making, shea butter, and pottery.",
-        "notes": "### Indigenous Ghanaian Technologies & Applied Scientific Principles\n* **NaCCA Curriculum Code:** `B7.5.3.1`\n* **Core Competency:** Explain the scientific principles underlying traditional Ghanaian cottage industries and indigenous manufacturing.\n\n#### 1. Traditional Soap Making (Saponification with Local Alkalis)\n* **Raw Materials:** Ash from dried cocoa pods, plantain peels, or palm bunches; vegetable oils (palm kernel oil, coconut oil).\n* **Chemical Principle:**\n  * The ash contains high concentrations of water-soluble alkaline potassium carbonate ($\\text{K}_2\\text{CO}_3$).\n  * Leaching the ash with water produces a strong alkaline solution of potassium hydroxide:\n    $$\\text{K}_2\\text{CO}_{3(aq)} + \\text{Ca(OH)}_{2(aq)} \\rightarrow 2\\text{KOH}_{(aq)} + \\text{CaCO}_{3(s)}$$\n  * **Saponification Reaction:** Boiling potassium alkali with vegetable triglycerides hydrolyzes ester bonds, yielding glycerol and potassium carboxylate salts (traditional soft black soap / *alata samina*):\n    $$\\text{Fat / Triglyceride} + \\text{Potassium Hydroxide} \\rightarrow \\text{Glycerol} + \\text{Potassium Soap}$$\n\n#### 2. Indigenous Shea Butter Extraction (*Karité*)\n* **Process:** Shea nuts are boiled, sun-dried, de-shelled, roasted, pulverized into a fine paste, and churned vigorously by hand with water.\n* **Scientific Principle:** Churning destabilizes the natural lipid emulsion. Adding cold water causes the lighter hydrophobic shea fat to coalesce and float as a white curd on the surface, separating from the denser water-soluble residues by density divergence.\n\n#### 3. Traditional Earthenware Pottery\n* **Process:** Weathered riverbed clay is kneaded to remove trapped air bubbles, sculpted on a wheel or by hand, sun-dried, and fired in open wood kilns.\n* **Scientific Principle:** Firing at high temperatures ($>800^\\circ\\text{C}$) drives off structural water of crystallization, permanently transforming soft, pliable hydrated aluminum silicates into hard, vitrified, chemically inert ceramic structures (*asanka* / grinding bowls).",
+        "levelTitle": "Basic 7 (JHS 1) • Science, Industry, Career Pathways & Great Scientists",
+        "summary": "Investigate the epistemological foundations of science and technology, contrasting the natural sciences with applied technology. Analyze societal development vectors across health, communication, agriculture, transportation, and clean energy. Examine indigenous vs. modern technological paradigms and the developmental challenges in Ghana. Survey 18 specialized career pathways and model academic pursuits after distinguished Ghanaian scientists (Prof. Ibok Oduro, Prof. Francis Allotey, Prof. Ewurama Addy, Prof. Jophus Anamuah-Mensah, Prof. T. Ossei-Anto, Prof. C. Anthony-Krueger) and global scientific pioneers (Albert Einstein, Alexander Fleming, Charles Darwin, Paul Ratnei, Stephen Hawking).",
+        "notes": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 3: SCIENCE AND INDUSTRY\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 3 — Science and Industry\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.3.1:** Realise how careers in science can improve life of humans and research about Ghanaian and internationally recognised scientists and science educators and model after them.\n- **Indicator:**\n  - **B7.5.3.1.1:** Discover and explain how careers in science can improve human conditions and relate these careers to the work of great national and international scientists and science educators.\n- **Pedagogical Strategy:** Epistemological definitions of science and technology, comparative distinctions between natural and applied sciences, societal development vectors, indigenous vs. modern technological paradigms, exhaustive career profiles across 18 specialized professions, biographies of notable Ghanaian and international scientific icons, and fully rendered SVG vector diagrams.\n\n---\n\n### MODULE 1: Nature of Science, Branches of Science, and Science vs. Technology\n\n#### 1.1 Epistemological and Operational Definitions\n1. **Science:** Science is the systematic method of acquiring reliable, empirical, and verifiable knowledge about the universe through organized observation, logical hypothesizing, controlled experimentation, and empirical data analysis. It involves the rigorous investigation of the natural physical world — understanding what matter and energy are made of, how they exist, interact, and behave, and formulating universal physical laws that govern natural phenomena.\n2. **Technology:** Technology is the systematic, practical, and purposeful application of scientific knowledge, theories, principles, and empirical discoveries to design, manufacture, and operate tools, machines, materials, processes, and systems that solve real-world problems, optimize human labor, improve living conditions, and satisfy societal needs (e.g., Information and Communications Technology [ICT], food processing technology, medical biotechnology).\n\n#### 1.2 The Broad Fields and Specialized Branches of Science\nScientific inquiry is broadly organized into two overarching domains:\n1. **Natural Science:** The systematic study of the physical universe, material laws, and biological life through empirical observation and experimentation. It is subdivided into five core disciplines:\n   - **Biology:** The scientific study of living organisms, their physiological mechanisms, cellular structures, reproduction, genetics, evolutionary development, and environmental interactions (encompassing sub-disciplines such as botany, zoology, microbiology, and ecology).\n   - **Physics:** The fundamental study of the constituents of the universe, matter, energy, space-time, and the universal forces (gravitational, electromagnetic, strong and weak nuclear) that dictate physical interactions.\n   - **Chemistry:** The study of the composition, atomic structure, molecular properties, behavior, and transformation of matter, and the energetic laws governing chemical reactions.\n   - **Earth Science:** An all-encompassing umbrella field investigating planet Earth's structure, physical systems, dynamic atmospheric interactions, and terrestrial composition (including physical geography, geology, meteorology, hydrology, and oceanology).\n   - **Astronomy:** The scientific study of celestial bodies, extraterrestrial matter, and cosmic phenomena originating beyond the Earth's atmosphere, such as stars, planetary systems, comets, nebulae, black holes, and galaxies.\n2. **Applied Science:** The practical integration and direct utilization of existing scientific theories, principles, and experimental discoveries to engineer practical solutions, design commercial products, optimize industrial processes, and resolve clinical, environmental, or economic challenges (e.g., Civil and Mechanical Engineering, Clinical Medicine, Agricultural Agronomy, Forensic Toxicology, and Applied Meteorology).\n\n#### 1.3 Comparative Analysis: Science vs. Technology\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"300\" viewBox=\"0 0 760 300\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"300\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EPISTEMOLOGICAL CONTINUUM: SCIENCE VS. TECHNOLOGY</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"230\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"165\" y=\"24\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">SCIENCE (Inquiry into Nature)</text><line x1=\"20\" y1=\"35\" x2=\"310\" y2=\"35\" stroke=\"#93c5fd\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Method of obtaining knowledge via observation &amp; tests</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Discovers natural laws &amp; intangible theories</text><text x=\"15\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Changes occur gradually through research</text><text x=\"15\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Principles can be demonstrated easily</text><rect x=\"20\" y=\"140\" width=\"290\" height=\"75\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"165\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Natural Science Branches</text><text x=\"30\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Biology (Living organisms)</text><text x=\"30\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Physics (Matter, energy, forces)</text><text x=\"175\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Chemistry (Matter composition)</text><text x=\"175\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Earth Science &amp; Astronomy</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"230\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"165\" y=\"24\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">TECHNOLOGY (Practical Application)</text><line x1=\"20\" y1=\"35\" x2=\"310\" y2=\"35\" stroke=\"#86efac\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Systematic use of scientific ideas in practical ways</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Produces tangible tools, goods, and machines</text><text x=\"15\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Changes occur rapidly in shorter time frames</text><text x=\"15\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Complex principles cannot be demonstrated easily</text><rect x=\"20\" y=\"140\" width=\"290\" height=\"75\" rx=\"4\" fill=\"#dcfce7\"/><text x=\"165\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Applied Technological Systems</text><text x=\"30\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Mechanized Agriculture</text><text x=\"30\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Modern Transportation</text><text x=\"175\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Digital Communications &amp; ICT</text><text x=\"175\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Advanced Medicine &amp; Health</text></g><path d=\"M 363 150 L 395 150\" stroke=\"#0f172a\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/></svg>\n</div>\n\n| Comparative Dimension | Science (Scientific Inquiry) | Technology (Applied Production) |\n| :--- | :--- | :--- |\n| **Core Focus & Nature of Output** | Focuses primarily on the discovery and formulation of universal natural laws, theoretical principles, and mathematical models, which are conceptual and **intangible**. | Focuses on the production of tangible physical artifacts, tools, industrial machinery, computerized gadgets (e.g., automobiles, smartphones, combine harvesters) to meet human needs. |\n| **Temporal Rate of Transformation** | Scientific paradigm shifts occur **gradually and iteratively**, requiring extensive peer review, replication, experimental validation, and academic consensus over decades or centuries. | Technological modifications, hardware iterations, and software upgrades occur **rapidly and dynamically** across short product lifecycles (months to few years). |\n| **Demonstration of Principles** | Fundamental scientific laws and hypotheses can be demonstrated readily in school laboratories using basic experimental apparatus (e.g., Archimedes' principle, photosynthesis tests). | Technological principles embedded in complex integrated microcircuits, multi-core microprocessors, or heavy industrial machinery cannot be demonstrated or dismantled easily in basic settings. |\n| **Primary Operational Methodology** | Characterized by systematic inquiry, curiosity-driven exploration, observation, and hypothesizing into nature (**\"Knowing Why\"**). | Characterized by goal-oriented execution, utilitarian problem-solving, structural manufacturing, and process optimization (**\"Knowing How\"**). |\n\n---\n\n### MODULE 2: Societal Impact of Science and Technology, Indigenous vs. Modern Systems\n\n#### 2.1 Catalytic Vectors of Societal Transformation\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">DEVELOPMENT IMPACT VECTORS IN MODERN SOCIETY</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Health &amp; Medicine</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Production of vaccines &amp; drugs</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Fights smallpox, measles, tetanus</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Advanced clinical diagnostics</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#991b1b\">Outcome: Increased Life Expectancy</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Agriculture &amp; Food</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Mechanized combine harvesters</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Motorized tractor-drawn ploughs</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Modern food preservation</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#166534\">Outcome: Enhanced Food Security</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Communication &amp; ICT</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• High-speed digital computing</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Cellular mobile networks</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Instant global data transfer</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#1e40af\">Outcome: Global Connectivity</text></g><g transform=\"translate(25, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Transportation</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Automobiles, airplanes, ships</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• High-speed railway systems</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Rapid movement of goods &amp; people</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#854d0e\">Outcome: Accelerated Trade</text></g><g transform=\"translate(270, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#9333ea\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Education &amp; Pedagogy</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Interactive electronic smartboards</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Multimedia slide projectors</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Computer-aided simulations</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#6b21a8\">Outcome: Optimized Learning</text></g><g transform=\"translate(515, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#f0fdfa\" stroke=\"#0d9488\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#115e59\" text-anchor=\"middle\">Energy &amp; Sanitation</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Hydroelectric, solar &amp; biogas</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Effective liquid/solid waste disposal</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Industrial recycling methods</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#115e59\">Outcome: Clean &amp; Powered Cities</text></g></svg>\n</div>\n\n1. **Healthcare & Pharmacological Advancements:**\n   - *Impact:* The direct application of molecular biology, immunology, and pharmacology has led to the isolation and industrial synthesis of life-saving therapeutics (antibiotics like penicillin, synthetic insulin, antimalarials) and prophylactic vaccines that have controlled or eradicated deadly epidemic contagions (smallpox, polio, measles, tetanus).\n   - *Diagnostic Precision:* Advanced medical imaging technologies (Ultrasound sonography, Magnetic Resonance Imaging [MRI], Computed Tomography [CT] scans) and automated robotic surgery have elevated diagnostic accuracy, reduced perioperative mortality, and extended human life expectancy.\n2. **Global Telecommunications and Digital ICT:**\n   - *Impact:* Microelectronics, fiber-optic cable networks, satellite systems, and cellular communications have eliminated geographical barriers. Global information processing, financial electronic fund transfers (FinTech, mobile money), and teleconferencing occur instantaneously across distances via smartphones, computers, and internet backbones.\n3. **Agricultural Mechanization and Agronomy:**\n   - *Impact:* Motorized tractor-drawn disc ploughs, mechanical seed drills, automated center-pivot irrigation systems, and combine harvesters have replaced debilitating manual labor. Coupled with scientifically formulated fertilizers, green-revolution crop varieties, and biopesticides, crop yields per hectare have expanded dramatically to ensure national and global food security.\n4. **Modern Transportation Networks:**\n   - *Impact:* The design of internal combustion engines, turbojet aircraft, high-speed electric locomotives, and containerized maritime cargo ships has accelerated the global transit of humans, food commodities, and raw materials from months to hours, underpinning modern international trade.\n5. **Educational Pedagogy and Knowledge Dissemination:**\n   - *Impact:* Classroom instruction has shifted from rote chalkboard teaching to interactive multi-sensory learning through digital electronic smartboards, multimedia projectors, computer-aided laboratory simulations, and internet-enabled virtual libraries.\n6. **Municipal Environmental Sanitation & Circular Economy:**\n   - *Impact:* The deployment of modern sanitary landfills, mechanized sorting conveyors, aerobic bioreactors, and industrial pyrolysis/recycling technologies mitigates environmental disease vectors and recovers valuable secondary resources.\n7. **Alternative and Renewable Energy Harnessing:**\n   - *Impact:* Thermodynamics and photovoltaic physics have enabled nations to transition from carbon-heavy fossil fuels to clean renewable alternatives: hydroelectric dams (e.g., Akosombo Dam), photovoltaic solar farms, wind turbine generators, and anaerobic biogas digesters.\n\n#### 2.2 Technological Paradigms: Endogenous/Indigenous vs. Modern Systems\n1. **Endogenous (Indigenous) Technology:**\n   - *Definition:* Indigenous technology is the traditional body of technical knowledge, artisan craftsmanship, and localized production methods passed down through generations within a specific culture, relying primarily on local cultural skills, locally sourced raw materials, and simple manual tools to satisfy community needs.\n   - *Examples in Ghana:* Traditional blacksmithing (forging cutlasses and hoes from scrap steel), traditional handloom weaving (Kente and Smock cloth), woodcarving, earthen pottery, artisanal shea butter extraction, indigenous herbal medicine concoctions, and spontaneous food fermentations (*kenkey*, *gari*, *pito*).\n2. **Modern Technology:**\n   - *Definition:* Advanced technological systems grounded in formal scientific engineering, computerized algorithms, mechanized automation, and mass-scale industrial assembly lines designed to maximize operational efficiency, minimize unit costs, and eliminate human manual fatigue.\n   - *Examples:* Automated vehicle assembly plants (e.g., Kantanka, Toyota Ghana), computerized magnetic resonance imaging (MRI), satellite remote sensing, combine harvesters, automated grain silos, and cloud software architectures.\n\n#### 2.3 Challenges Facing Technological Development in Ghana\nDespite substantial progress, technological industrialization in Ghana faces critical developmental hurdles:\n1. **Slow Transition from Archaic Tools:** Persistent reliance on manual, low-efficiency tools (hoe, cutlass) across agriculture and basic manufacturing due to capital constraints.\n2. **Inadequate Technology Transfer and Local Adaptation:** Inability to effectively deconstruct, adapt, and reverse-engineer imported foreign technologies to match tropical environmental conditions, compounded by a lack of advanced technical and software vocational training.\n3. **Excessive Dependence on Low-Output Methods:** Traditional, small-scale cottage processing with limited quality standardization and low economies of scale.\n4. **Deficit of Dedicated Research & Development (R&D) Funding:** Sub-Saharan African economies allocate less than 0.5% of GDP to scientific research; absence of dedicated venture capital funds for high-risk technological innovations.\n5. **Inadequate Fiscal and Tax Incentives:** High import duties on specialized technological machinery and inadequate pioneer tax holidays for domestic engineering startups.\n6. **Bureaucratic Inefficiencies & Corruption:** Regulatory red tape, corruption in public procurement, and slow patenting processes discouraging local inventors.\n7. **Electrical Grid Instability (*Dumsor*):** Fluctuating, intermittent power supply causing expensive machinery breakdowns and crippling continuous manufacturing operations.\n\n#### 2.4 Strategic Interventions for Accelerated Industrialization\n- **State-Sponsored R&D Endowment Funds:** Establishing competitive national research grants financed by a dedicated fraction of national petroleum and mineral revenues to support university-industry collaborative research.\n- **Adaptive Reverse-Engineering:** Establishing technical innovation hubs and fabrication laboratories (FabLabs) to disassemble, redesign, and mass-produce adapted industrial machinery locally.\n- **Concessionary Financing & Credit Guarantees:** Providing low-interest, long-term bank loans and tax rebates for domestic tech entrepreneurs and precision engineering firms.\n\n---\n\n### MODULE 3: Careers in Science, Technology, and Applied Industries\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"320\" viewBox=\"0 0 760 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"320\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CAREER PATHWAYS IN APPLIED SCIENCE &amp; TECHNOLOGY</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Biological &amp; Life Sciences</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Biologist: Studies living processes</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Botanist: Plant kingdom studies</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Zoologist: Animal ecology &amp; traits</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Entomologist: Insect biology</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Ethologist: Animal natural behavior</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Healthcare &amp; Clinical Analysis</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Pharmacist: Drug use, storage, care</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Pharmacologist: Tests drug effects</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Toxicologist: Poisons &amp; toxins</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Lab Technician: Diagnostic tests</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Medical Doctor, Dentist, Nurse</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Earth, Forensics &amp; Environment</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Ecologist: Organism-habitat links</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Forensic Scientist: Crime evidence</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Geochemist: Earth chemical minerals</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Hazardous Waste Chemist</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Veterinary Doctor</text></g><g transform=\"translate(150, 180)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Software &amp; Digital Engineering</text><text x=\"10\" y=\"48\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Software Engineer / Developer</text><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Applies math &amp; science principles</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Designs computer applications</text><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Solves real-time digital problems</text></g><g transform=\"translate(390, 180)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Industrial &amp; Applied Engineering</text><text x=\"10\" y=\"48\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Mechanical, Civil, Electrical</text><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Chemical, Computer, Geological</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Commercial Aircraft Pilot</text><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Science Educator &amp; Researcher</text></g></svg>\n</div>\n\nScientific training unlocks a spectrum of career pathways that preserve public health, protect ecological biodiversity, innovate digital applications, construct national infrastructure, and inspire upcoming generations:\n\n1. **Biologist:** A foundational scientist who investigates living organisms — microorganisms, plants, animals, and humans — to elucidate the biochemical, genetic, cellular, and physiological processes that sustain life.\n2. **Botanist:** A specialized plant biologist who investigates plant taxonomy, physiology, reproductive genetics, phytochemistry, and agricultural ecology, identifying economic crops and medicinal plant species.\n3. **Zoologist:** An animal scientist who studies the anatomy, evolutionary development, physiological functions, dietary habits, habitats, and ecological distribution of wild and domesticated animals.\n4. **Entomologist:** A specialized zoological scientist dedicated to studying insects — examining their morphology, reproductive cycles, behavior, and role as agricultural pests or disease vectors (e.g., *Anopheles* mosquitoes vectoring malaria).\n5. **Ethologist:** A behavioral biologist who conducts rigorous field and laboratory observations of animal behavior in their natural ecological environments, analyzing instinctive drives, social structures, and communication signals.\n6. **Ecologist:** A systems scientist who analyzes the complex interactions, energy flows, and nutrient biogeochemical cycles between living organisms and their biotic and abiotic environments to design conservation policies.\n7. **Pharmacist:** A licensed healthcare professional who specializes in the safe compounding, dispensing, clinical dosage formulation, preservation, storage, and legal regulation of pharmaceutical medicines to ensure patient therapeutic safety.\n8. **Pharmacologist:** A biomedical research scientist who conducts advanced in vitro and in vivo laboratory investigations on drug candidates, evaluating their chemical pharmacokinetics (absorption, distribution, metabolism, excretion), therapeutic efficacy, and cellular toxicity in living organisms.\n9. **Toxicologist:** A forensic and analytical specialist who tests blood, organ tissues, and environmental fluids to detect and quantify the physiological impacts of synthetic poisons, industrial heavy metals, chemical pollutants, alcohol, and drug overdoses.\n10. **Medical Laboratory Technician:** A clinical technical professional who analyzes patient blood, urine, sputum, and tissue biopsies using automated hematology analyzers, spectrophotometers, and microscopes to deliver diagnostic data to medical doctors.\n11. **Forensic Scientist:** An analytical investigator who applies chemical, biological, and physical sciences to crime scene evidence (fingerprints, blood splatter patterns, ballistics, hair fibers, DNA profiles) to produce objective scientific expert testimony in courts of law.\n12. **Geochemist:** A physical scientist who analyzes the chemical composition, mineral distribution, and movement of elements through the Earth's crust, aquifers, and rock strata to locate mineral ore deposits, crude petroleum reservoirs, and groundwater tables.\n13. **Hazardous Waste Chemist:** An environmental chemist tasked with monitoring, identifying, neutralizing, and safely disposing of toxic chemical pollutants, heavy metals, radioactive effluents, and volatile organic compounds released by industrial manufacturing plants.\n14. **Software Engineer (Developer):** A professional who applies computer science theory, algorithms, and mathematical principles to design, program, test, debug, and deploy digital computer software, enterprise systems, and mobile applications that automate real-world processes.\n15. **Commercial Pilot:** A trained professional licensed to navigate, control, and operate multi-engine commercial aircraft carrying passengers and freight across international airspace according to aerodynamics, meteorology, and avionics.\n16. **Engineers (Mechanical, Civil, Electrical, Chemical, Computer, Geological):** Applied physical scientists who design, construct, test, and maintain heavy industrial machinery, highways, bridges, hydroelectric dams, electrical distribution grids, chemical processing refineries, microprocessors, and mine pits.\n17. **Medical Doctors, Dentists, Veterinarians & Nurses:** Clinical practitioners who diagnose systemic pathologies, perform intricate surgical interventions, administer therapeutic regimens, manage clinical healthcare delivery, and safeguard domestic and livestock animal health.\n18. **Science Educators & Academic Researchers:** Professional teachers, curriculum developers, and university lecturers who instruct, mentor, demystify scientific principles, and conduct foundational research to train the next generation of scientists.\n\n---\n\n### MODULE 4: Notable Ghanaian and International Scientists and Science Educators\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">NOTABLE SCIENTISTS AND SCIENCE EDUCATORS</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"215\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"0\" y=\"0\" width=\"330\" height=\"30\" rx=\"6\" fill=\"#0284c7\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EMINENT GHANAIAN SCIENTISTS</text><text x=\"15\" y=\"50\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">1. Prof. Ibok Nsa Oduro</text><text x=\"28\" y=\"64\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Post-harvest technology &amp; food value addition</text><text x=\"15\" y=\"82\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">2. Prof. Francis Allotey</text><text x=\"28\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Mathematical physics &amp; 'Allotey Formalism'</text><text x=\"15\" y=\"114\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">3. Prof. Ewurama Addy</text><text x=\"28\" y=\"128\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Biochemist &amp; inaugural quiz mistress of NSMQ</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">4. Prof. Jophus Anamuah-Mensah</text><text x=\"28\" y=\"160\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Science educator &amp; educational reform leader</text><text x=\"15\" y=\"178\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">5. Prof. T. Ossei-Anto &amp; Prof. C. Anthony-Krueger</text><text x=\"28\" y=\"192\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Physics/Chemistry pedagogy &amp; curriculum design</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"215\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><rect x=\"0\" y=\"0\" width=\"330\" height=\"30\" rx=\"6\" fill=\"#16a34a\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">GREAT INTERNATIONAL SCIENTISTS</text><text x=\"15\" y=\"50\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">i. Albert Einstein</text><text x=\"28\" y=\"64\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Theory of Relativity &amp; Photoelectric effect (E=mc²)</text><text x=\"15\" y=\"82\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">ii. Alexander Fleming</text><text x=\"28\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Discovery of the antibiotic Penicillin (1928)</text><text x=\"15\" y=\"114\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">iii. Charles Darwin</text><text x=\"28\" y=\"128\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Theory of Evolution by Natural Selection (1859)</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">iv. Paul Ratnei</text><text x=\"28\" y=\"160\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Physical science &amp; empirical research pioneer</text><text x=\"15\" y=\"178\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">v. Stephen Hawking</text><text x=\"28\" y=\"192\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cosmology, singularity theorems &amp; Hawking radiation</text></g></svg>\n</div>\n\n#### 4.1 Eminent Ghanaian Scientists and Science Educators\n1. **Prof. Ibok Nsa Oduro:**\n   - *Discipline:* Post-Harvest Technology, Food Science & Nutrition.\n   - *Institutional Base:* Kwame Nkrumah University of Science and Technology (KNUST), Kumasi.\n   - *Key Scientific Contributions:* A distinguished female scientist, Provost of the College of Science, and pioneer of post-harvest engineering in Africa. She dedicated decades to valorizing neglected and underutilized traditional African root and tuber crops (sweet potato, cassava, yam). Her research engineered high-quality composite flours, low-cost solar dehydrators, and biofortified sweet potato processing techniques that reduced post-harvest losses from 40% to <10%, boosting rural agricultural incomes and maternal-child nutrition across Ghana.\n2. **Prof. Francis Kofi Ampenyin Allotey (1932–2017):**\n   - *Discipline:* Theoretical Physics, Mathematical Physics & Geophysics.\n   - *Institutional Base:* KNUST, Ghana Atomic Energy Commission (GAEC), African Institute for Mathematical Sciences (AIMS).\n   - *Key Scientific Contributions:* World-renowned mathematical physicist celebrated for formulating the **\"Allotey Formalism\"** — a theoretical technique resolving the effect of electron-hole interactions on soft X-ray emission spectra in condensed matter physics. He was the first Ghanaian to be appointed Full Professor of Mathematics at KNUST, pioneered computer science education in Ghana, and founded the African Academy of Sciences.\n3. **Prof. Marian Ewurama Addy (1942–2014):**\n   - *Discipline:* Biochemistry, Molecular Biology & Science Education.\n   - *Institutional Base:* University of Ghana, Legon.\n   - *Key Scientific Contributions:* The first Ghanaian female professor of natural science. She conducted pioneering research into the biochemical efficacy and standardization of Ghanaian indigenous herbal medicines, demonstrating the therapeutic anti-hyperglycemic properties of local plant extracts. She served as the iconic inaugural Quiz Mistress of the National Science and Maths Quiz (NSMQ), popularizing STEM careers across West Africa and inspiring thousands of young women into scientific fields.\n4. **Prof. Jophus Anamuah-Mensah:**\n   - *Discipline:* Chemistry Education & Science Curriculum Development.\n   - *Institutional Base:* University of Cape Coast (UCC), University of Education, Winneba (UEW).\n   - *Key Scientific Contributions:* Eminent educationist and former Vice-Chancellor of UEW. He served as the Chairman of the landmark Presidential Committee for the Review of Education Reforms in Ghana (2002), authoring the \"Anamuah-Mensah Report\" that modernized science, technical, and vocational education (TVET) across basic and senior high school curricula in Ghana.\n5. **Prof. Theophilus Ossei-Anto:**\n   - *Discipline:* Physics Education, Micro-Science Pedagogy & Practical Science Teaching.\n   - *Institutional Base:* University of Cape Coast (UCC).\n   - *Key Scientific Contributions:* Pioneer in physics pedagogy who revolutionized science education in Ghana by introducing and championing **micro-scale science equipment** and low-cost hands-on laboratory kits. This allowed schools lacking expensive plumbing, gas pipelines, and glassware to conduct rigorous physics and chemistry experiments safely.\n6. **Prof. Christian Anthony-Krueger:**\n   - *Discipline:* Chemistry Pedagogy & Science Teacher Education.\n   - *Institutional Base:* University of Cape Coast (UCC).\n   - *Key Scientific Contributions:* Renowned scholar who dedicated his career to training thousands of Ghanaian science teachers, designing innovative formative assessment frameworks, and integrating cultural and environmental contexts into chemistry curricula.\n\n#### 4.2 Great International Scientists\n1. **Albert Einstein (1879–1955):**\n   - *Discipline:* Theoretical Physics.\n   - *Key Scientific Contributions:* Revolutionized human understanding of space, time, gravity, and the cosmos through his Special Theory of Relativity (1905) and General Theory of Relativity (1915). Formulated the world's most famous mass-energy equivalence equation ($E = mc^2$). Awarded the 1921 Nobel Prize in Physics for his mathematical explanation of the photoelectric effect, laying the foundation for modern quantum mechanics and solar photovoltaic technology.\n2. **Alexander Fleming (1881–1955):**\n   - *Discipline:* Microbiology, Bacteriology & Pharmacology.\n   - *Key Scientific Contributions:* Scottish physician and microbiologist who discovered the world's first true clinical antibiotic, **Penicillin**, derived from the mold *Penicillium notatum* in 1928. This discovery revolutionized medical therapy, transforming fatal bacterial infections (pneumonia, syphilis, septicemia) into curable conditions and saving over 200 million human lives.\n3. **Charles Darwin (1809–1882):**\n   - *Discipline:* Natural History, Geology & Evolutionary Biology.\n   - *Key Scientific Contributions:* Formulated the foundational theory of biological evolution by **natural selection**, published in his monumental 1859 treatise *On the Origin of Species*. He demonstrated that all species of life have descended over generations from common ancestors through survival and differential reproduction of organisms with favorable inheritable traits.\n4. **Paul Ratnei:**\n   - *Discipline:* Physical Sciences, Materials Research & Empirical Methodology.\n   - *Key Scientific Contributions:* Celebrated physical science researcher renowned for empirical innovations in material structures, scientific measurements, and systematic testing methodologies that advanced modern applied technologies.\n5. **Stephen Hawking (1942–2018):**\n   - *Discipline:* Theoretical Physics, General Relativity & Quantum Cosmology.\n   - *Key Scientific Contributions:* Legendary theoretical physicist and cosmologist who proved gravitational singularity theorems within general relativity (with Roger Penrose), mathematically predicted that black holes emit thermal quantum radiation (designated as **\"Hawking Radiation\"**), and authored world-renowned science books (including *A Brief History of Time*) that brought cosmological physics to the global public.\n\n---\n\n### MODULE 5: Quantitative Industrial Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Agricultural Mechanization Engineering & Economic Throughput (Afram Plains Maize Farming Cooperative)\n**Technical / Industrial Scenario:**\nA commercial farming cooperative in the Afram Plains agricultural belt of Ghana cultivates a 120-hectare (ha) commercial maize plantation.\n- Under **Traditional Indigenous Technology**, a group of 25 agricultural laborers using manual weeding hoes and cutlasses can clear and plough land at a combined throughput rate of 0.8 hectares per 8-hour workday. Manual harvesting incurs post-harvest field shattering losses of 18% of the total grain yield.\n- Under **Modern Agricultural Technology**, the cooperative leases a 90-horsepower (hp) tractor equipped with a 4-disc reversible plough and a diesel combine harvester operated by 2 trained technical operators. The mechanized plough operates at an effective field capacity of 1.5 hectares per hour, while the combine harvester reduces harvesting field grain losses to only 2.5%.\n- Average maize grain yield is 4.0 metric tons (t) per hectare, valued at GHS 3,500 per metric ton.\n\n**(a)** Calculate the total number of workdays required to plough the entire 120-hectare plantation using: (1) Manual indigenous labor; (2) The mechanized tractor system operating 8 hours daily.\n**(b)** Calculate the total mass of maize grain harvested (in metric tons) and the total revenue earned under: (1) Manual harvesting (18% loss); (2) Mechanized combine harvesting (2.5% loss).\n**(c)** Determine the net economic financial gain achieved exclusively by adopting the mechanized harvesting technology.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate Ploughing Duration under Both Paradigms:\n- Manual Indigenous Technology:\n  $$\\text{Workdays Required} = \\frac{\\text{Total Land Area}}{\\text{Daily Manual Throughput}} = \\frac{120\\text{ ha}}{0.8\\text{ ha/day}} = 150\\text{ workdays}$$\n  (Requiring 5 months of exhausting physical manual labor).\n- Modern Mechanized Tractor System:\n  Throughput per 8-hour day = $1.5\\text{ ha/hr} \\times 8\\text{ hr/day} = 12.0\\text{ hectares/day}$.\n  $$\\text{Workdays Required} = \\frac{120\\text{ ha}}{12.0\\text{ ha/day}} = 10.0\\text{ workdays}$$\n  (Achieving a 15-fold reduction in land preparation duration).\n\nStep 2: Calculate Yield and Revenue under Both Harvesting Methods:\n- Potential Biological Yield before Harvest Losses:\n  $$\\text{Total Potential Yield} = 120\\text{ ha} \\times 4.0\\text{ t/ha} = 480.0\\text{ metric tons}$$\n- Manual Harvesting (18% Post-Harvest Shattering Loss):\n  $$\\text{Harvest Loss Mass} = 0.18 \\times 480.0\\text{ t} = 86.4\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 86.4\\text{ t} = 393.6\\text{ metric tons}$$\n  $$\\text{Manual Harvest Revenue} = 393.6\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,377,600$$\n- Modern Mechanized Combine Harvesting (2.5% Loss):\n  $$\\text{Harvest Loss Mass} = 0.025 \\times 480.0\\text{ t} = 12.0\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 12.0\\text{ t} = 468.0\\text{ metric tons}$$\n  $$\\text{Mechanized Harvest Revenue} = 468.0\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,638,000$$\n\nStep 3: Calculate the Net Economic Gain from Mechanization:\n$$\\text{Net Revenue Difference} = \\text{GHS } 1,638,000 - \\text{GHS } 1,377,600 = \\text{GHS } 260,400$$\n$$\\text{Additional Grain Recovered} = 468.0\\text{ t} - 393.6\\text{ t} = 74.4\\text{ metric tons of maize}$$\nConclusion: By transitioning to modern agricultural technology, the cooperative salvages 74.4 metric tons of food grain that would have decomposed in the field, earning an additional GHS 260,400 in revenue while reducing cultivation time from 150 days to 10 days.\n\n---\n\n#### Worked Example 2: Applied Forensic Science & Analytical Toxicology (Crime Scene Chemical Evidence Evaluation)\n**Technical / Industrial Scenario:**\nAt a regional forensic science laboratory in Accra, a Forensic Scientist and a Toxicologist collaborate on an investigative case involving sudden industrial poisoning in a manufacturing plant.\n- The forensic team extracts a 10.0 mL blood specimen from an unconscious machine operator suspected of acute methanol or ethanol intoxication.\n- Gas Chromatography–Mass Spectrometry (GC-MS) analysis determines that the blood contains 160 mg of ethanol per 100 mL of blood ($1.60\\text{ mg/mL}$).\n- In Ghana, the statutory legal Blood Alcohol Concentration (BAC) limit for operating motor vehicles and industrial heavy machinery is $0.08\\text{ g/dL}$ (which equals $80\\text{ mg/100 mL}$ or $0.80\\text{ mg/mL}$).\n\n**(a)** Contrast the primary professional responsibilities of a **Forensic Scientist** versus a **Toxicologist** in this investigation.\n**(b)** Calculate the operator's measured Blood Alcohol Concentration in: (1) grams per decilitre (g/dL); (2) percentage weight/volume (% w/v).\n**(c)** Determine whether the operator exceeded the statutory legal threshold, calculating the exact percentage excess.\n**(d)** Explain how a forensic toxicologist guarantees the integrity of chemical evidence presented in a court of law using the scientific **Chain of Custody** protocol.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Contrast Roles of Forensic Scientist vs. Toxicologist:\n- Forensic Scientist: Specializes in locating, collecting, packaging, preserving, and physically analyzing all trace physical evidence from crime/incident scenes (fingerprints, blood splatters, hair fibers, DNA, soil residues), documenting chain of custody, and presenting objective physical evidence in court.\n- Toxicologist: Specializes in conducting specialized pharmacological and chemical assays on biological fluids (blood, urine, vitreous humor) and organ tissues to detect, quantify, and explain the physiological mechanisms and toxic effects of poisons, drugs, alcohol, and hazardous chemicals.\n\nStep 2: Quantitative Concentration Unit Conversions:\n- Conversion to g/dL:\n  Given concentration = 160 mg per 100 mL.\n  Since $100\\text{ mL} = 1.0\\text{ decilitre (dL)}$ and $160\\text{ mg} = 0.160\\text{ grams}$:\n  $$\\text{BAC} = 0.160\\text{ g/dL}$$\n- Conversion to % w/v (grams per 100 mL):\n  $$\\text{BAC (\\% w/v)} = \\frac{0.160\\text{ g}}{100\\text{ mL}} \\times 100 = 0.16\\%$$\n  (The operator's blood alcohol concentration is $0.16\\%$ w/v or $0.160\\text{ g/dL}$).\n\nStep 3: Comparison with Statutory Limit:\n- Legal Limit = $0.08\\text{ g/dL}$.\n- Measured Level = $0.160\\text{ g/dL}$.\n- The operator's blood alcohol level is exactly double ($2.0\\times$) the legal safety threshold.\n$$\\text{Percentage Excess} = \\frac{0.160 - 0.080}{0.080} \\times 100 = \\frac{0.080}{0.080} \\times 100 = 100\\%\\text{ excess}$$\n\nStep 4: Chain of Custody Scientific Protocol:\nTo ensure forensic evidence is admissible and tamper-proof in court, the toxicologist enforces a rigorous Chain of Custody: (1) The blood specimen is sealed at collection in a tamper-evident biohazard vial with an inviolable barcode and unique identifier; (2) Every individual who handles, transports, freezes, or tests the sample signs and timestamps a chronological custody log; (3) The sample is stored in a secured, temperature-monitored refrigerated evidence vault accessible only by authorized analysts; (4) Testing instruments (GC-MS) are calibrated against verified analytical reference standards with blank control runs.\n\n---\n\n#### Worked Example 3: Theoretical Physics & Mass-Energy Equivalence: Modeling Einsteinian Principles & Allotey Formalism\n**Technical / Industrial Scenario:**\nPhysics students at a Ghanaian secondary school investigate the theoretical breakthroughs of Albert Einstein and Prof. Francis Allotey.\n- **Part 1 (Einstein's Mass-Energy Equivalence):** In a nuclear fusion reaction, four hydrogen nuclei fuse to form one helium-4 nucleus. A tiny mass defect of $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$ is converted directly into thermal and radiant energy.\n  Given the universal speed of light in vacuum is $c = 3.0 \\times 10^8\\text{ m/s}$.\n- **Part 2 (Allotey Formalism in Soft X-ray Spectroscopy):** Prof. Francis Allotey formulated his celebrated equation explaining how an electron from a valence band drops into a vacant core hole in an atom, emitting a soft X-ray photon with energy $E = hf$.\n  Given Planck's constant $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ and the frequency of the emitted soft X-ray photon is $f = 2.40 \\times 10^{17}\\text{ Hz}$.\n\n**(a)** Using Einstein's equation $E = \\Delta m \\cdot c^2$, calculate the energy released in Joules (J) from the fusion mass defect.\n**(b)** Calculate the energy of the soft X-ray photon analyzed in the Allotey Formalism in Joules (J), and convert it into electron-volts (eV) where $1\\text{ eV} = 1.60 \\times 10^{-19}\\text{ J}$.\n**(c)** Explain why Prof. Francis Allotey's breakthrough in theoretical physics was of monumental scientific significance for global condensed matter physics and science education in Africa.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate Mass-Energy Equivalence (Albert Einstein):\n- Formula: $E = \\Delta m \\cdot c^2$\n- Given: $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$, $c = 3.0 \\times 10^8\\text{ m/s}$\n- Calculation:\n  $$c^2 = (3.0 \\times 10^8\\text{ m/s})^2 = 9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2$$\n  $$E = (4.80 \\times 10^{-29}\\text{ kg}) \\times (9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2)$$\n  $$E = 43.20 \\times 10^{-13}\\text{ J} = 4.32 \\times 10^{-12}\\text{ Joules}$$\n  (Even a minuscule nuclear mass loss yields an immense $4.32\\text{ pJ}$ of energy per reaction, powering stars).\n\nStep 2: Calculate Soft X-ray Photon Energy (Allotey Formalism):\n- Formula: $E = h \\cdot f$\n- Given: $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$, $f = 2.40 \\times 10^{17}\\text{ Hz}$\n- Calculation in Joules:\n  $$E = (6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}) \\times (2.40 \\times 10^{17}\\text{ s}^{-1})$$\n  $$E = 15.912 \\times 10^{-17}\\text{ J} = 1.5912 \\times 10^{-16}\\text{ Joules}$$\n- Conversion into electron-volts (eV):\n  $$\\text{Energy in eV} = \\frac{1.5912 \\times 10^{-16}\\text{ J}}{1.60 \\times 10^{-19}\\text{ J/eV}} = 994.5\\text{ eV} \\approx 0.995\\text{ keV}$$\n  (This photon falls squarely into the soft X-ray spectrum analyzed by the Allotey Formalism).\n\nStep 3: Significance of Prof. Francis Allotey's Scientific Breakthrough:\n1. Resolution of the Resonance Problem: Prior to Allotey's work, theoretical models could not accurately explain the sharp edge anomalies in soft X-ray emission spectra of lithium, sodium, and light metals. The 'Allotey Formalism' proved that the sudden creation of a core hole induces an asymptotically free electron-hole scattering resonance.\n2. African Scientific Leadership: Prof. Allotey became the first African to introduce a foundational theoretical physics formalism adopted into global physics textbooks, demonstrating African intellectual leadership in mathematical physics.\n3. Champion of Digital Infrastructure: He spearheaded Ghana's early adoption of computer technology, founded the Ghana Institute of Physics, and co-founded the African Institute for Mathematical Sciences (AIMS).\n\n---\n\n#### Worked Example 4: Post-Harvest Food Technology & Dehydration Engineering (Prof. Ibok Oduro's Sweet Potato Valorization Protocol)\n**Technical / Industrial Scenario:**\nIn line with Prof. Ibok Nsa Oduro's post-harvest food science research at KNUST, a district food processing cooperative in the Volta Region processes fresh orange-fleshed sweet potatoes into shelf-stable composite flour.\n- Fresh sweet potato tubers have an initial mass of $M_1 = 1,000\\text{ kg}$ and an initial moisture content of $72\\%$ by mass (water mass fraction $w_1 = 0.72$).\n- The peeled tubers are chipped and dehydrated in a solar-assisted hybrid convective tunnel dryer until the moisture content is reduced to a safe shelf-stable level of $10\\%$ by mass (water mass fraction $w_2 = 0.10$).\n- At $10\\%$ moisture, the biological water activity ($a_w$) drops below $0.60$, completely halting the growth of spoilage molds and pathogenic bacteria.\n\n**(a)** Calculate the mass of dry solid matter (bone-dry potato solids) in the 1,000 kg batch of fresh tubers.\n**(b)** Calculate the total mass of finished dried sweet potato chips ($M_2$) obtained at the final 10% moisture content.\n**(c)** Calculate the total volume of water evaporated and removed by the solar dryer (assuming density of water $\\rho = 1.0\\text{ kg/L}$).\n**(d)** Explain how Prof. Ibok Oduro's post-harvest technological innovation directly solves challenges of food security and Vitamin A deficiency in Ghanaian rural communities.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate the Mass of Dry Solids ($M_{\\text{dry}}$):\n- Initial total mass = $M_1 = 1,000\\text{ kg}$\n- Initial moisture fraction = $w_1 = 0.72$ (72% water)\n- Solids fraction = $1 - w_1 = 1 - 0.72 = 0.28$ (28% dry solid matter)\n$$\\text{Mass of Dry Solids } (M_{\\text{dry}}) = 1,000\\text{ kg} \\times 0.28 = 280.0\\text{ kg of dry matter}$$\n(Note: During drying, only water evaporates; the dry solid mass remains constant at 280.0 kg).\n\nStep 2: Calculate the Mass of Dried Potato Chips ($M_2$):\n- Final moisture content = $w_2 = 0.10$ (10% water)\n- Final solids fraction = $1 - w_2 = 1 - 0.10 = 0.90$ (90% solids)\n- Since the 280.0 kg of dry solids represents 90% of the final product mass $M_2$:\n  $$0.90 \\times M_2 = M_{\\text{dry}} = 280.0\\text{ kg}$$\n  $$M_2 = \\frac{280.0\\text{ kg}}{0.90} = 311.11\\text{ kg of dried chips}$$\n\nStep 3: Calculate the Mass and Volume of Water Evaporated:\n$$\\text{Water Removed } (\\Delta M_{\\text{water}}) = M_1 - M_2 = 1,000\\text{ kg} - 311.11\\text{ kg} = 688.89\\text{ kg of water}$$\n- Since water density is $1.0\\text{ kg/L}$:\n  $$\\text{Volume of Evaporated Water} = 688.89\\text{ Litres of water vapor}$$\n\nStep 4: Societal and Nutritional Impact of Prof. Ibok Oduro's Work:\n1. Prevention of Post-Harvest Waste: Fresh sweet potatoes rot within 2 to 3 weeks due to high moisture (72%). Reducing moisture to 10% extends shelf life to over 12 months without chemical preservatives.\n2. Eradication of Vitamin A Deficiency: Orange-fleshed sweet potato is exceptionally rich in $\\beta$-carotene (provitamin A). Milling dried chips into composite baking flour allows bakers to replace 30%–40% of expensive imported wheat flour with local sweet potato flour in bread and pastries, delivering bioavailable Vitamin A to schoolchildren and preventing xerophthalmia and night blindness.\n3. Economic Empowerment: Reduces national foreign exchange expenditure on wheat importation while creating a stable processing market for rural Ghanaian women farmers.\n\n---\n\n",
         "workedExamples": [
           {
             "id": "ex_b7_s17_1",
-            "title": "Worked Example: The Chemistry of Traditional Black Soap Making",
-            "problem": "Explain the scientific chemical basis of using cocoa pod husk ash and palm kernel oil in the traditional manufacture of Ghanaian black soap (alata samina).",
+            "title": "Worked Example 1: Agricultural Mechanization Engineering & Economic Throughput (Afram Plains Maize Farming Cooperative)",
+            "problem": "A commercial farming cooperative in the Afram Plains agricultural belt of Ghana cultivates a 120-hectare (ha) commercial maize plantation.\n- Under **Traditional Indigenous Technology**, a group of 25 agricultural laborers using manual weeding hoes and cutlasses can clear and plough land at a combined throughput rate of 0.8 hectares per 8-hour workday. Manual harvesting incurs post-harvest field shattering losses of 18% of the total grain yield.\n- Under **Modern Agricultural Technology**, the cooperative leases a 90-horsepower (hp) tractor equipped with a 4-disc reversible plough and a diesel combine harvester operated by 2 trained technical operators. The mechanized plough operates at an effective field capacity of 1.5 hectares per hour, while the combine harvester reduces harvesting field grain losses to only 2.5%.\n- Average maize grain yield is 4.0 metric tons (t) per hectare, valued at GHS 3,500 per metric ton.\n\n**(a)** Calculate the total number of workdays required to plough the entire 120-hectare plantation using: (1) Manual indigenous labor; (2) The mechanized tractor system operating 8 hours daily.\n**(b)** Calculate the total mass of maize grain harvested (in metric tons) and the total revenue earned under: (1) Manual harvesting (18% loss); (2) Mechanized combine harvesting (2.5% loss).\n**(c)** Determine the net economic financial gain achieved exclusively by adopting the mechanized harvesting technology.",
             "steps": [
-              "Step 1: Origin of the alkali — Cocoa pod husks contain significant amounts of potassium salts absorbed from tropical soils. When burned, they leave behind potassium carbonate (K2CO3). Boiling this ash with water leaches out soluble potassium hydroxide (KOH), a strong chemical alkali.",
-              "Step 2: Saponification reaction — When the hot alkaline leachate is boiled with palm kernel oil (which contains triglycerides/esters of fatty acids), alkaline hydrolysis occurs (saponification).",
-              "Step 3: Product formation — The ester bonds of the triglycerides are cleaved, releasing glycerol and potassium salts of fatty acids, which solidify upon cooling into the traditional cleansing soft soap."
+              "Step 1: Calculate Ploughing Duration under Both Paradigms:\n- Manual Indigenous Technology:\n  $$\\text{Workdays Required} = \\frac{\\text{Total Land Area}}{\\text{Daily Manual Throughput}} = \\frac{120\\text{ ha}}{0.8\\text{ ha/day}} = 150\\text{ workdays}$$\n  (Requiring 5 months of exhausting physical manual labor).\n- Modern Mechanized Tractor System:\n  Throughput per 8-hour day = $1.5\\text{ ha/hr} \\times 8\\text{ hr/day} = 12.0\\text{ hectares/day}$.\n  $$\\text{Workdays Required} = \\frac{120\\text{ ha}}{12.0\\text{ ha/day}} = 10.0\\text{ workdays}$$\n  (Achieving a 15-fold reduction in land preparation duration).",
+              "Step 2: Calculate Yield and Revenue under Both Harvesting Methods:\n- Potential Biological Yield before Harvest Losses:\n  $$\\text{Total Potential Yield} = 120\\text{ ha} \\times 4.0\\text{ t/ha} = 480.0\\text{ metric tons}$$\n- Manual Harvesting (18% Post-Harvest Shattering Loss):\n  $$\\text{Harvest Loss Mass} = 0.18 \\times 480.0\\text{ t} = 86.4\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 86.4\\text{ t} = 393.6\\text{ metric tons}$$\n  $$\\text{Manual Harvest Revenue} = 393.6\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,377,600$$\n- Modern Mechanized Combine Harvesting (2.5% Loss):\n  $$\\text{Harvest Loss Mass} = 0.025 \\times 480.0\\text{ t} = 12.0\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 12.0\\text{ t} = 468.0\\text{ metric tons}$$\n  $$\\text{Mechanized Harvest Revenue} = 468.0\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,638,000$$",
+              "Step 3: Calculate the Net Economic Gain from Mechanization:\n$$\\text{Net Revenue Difference} = \\text{GHS } 1,638,000 - \\text{GHS } 1,377,600 = \\text{GHS } 260,400$$\n$$\\text{Additional Grain Recovered} = 468.0\\text{ t} - 393.6\\text{ t} = 74.4\\text{ metric tons of maize}$$\nConclusion: By transitioning to modern agricultural technology, the cooperative salvages 74.4 metric tons of food grain that would have decomposed in the field, earning an additional GHS 260,400 in revenue while reducing cultivation time from 150 days to 10 days."
             ],
-            "finalAnswer": "Examiner Tip: Use the term 'saponification' and identify potassium hydroxide as the active alkali extracted from cocoa pod ash."
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s17_2",
+            "title": "Worked Example 2: Applied Forensic Science & Analytical Toxicology (Crime Scene Chemical Evidence Evaluation)",
+            "problem": "At a regional forensic science laboratory in Accra, a Forensic Scientist and a Toxicologist collaborate on an investigative case involving sudden industrial poisoning in a manufacturing plant.\n- The forensic team extracts a 10.0 mL blood specimen from an unconscious machine operator suspected of acute methanol or ethanol intoxication.\n- Gas Chromatography–Mass Spectrometry (GC-MS) analysis determines that the blood contains 160 mg of ethanol per 100 mL of blood ($1.60\\text{ mg/mL}$).\n- In Ghana, the statutory legal Blood Alcohol Concentration (BAC) limit for operating motor vehicles and industrial heavy machinery is $0.08\\text{ g/dL}$ (which equals $80\\text{ mg/100 mL}$ or $0.80\\text{ mg/mL}$).\n\n**(a)** Contrast the primary professional responsibilities of a **Forensic Scientist** versus a **Toxicologist** in this investigation.\n**(b)** Calculate the operator's measured Blood Alcohol Concentration in: (1) grams per decilitre (g/dL); (2) percentage weight/volume (% w/v).\n**(c)** Determine whether the operator exceeded the statutory legal threshold, calculating the exact percentage excess.\n**(d)** Explain how a forensic toxicologist guarantees the integrity of chemical evidence presented in a court of law using the scientific **Chain of Custody** protocol.",
+            "steps": [
+              "Step 1: Contrast Roles of Forensic Scientist vs. Toxicologist:\n- Forensic Scientist: Specializes in locating, collecting, packaging, preserving, and physically analyzing all trace physical evidence from crime/incident scenes (fingerprints, blood splatters, hair fibers, DNA, soil residues), documenting chain of custody, and presenting objective physical evidence in court.\n- Toxicologist: Specializes in conducting specialized pharmacological and chemical assays on biological fluids (blood, urine, vitreous humor) and organ tissues to detect, quantify, and explain the physiological mechanisms and toxic effects of poisons, drugs, alcohol, and hazardous chemicals.",
+              "Step 2: Quantitative Concentration Unit Conversions:\n- Conversion to g/dL:\n  Given concentration = 160 mg per 100 mL.\n  Since $100\\text{ mL} = 1.0\\text{ decilitre (dL)}$ and $160\\text{ mg} = 0.160\\text{ grams}$:\n  $$\\text{BAC} = 0.160\\text{ g/dL}$$\n- Conversion to % w/v (grams per 100 mL):\n  $$\\text{BAC (\\% w/v)} = \\frac{0.160\\text{ g}}{100\\text{ mL}} \\times 100 = 0.16\\%$$\n  (The operator's blood alcohol concentration is $0.16\\%$ w/v or $0.160\\text{ g/dL}$).",
+              "Step 3: Comparison with Statutory Limit:\n- Legal Limit = $0.08\\text{ g/dL}$.\n- Measured Level = $0.160\\text{ g/dL}$.\n- The operator's blood alcohol level is exactly double ($2.0\\times$) the legal safety threshold.\n$$\\text{Percentage Excess} = \\frac{0.160 - 0.080}{0.080} \\times 100 = \\frac{0.080}{0.080} \\times 100 = 100\\%\\text{ excess}$$",
+              "Step 4: Chain of Custody Scientific Protocol:\nTo ensure forensic evidence is admissible and tamper-proof in court, the toxicologist enforces a rigorous Chain of Custody: (1) The blood specimen is sealed at collection in a tamper-evident biohazard vial with an inviolable barcode and unique identifier; (2) Every individual who handles, transports, freezes, or tests the sample signs and timestamps a chronological custody log; (3) The sample is stored in a secured, temperature-monitored refrigerated evidence vault accessible only by authorized analysts; (4) Testing instruments (GC-MS) are calibrated against verified analytical reference standards with blank control runs."
+            ],
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s17_3",
+            "title": "Worked Example 3: Theoretical Physics & Mass-Energy Equivalence: Modeling Einsteinian Principles & Allotey Formalism",
+            "problem": "Physics students at a Ghanaian secondary school investigate the theoretical breakthroughs of Albert Einstein and Prof. Francis Allotey.\n- **Part 1 (Einstein's Mass-Energy Equivalence):** In a nuclear fusion reaction, four hydrogen nuclei fuse to form one helium-4 nucleus. A tiny mass defect of $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$ is converted directly into thermal and radiant energy.\n  Given the universal speed of light in vacuum is $c = 3.0 \\times 10^8\\text{ m/s}$.\n- **Part 2 (Allotey Formalism in Soft X-ray Spectroscopy):** Prof. Francis Allotey formulated his celebrated equation explaining how an electron from a valence band drops into a vacant core hole in an atom, emitting a soft X-ray photon with energy $E = hf$.\n  Given Planck's constant $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ and the frequency of the emitted soft X-ray photon is $f = 2.40 \\times 10^{17}\\text{ Hz}$.\n\n**(a)** Using Einstein's equation $E = \\Delta m \\cdot c^2$, calculate the energy released in Joules (J) from the fusion mass defect.\n**(b)** Calculate the energy of the soft X-ray photon analyzed in the Allotey Formalism in Joules (J), and convert it into electron-volts (eV) where $1\\text{ eV} = 1.60 \\times 10^{-19}\\text{ J}$.\n**(c)** Explain why Prof. Francis Allotey's breakthrough in theoretical physics was of monumental scientific significance for global condensed matter physics and science education in Africa.",
+            "steps": [
+              "Step 1: Calculate Mass-Energy Equivalence (Albert Einstein):\n- Formula: $E = \\Delta m \\cdot c^2$\n- Given: $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$, $c = 3.0 \\times 10^8\\text{ m/s}$\n- Calculation:\n  $$c^2 = (3.0 \\times 10^8\\text{ m/s})^2 = 9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2$$\n  $$E = (4.80 \\times 10^{-29}\\text{ kg}) \\times (9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2)$$\n  $$E = 43.20 \\times 10^{-13}\\text{ J} = 4.32 \\times 10^{-12}\\text{ Joules}$$\n  (Even a minuscule nuclear mass loss yields an immense $4.32\\text{ pJ}$ of energy per reaction, powering stars).",
+              "Step 2: Calculate Soft X-ray Photon Energy (Allotey Formalism):\n- Formula: $E = h \\cdot f$\n- Given: $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$, $f = 2.40 \\times 10^{17}\\text{ Hz}$\n- Calculation in Joules:\n  $$E = (6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}) \\times (2.40 \\times 10^{17}\\text{ s}^{-1})$$\n  $$E = 15.912 \\times 10^{-17}\\text{ J} = 1.5912 \\times 10^{-16}\\text{ Joules}$$\n- Conversion into electron-volts (eV):\n  $$\\text{Energy in eV} = \\frac{1.5912 \\times 10^{-16}\\text{ J}}{1.60 \\times 10^{-19}\\text{ J/eV}} = 994.5\\text{ eV} \\approx 0.995\\text{ keV}$$\n  (This photon falls squarely into the soft X-ray spectrum analyzed by the Allotey Formalism).",
+              "Step 3: Significance of Prof. Francis Allotey's Scientific Breakthrough:\n1. Resolution of the Resonance Problem: Prior to Allotey's work, theoretical models could not accurately explain the sharp edge anomalies in soft X-ray emission spectra of lithium, sodium, and light metals. The 'Allotey Formalism' proved that the sudden creation of a core hole induces an asymptotically free electron-hole scattering resonance.\n2. African Scientific Leadership: Prof. Allotey became the first African to introduce a foundational theoretical physics formalism adopted into global physics textbooks, demonstrating African intellectual leadership in mathematical physics.\n3. Champion of Digital Infrastructure: He spearheaded Ghana's early adoption of computer technology, founded the Ghana Institute of Physics, and co-founded the African Institute for Mathematical Sciences (AIMS)."
+            ],
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s17_4",
+            "title": "Worked Example 4: Post-Harvest Food Technology & Dehydration Engineering (Prof. Ibok Oduro's Sweet Potato Valorization Protocol)",
+            "problem": "In line with Prof. Ibok Nsa Oduro's post-harvest food science research at KNUST, a district food processing cooperative in the Volta Region processes fresh orange-fleshed sweet potatoes into shelf-stable composite flour.\n- Fresh sweet potato tubers have an initial mass of $M_1 = 1,000\\text{ kg}$ and an initial moisture content of $72\\%$ by mass (water mass fraction $w_1 = 0.72$).\n- The peeled tubers are chipped and dehydrated in a solar-assisted hybrid convective tunnel dryer until the moisture content is reduced to a safe shelf-stable level of $10\\%$ by mass (water mass fraction $w_2 = 0.10$).\n- At $10\\%$ moisture, the biological water activity ($a_w$) drops below $0.60$, completely halting the growth of spoilage molds and pathogenic bacteria.\n\n**(a)** Calculate the mass of dry solid matter (bone-dry potato solids) in the 1,000 kg batch of fresh tubers.\n**(b)** Calculate the total mass of finished dried sweet potato chips ($M_2$) obtained at the final 10% moisture content.\n**(c)** Calculate the total volume of water evaporated and removed by the solar dryer (assuming density of water $\\rho = 1.0\\text{ kg/L}$).\n**(d)** Explain how Prof. Ibok Oduro's post-harvest technological innovation directly solves challenges of food security and Vitamin A deficiency in Ghanaian rural communities.",
+            "steps": [
+              "Step 1: Calculate the Mass of Dry Solids ($M_{\\text{dry}}$):\n- Initial total mass = $M_1 = 1,000\\text{ kg}$\n- Initial moisture fraction = $w_1 = 0.72$ (72% water)\n- Solids fraction = $1 - w_1 = 1 - 0.72 = 0.28$ (28% dry solid matter)\n$$\\text{Mass of Dry Solids } (M_{\\text{dry}}) = 1,000\\text{ kg} \\times 0.28 = 280.0\\text{ kg of dry matter}$$\n(Note: During drying, only water evaporates; the dry solid mass remains constant at 280.0 kg).",
+              "Step 2: Calculate the Mass of Dried Potato Chips ($M_2$):\n- Final moisture content = $w_2 = 0.10$ (10% water)\n- Final solids fraction = $1 - w_2 = 1 - 0.10 = 0.90$ (90% solids)\n- Since the 280.0 kg of dry solids represents 90% of the final product mass $M_2$:\n  $$0.90 \\times M_2 = M_{\\text{dry}} = 280.0\\text{ kg}$$\n  $$M_2 = \\frac{280.0\\text{ kg}}{0.90} = 311.11\\text{ kg of dried chips}$$",
+              "Step 3: Calculate the Mass and Volume of Water Evaporated:\n$$\\text{Water Removed } (\\Delta M_{\\text{water}}) = M_1 - M_2 = 1,000\\text{ kg} - 311.11\\text{ kg} = 688.89\\text{ kg of water}$$\n- Since water density is $1.0\\text{ kg/L}$:\n  $$\\text{Volume of Evaporated Water} = 688.89\\text{ Litres of water vapor}$$",
+              "Step 4: Societal and Nutritional Impact of Prof. Ibok Oduro's Work:\n1. Prevention of Post-Harvest Waste: Fresh sweet potatoes rot within 2 to 3 weeks due to high moisture (72%). Reducing moisture to 10% extends shelf life to over 12 months without chemical preservatives.\n2. Eradication of Vitamin A Deficiency: Orange-fleshed sweet potato is exceptionally rich in $\\beta$-carotene (provitamin A). Milling dried chips into composite baking flour allows bakers to replace 30%–40% of expensive imported wheat flour with local sweet potato flour in bread and pastries, delivering bioavailable Vitamin A to schoolchildren and preventing xerophthalmia and night blindness.\n3. Economic Empowerment: Reduces national foreign exchange expenditure on wheat importation while creating a stable processing market for rural Ghanaian women farmers."
+            ],
+            "finalAnswer": ""
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s17_1",
+              "id": "B7_SI_F01",
               "difficulty": "low",
-              "prompt": "In traditional Ghanaian soap making, cocoa pod husk ash is used because it provides:",
+              "prompt": "What is science defined as?",
               "options": [
-                "Synthetic perfume",
-                "Strong potassium alkali solution for saponification",
-                "Acid to neutralize the soap",
-                "Plastic hardening agents"
+                "A. The art of drawing pictures of nature",
+                "B. The method of obtaining knowledge through observation and experimentation",
+                "C. The manufacture of machines in factories",
+                "D. The memorization of ancient folklore"
               ],
-              "correctAnswer": "Strong potassium alkali solution for saponification",
-              "hint": "Ashes of plants are rich in alkaline potassium carbonate.",
-              "workedSolution": "Burning cocoa pod husks yields ash rich in potassium carbonate, which dissolves in water to form the strong potassium alkali necessary to hydrolyze vegetable oils into soap.",
+              "correctAnswer": "B. The method of obtaining knowledge through observation and experimentation",
+              "hint": "Science is the method of obtaining knowledge through systematic observation and experimentation.",
+              "workedSolution": "Science is the method of obtaining knowledge through systematic observation and experimentation.",
               "points": 1,
-              "learningCompetency": "B7.5.3.1",
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F02",
+              "difficulty": "low",
+              "prompt": "Which broad field of science studies natural phenomena, including biological life?",
+              "options": [
+                "A. Natural science",
+                "B. Social science",
+                "C. Applied politics",
+                "D. Formal linguistics"
+              ],
+              "correctAnswer": "A. Natural science",
+              "hint": "Natural science is the field of science dedicated to studying natural phenomena, physical laws, and living organisms.",
+              "workedSolution": "Natural science is the field of science dedicated to studying natural phenomena, physical laws, and living organisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F03",
+              "difficulty": "low",
+              "prompt": "The branch of natural science that deals with the study of living organisms is:",
+              "options": [
+                "A. Physics",
+                "B. Geology",
+                "C. Biology",
+                "D. Astronomy"
+              ],
+              "correctAnswer": "C. Biology",
+              "hint": "Biology is defined as the scientific study of living organisms.",
+              "workedSolution": "Biology is defined as the scientific study of living organisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F04",
+              "difficulty": "low",
+              "prompt": "Which branch of science studies the fundamental constituents of the universe, energy, and forces?",
+              "options": [
+                "A. Chemistry",
+                "B. Physics",
+                "C. Botany",
+                "D. Zoology"
+              ],
+              "correctAnswer": "B. Physics",
+              "hint": "Physics is the study of the fundamental constituents of the universe, matter, energy, and the forces they exert on one another.",
+              "workedSolution": "Physics is the study of the fundamental constituents of the universe, matter, energy, and the forces they exert on one another.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F05",
+              "difficulty": "low",
+              "prompt": "The study of the existence, composition, and properties of matter is known as:",
+              "options": [
+                "A. Chemistry",
+                "B. Astronomy",
+                "C. Geography",
+                "D. Meteorology"
+              ],
+              "correctAnswer": "A. Chemistry",
+              "hint": "Chemistry is the branch of science that investigates the existence and composition of matter and its reactions.",
+              "workedSolution": "Chemistry is the branch of science that investigates the existence and composition of matter and its reactions.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F06",
+              "difficulty": "low",
+              "prompt": "Which field of science encompasses physical geography, geology, and oceanology?",
+              "options": [
+                "A. Earth science",
+                "B. Classical mechanics",
+                "C. Cellular biology",
+                "D. Nuclear physics"
+              ],
+              "correctAnswer": "A. Earth science",
+              "hint": "Earth science is an all-embracing term for disciplines related to planet Earth, including geology and physical geography.",
+              "workedSolution": "Earth science is an all-embracing term for disciplines related to planet Earth, including geology and physical geography.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F07",
+              "difficulty": "low",
+              "prompt": "The scientific study of celestial objects originating outside the Earth's atmosphere (stars, planets, comets) is:",
+              "options": [
+                "A. Meteorology",
+                "B. Astrology",
+                "C. Astronomy",
+                "D. Ecology"
+              ],
+              "correctAnswer": "C. Astronomy",
+              "hint": "Astronomy is the science of celestial objects and cosmic phenomena originating beyond Earth's atmosphere.",
+              "workedSolution": "Astronomy is the science of celestial objects and cosmic phenomena originating beyond Earth's atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F08",
+              "difficulty": "low",
+              "prompt": "What is technology?",
+              "options": [
+                "A. The memorization of scientific laws",
+                "B. The systematic application of scientific knowledge in a practical way to improve lives and meet needs",
+                "C. The creation of natural forests",
+                "D. The observation of celestial bodies"
+              ],
+              "correctAnswer": "B. The systematic application of scientific knowledge in a practical way to improve lives and meet needs",
+              "hint": "Technology is the systematic application of scientific ideas and knowledge in a practical way to solve problems and meet societal needs.",
+              "workedSolution": "Technology is the systematic application of scientific ideas and knowledge in a practical way to solve problems and meet societal needs.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F09",
+              "difficulty": "low",
+              "prompt": "Which of the following is a primary characteristic of science as opposed to technology?",
+              "options": [
+                "A. It produces tangible machines like cars",
+                "B. It primarily deals with the study and discovery of laws and theories that are not tangible",
+                "C. It changes in relatively shorter times",
+                "D. Its principles cannot be demonstrated easily"
+              ],
+              "correctAnswer": "B. It primarily deals with the study and discovery of laws and theories that are not tangible",
+              "hint": "Science primarily deals with discovering laws and theories that are intangible, whereas technology produces tangible machines.",
+              "workedSolution": "Science primarily deals with discovering laws and theories that are intangible, whereas technology produces tangible machines.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F10",
+              "difficulty": "low",
+              "prompt": "Unlike scientific laws, technological developments generally:",
+              "options": [
+                "A. Never change",
+                "B. Result in tangible products such as computers and automobiles",
+                "C. Deal only with living things",
+                "D. Avoid using scientific knowledge"
+              ],
+              "correctAnswer": "B. Result in tangible products such as computers and automobiles",
+              "hint": "Technology deals with the practical production of tangible items like computers, machinery, and vehicles.",
+              "workedSolution": "Technology deals with the practical production of tangible items like computers, machinery, and vehicles.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F11",
+              "difficulty": "low",
+              "prompt": "How has technology directly improved human healthcare?",
+              "options": [
+                "A. By increasing bacterial infections",
+                "B. Through the development of vaccines and medicines to fight diseases like measles and tetanus",
+                "C. By stopping human physical exercise",
+                "D. By eliminating hospital buildings"
+              ],
+              "correctAnswer": "B. Through the development of vaccines and medicines to fight diseases like measles and tetanus",
+              "hint": "The application of technology in healthcare has led to the production of vaccines and pharmaceutical drugs to prevent and treat diseases.",
+              "workedSolution": "The application of technology in healthcare has led to the production of vaccines and pharmaceutical drugs to prevent and treat diseases.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F12",
+              "difficulty": "low",
+              "prompt": "Which technological devices have significantly enhanced global communication?",
+              "options": [
+                "A. Computers, mobile phones, and internet networks",
+                "B. Microscopes and test tubes",
+                "C. Combine harvesters and ploughs",
+                "D. Thermometers and barometers"
+              ],
+              "correctAnswer": "A. Computers, mobile phones, and internet networks",
+              "hint": "Computers, mobile phones, and telecommunication devices make accessing, processing, and transmitting information easier and faster.",
+              "workedSolution": "Computers, mobile phones, and telecommunication devices make accessing, processing, and transmitting information easier and faster.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F13",
+              "difficulty": "low",
+              "prompt": "Which agricultural machines were introduced through technology to replace manual labor?",
+              "options": [
+                "A. Cutlasses and hoes",
+                "B. Tractor-mounted ploughs and combine harvesters",
+                "C. Baskets and head pans",
+                "D. Dibbers and wooden rakes"
+              ],
+              "correctAnswer": "B. Tractor-mounted ploughs and combine harvesters",
+              "hint": "Mechanized farm implements such as ploughs and combine harvesters are products of agricultural technology.",
+              "workedSolution": "Mechanized farm implements such as ploughs and combine harvesters are products of agricultural technology.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F14",
+              "difficulty": "low",
+              "prompt": "The technology that makes use of local resources, skills, and indigenous tools is termed:",
+              "options": [
+                "A. Foreign technology",
+                "B. Endogenous (indigenous) technology",
+                "C. Space technology",
+                "D. Cybernetic technology"
+              ],
+              "correctAnswer": "B. Endogenous (indigenous) technology",
+              "hint": "Endogenous technology relies on local resources, traditional techniques, and indigenous tools to produce goods.",
+              "workedSolution": "Endogenous technology relies on local resources, traditional techniques, and indigenous tools to produce goods.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F15",
+              "difficulty": "low",
+              "prompt": "What is modern technology?",
+              "options": [
+                "A. The use of hand-carved stone blades",
+                "B. The production of goods, machines, and tools using improved methods to make life easier",
+                "C. The refusal to use electrical energy",
+                "D. Relying strictly on local folklore"
+              ],
+              "correctAnswer": "B. The production of goods, machines, and tools using improved methods to make life easier",
+              "hint": "Modern technology involves producing machines, tools, and systems using advanced methods to simplify human tasks.",
+              "workedSolution": "Modern technology involves producing machines, tools, and systems using advanced methods to simplify human tasks.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F16",
+              "difficulty": "low",
+              "prompt": "Which of the following is a major factor hindering technological improvement in Ghana?",
+              "options": [
+                "A. High cost or absence of credit for research and development",
+                "B. Having too many scientists",
+                "C. An oversupply of cheap electricity",
+                "D. Banning all imported goods"
+              ],
+              "correctAnswer": "A. High cost or absence of credit for research and development",
+              "hint": "High cost of capital and lack of credit or funds for research and development severely limit technological growth in Ghana.",
+              "workedSolution": "High cost of capital and lack of credit or funds for research and development severely limit technological growth in Ghana.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F17",
+              "difficulty": "low",
+              "prompt": "How does an irregular power supply (dumsor) affect technological development?",
+              "options": [
+                "A. It speeds up manufacturing output",
+                "B. It disrupts factory machinery operations and damages electronic equipment",
+                "C. It encourages foreign investors to build factories",
+                "D. It improves digital software development"
+              ],
+              "correctAnswer": "B. It disrupts factory machinery operations and damages electronic equipment",
+              "hint": "Unstable electrical power disrupts manufacturing plants, halts digital workflows, and discourages industrial production.",
+              "workedSolution": "Unstable electrical power disrupts manufacturing plants, halts digital workflows, and discourages industrial production.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F18",
+              "difficulty": "low",
+              "prompt": "One key way to improve indigenous tools and technology in Ghana is to:",
+              "options": [
+                "A. Stop teaching science in basic schools",
+                "B. Provide funds and sponsorships for research work",
+                "C. Ban the use of computers nationwide",
+                "D. Discard all local agricultural knowledge"
+              ],
+              "correctAnswer": "B. Provide funds and sponsorships for research work",
+              "hint": "Allocating funds and research grants enables local innovators to refine indigenous tools and scale production.",
+              "workedSolution": "Allocating funds and research grants enables local innovators to refine indigenous tools and scale production.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F19",
+              "difficulty": "low",
+              "prompt": "A healthcare professional who specializes in the right way to use, store, preserve, and dispense medicine is a:",
+              "options": [
+                "A. Pharmacist",
+                "B. Botanist",
+                "C. Geochemist",
+                "D. Pilot"
+              ],
+              "correctAnswer": "A. Pharmacist",
+              "hint": "Pharmacists specialize in the proper use, storage, preservation, and dispensing of pharmaceuticals to patients.",
+              "workedSolution": "Pharmacists specialize in the proper use, storage, preservation, and dispensing of pharmaceuticals to patients.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F20",
+              "difficulty": "low",
+              "prompt": "What is the primary role of an airplane pilot?",
+              "options": [
+                "A. Designing airplane wings",
+                "B. Operating and flying an aircraft",
+                "C. Repairing jet runways",
+                "D. Managing flight ticket sales"
+              ],
+              "correctAnswer": "B. Operating and flying an aircraft",
+              "hint": "A pilot is a person professionally trained to operate and fly an aircraft.",
+              "workedSolution": "A pilot is a person professionally trained to operate and fly an aircraft.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F21",
+              "difficulty": "low",
+              "prompt": "A scientist who studies how animals and plants interact with their environment is a/an:",
+              "options": [
+                "A. Geologist",
+                "B. Ecologist",
+                "C. Astronomer",
+                "D. Toxicologist"
+              ],
+              "correctAnswer": "B. Ecologist",
+              "hint": "An ecologist investigates the interactions between living organisms and their physical environment.",
+              "workedSolution": "An ecologist investigates the interactions between living organisms and their physical environment.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F22",
+              "difficulty": "low",
+              "prompt": "A scientist who studies animals, their physical traits, diets, and behaviors is a:",
+              "options": [
+                "A. Zoologist",
+                "B. Botanist",
+                "C. Pharmacologist",
+                "D. Software developer"
+              ],
+              "correctAnswer": "A. Zoologist",
+              "hint": "A zoologist studies animals, their biological characteristics, diets, behaviors, and habitats.",
+              "workedSolution": "A zoologist studies animals, their biological characteristics, diets, behaviors, and habitats.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F23",
+              "difficulty": "low",
+              "prompt": "A scientist who studies plants and the plant kingdom is called a:",
+              "options": [
+                "A. Botanist",
+                "B. Entomologist",
+                "C. Toxicologist",
+                "D. Geochemist"
+              ],
+              "correctAnswer": "A. Botanist",
+              "hint": "A botanist is a scientist specialized in studying plants, their classification, and physiology.",
+              "workedSolution": "A botanist is a scientist specialized in studying plants, their classification, and physiology.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F24",
+              "difficulty": "low",
+              "prompt": "An entomologist is a specialist who studies:",
+              "options": [
+                "A. Earthquakes and volcanoes",
+                "B. Insects (their life cycles, anatomy, and behavior)",
+                "C. Marine fish populations",
+                "D. Deep space galaxies"
+              ],
+              "correctAnswer": "B. Insects (their life cycles, anatomy, and behavior)",
+              "hint": "An entomologist is a scientist who investigates insects, including their life cycles, distribution, and behavior.",
+              "workedSolution": "An entomologist is a scientist who investigates insects, including their life cycles, distribution, and behavior.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F25",
+              "difficulty": "low",
+              "prompt": "A scientist who studies the behavior of animals under their natural conditions is a/an:",
+              "options": [
+                "A. Ethologist",
+                "B. Geochemist",
+                "C. Pharmacist",
+                "D. Software engineer"
+              ],
+              "correctAnswer": "A. Ethologist",
+              "hint": "An ethologist studies animal behavior under natural environmental conditions.",
+              "workedSolution": "An ethologist studies animal behavior under natural environmental conditions.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F26",
+              "difficulty": "low",
+              "prompt": "Which professional collects and analyzes crime scene evidence like fingerprints and blood samples?",
+              "options": [
+                "A. Forensic scientist",
+                "B. Botanist",
+                "C. Agronomist",
+                "D. Astronomer"
+              ],
+              "correctAnswer": "A. Forensic scientist",
+              "hint": "Forensic scientists collect, analyze, and present physical evidence from crime scenes in legal cases.",
+              "workedSolution": "Forensic scientists collect, analyze, and present physical evidence from crime scenes in legal cases.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F27",
+              "difficulty": "low",
+              "prompt": "A geochemist is a scientist who investigates:",
+              "options": [
+                "A. Chemical compounds in the Earth, minerals, and water systems",
+                "B. Animal mating habits",
+                "C. The construction of web applications",
+                "D. Human dental hygiene"
+              ],
+              "correctAnswer": "A. Chemical compounds in the Earth, minerals, and water systems",
+              "hint": "Geochemists study the appearance, movement, and effects of chemical compounds in geological minerals and waters.",
+              "workedSolution": "Geochemists study the appearance, movement, and effects of chemical compounds in geological minerals and waters.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F28",
+              "difficulty": "low",
+              "prompt": "Which professional is responsible for monitoring and managing chemical pollutants in the air and water?",
+              "options": [
+                "A. Hazardous waste chemist",
+                "B. Ethologist",
+                "C. Zoologist",
+                "D. Pilot"
+              ],
+              "correctAnswer": "A. Hazardous waste chemist",
+              "hint": "Hazardous waste chemists monitor, test, and safely manage toxic pollutants in the environment.",
+              "workedSolution": "Hazardous waste chemists monitor, test, and safely manage toxic pollutants in the environment.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F29",
+              "difficulty": "low",
+              "prompt": "A pharmacologist is a biomedical scientist who:",
+              "options": [
+                "A. Flies commercial passenger aircraft",
+                "B. Studies the effects, sources, and effectiveness of drugs on humans and animals",
+                "C. Only works on vegetable farms",
+                "D. Digs mineral rocks in mines"
+              ],
+              "correctAnswer": "B. Studies the effects, sources, and effectiveness of drugs on humans and animals",
+              "hint": "Pharmacologists perform laboratory trials on pharmaceutical drugs to determine their efficacy, toxicity, and makeup.",
+              "workedSolution": "Pharmacologists perform laboratory trials on pharmaceutical drugs to determine their efficacy, toxicity, and makeup.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F30",
+              "difficulty": "low",
+              "prompt": "Testing blood and tissue samples to detect the presence of poisons, alcohol, and drugs is the work of a:",
+              "options": [
+                "A. Toxicologist",
+                "B. Botanist",
+                "C. Software engineer",
+                "D. Civil engineer"
+              ],
+              "correctAnswer": "A. Toxicologist",
+              "hint": "Toxicologists examine biological tissues and fluids to identify toxic foreign substances, poisons, or alcohol.",
+              "workedSolution": "Toxicologists examine biological tissues and fluids to identify toxic foreign substances, poisons, or alcohol.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F31",
+              "difficulty": "low",
+              "prompt": "What is the primary role of a medical laboratory technician?",
+              "options": [
+                "A. Performing diagnostic clinical tests on blood, tissues, and fluids to assist physicians",
+                "B. Writing software operating systems",
+                "C. Designing farm machinery",
+                "D. Directing airplane traffic"
+              ],
+              "correctAnswer": "A. Performing diagnostic clinical tests on blood, tissues, and fluids to assist physicians",
+              "hint": "Laboratory technicians carry out diagnostic clinical tests on body fluids and tissues to help doctors diagnose diseases.",
+              "workedSolution": "Laboratory technicians carry out diagnostic clinical tests on body fluids and tissues to help doctors diagnose diseases.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F32",
+              "difficulty": "low",
+              "prompt": "A professional who applies mathematical and scientific principles to design and code computer software is a:",
+              "options": [
+                "A. Software engineer (developer)",
+                "B. Geochemist",
+                "C. Toxicologist",
+                "D. Biologist"
+              ],
+              "correctAnswer": "A. Software engineer (developer)",
+              "hint": "Software engineers apply scientific and mathematical principles to build software applications that solve problems.",
+              "workedSolution": "Software engineers apply scientific and mathematical principles to build software applications that solve problems.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F33",
+              "difficulty": "low",
+              "prompt": "Which eminent Ghanaian scientist is celebrated for research in post-harvest food technology and root crop value addition?",
+              "options": [
+                "A. Prof. Ibok Nsa Oduro",
+                "B. Charles Darwin",
+                "C. Stephen Hawking",
+                "D. Alexander Fleming"
+              ],
+              "correctAnswer": "A. Prof. Ibok Nsa Oduro",
+              "hint": "Prof. Ibok Nsa Oduro is a distinguished Ghanaian food scientist known for her work on post-harvest preservation and root crops.",
+              "workedSolution": "Prof. Ibok Nsa Oduro is a distinguished Ghanaian food scientist known for her work on post-harvest preservation and root crops.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F34",
+              "difficulty": "low",
+              "prompt": "Prof. Francis Allotey, an internationally acclaimed Ghanaian scientist, was famous for his contributions to:",
+              "options": [
+                "A. Mathematical physics and soft X-ray spectroscopy",
+                "B. Marine fishing net design",
+                "C. Local pottery clay mixing",
+                "D. Cocoa tree breeding"
+              ],
+              "correctAnswer": "A. Mathematical physics and soft X-ray spectroscopy",
+              "hint": "Prof. Francis Allotey was a world-renowned mathematical physicist known for formulating the 'Allotey Formalism'.",
+              "workedSolution": "Prof. Francis Allotey was a world-renowned mathematical physicist known for formulating the 'Allotey Formalism'.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F35",
+              "difficulty": "low",
+              "prompt": "Who was the prominent Ghanaian female biochemist and inaugural quiz mistress of the National Science and Maths Quiz?",
+              "options": [
+                "A. Prof. Ewurama Addy",
+                "B. Marie Curie",
+                "C. Rosalind Franklin",
+                "D. Florence Nightingale"
+              ],
+              "correctAnswer": "A. Prof. Ewurama Addy",
+              "hint": "Professor Ewurama Addy was a celebrated biochemist, educator, and the first quiz mistress of the NSMQ.",
+              "workedSolution": "Professor Ewurama Addy was a celebrated biochemist, educator, and the first quiz mistress of the NSMQ.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F36",
+              "difficulty": "low",
+              "prompt": "Prof. Jophus Anamuah-Mensah made notable national contributions in Ghana as a/an:",
+              "options": [
+                "A. Science educator and educational reform leader",
+                "B. Aircraft flight instructor",
+                "C. Mineral oil refinery builder",
+                "D. Software game programmer"
+              ],
+              "correctAnswer": "A. Science educator and educational reform leader",
+              "hint": "Prof. Anamuah-Mensah is a renowned Ghanaian chemistry educator who chaired major national education reform committees.",
+              "workedSolution": "Prof. Anamuah-Mensah is a renowned Ghanaian chemistry educator who chaired major national education reform committees.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F37",
+              "difficulty": "low",
+              "prompt": "Prof. Theophilus Ossei-Anto is recognized in Ghanaian science education for his work in:",
+              "options": [
+                "A. Physics pedagogy and practical science equipment development",
+                "B. Deep sea oil drilling",
+                "C. Manufacturing jet engines",
+                "D. Commercial cattle rearing"
+              ],
+              "correctAnswer": "A. Physics pedagogy and practical science equipment development",
+              "hint": "Prof. Theophilus Ossei-Anto contributed extensively to physics education and hands-on laboratory science pedagogy in Ghana.",
+              "workedSolution": "Prof. Theophilus Ossei-Anto contributed extensively to physics education and hands-on laboratory science pedagogy in Ghana.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F38",
+              "difficulty": "low",
+              "prompt": "Which Ghanaian science educator has published extensive research on science curriculum and teacher education at UCC?",
+              "options": [
+                "A. Prof. Christian Anthony-Krueger",
+                "B. Albert Einstein",
+                "C. Isaac Newton",
+                "D. Paul Ratnei"
+              ],
+              "correctAnswer": "A. Prof. Christian Anthony-Krueger",
+              "hint": "Prof. Christian Anthony-Krueger is a leading Ghanaian scholar in science teacher training and curriculum development.",
+              "workedSolution": "Prof. Christian Anthony-Krueger is a leading Ghanaian scholar in science teacher training and curriculum development.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F39",
+              "difficulty": "low",
+              "prompt": "Albert Einstein was an international physicist famous for formulating:",
+              "options": [
+                "A. The Theory of Relativity and the photoelectric effect",
+                "B. The discovery of penicillin",
+                "C. The periodic table of elements",
+                "D. The polio vaccine"
+              ],
+              "correctAnswer": "A. The Theory of Relativity and the photoelectric effect",
+              "hint": "Albert Einstein revolutionized physics with his theories of relativity and discovery of the law of the photoelectric effect.",
+              "workedSolution": "Albert Einstein revolutionized physics with his theories of relativity and discovery of the law of the photoelectric effect.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F40",
+              "difficulty": "low",
+              "prompt": "Which international scientist discovered the first clinical antibiotic, Penicillin, in 1928?",
+              "options": [
+                "A. Alexander Fleming",
+                "B. Charles Darwin",
+                "C. Stephen Hawking",
+                "D. Paul Ratnei"
+              ],
+              "correctAnswer": "A. Alexander Fleming",
+              "hint": "Alexander Fleming discovered penicillin, revolutionizing medical treatment of bacterial infections.",
+              "workedSolution": "Alexander Fleming discovered penicillin, revolutionizing medical treatment of bacterial infections.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F41",
+              "difficulty": "low",
+              "prompt": "Charles Darwin is renowned in biological science for proposing:",
+              "options": [
+                "A. The theory of biological evolution by natural selection",
+                "B. The law of universal gravitation",
+                "C. The atomic structure model",
+                "D. The planetary laws of motion"
+              ],
+              "correctAnswer": "A. The theory of biological evolution by natural selection",
+              "hint": "Charles Darwin formulated the foundational theory of evolution by natural selection.",
+              "workedSolution": "Charles Darwin formulated the foundational theory of evolution by natural selection.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F42",
+              "difficulty": "low",
+              "prompt": "Stephen Hawking was a globally celebrated theoretical physicist renowned for work on:",
+              "options": [
+                "A. Black hole physics, gravitational singularities, and cosmology",
+                "B. Antibiotic extraction from fungi",
+                "C. Designing steam engines",
+                "D. The discovery of DNA double helix"
+              ],
+              "correctAnswer": "A. Black hole physics, gravitational singularities, and cosmology",
+              "hint": "Stephen Hawking made major discoveries regarding black hole radiation and theoretical cosmology.",
+              "workedSolution": "Stephen Hawking made major discoveries regarding black hole radiation and theoretical cosmology.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F43",
+              "difficulty": "low",
+              "prompt": "Which renewable energy source uses water stored in dams to generate electricity?",
+              "options": [
+                "A. Hydroelectric power",
+                "B. Coal combustion",
+                "C. Biogas digestion",
+                "D. Geothermal steam"
+              ],
+              "correctAnswer": "A. Hydroelectric power",
+              "hint": "Hydroelectric power stations, like the Akosombo Dam, harness flowing or falling water to generate electrical energy.",
+              "workedSolution": "Hydroelectric power stations, like the Akosombo Dam, harness flowing or falling water to generate electrical energy.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F44",
+              "difficulty": "low",
+              "prompt": "The production of gas from decomposing organic matter used for cooking and lighting is known as:",
+              "options": [
+                "A. Biogas",
+                "B. Kerosene",
+                "C. Gasoline",
+                "D. Diesel"
+              ],
+              "correctAnswer": "A. Biogas",
+              "hint": "Biogas is renewable fuel produced via anaerobic biological digestion of organic waste.",
+              "workedSolution": "Biogas is renewable fuel produced via anaerobic biological digestion of organic waste.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F45",
+              "difficulty": "low",
+              "prompt": "Modern educational technology in Ghanaian classrooms includes:",
+              "options": [
+                "A. Interactive electronic boards and slide projectors",
+                "B. Chalk and slates only",
+                "C. Clay tablets and papyrus",
+                "D. Charcoal wall markers"
+              ],
+              "correctAnswer": "A. Interactive electronic boards and slide projectors",
+              "hint": "Modern teaching utilizes electronic boards, computers, and multimedia slide projectors.",
+              "workedSolution": "Modern teaching utilizes electronic boards, computers, and multimedia slide projectors.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F46",
+              "difficulty": "low",
+              "prompt": "Which of the following is an applied science discipline?",
+              "options": [
+                "A. Pure theoretical philosophy",
+                "B. Engineering",
+                "C. Abstract geometry",
+                "D. Classical poetry"
+              ],
+              "correctAnswer": "B. Engineering",
+              "hint": "Engineering is an applied science that translates scientific discoveries into practical structures and machines.",
+              "workedSolution": "Engineering is an applied science that translates scientific discoveries into practical structures and machines.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F47",
+              "difficulty": "low",
+              "prompt": "A veterinary doctor specializes in:",
+              "options": [
+                "A. Diagnosing and treating diseases in animals",
+                "B. Flying aircraft",
+                "C. Testing rocks for gold",
+                "D. Designing software programs"
+              ],
+              "correctAnswer": "A. Diagnosing and treating diseases in animals",
+              "hint": "Veterinary doctors are healthcare professionals trained to manage the health and diseases of animals.",
+              "workedSolution": "Veterinary doctors are healthcare professionals trained to manage the health and diseases of animals.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F48",
+              "difficulty": "low",
+              "prompt": "Which professional focuses on designing and erecting physical infrastructure like roads and bridges?",
+              "options": [
+                "A. Civil engineer",
+                "B. Botanist",
+                "C. Pharmacist",
+                "D. Entomologist"
+              ],
+              "correctAnswer": "A. Civil engineer",
+              "hint": "Civil engineers plan, design, and oversee the construction of public infrastructure like bridges, roads, and dams.",
+              "workedSolution": "Civil engineers plan, design, and oversee the construction of public infrastructure like bridges, roads, and dams.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F49",
+              "difficulty": "low",
+              "prompt": "A medical doctor who specializes in caring for human teeth and oral cavities is a:",
+              "options": [
+                "A. Dentist",
+                "B. Zoologist",
+                "C. Pilot",
+                "D. Geochemist"
+              ],
+              "correctAnswer": "A. Dentist",
+              "hint": "A dentist is a specialized healthcare provider who diagnoses and treats oral and dental conditions.",
+              "workedSolution": "A dentist is a specialized healthcare provider who diagnoses and treats oral and dental conditions.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_F50",
+              "difficulty": "low",
+              "prompt": "The ultimate aim of studying science and pursuing scientific careers is to:",
+              "options": [
+                "A. Improve human living conditions and solve societal challenges",
+                "B. Create destructive weapons only",
+                "C. Replace all human beings with robots",
+                "D. Make all living things extinct"
+              ],
+              "correctAnswer": "A. Improve human living conditions and solve societal challenges",
+              "hint": "Scientific careers and technological developments exist primarily to improve human life and solve problems facing humanity.",
+              "workedSolution": "Scientific careers and technological developments exist primarily to improve human life and solve problems facing humanity.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s17_2",
+              "id": "B7_SI_I01",
               "difficulty": "medium",
-              "prompt": "Why must freshly molded clay pottery (such as traditional asanka) be fired at high temperatures in a kiln?",
+              "prompt": "How do scientific discoveries differ from technological inventions regarding demonstration?",
               "options": [
-                "To melt the clay into glass",
-                "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
-                "To color the clay bright green",
-                "To make the pot dissolve in water"
+                "A. Scientific facts or principles can be demonstrated easily, whereas technological principles cannot be demonstrated easily",
+                "B. Technology is demonstrated only with pencil and paper",
+                "C. Science deals only with visible physical machines",
+                "D. Neither science nor technology can be demonstrated"
               ],
-              "correctAnswer": "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
-              "hint": "Firing causes irreversible thermal vitrification.",
-              "workedSolution": "High-temperature kiln firing drives off chemically bound water from hydrated aluminum silicates, causing ceramic vitrification and sintering that turns soft clay into a rigid, permanent, water-insoluble pot.",
+              "correctAnswer": "A. Scientific facts or principles can be demonstrated easily, whereas technological principles cannot be demonstrated easily",
+              "hint": "Scientific principles can usually be demonstrated via basic experiments, while complex internal technological workings are harder to demonstrate simply.",
+              "workedSolution": "Scientific principles can usually be demonstrated via basic experiments, while complex internal technological workings are harder to demonstrate simply.",
               "points": 1,
-              "learningCompetency": "B7.5.3.1",
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I02",
+              "difficulty": "medium",
+              "prompt": "Why do changes in technology generally occur in shorter timeframes than paradigm shifts in pure science?",
+              "options": [
+                "A. Market consumer demands drive continuous industrial engineering upgrades, while natural laws are universal and discovered slowly",
+                "B. Science is strictly illegal in industries",
+                "C. Technology requires no thinking or designing",
+                "D. Natural laws change every week"
+              ],
+              "correctAnswer": "A. Market consumer demands drive continuous industrial engineering upgrades, while natural laws are universal and discovered slowly",
+              "hint": "Commercial demand and competitive manufacturing lead to rapid, frequent technological updates, whereas fundamental scientific laws are enduring.",
+              "workedSolution": "Commercial demand and competitive manufacturing lead to rapid, frequent technological updates, whereas fundamental scientific laws are enduring.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I03",
+              "difficulty": "medium",
+              "prompt": "What is the primary operational difference between a pharmacologist and a pharmacist?",
+              "options": [
+                "A. A pharmacologist conducts research on drug mechanisms and efficacy in labs, while a pharmacist dispenses and oversees patient medication",
+                "B. A pharmacist discovers new bacteria in rivers",
+                "C. A pharmacologist only sells drugs in hospitals",
+                "D. They perform identical non-scientific jobs"
+              ],
+              "correctAnswer": "A. A pharmacologist conducts research on drug mechanisms and efficacy in labs, while a pharmacist dispenses and oversees patient medication",
+              "hint": "Pharmacologists are research scientists studying drug effects, while pharmacists are licensed clinical practitioners who dispense medicines.",
+              "workedSolution": "Pharmacologists are research scientists studying drug effects, while pharmacists are licensed clinical practitioners who dispense medicines.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I04",
+              "difficulty": "medium",
+              "prompt": "In a legal murder investigation, why is the testimony of a forensic scientist vital?",
+              "options": [
+                "A. They provide objective, laboratory-analyzed physical evidence (DNA, fingerprints, blood) in court",
+                "B. They decide which lawyer wins the case",
+                "C. They arrest criminal suspects directly",
+                "D. They rewrite national criminal laws"
+              ],
+              "correctAnswer": "A. They provide objective, laboratory-analyzed physical evidence (DNA, fingerprints, blood) in court",
+              "hint": "Forensic scientists use analytical chemistry, biology, and physics to examine physical evidence and present expert findings in courts.",
+              "workedSolution": "Forensic scientists use analytical chemistry, biology, and physics to examine physical evidence and present expert findings in courts.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I05",
+              "difficulty": "medium",
+              "prompt": "How does an ethologist contribute to improved livestock production on a farm?",
+              "options": [
+                "A. By understanding natural animal behaviors and stress factors to optimize housing, feeding, and breeding conditions",
+                "B. By manufacturing artificial feeds from plastic",
+                "C. By slaughtering animals without cause",
+                "D. By replacing veterinary medicines with chemicals"
+              ],
+              "correctAnswer": "A. By understanding natural animal behaviors and stress factors to optimize housing, feeding, and breeding conditions",
+              "hint": "Ethologists understand animal behavioral patterns, helping farmers improve animal welfare, lower stress, and boost farm productivity.",
+              "workedSolution": "Ethologists understand animal behavioral patterns, helping farmers improve animal welfare, lower stress, and boost farm productivity.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I06",
+              "difficulty": "medium",
+              "prompt": "What distinguishes an entomologist from a general zoologist?",
+              "options": [
+                "A. An entomologist focuses specifically on the life cycle, physiology, and control of insects",
+                "B. A zoologist studies only plant roots",
+                "C. An entomologist studies only deep-sea whales",
+                "D. A zoologist never observes living organisms"
+              ],
+              "correctAnswer": "A. An entomologist focuses specifically on the life cycle, physiology, and control of insects",
+              "hint": "While zoologists study the animal kingdom broadly, entomologists specialize specifically in insect biology.",
+              "workedSolution": "While zoologists study the animal kingdom broadly, entomologists specialize specifically in insect biology.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I07",
+              "difficulty": "medium",
+              "prompt": "A geochemist sampling water near an active mining site is primarily investigating:",
+              "options": [
+                "A. The movement, distribution, and concentrations of chemical minerals and heavy metal compounds in the water system",
+                "B. The breeding season of water birds",
+                "C. The price of gold in world markets",
+                "D. The software operating the drill rigs"
+              ],
+              "correctAnswer": "A. The movement, distribution, and concentrations of chemical minerals and heavy metal compounds in the water system",
+              "hint": "Geochemists map and measure chemical element distribution and mineral interactions within terrestrial and aquatic formations.",
+              "workedSolution": "Geochemists map and measure chemical element distribution and mineral interactions within terrestrial and aquatic formations.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I08",
+              "difficulty": "medium",
+              "prompt": "Why is the role of a hazardous waste chemist essential in an industrial zone like Tema?",
+              "options": [
+                "A. To monitor, identify, and safely neutralize toxic chemical emissions into air and water",
+                "B. To ensure workers wear cheap clothing",
+                "C. To sell scrap metals to domestic buyers",
+                "D. To increase the volume of industrial smoke"
+              ],
+              "correctAnswer": "A. To monitor, identify, and safely neutralize toxic chemical emissions into air and water",
+              "hint": "Hazardous waste chemists evaluate hazardous emissions and design containment systems to prevent environmental pollution.",
+              "workedSolution": "Hazardous waste chemists evaluate hazardous emissions and design containment systems to prevent environmental pollution.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I09",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the professional domain of a software engineer?",
+              "options": [
+                "A. Designing, building, and maintaining computer code and software applications to solve real-world problems",
+                "B. Prescribing oral antibiotic pills",
+                "C. Testing river water for sulfur content",
+                "D. Operating agricultural tractor engines"
+              ],
+              "correctAnswer": "A. Designing, building, and maintaining computer code and software applications to solve real-world problems",
+              "hint": "Software engineers apply computer science and mathematics to design and maintain digital algorithms and programs.",
+              "workedSolution": "Software engineers apply computer science and mathematics to design and maintain digital algorithms and programs.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I10",
+              "difficulty": "medium",
+              "prompt": "How did the discovery of Penicillin by Alexander Fleming transform human life?",
+              "options": [
+                "A. It provided an effective antimicrobial weapon against deadly bacterial infections, saving millions of lives",
+                "B. It proved that light has a speed limit",
+                "C. It led to the invention of airplanes",
+                "D. It eliminated the need for clean drinking water"
+              ],
+              "correctAnswer": "A. It provided an effective antimicrobial weapon against deadly bacterial infections, saving millions of lives",
+              "hint": "Penicillin introduced the era of antibiotics, curbing previously fatal bacterial infections like pneumonia and sepsis.",
+              "workedSolution": "Penicillin introduced the era of antibiotics, curbing previously fatal bacterial infections like pneumonia and sepsis.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I11",
+              "difficulty": "medium",
+              "prompt": "How does endogenous technology differ from modern technology in Ghana?",
+              "options": [
+                "A. Endogenous technology relies on traditional manual skills and local tools, whereas modern technology uses improved machines and automation",
+                "B. Endogenous technology requires satellite computers",
+                "C. Modern technology never uses scientific principles",
+                "D. Endogenous technology is completely illegal"
+              ],
+              "correctAnswer": "A. Endogenous technology relies on traditional manual skills and local tools, whereas modern technology uses improved machines and automation",
+              "hint": "Endogenous technology is rooted in local craft traditions and manual tools, whereas modern technology employs automated, advanced methods.",
+              "workedSolution": "Endogenous technology is rooted in local craft traditions and manual tools, whereas modern technology employs automated, advanced methods.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I12",
+              "difficulty": "medium",
+              "prompt": "Why is the inability to adapt foreign technologies to local needs a hindrance in Ghana?",
+              "options": [
+                "A. Imported machines often break down due to harsh local conditions, lack of spare parts, or lack of local maintenance skills",
+                "B. Foreign technologies are too cheap to use",
+                "C. Ghana has completely banned foreign knowledge",
+                "D. Imported tools never require electrical power"
+              ],
+              "correctAnswer": "A. Imported machines often break down due to harsh local conditions, lack of spare parts, or lack of local maintenance skills",
+              "hint": "Without local adaptation and training, imported technologies fail when subjected to local operating environments and power constraints.",
+              "workedSolution": "Without local adaptation and training, imported technologies fail when subjected to local operating environments and power constraints.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I13",
+              "difficulty": "medium",
+              "prompt": "What is meant by 'lack of practical software training' as a setback to technological advancement?",
+              "options": [
+                "A. School curricula often focus on theoretical memorization rather than hands-on coding and application design",
+                "B. Computers are completely forbidden in tertiary schools",
+                "C. Software programs cannot run in Africa",
+                "D. All software requires internet cables"
+              ],
+              "correctAnswer": "A. School curricula often focus on theoretical memorization rather than hands-on coding and application design",
+              "hint": "A shortage of practical, hands-on programming skills prevents students from engineering software solutions for national challenges.",
+              "workedSolution": "A shortage of practical, hands-on programming skills prevents students from engineering software solutions for national challenges.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I14",
+              "difficulty": "medium",
+              "prompt": "How can providing tax incentives to companies encourage technological development?",
+              "options": [
+                "A. It lowers business operating costs, encouraging firms to invest profits into scientific research and equipment",
+                "B. It makes all imported goods free",
+                "C. It forces companies to close factory branches",
+                "D. It removes the need for banking institutions"
+              ],
+              "correctAnswer": "A. It lowers business operating costs, encouraging firms to invest profits into scientific research and equipment",
+              "hint": "Tax relief frees up capital, enabling manufacturing and tech companies to purchase modern machinery and innovate.",
+              "workedSolution": "Tax relief frees up capital, enabling manufacturing and tech companies to purchase modern machinery and innovate.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I15",
+              "difficulty": "medium",
+              "prompt": "Why does excessive dependence on traditional ways of producing goods restrict economic output?",
+              "options": [
+                "A. Manual indigenous methods are labor-intensive, slow, and cannot produce goods at large industrial scales",
+                "B. Traditional goods are always toxic",
+                "C. Manual tools use too much electricity",
+                "D. Indigenous skills are impossible to teach"
+              ],
+              "correctAnswer": "A. Manual indigenous methods are labor-intensive, slow, and cannot produce goods at large industrial scales",
+              "hint": "Manual traditional crafts yield limited output, failing to satisfy the high volume demands of expanding national markets.",
+              "workedSolution": "Manual traditional crafts yield limited output, failing to satisfy the high volume demands of expanding national markets.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I16",
+              "difficulty": "medium",
+              "prompt": "What major contribution did Prof. Ibok Nsa Oduro make to rural agro-industries in Ghana?",
+              "options": [
+                "A. Formulating processing methods that turn sweet potatoes and local roots into flour, bread, and stable food products",
+                "B. Discovering new planets with telescopes",
+                "C. Building passenger supersonic jets",
+                "D. Designing deep gold mine tunnels"
+              ],
+              "correctAnswer": "A. Formulating processing methods that turn sweet potatoes and local roots into flour, bread, and stable food products",
+              "hint": "Prof. Ibok Oduro developed post-harvest processing technologies for sweet potatoes and indigenous crops, reducing spoilage.",
+              "workedSolution": "Prof. Ibok Oduro developed post-harvest processing technologies for sweet potatoes and indigenous crops, reducing spoilage.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I17",
+              "difficulty": "medium",
+              "prompt": "How did Prof. Ewurama Addy inspire generations of Ghanaian basic and secondary students?",
+              "options": [
+                "A. Through her role as the quiz mistress of the NSMQ and modeling science as an exciting, accessible discipline",
+                "B. By building sports stadiums",
+                "C. By leading musical bands",
+                "D. By managing commercial banking firms"
+              ],
+              "correctAnswer": "A. Through her role as the quiz mistress of the NSMQ and modeling science as an exciting, accessible discipline",
+              "hint": "Prof. Ewurama Addy served as a prominent role model through the NSMQ, popularizing science education nationwide.",
+              "workedSolution": "Prof. Ewurama Addy served as a prominent role model through the NSMQ, popularizing science education nationwide.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I18",
+              "difficulty": "medium",
+              "prompt": "Prof. Francis Allotey’s 'Allotey Formalism' is a theoretical model that explains:",
+              "options": [
+                "A. How matter absorbs soft X-rays through electron interactions",
+                "B. How cocoa beans ferment in banana leaves",
+                "C. The migration of birds across oceans",
+                "D. How to purify river water with sand"
+              ],
+              "correctAnswer": "A. How matter absorbs soft X-rays through electron interactions",
+              "hint": "The Allotey Formalism is a renowned physical formula explaining resonance scattering of soft X-rays in metals.",
+              "workedSolution": "The Allotey Formalism is a renowned physical formula explaining resonance scattering of soft X-rays in metals.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I19",
+              "difficulty": "medium",
+              "prompt": "Which of the following demonstrates how technology has revolutionized sanitation in modern settlements?",
+              "options": [
+                "A. Automated sewage treatment plants and mechanical sorting for recycling",
+                "B. Open burning of plastic bottles behind homes",
+                "C. Dumping unsegregated trash into river estuaries",
+                "D. Throwing wastewater into open gutters"
+              ],
+              "correctAnswer": "A. Automated sewage treatment plants and mechanical sorting for recycling",
+              "hint": "Modern sanitation utilizes mechanized waste handling, sewage treatment, and material reclamation technologies.",
+              "workedSolution": "Modern sanitation utilizes mechanized waste handling, sewage treatment, and material reclamation technologies.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I20",
+              "difficulty": "medium",
+              "prompt": "How does Charles Darwin's Theory of Natural Selection explain biological diversity?",
+              "options": [
+                "A. Organisms with advantageous traits best suited to their environment survive and reproduce, passing on those traits",
+                "B. Animals change their anatomy at will in one day",
+                "C. All species were created identical without variation",
+                "D. Climate changes have no effect on living organisms"
+              ],
+              "correctAnswer": "A. Organisms with advantageous traits best suited to their environment survive and reproduce, passing on those traits",
+              "hint": "Darwin showed that natural selection acts on heritable variations, allowing better-adapted organisms to thrive.",
+              "workedSolution": "Darwin showed that natural selection acts on heritable variations, allowing better-adapted organisms to thrive.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I21",
+              "difficulty": "medium",
+              "prompt": "Why is corruption in public procurement detrimental to scientific progress in developing countries?",
+              "options": [
+                "A. Funds meant for laboratory equipment and technical research are diverted, leaving schools and universities poorly equipped",
+                "B. It makes scientific formulas incorrect",
+                "C. It forces computers to shut down",
+                "D. It causes chemical elements to disappear"
+              ],
+              "correctAnswer": "A. Funds meant for laboratory equipment and technical research are diverted, leaving schools and universities poorly equipped",
+              "hint": "Corrupt diversion of educational and research budgets deprives institutions of essential laboratory and research tools.",
+              "workedSolution": "Corrupt diversion of educational and research budgets deprives institutions of essential laboratory and research tools.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I22",
+              "difficulty": "medium",
+              "prompt": "How does biogas technology demonstrate the practical application of biological science?",
+              "options": [
+                "A. It harnesses anaerobic bacterial fermentation of organic animal dung to generate methane fuel",
+                "B. It burns fossil coal in power stations",
+                "C. It splits uranium atoms in nuclear cores",
+                "D. It converts sunlight into sound"
+              ],
+              "correctAnswer": "A. It harnesses anaerobic bacterial fermentation of organic animal dung to generate methane fuel",
+              "hint": "Biogas digesters utilize anaerobic methanogenic microorganisms to convert livestock manure into combustible methane.",
+              "workedSolution": "Biogas digesters utilize anaerobic methanogenic microorganisms to convert livestock manure into combustible methane.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I23",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of a toxicologist in a hospital poisoning emergency?",
+              "options": [
+                "A. Rapidly identifying the specific poison or chemical overdose in bodily fluids so doctors can administer the correct antidote",
+                "B. Performing surgical amputations",
+                "C. Disinfecting hospital floors",
+                "D. Repairing X-ray machines"
+              ],
+              "correctAnswer": "A. Rapidly identifying the specific poison or chemical overdose in bodily fluids so doctors can administer the correct antidote",
+              "hint": "Toxicologists perform rapid diagnostic toxicology screens to detect toxins, guiding life-saving clinical interventions.",
+              "workedSolution": "Toxicologists perform rapid diagnostic toxicology screens to detect toxins, guiding life-saving clinical interventions.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I24",
+              "difficulty": "medium",
+              "prompt": "Why must an aircraft pilot possess a solid foundation in basic physics and meteorology?",
+              "options": [
+                "A. To understand aerodynamic lift, airspeed, atmospheric pressure, and weather hazard patterns during flight",
+                "B. To calculate ticket prices during flight",
+                "C. To repair the runway lights",
+                "D. To serve food to passengers"
+              ],
+              "correctAnswer": "A. To understand aerodynamic lift, airspeed, atmospheric pressure, and weather hazard patterns during flight",
+              "hint": "Pilots rely on fluid dynamics, atmospheric physics, and meteorology to safely navigate and control aircraft.",
+              "workedSolution": "Pilots rely on fluid dynamics, atmospheric physics, and meteorology to safely navigate and control aircraft.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I25",
+              "difficulty": "medium",
+              "prompt": "How does an ecologist help prevent species extinction in a forest reserve?",
+              "options": [
+                "A. By studying food web dependencies and habitat requirements to design conservation interventions",
+                "B. By felling all timber trees for export",
+                "C. By building concrete walls through the forest",
+                "D. By poisoning all carnivorous predators"
+              ],
+              "correctAnswer": "A. By studying food web dependencies and habitat requirements to design conservation interventions",
+              "hint": "Ecologists examine trophic networks and ecological requirements to develop sustainable conservation strategies.",
+              "workedSolution": "Ecologists examine trophic networks and ecological requirements to develop sustainable conservation strategies.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I26",
+              "difficulty": "medium",
+              "prompt": "Which branch of applied engineering focuses on extracting and processing mineral ores from the ground?",
+              "options": [
+                "A. Geological / Mining engineering",
+                "B. Electrical engineering",
+                "C. Software engineering",
+                "D. Biomedical engineering"
+              ],
+              "correctAnswer": "A. Geological / Mining engineering",
+              "hint": "Geological and mining engineers apply geology, physics, and chemistry to discover and extract mineral deposits safely.",
+              "workedSolution": "Geological and mining engineers apply geology, physics, and chemistry to discover and extract mineral deposits safely.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I27",
+              "difficulty": "medium",
+              "prompt": "How did the invention of maritime ships and modern airplanes alter international trade?",
+              "options": [
+                "A. It enabled the rapid, high-volume transportation of commercial commodities across global oceans and continents",
+                "B. It made all goods travel by foot",
+                "C. It stopped nations from trading with one another",
+                "D. It caused all overland roads to be abandoned"
+              ],
+              "correctAnswer": "A. It enabled the rapid, high-volume transportation of commercial commodities across global oceans and continents",
+              "hint": "Container ships and cargo aircraft enable rapid, bulk transportation of products, fueling global commerce.",
+              "workedSolution": "Container ships and cargo aircraft enable rapid, bulk transportation of products, fueling global commerce.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I28",
+              "difficulty": "medium",
+              "prompt": "What is the primary task of a chemical engineer in an industrial plant?",
+              "options": [
+                "A. Scaling up chemical reactions from small laboratory beakers into mass industrial production systems",
+                "B. Testing human blood for malaria parasites",
+                "C. Flying airplanes between cities",
+                "D. Directing television broadcasts"
+              ],
+              "correctAnswer": "A. Scaling up chemical reactions from small laboratory beakers into mass industrial production systems",
+              "hint": "Chemical engineers design, scale, and optimize chemical manufacturing processes for petroleum, food, and pharmaceuticals.",
+              "workedSolution": "Chemical engineers design, scale, and optimize chemical manufacturing processes for petroleum, food, and pharmaceuticals.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I29",
+              "difficulty": "medium",
+              "prompt": "Which of the following illustrates the 'protein-sparing effect' of carbohydrates in human nutrition?",
+              "options": [
+                "A. Consuming adequate carbohydrates prevents the body from breaking down functional muscle protein for energy",
+                "B. Carbohydrates destroy all dietary protein",
+                "C. Carbohydrates convert into meat inside the stomach",
+                "D. Eating carbohydrates removes the need for amino acids"
+              ],
+              "correctAnswer": "A. Consuming adequate carbohydrates prevents the body from breaking down functional muscle protein for energy",
+              "hint": "When dietary carbohydrates supply sufficient calories, cellular metabolism spares structural proteins from being catabolized.",
+              "workedSolution": "When dietary carbohydrates supply sufficient calories, cellular metabolism spares structural proteins from being catabolized.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I30",
+              "difficulty": "medium",
+              "prompt": "Why are computer software developers crucial to modern healthcare delivery?",
+              "options": [
+                "A. They build digital health records, hospital databases, and diagnostic image processing software",
+                "B. They perform open-heart surgery on patients",
+                "C. They synthesize herbal medicines from tree roots",
+                "D. They clean patient hospital beds"
+              ],
+              "correctAnswer": "A. They build digital health records, hospital databases, and diagnostic image processing software",
+              "hint": "Software developers create electronic health record systems, telemedicine portals, and computerized diagnostic imaging tools.",
+              "workedSolution": "Software developers create electronic health record systems, telemedicine portals, and computerized diagnostic imaging tools.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I31",
+              "difficulty": "medium",
+              "prompt": "What role does a biochemist play in agricultural development?",
+              "options": [
+                "A. Investigating cellular chemistry in crop plants to improve drought tolerance and nutritional content",
+                "B. Driving diesel tractors across fields",
+                "C. Building farm fences from timber",
+                "D. Sowing seeds by hand"
+              ],
+              "correctAnswer": "A. Investigating cellular chemistry in crop plants to improve drought tolerance and nutritional content",
+              "hint": "Biochemists examine plant molecular pathways to develop biofortified crops, natural biopesticides, and disease resistance.",
+              "workedSolution": "Biochemists examine plant molecular pathways to develop biofortified crops, natural biopesticides, and disease resistance.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I32",
+              "difficulty": "medium",
+              "prompt": "How did Stephen Hawking contribute to public science education despite physical disability?",
+              "options": [
+                "A. By writing popular, bestselling books like 'A Brief History of Time' that explained cosmology simply to non-scientists",
+                "B. By building radio telescopes with his hands",
+                "C. By inventing modern smartphones",
+                "D. By establishing commercial banks"
+              ],
+              "correctAnswer": "A. By writing popular, bestselling books like 'A Brief History of Time' that explained cosmology simply to non-scientists",
+              "hint": "Stephen Hawking popularized astrophysics and inspired millions through accessible science books and lectures.",
+              "workedSolution": "Stephen Hawking popularized astrophysics and inspired millions through accessible science books and lectures.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I33",
+              "difficulty": "medium",
+              "prompt": "What is the primary scientific function of a food scientist in food manufacturing?",
+              "options": [
+                "A. Formulating processing, packaging, and preservation methods to enhance food shelf-life and nutritional safety",
+                "B. Serving meals in restaurants",
+                "C. Planting maize seeds in fields",
+                "D. Selling agricultural land"
+              ],
+              "correctAnswer": "A. Formulating processing, packaging, and preservation methods to enhance food shelf-life and nutritional safety",
+              "hint": "Food scientists apply chemistry, microbiology, and engineering to preserve, package, and ensure the safety of food products.",
+              "workedSolution": "Food scientists apply chemistry, microbiology, and engineering to preserve, package, and ensure the safety of food products.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I34",
+              "difficulty": "medium",
+              "prompt": "Why must laboratory technicians adhere strictly to standard operating procedures (SOPs)?",
+              "options": [
+                "A. To ensure diagnostic test results are accurate, reliable, reproducible, and contamination-free",
+                "B. To make tests take longer to finish",
+                "C. To prevent doctors from reading patient files",
+                "D. To avoid using electricity in laboratories"
+              ],
+              "correctAnswer": "A. To ensure diagnostic test results are accurate, reliable, reproducible, and contamination-free",
+              "hint": "Adhering to strict clinical SOPs ensures diagnostic accuracy and prevents misdiagnosis of patients.",
+              "workedSolution": "Adhering to strict clinical SOPs ensures diagnostic accuracy and prevents misdiagnosis of patients.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I35",
+              "difficulty": "medium",
+              "prompt": "Which of the following is an example of an applied science career?",
+              "options": [
+                "A. Electrical engineer",
+                "B. Classical music singer",
+                "C. Traditional stage dancer",
+                "D. Ancient language translator"
+              ],
+              "correctAnswer": "A. Electrical engineer",
+              "hint": "Electrical engineering is an applied science that designs and builds power systems using electromagnetic principles.",
+              "workedSolution": "Electrical engineering is an applied science that designs and builds power systems using electromagnetic principles.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I36",
+              "difficulty": "medium",
+              "prompt": "What is the main danger of depending heavily on imported technologies without local capacity building?",
+              "options": [
+                "A. National vulnerability to economic shocks, technical dependency, and inability to repair broken systems",
+                "B. Local workers becoming too knowledgeable",
+                "C. Machines operating too fast for factories",
+                "D. Products becoming too inexpensive"
+              ],
+              "correctAnswer": "A. National vulnerability to economic shocks, technical dependency, and inability to repair broken systems",
+              "hint": "Total reliance on foreign technology without local know-how leaves domestic industries paralyzed when machines fail.",
+              "workedSolution": "Total reliance on foreign technology without local know-how leaves domestic industries paralyzed when machines fail.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I37",
+              "difficulty": "medium",
+              "prompt": "How does modern food packaging technology prevent food waste in urban retail markets?",
+              "options": [
+                "A. By using vacuum sealing and barrier films that inhibit microbial decay and oxidation",
+                "B. By making food items transparent",
+                "C. By heating food to 100°C continuously",
+                "D. By turning perishable food into plastic"
+              ],
+              "correctAnswer": "A. By using vacuum sealing and barrier films that inhibit microbial decay and oxidation",
+              "hint": "Advanced packaging creates protective barrier atmospheres that extend food shelf-life and reduce spoilage.",
+              "workedSolution": "Advanced packaging creates protective barrier atmospheres that extend food shelf-life and reduce spoilage.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I38",
+              "difficulty": "medium",
+              "prompt": "Why is mathematics an indispensable foundation for software engineering?",
+              "options": [
+                "A. Algorithms, data structures, and computer logic rely directly on mathematical principles and boolean algebra",
+                "B. Software engineers only write math textbooks",
+                "C. Computers operate on paper calculation rules",
+                "D. Math prevents computers from getting hot"
+              ],
+              "correctAnswer": "A. Algorithms, data structures, and computer logic rely directly on mathematical principles and boolean algebra",
+              "hint": "Software engineering applies discrete mathematics, computational logic, and algorithms to build functioning digital systems.",
+              "workedSolution": "Software engineering applies discrete mathematics, computational logic, and algorithms to build functioning digital systems.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I39",
+              "difficulty": "medium",
+              "prompt": "How did the development of slide projectors and digital boards modernize classroom education?",
+              "options": [
+                "A. They facilitate dynamic visual illustrations, multimedia presentations, and interactive learning",
+                "B. They remove the need for students to write exams",
+                "C. They teach students without teachers present",
+                "D. They make classrooms completely dark"
+              ],
+              "correctAnswer": "A. They facilitate dynamic visual illustrations, multimedia presentations, and interactive learning",
+              "hint": "Multimedia educational technology enhances conceptual understanding through visual models and interactive engagement.",
+              "workedSolution": "Multimedia educational technology enhances conceptual understanding through visual models and interactive engagement.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I40",
+              "difficulty": "medium",
+              "prompt": "What role does a mechanical engineer play in an automobile manufacturing plant?",
+              "options": [
+                "A. Designing vehicle engines, transmission assemblies, suspension systems, and safety frames",
+                "B. Selling vehicle insurance policies",
+                "C. Painting the company showroom",
+                "D. Driving finished cars to customers"
+              ],
+              "correctAnswer": "A. Designing vehicle engines, transmission assemblies, suspension systems, and safety frames",
+              "hint": "Mechanical engineers design, model, and manufacture the physical moving machinery, engines, and structural components of cars.",
+              "workedSolution": "Mechanical engineers design, model, and manufacture the physical moving machinery, engines, and structural components of cars.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I41",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the core duty of a nurse in healthcare delivery?",
+              "options": [
+                "A. Providing continuous patient care, administering prescribed medications, and monitoring vital signs",
+                "B. Manufacturing surgical knives",
+                "C. Testing engine fuels in refineries",
+                "D. Operating airport radar systems"
+              ],
+              "correctAnswer": "A. Providing continuous patient care, administering prescribed medications, and monitoring vital signs",
+              "hint": "Nurses manage direct patient clinical care, administer treatments, monitor recovery, and educate patients.",
+              "workedSolution": "Nurses manage direct patient clinical care, administer treatments, monitor recovery, and educate patients.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I42",
+              "difficulty": "medium",
+              "prompt": "How can learning from foreign technologies benefit local Ghanaian industries?",
+              "options": [
+                "A. By adopting and modifying advanced foreign designs to fit local Ghanaian resources and climatic conditions",
+                "B. By abandoning all local cultural heritage",
+                "C. By importing foreign workers to do all work",
+                "D. By paying high license fees indefinitely"
+              ],
+              "correctAnswer": "A. By adopting and modifying advanced foreign designs to fit local Ghanaian resources and climatic conditions",
+              "hint": "Technology transfer involves adapting foreign engineering blueprints to local industrial requirements and materials.",
+              "workedSolution": "Technology transfer involves adapting foreign engineering blueprints to local industrial requirements and materials.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I43",
+              "difficulty": "medium",
+              "prompt": "What is the primary contribution of science educators in basic and secondary schools?",
+              "options": [
+                "A. Inspiring and mentoring students in scientific inquiry, critical thinking, and laboratory investigations",
+                "B. Selling foreign textbooks for profit",
+                "C. Building school classroom roofs",
+                "D. Managing financial school accounts"
+              ],
+              "correctAnswer": "A. Inspiring and mentoring students in scientific inquiry, critical thinking, and laboratory investigations",
+              "hint": "Science educators cultivate scientific literacy, curiosity, and research skills among young scholars.",
+              "workedSolution": "Science educators cultivate scientific literacy, curiosity, and research skills among young scholars.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I44",
+              "difficulty": "medium",
+              "prompt": "How does research in indigenous herbal medicine illustrate the convergence of science and traditional knowledge?",
+              "options": [
+                "A. Modern pharmacological methods extract, standardize, and clinically test active plant compounds used traditionally",
+                "B. It proves that plants have no medicinal value",
+                "C. It replaces modern chemistry with magic",
+                "D. It eliminates all synthetic pharmaceuticals"
+              ],
+              "correctAnswer": "A. Modern pharmacological methods extract, standardize, and clinically test active plant compounds used traditionally",
+              "hint": "Pharmacological science tests and standardizes active phytochemicals from traditional medicinal plants, creating safe drugs.",
+              "workedSolution": "Pharmacological science tests and standardizes active phytochemicals from traditional medicinal plants, creating safe drugs.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I45",
+              "difficulty": "medium",
+              "prompt": "Why is business expansion vital for small-scale local tool manufacturers in Ghana?",
+              "options": [
+                "A. To achieve economies of scale, reduce unit production costs, and afford modern manufacturing machinery",
+                "B. To avoid paying workers their wages",
+                "C. To prevent foreign tools from being imported",
+                "D. To turn small workshops into farms"
+              ],
+              "correctAnswer": "A. To achieve economies of scale, reduce unit production costs, and afford modern manufacturing machinery",
+              "hint": "Capital expansion enables local fabrication shops to purchase modern machinery and mass-produce affordable tools.",
+              "workedSolution": "Capital expansion enables local fabrication shops to purchase modern machinery and mass-produce affordable tools.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I46",
+              "difficulty": "medium",
+              "prompt": "Which of the following scientists would be called upon to evaluate the impact of a new dam on river fish migration?",
+              "options": [
+                "A. An ecologist or zoologist",
+                "B. An astronomer",
+                "C. A software engineer",
+                "D. A pilot"
+              ],
+              "correctAnswer": "A. An ecologist or zoologist",
+              "hint": "Ecologists and zoologists assess environmental impacts, aquatic habitats, and wildlife migration corridors.",
+              "workedSolution": "Ecologists and zoologists assess environmental impacts, aquatic habitats, and wildlife migration corridors.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I47",
+              "difficulty": "medium",
+              "prompt": "How do scientific discoveries in chemistry support the textile and clothing industry?",
+              "options": [
+                "A. Through the synthesis of durable artificial dyes, synthetic polymers, and stain-resistant finishes",
+                "B. By making cotton plants grow in salt water",
+                "C. By eliminating the need to wash clothes",
+                "D. By turning wool into metal"
+              ],
+              "correctAnswer": "A. Through the synthesis of durable artificial dyes, synthetic polymers, and stain-resistant finishes",
+              "hint": "Chemical innovations produce synthetic dyes, nylon, polyester fibers, and protective fabric coatings.",
+              "workedSolution": "Chemical innovations produce synthetic dyes, nylon, polyester fibers, and protective fabric coatings.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I48",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of an agronomist in improving national food production?",
+              "options": [
+                "A. Developing improved crop varieties, optimal soil management practices, and pest control techniques",
+                "B. Operating commercial bank branches",
+                "C. Building airplane runways",
+                "D. Manufacturing plastic toys"
+              ],
+              "correctAnswer": "A. Developing improved crop varieties, optimal soil management practices, and pest control techniques",
+              "hint": "Agronomists specialize in soil science and crop genetics to maximize agricultural productivity and sustainability.",
+              "workedSolution": "Agronomists specialize in soil science and crop genetics to maximize agricultural productivity and sustainability.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I49",
+              "difficulty": "medium",
+              "prompt": "Why does a medical doctor rely directly on laboratory technicians before prescribing specialized treatments?",
+              "options": [
+                "A. Accurate laboratory findings confirm the definitive presence and strain of pathogens causing the illness",
+                "B. Doctors are legally forbidden from writing prescriptions",
+                "C. Laboratory technicians own all hospitals",
+                "D. Technicians determine patient hospital bills"
+              ],
+              "correctAnswer": "A. Accurate laboratory findings confirm the definitive presence and strain of pathogens causing the illness",
+              "hint": "Evidence-based clinical medicine relies on diagnostic lab tests (blood smears, cultures) to guide effective therapies.",
+              "workedSolution": "Evidence-based clinical medicine relies on diagnostic lab tests (blood smears, cultures) to guide effective therapies.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_I50",
+              "difficulty": "medium",
+              "prompt": "How does investment in science and technology education empower young Ghanaian students?",
+              "options": [
+                "A. It equips them with problem-solving, analytical, and technical skills needed to build modern industries",
+                "B. It forces them to memorize historical poems",
+                "C. It guarantees they never have to work",
+                "D. It removes the need for national universities"
+              ],
+              "correctAnswer": "A. It equips them with problem-solving, analytical, and technical skills needed to build modern industries",
+              "hint": "STEM education develops critical problem-solving skills, preparing learners to drive industrial and economic innovation.",
+              "workedSolution": "STEM education develops critical problem-solving skills, preparing learners to drive industrial and economic innovation.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_SI_A01",
+              "difficulty": "hard",
+              "prompt": "A forensic scientist discovers a minute drop of blood at a burglary crime scene. Which molecular biological technique allows the scientist to identify the suspect?",
+              "options": [
+                "A. Polymerase Chain Reaction (PCR) and Short Tandem Repeat (STR) DNA profiling",
+                "B. Acid-base titration with phenolphthalein",
+                "C. Distillation of blood plasma",
+                "D. Weighing the blood on an electronic balance"
+              ],
+              "correctAnswer": "A. Polymerase Chain Reaction (PCR) and Short Tandem Repeat (STR) DNA profiling",
+              "hint": "Forensic scientists amplify trace DNA via PCR and generate STR profiles that uniquely match suspects to physical evidence.",
+              "workedSolution": "Forensic scientists amplify trace DNA via PCR and generate STR profiles that uniquely match suspects to physical evidence.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A02",
+              "difficulty": "hard",
+              "prompt": "Why is the 'Allotey Formalism' formulated by Prof. Francis Allotey considered a major breakthrough in modern theoretical physics?",
+              "options": [
+                "A. It proved that electron-hole core interactions in soft X-ray spectroscopy create characteristic resonance edge structures in metals",
+                "B. It proved that sound travels faster than light in space",
+                "C. It invented the first steam locomotive engine",
+                "D. It proved that gravity repels large planets"
+              ],
+              "correctAnswer": "A. It proved that electron-hole core interactions in soft X-ray spectroscopy create characteristic resonance edge structures in metals",
+              "hint": "Allotey showed that core-hole electron attraction induces an edge resonance peak in soft X-ray absorption spectra of metals.",
+              "workedSolution": "Allotey showed that core-hole electron attraction induces an edge resonance peak in soft X-ray absorption spectra of metals.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A03",
+              "difficulty": "hard",
+              "prompt": "A toxicologist tests a biological liver specimen in a fatal poisoning case and discovers high concentrations of organophosphate metabolites. What biochemical mechanism caused death?",
+              "options": [
+                "A. Irreversible inhibition of acetylcholinesterase, leading to fatal cholinergic crisis and asphyxiation",
+                "B. Rapid crystallization of bone calcium",
+                "C. Conversion of blood into stomach acid",
+                "D. Dissolution of muscle fibers into water"
+              ],
+              "correctAnswer": "A. Irreversible inhibition of acetylcholinesterase, leading to fatal cholinergic crisis and asphyxiation",
+              "hint": "Organophosphate poisons block acetylcholinesterase, resulting in continuous acetylcholine accumulation and respiratory paralysis.",
+              "workedSolution": "Organophosphate poisons block acetylcholinesterase, resulting in continuous acetylcholine accumulation and respiratory paralysis.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A04",
+              "difficulty": "hard",
+              "prompt": "In software engineering, why is the software development life cycle (SDLC) structured into rigorous analysis, design, testing, and deployment phases?",
+              "options": [
+                "A. To ensure that digital applications are secure, scalable, bug-free, and meet real-world user specifications",
+                "B. To make writing computer code take as long as possible",
+                "C. To prevent computers from using microchips",
+                "D. To replace programming languages with numbers"
+              ],
+              "correctAnswer": "A. To ensure that digital applications are secure, scalable, bug-free, and meet real-world user specifications",
+              "hint": "The SDLC is an engineering methodology ensuring high-quality, fault-tolerant software that solves client problems.",
+              "workedSolution": "The SDLC is an engineering methodology ensuring high-quality, fault-tolerant software that solves client problems.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A05",
+              "difficulty": "hard",
+              "prompt": "A chemical engineer scales up a lab pharmaceutical synthesis from a 500 mL beaker to a 10,000 L stainless steel reactor. What thermodynamic challenge must be solved?",
+              "options": [
+                "A. Exothermic heat transfer dissipation, reaction kinetics, and fluid mixing turbulence to prevent runaway reactions",
+                "B. The chemical elements turn into gases instantly",
+                "C. The reactor becomes too heavy to sit on the floor",
+                "D. Chemical reactions cannot occur in large tanks"
+              ],
+              "correctAnswer": "A. Exothermic heat transfer dissipation, reaction kinetics, and fluid mixing turbulence to prevent runaway reactions",
+              "hint": "Reactor scale-up reduces the surface-area-to-volume ratio, making heat dissipation and mass transport critical to avoid explosion.",
+              "workedSolution": "Reactor scale-up reduces the surface-area-to-volume ratio, making heat dissipation and mass transport critical to avoid explosion.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A06",
+              "difficulty": "hard",
+              "prompt": "Why is the preservation of indigenous agro-processing techniques through scientific value addition (as pioneered by Prof. Ibok Oduro) critical for African food sovereignty?",
+              "options": [
+                "A. It reduces reliance on expensive imported wheat flour by engineering high-grade composite flours from local sweet potatoes and cassava",
+                "B. It makes all imported food products illegal",
+                "C. It stops the need for farming crops",
+                "D. It allows food to be stored without packaging"
+              ],
+              "correctAnswer": "A. It reduces reliance on expensive imported wheat flour by engineering high-grade composite flours from local sweet potatoes and cassava",
+              "hint": "Scientific value-addition upgrades indigenous crops into shelf-stable industrial flours, reducing food import dependencies.",
+              "workedSolution": "Scientific value-addition upgrades indigenous crops into shelf-stable industrial flours, reducing food import dependencies.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A07",
+              "difficulty": "hard",
+              "prompt": "How does an ecologist utilize geographic information systems (GIS) and remote sensing technology in environmental management?",
+              "options": [
+                "A. Tracking deforestation rates, wildlife migration patterns, and wetland degradation across large landscapes over time",
+                "B. Generating electrical current from trees",
+                "C. Predicting consumer prices of mobile phones",
+                "D. Manufacturing artificial soil in laboratories"
+              ],
+              "correctAnswer": "A. Tracking deforestation rates, wildlife migration patterns, and wetland degradation across large landscapes over time",
+              "hint": "Ecologists combine satellite telemetry and GIS spatial analysis to monitor ecological changes and design conservation corridors.",
+              "workedSolution": "Ecologists combine satellite telemetry and GIS spatial analysis to monitor ecological changes and design conservation corridors.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A08",
+              "difficulty": "hard",
+              "prompt": "Why does a pharmacologist evaluate both pharmacokinetics (ADME) and pharmacodynamics during new drug development?",
+              "options": [
+                "A. To understand how the body absorbs, distributes, metabolizes, and excretes the drug, and its precise therapeutic mechanism on target receptors",
+                "B. To ensure the drug has a sweet fruit taste",
+                "C. To calculate the sales tax on drug packaging",
+                "D. To make sure the drug turns into a liquid"
+              ],
+              "correctAnswer": "A. To understand how the body absorbs, distributes, metabolizes, and excretes the drug, and its precise therapeutic mechanism on target receptors",
+              "hint": "Pharmacokinetics (what the body does to the drug) and pharmacodynamics (what the drug does to the body) establish safe dosages.",
+              "workedSolution": "Pharmacokinetics (what the body does to the drug) and pharmacodynamics (what the drug does to the body) establish safe dosages.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A09",
+              "difficulty": "hard",
+              "prompt": "What is the primary danger when an industrial developing nation pursues rapid technological growth while neglecting hazardous waste chemistry?",
+              "options": [
+                "A. Severe environmental degradation, heavy metal biomagnification, and catastrophic public health poisoning disasters",
+                "B. The nation’s internet speeds become too fast",
+                "C. Manufacturing machines run out of steel",
+                "D. Factories produce too much clean drinking water"
+              ],
+              "correctAnswer": "A. Severe environmental degradation, heavy metal biomagnification, and catastrophic public health poisoning disasters",
+              "hint": "Industrialization without toxic waste management contaminates water tables and soil, triggering chronic public health crises.",
+              "workedSolution": "Industrialization without toxic waste management contaminates water tables and soil, triggering chronic public health crises.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A10",
+              "difficulty": "hard",
+              "prompt": "How did Albert Einstein’s discovery of the Law of the Photoelectric Effect lay the foundation for modern renewable energy technology?",
+              "options": [
+                "A. It proved that light photons eject electrons from semiconductor surfaces, enabling the invention of solar photovoltaic cells",
+                "B. It led to the construction of hydroelectric dams",
+                "C. It proved that wind turbines can generate steam",
+                "D. It showed how to produce biogas from animal manure"
+              ],
+              "correctAnswer": "A. It proved that light photons eject electrons from semiconductor surfaces, enabling the invention of solar photovoltaic cells",
+              "hint": "The photoelectric effect demonstrated quantum photon-electron conversion, which is the operational basis of solar panels.",
+              "workedSolution": "The photoelectric effect demonstrated quantum photon-electron conversion, which is the operational basis of solar panels.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A11",
+              "difficulty": "hard",
+              "prompt": "In civil engineering, why must soil mechanics and geotechnical testing be conducted before constructing multi-story commercial buildings?",
+              "options": [
+                "A. To determine the bearing capacity, shear strength, and settlement behavior of the foundation soil under heavy structural load",
+                "B. To check if the soil contains edible salts",
+                "C. To count the number of earthworms in the soil",
+                "D. To color the building foundation"
+              ],
+              "correctAnswer": "A. To determine the bearing capacity, shear strength, and settlement behavior of the foundation soil under heavy structural load",
+              "hint": "Geotechnical testing ensures the soil stratum can support structural loads without catastrophic foundation settlement or shear failure.",
+              "workedSolution": "Geotechnical testing ensures the soil stratum can support structural loads without catastrophic foundation settlement or shear failure.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A12",
+              "difficulty": "hard",
+              "prompt": "How does Stephen Hawking’s prediction of 'Hawking Radiation' challenge classical general relativity?",
+              "options": [
+                "A. It showed that quantum field effects near the event horizon cause black holes to emit thermal radiation and slowly evaporate over time",
+                "B. It showed that black holes are made of solid granite",
+                "C. It proved that light can never travel through a vacuum",
+                "D. It demonstrated that stars never collapse"
+              ],
+              "correctAnswer": "A. It showed that quantum field effects near the event horizon cause black holes to emit thermal radiation and slowly evaporate over time",
+              "hint": "Hawking merged quantum mechanics and general relativity, proving black holes radiate thermal energy and eventually evaporate.",
+              "workedSolution": "Hawking merged quantum mechanics and general relativity, proving black holes radiate thermal energy and eventually evaporate.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A13",
+              "difficulty": "hard",
+              "prompt": "What is the primary scientific function of a food biochemist investigating enzymatic browning in harvested fruits?",
+              "options": [
+                "A. Elucidating polyphenol oxidase kinetics to develop chemical inhibitors or thermal blanching treatments that preserve fruit quality",
+                "B. Changing the genetic color of the fruit tree leaves",
+                "C. Forcing fruits to ferment into vinegar immediately",
+                "D. Making fruit skin poisonous to humans"
+              ],
+              "correctAnswer": "A. Elucidating polyphenol oxidase kinetics to develop chemical inhibitors or thermal blanching treatments that preserve fruit quality",
+              "hint": "Inhibiting polyphenol oxidase enzyme activity prevents oxidative browning, extending the market life of harvested produce.",
+              "workedSolution": "Inhibiting polyphenol oxidase enzyme activity prevents oxidative browning, extending the market life of harvested produce.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A14",
+              "difficulty": "hard",
+              "prompt": "Why is the 'micro-scale science equipment' pioneered by Ghanaian educators like Prof. Ossei-Anto revolutionary for under-resourced schools?",
+              "options": [
+                "A. It allows students to perform valid, hands-on scientific experiments safely using minute chemical volumes and low-cost apparatus",
+                "B. It eliminates the need for students to learn chemistry",
+                "C. It requires schools to build multi-million dollar laboratories",
+                "D. It replaces all classroom teachers with computers"
+              ],
+              "correctAnswer": "A. It allows students to perform valid, hands-on scientific experiments safely using minute chemical volumes and low-cost apparatus",
+              "hint": "Micro-chemistry kits allow practical laboratory experimentation at low costs, with minimal chemical waste and high safety.",
+              "workedSolution": "Micro-chemistry kits allow practical laboratory experimentation at low costs, with minimal chemical waste and high safety.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A15",
+              "difficulty": "hard",
+              "prompt": "How does an entomologist apply biological pest control to protect maize farms from fall armyworm infestations?",
+              "options": [
+                "A. Introducing host-specific natural parasitoid wasps that target pest larvae, reducing reliance on synthetic insecticides",
+                "B. Spraying heavy motor oil on all maize leaves",
+                "C. Burning the entire maize field during harvest",
+                "D. Flooding the farm with salt water"
+              ],
+              "correctAnswer": "A. Introducing host-specific natural parasitoid wasps that target pest larvae, reducing reliance on synthetic insecticides",
+              "hint": "Biological control uses natural predators or parasitoids to suppress agricultural pests sustainably without chemical hazards.",
+              "workedSolution": "Biological control uses natural predators or parasitoids to suppress agricultural pests sustainably without chemical hazards.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A16",
+              "difficulty": "hard",
+              "prompt": "Why is the establishment of low-interest credit facilities crucial for scaling endogenous technology in Ghana?",
+              "options": [
+                "A. Local tool fabricators need capital investment to purchase metal-forming lathes, CNC mills, and welding machines",
+                "B. Fabricators want to stop making tools completely",
+                "C. It allows businesses to avoid paying taxes",
+                "D. Low interest rates eliminate competition"
+              ],
+              "correctAnswer": "A. Local tool fabricators need capital investment to purchase metal-forming lathes, CNC mills, and welding machines",
+              "hint": "Affordable financing enables small fabricators to modernize machine tooling and produce high-precision agricultural implements.",
+              "workedSolution": "Affordable financing enables small fabricators to modernize machine tooling and produce high-precision agricultural implements.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A17",
+              "difficulty": "hard",
+              "prompt": "A medical laboratory technician identifies rod-shaped, acid-fast bacilli in a patient's sputum smear. What disease is diagnosed?",
+              "options": [
+                "A. Pulmonary Tuberculosis (Mycobacterium tuberculosis)",
+                "B. Malaria",
+                "C. Cholera",
+                "D. Hepatitis B"
+              ],
+              "correctAnswer": "A. Pulmonary Tuberculosis (Mycobacterium tuberculosis)",
+              "hint": "Acid-fast Ziehl-Neelsen staining confirms Mycobacterium tuberculosis bacilli in clinical sputum samples.",
+              "workedSolution": "Acid-fast Ziehl-Neelsen staining confirms Mycobacterium tuberculosis bacilli in clinical sputum samples.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A18",
+              "difficulty": "hard",
+              "prompt": "How does Charles Darwin’s evolutionary biology provide the foundation for understanding antibiotic resistance in modern medicine?",
+              "options": [
+                "A. Bacterial populations under antibiotic selective pressure undergo natural selection, allowing mutant resistant strains to survive and multiply",
+                "B. Antibiotics mutate into food for bacteria",
+                "C. Bacteria learn how to avoid drugs by thinking",
+                "D. Penicillin was proven to be ineffective on bacteria"
+              ],
+              "correctAnswer": "A. Bacterial populations under antibiotic selective pressure undergo natural selection, allowing mutant resistant strains to survive and multiply",
+              "hint": "Antibiotic resistance is natural selection in action: selective pressure eliminates susceptible bacteria, selecting for resistant mutants.",
+              "workedSolution": "Antibiotic resistance is natural selection in action: selective pressure eliminates susceptible bacteria, selecting for resistant mutants.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A19",
+              "difficulty": "hard",
+              "prompt": "What is the primary role of an electrical engineer in expanding renewable solar power grids?",
+              "options": [
+                "A. Designing DC-to-AC inverters, transformer sub-stations, and grid synchronization systems to safely transmit power",
+                "B. Assembling glass panels without wires",
+                "C. Measuring rainfall on solar panels",
+                "D. Digging trenches for telephone poles"
+              ],
+              "correctAnswer": "A. Designing DC-to-AC inverters, transformer sub-stations, and grid synchronization systems to safely transmit power",
+              "hint": "Electrical engineers design power electronics and grid-tied inverters to integrate variable solar generation into national grids.",
+              "workedSolution": "Electrical engineers design power electronics and grid-tied inverters to integrate variable solar generation into national grids.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A20",
+              "difficulty": "hard",
+              "prompt": "How does geochemist research support mineral exploration while mitigating acid mine drainage (AMD)?",
+              "options": [
+                "A. By identifying sulfide mineral complexes and modeling geochemical weathering to prevent sulfuric acid runoff into water bodies",
+                "B. By melting all rocks into liquid magma",
+                "C. By stopping all chemical reactions underground",
+                "D. By predicting the price of diamond exports"
+              ],
+              "correctAnswer": "A. By identifying sulfide mineral complexes and modeling geochemical weathering to prevent sulfuric acid runoff into water bodies",
+              "hint": "Geochemists analyze sulfide ore oxidation (pyrite), designing lime-neutralization systems to prevent toxic acidic drainage.",
+              "workedSolution": "Geochemists analyze sulfide ore oxidation (pyrite), designing lime-neutralization systems to prevent toxic acidic drainage.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A21",
+              "difficulty": "hard",
+              "prompt": "What is the significance of the mass-energy equivalence equation ($E = mc^2$) formulated by Albert Einstein?",
+              "options": [
+                "A. It proved that mass and energy are interconvertible, establishing the scientific foundation of nuclear energy generation",
+                "B. It calculates the speed of diesel locomotives",
+                "C. It proves that sound travels faster than light",
+                "D. It calculates the volume of water in dams"
+              ],
+              "correctAnswer": "A. It proved that mass and energy are interconvertible, establishing the scientific foundation of nuclear energy generation",
+              "hint": "$E = mc^2$ demonstrates that a tiny amount of mass can be converted into massive nuclear energy via fission or fusion.",
+              "workedSolution": "$E = mc^2$ demonstrates that a tiny amount of mass can be converted into massive nuclear energy via fission or fusion.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A22",
+              "difficulty": "hard",
+              "prompt": "Why is the work of an ethologist critical when designing modern zoological parks and wildlife rehabilitation sanctuaries?",
+              "options": [
+                "A. It ensures animal enclosures replicate natural habitats and behavioral stimulation, preventing stereotypic stress behaviors",
+                "B. It trains animals to speak human languages",
+                "C. It allows wild animals to be sold in markets",
+                "D. It eliminates the need to feed animals"
+              ],
+              "correctAnswer": "A. It ensures animal enclosures replicate natural habitats and behavioral stimulation, preventing stereotypic stress behaviors",
+              "hint": "Ethological knowledge ensures captive environments meet natural psychological, social, and foraging requirements of species.",
+              "workedSolution": "Ethological knowledge ensures captive environments meet natural psychological, social, and foraging requirements of species.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A23",
+              "difficulty": "hard",
+              "prompt": "In pharmaceutical manufacturing, what is the role of a quality control (QC) analytical chemist?",
+              "options": [
+                "A. Using HPLC and spectrophotometry to verify that drug active pharmaceutical ingredients (APIs) match exact purity and potency standards",
+                "B. Designing advertising posters for drugstores",
+                "C. Delivering medicine boxes in delivery vans",
+                "D. Sowing medicinal plants on farms"
+              ],
+              "correctAnswer": "A. Using HPLC and spectrophotometry to verify that drug active pharmaceutical ingredients (APIs) match exact purity and potency standards",
+              "hint": "QC analytical chemists perform chromatographic tests to ensure commercial medications are unadulterated and potent.",
+              "workedSolution": "QC analytical chemists perform chromatographic tests to ensure commercial medications are unadulterated and potent.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A24",
+              "difficulty": "hard",
+              "prompt": "How did the late Prof. Jophus Anamuah-Mensah’s educational philosophy shape modern Basic Design and Technology (BDT) curricula in Ghana?",
+              "options": [
+                "A. By advocating for the integration of hands-on vocational, technological, and scientific problem-solving skills into basic education",
+                "B. By replacing science classrooms with sports fields",
+                "C. By banning science practicals in all schools",
+                "D. By restricting education to rote learning"
+              ],
+              "correctAnswer": "A. By advocating for the integration of hands-on vocational, technological, and scientific problem-solving skills into basic education",
+              "hint": "Prof. Anamuah-Mensah championed technical-vocational and practical science integration to prepare students for industrial careers.",
+              "workedSolution": "Prof. Anamuah-Mensah championed technical-vocational and practical science integration to prepare students for industrial careers.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A25",
+              "difficulty": "hard",
+              "prompt": "Why does a software developer implement cybersecurity cryptography in mobile banking applications?",
+              "options": [
+                "A. To encrypt sensitive financial transaction data, preventing unauthorized interception, identity theft, and cyber fraud",
+                "B. To make the smartphone battery last longer",
+                "C. To prevent the screen from getting dirty",
+                "D. To turn digital currency into gold"
+              ],
+              "correctAnswer": "A. To encrypt sensitive financial transaction data, preventing unauthorized interception, identity theft, and cyber fraud",
+              "hint": "Cryptographic algorithms secure data packets in transit, safeguarding digital banking from cyber attacks and data breaches.",
+              "workedSolution": "Cryptographic algorithms secure data packets in transit, safeguarding digital banking from cyber attacks and data breaches.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A26",
+              "difficulty": "hard",
+              "prompt": "How does an industrial biotechnologist use genetic engineering to produce human insulin?",
+              "options": [
+                "A. Inserting the human insulin gene into recombinant Escherichia coli bacterial plasmids to express human insulin in commercial fermenters",
+                "B. Extracting insulin from plant roots",
+                "C. Crushing animal bones in chemical factories",
+                "D. Boiling table sugar with acids"
+              ],
+              "correctAnswer": "A. Inserting the human insulin gene into recombinant Escherichia coli bacterial plasmids to express human insulin in commercial fermenters",
+              "hint": "Recombinant DNA technology inserts the human proinsulin gene into bacteria, producing pure biosimilar insulin for diabetics.",
+              "workedSolution": "Recombinant DNA technology inserts the human proinsulin gene into bacteria, producing pure biosimilar insulin for diabetics.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A27",
+              "difficulty": "hard",
+              "prompt": "What is the primary operational hazard investigated by an aviation safety engineer after an aircraft engine failure?",
+              "options": [
+                "A. Metallurgical fatigue cracking in turbine fan blades or catastrophic foreign object bird ingestion",
+                "B. The color of passenger seats inside the cabin",
+                "C. The price of aviation fuel at the airport",
+                "D. The cleanliness of the pilot's uniform"
+              ],
+              "correctAnswer": "A. Metallurgical fatigue cracking in turbine fan blades or catastrophic foreign object bird ingestion",
+              "hint": "Aviation engineers analyze flight data recorders and fracture mechanics of engine blades to determine failure causes.",
+              "workedSolution": "Aviation engineers analyze flight data recorders and fracture mechanics of engine blades to determine failure causes.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A28",
+              "difficulty": "hard",
+              "prompt": "Why is the preservation of biodiversity considered vital by agricultural geneticists and botanists?",
+              "options": [
+                "A. Wild crop relatives harbor unique genetic traits for drought tolerance, disease resistance, and yield enhancement needed in crop breeding",
+                "B. It makes forest trees grow twice as tall",
+                "C. It prevents soil from eroding completely",
+                "D. Wild plants require no sunlight"
+              ],
+              "correctAnswer": "A. Wild crop relatives harbor unique genetic traits for drought tolerance, disease resistance, and yield enhancement needed in crop breeding",
+              "hint": "Wild germplasm provides critical gene reservoirs for developing climate-resilient, disease-resistant crop cultivars.",
+              "workedSolution": "Wild germplasm provides critical gene reservoirs for developing climate-resilient, disease-resistant crop cultivars.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A29",
+              "difficulty": "hard",
+              "prompt": "How does a biomedical engineer improve the mobility of physically disabled amputees?",
+              "options": [
+                "A. Designing advanced prosthetic limbs using lightweight carbon-fiber composites and myoelectric neural sensors",
+                "B. Prescribing antibiotic pills",
+                "C. Performing bone marrow transplants",
+                "D. Supplying wooden crutches only"
+              ],
+              "correctAnswer": "A. Designing advanced prosthetic limbs using lightweight carbon-fiber composites and myoelectric neural sensors",
+              "hint": "Biomedical engineering integrates mechanical design, materials science, and neuro-sensors to construct functional bionic prosthetics.",
+              "workedSolution": "Biomedical engineering integrates mechanical design, materials science, and neuro-sensors to construct functional bionic prosthetics.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A30",
+              "difficulty": "hard",
+              "prompt": "What chemical process is monitored by a hazardous waste chemist during the remediation of soil contaminated with polychlorinated biphenyls (PCBs)?",
+              "options": [
+                "A. High-temperature thermal desorption or advanced oxidative dechlorination of aromatic rings",
+                "B. Adding water to make PCBs evaporate",
+                "C. Freezing the contaminated soil",
+                "D. Mixing soil with sugar syrup"
+              ],
+              "correctAnswer": "A. High-temperature thermal desorption or advanced oxidative dechlorination of aromatic rings",
+              "hint": "Remediating persistent PCBs requires chemical dechlorination or thermal destruction to break down stable chlorine-carbon bonds.",
+              "workedSolution": "Remediating persistent PCBs requires chemical dechlorination or thermal destruction to break down stable chlorine-carbon bonds.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A31",
+              "difficulty": "hard",
+              "prompt": "Why is reverse engineering of imported agricultural machinery an effective industrial strategy for developing countries?",
+              "options": [
+                "A. It deconstructs foreign mechanisms to understand their engineering principles, allowing local manufacturers to fabricate affordable domestic versions",
+                "B. It makes all imported machines illegal",
+                "C. It eliminates the need for steel factories",
+                "D. It breaks down foreign machines permanently"
+              ],
+              "correctAnswer": "A. It deconstructs foreign mechanisms to understand their engineering principles, allowing local manufacturers to fabricate affordable domestic versions",
+              "hint": "Analyzing foreign designs allows local engineers to build capacity, substitute local materials, and produce contextualized machines.",
+              "workedSolution": "Analyzing foreign designs allows local engineers to build capacity, substitute local materials, and produce contextualized machines.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A32",
+              "difficulty": "hard",
+              "prompt": "In pathology, how does immunohistochemistry (IHC) performed by a laboratory technician assist an oncologist?",
+              "options": [
+                "A. Identifying specific antigen markers on tumor biopsy slices to determine the exact cellular origin and malignancy of cancer",
+                "B. Measuring patient blood pressure",
+                "C. Testing urine for glucose",
+                "D. Checking eye vision"
+              ],
+              "correctAnswer": "A. Identifying specific antigen markers on tumor biopsy slices to determine the exact cellular origin and malignancy of cancer",
+              "hint": "IHC uses labeled antibodies to bind specific tumor biomarkers on tissue sections, guiding targeted chemotherapy.",
+              "workedSolution": "IHC uses labeled antibodies to bind specific tumor biomarkers on tissue sections, guiding targeted chemotherapy.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A33",
+              "difficulty": "hard",
+              "prompt": "How does an industrial robotics engineer optimize manufacturing assembly lines in an automobile factory?",
+              "options": [
+                "A. Programming articulated robotic arms to perform high-precision spot welding, painting, and assembly with zero fatigue",
+                "B. Replacing electricity with coal furnaces",
+                "C. Making all cars by hand",
+                "D. Slowing down the movement of conveyor belts"
+              ],
+              "correctAnswer": "A. Programming articulated robotic arms to perform high-precision spot welding, painting, and assembly with zero fatigue",
+              "hint": "Industrial robotics automates repetitive, hazardous tasks, dramatically increasing production speed, precision, and safety.",
+              "workedSolution": "Industrial robotics automates repetitive, hazardous tasks, dramatically increasing production speed, precision, and safety.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A34",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of a database administrator in a national telecommunication agency?",
+              "options": [
+                "A. Ensuring massive citizen call and data databases are organized, encrypted, backed up, and accessible with zero downtime",
+                "B. Laying underground copper telephone cables",
+                "C. Selling mobile phone SIM cards",
+                "D. Repairing damaged phone screens"
+              ],
+              "correctAnswer": "A. Ensuring massive citizen call and data databases are organized, encrypted, backed up, and accessible with zero downtime",
+              "hint": "Database administrators manage large-scale data integrity, query optimization, high availability, and disaster recovery.",
+              "workedSolution": "Database administrators manage large-scale data integrity, query optimization, high availability, and disaster recovery.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A35",
+              "difficulty": "hard",
+              "prompt": "Why is the study of entomology crucial in the epidemiology of tropical infectious diseases?",
+              "options": [
+                "A. Many severe human pathogens are transmitted by insect vectors (e.g., Anopheles mosquitoes transmitting malaria, tsetse flies transmitting sleeping sickness)",
+                "B. Insects are the only source of antibiotics",
+                "C. Insects produce all known vaccines",
+                "D. Insects purify contaminated river water"
+              ],
+              "correctAnswer": "A. Many severe human pathogens are transmitted by insect vectors (e.g., Anopheles mosquitoes transmitting malaria, tsetse flies transmitting sleeping sickness)",
+              "hint": "Medical entomologists study vector ecology, feeding behaviors, and insecticide resistance to interrupt vector-borne disease transmission.",
+              "workedSolution": "Medical entomologists study vector ecology, feeding behaviors, and insecticide resistance to interrupt vector-borne disease transmission.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A36",
+              "difficulty": "hard",
+              "prompt": "How did Prof. Christian Anthony-Krueger’s pedagogical models transform science teacher preparation in Ghana?",
+              "options": [
+                "A. By emphasizing reflective practice, learner-centered inquiry, and formative performance assessment in science education",
+                "B. By replacing science classrooms with libraries",
+                "C. By removing chemistry from the curriculum",
+                "D. By advocating for pure textbook memorization"
+              ],
+              "correctAnswer": "A. By emphasizing reflective practice, learner-centered inquiry, and formative performance assessment in science education",
+              "hint": "Prof. Anthony-Krueger developed assessment frameworks and reflective teaching models that improved practical pedagogy.",
+              "workedSolution": "Prof. Anthony-Krueger developed assessment frameworks and reflective teaching models that improved practical pedagogy.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A37",
+              "difficulty": "hard",
+              "prompt": "What is the ecological hazard when an aquaculture farm discharges untreated fish waste into a river?",
+              "options": [
+                "A. Excessive nitrogenous waste and unconsumed feed induce severe algal blooms, nocturnal hypoxia, and downstream fish kills",
+                "B. The river water turns into pure spring water",
+                "C. The river becomes frozen",
+                "D. River fish turn into ocean mammals"
+              ],
+              "correctAnswer": "A. Excessive nitrogenous waste and unconsumed feed induce severe algal blooms, nocturnal hypoxia, and downstream fish kills",
+              "hint": "Aquaculture effluents contain concentrated ammonia and phosphorus that cause downstream eutrophication and dissolved oxygen collapse.",
+              "workedSolution": "Aquaculture effluents contain concentrated ammonia and phosphorus that cause downstream eutrophication and dissolved oxygen collapse.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A38",
+              "difficulty": "hard",
+              "prompt": "How does a marine geochemist investigate the impact of global warming on coral reefs?",
+              "options": [
+                "A. Measuring ocean acidification, dissolved carbonate ion saturation states, and calcification rates of coral skeletons",
+                "B. Catching fish with nylon nets",
+                "C. Planting palm trees along the coast",
+                "D. Painting coral reefs with white dye"
+              ],
+              "correctAnswer": "A. Measuring ocean acidification, dissolved carbonate ion saturation states, and calcification rates of coral skeletons",
+              "hint": "Geochemists measure seawater pH drops caused by absorbed atmospheric $CO_2$, which dissolves calcium carbonate coral skeletons.",
+              "workedSolution": "Geochemists measure seawater pH drops caused by absorbed atmospheric $CO_2$, which dissolves calcium carbonate coral skeletons.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A39",
+              "difficulty": "hard",
+              "prompt": "Why is the Allotey Formalism applied in semiconductor and nanotechnology manufacturing?",
+              "options": [
+                "A. It provides mathematical models to analyze and verify the electronic band structures of nanoscale silicon and novel alloys",
+                "B. It calculates the weight of bulldozer engines",
+                "C. It prevents computer monitors from breaking",
+                "D. It converts silicon into pure gold"
+              ],
+              "correctAnswer": "A. It provides mathematical models to analyze and verify the electronic band structures of nanoscale silicon and novel alloys",
+              "hint": "Allotey's spectroscopic formalism allows solid-state physicists to probe electronic density and band gaps in novel semiconductors.",
+              "workedSolution": "Allotey's spectroscopic formalism allows solid-state physicists to probe electronic density and band gaps in novel semiconductors.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A40",
+              "difficulty": "hard",
+              "prompt": "In organic food production, how does an agricultural microbiologist develop mycorrhizal bio-fertilizers?",
+              "options": [
+                "A. Culturing beneficial symbiotic fungi that colonize plant root systems, enhancing phosphorus uptake and drought resilience",
+                "B. Adding synthetic sulfuric acid to soil",
+                "C. Irradiating seeds with radioactive rays",
+                "D. Freezing crop roots in liquid nitrogen"
+              ],
+              "correctAnswer": "A. Culturing beneficial symbiotic fungi that colonize plant root systems, enhancing phosphorus uptake and drought resilience",
+              "hint": "Mycorrhizal inoculants establish mutualistic root associations that dramatically improve mineral absorption without synthetic chemicals.",
+              "workedSolution": "Mycorrhizal inoculants establish mutualistic root associations that dramatically improve mineral absorption without synthetic chemicals.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A41",
+              "difficulty": "hard",
+              "prompt": "How do software engineers use artificial intelligence (AI) to improve medical diagnostic imaging?",
+              "options": [
+                "A. Training deep convolutional neural networks to detect early malignant tumors on CT and MRI scans with high sensitivity",
+                "B. Replacing hospital beds with computer monitors",
+                "C. Prescribing medication without clinical trials",
+                "D. Disinfecting surgery rooms with laser beams"
+              ],
+              "correctAnswer": "A. Training deep convolutional neural networks to detect early malignant tumors on CT and MRI scans with high sensitivity",
+              "hint": "Computer vision algorithms detect subtle radiological patterns in scans, assisting radiologists in early cancer detection.",
+              "workedSolution": "Computer vision algorithms detect subtle radiological patterns in scans, assisting radiologists in early cancer detection.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A42",
+              "difficulty": "hard",
+              "prompt": "What is the primary responsibility of an environmental toxicologist in a municipal drinking water treatment facility?",
+              "options": [
+                "A. Conducting bio-assays to ensure treated water is free of heavy metals, pesticide residues, and disinfection by-products",
+                "B. Painting the water storage reservoirs",
+                "C. Setting municipal water bills",
+                "D. Repairing broken water pipe valves"
+              ],
+              "correctAnswer": "A. Conducting bio-assays to ensure treated water is free of heavy metals, pesticide residues, and disinfection by-products",
+              "hint": "Toxicologists verify that treated drinking water meets maximum contaminant levels for toxic chemical compounds.",
+              "workedSolution": "Toxicologists verify that treated drinking water meets maximum contaminant levels for toxic chemical compounds.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A43",
+              "difficulty": "hard",
+              "prompt": "Why is the preservation of endangered native livestock breeds considered essential by an animal geneticist?",
+              "options": [
+                "A. Indigenous breeds possess vital genetic adaptations for disease resistance (e.g., trypanotolerance) and heat tolerance",
+                "B. Native animals produce only gold wool",
+                "C. Exotic animals cannot eat grass",
+                "D. Native breeds require no drinking water"
+              ],
+              "correctAnswer": "A. Indigenous breeds possess vital genetic adaptations for disease resistance (e.g., trypanotolerance) and heat tolerance",
+              "hint": "Indigenous genetic traits (like trypanotolerance in N'Dama cattle) provide invaluable resilience against endemic tropical diseases.",
+              "workedSolution": "Indigenous genetic traits (like trypanotolerance in N'Dama cattle) provide invaluable resilience against endemic tropical diseases.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A44",
+              "difficulty": "hard",
+              "prompt": "How does a pharmacologist formulate sustained-release drug delivery systems?",
+              "options": [
+                "A. Encapsulating the drug in biodegradable polymer matrices that dissolve slowly, maintaining steady therapeutic plasma concentrations",
+                "B. Mixing the drug with table salt and water",
+                "C. Freezing the medicine before sale",
+                "D. Coating pills with sweet fruit syrup only"
+              ],
+              "correctAnswer": "A. Encapsulating the drug in biodegradable polymer matrices that dissolve slowly, maintaining steady therapeutic plasma concentrations",
+              "hint": "Polymer microspheres control dissolution rates, eliminating sharp peaks and troughs in patient drug blood levels.",
+              "workedSolution": "Polymer microspheres control dissolution rates, eliminating sharp peaks and troughs in patient drug blood levels.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A45",
+              "difficulty": "hard",
+              "prompt": "What is the role of an aerodynamic engineer in wind turbine design?",
+              "options": [
+                "A. Modeling airfoil blade profiles to maximize lift-to-drag ratios and kinetic energy extraction across varying wind speeds",
+                "B. Painting wind turbine towers green",
+                "C. Digging deep foundations for towers",
+                "D. Measuring solar radiation on the blades"
+              ],
+              "correctAnswer": "A. Modeling airfoil blade profiles to maximize lift-to-drag ratios and kinetic energy extraction across varying wind speeds",
+              "hint": "Aerodynamic engineers optimize blade geometry to capture maximum wind kinetic energy while minimizing structural turbulence.",
+              "workedSolution": "Aerodynamic engineers optimize blade geometry to capture maximum wind kinetic energy while minimizing structural turbulence.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A46",
+              "difficulty": "hard",
+              "prompt": "Why does a clinical pathologist evaluate peripheral blood films under high magnification?",
+              "options": [
+                "A. Assessing red cell morphology, detecting intracellular malaria parasites, and identifying abnormal blast cells in leukemia",
+                "B. Counting the number of water molecules in blood",
+                "C. Determining the blood temperature in Celsius",
+                "D. Checking the patient's blood pressure"
+              ],
+              "correctAnswer": "A. Assessing red cell morphology, detecting intracellular malaria parasites, and identifying abnormal blast cells in leukemia",
+              "hint": "Microscopic blood film analysis identifies morphological anomalies, parasitic infections (Plasmodium), and hematological malignancies.",
+              "workedSolution": "Microscopic blood film analysis identifies morphological anomalies, parasitic infections (Plasmodium), and hematological malignancies.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A47",
+              "difficulty": "hard",
+              "prompt": "How does an ethologist contribute to the conservation of endangered sea turtles nesting on Ghanaian beaches?",
+              "options": [
+                "A. Studying orientation behavior and artificial lighting disruption to protect hatchlings as they navigate to the ocean",
+                "B. Feeding sea turtles with bread",
+                "C. Keeping hatchlings in metal cages permanently",
+                "D. Selling sea turtle eggs to tourists"
+              ],
+              "correctAnswer": "A. Studying orientation behavior and artificial lighting disruption to protect hatchlings as they navigate to the ocean",
+              "hint": "Ethologists understand sea-finding phototaxis in hatchlings, designing dark-sky buffer zones to stop hatchling disorientation.",
+              "workedSolution": "Ethologists understand sea-finding phototaxis in hatchlings, designing dark-sky buffer zones to stop hatchling disorientation.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A48",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of a database security architect in cloud computing software engineering?",
+              "options": [
+                "A. Implementing zero-trust authentication, role-based access control, and end-to-end data encryption across distributed servers",
+                "B. Cleaning computer keyboard dust",
+                "C. Designing physical computer cases",
+                "D. Installing telephone wires in homes"
+              ],
+              "correctAnswer": "A. Implementing zero-trust authentication, role-based access control, and end-to-end data encryption across distributed servers",
+              "hint": "Security architects establish multi-layered defense protocols to prevent unauthorized data access, leakage, or ransomware in cloud systems.",
+              "workedSolution": "Security architects establish multi-layered defense protocols to prevent unauthorized data access, leakage, or ransomware in cloud systems.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A49",
+              "difficulty": "hard",
+              "prompt": "Why is the collaboration between agricultural engineers and meteorologists critical for climate-smart farming?",
+              "options": [
+                "A. Developing precision automated irrigation systems programmed to respond dynamically to predictive weather and evapotranspiration data",
+                "B. Stopping heavy rainfall from reaching crops",
+                "C. Changing the climate of the entire continent",
+                "D. Making all crops grow without sunlight"
+              ],
+              "correctAnswer": "A. Developing precision automated irrigation systems programmed to respond dynamically to predictive weather and evapotranspiration data",
+              "hint": "Integrating micro-meteorological forecasts with smart drip irrigation optimizes water conservation and boosts crop climate resilience.",
+              "workedSolution": "Integrating micro-meteorological forecasts with smart drip irrigation optimizes water conservation and boosts crop climate resilience.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SI_A50",
+              "difficulty": "hard",
+              "prompt": "How does modeling science careers after great national icons like Prof. Allotey and Prof. Ewurama Addy inspire sustainable national development?",
+              "options": [
+                "A. It instills research discipline, technological innovation, and self-belief in young scholars to solve domestic industrial challenges",
+                "B. It encourages students to avoid scientific studies",
+                "C. It teaches students to import all manufactured goods",
+                "D. It removes the need for science education"
+              ],
+              "correctAnswer": "A. It instills research discipline, technological innovation, and self-belief in young scholars to solve domestic industrial challenges",
+              "hint": "Pioneering role models inspire youth to pursue STEM excellence, invent local technologies, and drive national industrial transformation.",
+              "workedSolution": "Pioneering role models inspire youth to pursue STEM excellence, invent local technologies, and drive national industrial transformation.",
+              "points": 1,
+              "learningCompetency": "B7.5.3.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -39328,7 +41880,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -39524,7 +42076,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -39721,7 +42273,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T14:22:52.983Z"
+    "updatedAt": "2026-10-08T15:40:56.582Z"
   }
 ];
 
@@ -75878,48 +78430,2434 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Science, Industry & Career Pathways (STEM Careers, Ghanaian/Global Scientists, Indigenous Tech)",
     "order": 49,
     "notes": {
-      "summaryMarkdown": "### Indigenous Ghanaian Technologies & Applied Scientific Principles\n* **NaCCA Curriculum Code:** `B7.5.3.1`\n* **Core Competency:** Explain the scientific principles underlying traditional Ghanaian cottage industries and indigenous manufacturing.\n\n#### 1. Traditional Soap Making (Saponification with Local Alkalis)\n* **Raw Materials:** Ash from dried cocoa pods, plantain peels, or palm bunches; vegetable oils (palm kernel oil, coconut oil).\n* **Chemical Principle:**\n  * The ash contains high concentrations of water-soluble alkaline potassium carbonate ($\\text{K}_2\\text{CO}_3$).\n  * Leaching the ash with water produces a strong alkaline solution of potassium hydroxide:\n    $$\\text{K}_2\\text{CO}_{3(aq)} + \\text{Ca(OH)}_{2(aq)} \\rightarrow 2\\text{KOH}_{(aq)} + \\text{CaCO}_{3(s)}$$\n  * **Saponification Reaction:** Boiling potassium alkali with vegetable triglycerides hydrolyzes ester bonds, yielding glycerol and potassium carboxylate salts (traditional soft black soap / *alata samina*):\n    $$\\text{Fat / Triglyceride} + \\text{Potassium Hydroxide} \\rightarrow \\text{Glycerol} + \\text{Potassium Soap}$$\n\n#### 2. Indigenous Shea Butter Extraction (*Karité*)\n* **Process:** Shea nuts are boiled, sun-dried, de-shelled, roasted, pulverized into a fine paste, and churned vigorously by hand with water.\n* **Scientific Principle:** Churning destabilizes the natural lipid emulsion. Adding cold water causes the lighter hydrophobic shea fat to coalesce and float as a white curd on the surface, separating from the denser water-soluble residues by density divergence.\n\n#### 3. Traditional Earthenware Pottery\n* **Process:** Weathered riverbed clay is kneaded to remove trapped air bubbles, sculpted on a wheel or by hand, sun-dried, and fired in open wood kilns.\n* **Scientific Principle:** Firing at high temperatures ($>800^\\circ\\text{C}$) drives off structural water of crystallization, permanently transforming soft, pliable hydrated aluminum silicates into hard, vitrified, chemically inert ceramic structures (*asanka* / grinding bowls).",
+      "summaryMarkdown": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 3: SCIENCE AND INDUSTRY\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 3 — Science and Industry\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.3.1:** Realise how careers in science can improve life of humans and research about Ghanaian and internationally recognised scientists and science educators and model after them.\n- **Indicator:**\n  - **B7.5.3.1.1:** Discover and explain how careers in science can improve human conditions and relate these careers to the work of great national and international scientists and science educators.\n- **Pedagogical Strategy:** Epistemological definitions of science and technology, comparative distinctions between natural and applied sciences, societal development vectors, indigenous vs. modern technological paradigms, exhaustive career profiles across 18 specialized professions, biographies of notable Ghanaian and international scientific icons, and fully rendered SVG vector diagrams.\n\n---\n\n### MODULE 1: Nature of Science, Branches of Science, and Science vs. Technology\n\n#### 1.1 Epistemological and Operational Definitions\n1. **Science:** Science is the systematic method of acquiring reliable, empirical, and verifiable knowledge about the universe through organized observation, logical hypothesizing, controlled experimentation, and empirical data analysis. It involves the rigorous investigation of the natural physical world — understanding what matter and energy are made of, how they exist, interact, and behave, and formulating universal physical laws that govern natural phenomena.\n2. **Technology:** Technology is the systematic, practical, and purposeful application of scientific knowledge, theories, principles, and empirical discoveries to design, manufacture, and operate tools, machines, materials, processes, and systems that solve real-world problems, optimize human labor, improve living conditions, and satisfy societal needs (e.g., Information and Communications Technology [ICT], food processing technology, medical biotechnology).\n\n#### 1.2 The Broad Fields and Specialized Branches of Science\nScientific inquiry is broadly organized into two overarching domains:\n1. **Natural Science:** The systematic study of the physical universe, material laws, and biological life through empirical observation and experimentation. It is subdivided into five core disciplines:\n   - **Biology:** The scientific study of living organisms, their physiological mechanisms, cellular structures, reproduction, genetics, evolutionary development, and environmental interactions (encompassing sub-disciplines such as botany, zoology, microbiology, and ecology).\n   - **Physics:** The fundamental study of the constituents of the universe, matter, energy, space-time, and the universal forces (gravitational, electromagnetic, strong and weak nuclear) that dictate physical interactions.\n   - **Chemistry:** The study of the composition, atomic structure, molecular properties, behavior, and transformation of matter, and the energetic laws governing chemical reactions.\n   - **Earth Science:** An all-encompassing umbrella field investigating planet Earth's structure, physical systems, dynamic atmospheric interactions, and terrestrial composition (including physical geography, geology, meteorology, hydrology, and oceanology).\n   - **Astronomy:** The scientific study of celestial bodies, extraterrestrial matter, and cosmic phenomena originating beyond the Earth's atmosphere, such as stars, planetary systems, comets, nebulae, black holes, and galaxies.\n2. **Applied Science:** The practical integration and direct utilization of existing scientific theories, principles, and experimental discoveries to engineer practical solutions, design commercial products, optimize industrial processes, and resolve clinical, environmental, or economic challenges (e.g., Civil and Mechanical Engineering, Clinical Medicine, Agricultural Agronomy, Forensic Toxicology, and Applied Meteorology).\n\n#### 1.3 Comparative Analysis: Science vs. Technology\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"300\" viewBox=\"0 0 760 300\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"300\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EPISTEMOLOGICAL CONTINUUM: SCIENCE VS. TECHNOLOGY</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"230\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"165\" y=\"24\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">SCIENCE (Inquiry into Nature)</text><line x1=\"20\" y1=\"35\" x2=\"310\" y2=\"35\" stroke=\"#93c5fd\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Method of obtaining knowledge via observation &amp; tests</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Discovers natural laws &amp; intangible theories</text><text x=\"15\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Changes occur gradually through research</text><text x=\"15\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Principles can be demonstrated easily</text><rect x=\"20\" y=\"140\" width=\"290\" height=\"75\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"165\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Natural Science Branches</text><text x=\"30\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Biology (Living organisms)</text><text x=\"30\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Physics (Matter, energy, forces)</text><text x=\"175\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Chemistry (Matter composition)</text><text x=\"175\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Earth Science &amp; Astronomy</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"230\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"165\" y=\"24\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">TECHNOLOGY (Practical Application)</text><line x1=\"20\" y1=\"35\" x2=\"310\" y2=\"35\" stroke=\"#86efac\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Systematic use of scientific ideas in practical ways</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Produces tangible tools, goods, and machines</text><text x=\"15\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Changes occur rapidly in shorter time frames</text><text x=\"15\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Complex principles cannot be demonstrated easily</text><rect x=\"20\" y=\"140\" width=\"290\" height=\"75\" rx=\"4\" fill=\"#dcfce7\"/><text x=\"165\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Applied Technological Systems</text><text x=\"30\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Mechanized Agriculture</text><text x=\"30\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Modern Transportation</text><text x=\"175\" y=\"176\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Digital Communications &amp; ICT</text><text x=\"175\" y=\"192\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Advanced Medicine &amp; Health</text></g><path d=\"M 363 150 L 395 150\" stroke=\"#0f172a\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/></svg>\n</div>\n\n| Comparative Dimension | Science (Scientific Inquiry) | Technology (Applied Production) |\n| :--- | :--- | :--- |\n| **Core Focus & Nature of Output** | Focuses primarily on the discovery and formulation of universal natural laws, theoretical principles, and mathematical models, which are conceptual and **intangible**. | Focuses on the production of tangible physical artifacts, tools, industrial machinery, computerized gadgets (e.g., automobiles, smartphones, combine harvesters) to meet human needs. |\n| **Temporal Rate of Transformation** | Scientific paradigm shifts occur **gradually and iteratively**, requiring extensive peer review, replication, experimental validation, and academic consensus over decades or centuries. | Technological modifications, hardware iterations, and software upgrades occur **rapidly and dynamically** across short product lifecycles (months to few years). |\n| **Demonstration of Principles** | Fundamental scientific laws and hypotheses can be demonstrated readily in school laboratories using basic experimental apparatus (e.g., Archimedes' principle, photosynthesis tests). | Technological principles embedded in complex integrated microcircuits, multi-core microprocessors, or heavy industrial machinery cannot be demonstrated or dismantled easily in basic settings. |\n| **Primary Operational Methodology** | Characterized by systematic inquiry, curiosity-driven exploration, observation, and hypothesizing into nature (**\"Knowing Why\"**). | Characterized by goal-oriented execution, utilitarian problem-solving, structural manufacturing, and process optimization (**\"Knowing How\"**). |\n\n---\n\n### MODULE 2: Societal Impact of Science and Technology, Indigenous vs. Modern Systems\n\n#### 2.1 Catalytic Vectors of Societal Transformation\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">DEVELOPMENT IMPACT VECTORS IN MODERN SOCIETY</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Health &amp; Medicine</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Production of vaccines &amp; drugs</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Fights smallpox, measles, tetanus</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Advanced clinical diagnostics</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#991b1b\">Outcome: Increased Life Expectancy</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Agriculture &amp; Food</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Mechanized combine harvesters</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Motorized tractor-drawn ploughs</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Modern food preservation</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#166534\">Outcome: Enhanced Food Security</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Communication &amp; ICT</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• High-speed digital computing</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Cellular mobile networks</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Instant global data transfer</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#1e40af\">Outcome: Global Connectivity</text></g><g transform=\"translate(25, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Transportation</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Automobiles, airplanes, ships</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• High-speed railway systems</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Rapid movement of goods &amp; people</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#854d0e\">Outcome: Accelerated Trade</text></g><g transform=\"translate(270, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#9333ea\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Education &amp; Pedagogy</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Interactive electronic smartboards</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Multimedia slide projectors</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Computer-aided simulations</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#6b21a8\">Outcome: Optimized Learning</text></g><g transform=\"translate(515, 160)\"><rect width=\"220\" height=\"105\" rx=\"6\" fill=\"#f0fdfa\" stroke=\"#0d9488\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#115e59\" text-anchor=\"middle\">Energy &amp; Sanitation</text><text x=\"10\" y=\"40\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Hydroelectric, solar &amp; biogas</text><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Effective liquid/solid waste disposal</text><text x=\"10\" y=\"70\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Industrial recycling methods</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#115e59\">Outcome: Clean &amp; Powered Cities</text></g></svg>\n</div>\n\n1. **Healthcare & Pharmacological Advancements:**\n   - *Impact:* The direct application of molecular biology, immunology, and pharmacology has led to the isolation and industrial synthesis of life-saving therapeutics (antibiotics like penicillin, synthetic insulin, antimalarials) and prophylactic vaccines that have controlled or eradicated deadly epidemic contagions (smallpox, polio, measles, tetanus).\n   - *Diagnostic Precision:* Advanced medical imaging technologies (Ultrasound sonography, Magnetic Resonance Imaging [MRI], Computed Tomography [CT] scans) and automated robotic surgery have elevated diagnostic accuracy, reduced perioperative mortality, and extended human life expectancy.\n2. **Global Telecommunications and Digital ICT:**\n   - *Impact:* Microelectronics, fiber-optic cable networks, satellite systems, and cellular communications have eliminated geographical barriers. Global information processing, financial electronic fund transfers (FinTech, mobile money), and teleconferencing occur instantaneously across distances via smartphones, computers, and internet backbones.\n3. **Agricultural Mechanization and Agronomy:**\n   - *Impact:* Motorized tractor-drawn disc ploughs, mechanical seed drills, automated center-pivot irrigation systems, and combine harvesters have replaced debilitating manual labor. Coupled with scientifically formulated fertilizers, green-revolution crop varieties, and biopesticides, crop yields per hectare have expanded dramatically to ensure national and global food security.\n4. **Modern Transportation Networks:**\n   - *Impact:* The design of internal combustion engines, turbojet aircraft, high-speed electric locomotives, and containerized maritime cargo ships has accelerated the global transit of humans, food commodities, and raw materials from months to hours, underpinning modern international trade.\n5. **Educational Pedagogy and Knowledge Dissemination:**\n   - *Impact:* Classroom instruction has shifted from rote chalkboard teaching to interactive multi-sensory learning through digital electronic smartboards, multimedia projectors, computer-aided laboratory simulations, and internet-enabled virtual libraries.\n6. **Municipal Environmental Sanitation & Circular Economy:**\n   - *Impact:* The deployment of modern sanitary landfills, mechanized sorting conveyors, aerobic bioreactors, and industrial pyrolysis/recycling technologies mitigates environmental disease vectors and recovers valuable secondary resources.\n7. **Alternative and Renewable Energy Harnessing:**\n   - *Impact:* Thermodynamics and photovoltaic physics have enabled nations to transition from carbon-heavy fossil fuels to clean renewable alternatives: hydroelectric dams (e.g., Akosombo Dam), photovoltaic solar farms, wind turbine generators, and anaerobic biogas digesters.\n\n#### 2.2 Technological Paradigms: Endogenous/Indigenous vs. Modern Systems\n1. **Endogenous (Indigenous) Technology:**\n   - *Definition:* Indigenous technology is the traditional body of technical knowledge, artisan craftsmanship, and localized production methods passed down through generations within a specific culture, relying primarily on local cultural skills, locally sourced raw materials, and simple manual tools to satisfy community needs.\n   - *Examples in Ghana:* Traditional blacksmithing (forging cutlasses and hoes from scrap steel), traditional handloom weaving (Kente and Smock cloth), woodcarving, earthen pottery, artisanal shea butter extraction, indigenous herbal medicine concoctions, and spontaneous food fermentations (*kenkey*, *gari*, *pito*).\n2. **Modern Technology:**\n   - *Definition:* Advanced technological systems grounded in formal scientific engineering, computerized algorithms, mechanized automation, and mass-scale industrial assembly lines designed to maximize operational efficiency, minimize unit costs, and eliminate human manual fatigue.\n   - *Examples:* Automated vehicle assembly plants (e.g., Kantanka, Toyota Ghana), computerized magnetic resonance imaging (MRI), satellite remote sensing, combine harvesters, automated grain silos, and cloud software architectures.\n\n#### 2.3 Challenges Facing Technological Development in Ghana\nDespite substantial progress, technological industrialization in Ghana faces critical developmental hurdles:\n1. **Slow Transition from Archaic Tools:** Persistent reliance on manual, low-efficiency tools (hoe, cutlass) across agriculture and basic manufacturing due to capital constraints.\n2. **Inadequate Technology Transfer and Local Adaptation:** Inability to effectively deconstruct, adapt, and reverse-engineer imported foreign technologies to match tropical environmental conditions, compounded by a lack of advanced technical and software vocational training.\n3. **Excessive Dependence on Low-Output Methods:** Traditional, small-scale cottage processing with limited quality standardization and low economies of scale.\n4. **Deficit of Dedicated Research & Development (R&D) Funding:** Sub-Saharan African economies allocate less than 0.5% of GDP to scientific research; absence of dedicated venture capital funds for high-risk technological innovations.\n5. **Inadequate Fiscal and Tax Incentives:** High import duties on specialized technological machinery and inadequate pioneer tax holidays for domestic engineering startups.\n6. **Bureaucratic Inefficiencies & Corruption:** Regulatory red tape, corruption in public procurement, and slow patenting processes discouraging local inventors.\n7. **Electrical Grid Instability (*Dumsor*):** Fluctuating, intermittent power supply causing expensive machinery breakdowns and crippling continuous manufacturing operations.\n\n#### 2.4 Strategic Interventions for Accelerated Industrialization\n- **State-Sponsored R&D Endowment Funds:** Establishing competitive national research grants financed by a dedicated fraction of national petroleum and mineral revenues to support university-industry collaborative research.\n- **Adaptive Reverse-Engineering:** Establishing technical innovation hubs and fabrication laboratories (FabLabs) to disassemble, redesign, and mass-produce adapted industrial machinery locally.\n- **Concessionary Financing & Credit Guarantees:** Providing low-interest, long-term bank loans and tax rebates for domestic tech entrepreneurs and precision engineering firms.\n\n---\n\n### MODULE 3: Careers in Science, Technology, and Applied Industries\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"320\" viewBox=\"0 0 760 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"320\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CAREER PATHWAYS IN APPLIED SCIENCE &amp; TECHNOLOGY</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Biological &amp; Life Sciences</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Biologist: Studies living processes</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Botanist: Plant kingdom studies</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Zoologist: Animal ecology &amp; traits</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Entomologist: Insect biology</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Ethologist: Animal natural behavior</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Healthcare &amp; Clinical Analysis</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Pharmacist: Drug use, storage, care</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Pharmacologist: Tests drug effects</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Toxicologist: Poisons &amp; toxins</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Lab Technician: Diagnostic tests</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Medical Doctor, Dentist, Nurse</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Earth, Forensics &amp; Environment</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Ecologist: Organism-habitat links</text><text x=\"10\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Forensic Scientist: Crime evidence</text><text x=\"10\" y=\"81\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Geochemist: Earth chemical minerals</text><text x=\"10\" y=\"99\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Hazardous Waste Chemist</text><text x=\"10\" y=\"117\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Veterinary Doctor</text></g><g transform=\"translate(150, 180)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Software &amp; Digital Engineering</text><text x=\"10\" y=\"48\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Software Engineer / Developer</text><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Applies math &amp; science principles</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Designs computer applications</text><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#581c87\">• Solves real-time digital problems</text></g><g transform=\"translate(390, 180)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Industrial &amp; Applied Engineering</text><text x=\"10\" y=\"48\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Mechanical, Civil, Electrical</text><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Chemical, Computer, Geological</text><text x=\"10\" y=\"88\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Commercial Aircraft Pilot</text><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Science Educator &amp; Researcher</text></g></svg>\n</div>\n\nScientific training unlocks a spectrum of career pathways that preserve public health, protect ecological biodiversity, innovate digital applications, construct national infrastructure, and inspire upcoming generations:\n\n1. **Biologist:** A foundational scientist who investigates living organisms — microorganisms, plants, animals, and humans — to elucidate the biochemical, genetic, cellular, and physiological processes that sustain life.\n2. **Botanist:** A specialized plant biologist who investigates plant taxonomy, physiology, reproductive genetics, phytochemistry, and agricultural ecology, identifying economic crops and medicinal plant species.\n3. **Zoologist:** An animal scientist who studies the anatomy, evolutionary development, physiological functions, dietary habits, habitats, and ecological distribution of wild and domesticated animals.\n4. **Entomologist:** A specialized zoological scientist dedicated to studying insects — examining their morphology, reproductive cycles, behavior, and role as agricultural pests or disease vectors (e.g., *Anopheles* mosquitoes vectoring malaria).\n5. **Ethologist:** A behavioral biologist who conducts rigorous field and laboratory observations of animal behavior in their natural ecological environments, analyzing instinctive drives, social structures, and communication signals.\n6. **Ecologist:** A systems scientist who analyzes the complex interactions, energy flows, and nutrient biogeochemical cycles between living organisms and their biotic and abiotic environments to design conservation policies.\n7. **Pharmacist:** A licensed healthcare professional who specializes in the safe compounding, dispensing, clinical dosage formulation, preservation, storage, and legal regulation of pharmaceutical medicines to ensure patient therapeutic safety.\n8. **Pharmacologist:** A biomedical research scientist who conducts advanced in vitro and in vivo laboratory investigations on drug candidates, evaluating their chemical pharmacokinetics (absorption, distribution, metabolism, excretion), therapeutic efficacy, and cellular toxicity in living organisms.\n9. **Toxicologist:** A forensic and analytical specialist who tests blood, organ tissues, and environmental fluids to detect and quantify the physiological impacts of synthetic poisons, industrial heavy metals, chemical pollutants, alcohol, and drug overdoses.\n10. **Medical Laboratory Technician:** A clinical technical professional who analyzes patient blood, urine, sputum, and tissue biopsies using automated hematology analyzers, spectrophotometers, and microscopes to deliver diagnostic data to medical doctors.\n11. **Forensic Scientist:** An analytical investigator who applies chemical, biological, and physical sciences to crime scene evidence (fingerprints, blood splatter patterns, ballistics, hair fibers, DNA profiles) to produce objective scientific expert testimony in courts of law.\n12. **Geochemist:** A physical scientist who analyzes the chemical composition, mineral distribution, and movement of elements through the Earth's crust, aquifers, and rock strata to locate mineral ore deposits, crude petroleum reservoirs, and groundwater tables.\n13. **Hazardous Waste Chemist:** An environmental chemist tasked with monitoring, identifying, neutralizing, and safely disposing of toxic chemical pollutants, heavy metals, radioactive effluents, and volatile organic compounds released by industrial manufacturing plants.\n14. **Software Engineer (Developer):** A professional who applies computer science theory, algorithms, and mathematical principles to design, program, test, debug, and deploy digital computer software, enterprise systems, and mobile applications that automate real-world processes.\n15. **Commercial Pilot:** A trained professional licensed to navigate, control, and operate multi-engine commercial aircraft carrying passengers and freight across international airspace according to aerodynamics, meteorology, and avionics.\n16. **Engineers (Mechanical, Civil, Electrical, Chemical, Computer, Geological):** Applied physical scientists who design, construct, test, and maintain heavy industrial machinery, highways, bridges, hydroelectric dams, electrical distribution grids, chemical processing refineries, microprocessors, and mine pits.\n17. **Medical Doctors, Dentists, Veterinarians & Nurses:** Clinical practitioners who diagnose systemic pathologies, perform intricate surgical interventions, administer therapeutic regimens, manage clinical healthcare delivery, and safeguard domestic and livestock animal health.\n18. **Science Educators & Academic Researchers:** Professional teachers, curriculum developers, and university lecturers who instruct, mentor, demystify scientific principles, and conduct foundational research to train the next generation of scientists.\n\n---\n\n### MODULE 4: Notable Ghanaian and International Scientists and Science Educators\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">NOTABLE SCIENTISTS AND SCIENCE EDUCATORS</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"215\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"0\" y=\"0\" width=\"330\" height=\"30\" rx=\"6\" fill=\"#0284c7\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EMINENT GHANAIAN SCIENTISTS</text><text x=\"15\" y=\"50\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">1. Prof. Ibok Nsa Oduro</text><text x=\"28\" y=\"64\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Post-harvest technology &amp; food value addition</text><text x=\"15\" y=\"82\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">2. Prof. Francis Allotey</text><text x=\"28\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Mathematical physics &amp; 'Allotey Formalism'</text><text x=\"15\" y=\"114\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">3. Prof. Ewurama Addy</text><text x=\"28\" y=\"128\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Biochemist &amp; inaugural quiz mistress of NSMQ</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">4. Prof. Jophus Anamuah-Mensah</text><text x=\"28\" y=\"160\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Science educator &amp; educational reform leader</text><text x=\"15\" y=\"178\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">5. Prof. T. Ossei-Anto &amp; Prof. C. Anthony-Krueger</text><text x=\"28\" y=\"192\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Physics/Chemistry pedagogy &amp; curriculum design</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"215\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><rect x=\"0\" y=\"0\" width=\"330\" height=\"30\" rx=\"6\" fill=\"#16a34a\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">GREAT INTERNATIONAL SCIENTISTS</text><text x=\"15\" y=\"50\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">i. Albert Einstein</text><text x=\"28\" y=\"64\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Theory of Relativity &amp; Photoelectric effect (E=mc²)</text><text x=\"15\" y=\"82\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">ii. Alexander Fleming</text><text x=\"28\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Discovery of the antibiotic Penicillin (1928)</text><text x=\"15\" y=\"114\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">iii. Charles Darwin</text><text x=\"28\" y=\"128\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Theory of Evolution by Natural Selection (1859)</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">iv. Paul Ratnei</text><text x=\"28\" y=\"160\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Physical science &amp; empirical research pioneer</text><text x=\"15\" y=\"178\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">v. Stephen Hawking</text><text x=\"28\" y=\"192\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cosmology, singularity theorems &amp; Hawking radiation</text></g></svg>\n</div>\n\n#### 4.1 Eminent Ghanaian Scientists and Science Educators\n1. **Prof. Ibok Nsa Oduro:**\n   - *Discipline:* Post-Harvest Technology, Food Science & Nutrition.\n   - *Institutional Base:* Kwame Nkrumah University of Science and Technology (KNUST), Kumasi.\n   - *Key Scientific Contributions:* A distinguished female scientist, Provost of the College of Science, and pioneer of post-harvest engineering in Africa. She dedicated decades to valorizing neglected and underutilized traditional African root and tuber crops (sweet potato, cassava, yam). Her research engineered high-quality composite flours, low-cost solar dehydrators, and biofortified sweet potato processing techniques that reduced post-harvest losses from 40% to <10%, boosting rural agricultural incomes and maternal-child nutrition across Ghana.\n2. **Prof. Francis Kofi Ampenyin Allotey (1932–2017):**\n   - *Discipline:* Theoretical Physics, Mathematical Physics & Geophysics.\n   - *Institutional Base:* KNUST, Ghana Atomic Energy Commission (GAEC), African Institute for Mathematical Sciences (AIMS).\n   - *Key Scientific Contributions:* World-renowned mathematical physicist celebrated for formulating the **\"Allotey Formalism\"** — a theoretical technique resolving the effect of electron-hole interactions on soft X-ray emission spectra in condensed matter physics. He was the first Ghanaian to be appointed Full Professor of Mathematics at KNUST, pioneered computer science education in Ghana, and founded the African Academy of Sciences.\n3. **Prof. Marian Ewurama Addy (1942–2014):**\n   - *Discipline:* Biochemistry, Molecular Biology & Science Education.\n   - *Institutional Base:* University of Ghana, Legon.\n   - *Key Scientific Contributions:* The first Ghanaian female professor of natural science. She conducted pioneering research into the biochemical efficacy and standardization of Ghanaian indigenous herbal medicines, demonstrating the therapeutic anti-hyperglycemic properties of local plant extracts. She served as the iconic inaugural Quiz Mistress of the National Science and Maths Quiz (NSMQ), popularizing STEM careers across West Africa and inspiring thousands of young women into scientific fields.\n4. **Prof. Jophus Anamuah-Mensah:**\n   - *Discipline:* Chemistry Education & Science Curriculum Development.\n   - *Institutional Base:* University of Cape Coast (UCC), University of Education, Winneba (UEW).\n   - *Key Scientific Contributions:* Eminent educationist and former Vice-Chancellor of UEW. He served as the Chairman of the landmark Presidential Committee for the Review of Education Reforms in Ghana (2002), authoring the \"Anamuah-Mensah Report\" that modernized science, technical, and vocational education (TVET) across basic and senior high school curricula in Ghana.\n5. **Prof. Theophilus Ossei-Anto:**\n   - *Discipline:* Physics Education, Micro-Science Pedagogy & Practical Science Teaching.\n   - *Institutional Base:* University of Cape Coast (UCC).\n   - *Key Scientific Contributions:* Pioneer in physics pedagogy who revolutionized science education in Ghana by introducing and championing **micro-scale science equipment** and low-cost hands-on laboratory kits. This allowed schools lacking expensive plumbing, gas pipelines, and glassware to conduct rigorous physics and chemistry experiments safely.\n6. **Prof. Christian Anthony-Krueger:**\n   - *Discipline:* Chemistry Pedagogy & Science Teacher Education.\n   - *Institutional Base:* University of Cape Coast (UCC).\n   - *Key Scientific Contributions:* Renowned scholar who dedicated his career to training thousands of Ghanaian science teachers, designing innovative formative assessment frameworks, and integrating cultural and environmental contexts into chemistry curricula.\n\n#### 4.2 Great International Scientists\n1. **Albert Einstein (1879–1955):**\n   - *Discipline:* Theoretical Physics.\n   - *Key Scientific Contributions:* Revolutionized human understanding of space, time, gravity, and the cosmos through his Special Theory of Relativity (1905) and General Theory of Relativity (1915). Formulated the world's most famous mass-energy equivalence equation ($E = mc^2$). Awarded the 1921 Nobel Prize in Physics for his mathematical explanation of the photoelectric effect, laying the foundation for modern quantum mechanics and solar photovoltaic technology.\n2. **Alexander Fleming (1881–1955):**\n   - *Discipline:* Microbiology, Bacteriology & Pharmacology.\n   - *Key Scientific Contributions:* Scottish physician and microbiologist who discovered the world's first true clinical antibiotic, **Penicillin**, derived from the mold *Penicillium notatum* in 1928. This discovery revolutionized medical therapy, transforming fatal bacterial infections (pneumonia, syphilis, septicemia) into curable conditions and saving over 200 million human lives.\n3. **Charles Darwin (1809–1882):**\n   - *Discipline:* Natural History, Geology & Evolutionary Biology.\n   - *Key Scientific Contributions:* Formulated the foundational theory of biological evolution by **natural selection**, published in his monumental 1859 treatise *On the Origin of Species*. He demonstrated that all species of life have descended over generations from common ancestors through survival and differential reproduction of organisms with favorable inheritable traits.\n4. **Paul Ratnei:**\n   - *Discipline:* Physical Sciences, Materials Research & Empirical Methodology.\n   - *Key Scientific Contributions:* Celebrated physical science researcher renowned for empirical innovations in material structures, scientific measurements, and systematic testing methodologies that advanced modern applied technologies.\n5. **Stephen Hawking (1942–2018):**\n   - *Discipline:* Theoretical Physics, General Relativity & Quantum Cosmology.\n   - *Key Scientific Contributions:* Legendary theoretical physicist and cosmologist who proved gravitational singularity theorems within general relativity (with Roger Penrose), mathematically predicted that black holes emit thermal quantum radiation (designated as **\"Hawking Radiation\"**), and authored world-renowned science books (including *A Brief History of Time*) that brought cosmological physics to the global public.\n\n---\n\n### MODULE 5: Quantitative Industrial Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Agricultural Mechanization Engineering & Economic Throughput (Afram Plains Maize Farming Cooperative)\n**Technical / Industrial Scenario:**\nA commercial farming cooperative in the Afram Plains agricultural belt of Ghana cultivates a 120-hectare (ha) commercial maize plantation.\n- Under **Traditional Indigenous Technology**, a group of 25 agricultural laborers using manual weeding hoes and cutlasses can clear and plough land at a combined throughput rate of 0.8 hectares per 8-hour workday. Manual harvesting incurs post-harvest field shattering losses of 18% of the total grain yield.\n- Under **Modern Agricultural Technology**, the cooperative leases a 90-horsepower (hp) tractor equipped with a 4-disc reversible plough and a diesel combine harvester operated by 2 trained technical operators. The mechanized plough operates at an effective field capacity of 1.5 hectares per hour, while the combine harvester reduces harvesting field grain losses to only 2.5%.\n- Average maize grain yield is 4.0 metric tons (t) per hectare, valued at GHS 3,500 per metric ton.\n\n**(a)** Calculate the total number of workdays required to plough the entire 120-hectare plantation using: (1) Manual indigenous labor; (2) The mechanized tractor system operating 8 hours daily.\n**(b)** Calculate the total mass of maize grain harvested (in metric tons) and the total revenue earned under: (1) Manual harvesting (18% loss); (2) Mechanized combine harvesting (2.5% loss).\n**(c)** Determine the net economic financial gain achieved exclusively by adopting the mechanized harvesting technology.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate Ploughing Duration under Both Paradigms:\n- Manual Indigenous Technology:\n  $$\\text{Workdays Required} = \\frac{\\text{Total Land Area}}{\\text{Daily Manual Throughput}} = \\frac{120\\text{ ha}}{0.8\\text{ ha/day}} = 150\\text{ workdays}$$\n  (Requiring 5 months of exhausting physical manual labor).\n- Modern Mechanized Tractor System:\n  Throughput per 8-hour day = $1.5\\text{ ha/hr} \\times 8\\text{ hr/day} = 12.0\\text{ hectares/day}$.\n  $$\\text{Workdays Required} = \\frac{120\\text{ ha}}{12.0\\text{ ha/day}} = 10.0\\text{ workdays}$$\n  (Achieving a 15-fold reduction in land preparation duration).\n\nStep 2: Calculate Yield and Revenue under Both Harvesting Methods:\n- Potential Biological Yield before Harvest Losses:\n  $$\\text{Total Potential Yield} = 120\\text{ ha} \\times 4.0\\text{ t/ha} = 480.0\\text{ metric tons}$$\n- Manual Harvesting (18% Post-Harvest Shattering Loss):\n  $$\\text{Harvest Loss Mass} = 0.18 \\times 480.0\\text{ t} = 86.4\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 86.4\\text{ t} = 393.6\\text{ metric tons}$$\n  $$\\text{Manual Harvest Revenue} = 393.6\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,377,600$$\n- Modern Mechanized Combine Harvesting (2.5% Loss):\n  $$\\text{Harvest Loss Mass} = 0.025 \\times 480.0\\text{ t} = 12.0\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 12.0\\text{ t} = 468.0\\text{ metric tons}$$\n  $$\\text{Mechanized Harvest Revenue} = 468.0\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,638,000$$\n\nStep 3: Calculate the Net Economic Gain from Mechanization:\n$$\\text{Net Revenue Difference} = \\text{GHS } 1,638,000 - \\text{GHS } 1,377,600 = \\text{GHS } 260,400$$\n$$\\text{Additional Grain Recovered} = 468.0\\text{ t} - 393.6\\text{ t} = 74.4\\text{ metric tons of maize}$$\nConclusion: By transitioning to modern agricultural technology, the cooperative salvages 74.4 metric tons of food grain that would have decomposed in the field, earning an additional GHS 260,400 in revenue while reducing cultivation time from 150 days to 10 days.\n\n---\n\n#### Worked Example 2: Applied Forensic Science & Analytical Toxicology (Crime Scene Chemical Evidence Evaluation)\n**Technical / Industrial Scenario:**\nAt a regional forensic science laboratory in Accra, a Forensic Scientist and a Toxicologist collaborate on an investigative case involving sudden industrial poisoning in a manufacturing plant.\n- The forensic team extracts a 10.0 mL blood specimen from an unconscious machine operator suspected of acute methanol or ethanol intoxication.\n- Gas Chromatography–Mass Spectrometry (GC-MS) analysis determines that the blood contains 160 mg of ethanol per 100 mL of blood ($1.60\\text{ mg/mL}$).\n- In Ghana, the statutory legal Blood Alcohol Concentration (BAC) limit for operating motor vehicles and industrial heavy machinery is $0.08\\text{ g/dL}$ (which equals $80\\text{ mg/100 mL}$ or $0.80\\text{ mg/mL}$).\n\n**(a)** Contrast the primary professional responsibilities of a **Forensic Scientist** versus a **Toxicologist** in this investigation.\n**(b)** Calculate the operator's measured Blood Alcohol Concentration in: (1) grams per decilitre (g/dL); (2) percentage weight/volume (% w/v).\n**(c)** Determine whether the operator exceeded the statutory legal threshold, calculating the exact percentage excess.\n**(d)** Explain how a forensic toxicologist guarantees the integrity of chemical evidence presented in a court of law using the scientific **Chain of Custody** protocol.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Contrast Roles of Forensic Scientist vs. Toxicologist:\n- Forensic Scientist: Specializes in locating, collecting, packaging, preserving, and physically analyzing all trace physical evidence from crime/incident scenes (fingerprints, blood splatters, hair fibers, DNA, soil residues), documenting chain of custody, and presenting objective physical evidence in court.\n- Toxicologist: Specializes in conducting specialized pharmacological and chemical assays on biological fluids (blood, urine, vitreous humor) and organ tissues to detect, quantify, and explain the physiological mechanisms and toxic effects of poisons, drugs, alcohol, and hazardous chemicals.\n\nStep 2: Quantitative Concentration Unit Conversions:\n- Conversion to g/dL:\n  Given concentration = 160 mg per 100 mL.\n  Since $100\\text{ mL} = 1.0\\text{ decilitre (dL)}$ and $160\\text{ mg} = 0.160\\text{ grams}$:\n  $$\\text{BAC} = 0.160\\text{ g/dL}$$\n- Conversion to % w/v (grams per 100 mL):\n  $$\\text{BAC (\\% w/v)} = \\frac{0.160\\text{ g}}{100\\text{ mL}} \\times 100 = 0.16\\%$$\n  (The operator's blood alcohol concentration is $0.16\\%$ w/v or $0.160\\text{ g/dL}$).\n\nStep 3: Comparison with Statutory Limit:\n- Legal Limit = $0.08\\text{ g/dL}$.\n- Measured Level = $0.160\\text{ g/dL}$.\n- The operator's blood alcohol level is exactly double ($2.0\\times$) the legal safety threshold.\n$$\\text{Percentage Excess} = \\frac{0.160 - 0.080}{0.080} \\times 100 = \\frac{0.080}{0.080} \\times 100 = 100\\%\\text{ excess}$$\n\nStep 4: Chain of Custody Scientific Protocol:\nTo ensure forensic evidence is admissible and tamper-proof in court, the toxicologist enforces a rigorous Chain of Custody: (1) The blood specimen is sealed at collection in a tamper-evident biohazard vial with an inviolable barcode and unique identifier; (2) Every individual who handles, transports, freezes, or tests the sample signs and timestamps a chronological custody log; (3) The sample is stored in a secured, temperature-monitored refrigerated evidence vault accessible only by authorized analysts; (4) Testing instruments (GC-MS) are calibrated against verified analytical reference standards with blank control runs.\n\n---\n\n#### Worked Example 3: Theoretical Physics & Mass-Energy Equivalence: Modeling Einsteinian Principles & Allotey Formalism\n**Technical / Industrial Scenario:**\nPhysics students at a Ghanaian secondary school investigate the theoretical breakthroughs of Albert Einstein and Prof. Francis Allotey.\n- **Part 1 (Einstein's Mass-Energy Equivalence):** In a nuclear fusion reaction, four hydrogen nuclei fuse to form one helium-4 nucleus. A tiny mass defect of $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$ is converted directly into thermal and radiant energy.\n  Given the universal speed of light in vacuum is $c = 3.0 \\times 10^8\\text{ m/s}$.\n- **Part 2 (Allotey Formalism in Soft X-ray Spectroscopy):** Prof. Francis Allotey formulated his celebrated equation explaining how an electron from a valence band drops into a vacant core hole in an atom, emitting a soft X-ray photon with energy $E = hf$.\n  Given Planck's constant $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ and the frequency of the emitted soft X-ray photon is $f = 2.40 \\times 10^{17}\\text{ Hz}$.\n\n**(a)** Using Einstein's equation $E = \\Delta m \\cdot c^2$, calculate the energy released in Joules (J) from the fusion mass defect.\n**(b)** Calculate the energy of the soft X-ray photon analyzed in the Allotey Formalism in Joules (J), and convert it into electron-volts (eV) where $1\\text{ eV} = 1.60 \\times 10^{-19}\\text{ J}$.\n**(c)** Explain why Prof. Francis Allotey's breakthrough in theoretical physics was of monumental scientific significance for global condensed matter physics and science education in Africa.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate Mass-Energy Equivalence (Albert Einstein):\n- Formula: $E = \\Delta m \\cdot c^2$\n- Given: $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$, $c = 3.0 \\times 10^8\\text{ m/s}$\n- Calculation:\n  $$c^2 = (3.0 \\times 10^8\\text{ m/s})^2 = 9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2$$\n  $$E = (4.80 \\times 10^{-29}\\text{ kg}) \\times (9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2)$$\n  $$E = 43.20 \\times 10^{-13}\\text{ J} = 4.32 \\times 10^{-12}\\text{ Joules}$$\n  (Even a minuscule nuclear mass loss yields an immense $4.32\\text{ pJ}$ of energy per reaction, powering stars).\n\nStep 2: Calculate Soft X-ray Photon Energy (Allotey Formalism):\n- Formula: $E = h \\cdot f$\n- Given: $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$, $f = 2.40 \\times 10^{17}\\text{ Hz}$\n- Calculation in Joules:\n  $$E = (6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}) \\times (2.40 \\times 10^{17}\\text{ s}^{-1})$$\n  $$E = 15.912 \\times 10^{-17}\\text{ J} = 1.5912 \\times 10^{-16}\\text{ Joules}$$\n- Conversion into electron-volts (eV):\n  $$\\text{Energy in eV} = \\frac{1.5912 \\times 10^{-16}\\text{ J}}{1.60 \\times 10^{-19}\\text{ J/eV}} = 994.5\\text{ eV} \\approx 0.995\\text{ keV}$$\n  (This photon falls squarely into the soft X-ray spectrum analyzed by the Allotey Formalism).\n\nStep 3: Significance of Prof. Francis Allotey's Scientific Breakthrough:\n1. Resolution of the Resonance Problem: Prior to Allotey's work, theoretical models could not accurately explain the sharp edge anomalies in soft X-ray emission spectra of lithium, sodium, and light metals. The 'Allotey Formalism' proved that the sudden creation of a core hole induces an asymptotically free electron-hole scattering resonance.\n2. African Scientific Leadership: Prof. Allotey became the first African to introduce a foundational theoretical physics formalism adopted into global physics textbooks, demonstrating African intellectual leadership in mathematical physics.\n3. Champion of Digital Infrastructure: He spearheaded Ghana's early adoption of computer technology, founded the Ghana Institute of Physics, and co-founded the African Institute for Mathematical Sciences (AIMS).\n\n---\n\n#### Worked Example 4: Post-Harvest Food Technology & Dehydration Engineering (Prof. Ibok Oduro's Sweet Potato Valorization Protocol)\n**Technical / Industrial Scenario:**\nIn line with Prof. Ibok Nsa Oduro's post-harvest food science research at KNUST, a district food processing cooperative in the Volta Region processes fresh orange-fleshed sweet potatoes into shelf-stable composite flour.\n- Fresh sweet potato tubers have an initial mass of $M_1 = 1,000\\text{ kg}$ and an initial moisture content of $72\\%$ by mass (water mass fraction $w_1 = 0.72$).\n- The peeled tubers are chipped and dehydrated in a solar-assisted hybrid convective tunnel dryer until the moisture content is reduced to a safe shelf-stable level of $10\\%$ by mass (water mass fraction $w_2 = 0.10$).\n- At $10\\%$ moisture, the biological water activity ($a_w$) drops below $0.60$, completely halting the growth of spoilage molds and pathogenic bacteria.\n\n**(a)** Calculate the mass of dry solid matter (bone-dry potato solids) in the 1,000 kg batch of fresh tubers.\n**(b)** Calculate the total mass of finished dried sweet potato chips ($M_2$) obtained at the final 10% moisture content.\n**(c)** Calculate the total volume of water evaporated and removed by the solar dryer (assuming density of water $\\rho = 1.0\\text{ kg/L}$).\n**(d)** Explain how Prof. Ibok Oduro's post-harvest technological innovation directly solves challenges of food security and Vitamin A deficiency in Ghanaian rural communities.\n\n**Step-by-Step Analytical Formulation & Mathematical Solution:**\nStep 1: Calculate the Mass of Dry Solids ($M_{\\text{dry}}$):\n- Initial total mass = $M_1 = 1,000\\text{ kg}$\n- Initial moisture fraction = $w_1 = 0.72$ (72% water)\n- Solids fraction = $1 - w_1 = 1 - 0.72 = 0.28$ (28% dry solid matter)\n$$\\text{Mass of Dry Solids } (M_{\\text{dry}}) = 1,000\\text{ kg} \\times 0.28 = 280.0\\text{ kg of dry matter}$$\n(Note: During drying, only water evaporates; the dry solid mass remains constant at 280.0 kg).\n\nStep 2: Calculate the Mass of Dried Potato Chips ($M_2$):\n- Final moisture content = $w_2 = 0.10$ (10% water)\n- Final solids fraction = $1 - w_2 = 1 - 0.10 = 0.90$ (90% solids)\n- Since the 280.0 kg of dry solids represents 90% of the final product mass $M_2$:\n  $$0.90 \\times M_2 = M_{\\text{dry}} = 280.0\\text{ kg}$$\n  $$M_2 = \\frac{280.0\\text{ kg}}{0.90} = 311.11\\text{ kg of dried chips}$$\n\nStep 3: Calculate the Mass and Volume of Water Evaporated:\n$$\\text{Water Removed } (\\Delta M_{\\text{water}}) = M_1 - M_2 = 1,000\\text{ kg} - 311.11\\text{ kg} = 688.89\\text{ kg of water}$$\n- Since water density is $1.0\\text{ kg/L}$:\n  $$\\text{Volume of Evaporated Water} = 688.89\\text{ Litres of water vapor}$$\n\nStep 4: Societal and Nutritional Impact of Prof. Ibok Oduro's Work:\n1. Prevention of Post-Harvest Waste: Fresh sweet potatoes rot within 2 to 3 weeks due to high moisture (72%). Reducing moisture to 10% extends shelf life to over 12 months without chemical preservatives.\n2. Eradication of Vitamin A Deficiency: Orange-fleshed sweet potato is exceptionally rich in $\\beta$-carotene (provitamin A). Milling dried chips into composite baking flour allows bakers to replace 30%–40% of expensive imported wheat flour with local sweet potato flour in bread and pastries, delivering bioavailable Vitamin A to schoolchildren and preventing xerophthalmia and night blindness.\n3. Economic Empowerment: Reduces national foreign exchange expenditure on wheat importation while creating a stable processing market for rural Ghanaian women farmers.\n\n---\n\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
         "id": "ex_b7_s17_1",
-        "questionPrompt": "Explain the scientific chemical basis of using cocoa pod husk ash and palm kernel oil in the traditional manufacture of Ghanaian black soap (alata samina).",
-        "stepByStepSolution": "Step 1: Origin of the alkali — Cocoa pod husks contain significant amounts of potassium salts absorbed from tropical soils. When burned, they leave behind potassium carbonate (K2CO3). Boiling this ash with water leaches out soluble potassium hydroxide (KOH), a strong chemical alkali.\nStep 2: Saponification reaction — When the hot alkaline leachate is boiled with palm kernel oil (which contains triglycerides/esters of fatty acids), alkaline hydrolysis occurs (saponification).\nStep 3: Product formation — The ester bonds of the triglycerides are cleaved, releasing glycerol and potassium salts of fatty acids, which solidify upon cooling into the traditional cleansing soft soap.",
-        "examinerTip": "Examiner Tip: Use the term 'saponification' and identify potassium hydroxide as the active alkali extracted from cocoa pod ash."
+        "questionPrompt": "A commercial farming cooperative in the Afram Plains agricultural belt of Ghana cultivates a 120-hectare (ha) commercial maize plantation.\n- Under **Traditional Indigenous Technology**, a group of 25 agricultural laborers using manual weeding hoes and cutlasses can clear and plough land at a combined throughput rate of 0.8 hectares per 8-hour workday. Manual harvesting incurs post-harvest field shattering losses of 18% of the total grain yield.\n- Under **Modern Agricultural Technology**, the cooperative leases a 90-horsepower (hp) tractor equipped with a 4-disc reversible plough and a diesel combine harvester operated by 2 trained technical operators. The mechanized plough operates at an effective field capacity of 1.5 hectares per hour, while the combine harvester reduces harvesting field grain losses to only 2.5%.\n- Average maize grain yield is 4.0 metric tons (t) per hectare, valued at GHS 3,500 per metric ton.\n\n**(a)** Calculate the total number of workdays required to plough the entire 120-hectare plantation using: (1) Manual indigenous labor; (2) The mechanized tractor system operating 8 hours daily.\n**(b)** Calculate the total mass of maize grain harvested (in metric tons) and the total revenue earned under: (1) Manual harvesting (18% loss); (2) Mechanized combine harvesting (2.5% loss).\n**(c)** Determine the net economic financial gain achieved exclusively by adopting the mechanized harvesting technology.",
+        "stepByStepSolution": "Step 1: Calculate Ploughing Duration under Both Paradigms:\n- Manual Indigenous Technology:\n  $$\\text{Workdays Required} = \\frac{\\text{Total Land Area}}{\\text{Daily Manual Throughput}} = \\frac{120\\text{ ha}}{0.8\\text{ ha/day}} = 150\\text{ workdays}$$\n  (Requiring 5 months of exhausting physical manual labor).\n- Modern Mechanized Tractor System:\n  Throughput per 8-hour day = $1.5\\text{ ha/hr} \\times 8\\text{ hr/day} = 12.0\\text{ hectares/day}$.\n  $$\\text{Workdays Required} = \\frac{120\\text{ ha}}{12.0\\text{ ha/day}} = 10.0\\text{ workdays}$$\n  (Achieving a 15-fold reduction in land preparation duration).\nStep 2: Calculate Yield and Revenue under Both Harvesting Methods:\n- Potential Biological Yield before Harvest Losses:\n  $$\\text{Total Potential Yield} = 120\\text{ ha} \\times 4.0\\text{ t/ha} = 480.0\\text{ metric tons}$$\n- Manual Harvesting (18% Post-Harvest Shattering Loss):\n  $$\\text{Harvest Loss Mass} = 0.18 \\times 480.0\\text{ t} = 86.4\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 86.4\\text{ t} = 393.6\\text{ metric tons}$$\n  $$\\text{Manual Harvest Revenue} = 393.6\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,377,600$$\n- Modern Mechanized Combine Harvesting (2.5% Loss):\n  $$\\text{Harvest Loss Mass} = 0.025 \\times 480.0\\text{ t} = 12.0\\text{ metric tons}$$\n  $$\\text{Net Yield Recovered} = 480.0\\text{ t} - 12.0\\text{ t} = 468.0\\text{ metric tons}$$\n  $$\\text{Mechanized Harvest Revenue} = 468.0\\text{ t} \\times \\text{GHS } 3,500/\\text{t} = \\text{GHS } 1,638,000$$\nStep 3: Calculate the Net Economic Gain from Mechanization:\n$$\\text{Net Revenue Difference} = \\text{GHS } 1,638,000 - \\text{GHS } 1,377,600 = \\text{GHS } 260,400$$\n$$\\text{Additional Grain Recovered} = 468.0\\text{ t} - 393.6\\text{ t} = 74.4\\text{ metric tons of maize}$$\nConclusion: By transitioning to modern agricultural technology, the cooperative salvages 74.4 metric tons of food grain that would have decomposed in the field, earning an additional GHS 260,400 in revenue while reducing cultivation time from 150 days to 10 days.",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s17_2",
+        "questionPrompt": "At a regional forensic science laboratory in Accra, a Forensic Scientist and a Toxicologist collaborate on an investigative case involving sudden industrial poisoning in a manufacturing plant.\n- The forensic team extracts a 10.0 mL blood specimen from an unconscious machine operator suspected of acute methanol or ethanol intoxication.\n- Gas Chromatography–Mass Spectrometry (GC-MS) analysis determines that the blood contains 160 mg of ethanol per 100 mL of blood ($1.60\\text{ mg/mL}$).\n- In Ghana, the statutory legal Blood Alcohol Concentration (BAC) limit for operating motor vehicles and industrial heavy machinery is $0.08\\text{ g/dL}$ (which equals $80\\text{ mg/100 mL}$ or $0.80\\text{ mg/mL}$).\n\n**(a)** Contrast the primary professional responsibilities of a **Forensic Scientist** versus a **Toxicologist** in this investigation.\n**(b)** Calculate the operator's measured Blood Alcohol Concentration in: (1) grams per decilitre (g/dL); (2) percentage weight/volume (% w/v).\n**(c)** Determine whether the operator exceeded the statutory legal threshold, calculating the exact percentage excess.\n**(d)** Explain how a forensic toxicologist guarantees the integrity of chemical evidence presented in a court of law using the scientific **Chain of Custody** protocol.",
+        "stepByStepSolution": "Step 1: Contrast Roles of Forensic Scientist vs. Toxicologist:\n- Forensic Scientist: Specializes in locating, collecting, packaging, preserving, and physically analyzing all trace physical evidence from crime/incident scenes (fingerprints, blood splatters, hair fibers, DNA, soil residues), documenting chain of custody, and presenting objective physical evidence in court.\n- Toxicologist: Specializes in conducting specialized pharmacological and chemical assays on biological fluids (blood, urine, vitreous humor) and organ tissues to detect, quantify, and explain the physiological mechanisms and toxic effects of poisons, drugs, alcohol, and hazardous chemicals.\nStep 2: Quantitative Concentration Unit Conversions:\n- Conversion to g/dL:\n  Given concentration = 160 mg per 100 mL.\n  Since $100\\text{ mL} = 1.0\\text{ decilitre (dL)}$ and $160\\text{ mg} = 0.160\\text{ grams}$:\n  $$\\text{BAC} = 0.160\\text{ g/dL}$$\n- Conversion to % w/v (grams per 100 mL):\n  $$\\text{BAC (\\% w/v)} = \\frac{0.160\\text{ g}}{100\\text{ mL}} \\times 100 = 0.16\\%$$\n  (The operator's blood alcohol concentration is $0.16\\%$ w/v or $0.160\\text{ g/dL}$).\nStep 3: Comparison with Statutory Limit:\n- Legal Limit = $0.08\\text{ g/dL}$.\n- Measured Level = $0.160\\text{ g/dL}$.\n- The operator's blood alcohol level is exactly double ($2.0\\times$) the legal safety threshold.\n$$\\text{Percentage Excess} = \\frac{0.160 - 0.080}{0.080} \\times 100 = \\frac{0.080}{0.080} \\times 100 = 100\\%\\text{ excess}$$\nStep 4: Chain of Custody Scientific Protocol:\nTo ensure forensic evidence is admissible and tamper-proof in court, the toxicologist enforces a rigorous Chain of Custody: (1) The blood specimen is sealed at collection in a tamper-evident biohazard vial with an inviolable barcode and unique identifier; (2) Every individual who handles, transports, freezes, or tests the sample signs and timestamps a chronological custody log; (3) The sample is stored in a secured, temperature-monitored refrigerated evidence vault accessible only by authorized analysts; (4) Testing instruments (GC-MS) are calibrated against verified analytical reference standards with blank control runs.",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s17_3",
+        "questionPrompt": "Physics students at a Ghanaian secondary school investigate the theoretical breakthroughs of Albert Einstein and Prof. Francis Allotey.\n- **Part 1 (Einstein's Mass-Energy Equivalence):** In a nuclear fusion reaction, four hydrogen nuclei fuse to form one helium-4 nucleus. A tiny mass defect of $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$ is converted directly into thermal and radiant energy.\n  Given the universal speed of light in vacuum is $c = 3.0 \\times 10^8\\text{ m/s}$.\n- **Part 2 (Allotey Formalism in Soft X-ray Spectroscopy):** Prof. Francis Allotey formulated his celebrated equation explaining how an electron from a valence band drops into a vacant core hole in an atom, emitting a soft X-ray photon with energy $E = hf$.\n  Given Planck's constant $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ and the frequency of the emitted soft X-ray photon is $f = 2.40 \\times 10^{17}\\text{ Hz}$.\n\n**(a)** Using Einstein's equation $E = \\Delta m \\cdot c^2$, calculate the energy released in Joules (J) from the fusion mass defect.\n**(b)** Calculate the energy of the soft X-ray photon analyzed in the Allotey Formalism in Joules (J), and convert it into electron-volts (eV) where $1\\text{ eV} = 1.60 \\times 10^{-19}\\text{ J}$.\n**(c)** Explain why Prof. Francis Allotey's breakthrough in theoretical physics was of monumental scientific significance for global condensed matter physics and science education in Africa.",
+        "stepByStepSolution": "Step 1: Calculate Mass-Energy Equivalence (Albert Einstein):\n- Formula: $E = \\Delta m \\cdot c^2$\n- Given: $\\Delta m = 4.80 \\times 10^{-29}\\text{ kg}$, $c = 3.0 \\times 10^8\\text{ m/s}$\n- Calculation:\n  $$c^2 = (3.0 \\times 10^8\\text{ m/s})^2 = 9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2$$\n  $$E = (4.80 \\times 10^{-29}\\text{ kg}) \\times (9.0 \\times 10^{16}\\text{ m}^2/\\text{s}^2)$$\n  $$E = 43.20 \\times 10^{-13}\\text{ J} = 4.32 \\times 10^{-12}\\text{ Joules}$$\n  (Even a minuscule nuclear mass loss yields an immense $4.32\\text{ pJ}$ of energy per reaction, powering stars).\nStep 2: Calculate Soft X-ray Photon Energy (Allotey Formalism):\n- Formula: $E = h \\cdot f$\n- Given: $h = 6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$, $f = 2.40 \\times 10^{17}\\text{ Hz}$\n- Calculation in Joules:\n  $$E = (6.63 \\times 10^{-34}\\text{ J}\\cdot\\text{s}) \\times (2.40 \\times 10^{17}\\text{ s}^{-1})$$\n  $$E = 15.912 \\times 10^{-17}\\text{ J} = 1.5912 \\times 10^{-16}\\text{ Joules}$$\n- Conversion into electron-volts (eV):\n  $$\\text{Energy in eV} = \\frac{1.5912 \\times 10^{-16}\\text{ J}}{1.60 \\times 10^{-19}\\text{ J/eV}} = 994.5\\text{ eV} \\approx 0.995\\text{ keV}$$\n  (This photon falls squarely into the soft X-ray spectrum analyzed by the Allotey Formalism).\nStep 3: Significance of Prof. Francis Allotey's Scientific Breakthrough:\n1. Resolution of the Resonance Problem: Prior to Allotey's work, theoretical models could not accurately explain the sharp edge anomalies in soft X-ray emission spectra of lithium, sodium, and light metals. The 'Allotey Formalism' proved that the sudden creation of a core hole induces an asymptotically free electron-hole scattering resonance.\n2. African Scientific Leadership: Prof. Allotey became the first African to introduce a foundational theoretical physics formalism adopted into global physics textbooks, demonstrating African intellectual leadership in mathematical physics.\n3. Champion of Digital Infrastructure: He spearheaded Ghana's early adoption of computer technology, founded the Ghana Institute of Physics, and co-founded the African Institute for Mathematical Sciences (AIMS).",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s17_4",
+        "questionPrompt": "In line with Prof. Ibok Nsa Oduro's post-harvest food science research at KNUST, a district food processing cooperative in the Volta Region processes fresh orange-fleshed sweet potatoes into shelf-stable composite flour.\n- Fresh sweet potato tubers have an initial mass of $M_1 = 1,000\\text{ kg}$ and an initial moisture content of $72\\%$ by mass (water mass fraction $w_1 = 0.72$).\n- The peeled tubers are chipped and dehydrated in a solar-assisted hybrid convective tunnel dryer until the moisture content is reduced to a safe shelf-stable level of $10\\%$ by mass (water mass fraction $w_2 = 0.10$).\n- At $10\\%$ moisture, the biological water activity ($a_w$) drops below $0.60$, completely halting the growth of spoilage molds and pathogenic bacteria.\n\n**(a)** Calculate the mass of dry solid matter (bone-dry potato solids) in the 1,000 kg batch of fresh tubers.\n**(b)** Calculate the total mass of finished dried sweet potato chips ($M_2$) obtained at the final 10% moisture content.\n**(c)** Calculate the total volume of water evaporated and removed by the solar dryer (assuming density of water $\\rho = 1.0\\text{ kg/L}$).\n**(d)** Explain how Prof. Ibok Oduro's post-harvest technological innovation directly solves challenges of food security and Vitamin A deficiency in Ghanaian rural communities.",
+        "stepByStepSolution": "Step 1: Calculate the Mass of Dry Solids ($M_{\\text{dry}}$):\n- Initial total mass = $M_1 = 1,000\\text{ kg}$\n- Initial moisture fraction = $w_1 = 0.72$ (72% water)\n- Solids fraction = $1 - w_1 = 1 - 0.72 = 0.28$ (28% dry solid matter)\n$$\\text{Mass of Dry Solids } (M_{\\text{dry}}) = 1,000\\text{ kg} \\times 0.28 = 280.0\\text{ kg of dry matter}$$\n(Note: During drying, only water evaporates; the dry solid mass remains constant at 280.0 kg).\nStep 2: Calculate the Mass of Dried Potato Chips ($M_2$):\n- Final moisture content = $w_2 = 0.10$ (10% water)\n- Final solids fraction = $1 - w_2 = 1 - 0.10 = 0.90$ (90% solids)\n- Since the 280.0 kg of dry solids represents 90% of the final product mass $M_2$:\n  $$0.90 \\times M_2 = M_{\\text{dry}} = 280.0\\text{ kg}$$\n  $$M_2 = \\frac{280.0\\text{ kg}}{0.90} = 311.11\\text{ kg of dried chips}$$\nStep 3: Calculate the Mass and Volume of Water Evaporated:\n$$\\text{Water Removed } (\\Delta M_{\\text{water}}) = M_1 - M_2 = 1,000\\text{ kg} - 311.11\\text{ kg} = 688.89\\text{ kg of water}$$\n- Since water density is $1.0\\text{ kg/L}$:\n  $$\\text{Volume of Evaporated Water} = 688.89\\text{ Litres of water vapor}$$\nStep 4: Societal and Nutritional Impact of Prof. Ibok Oduro's Work:\n1. Prevention of Post-Harvest Waste: Fresh sweet potatoes rot within 2 to 3 weeks due to high moisture (72%). Reducing moisture to 10% extends shelf life to over 12 months without chemical preservatives.\n2. Eradication of Vitamin A Deficiency: Orange-fleshed sweet potato is exceptionally rich in $\\beta$-carotene (provitamin A). Milling dried chips into composite baking flour allows bakers to replace 30%–40% of expensive imported wheat flour with local sweet potato flour in bread and pastries, delivering bioavailable Vitamin A to schoolchildren and preventing xerophthalmia and night blindness.\n3. Economic Empowerment: Reduces national foreign exchange expenditure on wheat importation while creating a stable processing market for rural Ghanaian women farmers.",
+        "examinerTip": ""
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s17_1",
+        "id": "B7_SI_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "In traditional Ghanaian soap making, cocoa pod husk ash is used because it provides:",
+        "prompt": "What is science defined as?",
         "options": [
-          "Synthetic perfume",
-          "Strong potassium alkali solution for saponification",
-          "Acid to neutralize the soap",
-          "Plastic hardening agents"
+          "A. The art of drawing pictures of nature",
+          "B. The method of obtaining knowledge through observation and experimentation",
+          "C. The manufacture of machines in factories",
+          "D. The memorization of ancient folklore"
         ],
-        "correctAnswer": "Strong potassium alkali solution for saponification",
-        "hint": "Ashes of plants are rich in alkaline potassium carbonate.",
-        "workedSolution": "Burning cocoa pod husks yields ash rich in potassium carbonate, which dissolves in water to form the strong potassium alkali necessary to hydrolyze vegetable oils into soap.",
+        "correctAnswer": "B. The method of obtaining knowledge through observation and experimentation",
+        "hint": "Science is the method of obtaining knowledge through systematic observation and experimentation.",
+        "workedSolution": "Science is the method of obtaining knowledge through systematic observation and experimentation.",
         "points": 1
       },
       {
-        "id": "q_b7_s17_2",
+        "id": "B7_SI_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which broad field of science studies natural phenomena, including biological life?",
+        "options": [
+          "A. Natural science",
+          "B. Social science",
+          "C. Applied politics",
+          "D. Formal linguistics"
+        ],
+        "correctAnswer": "A. Natural science",
+        "hint": "Natural science is the field of science dedicated to studying natural phenomena, physical laws, and living organisms.",
+        "workedSolution": "Natural science is the field of science dedicated to studying natural phenomena, physical laws, and living organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The branch of natural science that deals with the study of living organisms is:",
+        "options": [
+          "A. Physics",
+          "B. Geology",
+          "C. Biology",
+          "D. Astronomy"
+        ],
+        "correctAnswer": "C. Biology",
+        "hint": "Biology is defined as the scientific study of living organisms.",
+        "workedSolution": "Biology is defined as the scientific study of living organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which branch of science studies the fundamental constituents of the universe, energy, and forces?",
+        "options": [
+          "A. Chemistry",
+          "B. Physics",
+          "C. Botany",
+          "D. Zoology"
+        ],
+        "correctAnswer": "B. Physics",
+        "hint": "Physics is the study of the fundamental constituents of the universe, matter, energy, and the forces they exert on one another.",
+        "workedSolution": "Physics is the study of the fundamental constituents of the universe, matter, energy, and the forces they exert on one another.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The study of the existence, composition, and properties of matter is known as:",
+        "options": [
+          "A. Chemistry",
+          "B. Astronomy",
+          "C. Geography",
+          "D. Meteorology"
+        ],
+        "correctAnswer": "A. Chemistry",
+        "hint": "Chemistry is the branch of science that investigates the existence and composition of matter and its reactions.",
+        "workedSolution": "Chemistry is the branch of science that investigates the existence and composition of matter and its reactions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which field of science encompasses physical geography, geology, and oceanology?",
+        "options": [
+          "A. Earth science",
+          "B. Classical mechanics",
+          "C. Cellular biology",
+          "D. Nuclear physics"
+        ],
+        "correctAnswer": "A. Earth science",
+        "hint": "Earth science is an all-embracing term for disciplines related to planet Earth, including geology and physical geography.",
+        "workedSolution": "Earth science is an all-embracing term for disciplines related to planet Earth, including geology and physical geography.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The scientific study of celestial objects originating outside the Earth's atmosphere (stars, planets, comets) is:",
+        "options": [
+          "A. Meteorology",
+          "B. Astrology",
+          "C. Astronomy",
+          "D. Ecology"
+        ],
+        "correctAnswer": "C. Astronomy",
+        "hint": "Astronomy is the science of celestial objects and cosmic phenomena originating beyond Earth's atmosphere.",
+        "workedSolution": "Astronomy is the science of celestial objects and cosmic phenomena originating beyond Earth's atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is technology?",
+        "options": [
+          "A. The memorization of scientific laws",
+          "B. The systematic application of scientific knowledge in a practical way to improve lives and meet needs",
+          "C. The creation of natural forests",
+          "D. The observation of celestial bodies"
+        ],
+        "correctAnswer": "B. The systematic application of scientific knowledge in a practical way to improve lives and meet needs",
+        "hint": "Technology is the systematic application of scientific ideas and knowledge in a practical way to solve problems and meet societal needs.",
+        "workedSolution": "Technology is the systematic application of scientific ideas and knowledge in a practical way to solve problems and meet societal needs.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a primary characteristic of science as opposed to technology?",
+        "options": [
+          "A. It produces tangible machines like cars",
+          "B. It primarily deals with the study and discovery of laws and theories that are not tangible",
+          "C. It changes in relatively shorter times",
+          "D. Its principles cannot be demonstrated easily"
+        ],
+        "correctAnswer": "B. It primarily deals with the study and discovery of laws and theories that are not tangible",
+        "hint": "Science primarily deals with discovering laws and theories that are intangible, whereas technology produces tangible machines.",
+        "workedSolution": "Science primarily deals with discovering laws and theories that are intangible, whereas technology produces tangible machines.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Unlike scientific laws, technological developments generally:",
+        "options": [
+          "A. Never change",
+          "B. Result in tangible products such as computers and automobiles",
+          "C. Deal only with living things",
+          "D. Avoid using scientific knowledge"
+        ],
+        "correctAnswer": "B. Result in tangible products such as computers and automobiles",
+        "hint": "Technology deals with the practical production of tangible items like computers, machinery, and vehicles.",
+        "workedSolution": "Technology deals with the practical production of tangible items like computers, machinery, and vehicles.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How has technology directly improved human healthcare?",
+        "options": [
+          "A. By increasing bacterial infections",
+          "B. Through the development of vaccines and medicines to fight diseases like measles and tetanus",
+          "C. By stopping human physical exercise",
+          "D. By eliminating hospital buildings"
+        ],
+        "correctAnswer": "B. Through the development of vaccines and medicines to fight diseases like measles and tetanus",
+        "hint": "The application of technology in healthcare has led to the production of vaccines and pharmaceutical drugs to prevent and treat diseases.",
+        "workedSolution": "The application of technology in healthcare has led to the production of vaccines and pharmaceutical drugs to prevent and treat diseases.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which technological devices have significantly enhanced global communication?",
+        "options": [
+          "A. Computers, mobile phones, and internet networks",
+          "B. Microscopes and test tubes",
+          "C. Combine harvesters and ploughs",
+          "D. Thermometers and barometers"
+        ],
+        "correctAnswer": "A. Computers, mobile phones, and internet networks",
+        "hint": "Computers, mobile phones, and telecommunication devices make accessing, processing, and transmitting information easier and faster.",
+        "workedSolution": "Computers, mobile phones, and telecommunication devices make accessing, processing, and transmitting information easier and faster.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which agricultural machines were introduced through technology to replace manual labor?",
+        "options": [
+          "A. Cutlasses and hoes",
+          "B. Tractor-mounted ploughs and combine harvesters",
+          "C. Baskets and head pans",
+          "D. Dibbers and wooden rakes"
+        ],
+        "correctAnswer": "B. Tractor-mounted ploughs and combine harvesters",
+        "hint": "Mechanized farm implements such as ploughs and combine harvesters are products of agricultural technology.",
+        "workedSolution": "Mechanized farm implements such as ploughs and combine harvesters are products of agricultural technology.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The technology that makes use of local resources, skills, and indigenous tools is termed:",
+        "options": [
+          "A. Foreign technology",
+          "B. Endogenous (indigenous) technology",
+          "C. Space technology",
+          "D. Cybernetic technology"
+        ],
+        "correctAnswer": "B. Endogenous (indigenous) technology",
+        "hint": "Endogenous technology relies on local resources, traditional techniques, and indigenous tools to produce goods.",
+        "workedSolution": "Endogenous technology relies on local resources, traditional techniques, and indigenous tools to produce goods.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is modern technology?",
+        "options": [
+          "A. The use of hand-carved stone blades",
+          "B. The production of goods, machines, and tools using improved methods to make life easier",
+          "C. The refusal to use electrical energy",
+          "D. Relying strictly on local folklore"
+        ],
+        "correctAnswer": "B. The production of goods, machines, and tools using improved methods to make life easier",
+        "hint": "Modern technology involves producing machines, tools, and systems using advanced methods to simplify human tasks.",
+        "workedSolution": "Modern technology involves producing machines, tools, and systems using advanced methods to simplify human tasks.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a major factor hindering technological improvement in Ghana?",
+        "options": [
+          "A. High cost or absence of credit for research and development",
+          "B. Having too many scientists",
+          "C. An oversupply of cheap electricity",
+          "D. Banning all imported goods"
+        ],
+        "correctAnswer": "A. High cost or absence of credit for research and development",
+        "hint": "High cost of capital and lack of credit or funds for research and development severely limit technological growth in Ghana.",
+        "workedSolution": "High cost of capital and lack of credit or funds for research and development severely limit technological growth in Ghana.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does an irregular power supply (dumsor) affect technological development?",
+        "options": [
+          "A. It speeds up manufacturing output",
+          "B. It disrupts factory machinery operations and damages electronic equipment",
+          "C. It encourages foreign investors to build factories",
+          "D. It improves digital software development"
+        ],
+        "correctAnswer": "B. It disrupts factory machinery operations and damages electronic equipment",
+        "hint": "Unstable electrical power disrupts manufacturing plants, halts digital workflows, and discourages industrial production.",
+        "workedSolution": "Unstable electrical power disrupts manufacturing plants, halts digital workflows, and discourages industrial production.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "One key way to improve indigenous tools and technology in Ghana is to:",
+        "options": [
+          "A. Stop teaching science in basic schools",
+          "B. Provide funds and sponsorships for research work",
+          "C. Ban the use of computers nationwide",
+          "D. Discard all local agricultural knowledge"
+        ],
+        "correctAnswer": "B. Provide funds and sponsorships for research work",
+        "hint": "Allocating funds and research grants enables local innovators to refine indigenous tools and scale production.",
+        "workedSolution": "Allocating funds and research grants enables local innovators to refine indigenous tools and scale production.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A healthcare professional who specializes in the right way to use, store, preserve, and dispense medicine is a:",
+        "options": [
+          "A. Pharmacist",
+          "B. Botanist",
+          "C. Geochemist",
+          "D. Pilot"
+        ],
+        "correctAnswer": "A. Pharmacist",
+        "hint": "Pharmacists specialize in the proper use, storage, preservation, and dispensing of pharmaceuticals to patients.",
+        "workedSolution": "Pharmacists specialize in the proper use, storage, preservation, and dispensing of pharmaceuticals to patients.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of an airplane pilot?",
+        "options": [
+          "A. Designing airplane wings",
+          "B. Operating and flying an aircraft",
+          "C. Repairing jet runways",
+          "D. Managing flight ticket sales"
+        ],
+        "correctAnswer": "B. Operating and flying an aircraft",
+        "hint": "A pilot is a person professionally trained to operate and fly an aircraft.",
+        "workedSolution": "A pilot is a person professionally trained to operate and fly an aircraft.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A scientist who studies how animals and plants interact with their environment is a/an:",
+        "options": [
+          "A. Geologist",
+          "B. Ecologist",
+          "C. Astronomer",
+          "D. Toxicologist"
+        ],
+        "correctAnswer": "B. Ecologist",
+        "hint": "An ecologist investigates the interactions between living organisms and their physical environment.",
+        "workedSolution": "An ecologist investigates the interactions between living organisms and their physical environment.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A scientist who studies animals, their physical traits, diets, and behaviors is a:",
+        "options": [
+          "A. Zoologist",
+          "B. Botanist",
+          "C. Pharmacologist",
+          "D. Software developer"
+        ],
+        "correctAnswer": "A. Zoologist",
+        "hint": "A zoologist studies animals, their biological characteristics, diets, behaviors, and habitats.",
+        "workedSolution": "A zoologist studies animals, their biological characteristics, diets, behaviors, and habitats.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A scientist who studies plants and the plant kingdom is called a:",
+        "options": [
+          "A. Botanist",
+          "B. Entomologist",
+          "C. Toxicologist",
+          "D. Geochemist"
+        ],
+        "correctAnswer": "A. Botanist",
+        "hint": "A botanist is a scientist specialized in studying plants, their classification, and physiology.",
+        "workedSolution": "A botanist is a scientist specialized in studying plants, their classification, and physiology.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "An entomologist is a specialist who studies:",
+        "options": [
+          "A. Earthquakes and volcanoes",
+          "B. Insects (their life cycles, anatomy, and behavior)",
+          "C. Marine fish populations",
+          "D. Deep space galaxies"
+        ],
+        "correctAnswer": "B. Insects (their life cycles, anatomy, and behavior)",
+        "hint": "An entomologist is a scientist who investigates insects, including their life cycles, distribution, and behavior.",
+        "workedSolution": "An entomologist is a scientist who investigates insects, including their life cycles, distribution, and behavior.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A scientist who studies the behavior of animals under their natural conditions is a/an:",
+        "options": [
+          "A. Ethologist",
+          "B. Geochemist",
+          "C. Pharmacist",
+          "D. Software engineer"
+        ],
+        "correctAnswer": "A. Ethologist",
+        "hint": "An ethologist studies animal behavior under natural environmental conditions.",
+        "workedSolution": "An ethologist studies animal behavior under natural environmental conditions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which professional collects and analyzes crime scene evidence like fingerprints and blood samples?",
+        "options": [
+          "A. Forensic scientist",
+          "B. Botanist",
+          "C. Agronomist",
+          "D. Astronomer"
+        ],
+        "correctAnswer": "A. Forensic scientist",
+        "hint": "Forensic scientists collect, analyze, and present physical evidence from crime scenes in legal cases.",
+        "workedSolution": "Forensic scientists collect, analyze, and present physical evidence from crime scenes in legal cases.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A geochemist is a scientist who investigates:",
+        "options": [
+          "A. Chemical compounds in the Earth, minerals, and water systems",
+          "B. Animal mating habits",
+          "C. The construction of web applications",
+          "D. Human dental hygiene"
+        ],
+        "correctAnswer": "A. Chemical compounds in the Earth, minerals, and water systems",
+        "hint": "Geochemists study the appearance, movement, and effects of chemical compounds in geological minerals and waters.",
+        "workedSolution": "Geochemists study the appearance, movement, and effects of chemical compounds in geological minerals and waters.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which professional is responsible for monitoring and managing chemical pollutants in the air and water?",
+        "options": [
+          "A. Hazardous waste chemist",
+          "B. Ethologist",
+          "C. Zoologist",
+          "D. Pilot"
+        ],
+        "correctAnswer": "A. Hazardous waste chemist",
+        "hint": "Hazardous waste chemists monitor, test, and safely manage toxic pollutants in the environment.",
+        "workedSolution": "Hazardous waste chemists monitor, test, and safely manage toxic pollutants in the environment.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A pharmacologist is a biomedical scientist who:",
+        "options": [
+          "A. Flies commercial passenger aircraft",
+          "B. Studies the effects, sources, and effectiveness of drugs on humans and animals",
+          "C. Only works on vegetable farms",
+          "D. Digs mineral rocks in mines"
+        ],
+        "correctAnswer": "B. Studies the effects, sources, and effectiveness of drugs on humans and animals",
+        "hint": "Pharmacologists perform laboratory trials on pharmaceutical drugs to determine their efficacy, toxicity, and makeup.",
+        "workedSolution": "Pharmacologists perform laboratory trials on pharmaceutical drugs to determine their efficacy, toxicity, and makeup.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Testing blood and tissue samples to detect the presence of poisons, alcohol, and drugs is the work of a:",
+        "options": [
+          "A. Toxicologist",
+          "B. Botanist",
+          "C. Software engineer",
+          "D. Civil engineer"
+        ],
+        "correctAnswer": "A. Toxicologist",
+        "hint": "Toxicologists examine biological tissues and fluids to identify toxic foreign substances, poisons, or alcohol.",
+        "workedSolution": "Toxicologists examine biological tissues and fluids to identify toxic foreign substances, poisons, or alcohol.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of a medical laboratory technician?",
+        "options": [
+          "A. Performing diagnostic clinical tests on blood, tissues, and fluids to assist physicians",
+          "B. Writing software operating systems",
+          "C. Designing farm machinery",
+          "D. Directing airplane traffic"
+        ],
+        "correctAnswer": "A. Performing diagnostic clinical tests on blood, tissues, and fluids to assist physicians",
+        "hint": "Laboratory technicians carry out diagnostic clinical tests on body fluids and tissues to help doctors diagnose diseases.",
+        "workedSolution": "Laboratory technicians carry out diagnostic clinical tests on body fluids and tissues to help doctors diagnose diseases.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A professional who applies mathematical and scientific principles to design and code computer software is a:",
+        "options": [
+          "A. Software engineer (developer)",
+          "B. Geochemist",
+          "C. Toxicologist",
+          "D. Biologist"
+        ],
+        "correctAnswer": "A. Software engineer (developer)",
+        "hint": "Software engineers apply scientific and mathematical principles to build software applications that solve problems.",
+        "workedSolution": "Software engineers apply scientific and mathematical principles to build software applications that solve problems.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which eminent Ghanaian scientist is celebrated for research in post-harvest food technology and root crop value addition?",
+        "options": [
+          "A. Prof. Ibok Nsa Oduro",
+          "B. Charles Darwin",
+          "C. Stephen Hawking",
+          "D. Alexander Fleming"
+        ],
+        "correctAnswer": "A. Prof. Ibok Nsa Oduro",
+        "hint": "Prof. Ibok Nsa Oduro is a distinguished Ghanaian food scientist known for her work on post-harvest preservation and root crops.",
+        "workedSolution": "Prof. Ibok Nsa Oduro is a distinguished Ghanaian food scientist known for her work on post-harvest preservation and root crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Prof. Francis Allotey, an internationally acclaimed Ghanaian scientist, was famous for his contributions to:",
+        "options": [
+          "A. Mathematical physics and soft X-ray spectroscopy",
+          "B. Marine fishing net design",
+          "C. Local pottery clay mixing",
+          "D. Cocoa tree breeding"
+        ],
+        "correctAnswer": "A. Mathematical physics and soft X-ray spectroscopy",
+        "hint": "Prof. Francis Allotey was a world-renowned mathematical physicist known for formulating the 'Allotey Formalism'.",
+        "workedSolution": "Prof. Francis Allotey was a world-renowned mathematical physicist known for formulating the 'Allotey Formalism'.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Who was the prominent Ghanaian female biochemist and inaugural quiz mistress of the National Science and Maths Quiz?",
+        "options": [
+          "A. Prof. Ewurama Addy",
+          "B. Marie Curie",
+          "C. Rosalind Franklin",
+          "D. Florence Nightingale"
+        ],
+        "correctAnswer": "A. Prof. Ewurama Addy",
+        "hint": "Professor Ewurama Addy was a celebrated biochemist, educator, and the first quiz mistress of the NSMQ.",
+        "workedSolution": "Professor Ewurama Addy was a celebrated biochemist, educator, and the first quiz mistress of the NSMQ.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Prof. Jophus Anamuah-Mensah made notable national contributions in Ghana as a/an:",
+        "options": [
+          "A. Science educator and educational reform leader",
+          "B. Aircraft flight instructor",
+          "C. Mineral oil refinery builder",
+          "D. Software game programmer"
+        ],
+        "correctAnswer": "A. Science educator and educational reform leader",
+        "hint": "Prof. Anamuah-Mensah is a renowned Ghanaian chemistry educator who chaired major national education reform committees.",
+        "workedSolution": "Prof. Anamuah-Mensah is a renowned Ghanaian chemistry educator who chaired major national education reform committees.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Prof. Theophilus Ossei-Anto is recognized in Ghanaian science education for his work in:",
+        "options": [
+          "A. Physics pedagogy and practical science equipment development",
+          "B. Deep sea oil drilling",
+          "C. Manufacturing jet engines",
+          "D. Commercial cattle rearing"
+        ],
+        "correctAnswer": "A. Physics pedagogy and practical science equipment development",
+        "hint": "Prof. Theophilus Ossei-Anto contributed extensively to physics education and hands-on laboratory science pedagogy in Ghana.",
+        "workedSolution": "Prof. Theophilus Ossei-Anto contributed extensively to physics education and hands-on laboratory science pedagogy in Ghana.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which Ghanaian science educator has published extensive research on science curriculum and teacher education at UCC?",
+        "options": [
+          "A. Prof. Christian Anthony-Krueger",
+          "B. Albert Einstein",
+          "C. Isaac Newton",
+          "D. Paul Ratnei"
+        ],
+        "correctAnswer": "A. Prof. Christian Anthony-Krueger",
+        "hint": "Prof. Christian Anthony-Krueger is a leading Ghanaian scholar in science teacher training and curriculum development.",
+        "workedSolution": "Prof. Christian Anthony-Krueger is a leading Ghanaian scholar in science teacher training and curriculum development.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Albert Einstein was an international physicist famous for formulating:",
+        "options": [
+          "A. The Theory of Relativity and the photoelectric effect",
+          "B. The discovery of penicillin",
+          "C. The periodic table of elements",
+          "D. The polio vaccine"
+        ],
+        "correctAnswer": "A. The Theory of Relativity and the photoelectric effect",
+        "hint": "Albert Einstein revolutionized physics with his theories of relativity and discovery of the law of the photoelectric effect.",
+        "workedSolution": "Albert Einstein revolutionized physics with his theories of relativity and discovery of the law of the photoelectric effect.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which international scientist discovered the first clinical antibiotic, Penicillin, in 1928?",
+        "options": [
+          "A. Alexander Fleming",
+          "B. Charles Darwin",
+          "C. Stephen Hawking",
+          "D. Paul Ratnei"
+        ],
+        "correctAnswer": "A. Alexander Fleming",
+        "hint": "Alexander Fleming discovered penicillin, revolutionizing medical treatment of bacterial infections.",
+        "workedSolution": "Alexander Fleming discovered penicillin, revolutionizing medical treatment of bacterial infections.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Charles Darwin is renowned in biological science for proposing:",
+        "options": [
+          "A. The theory of biological evolution by natural selection",
+          "B. The law of universal gravitation",
+          "C. The atomic structure model",
+          "D. The planetary laws of motion"
+        ],
+        "correctAnswer": "A. The theory of biological evolution by natural selection",
+        "hint": "Charles Darwin formulated the foundational theory of evolution by natural selection.",
+        "workedSolution": "Charles Darwin formulated the foundational theory of evolution by natural selection.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Stephen Hawking was a globally celebrated theoretical physicist renowned for work on:",
+        "options": [
+          "A. Black hole physics, gravitational singularities, and cosmology",
+          "B. Antibiotic extraction from fungi",
+          "C. Designing steam engines",
+          "D. The discovery of DNA double helix"
+        ],
+        "correctAnswer": "A. Black hole physics, gravitational singularities, and cosmology",
+        "hint": "Stephen Hawking made major discoveries regarding black hole radiation and theoretical cosmology.",
+        "workedSolution": "Stephen Hawking made major discoveries regarding black hole radiation and theoretical cosmology.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which renewable energy source uses water stored in dams to generate electricity?",
+        "options": [
+          "A. Hydroelectric power",
+          "B. Coal combustion",
+          "C. Biogas digestion",
+          "D. Geothermal steam"
+        ],
+        "correctAnswer": "A. Hydroelectric power",
+        "hint": "Hydroelectric power stations, like the Akosombo Dam, harness flowing or falling water to generate electrical energy.",
+        "workedSolution": "Hydroelectric power stations, like the Akosombo Dam, harness flowing or falling water to generate electrical energy.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The production of gas from decomposing organic matter used for cooking and lighting is known as:",
+        "options": [
+          "A. Biogas",
+          "B. Kerosene",
+          "C. Gasoline",
+          "D. Diesel"
+        ],
+        "correctAnswer": "A. Biogas",
+        "hint": "Biogas is renewable fuel produced via anaerobic biological digestion of organic waste.",
+        "workedSolution": "Biogas is renewable fuel produced via anaerobic biological digestion of organic waste.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Modern educational technology in Ghanaian classrooms includes:",
+        "options": [
+          "A. Interactive electronic boards and slide projectors",
+          "B. Chalk and slates only",
+          "C. Clay tablets and papyrus",
+          "D. Charcoal wall markers"
+        ],
+        "correctAnswer": "A. Interactive electronic boards and slide projectors",
+        "hint": "Modern teaching utilizes electronic boards, computers, and multimedia slide projectors.",
+        "workedSolution": "Modern teaching utilizes electronic boards, computers, and multimedia slide projectors.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an applied science discipline?",
+        "options": [
+          "A. Pure theoretical philosophy",
+          "B. Engineering",
+          "C. Abstract geometry",
+          "D. Classical poetry"
+        ],
+        "correctAnswer": "B. Engineering",
+        "hint": "Engineering is an applied science that translates scientific discoveries into practical structures and machines.",
+        "workedSolution": "Engineering is an applied science that translates scientific discoveries into practical structures and machines.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A veterinary doctor specializes in:",
+        "options": [
+          "A. Diagnosing and treating diseases in animals",
+          "B. Flying aircraft",
+          "C. Testing rocks for gold",
+          "D. Designing software programs"
+        ],
+        "correctAnswer": "A. Diagnosing and treating diseases in animals",
+        "hint": "Veterinary doctors are healthcare professionals trained to manage the health and diseases of animals.",
+        "workedSolution": "Veterinary doctors are healthcare professionals trained to manage the health and diseases of animals.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which professional focuses on designing and erecting physical infrastructure like roads and bridges?",
+        "options": [
+          "A. Civil engineer",
+          "B. Botanist",
+          "C. Pharmacist",
+          "D. Entomologist"
+        ],
+        "correctAnswer": "A. Civil engineer",
+        "hint": "Civil engineers plan, design, and oversee the construction of public infrastructure like bridges, roads, and dams.",
+        "workedSolution": "Civil engineers plan, design, and oversee the construction of public infrastructure like bridges, roads, and dams.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A medical doctor who specializes in caring for human teeth and oral cavities is a:",
+        "options": [
+          "A. Dentist",
+          "B. Zoologist",
+          "C. Pilot",
+          "D. Geochemist"
+        ],
+        "correctAnswer": "A. Dentist",
+        "hint": "A dentist is a specialized healthcare provider who diagnoses and treats oral and dental conditions.",
+        "workedSolution": "A dentist is a specialized healthcare provider who diagnoses and treats oral and dental conditions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The ultimate aim of studying science and pursuing scientific careers is to:",
+        "options": [
+          "A. Improve human living conditions and solve societal challenges",
+          "B. Create destructive weapons only",
+          "C. Replace all human beings with robots",
+          "D. Make all living things extinct"
+        ],
+        "correctAnswer": "A. Improve human living conditions and solve societal challenges",
+        "hint": "Scientific careers and technological developments exist primarily to improve human life and solve problems facing humanity.",
+        "workedSolution": "Scientific careers and technological developments exist primarily to improve human life and solve problems facing humanity.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why must freshly molded clay pottery (such as traditional asanka) be fired at high temperatures in a kiln?",
+        "prompt": "How do scientific discoveries differ from technological inventions regarding demonstration?",
         "options": [
-          "To melt the clay into glass",
-          "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
-          "To color the clay bright green",
-          "To make the pot dissolve in water"
+          "A. Scientific facts or principles can be demonstrated easily, whereas technological principles cannot be demonstrated easily",
+          "B. Technology is demonstrated only with pencil and paper",
+          "C. Science deals only with visible physical machines",
+          "D. Neither science nor technology can be demonstrated"
         ],
-        "correctAnswer": "To drive out water of crystallization and fuse clay particles into a rigid, irreversible ceramic",
-        "hint": "Firing causes irreversible thermal vitrification.",
-        "workedSolution": "High-temperature kiln firing drives off chemically bound water from hydrated aluminum silicates, causing ceramic vitrification and sintering that turns soft clay into a rigid, permanent, water-insoluble pot.",
+        "correctAnswer": "A. Scientific facts or principles can be demonstrated easily, whereas technological principles cannot be demonstrated easily",
+        "hint": "Scientific principles can usually be demonstrated via basic experiments, while complex internal technological workings are harder to demonstrate simply.",
+        "workedSolution": "Scientific principles can usually be demonstrated via basic experiments, while complex internal technological workings are harder to demonstrate simply.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do changes in technology generally occur in shorter timeframes than paradigm shifts in pure science?",
+        "options": [
+          "A. Market consumer demands drive continuous industrial engineering upgrades, while natural laws are universal and discovered slowly",
+          "B. Science is strictly illegal in industries",
+          "C. Technology requires no thinking or designing",
+          "D. Natural laws change every week"
+        ],
+        "correctAnswer": "A. Market consumer demands drive continuous industrial engineering upgrades, while natural laws are universal and discovered slowly",
+        "hint": "Commercial demand and competitive manufacturing lead to rapid, frequent technological updates, whereas fundamental scientific laws are enduring.",
+        "workedSolution": "Commercial demand and competitive manufacturing lead to rapid, frequent technological updates, whereas fundamental scientific laws are enduring.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary operational difference between a pharmacologist and a pharmacist?",
+        "options": [
+          "A. A pharmacologist conducts research on drug mechanisms and efficacy in labs, while a pharmacist dispenses and oversees patient medication",
+          "B. A pharmacist discovers new bacteria in rivers",
+          "C. A pharmacologist only sells drugs in hospitals",
+          "D. They perform identical non-scientific jobs"
+        ],
+        "correctAnswer": "A. A pharmacologist conducts research on drug mechanisms and efficacy in labs, while a pharmacist dispenses and oversees patient medication",
+        "hint": "Pharmacologists are research scientists studying drug effects, while pharmacists are licensed clinical practitioners who dispense medicines.",
+        "workedSolution": "Pharmacologists are research scientists studying drug effects, while pharmacists are licensed clinical practitioners who dispense medicines.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In a legal murder investigation, why is the testimony of a forensic scientist vital?",
+        "options": [
+          "A. They provide objective, laboratory-analyzed physical evidence (DNA, fingerprints, blood) in court",
+          "B. They decide which lawyer wins the case",
+          "C. They arrest criminal suspects directly",
+          "D. They rewrite national criminal laws"
+        ],
+        "correctAnswer": "A. They provide objective, laboratory-analyzed physical evidence (DNA, fingerprints, blood) in court",
+        "hint": "Forensic scientists use analytical chemistry, biology, and physics to examine physical evidence and present expert findings in courts.",
+        "workedSolution": "Forensic scientists use analytical chemistry, biology, and physics to examine physical evidence and present expert findings in courts.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an ethologist contribute to improved livestock production on a farm?",
+        "options": [
+          "A. By understanding natural animal behaviors and stress factors to optimize housing, feeding, and breeding conditions",
+          "B. By manufacturing artificial feeds from plastic",
+          "C. By slaughtering animals without cause",
+          "D. By replacing veterinary medicines with chemicals"
+        ],
+        "correctAnswer": "A. By understanding natural animal behaviors and stress factors to optimize housing, feeding, and breeding conditions",
+        "hint": "Ethologists understand animal behavioral patterns, helping farmers improve animal welfare, lower stress, and boost farm productivity.",
+        "workedSolution": "Ethologists understand animal behavioral patterns, helping farmers improve animal welfare, lower stress, and boost farm productivity.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What distinguishes an entomologist from a general zoologist?",
+        "options": [
+          "A. An entomologist focuses specifically on the life cycle, physiology, and control of insects",
+          "B. A zoologist studies only plant roots",
+          "C. An entomologist studies only deep-sea whales",
+          "D. A zoologist never observes living organisms"
+        ],
+        "correctAnswer": "A. An entomologist focuses specifically on the life cycle, physiology, and control of insects",
+        "hint": "While zoologists study the animal kingdom broadly, entomologists specialize specifically in insect biology.",
+        "workedSolution": "While zoologists study the animal kingdom broadly, entomologists specialize specifically in insect biology.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A geochemist sampling water near an active mining site is primarily investigating:",
+        "options": [
+          "A. The movement, distribution, and concentrations of chemical minerals and heavy metal compounds in the water system",
+          "B. The breeding season of water birds",
+          "C. The price of gold in world markets",
+          "D. The software operating the drill rigs"
+        ],
+        "correctAnswer": "A. The movement, distribution, and concentrations of chemical minerals and heavy metal compounds in the water system",
+        "hint": "Geochemists map and measure chemical element distribution and mineral interactions within terrestrial and aquatic formations.",
+        "workedSolution": "Geochemists map and measure chemical element distribution and mineral interactions within terrestrial and aquatic formations.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the role of a hazardous waste chemist essential in an industrial zone like Tema?",
+        "options": [
+          "A. To monitor, identify, and safely neutralize toxic chemical emissions into air and water",
+          "B. To ensure workers wear cheap clothing",
+          "C. To sell scrap metals to domestic buyers",
+          "D. To increase the volume of industrial smoke"
+        ],
+        "correctAnswer": "A. To monitor, identify, and safely neutralize toxic chemical emissions into air and water",
+        "hint": "Hazardous waste chemists evaluate hazardous emissions and design containment systems to prevent environmental pollution.",
+        "workedSolution": "Hazardous waste chemists evaluate hazardous emissions and design containment systems to prevent environmental pollution.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the professional domain of a software engineer?",
+        "options": [
+          "A. Designing, building, and maintaining computer code and software applications to solve real-world problems",
+          "B. Prescribing oral antibiotic pills",
+          "C. Testing river water for sulfur content",
+          "D. Operating agricultural tractor engines"
+        ],
+        "correctAnswer": "A. Designing, building, and maintaining computer code and software applications to solve real-world problems",
+        "hint": "Software engineers apply computer science and mathematics to design and maintain digital algorithms and programs.",
+        "workedSolution": "Software engineers apply computer science and mathematics to design and maintain digital algorithms and programs.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How did the discovery of Penicillin by Alexander Fleming transform human life?",
+        "options": [
+          "A. It provided an effective antimicrobial weapon against deadly bacterial infections, saving millions of lives",
+          "B. It proved that light has a speed limit",
+          "C. It led to the invention of airplanes",
+          "D. It eliminated the need for clean drinking water"
+        ],
+        "correctAnswer": "A. It provided an effective antimicrobial weapon against deadly bacterial infections, saving millions of lives",
+        "hint": "Penicillin introduced the era of antibiotics, curbing previously fatal bacterial infections like pneumonia and sepsis.",
+        "workedSolution": "Penicillin introduced the era of antibiotics, curbing previously fatal bacterial infections like pneumonia and sepsis.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does endogenous technology differ from modern technology in Ghana?",
+        "options": [
+          "A. Endogenous technology relies on traditional manual skills and local tools, whereas modern technology uses improved machines and automation",
+          "B. Endogenous technology requires satellite computers",
+          "C. Modern technology never uses scientific principles",
+          "D. Endogenous technology is completely illegal"
+        ],
+        "correctAnswer": "A. Endogenous technology relies on traditional manual skills and local tools, whereas modern technology uses improved machines and automation",
+        "hint": "Endogenous technology is rooted in local craft traditions and manual tools, whereas modern technology employs automated, advanced methods.",
+        "workedSolution": "Endogenous technology is rooted in local craft traditions and manual tools, whereas modern technology employs automated, advanced methods.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the inability to adapt foreign technologies to local needs a hindrance in Ghana?",
+        "options": [
+          "A. Imported machines often break down due to harsh local conditions, lack of spare parts, or lack of local maintenance skills",
+          "B. Foreign technologies are too cheap to use",
+          "C. Ghana has completely banned foreign knowledge",
+          "D. Imported tools never require electrical power"
+        ],
+        "correctAnswer": "A. Imported machines often break down due to harsh local conditions, lack of spare parts, or lack of local maintenance skills",
+        "hint": "Without local adaptation and training, imported technologies fail when subjected to local operating environments and power constraints.",
+        "workedSolution": "Without local adaptation and training, imported technologies fail when subjected to local operating environments and power constraints.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is meant by 'lack of practical software training' as a setback to technological advancement?",
+        "options": [
+          "A. School curricula often focus on theoretical memorization rather than hands-on coding and application design",
+          "B. Computers are completely forbidden in tertiary schools",
+          "C. Software programs cannot run in Africa",
+          "D. All software requires internet cables"
+        ],
+        "correctAnswer": "A. School curricula often focus on theoretical memorization rather than hands-on coding and application design",
+        "hint": "A shortage of practical, hands-on programming skills prevents students from engineering software solutions for national challenges.",
+        "workedSolution": "A shortage of practical, hands-on programming skills prevents students from engineering software solutions for national challenges.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How can providing tax incentives to companies encourage technological development?",
+        "options": [
+          "A. It lowers business operating costs, encouraging firms to invest profits into scientific research and equipment",
+          "B. It makes all imported goods free",
+          "C. It forces companies to close factory branches",
+          "D. It removes the need for banking institutions"
+        ],
+        "correctAnswer": "A. It lowers business operating costs, encouraging firms to invest profits into scientific research and equipment",
+        "hint": "Tax relief frees up capital, enabling manufacturing and tech companies to purchase modern machinery and innovate.",
+        "workedSolution": "Tax relief frees up capital, enabling manufacturing and tech companies to purchase modern machinery and innovate.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does excessive dependence on traditional ways of producing goods restrict economic output?",
+        "options": [
+          "A. Manual indigenous methods are labor-intensive, slow, and cannot produce goods at large industrial scales",
+          "B. Traditional goods are always toxic",
+          "C. Manual tools use too much electricity",
+          "D. Indigenous skills are impossible to teach"
+        ],
+        "correctAnswer": "A. Manual indigenous methods are labor-intensive, slow, and cannot produce goods at large industrial scales",
+        "hint": "Manual traditional crafts yield limited output, failing to satisfy the high volume demands of expanding national markets.",
+        "workedSolution": "Manual traditional crafts yield limited output, failing to satisfy the high volume demands of expanding national markets.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What major contribution did Prof. Ibok Nsa Oduro make to rural agro-industries in Ghana?",
+        "options": [
+          "A. Formulating processing methods that turn sweet potatoes and local roots into flour, bread, and stable food products",
+          "B. Discovering new planets with telescopes",
+          "C. Building passenger supersonic jets",
+          "D. Designing deep gold mine tunnels"
+        ],
+        "correctAnswer": "A. Formulating processing methods that turn sweet potatoes and local roots into flour, bread, and stable food products",
+        "hint": "Prof. Ibok Oduro developed post-harvest processing technologies for sweet potatoes and indigenous crops, reducing spoilage.",
+        "workedSolution": "Prof. Ibok Oduro developed post-harvest processing technologies for sweet potatoes and indigenous crops, reducing spoilage.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How did Prof. Ewurama Addy inspire generations of Ghanaian basic and secondary students?",
+        "options": [
+          "A. Through her role as the quiz mistress of the NSMQ and modeling science as an exciting, accessible discipline",
+          "B. By building sports stadiums",
+          "C. By leading musical bands",
+          "D. By managing commercial banking firms"
+        ],
+        "correctAnswer": "A. Through her role as the quiz mistress of the NSMQ and modeling science as an exciting, accessible discipline",
+        "hint": "Prof. Ewurama Addy served as a prominent role model through the NSMQ, popularizing science education nationwide.",
+        "workedSolution": "Prof. Ewurama Addy served as a prominent role model through the NSMQ, popularizing science education nationwide.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Prof. Francis Allotey’s 'Allotey Formalism' is a theoretical model that explains:",
+        "options": [
+          "A. How matter absorbs soft X-rays through electron interactions",
+          "B. How cocoa beans ferment in banana leaves",
+          "C. The migration of birds across oceans",
+          "D. How to purify river water with sand"
+        ],
+        "correctAnswer": "A. How matter absorbs soft X-rays through electron interactions",
+        "hint": "The Allotey Formalism is a renowned physical formula explaining resonance scattering of soft X-rays in metals.",
+        "workedSolution": "The Allotey Formalism is a renowned physical formula explaining resonance scattering of soft X-rays in metals.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following demonstrates how technology has revolutionized sanitation in modern settlements?",
+        "options": [
+          "A. Automated sewage treatment plants and mechanical sorting for recycling",
+          "B. Open burning of plastic bottles behind homes",
+          "C. Dumping unsegregated trash into river estuaries",
+          "D. Throwing wastewater into open gutters"
+        ],
+        "correctAnswer": "A. Automated sewage treatment plants and mechanical sorting for recycling",
+        "hint": "Modern sanitation utilizes mechanized waste handling, sewage treatment, and material reclamation technologies.",
+        "workedSolution": "Modern sanitation utilizes mechanized waste handling, sewage treatment, and material reclamation technologies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does Charles Darwin's Theory of Natural Selection explain biological diversity?",
+        "options": [
+          "A. Organisms with advantageous traits best suited to their environment survive and reproduce, passing on those traits",
+          "B. Animals change their anatomy at will in one day",
+          "C. All species were created identical without variation",
+          "D. Climate changes have no effect on living organisms"
+        ],
+        "correctAnswer": "A. Organisms with advantageous traits best suited to their environment survive and reproduce, passing on those traits",
+        "hint": "Darwin showed that natural selection acts on heritable variations, allowing better-adapted organisms to thrive.",
+        "workedSolution": "Darwin showed that natural selection acts on heritable variations, allowing better-adapted organisms to thrive.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is corruption in public procurement detrimental to scientific progress in developing countries?",
+        "options": [
+          "A. Funds meant for laboratory equipment and technical research are diverted, leaving schools and universities poorly equipped",
+          "B. It makes scientific formulas incorrect",
+          "C. It forces computers to shut down",
+          "D. It causes chemical elements to disappear"
+        ],
+        "correctAnswer": "A. Funds meant for laboratory equipment and technical research are diverted, leaving schools and universities poorly equipped",
+        "hint": "Corrupt diversion of educational and research budgets deprives institutions of essential laboratory and research tools.",
+        "workedSolution": "Corrupt diversion of educational and research budgets deprives institutions of essential laboratory and research tools.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does biogas technology demonstrate the practical application of biological science?",
+        "options": [
+          "A. It harnesses anaerobic bacterial fermentation of organic animal dung to generate methane fuel",
+          "B. It burns fossil coal in power stations",
+          "C. It splits uranium atoms in nuclear cores",
+          "D. It converts sunlight into sound"
+        ],
+        "correctAnswer": "A. It harnesses anaerobic bacterial fermentation of organic animal dung to generate methane fuel",
+        "hint": "Biogas digesters utilize anaerobic methanogenic microorganisms to convert livestock manure into combustible methane.",
+        "workedSolution": "Biogas digesters utilize anaerobic methanogenic microorganisms to convert livestock manure into combustible methane.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of a toxicologist in a hospital poisoning emergency?",
+        "options": [
+          "A. Rapidly identifying the specific poison or chemical overdose in bodily fluids so doctors can administer the correct antidote",
+          "B. Performing surgical amputations",
+          "C. Disinfecting hospital floors",
+          "D. Repairing X-ray machines"
+        ],
+        "correctAnswer": "A. Rapidly identifying the specific poison or chemical overdose in bodily fluids so doctors can administer the correct antidote",
+        "hint": "Toxicologists perform rapid diagnostic toxicology screens to detect toxins, guiding life-saving clinical interventions.",
+        "workedSolution": "Toxicologists perform rapid diagnostic toxicology screens to detect toxins, guiding life-saving clinical interventions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must an aircraft pilot possess a solid foundation in basic physics and meteorology?",
+        "options": [
+          "A. To understand aerodynamic lift, airspeed, atmospheric pressure, and weather hazard patterns during flight",
+          "B. To calculate ticket prices during flight",
+          "C. To repair the runway lights",
+          "D. To serve food to passengers"
+        ],
+        "correctAnswer": "A. To understand aerodynamic lift, airspeed, atmospheric pressure, and weather hazard patterns during flight",
+        "hint": "Pilots rely on fluid dynamics, atmospheric physics, and meteorology to safely navigate and control aircraft.",
+        "workedSolution": "Pilots rely on fluid dynamics, atmospheric physics, and meteorology to safely navigate and control aircraft.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an ecologist help prevent species extinction in a forest reserve?",
+        "options": [
+          "A. By studying food web dependencies and habitat requirements to design conservation interventions",
+          "B. By felling all timber trees for export",
+          "C. By building concrete walls through the forest",
+          "D. By poisoning all carnivorous predators"
+        ],
+        "correctAnswer": "A. By studying food web dependencies and habitat requirements to design conservation interventions",
+        "hint": "Ecologists examine trophic networks and ecological requirements to develop sustainable conservation strategies.",
+        "workedSolution": "Ecologists examine trophic networks and ecological requirements to develop sustainable conservation strategies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which branch of applied engineering focuses on extracting and processing mineral ores from the ground?",
+        "options": [
+          "A. Geological / Mining engineering",
+          "B. Electrical engineering",
+          "C. Software engineering",
+          "D. Biomedical engineering"
+        ],
+        "correctAnswer": "A. Geological / Mining engineering",
+        "hint": "Geological and mining engineers apply geology, physics, and chemistry to discover and extract mineral deposits safely.",
+        "workedSolution": "Geological and mining engineers apply geology, physics, and chemistry to discover and extract mineral deposits safely.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How did the invention of maritime ships and modern airplanes alter international trade?",
+        "options": [
+          "A. It enabled the rapid, high-volume transportation of commercial commodities across global oceans and continents",
+          "B. It made all goods travel by foot",
+          "C. It stopped nations from trading with one another",
+          "D. It caused all overland roads to be abandoned"
+        ],
+        "correctAnswer": "A. It enabled the rapid, high-volume transportation of commercial commodities across global oceans and continents",
+        "hint": "Container ships and cargo aircraft enable rapid, bulk transportation of products, fueling global commerce.",
+        "workedSolution": "Container ships and cargo aircraft enable rapid, bulk transportation of products, fueling global commerce.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary task of a chemical engineer in an industrial plant?",
+        "options": [
+          "A. Scaling up chemical reactions from small laboratory beakers into mass industrial production systems",
+          "B. Testing human blood for malaria parasites",
+          "C. Flying airplanes between cities",
+          "D. Directing television broadcasts"
+        ],
+        "correctAnswer": "A. Scaling up chemical reactions from small laboratory beakers into mass industrial production systems",
+        "hint": "Chemical engineers design, scale, and optimize chemical manufacturing processes for petroleum, food, and pharmaceuticals.",
+        "workedSolution": "Chemical engineers design, scale, and optimize chemical manufacturing processes for petroleum, food, and pharmaceuticals.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following illustrates the 'protein-sparing effect' of carbohydrates in human nutrition?",
+        "options": [
+          "A. Consuming adequate carbohydrates prevents the body from breaking down functional muscle protein for energy",
+          "B. Carbohydrates destroy all dietary protein",
+          "C. Carbohydrates convert into meat inside the stomach",
+          "D. Eating carbohydrates removes the need for amino acids"
+        ],
+        "correctAnswer": "A. Consuming adequate carbohydrates prevents the body from breaking down functional muscle protein for energy",
+        "hint": "When dietary carbohydrates supply sufficient calories, cellular metabolism spares structural proteins from being catabolized.",
+        "workedSolution": "When dietary carbohydrates supply sufficient calories, cellular metabolism spares structural proteins from being catabolized.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are computer software developers crucial to modern healthcare delivery?",
+        "options": [
+          "A. They build digital health records, hospital databases, and diagnostic image processing software",
+          "B. They perform open-heart surgery on patients",
+          "C. They synthesize herbal medicines from tree roots",
+          "D. They clean patient hospital beds"
+        ],
+        "correctAnswer": "A. They build digital health records, hospital databases, and diagnostic image processing software",
+        "hint": "Software developers create electronic health record systems, telemedicine portals, and computerized diagnostic imaging tools.",
+        "workedSolution": "Software developers create electronic health record systems, telemedicine portals, and computerized diagnostic imaging tools.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role does a biochemist play in agricultural development?",
+        "options": [
+          "A. Investigating cellular chemistry in crop plants to improve drought tolerance and nutritional content",
+          "B. Driving diesel tractors across fields",
+          "C. Building farm fences from timber",
+          "D. Sowing seeds by hand"
+        ],
+        "correctAnswer": "A. Investigating cellular chemistry in crop plants to improve drought tolerance and nutritional content",
+        "hint": "Biochemists examine plant molecular pathways to develop biofortified crops, natural biopesticides, and disease resistance.",
+        "workedSolution": "Biochemists examine plant molecular pathways to develop biofortified crops, natural biopesticides, and disease resistance.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How did Stephen Hawking contribute to public science education despite physical disability?",
+        "options": [
+          "A. By writing popular, bestselling books like 'A Brief History of Time' that explained cosmology simply to non-scientists",
+          "B. By building radio telescopes with his hands",
+          "C. By inventing modern smartphones",
+          "D. By establishing commercial banks"
+        ],
+        "correctAnswer": "A. By writing popular, bestselling books like 'A Brief History of Time' that explained cosmology simply to non-scientists",
+        "hint": "Stephen Hawking popularized astrophysics and inspired millions through accessible science books and lectures.",
+        "workedSolution": "Stephen Hawking popularized astrophysics and inspired millions through accessible science books and lectures.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary scientific function of a food scientist in food manufacturing?",
+        "options": [
+          "A. Formulating processing, packaging, and preservation methods to enhance food shelf-life and nutritional safety",
+          "B. Serving meals in restaurants",
+          "C. Planting maize seeds in fields",
+          "D. Selling agricultural land"
+        ],
+        "correctAnswer": "A. Formulating processing, packaging, and preservation methods to enhance food shelf-life and nutritional safety",
+        "hint": "Food scientists apply chemistry, microbiology, and engineering to preserve, package, and ensure the safety of food products.",
+        "workedSolution": "Food scientists apply chemistry, microbiology, and engineering to preserve, package, and ensure the safety of food products.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why must laboratory technicians adhere strictly to standard operating procedures (SOPs)?",
+        "options": [
+          "A. To ensure diagnostic test results are accurate, reliable, reproducible, and contamination-free",
+          "B. To make tests take longer to finish",
+          "C. To prevent doctors from reading patient files",
+          "D. To avoid using electricity in laboratories"
+        ],
+        "correctAnswer": "A. To ensure diagnostic test results are accurate, reliable, reproducible, and contamination-free",
+        "hint": "Adhering to strict clinical SOPs ensures diagnostic accuracy and prevents misdiagnosis of patients.",
+        "workedSolution": "Adhering to strict clinical SOPs ensures diagnostic accuracy and prevents misdiagnosis of patients.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an applied science career?",
+        "options": [
+          "A. Electrical engineer",
+          "B. Classical music singer",
+          "C. Traditional stage dancer",
+          "D. Ancient language translator"
+        ],
+        "correctAnswer": "A. Electrical engineer",
+        "hint": "Electrical engineering is an applied science that designs and builds power systems using electromagnetic principles.",
+        "workedSolution": "Electrical engineering is an applied science that designs and builds power systems using electromagnetic principles.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main danger of depending heavily on imported technologies without local capacity building?",
+        "options": [
+          "A. National vulnerability to economic shocks, technical dependency, and inability to repair broken systems",
+          "B. Local workers becoming too knowledgeable",
+          "C. Machines operating too fast for factories",
+          "D. Products becoming too inexpensive"
+        ],
+        "correctAnswer": "A. National vulnerability to economic shocks, technical dependency, and inability to repair broken systems",
+        "hint": "Total reliance on foreign technology without local know-how leaves domestic industries paralyzed when machines fail.",
+        "workedSolution": "Total reliance on foreign technology without local know-how leaves domestic industries paralyzed when machines fail.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does modern food packaging technology prevent food waste in urban retail markets?",
+        "options": [
+          "A. By using vacuum sealing and barrier films that inhibit microbial decay and oxidation",
+          "B. By making food items transparent",
+          "C. By heating food to 100°C continuously",
+          "D. By turning perishable food into plastic"
+        ],
+        "correctAnswer": "A. By using vacuum sealing and barrier films that inhibit microbial decay and oxidation",
+        "hint": "Advanced packaging creates protective barrier atmospheres that extend food shelf-life and reduce spoilage.",
+        "workedSolution": "Advanced packaging creates protective barrier atmospheres that extend food shelf-life and reduce spoilage.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is mathematics an indispensable foundation for software engineering?",
+        "options": [
+          "A. Algorithms, data structures, and computer logic rely directly on mathematical principles and boolean algebra",
+          "B. Software engineers only write math textbooks",
+          "C. Computers operate on paper calculation rules",
+          "D. Math prevents computers from getting hot"
+        ],
+        "correctAnswer": "A. Algorithms, data structures, and computer logic rely directly on mathematical principles and boolean algebra",
+        "hint": "Software engineering applies discrete mathematics, computational logic, and algorithms to build functioning digital systems.",
+        "workedSolution": "Software engineering applies discrete mathematics, computational logic, and algorithms to build functioning digital systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How did the development of slide projectors and digital boards modernize classroom education?",
+        "options": [
+          "A. They facilitate dynamic visual illustrations, multimedia presentations, and interactive learning",
+          "B. They remove the need for students to write exams",
+          "C. They teach students without teachers present",
+          "D. They make classrooms completely dark"
+        ],
+        "correctAnswer": "A. They facilitate dynamic visual illustrations, multimedia presentations, and interactive learning",
+        "hint": "Multimedia educational technology enhances conceptual understanding through visual models and interactive engagement.",
+        "workedSolution": "Multimedia educational technology enhances conceptual understanding through visual models and interactive engagement.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What role does a mechanical engineer play in an automobile manufacturing plant?",
+        "options": [
+          "A. Designing vehicle engines, transmission assemblies, suspension systems, and safety frames",
+          "B. Selling vehicle insurance policies",
+          "C. Painting the company showroom",
+          "D. Driving finished cars to customers"
+        ],
+        "correctAnswer": "A. Designing vehicle engines, transmission assemblies, suspension systems, and safety frames",
+        "hint": "Mechanical engineers design, model, and manufacture the physical moving machinery, engines, and structural components of cars.",
+        "workedSolution": "Mechanical engineers design, model, and manufacture the physical moving machinery, engines, and structural components of cars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the core duty of a nurse in healthcare delivery?",
+        "options": [
+          "A. Providing continuous patient care, administering prescribed medications, and monitoring vital signs",
+          "B. Manufacturing surgical knives",
+          "C. Testing engine fuels in refineries",
+          "D. Operating airport radar systems"
+        ],
+        "correctAnswer": "A. Providing continuous patient care, administering prescribed medications, and monitoring vital signs",
+        "hint": "Nurses manage direct patient clinical care, administer treatments, monitor recovery, and educate patients.",
+        "workedSolution": "Nurses manage direct patient clinical care, administer treatments, monitor recovery, and educate patients.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How can learning from foreign technologies benefit local Ghanaian industries?",
+        "options": [
+          "A. By adopting and modifying advanced foreign designs to fit local Ghanaian resources and climatic conditions",
+          "B. By abandoning all local cultural heritage",
+          "C. By importing foreign workers to do all work",
+          "D. By paying high license fees indefinitely"
+        ],
+        "correctAnswer": "A. By adopting and modifying advanced foreign designs to fit local Ghanaian resources and climatic conditions",
+        "hint": "Technology transfer involves adapting foreign engineering blueprints to local industrial requirements and materials.",
+        "workedSolution": "Technology transfer involves adapting foreign engineering blueprints to local industrial requirements and materials.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary contribution of science educators in basic and secondary schools?",
+        "options": [
+          "A. Inspiring and mentoring students in scientific inquiry, critical thinking, and laboratory investigations",
+          "B. Selling foreign textbooks for profit",
+          "C. Building school classroom roofs",
+          "D. Managing financial school accounts"
+        ],
+        "correctAnswer": "A. Inspiring and mentoring students in scientific inquiry, critical thinking, and laboratory investigations",
+        "hint": "Science educators cultivate scientific literacy, curiosity, and research skills among young scholars.",
+        "workedSolution": "Science educators cultivate scientific literacy, curiosity, and research skills among young scholars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does research in indigenous herbal medicine illustrate the convergence of science and traditional knowledge?",
+        "options": [
+          "A. Modern pharmacological methods extract, standardize, and clinically test active plant compounds used traditionally",
+          "B. It proves that plants have no medicinal value",
+          "C. It replaces modern chemistry with magic",
+          "D. It eliminates all synthetic pharmaceuticals"
+        ],
+        "correctAnswer": "A. Modern pharmacological methods extract, standardize, and clinically test active plant compounds used traditionally",
+        "hint": "Pharmacological science tests and standardizes active phytochemicals from traditional medicinal plants, creating safe drugs.",
+        "workedSolution": "Pharmacological science tests and standardizes active phytochemicals from traditional medicinal plants, creating safe drugs.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is business expansion vital for small-scale local tool manufacturers in Ghana?",
+        "options": [
+          "A. To achieve economies of scale, reduce unit production costs, and afford modern manufacturing machinery",
+          "B. To avoid paying workers their wages",
+          "C. To prevent foreign tools from being imported",
+          "D. To turn small workshops into farms"
+        ],
+        "correctAnswer": "A. To achieve economies of scale, reduce unit production costs, and afford modern manufacturing machinery",
+        "hint": "Capital expansion enables local fabrication shops to purchase modern machinery and mass-produce affordable tools.",
+        "workedSolution": "Capital expansion enables local fabrication shops to purchase modern machinery and mass-produce affordable tools.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following scientists would be called upon to evaluate the impact of a new dam on river fish migration?",
+        "options": [
+          "A. An ecologist or zoologist",
+          "B. An astronomer",
+          "C. A software engineer",
+          "D. A pilot"
+        ],
+        "correctAnswer": "A. An ecologist or zoologist",
+        "hint": "Ecologists and zoologists assess environmental impacts, aquatic habitats, and wildlife migration corridors.",
+        "workedSolution": "Ecologists and zoologists assess environmental impacts, aquatic habitats, and wildlife migration corridors.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do scientific discoveries in chemistry support the textile and clothing industry?",
+        "options": [
+          "A. Through the synthesis of durable artificial dyes, synthetic polymers, and stain-resistant finishes",
+          "B. By making cotton plants grow in salt water",
+          "C. By eliminating the need to wash clothes",
+          "D. By turning wool into metal"
+        ],
+        "correctAnswer": "A. Through the synthesis of durable artificial dyes, synthetic polymers, and stain-resistant finishes",
+        "hint": "Chemical innovations produce synthetic dyes, nylon, polyester fibers, and protective fabric coatings.",
+        "workedSolution": "Chemical innovations produce synthetic dyes, nylon, polyester fibers, and protective fabric coatings.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of an agronomist in improving national food production?",
+        "options": [
+          "A. Developing improved crop varieties, optimal soil management practices, and pest control techniques",
+          "B. Operating commercial bank branches",
+          "C. Building airplane runways",
+          "D. Manufacturing plastic toys"
+        ],
+        "correctAnswer": "A. Developing improved crop varieties, optimal soil management practices, and pest control techniques",
+        "hint": "Agronomists specialize in soil science and crop genetics to maximize agricultural productivity and sustainability.",
+        "workedSolution": "Agronomists specialize in soil science and crop genetics to maximize agricultural productivity and sustainability.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a medical doctor rely directly on laboratory technicians before prescribing specialized treatments?",
+        "options": [
+          "A. Accurate laboratory findings confirm the definitive presence and strain of pathogens causing the illness",
+          "B. Doctors are legally forbidden from writing prescriptions",
+          "C. Laboratory technicians own all hospitals",
+          "D. Technicians determine patient hospital bills"
+        ],
+        "correctAnswer": "A. Accurate laboratory findings confirm the definitive presence and strain of pathogens causing the illness",
+        "hint": "Evidence-based clinical medicine relies on diagnostic lab tests (blood smears, cultures) to guide effective therapies.",
+        "workedSolution": "Evidence-based clinical medicine relies on diagnostic lab tests (blood smears, cultures) to guide effective therapies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does investment in science and technology education empower young Ghanaian students?",
+        "options": [
+          "A. It equips them with problem-solving, analytical, and technical skills needed to build modern industries",
+          "B. It forces them to memorize historical poems",
+          "C. It guarantees they never have to work",
+          "D. It removes the need for national universities"
+        ],
+        "correctAnswer": "A. It equips them with problem-solving, analytical, and technical skills needed to build modern industries",
+        "hint": "STEM education develops critical problem-solving skills, preparing learners to drive industrial and economic innovation.",
+        "workedSolution": "STEM education develops critical problem-solving skills, preparing learners to drive industrial and economic innovation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A forensic scientist discovers a minute drop of blood at a burglary crime scene. Which molecular biological technique allows the scientist to identify the suspect?",
+        "options": [
+          "A. Polymerase Chain Reaction (PCR) and Short Tandem Repeat (STR) DNA profiling",
+          "B. Acid-base titration with phenolphthalein",
+          "C. Distillation of blood plasma",
+          "D. Weighing the blood on an electronic balance"
+        ],
+        "correctAnswer": "A. Polymerase Chain Reaction (PCR) and Short Tandem Repeat (STR) DNA profiling",
+        "hint": "Forensic scientists amplify trace DNA via PCR and generate STR profiles that uniquely match suspects to physical evidence.",
+        "workedSolution": "Forensic scientists amplify trace DNA via PCR and generate STR profiles that uniquely match suspects to physical evidence.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the 'Allotey Formalism' formulated by Prof. Francis Allotey considered a major breakthrough in modern theoretical physics?",
+        "options": [
+          "A. It proved that electron-hole core interactions in soft X-ray spectroscopy create characteristic resonance edge structures in metals",
+          "B. It proved that sound travels faster than light in space",
+          "C. It invented the first steam locomotive engine",
+          "D. It proved that gravity repels large planets"
+        ],
+        "correctAnswer": "A. It proved that electron-hole core interactions in soft X-ray spectroscopy create characteristic resonance edge structures in metals",
+        "hint": "Allotey showed that core-hole electron attraction induces an edge resonance peak in soft X-ray absorption spectra of metals.",
+        "workedSolution": "Allotey showed that core-hole electron attraction induces an edge resonance peak in soft X-ray absorption spectra of metals.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A toxicologist tests a biological liver specimen in a fatal poisoning case and discovers high concentrations of organophosphate metabolites. What biochemical mechanism caused death?",
+        "options": [
+          "A. Irreversible inhibition of acetylcholinesterase, leading to fatal cholinergic crisis and asphyxiation",
+          "B. Rapid crystallization of bone calcium",
+          "C. Conversion of blood into stomach acid",
+          "D. Dissolution of muscle fibers into water"
+        ],
+        "correctAnswer": "A. Irreversible inhibition of acetylcholinesterase, leading to fatal cholinergic crisis and asphyxiation",
+        "hint": "Organophosphate poisons block acetylcholinesterase, resulting in continuous acetylcholine accumulation and respiratory paralysis.",
+        "workedSolution": "Organophosphate poisons block acetylcholinesterase, resulting in continuous acetylcholine accumulation and respiratory paralysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In software engineering, why is the software development life cycle (SDLC) structured into rigorous analysis, design, testing, and deployment phases?",
+        "options": [
+          "A. To ensure that digital applications are secure, scalable, bug-free, and meet real-world user specifications",
+          "B. To make writing computer code take as long as possible",
+          "C. To prevent computers from using microchips",
+          "D. To replace programming languages with numbers"
+        ],
+        "correctAnswer": "A. To ensure that digital applications are secure, scalable, bug-free, and meet real-world user specifications",
+        "hint": "The SDLC is an engineering methodology ensuring high-quality, fault-tolerant software that solves client problems.",
+        "workedSolution": "The SDLC is an engineering methodology ensuring high-quality, fault-tolerant software that solves client problems.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A chemical engineer scales up a lab pharmaceutical synthesis from a 500 mL beaker to a 10,000 L stainless steel reactor. What thermodynamic challenge must be solved?",
+        "options": [
+          "A. Exothermic heat transfer dissipation, reaction kinetics, and fluid mixing turbulence to prevent runaway reactions",
+          "B. The chemical elements turn into gases instantly",
+          "C. The reactor becomes too heavy to sit on the floor",
+          "D. Chemical reactions cannot occur in large tanks"
+        ],
+        "correctAnswer": "A. Exothermic heat transfer dissipation, reaction kinetics, and fluid mixing turbulence to prevent runaway reactions",
+        "hint": "Reactor scale-up reduces the surface-area-to-volume ratio, making heat dissipation and mass transport critical to avoid explosion.",
+        "workedSolution": "Reactor scale-up reduces the surface-area-to-volume ratio, making heat dissipation and mass transport critical to avoid explosion.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the preservation of indigenous agro-processing techniques through scientific value addition (as pioneered by Prof. Ibok Oduro) critical for African food sovereignty?",
+        "options": [
+          "A. It reduces reliance on expensive imported wheat flour by engineering high-grade composite flours from local sweet potatoes and cassava",
+          "B. It makes all imported food products illegal",
+          "C. It stops the need for farming crops",
+          "D. It allows food to be stored without packaging"
+        ],
+        "correctAnswer": "A. It reduces reliance on expensive imported wheat flour by engineering high-grade composite flours from local sweet potatoes and cassava",
+        "hint": "Scientific value-addition upgrades indigenous crops into shelf-stable industrial flours, reducing food import dependencies.",
+        "workedSolution": "Scientific value-addition upgrades indigenous crops into shelf-stable industrial flours, reducing food import dependencies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an ecologist utilize geographic information systems (GIS) and remote sensing technology in environmental management?",
+        "options": [
+          "A. Tracking deforestation rates, wildlife migration patterns, and wetland degradation across large landscapes over time",
+          "B. Generating electrical current from trees",
+          "C. Predicting consumer prices of mobile phones",
+          "D. Manufacturing artificial soil in laboratories"
+        ],
+        "correctAnswer": "A. Tracking deforestation rates, wildlife migration patterns, and wetland degradation across large landscapes over time",
+        "hint": "Ecologists combine satellite telemetry and GIS spatial analysis to monitor ecological changes and design conservation corridors.",
+        "workedSolution": "Ecologists combine satellite telemetry and GIS spatial analysis to monitor ecological changes and design conservation corridors.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a pharmacologist evaluate both pharmacokinetics (ADME) and pharmacodynamics during new drug development?",
+        "options": [
+          "A. To understand how the body absorbs, distributes, metabolizes, and excretes the drug, and its precise therapeutic mechanism on target receptors",
+          "B. To ensure the drug has a sweet fruit taste",
+          "C. To calculate the sales tax on drug packaging",
+          "D. To make sure the drug turns into a liquid"
+        ],
+        "correctAnswer": "A. To understand how the body absorbs, distributes, metabolizes, and excretes the drug, and its precise therapeutic mechanism on target receptors",
+        "hint": "Pharmacokinetics (what the body does to the drug) and pharmacodynamics (what the drug does to the body) establish safe dosages.",
+        "workedSolution": "Pharmacokinetics (what the body does to the drug) and pharmacodynamics (what the drug does to the body) establish safe dosages.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary danger when an industrial developing nation pursues rapid technological growth while neglecting hazardous waste chemistry?",
+        "options": [
+          "A. Severe environmental degradation, heavy metal biomagnification, and catastrophic public health poisoning disasters",
+          "B. The nation’s internet speeds become too fast",
+          "C. Manufacturing machines run out of steel",
+          "D. Factories produce too much clean drinking water"
+        ],
+        "correctAnswer": "A. Severe environmental degradation, heavy metal biomagnification, and catastrophic public health poisoning disasters",
+        "hint": "Industrialization without toxic waste management contaminates water tables and soil, triggering chronic public health crises.",
+        "workedSolution": "Industrialization without toxic waste management contaminates water tables and soil, triggering chronic public health crises.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How did Albert Einstein’s discovery of the Law of the Photoelectric Effect lay the foundation for modern renewable energy technology?",
+        "options": [
+          "A. It proved that light photons eject electrons from semiconductor surfaces, enabling the invention of solar photovoltaic cells",
+          "B. It led to the construction of hydroelectric dams",
+          "C. It proved that wind turbines can generate steam",
+          "D. It showed how to produce biogas from animal manure"
+        ],
+        "correctAnswer": "A. It proved that light photons eject electrons from semiconductor surfaces, enabling the invention of solar photovoltaic cells",
+        "hint": "The photoelectric effect demonstrated quantum photon-electron conversion, which is the operational basis of solar panels.",
+        "workedSolution": "The photoelectric effect demonstrated quantum photon-electron conversion, which is the operational basis of solar panels.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In civil engineering, why must soil mechanics and geotechnical testing be conducted before constructing multi-story commercial buildings?",
+        "options": [
+          "A. To determine the bearing capacity, shear strength, and settlement behavior of the foundation soil under heavy structural load",
+          "B. To check if the soil contains edible salts",
+          "C. To count the number of earthworms in the soil",
+          "D. To color the building foundation"
+        ],
+        "correctAnswer": "A. To determine the bearing capacity, shear strength, and settlement behavior of the foundation soil under heavy structural load",
+        "hint": "Geotechnical testing ensures the soil stratum can support structural loads without catastrophic foundation settlement or shear failure.",
+        "workedSolution": "Geotechnical testing ensures the soil stratum can support structural loads without catastrophic foundation settlement or shear failure.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Stephen Hawking’s prediction of 'Hawking Radiation' challenge classical general relativity?",
+        "options": [
+          "A. It showed that quantum field effects near the event horizon cause black holes to emit thermal radiation and slowly evaporate over time",
+          "B. It showed that black holes are made of solid granite",
+          "C. It proved that light can never travel through a vacuum",
+          "D. It demonstrated that stars never collapse"
+        ],
+        "correctAnswer": "A. It showed that quantum field effects near the event horizon cause black holes to emit thermal radiation and slowly evaporate over time",
+        "hint": "Hawking merged quantum mechanics and general relativity, proving black holes radiate thermal energy and eventually evaporate.",
+        "workedSolution": "Hawking merged quantum mechanics and general relativity, proving black holes radiate thermal energy and eventually evaporate.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary scientific function of a food biochemist investigating enzymatic browning in harvested fruits?",
+        "options": [
+          "A. Elucidating polyphenol oxidase kinetics to develop chemical inhibitors or thermal blanching treatments that preserve fruit quality",
+          "B. Changing the genetic color of the fruit tree leaves",
+          "C. Forcing fruits to ferment into vinegar immediately",
+          "D. Making fruit skin poisonous to humans"
+        ],
+        "correctAnswer": "A. Elucidating polyphenol oxidase kinetics to develop chemical inhibitors or thermal blanching treatments that preserve fruit quality",
+        "hint": "Inhibiting polyphenol oxidase enzyme activity prevents oxidative browning, extending the market life of harvested produce.",
+        "workedSolution": "Inhibiting polyphenol oxidase enzyme activity prevents oxidative browning, extending the market life of harvested produce.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the 'micro-scale science equipment' pioneered by Ghanaian educators like Prof. Ossei-Anto revolutionary for under-resourced schools?",
+        "options": [
+          "A. It allows students to perform valid, hands-on scientific experiments safely using minute chemical volumes and low-cost apparatus",
+          "B. It eliminates the need for students to learn chemistry",
+          "C. It requires schools to build multi-million dollar laboratories",
+          "D. It replaces all classroom teachers with computers"
+        ],
+        "correctAnswer": "A. It allows students to perform valid, hands-on scientific experiments safely using minute chemical volumes and low-cost apparatus",
+        "hint": "Micro-chemistry kits allow practical laboratory experimentation at low costs, with minimal chemical waste and high safety.",
+        "workedSolution": "Micro-chemistry kits allow practical laboratory experimentation at low costs, with minimal chemical waste and high safety.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an entomologist apply biological pest control to protect maize farms from fall armyworm infestations?",
+        "options": [
+          "A. Introducing host-specific natural parasitoid wasps that target pest larvae, reducing reliance on synthetic insecticides",
+          "B. Spraying heavy motor oil on all maize leaves",
+          "C. Burning the entire maize field during harvest",
+          "D. Flooding the farm with salt water"
+        ],
+        "correctAnswer": "A. Introducing host-specific natural parasitoid wasps that target pest larvae, reducing reliance on synthetic insecticides",
+        "hint": "Biological control uses natural predators or parasitoids to suppress agricultural pests sustainably without chemical hazards.",
+        "workedSolution": "Biological control uses natural predators or parasitoids to suppress agricultural pests sustainably without chemical hazards.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the establishment of low-interest credit facilities crucial for scaling endogenous technology in Ghana?",
+        "options": [
+          "A. Local tool fabricators need capital investment to purchase metal-forming lathes, CNC mills, and welding machines",
+          "B. Fabricators want to stop making tools completely",
+          "C. It allows businesses to avoid paying taxes",
+          "D. Low interest rates eliminate competition"
+        ],
+        "correctAnswer": "A. Local tool fabricators need capital investment to purchase metal-forming lathes, CNC mills, and welding machines",
+        "hint": "Affordable financing enables small fabricators to modernize machine tooling and produce high-precision agricultural implements.",
+        "workedSolution": "Affordable financing enables small fabricators to modernize machine tooling and produce high-precision agricultural implements.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A medical laboratory technician identifies rod-shaped, acid-fast bacilli in a patient's sputum smear. What disease is diagnosed?",
+        "options": [
+          "A. Pulmonary Tuberculosis (Mycobacterium tuberculosis)",
+          "B. Malaria",
+          "C. Cholera",
+          "D. Hepatitis B"
+        ],
+        "correctAnswer": "A. Pulmonary Tuberculosis (Mycobacterium tuberculosis)",
+        "hint": "Acid-fast Ziehl-Neelsen staining confirms Mycobacterium tuberculosis bacilli in clinical sputum samples.",
+        "workedSolution": "Acid-fast Ziehl-Neelsen staining confirms Mycobacterium tuberculosis bacilli in clinical sputum samples.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Charles Darwin’s evolutionary biology provide the foundation for understanding antibiotic resistance in modern medicine?",
+        "options": [
+          "A. Bacterial populations under antibiotic selective pressure undergo natural selection, allowing mutant resistant strains to survive and multiply",
+          "B. Antibiotics mutate into food for bacteria",
+          "C. Bacteria learn how to avoid drugs by thinking",
+          "D. Penicillin was proven to be ineffective on bacteria"
+        ],
+        "correctAnswer": "A. Bacterial populations under antibiotic selective pressure undergo natural selection, allowing mutant resistant strains to survive and multiply",
+        "hint": "Antibiotic resistance is natural selection in action: selective pressure eliminates susceptible bacteria, selecting for resistant mutants.",
+        "workedSolution": "Antibiotic resistance is natural selection in action: selective pressure eliminates susceptible bacteria, selecting for resistant mutants.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary role of an electrical engineer in expanding renewable solar power grids?",
+        "options": [
+          "A. Designing DC-to-AC inverters, transformer sub-stations, and grid synchronization systems to safely transmit power",
+          "B. Assembling glass panels without wires",
+          "C. Measuring rainfall on solar panels",
+          "D. Digging trenches for telephone poles"
+        ],
+        "correctAnswer": "A. Designing DC-to-AC inverters, transformer sub-stations, and grid synchronization systems to safely transmit power",
+        "hint": "Electrical engineers design power electronics and grid-tied inverters to integrate variable solar generation into national grids.",
+        "workedSolution": "Electrical engineers design power electronics and grid-tied inverters to integrate variable solar generation into national grids.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does geochemist research support mineral exploration while mitigating acid mine drainage (AMD)?",
+        "options": [
+          "A. By identifying sulfide mineral complexes and modeling geochemical weathering to prevent sulfuric acid runoff into water bodies",
+          "B. By melting all rocks into liquid magma",
+          "C. By stopping all chemical reactions underground",
+          "D. By predicting the price of diamond exports"
+        ],
+        "correctAnswer": "A. By identifying sulfide mineral complexes and modeling geochemical weathering to prevent sulfuric acid runoff into water bodies",
+        "hint": "Geochemists analyze sulfide ore oxidation (pyrite), designing lime-neutralization systems to prevent toxic acidic drainage.",
+        "workedSolution": "Geochemists analyze sulfide ore oxidation (pyrite), designing lime-neutralization systems to prevent toxic acidic drainage.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the significance of the mass-energy equivalence equation ($E = mc^2$) formulated by Albert Einstein?",
+        "options": [
+          "A. It proved that mass and energy are interconvertible, establishing the scientific foundation of nuclear energy generation",
+          "B. It calculates the speed of diesel locomotives",
+          "C. It proves that sound travels faster than light",
+          "D. It calculates the volume of water in dams"
+        ],
+        "correctAnswer": "A. It proved that mass and energy are interconvertible, establishing the scientific foundation of nuclear energy generation",
+        "hint": "$E = mc^2$ demonstrates that a tiny amount of mass can be converted into massive nuclear energy via fission or fusion.",
+        "workedSolution": "$E = mc^2$ demonstrates that a tiny amount of mass can be converted into massive nuclear energy via fission or fusion.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the work of an ethologist critical when designing modern zoological parks and wildlife rehabilitation sanctuaries?",
+        "options": [
+          "A. It ensures animal enclosures replicate natural habitats and behavioral stimulation, preventing stereotypic stress behaviors",
+          "B. It trains animals to speak human languages",
+          "C. It allows wild animals to be sold in markets",
+          "D. It eliminates the need to feed animals"
+        ],
+        "correctAnswer": "A. It ensures animal enclosures replicate natural habitats and behavioral stimulation, preventing stereotypic stress behaviors",
+        "hint": "Ethological knowledge ensures captive environments meet natural psychological, social, and foraging requirements of species.",
+        "workedSolution": "Ethological knowledge ensures captive environments meet natural psychological, social, and foraging requirements of species.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In pharmaceutical manufacturing, what is the role of a quality control (QC) analytical chemist?",
+        "options": [
+          "A. Using HPLC and spectrophotometry to verify that drug active pharmaceutical ingredients (APIs) match exact purity and potency standards",
+          "B. Designing advertising posters for drugstores",
+          "C. Delivering medicine boxes in delivery vans",
+          "D. Sowing medicinal plants on farms"
+        ],
+        "correctAnswer": "A. Using HPLC and spectrophotometry to verify that drug active pharmaceutical ingredients (APIs) match exact purity and potency standards",
+        "hint": "QC analytical chemists perform chromatographic tests to ensure commercial medications are unadulterated and potent.",
+        "workedSolution": "QC analytical chemists perform chromatographic tests to ensure commercial medications are unadulterated and potent.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How did the late Prof. Jophus Anamuah-Mensah’s educational philosophy shape modern Basic Design and Technology (BDT) curricula in Ghana?",
+        "options": [
+          "A. By advocating for the integration of hands-on vocational, technological, and scientific problem-solving skills into basic education",
+          "B. By replacing science classrooms with sports fields",
+          "C. By banning science practicals in all schools",
+          "D. By restricting education to rote learning"
+        ],
+        "correctAnswer": "A. By advocating for the integration of hands-on vocational, technological, and scientific problem-solving skills into basic education",
+        "hint": "Prof. Anamuah-Mensah championed technical-vocational and practical science integration to prepare students for industrial careers.",
+        "workedSolution": "Prof. Anamuah-Mensah championed technical-vocational and practical science integration to prepare students for industrial careers.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a software developer implement cybersecurity cryptography in mobile banking applications?",
+        "options": [
+          "A. To encrypt sensitive financial transaction data, preventing unauthorized interception, identity theft, and cyber fraud",
+          "B. To make the smartphone battery last longer",
+          "C. To prevent the screen from getting dirty",
+          "D. To turn digital currency into gold"
+        ],
+        "correctAnswer": "A. To encrypt sensitive financial transaction data, preventing unauthorized interception, identity theft, and cyber fraud",
+        "hint": "Cryptographic algorithms secure data packets in transit, safeguarding digital banking from cyber attacks and data breaches.",
+        "workedSolution": "Cryptographic algorithms secure data packets in transit, safeguarding digital banking from cyber attacks and data breaches.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an industrial biotechnologist use genetic engineering to produce human insulin?",
+        "options": [
+          "A. Inserting the human insulin gene into recombinant Escherichia coli bacterial plasmids to express human insulin in commercial fermenters",
+          "B. Extracting insulin from plant roots",
+          "C. Crushing animal bones in chemical factories",
+          "D. Boiling table sugar with acids"
+        ],
+        "correctAnswer": "A. Inserting the human insulin gene into recombinant Escherichia coli bacterial plasmids to express human insulin in commercial fermenters",
+        "hint": "Recombinant DNA technology inserts the human proinsulin gene into bacteria, producing pure biosimilar insulin for diabetics.",
+        "workedSolution": "Recombinant DNA technology inserts the human proinsulin gene into bacteria, producing pure biosimilar insulin for diabetics.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary operational hazard investigated by an aviation safety engineer after an aircraft engine failure?",
+        "options": [
+          "A. Metallurgical fatigue cracking in turbine fan blades or catastrophic foreign object bird ingestion",
+          "B. The color of passenger seats inside the cabin",
+          "C. The price of aviation fuel at the airport",
+          "D. The cleanliness of the pilot's uniform"
+        ],
+        "correctAnswer": "A. Metallurgical fatigue cracking in turbine fan blades or catastrophic foreign object bird ingestion",
+        "hint": "Aviation engineers analyze flight data recorders and fracture mechanics of engine blades to determine failure causes.",
+        "workedSolution": "Aviation engineers analyze flight data recorders and fracture mechanics of engine blades to determine failure causes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the preservation of biodiversity considered vital by agricultural geneticists and botanists?",
+        "options": [
+          "A. Wild crop relatives harbor unique genetic traits for drought tolerance, disease resistance, and yield enhancement needed in crop breeding",
+          "B. It makes forest trees grow twice as tall",
+          "C. It prevents soil from eroding completely",
+          "D. Wild plants require no sunlight"
+        ],
+        "correctAnswer": "A. Wild crop relatives harbor unique genetic traits for drought tolerance, disease resistance, and yield enhancement needed in crop breeding",
+        "hint": "Wild germplasm provides critical gene reservoirs for developing climate-resilient, disease-resistant crop cultivars.",
+        "workedSolution": "Wild germplasm provides critical gene reservoirs for developing climate-resilient, disease-resistant crop cultivars.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does a biomedical engineer improve the mobility of physically disabled amputees?",
+        "options": [
+          "A. Designing advanced prosthetic limbs using lightweight carbon-fiber composites and myoelectric neural sensors",
+          "B. Prescribing antibiotic pills",
+          "C. Performing bone marrow transplants",
+          "D. Supplying wooden crutches only"
+        ],
+        "correctAnswer": "A. Designing advanced prosthetic limbs using lightweight carbon-fiber composites and myoelectric neural sensors",
+        "hint": "Biomedical engineering integrates mechanical design, materials science, and neuro-sensors to construct functional bionic prosthetics.",
+        "workedSolution": "Biomedical engineering integrates mechanical design, materials science, and neuro-sensors to construct functional bionic prosthetics.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What chemical process is monitored by a hazardous waste chemist during the remediation of soil contaminated with polychlorinated biphenyls (PCBs)?",
+        "options": [
+          "A. High-temperature thermal desorption or advanced oxidative dechlorination of aromatic rings",
+          "B. Adding water to make PCBs evaporate",
+          "C. Freezing the contaminated soil",
+          "D. Mixing soil with sugar syrup"
+        ],
+        "correctAnswer": "A. High-temperature thermal desorption or advanced oxidative dechlorination of aromatic rings",
+        "hint": "Remediating persistent PCBs requires chemical dechlorination or thermal destruction to break down stable chlorine-carbon bonds.",
+        "workedSolution": "Remediating persistent PCBs requires chemical dechlorination or thermal destruction to break down stable chlorine-carbon bonds.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is reverse engineering of imported agricultural machinery an effective industrial strategy for developing countries?",
+        "options": [
+          "A. It deconstructs foreign mechanisms to understand their engineering principles, allowing local manufacturers to fabricate affordable domestic versions",
+          "B. It makes all imported machines illegal",
+          "C. It eliminates the need for steel factories",
+          "D. It breaks down foreign machines permanently"
+        ],
+        "correctAnswer": "A. It deconstructs foreign mechanisms to understand their engineering principles, allowing local manufacturers to fabricate affordable domestic versions",
+        "hint": "Analyzing foreign designs allows local engineers to build capacity, substitute local materials, and produce contextualized machines.",
+        "workedSolution": "Analyzing foreign designs allows local engineers to build capacity, substitute local materials, and produce contextualized machines.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In pathology, how does immunohistochemistry (IHC) performed by a laboratory technician assist an oncologist?",
+        "options": [
+          "A. Identifying specific antigen markers on tumor biopsy slices to determine the exact cellular origin and malignancy of cancer",
+          "B. Measuring patient blood pressure",
+          "C. Testing urine for glucose",
+          "D. Checking eye vision"
+        ],
+        "correctAnswer": "A. Identifying specific antigen markers on tumor biopsy slices to determine the exact cellular origin and malignancy of cancer",
+        "hint": "IHC uses labeled antibodies to bind specific tumor biomarkers on tissue sections, guiding targeted chemotherapy.",
+        "workedSolution": "IHC uses labeled antibodies to bind specific tumor biomarkers on tissue sections, guiding targeted chemotherapy.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an industrial robotics engineer optimize manufacturing assembly lines in an automobile factory?",
+        "options": [
+          "A. Programming articulated robotic arms to perform high-precision spot welding, painting, and assembly with zero fatigue",
+          "B. Replacing electricity with coal furnaces",
+          "C. Making all cars by hand",
+          "D. Slowing down the movement of conveyor belts"
+        ],
+        "correctAnswer": "A. Programming articulated robotic arms to perform high-precision spot welding, painting, and assembly with zero fatigue",
+        "hint": "Industrial robotics automates repetitive, hazardous tasks, dramatically increasing production speed, precision, and safety.",
+        "workedSolution": "Industrial robotics automates repetitive, hazardous tasks, dramatically increasing production speed, precision, and safety.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of a database administrator in a national telecommunication agency?",
+        "options": [
+          "A. Ensuring massive citizen call and data databases are organized, encrypted, backed up, and accessible with zero downtime",
+          "B. Laying underground copper telephone cables",
+          "C. Selling mobile phone SIM cards",
+          "D. Repairing damaged phone screens"
+        ],
+        "correctAnswer": "A. Ensuring massive citizen call and data databases are organized, encrypted, backed up, and accessible with zero downtime",
+        "hint": "Database administrators manage large-scale data integrity, query optimization, high availability, and disaster recovery.",
+        "workedSolution": "Database administrators manage large-scale data integrity, query optimization, high availability, and disaster recovery.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the study of entomology crucial in the epidemiology of tropical infectious diseases?",
+        "options": [
+          "A. Many severe human pathogens are transmitted by insect vectors (e.g., Anopheles mosquitoes transmitting malaria, tsetse flies transmitting sleeping sickness)",
+          "B. Insects are the only source of antibiotics",
+          "C. Insects produce all known vaccines",
+          "D. Insects purify contaminated river water"
+        ],
+        "correctAnswer": "A. Many severe human pathogens are transmitted by insect vectors (e.g., Anopheles mosquitoes transmitting malaria, tsetse flies transmitting sleeping sickness)",
+        "hint": "Medical entomologists study vector ecology, feeding behaviors, and insecticide resistance to interrupt vector-borne disease transmission.",
+        "workedSolution": "Medical entomologists study vector ecology, feeding behaviors, and insecticide resistance to interrupt vector-borne disease transmission.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How did Prof. Christian Anthony-Krueger’s pedagogical models transform science teacher preparation in Ghana?",
+        "options": [
+          "A. By emphasizing reflective practice, learner-centered inquiry, and formative performance assessment in science education",
+          "B. By replacing science classrooms with libraries",
+          "C. By removing chemistry from the curriculum",
+          "D. By advocating for pure textbook memorization"
+        ],
+        "correctAnswer": "A. By emphasizing reflective practice, learner-centered inquiry, and formative performance assessment in science education",
+        "hint": "Prof. Anthony-Krueger developed assessment frameworks and reflective teaching models that improved practical pedagogy.",
+        "workedSolution": "Prof. Anthony-Krueger developed assessment frameworks and reflective teaching models that improved practical pedagogy.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ecological hazard when an aquaculture farm discharges untreated fish waste into a river?",
+        "options": [
+          "A. Excessive nitrogenous waste and unconsumed feed induce severe algal blooms, nocturnal hypoxia, and downstream fish kills",
+          "B. The river water turns into pure spring water",
+          "C. The river becomes frozen",
+          "D. River fish turn into ocean mammals"
+        ],
+        "correctAnswer": "A. Excessive nitrogenous waste and unconsumed feed induce severe algal blooms, nocturnal hypoxia, and downstream fish kills",
+        "hint": "Aquaculture effluents contain concentrated ammonia and phosphorus that cause downstream eutrophication and dissolved oxygen collapse.",
+        "workedSolution": "Aquaculture effluents contain concentrated ammonia and phosphorus that cause downstream eutrophication and dissolved oxygen collapse.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does a marine geochemist investigate the impact of global warming on coral reefs?",
+        "options": [
+          "A. Measuring ocean acidification, dissolved carbonate ion saturation states, and calcification rates of coral skeletons",
+          "B. Catching fish with nylon nets",
+          "C. Planting palm trees along the coast",
+          "D. Painting coral reefs with white dye"
+        ],
+        "correctAnswer": "A. Measuring ocean acidification, dissolved carbonate ion saturation states, and calcification rates of coral skeletons",
+        "hint": "Geochemists measure seawater pH drops caused by absorbed atmospheric $CO_2$, which dissolves calcium carbonate coral skeletons.",
+        "workedSolution": "Geochemists measure seawater pH drops caused by absorbed atmospheric $CO_2$, which dissolves calcium carbonate coral skeletons.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the Allotey Formalism applied in semiconductor and nanotechnology manufacturing?",
+        "options": [
+          "A. It provides mathematical models to analyze and verify the electronic band structures of nanoscale silicon and novel alloys",
+          "B. It calculates the weight of bulldozer engines",
+          "C. It prevents computer monitors from breaking",
+          "D. It converts silicon into pure gold"
+        ],
+        "correctAnswer": "A. It provides mathematical models to analyze and verify the electronic band structures of nanoscale silicon and novel alloys",
+        "hint": "Allotey's spectroscopic formalism allows solid-state physicists to probe electronic density and band gaps in novel semiconductors.",
+        "workedSolution": "Allotey's spectroscopic formalism allows solid-state physicists to probe electronic density and band gaps in novel semiconductors.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In organic food production, how does an agricultural microbiologist develop mycorrhizal bio-fertilizers?",
+        "options": [
+          "A. Culturing beneficial symbiotic fungi that colonize plant root systems, enhancing phosphorus uptake and drought resilience",
+          "B. Adding synthetic sulfuric acid to soil",
+          "C. Irradiating seeds with radioactive rays",
+          "D. Freezing crop roots in liquid nitrogen"
+        ],
+        "correctAnswer": "A. Culturing beneficial symbiotic fungi that colonize plant root systems, enhancing phosphorus uptake and drought resilience",
+        "hint": "Mycorrhizal inoculants establish mutualistic root associations that dramatically improve mineral absorption without synthetic chemicals.",
+        "workedSolution": "Mycorrhizal inoculants establish mutualistic root associations that dramatically improve mineral absorption without synthetic chemicals.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do software engineers use artificial intelligence (AI) to improve medical diagnostic imaging?",
+        "options": [
+          "A. Training deep convolutional neural networks to detect early malignant tumors on CT and MRI scans with high sensitivity",
+          "B. Replacing hospital beds with computer monitors",
+          "C. Prescribing medication without clinical trials",
+          "D. Disinfecting surgery rooms with laser beams"
+        ],
+        "correctAnswer": "A. Training deep convolutional neural networks to detect early malignant tumors on CT and MRI scans with high sensitivity",
+        "hint": "Computer vision algorithms detect subtle radiological patterns in scans, assisting radiologists in early cancer detection.",
+        "workedSolution": "Computer vision algorithms detect subtle radiological patterns in scans, assisting radiologists in early cancer detection.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary responsibility of an environmental toxicologist in a municipal drinking water treatment facility?",
+        "options": [
+          "A. Conducting bio-assays to ensure treated water is free of heavy metals, pesticide residues, and disinfection by-products",
+          "B. Painting the water storage reservoirs",
+          "C. Setting municipal water bills",
+          "D. Repairing broken water pipe valves"
+        ],
+        "correctAnswer": "A. Conducting bio-assays to ensure treated water is free of heavy metals, pesticide residues, and disinfection by-products",
+        "hint": "Toxicologists verify that treated drinking water meets maximum contaminant levels for toxic chemical compounds.",
+        "workedSolution": "Toxicologists verify that treated drinking water meets maximum contaminant levels for toxic chemical compounds.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the preservation of endangered native livestock breeds considered essential by an animal geneticist?",
+        "options": [
+          "A. Indigenous breeds possess vital genetic adaptations for disease resistance (e.g., trypanotolerance) and heat tolerance",
+          "B. Native animals produce only gold wool",
+          "C. Exotic animals cannot eat grass",
+          "D. Native breeds require no drinking water"
+        ],
+        "correctAnswer": "A. Indigenous breeds possess vital genetic adaptations for disease resistance (e.g., trypanotolerance) and heat tolerance",
+        "hint": "Indigenous genetic traits (like trypanotolerance in N'Dama cattle) provide invaluable resilience against endemic tropical diseases.",
+        "workedSolution": "Indigenous genetic traits (like trypanotolerance in N'Dama cattle) provide invaluable resilience against endemic tropical diseases.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does a pharmacologist formulate sustained-release drug delivery systems?",
+        "options": [
+          "A. Encapsulating the drug in biodegradable polymer matrices that dissolve slowly, maintaining steady therapeutic plasma concentrations",
+          "B. Mixing the drug with table salt and water",
+          "C. Freezing the medicine before sale",
+          "D. Coating pills with sweet fruit syrup only"
+        ],
+        "correctAnswer": "A. Encapsulating the drug in biodegradable polymer matrices that dissolve slowly, maintaining steady therapeutic plasma concentrations",
+        "hint": "Polymer microspheres control dissolution rates, eliminating sharp peaks and troughs in patient drug blood levels.",
+        "workedSolution": "Polymer microspheres control dissolution rates, eliminating sharp peaks and troughs in patient drug blood levels.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of an aerodynamic engineer in wind turbine design?",
+        "options": [
+          "A. Modeling airfoil blade profiles to maximize lift-to-drag ratios and kinetic energy extraction across varying wind speeds",
+          "B. Painting wind turbine towers green",
+          "C. Digging deep foundations for towers",
+          "D. Measuring solar radiation on the blades"
+        ],
+        "correctAnswer": "A. Modeling airfoil blade profiles to maximize lift-to-drag ratios and kinetic energy extraction across varying wind speeds",
+        "hint": "Aerodynamic engineers optimize blade geometry to capture maximum wind kinetic energy while minimizing structural turbulence.",
+        "workedSolution": "Aerodynamic engineers optimize blade geometry to capture maximum wind kinetic energy while minimizing structural turbulence.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a clinical pathologist evaluate peripheral blood films under high magnification?",
+        "options": [
+          "A. Assessing red cell morphology, detecting intracellular malaria parasites, and identifying abnormal blast cells in leukemia",
+          "B. Counting the number of water molecules in blood",
+          "C. Determining the blood temperature in Celsius",
+          "D. Checking the patient's blood pressure"
+        ],
+        "correctAnswer": "A. Assessing red cell morphology, detecting intracellular malaria parasites, and identifying abnormal blast cells in leukemia",
+        "hint": "Microscopic blood film analysis identifies morphological anomalies, parasitic infections (Plasmodium), and hematological malignancies.",
+        "workedSolution": "Microscopic blood film analysis identifies morphological anomalies, parasitic infections (Plasmodium), and hematological malignancies.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an ethologist contribute to the conservation of endangered sea turtles nesting on Ghanaian beaches?",
+        "options": [
+          "A. Studying orientation behavior and artificial lighting disruption to protect hatchlings as they navigate to the ocean",
+          "B. Feeding sea turtles with bread",
+          "C. Keeping hatchlings in metal cages permanently",
+          "D. Selling sea turtle eggs to tourists"
+        ],
+        "correctAnswer": "A. Studying orientation behavior and artificial lighting disruption to protect hatchlings as they navigate to the ocean",
+        "hint": "Ethologists understand sea-finding phototaxis in hatchlings, designing dark-sky buffer zones to stop hatchling disorientation.",
+        "workedSolution": "Ethologists understand sea-finding phototaxis in hatchlings, designing dark-sky buffer zones to stop hatchling disorientation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of a database security architect in cloud computing software engineering?",
+        "options": [
+          "A. Implementing zero-trust authentication, role-based access control, and end-to-end data encryption across distributed servers",
+          "B. Cleaning computer keyboard dust",
+          "C. Designing physical computer cases",
+          "D. Installing telephone wires in homes"
+        ],
+        "correctAnswer": "A. Implementing zero-trust authentication, role-based access control, and end-to-end data encryption across distributed servers",
+        "hint": "Security architects establish multi-layered defense protocols to prevent unauthorized data access, leakage, or ransomware in cloud systems.",
+        "workedSolution": "Security architects establish multi-layered defense protocols to prevent unauthorized data access, leakage, or ransomware in cloud systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the collaboration between agricultural engineers and meteorologists critical for climate-smart farming?",
+        "options": [
+          "A. Developing precision automated irrigation systems programmed to respond dynamically to predictive weather and evapotranspiration data",
+          "B. Stopping heavy rainfall from reaching crops",
+          "C. Changing the climate of the entire continent",
+          "D. Making all crops grow without sunlight"
+        ],
+        "correctAnswer": "A. Developing precision automated irrigation systems programmed to respond dynamically to predictive weather and evapotranspiration data",
+        "hint": "Integrating micro-meteorological forecasts with smart drip irrigation optimizes water conservation and boosts crop climate resilience.",
+        "workedSolution": "Integrating micro-meteorological forecasts with smart drip irrigation optimizes water conservation and boosts crop climate resilience.",
+        "points": 1
+      },
+      {
+        "id": "B7_SI_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does modeling science careers after great national icons like Prof. Allotey and Prof. Ewurama Addy inspire sustainable national development?",
+        "options": [
+          "A. It instills research discipline, technological innovation, and self-belief in young scholars to solve domestic industrial challenges",
+          "B. It encourages students to avoid scientific studies",
+          "C. It teaches students to import all manufactured goods",
+          "D. It removes the need for science education"
+        ],
+        "correctAnswer": "A. It instills research discipline, technological innovation, and self-belief in young scholars to solve domestic industrial challenges",
+        "hint": "Pioneering role models inspire youth to pursue STEM excellence, invent local technologies, and drive national industrial transformation.",
+        "workedSolution": "Pioneering role models inspire youth to pursue STEM excellence, invent local technologies, and drive national industrial transformation.",
         "points": 1
       }
     ]
