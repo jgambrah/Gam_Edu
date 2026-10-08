@@ -310,7 +310,7 @@ export function TopicalLabRunner({
   const [activeLevel, setActiveLevel] = useState<TopicalLabLevelKey>(initialResolvedLevel);
 
   React.useEffect(() => {
-    setActiveLevel(initialResolvedLevel);
+    setActiveLevel(prev => prev !== initialResolvedLevel ? initialResolvedLevel : prev);
   }, [initialResolvedLevel]);
 
   // 2. Core Section Tabs State: 'notes_examples' | 'practice_labs' | 'past_exams'
@@ -363,7 +363,7 @@ export function TopicalLabRunner({
 
     return (
       sub.includes('science') ||
-      id.startsWith('b7_strand') || id.startsWith('b8_strand') || id.startsWith('b9_strand') || id.startsWith('bs') ||
+      id.startsWith('sci_strand') || id.startsWith('b7_strand') || id.startsWith('b8_strand') || id.startsWith('b9_strand') || id.startsWith('bs') || id.startsWith('CARD_') || id.includes('agricultural') ||
       strand.includes('diversity') || strand.includes('cycles') || strand.includes('systems') || strand.includes('forces') || strand.includes('environment') || strand.includes('matter') ||
       title.includes('diversity') || title.includes('matter') || title.includes('particulate') || title.includes('living cell') || title.includes('atomic structure') || title.includes('acids') || title.includes('biogeochemical') || title.includes('life cycle') || title.includes('dentition') || title.includes('solar system') || title.includes('electricity') || title.includes('force, motion') || title.includes('climate change') || title.includes('soil formation') ||
       subStrand.includes('materials') || subStrand.includes('living cells') || subStrand.includes('atomic') || subStrand.includes('acids') || subStrand.includes('biogeochemical') || subStrand.includes('metamorphosis') || subStrand.includes('dentition') || subStrand.includes('planetary') || subStrand.includes('semiconductors') || subStrand.includes('pressure') || subStrand.includes('green economy') || subStrand.includes('weathering')

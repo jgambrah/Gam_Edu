@@ -6832,7 +6832,7 @@ function MathLab({
     const [autoLaunchedExamId, setAutoLaunchedExamId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!targetExamId || autoLaunchedExamId === targetExamId || activeQuestionSet || activeTopicMeta || isLoadingSet) {
+        if (!targetExamId || autoLaunchedExamId === targetExamId || activeQuestionSet || activeTopicMeta || activeTopicalLab || isLoadingSet) {
             return;
         }
 
@@ -6990,7 +6990,7 @@ function MathLab({
         } finally {
             setIsRefreshing(false);
         }
-    }, [activeGrade, subject, toast]);
+    }, [activeGrade, subject]);
 
     useEffect(() => {
         refreshCurriculumSets(false);
@@ -8789,7 +8789,10 @@ if (
         // 1. Direct handling of Topical Practice Labs (costs strictly 1 Firestore read)
         const isRecognizedTopical = mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && (
             mod.topicId.startsWith('topic_') || mod.topicId.startsWith('bs') ||
+            mod.topicId.startsWith('sci_strand') || mod.topicId.startsWith('CARD_') ||
             mod.topicId.startsWith('b7_strand') || mod.topicId.startsWith('b8_strand') || mod.topicId.startsWith('b9_strand') ||
+            mod.topicId.startsWith('b7_sci_') || mod.topicId.startsWith('b8_sci_') || mod.topicId.startsWith('b9_sci_') ||
+            mod.topicId.includes('agricultural') ||
             mod.topicId.startsWith('oral_') || mod.topicId.startsWith('grammar_') ||
             mod.topicId.startsWith('reading_') || mod.topicId.startsWith('writing_') ||
             mod.topicId.startsWith('literature_') || mod.topicId.includes('phonology')
@@ -8799,7 +8802,7 @@ if (
             try {
                 const topicDocId = mod.topicId;
                 const isEng = ((mod.subject || '') as string).toLowerCase().includes('english') || subject === 'english' || topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('phonology');
-                const isSci = ((mod.subject || '') as string).toLowerCase().includes('science') || subject === 'science' || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
+                const isSci = ((mod.subject || '') as string).toLowerCase().includes('science') || subject === 'science' || topicDocId.startsWith('sci_strand') || topicDocId.startsWith('CARD_') || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('b7_sci_') || topicDocId.startsWith('bs') || topicDocId.includes('agricultural');
                 const labSubject = isSci ? 'science' : (isEng ? 'english' : 'math');
                 invalidateTopicalLabCache(topicDocId, labSubject);
                 const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject, true);
@@ -9867,8 +9870,13 @@ if (
                                     return (
                                         <div 
                                             key={mod.setId || i} 
+                                            onClick={() => {
+                                                if (mod.status !== 'pending_content') {
+                                                    handleLaunchModule(mod);
+                                                }
+                                            }}
                                             className={cn(
-                                                "rounded-2xl p-5 transition-all flex flex-col justify-between group h-full",
+                                                "rounded-2xl p-5 transition-all flex flex-col justify-between group h-full cursor-pointer",
                                                 isExamCard 
                                                     ? (isPaper2 
                                                         ? "border border-amber-500/30 hover:border-amber-400/60 bg-slate-900/90 shadow-[0_0_15px_rgba(245,158,11,0.06)]" 
@@ -9999,7 +10007,10 @@ if (
                                                 )}
                                                 <Button
                                                     size="sm"
-                                                    onClick={() => handleLaunchModule(mod)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleLaunchModule(mod);
+                                                    }}
                                                     disabled={mod.status === 'pending_content'}
                                                     className={cn(
                                                         "h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 cursor-pointer",

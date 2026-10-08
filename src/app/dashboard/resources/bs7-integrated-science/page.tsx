@@ -39,6 +39,8 @@ import {
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
+import { MathRenderer } from '@/components/curriculum/MathRenderer';
+import { NACCA_JHS_SCIENCE_19_HUBS } from '@/lib/data/jhs-science-curriculum';
 
 
 // --- CONSTANTS: The Structure You Provided ---
@@ -92,7 +94,8 @@ function MaterialEditorDialog({
   // Handle Strand Change to reset Sub-strand
   useEffect(() => {
     if (mode === 'create') {
-        setSubStrand(PREDEFINED_SUBSTRANDS[strand]?.[0] || '');
+      const defaultSub = PREDEFINED_SUBSTRANDS[strand]?.[0] || '';
+      setSubStrand(prev => (prev === defaultSub ? prev : defaultSub));
     }
   }, [strand, mode]);
 
@@ -184,6 +187,9 @@ function MaterialEditorDialog({
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>{mode === 'create' ? 'Create New Topic' : 'Edit Topic'}</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Manage comprehensive concept notes, diagrams, videos, and practice questions for this curriculum unit.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto bg-slate-50/50">
@@ -379,18 +385,101 @@ export default function BS7IntegratedSciencePage() {
 
   const { data: materials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
 
-  // Grouping Logic: Strand -> SubStrand -> Topics
+  // Grouping Logic: Strand -> SubStrand -> Topics (with authoritative NaCCA curriculum fallbacks)
   const groupedData = useMemo(() => {
-    if (!materials) return {};
     const groups: Record<string, Record<string, LearningMaterial[]>> = {};
 
-    materials.forEach(mat => {
+    // Initialize all predefined strands & sub-strands
+    PREDEFINED_STRANDS.forEach(s => {
+      groups[s] = {};
+      (PREDEFINED_SUBSTRANDS[s] || []).forEach(sub => {
+        groups[s][sub] = [];
+      });
+    });
+
+    // Seed authoritative B7 topics from NACCA_JHS_SCIENCE_19_HUBS
+    const hubSubStrandMap: Record<string, { strand: string; subStrand: string }> = {
+      sci_strand1_materials: { strand: "STRAND 1: DIVERSITY OF MATTER", subStrand: "Sub-strand 1: Materials" },
+      sci_strand1_cells: { strand: "STRAND 1: DIVERSITY OF MATTER", subStrand: "Sub-Strand 2: Living Cells" },
+      sci_strand2_earth_cycles: { strand: "STRAND 2: CYCLE", subStrand: "Sub-strand 1: Earth Science" },
+      sci_strand2_life_cycles: { strand: "STRAND 2: CYCLE", subStrand: "Sub-strand 2: Life Cycle of life Organisms" },
+      sci_strand2_crop_production: { strand: "STRAND 2: CYCLE", subStrand: "Sub-Strand 3: Crop Production" },
+      sci_strand2_animal_production: { strand: "STRAND 2: CYCLE", subStrand: "Sub-strand 4: Animal Production" },
+      sci_strand3_solar_system: { strand: "STRAND 3: SYSTEMS", subStrand: "Sub-strand 1: The Solar system" },
+      sci_strand3_ecosystems: { strand: "STRAND 3: SYSTEMS", subStrand: "Sub-strand 2: Ecosystems" },
+      sci_strand3_farming_systems: { strand: "STRAND 3: SYSTEMS", subStrand: "Sub-strand 3: Farming Systems" },
+      sci_strand4_energy_waves: { strand: "STRAND 4: FORCES AND ENERGY", subStrand: "Sub-strand 1: Energy" },
+      sci_strand4_electricity: { strand: "STRAND 4: FORCES AND ENERGY", subStrand: "Sub-strand 2: Electricity and Electronics" },
+      sci_strand4_conversion: { strand: "STRAND 4: FORCES AND ENERGY", subStrand: "Sub-strand 3: Conversion and Conservation of Energy" },
+      sci_strand4_forces_mechanics: { strand: "STRAND 4: FORCES AND ENERGY", subStrand: "Sub-strand 4: Force and Motion" },
+      sci_strand4_agricultural_tools: { strand: "STRAND 4: FORCES AND ENERGY", subStrand: "Sub-strand 5: Agricultural Tools" },
+      sci_strand5_waste_management: { strand: "STRAND 5: HUMAN AND THE ENVIRONMENT", subStrand: "Sub-strand 1: Waste Management" },
+      sci_strand5_human_health: { strand: "STRAND 5: HUMAN AND THE ENVIRONMENT", subStrand: "Sub-strand 2: Human Health" },
+      sci_strand5_science_industry: { strand: "STRAND 5: HUMAN AND THE ENVIRONMENT", subStrand: "Sub-strand 3: Science and Industry" },
+      sci_strand5_climate_change: { strand: "STRAND 5: HUMAN AND THE ENVIRONMENT", subStrand: "Sub-strand 4: Climate Change" }
+    };
+
+    NACCA_JHS_SCIENCE_19_HUBS.forEach(hub => {
+      const mapping = hubSubStrandMap[hub.id];
+      if (mapping && hub.levels?.b7?.notes) {
+        const b7Lvl = hub.levels.b7;
+        const questions: RichQuizQuestion[] = [
+          ...(b7Lvl.practicePool?.low || []),
+          ...(b7Lvl.practicePool?.medium || []),
+          ...(b7Lvl.practicePool?.hard || [])
+        ].map(q => ({
+          question: q.prompt,
+          options: q.options || [],
+          correctAnswer: q.correctAnswer
+        }));
+
+        const fallbackItem: LearningMaterial = {
+          id: `nacca_${hub.id}`,
+          courseId: 'bs7-integrated-science',
+          strand: mapping.strand,
+          subStrand: mapping.subStrand,
+          topicTitle: hub.title,
+          content: b7Lvl.notes,
+          practiceQuestions: questions,
+          videoLinks: [],
+          attachments: []
+        };
+
+        if (!groups[mapping.strand]) groups[mapping.strand] = {};
+        if (!groups[mapping.strand][mapping.subStrand]) groups[mapping.strand][mapping.subStrand] = [];
+        groups[mapping.strand][mapping.subStrand].push(fallbackItem);
+      }
+    });
+
+    // Overlay user created/edited materials from Firestore
+    if (materials && materials.length > 0) {
+      materials.forEach(mat => {
         if (!mat.strand || !mat.subStrand) return;
         if (!groups[mat.strand]) groups[mat.strand] = {};
         if (!groups[mat.strand][mat.subStrand]) groups[mat.strand][mat.subStrand] = [];
-        groups[mat.strand][mat.subStrand].push(mat);
+        // Replace matching seeded item or prepend
+        const existingIdx = groups[mat.strand][mat.subStrand].findIndex(i => i.topicTitle.toLowerCase() === mat.topicTitle.toLowerCase() || i.id === mat.id);
+        if (existingIdx >= 0) {
+          groups[mat.strand][mat.subStrand][existingIdx] = mat;
+        } else {
+          groups[mat.strand][mat.subStrand].unshift(mat);
+        }
+      });
+    }
+
+    // Filter out empty sub-strands and strands for clean display
+    const cleanedGroups: Record<string, Record<string, LearningMaterial[]>> = {};
+    Object.entries(groups).forEach(([sName, subMap]) => {
+      const activeSubs: Record<string, LearningMaterial[]> = {};
+      Object.entries(subMap).forEach(([subName, list]) => {
+        if (list.length > 0) activeSubs[subName] = list;
+      });
+      if (Object.keys(activeSubs).length > 0) {
+        cleanedGroups[sName] = activeSubs;
+      }
     });
-    return groups;
+
+    return cleanedGroups;
   }, [materials]);
 
   const handleEdit = (material: LearningMaterial) => {
@@ -481,7 +570,9 @@ export default function BS7IntegratedSciencePage() {
                                                 <CardContent className="p-4 space-y-6">
                                                     
                                                     {/* 1. Content */}
-                                                    <div className="prose prose-sm max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: topic.content }}/>
+                                                    <div className="prose prose-sm max-w-none">
+                                                      <MathRenderer content={topic.content} className="text-slate-800 leading-relaxed" />
+                                                    </div>
 
                                                     {/* 2. Attachments */}
                                                     {topic.attachments && topic.attachments.length > 0 && (

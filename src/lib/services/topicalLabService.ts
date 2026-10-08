@@ -391,6 +391,12 @@ const TOPIC_DOC_ALIASES: Record<string, string> = {
   b9_strand4_machines: 'sci_strand4_forces_mechanics',
   b9_strand5_waste_mgmt: 'sci_strand5_waste_management',
   b9_strand5_science_industry: 'sci_strand5_science_industry',
+  CARD_14_AGRICULTURAL_TOOLS_AND_IMPLEMENTS: 'sci_strand4_agricultural_tools',
+  b7_sci_strand4_agricultural_tools: 'sci_strand4_agricultural_tools',
+  b7_strand4_agricultural_tools: 'sci_strand4_agricultural_tools',
+  b8_strand4_agricultural_tools: 'sci_strand4_agricultural_tools',
+  b9_strand4_agricultural_tools: 'sci_strand4_agricultural_tools',
+  agricultural_tools: 'sci_strand4_agricultural_tools',
   cockcrow_literary_devices: 'beacon_of_light_anthology_literary_devices',
   literature_cockcrow_canon: 'beacon_of_light_anthology_literary_devices',
   the_cockcrow_anthology_literary_devices: 'beacon_of_light_anthology_literary_devices',
@@ -579,7 +585,7 @@ export async function fetchTopicalLabDoc(
   levelId: string = 'jhs',
   subjectId: string = 'math'
 ): Promise<TopicalLabDocument | null> {
-  const isScienceDocId = topicDocId.startsWith('sci_strand') || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('bs');
+  const isScienceDocId = topicDocId.startsWith('sci_strand') || topicDocId.startsWith('b7_strand') || topicDocId.startsWith('b8_strand') || topicDocId.startsWith('b9_strand') || topicDocId.startsWith('b7_sci_') || topicDocId.startsWith('b8_sci_') || topicDocId.startsWith('b9_sci_') || topicDocId.startsWith('bs') || topicDocId.startsWith('CARD_14') || topicDocId.includes('agricultural') || subjectId === 'science';
   const isEnglishDocId = topicDocId.startsWith('oral_') || topicDocId.startsWith('grammar_') || topicDocId.startsWith('reading_') || topicDocId.startsWith('writing_') || topicDocId.startsWith('literature_') || topicDocId.includes('beacon') || topicDocId.includes('cockcrow');
   const effectiveSubjectId = isScienceDocId ? 'science' : (isEnglishDocId ? 'english' : subjectId);
   try {
@@ -717,21 +723,83 @@ export async function fetchTopicalLabDoc(
       return adaptEnglishOrGenericDocToTopicalLab(topicalDocSnap.id, data);
     }
 
-    // 1. Primary check in topical_units (e.g. Science hubs: sci_strand1_materials or b7_strand1_materials)
+    // 1. Primary check in topical_units with authoritative NaCCA 19-hub code priority
     const resolvedScienceDocId = TOPIC_DOC_ALIASES[topicDocId] || topicDocId;
+    const hub19 = isScienceDocId ? NACCA_JHS_SCIENCE_19_HUBS.find(h => h.id === resolvedScienceDocId || (h as any).aliases?.includes(topicDocId) || (h as any).cardId === topicDocId) : null;
+    if (isScienceDocId && hub19 && hub19.levels?.b7?.notes && hub19.levels.b7.notes.length > 500) {
+      return hub19;
+    }
     const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', effectiveSubjectId, 'topical_units', resolvedScienceDocId);
     const unitSnap = await getDoc(unitRef);
     if (unitSnap.exists()) {
       const data = unitSnap.data() as any;
       if (data.notes && data.drillQuestions && !data.levels) {
-        return adaptScienceUnitToTopicalLab({ ...data, id: unitSnap.id });
+        const adapted = adaptScienceUnitToTopicalLab({ ...data, id: unitSnap.id });
+        if (hub19) {
+          return {
+            ...adapted,
+            ...hub19,
+            levels: {
+              b7: {
+                ...adapted.levels?.b7,
+                ...hub19.levels?.b7,
+                notes: (hub19.levels?.b7?.notes && hub19.levels.b7.notes.length > (adapted.levels?.b7?.notes?.length || 0)) ? hub19.levels.b7.notes : (adapted.levels?.b7?.notes || hub19.levels?.b7?.notes || ''),
+                workedExamples: (hub19.levels?.b7?.workedExamples && hub19.levels.b7.workedExamples.length > 0) ? hub19.levels.b7.workedExamples : (adapted.levels?.b7?.workedExamples || []),
+                practicePool: (adapted.levels?.b7?.practicePool?.low?.length || adapted.levels?.b7?.practicePool?.medium?.length) ? adapted.levels.b7.practicePool : hub19.levels?.b7?.practicePool
+              },
+              b8: {
+                ...adapted.levels?.b8,
+                ...hub19.levels?.b8,
+                notes: (hub19.levels?.b8?.notes && hub19.levels.b8.notes.length > (adapted.levels?.b8?.notes?.length || 0)) ? hub19.levels.b8.notes : (adapted.levels?.b8?.notes || hub19.levels?.b8?.notes || ''),
+                workedExamples: (hub19.levels?.b8?.workedExamples && hub19.levels.b8.workedExamples.length > 0) ? hub19.levels.b8.workedExamples : (adapted.levels?.b8?.workedExamples || []),
+                practicePool: (adapted.levels?.b8?.practicePool?.low?.length || adapted.levels?.b8?.practicePool?.medium?.length) ? adapted.levels.b8.practicePool : hub19.levels?.b8?.practicePool
+              },
+              b9: {
+                ...adapted.levels?.b9,
+                ...hub19.levels?.b9,
+                notes: (hub19.levels?.b9?.notes && hub19.levels.b9.notes.length > (adapted.levels?.b9?.notes?.length || 0)) ? hub19.levels.b9.notes : (adapted.levels?.b9?.notes || hub19.levels?.b9?.notes || ''),
+                workedExamples: (hub19.levels?.b9?.workedExamples && hub19.levels.b9.workedExamples.length > 0) ? hub19.levels.b9.workedExamples : (adapted.levels?.b9?.workedExamples || []),
+                practicePool: (adapted.levels?.b9?.practicePool?.low?.length || adapted.levels?.b9?.practicePool?.medium?.length) ? adapted.levels.b9.practicePool : hub19.levels?.b9?.practicePool
+              }
+            }
+          };
+        }
+        return adapted;
+      }
+      if (hub19) {
+        return {
+          ...data,
+          ...hub19,
+          levels: {
+            b7: {
+              ...data.levels?.b7,
+              ...hub19.levels?.b7,
+              notes: (hub19.levels?.b7?.notes && hub19.levels.b7.notes.length > (data.levels?.b7?.notes?.length || 0)) ? hub19.levels.b7.notes : (data.levels?.b7?.notes || hub19.levels?.b7?.notes || ''),
+              workedExamples: (hub19.levels?.b7?.workedExamples && hub19.levels.b7.workedExamples.length > 0) ? hub19.levels.b7.workedExamples : (data.levels?.b7?.workedExamples || []),
+              practicePool: (data.levels?.b7?.practicePool?.low?.length || data.levels?.b7?.practicePool?.medium?.length) ? data.levels.b7.practicePool : hub19.levels?.b7?.practicePool
+            },
+            b8: {
+              ...data.levels?.b8,
+              ...hub19.levels?.b8,
+              notes: (hub19.levels?.b8?.notes && hub19.levels.b8.notes.length > (data.levels?.b8?.notes?.length || 0)) ? hub19.levels.b8.notes : (data.levels?.b8?.notes || hub19.levels?.b8?.notes || ''),
+              workedExamples: (hub19.levels?.b8?.workedExamples && hub19.levels.b8.workedExamples.length > 0) ? hub19.levels.b8.workedExamples : (data.levels?.b8?.workedExamples || []),
+              practicePool: (data.levels?.b8?.practicePool?.low?.length || data.levels?.b8?.practicePool?.medium?.length) ? data.levels.b8.practicePool : hub19.levels?.b8?.practicePool
+            },
+            b9: {
+              ...data.levels?.b9,
+              ...hub19.levels?.b9,
+              notes: (hub19.levels?.b9?.notes && hub19.levels.b9.notes.length > (data.levels?.b9?.notes?.length || 0)) ? hub19.levels.b9.notes : (data.levels?.b9?.notes || hub19.levels?.b9?.notes || ''),
+              workedExamples: (hub19.levels?.b9?.workedExamples && hub19.levels.b9.workedExamples.length > 0) ? hub19.levels.b9.workedExamples : (data.levels?.b9?.workedExamples || []),
+              practicePool: (data.levels?.b9?.practicePool?.low?.length || data.levels?.b9?.practicePool?.medium?.length) ? data.levels.b9.practicePool : hub19.levels?.b9?.practicePool
+            }
+          }
+        } as TopicalLabDocument;
       }
       return { ...(data as TopicalLabDocument), id: unitSnap.id };
     }
 
     // 1b. Fallback for Science: Direct lookup in embedded NaCCA master 19 hubs curriculum
     if (isScienceDocId) {
-      const hub19 = NACCA_JHS_SCIENCE_19_HUBS.find(h => h.id === resolvedScienceDocId || (h as any).aliases?.includes(topicDocId));
       if (hub19) {
         return hub19;
       }
