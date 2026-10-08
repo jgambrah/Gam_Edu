@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.619Z"
+    "updatedAt": "2026-10-08T14:22:52.981Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.620Z"
+    "updatedAt": "2026-10-08T14:22:52.982Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.620Z"
+    "updatedAt": "2026-10-08T14:22:52.982Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.620Z"
+    "updatedAt": "2026-10-08T14:22:52.982Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.620Z"
+    "updatedAt": "2026-10-08T14:22:52.982Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.620Z"
+    "updatedAt": "2026-10-08T14:22:52.982Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22324,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25064,7 +25064,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27840,7 +27840,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30603,7 +30603,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33402,7 +33402,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33600,7 +33600,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.621Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -36384,7 +36384,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.622Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -36397,66 +36397,2620 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Trace the pathology, transmission, and prevention of infectious and non-communicable diseases with virtual clinical diagnostic tools. Integrates nutritional deficiency symptomology, bacterial/viral epidemiology, vaccine mechanisms, and healthy lifestyle choices.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Food Nutrients, Balanced Diets & Nutritional Deficiencies",
-        "summary": "Classify dietary nutrients, calculate Recommended Dietary Allowances, and diagnose malnutrition deficiency disorders.",
-        "notes": "### Human Nutrition: Balanced Diets & Nutritional Deficiency Disorders\n* **NaCCA Curriculum Code:** `B7.5.2.1`\n* **Core Competency:** Classify food nutrients, design balanced adolescent diets, and diagnose common nutritional deficiency diseases.\n\n#### 1. Classes of Food Nutrients\n* **Carbohydrates:** Primary energetic fuel ($17\\text{ kJ/g}$) for cellular metabolism (e.g., starch in yam, cassava, maize, rice; glucose).\n* **Proteins:** Polymers of amino acids required for growth, somatic tissue repair, enzyme and antibody synthesis ($17\\text{ kJ/g}$) (e.g., fish, beans, eggs, meat, milk).\n* **Lipids (Fats & Oils):** Concentrated long-term energy storage ($38\\text{ kJ/g}$), structural cell membranes, thermal insulation, shock absorption for organs.\n* **Vitamins (Organic Micronutrients):** Fat-soluble (A, D, E, K) and Water-soluble (B-complex, C). Essential coenzymes in biochemical reactions.\n* **Minerals (Inorganic Micronutrients):** Calcium, Iron, Iodine, Sodium, Potassium.\n* **Dietary Fiber (Roughage):** Indigestible cellulose providing bulk to stimulate intestinal peristalsis and prevent constipation.\n* **Water:** Universal biological solvent, thermoregulation through sweat evaporation, metabolic reaction medium.\n\n#### 2. Major Nutritional Deficiency Disorders\n* **Kwashiorkor:** Severe protein deficiency with adequate caloric intake. Symptoms: protruding belly (ascites from fluid edema), reddish/brown thinned hair, flaky skin dermatosis, apathy.\n* **Marasmus:** Total caloric and protein starvation. Symptoms: extreme skeletal emaciation (\"skin and bones\"), sunken eyes, loose folded skin, elderly facial appearance.\n* **Scurvy (Vitamin C Deficiency):** Bleeding spongy gums, delayed wound healing, subcutaneous hemorrhages (bruises) due to defective collagen synthesis.\n* **Rickets (Vitamin D / Calcium Deficiency in Children):** Soft, pliable leg bones bowing under body weight (bowlegs, knock-knees), deformed ribcage (pigeon chest).\n* **Nutritional Anemia (Iron Deficiency):** Chronic fatigue, paleness of conjunctiva and fingernail beds, breathlessness due to reduced hemoglobin production.\n* **Goitre (Iodine Deficiency):** Abnormal enlargement of the thyroid gland in the neck due to lack of iodine for thyroxine synthesis.",
+        "levelTitle": "Basic 7 (JHS 1) • Food Nutrients, Deficiency Pathologies & High-Impact Viral Diseases",
+        "summary": "Master nutritional biochemistry, essential food nutrient classes, and maternal-foetal metabolic dynamics. Investigate clinical deficiency pathologies including Kwashiorkor, Marasmus, Rickets, Goitre, Scurvy, and Beriberi with diagnostic visual recognition. Explore obligate intracellular virology, viral molecular replication cycles, and deep clinical epidemiology of high-impact viral pathogens: COVID-19 (SARS-CoV-2), Ebola Virus Disease (Filoviridae), and Swine Influenza (H1N1), alongside a comprehensive compendium of human and animal viral diseases.",
+        "notes": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 2: HUMAN HEALTH & DISEASE CONTROL\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Clinical Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 2 — Human Health\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standards:**\n  - **B7.5.2.1:** Demonstrate knowledge of common deficiency diseases of humans, their causes, symptoms, effects and prevention.\n  - **B7.5.2.2:** Demonstrate knowledge of the nature of selected viral diseases of humans, their causes, symptoms, effects and management.\n- **Indicators:**\n  - **B7.5.2.1.1:** Explain the relationship between food nutrients and common deficiency diseases and how they affect humans.\n  - **B7.5.2.2.1:** Explain the nature of viral diseases with special emphasis on corona virus (COVID-19), Ebola, and H1N1 disease: their causes, symptoms, effects on humans, and prevention.\n- **Pedagogical Strategy:** Clinical biochemistry classifications, operational definitions, maternal-foetal metabolic imperatives, obligate intracellular viral pathology, zoonotic transmission pathways, epidemiological containment protocols, and fully rendered SVG vector diagrams.\n\n---\n\n### MODULE 1: Food Nutrients, Balanced Diet, and Maternal-Foetal Nutrition\n\n#### 1.1 Foundational Scientific Definitions\n1. **Food:** Any substance containing essential biological nutrients that, when ingested, digested, and assimilated, nourishes the body, maintains metabolic life processes, and supports somatic growth and tissue repair. To qualify as food, an ingested substance must fulfill two mandatory scientific criteria:\n   - It must be non-toxic, digestible, and biologically edible (*worth eating*).\n   - It must actively nourish the body through metabolic energy yield, structural synthesis, or physiological regulation.\n2. **Food Nutrients:** Organic and inorganic biochemical compounds contained within food that biological cells absorb and utilize to synthesize cellular structures, drive enzymatic cascades, maintain electrolyte gradients, and sustain somatic vitality.\n3. **Nutrition:** The dynamic physiological process encompassing ingestion, enzymatic digestion, intestinal absorption, systemic vascular transport, cellular assimilation, and biological utilization of food nutrients by living organisms.\n4. **Essential Nutrients:** Biochemical molecules and inorganic elements indispensable for normal physiological and cellular functioning that the human body cannot synthesize *de novo* in adequate amounts (e.g., essential amino acids, essential fatty acids, vitamins, and trace minerals), thereby necessitating regular dietary intake.\n5. **Balanced Diet:** A dietary intake regimen containing all the essential classes of food substances (carbohydrates, proteins, lipids, vitamins, mineral salts, dietary fibre, and water) in correct physiological proportions and caloric quantities required to sustain metabolic homeostasis, physical activity, and tissue maintenance without nutritional excess or deficit. An unbalanced diet manifests as either primary undernutrition or overnutrition, precipitating systemic malnutrition.\n\n#### 1.2 Maternal and Foetal Nutrition Dynamics\nDuring pregnancy, maternal basal metabolic demand escalates significantly to orchestrate rapid embryogenesis, placental expansion, and organogenesis:\n- **Proteins:** Essential for continuous mitotic cell division, blastocyst organogenesis, maternal uterine hypertrophy, plasma volume expansion, and foetal muscular-skeletal tissue synthesis.\n- **Lipids (Fats & Oils):** Critical structural building blocks for foetal neural tube development, cerebral cortex encephalization, myelin sheath insulation around central and peripheral axons, and retinal photoreceptor membrane maturation.\n- **Carbohydrates:** Function as the primary bioenergetic substrate delivering continuous maternal blood glucose across the placental syncytiotrophoblast via facilitated diffusion (GLUT-1 transporters) to satisfy high foetal cerebral and cardiac ATP requirements.\n- **Gestational Homeostasis:** Adequate maternal macronutrient and micronutrient intake ensures healthy maternal weight gain, prevents placental insufficiency, maintains optimal amniotic fluid volume, and averts intrauterine growth restriction (IUGR) and low birth weight (<2.5 kg).\n\n#### 1.3 Biochemical Taxonomy of Food Classes\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">BIOCHEMICAL TAXONOMY OF ESSENTIAL FOOD CLASSES</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Carbohydrates (C, H, O)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Monosaccharides: Glucose, Fructose</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Disaccharides: Sucrose (Sugarcane)</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Polysaccharides: Starch (Rice, Yam)</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">Primary Role: Cellular Energy &amp; Glycemia</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Proteins (C, H, O, N)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• 1st Class: Animal origin (Complete)</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• 2nd Class: Plant origin (Incomplete)</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Subunits: Essential Amino Acids</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Primary Role: Tissue Repair, Enzymes</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Lipids: Fats &amp; Oils (C, H, O)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Fats: Solid at room temperature</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Oils: Liquid at room temperature</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Subcutaneous insulation cushion</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\">Primary Role: Solvent for A, D, E, K</text></g><g transform=\"translate(25, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Dietary Fibre (Roughage)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Indigestible plant cellulose bulk</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Promotes peristalsis contraction</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Prevents chronic constipation</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Primary Role: Reduces Colon Cancer</text></g><g transform=\"translate(270, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#f0fdfa\" stroke=\"#14b8a6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#115e59\" text-anchor=\"middle\">Water (H₂O - 66% Body Weight)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Universal metabolic reaction medium</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Thermoregulation via sweat cooling</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Transport of gases, ions &amp; glucose</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#115e59\">Primary Role: Osmotic Homeostasis</text></g><g transform=\"translate(515, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Micronutrients: Minerals &amp; Salts</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Potassium, Calcium, Iodine, Iron</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Sources: Sea fish, iodated table salt</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Maintain metabolic coordination</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#6b21a8\">Primary Role: Prevents Deficiency States</text></g></svg>\n</div>\n\n1. **Carbohydrates (Carbon, Hydrogen, Oxygen in ~1:2:1 Ratio):**\n   - *Monosaccharides:* Simple single-ring hexose and pentose sugars directly absorbable across the enterocyte brush border without preparatory enzymatic hydrolysis (e.g., Glucose, Fructose, Galactose).\n   - *Disaccharides:* Double-ring sugars linked by covalent glycosidic bonds that require specific brush-border disaccharidases (maltase, sucrase, lactase) for cleavage (e.g., Sucrose = Glucose + Fructose; Lactose = Glucose + Galactose; Maltose = Glucose + Glucose).\n   - *Polysaccharides:* High-molecular-weight polymers of repeating glucose subunits linked by $\\alpha$-1,4 and $\\alpha$-1,6 glycosidic bonds (e.g., Amylose and Amylopectin in Plant Starch; Glycogen in animal liver/muscle).\n   - *Dietary Sources:* Maize, cassava, yam, plantain, rice, millet, sorghum, potatoes, wheat bread, and sugar cane.\n   - *Physiological Functions:* Primary source of cellular adenosine triphosphate (ATP) via aerobic glycolysis and the Krebs cycle; maintains blood glucose homeostasis (3.9–5.6 mmol/L fasting); exerts a vital **protein-sparing effect** by preventing gluconeogenic catabolism of functional muscular proteins; facilitates complete fatty acid $\\beta$-oxidation, averting metabolic ketoacidosis; and contributes oligosaccharide chains to cell-surface glycoproteins and glycolipids.\n\n2. **Proteins (Polymers of Amino Acids containing C, H, O, N, and often S):**\n   - *First-Class (Complete) Proteins:* Principally derived from animal sources; supply all nine essential amino acids (Histidine, Isoleucine, Leucine, Lysine, Methionine, Phenylalanine, Threonine, Tryptophan, Valine) in optimal biological proportions matching human protein synthesis requirements (e.g., fresh fish, lean meat, eggs, cow's milk, cheese).\n   - *Second-Class (Incomplete) Proteins:* Primarily derived from plant tissues; deficient or limiting in one or more essential amino acids (e.g., cereals are limiting in lysine; legumes are limiting in methionine). Complementary mixing (such as consuming rice with cowpeas or maize with groundnuts) overcomes individual amino acid deficits.\n   - *Physiological Functions:* Structural synthesis of all somatic tissues (collagen, keratin, actin, myosin); biocatalytic synthesis of metabolic enzymes; production of peptide hormones (insulin, glucagon, growth hormone); humoral immunity synthesis of immunoglobulins (antibodies); osmotic pressure maintenance via blood serum albumin; and reserve energy generation during prolonged fasting.\n\n3. **Lipids — Fats and Oils (Hydrophobic Esters of Glycerol and Fatty Acids):**\n   - *Fats:* Triacylglycerols rich in saturated fatty acids with high melting points; solid at room temperature (25°C); typically of animal origin (beef tallow, lard, butter).\n   - *Oils:* Triacylglycerols containing mono- or polyunsaturated fatty acids with cis-double bonds and lower melting points; liquid at room temperature; typically of plant origin (groundnut oil, palm oil, coconut oil, soybean oil).\n   - *Physiological Functions:* Provide an ultra-dense metabolic energy store (37 kJ/g or 9 kcal/g, more than double that of carbohydrates or proteins); subcutaneous adipose layer provides thermal insulation against hypothermia; forms viscoelastic protective cushions enveloping vital viscera (kidneys, myocardium); constitutes the phospholipid bilayer of cellular membranes; and acts as the compulsory hydrophobic solvent required for the absorption, transport, and storage of fat-soluble vitamins (Vitamins A, D, E, and K).\n\n4. **Roughage (Dietary Fibre):**\n   - *Biochemical Nature:* Non-starch polysaccharides and structural plant cell-wall components (predominantly cellulose, hemicellulose, lignin, and pectin) containing $\\beta$-1,4 glycosidic linkages that resist enzymatic hydrolysis by human endogenous salivary, gastric, and pancreatic enzymes.\n   - *Dietary Sources:* Whole grains, legumes, bran, leafy greens (kontomire, amaranth), fruit peels, cabbage, and okra.\n   - *Physiological Functions:* Increases fecal bolus hydration and bulk, stimulating mechanical gastrointestinal stretch receptors and promoting coordinated peristaltic contractions; prevents chronic constipation, colonic diverticulosis, and hemorrhoids; adsorbs bile acids and luminal toxins, reducing reabsorption of cholesterol; and shortens fecal transit time, minimizing colonic mucosal contact with potential dietary carcinogens to decrease colorectal cancer risk.\n\n5. **Water ($H_2O$):**\n   - *Physiological Ubiquity:* Constitutes 60%–70% of total adult human body weight and over 75% of infant body mass.\n   - *Physiological Functions:* Universal biological solvent enabling intracellular and interstitial chemical solutes to dissolve and react; circulating transport vehicle in blood plasma for respiratory gases ($O_2, CO_2$), glucose, hormones, urea, and electrolytes; high specific heat capacity and latent heat of vaporization facilitate cutaneous evaporative cooling (perspiration thermoregulation); maintains systemic intravascular blood volume and arterial blood pressure; lubricates synovial joints, pericardial/pleural cavities, and intestinal tracts; and serves as a shock-absorbing fluid cushion protecting the brain (cerebrospinal fluid) and foetus (amniotic fluid).\n\n6. **Mineral Salts & Vitamins (Essential Micronutrients):**\n   - Organic vitamins and inorganic elemental minerals required in milligram or microgram quantities that do not yield energy directly, but function as indispensable enzymatic coenzymes, prosthetic groups, structural bone constituents, and electrochemical osmolytes.\n\n---\n\n### MODULE 2: Malnutrition and Clinical Pathology of Nutritional Deficiency Diseases\n\n#### 2.1 The Clinical Syndrome of Malnutrition\nMalnutrition denotes a pathological state resulting from relative or absolute nutritional deficiency (undernutrition), nutritional excess (overnutrition), or severe biological imbalance of essential dietary components relative to metabolic needs.\n- **Systemic Pathophysiological Sequelae:**\n  - Electrolyte shifts and interstitial fluid retention (loss of cellular membrane potassium and sodium-potassium ATPase pump dysfunction).\n  - Somatic growth arrest, failure to gain weight, and delayed ossification of epiphyseal growth plates.\n  - Progressive skeletal muscle proteolysis and subcutaneous lipolysis.\n  - Secondary immunodeficiency syndrome marked by thymic atrophy, depressed helper T-lymphocyte counts ($CD4^+$), impaired secretory IgA synthesis, and extreme vulnerability to opportunistic bacterial enteritis, measles, and bronchopneumonia.\n  - Multi-organ atrophy, impaired hepatic synthetic capacity, and high mortality if refeeding is unmanaged.\n\n#### 2.2 Clinical Profiles of Common Deficiency Pathologies\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLINICAL RECOGNITION SPECIMENS: DEFICIENCY PATHOLOGIES</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">SPECIMEN A: GOITRE</text><path d=\"M 70 80 Q 110 95 150 80 L 140 180 Q 110 200 80 180 Z\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><ellipse cx=\"110\" cy=\"145\" rx=\"35\" ry=\"40\" fill=\"#fdba74\" stroke=\"#c2410c\" stroke-width=\"2\"/><text x=\"110\" y=\"148\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Enlarged Thyroid</text><line x1=\"110\" y1=\"185\" x2=\"110\" y2=\"220\" stroke=\"#334155\" stroke-width=\"1\"/><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#eff6ff\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Cause: Dietary Iodine Deficiency</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Correction: Iodated salt &amp; Sea fish</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">SPECIMEN B: KWASHIORKOR</text><circle cx=\"110\" cy=\"65\" r=\"16\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><text x=\"110\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b45309\" text-anchor=\"middle\">Reddish Hair</text><line x1=\"110\" y1=\"81\" x2=\"110\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"4\"/><ellipse cx=\"110\" cy=\"140\" rx=\"36\" ry=\"30\" fill=\"#fdba74\" stroke=\"#c2410c\" stroke-width=\"2\"/><text x=\"110\" y=\"143\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Protruding Abdomen</text><line x1=\"95\" y1=\"165\" x2=\"95\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"3\"/><line x1=\"125\" y1=\"165\" x2=\"125\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"3\"/><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#fefce8\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Cause: Protein Deficiency</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">Oedema + Muscle Wasting</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">SPECIMEN C: RICKETS</text><circle cx=\"110\" cy=\"65\" r=\"16\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><line x1=\"110\" y1=\"81\" x2=\"110\" y2=\"140\" stroke=\"#ea580c\" stroke-width=\"4\"/><path d=\"M 95 140 C 70 170, 70 195, 90 215\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"4.5\"/><path d=\"M 125 140 C 150 170, 150 195, 130 215\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"4.5\"/><text x=\"110\" y=\"175\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">Bowed Legs</text><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#f0fdf4\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cause: Vitamin D / Calcium Lack</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">Soft, poorly mineralized bones</text></g></svg>\n</div>\n\n1. **Kwashiorkor (Severe Acute Protein Deprivation):**\n   - *Etiology:* Severe primary dietary lack of high-biological-value protein in the presence of adequate or marginally sufficient caloric intake (predominantly carbohydrate-based weanling gruels such as refined corn dough or cassava pap).\n   - *Pathophysiology:* Severe hypoalbuminemia drops intravascular plasma colloid oncotic pressure below critical capillary hydrostatic threshold, driving fluid extravasation into the interstitial tissue spaces. Impaired apolipoprotein B synthesis impairs hepatic triglyceride export, resulting in severe fatty liver (steatosis).\n   - *Clinical Hallmarks:* Bilateral dependent pitting oedema starting in feet/shins and progressing to periorbital puffiness and ascites (\"moon face\"); hair depigmentation changing to a reddish-copper, blonde, or grey tint with alternating light and dark bands (**flag sign**); thin, brittle, easily pluckable hair; hyperkeratotic, desquamating skin lesions resembling peeling sun-baked paint (**flaky-paint dermatosis**); marked hepatomegaly; profound lethargy and apathy; and generalized muscle wasting masked by generalized fluid retention.\n   - *Correction Protocol:* Cautious therapeutic refeeding with milk-based therapeutic diets (WHO F-75 initial stabilization formula followed by F-100 catch-up formula) and gradual incorporation of eggs, fish powder, groundnuts, and soybean blends.\n\n2. **Marasmus (Severe Energy & Protein Starvation):**\n   - *Etiology:* Chronic, balanced starvation characterized by catastrophic inadequacy of both total dietary energy (calories) and dietary protein (often triggered by early termination of breastfeeding, diluted infant formula, or severe prolonged gastroenteritis).\n   - *Pathophysiology:* Deprived of external energy, the infant catabolizes both endogenous adipose reserves (lipolysis) and structural skeletal muscle proteins (proteolysis) to supply amino acid substrates for basal hepatic gluconeogenesis.\n   - *Clinical Hallmarks:* Severe, generalized muscle wasting; virtually complete disappearance of subcutaneous adipose tissue; dry, thin, papery skin hanging in loose redundant folds around the axillae, gluteal regions, and thighs (\"baggy pants\" appearance); prominent, visible ribs and scapulae; sunken eyes, hollow cheeks, and prominent zygomatic bones yielding an **\"old man\" (wizened/senile) facial appearance**; absence of oedema; and persistent voracious appetite.\n   - *Correction Protocol:* High-calorie, nutrient-dense nutritional rehabilitation using enriched lipid-based therapeutic food (RUTF), peanut-butter therapeutic pastes, and fortified whole milk.\n\n3. **Rickets (Infantile) & Osteomalacia (Adults):**\n   - *Etiology:* Dietary deficiency of Vitamin D (calciferol), inadequate dietary Calcium or Phosphorus, or insufficient cutaneous solar ultraviolet B (UVB) irradiation required for the photolysis of 7-dehydrocholesterol to cholecalciferol ($D_3$).\n   - *Pathophysiology:* In the absence of active 1,25-dihydroxycholecalciferol $[1,25(OH)_2D_3]$, intestinal enterocyte calbindin synthesis declines, reducing dietary calcium absorption from ~40% to <10%. Hypocalcemia stimulates parathyroid hormone (PTH) secretion, mobilizing calcium from bone while inducing renal phosphate wasting, which leads to failure of osteoid matrix mineralization at growth plates.\n   - *Clinical Hallmarks:* Soft, unmineralized, pliable long bones that deform under the mechanical strain of gravity and ambulation, producing **bowed legs (genu varum)** or **knock-knees (genu valgum)**; nodular swelling of costochondral junctions along the sternal border forming the **rachitic rosary**; widened epiphyseal wrists and ankles; delayed closure of the cranial anterior fontanelle; craniotabes; and prominent sternal protrusion (**pigeon-chest / pectus carinatum**).\n   - *Correction Protocol:* Oral cholecalciferol supplementation, regular safe morning sunlight exposure, and consumption of calcium-dense dairy milk, fortified margarines, and bone-in fish (sardines).\n\n4. **Endemic Goitre (Thyroid Hypertrophy):**\n   - *Etiology:* Chronic dietary deficiency of the essential trace mineral Iodine ($I$), endemic in soils and water supplies distant from marine environments (e.g., highland or leached inland terrains).\n   - *Pathophysiology:* Iodine is the essential chemical substrate for synthesizing the thyroid prohormone thyroxine ($T_4$) and active triiodothyronine ($T_3$). Low circulating free $T_4$ removes negative feedback on the anterior pituitary gland, triggering uncalibrated, sustained hypersecretion of Thyroid-Stimulating Hormone (TSH). Elevated TSH drives compensatory hyperplasia and hypertrophy of thyroid follicular epithelial cells, enlarging the entire gland.\n   - *Clinical Hallmarks:* Painless, symmetric or nodular visible swelling in the anterior cervical (neck) region below the larynx; feeling of throat constriction; and in severe cases, mechanical compression of the trachea and esophagus leading to stridor, hoarseness, and dysphagia. Untreated maternal iodine deficiency during pregnancy causes irreversible foetal neurological cretinism.\n   - *Correction Protocol:* Universal legislative iodization of all commercial food-grade table salt ($KIO_3$ at 25–50 ppm) and increased consumption of sea fish, crabs, shrimp, oysters, and marine seaweeds.\n\n5. **Scurvy (Vitamin C Deficiency):**\n   - *Etiology:* Prolonged dietary deficiency of L-Ascorbic Acid (Vitamin C), typically due to absence of fresh fruits and raw vegetables in the diet.\n   - *Pathophysiology:* Ascorbic acid is the essential reducing cofactor for prolyl 4-hydroxylase and lysyl hydroxylase enzymes responsible for the post-translational hydroxylation of proline and lysine residues in procollagen. Defective triple-helix collagen assembly causes extreme capillary endothelial fragility, defective connective tissue scaffolding, and impaired osteoid formation.\n   - *Clinical Hallmarks:* Swollen, hyperemic, spongy, purple gums that bleed profusely upon minimal contact or mastication; looseness and eventual loss of teeth; widespread subcutaneous petechiae, perifollicular hemorrhages, purpura, and large intramuscular hematomas; painful hemarthroses (bleeding into joint cavities); impaired wound healing; and secondary microcytic anemia.\n   - *Correction Protocol:* Daily dietary administration of citrus fruits (oranges, lemons, grapefruits, limes), guava, raw tomatoes, pawpaw, green bell peppers, and fresh leafy greens.\n\n6. **Night Blindness (Nyctalopia) & Xerophthalmia:**\n   - *Etiology:* Chronic dietary deficiency of Vitamin A (retinol or provitamin A carotenoids).\n   - *Pathophysiology:* Retinol is converted to 11-cis-retinal, which binds the apoprotein opsin in retinal rod photoreceptors to form the light-sensitive photopigment rhodopsin. Vitamin A is also essential for maintaining differentiated mucin-secreting goblet cells across mucosal epithelia.\n   - *Clinical Hallmarks:* Inability to visually adapt or perceive silhouettes in dim twilight or darkened conditions (**nyctalopia**); conjunctival drying and keratinization (**xerosis conjunctivae**); triangular, foamy, pearly plaques on the bulbar conjunctiva (**Bitot's spots**); dry, cloudy, ulcerating cornea (**corneal xerosis**); and irreversible full-thickness corneal liquefactive necrosis and perforation (**keratomalacia**), resulting in permanent blindness.\n   - *Correction Protocol:* Routine high-potency Vitamin A capsule distribution to children, consumption of red palm oil, egg yolks, liver, carrots, mangoes, sweet potatoes, and dark-green leafy vegetables.\n\n7. **Beriberi (Vitamin $B_1$ Deficiency):**\n   - *Etiology:* Dietary deficiency of Thiamine (Vitamin $B_1$), classically associated with diets consisting predominantly of polished white rice or refined, unfortified cassava flours where the thiamine-rich outer aleurone layer and cereal germ have been milled away.\n   - *Pathophysiology:* Thiamine pyrophosphate (TPP) is an indispensable coenzyme for the pyruvate dehydrogenase and $\\alpha$-ketoglutarate dehydrogenase complexes required for carbohydrate catabolism in the Krebs cycle. Deficits lead to intracellular energy failure, accumulation of pyruvate and lactate, peripheral nerve demyelination, and vasodilation.\n   - *Clinical Hallmarks:*\n     - *Wet Beriberi:* Cardiovascular failure characterized by peripheral vasodilation, elevated cardiac output, tachycardia, dyspnea, and extensive bilateral pitting peripheral oedema.\n     - *Dry Beriberi:* Neurological failure without oedema, presenting with symmetrical peripheral polyneuropathy, burning sensations in the feet, calf muscle tenderness, diminished deep tendon reflexes, wrist-drop/foot-drop, and severe progressive muscle wasting.\n   - *Correction Protocol:* Consumption of unpolished/brown rice, whole wheat, groundnuts, cowpeas, yeast extracts, lean meats, and food fortification.\n\n8. **Pellagra (Vitamin $B_3$ Deficiency):**\n   - *Etiology:* Deficiency of Niacin (Nicotinic acid / Nicotinamide, Vitamin $B_3$) or its metabolic precursor amino acid Tryptophan, common in populations subsisting almost entirely on untreated maize (where niacin is chemically bound as niacytin).\n   - *Pathophysiology:* Niacin is the functional constituent of the cellular redox dinucleotides $NAD^+$ and $NADP^+$, without which mitochondrial cellular respiration, DNA repair (poly-ADP-ribose polymerase), and lipid biosynthesis fail.\n   - *Clinical Hallmarks (The Classic \"Three Ds\"):*\n     - *Dermatitis:* Bilateral, symmetrical, sharply demarcated erythematous scaly hyperpigmented rash on sun-exposed cutaneous areas (especially the anterior neck and upper sternum, designated as **Casal's necklace**).\n     - *Diarrhoea:* Diffuse inflammation and atrophy of the gastrointestinal mucosal lining, nausea, vomiting, and intractable watery stools.\n     - *Dementia:* Neuropsychiatric degeneration manifesting as insomnia, irritability, memory impairment, confusion, hallucinations, and progressive encephalopathy (ending in the \"Fourth D\": *Death* if untreated).\n   - *Correction Protocol:* Administration of nicotinamide tablets and dietary inclusion of groundnuts, beans, fish, poultry, eggs, and milk.\n\n9. **Nutritional Anaemias & Mucocutaneous Lesions (Iron, Folate, $B_2$, $B_{12}$):**\n   - *Etiology:* Deficiency of iron, riboflavin ($B_2$), cobalamin ($B_{12}$), or pteroylglutamic acid (folic acid).\n   - *Clinical Hallmarks:* Paleness of the palpebral conjunctiva, tongue, and nailbeds; angular stomatitis (painful macerated fissures at the labial oral commissures); cheilosis (dry, cracked lips); glossitis (swollen, smooth, beefy-red or magenta tongue); systemic fatigue, shortness of breath on mild exertion, and tachycardia.\n   - *Correction Protocol:* Iron-folic acid supplementation, regular deworming (eradicating *Necator americanus* hookworm blood loss), consumption of green leafy vegetables, organ liver, beans, and fortified grains.\n\n10. **Hemorrhagic Disease / Prolonged Bleeding (Vitamin K Deficiency):**\n    - *Etiology:* Deficiency of Phylloquinone/Menaquinone (Vitamin K), seen in exclusively breastfed neonates lacking gut flora, or secondary to broad-spectrum antibiotic sterilization of colonic microflora or biliary obstruction.\n    - *Pathophysiology:* Vitamin K serves as the compulsory cofactor for hepatic $\\gamma$-glutamyl carboxylase, which carboxylates glutamic acid residues on blood coagulation Factors II (prothrombin), VII, IX, and X, enabling their calcium-dependent binding to platelet phospholipid surfaces.\n    - *Clinical Hallmarks:* Defective secondary hemostasis manifested by prolonged prothrombin time (PT/INR); excessive ecchymoses and hematomas after trivial trauma; recurrent unprovoked epistaxis (nosebleeds); mucosal gingival bleeding; melena (black tarry blood in stools); hematuria; and life-threatening intracranial hemorrhage in neonates.\n    - *Correction Protocol:* Prophylactic intramuscular Vitamin K injection at birth, consumption of dark green leafy vegetables (kale, spinach, cabbage, broccoli), and maintenance of healthy intestinal microbiota.\n\n---\n\n### MODULE 3: General Virology, Genomic Architecture, and Viral Pathogenesis\n\n#### 3.1 Biological Nature and Physical Structure of Viruses\nViruses represent ultra-microscopic (20–400 nm), non-cellular, obligate intracellular infectious agents incapable of autonomous metabolic activity, cellular division, or independent replication outside a permissive living biological host cell.\n- **Fundamental Architectural Components:**\n  1. *Viral Genetic Core:* Contains a single type of genetic nucleic acid — either Deoxyribonucleic Acid (DNA) or Ribonucleic Acid (RNA), which may be single-stranded (ss) or double-stranded (ds), linear or circular, segmented or non-segmented, but **never both DNA and RNA simultaneously within the same virion**.\n  2. *Protein Capsid:* A rigid, protective macromolecular shell composed of repeated protein morphological subunits termed **capsomeres**, arranged in symmetrical helical, icosahedral (polyhedral), or complex geometries to protect the viral genome from nucleases and harsh environmental stressors.\n  3. *Viral Envelope (Enveloped Viruses):* An external lipid bilayer membrane acquired during egress by budding through host plasma membranes or nuclear/endoplasmic membranes, studded with virus-encoded glycoprotein surface spikes (peplomers) that dictate viral tissue tropism and mediate host cellular receptor attachment. Non-enveloped (\"naked\") viruses lack this lipid membrane and are generally more resistant to environmental heat, drying, detergents, and gastric acidity.\n- **The Living vs. Non-Living Threshold:**\n  Outside of a host cell, a virus exists as an inert, crystalline macromolecular physical particle known as a **virion**, devoid of cytoplasm, organelles, ribosomes, metabolic respiration, and intrinsic ATP generation. However, upon breaching a living host cell, the viral genome commandeers the host's biochemical and genetic machinery to replicate, synthesize proteins, evolve, and assemble daughter progeny, fulfilling the core biological criteria of living systems.\n\n#### 3.2 Molecular Steps of Viral Pathogenesis\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"arrBlue\" markerWidth=\"6\" markerHeight=\"6\" refX=\"4\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"#0284c7\"/></marker></defs><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE MOLECULAR INFECTION CYCLE OF AN ANIMAL VIRUS</text><rect x=\"40\" y=\"45\" width=\"680\" height=\"215\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.5\" stroke-dasharray=\"4,4\"/><text x=\"60\" y=\"70\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#334155\">Host Eukaryotic Cell Boundary</text><g transform=\"translate(50, 95)\"><circle cx=\"35\" cy=\"35\" r=\"20\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><circle cx=\"35\" cy=\"35\" r=\"6\" fill=\"#991b1b\"/><text x=\"35\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1. Attachment</text><text x=\"35\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">Spikes bind receptor</text></g><line x1=\"115\" y1=\"130\" x2=\"160\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(170, 95)\"><ellipse cx=\"40\" cy=\"35\" rx=\"24\" ry=\"18\" fill=\"#fee2e2\" stroke=\"#dc2626\"/><path d=\"M 30 35 Q 40 25 50 35\" fill=\"none\" stroke=\"#991b1b\" stroke-width=\"2\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">2. Entry/Uncoat</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">RNA/DNA released</text></g><line x1=\"245\" y1=\"130\" x2=\"290\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(300, 95)\"><rect x=\"15\" y=\"15\" width=\"65\" height=\"45\" rx=\"4\" fill=\"#fef08a\" stroke=\"#ca8a04\"/><path d=\"M 25 35 Q 47 15 70 35\" fill=\"none\" stroke=\"#854d0e\" stroke-width=\"2\" stroke-dasharray=\"2,2\"/><text x=\"47\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. Replication</text><text x=\"47\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">Host mach. hijacked</text></g><line x1=\"390\" y1=\"130\" x2=\"435\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(445, 95)\"><circle cx=\"40\" cy=\"35\" r=\"22\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><circle cx=\"35\" cy=\"30\" r=\"5\" fill=\"#9a3412\"/><circle cx=\"45\" cy=\"40\" r=\"5\" fill=\"#9a3412\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">4. Assembly</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7c2d12\" text-anchor=\"middle\">Virions packaged</text></g><line x1=\"515\" y1=\"130\" x2=\"560\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(570, 95)\"><circle cx=\"40\" cy=\"20\" r=\"12\" fill=\"#fecaca\" stroke=\"#dc2626\"/><circle cx=\"55\" cy=\"45\" r=\"12\" fill=\"#fecaca\" stroke=\"#dc2626\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. Lysis / Release</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">Cell death &amp; spread</text></g></svg>\n</div>\n\n1. **Attachment (Adsorption):** The viral surface attachment proteins or glycoprotein spikes bind with high stereochemical specificity to complementary receptor molecules and co-receptors situated on the outer membrane of the host eukaryotic target cell (e.g., SARS-CoV-2 spike protein binding the ACE2 receptor on human alveolar type II pneumocytes).\n2. **Penetration & Uncoating:** The virion enters the host cell cytoplasm via receptor-mediated endocytosis, pinocytosis, or direct membrane fusion between the viral lipid envelope and the host plasma membrane. Subsequent acidification or cellular protease activity degrades the viral protein capsid, uncoating and exposing the infectious viral nucleic acid core into the host cytoplasm or nucleoplasm.\n3. **Host Hijacking & Viral Replication:** The viral genome shuts down host cell macromolecular synthesis, commandeering host cell RNA/DNA polymerases, nucleoside triphosphates, and cellular energy systems (ATP) to drive explosive transcription of viral messenger RNAs (mRNAs) and replication of the viral genomic template.\n4. **Biosynthesis & Structural Assembly:** Host cell ribosomes and endoplasmic reticulum networks translate viral mRNAs into structural capsid proteins, envelope glycoproteins, and non-structural enzymatic proteins. Newly synthesized viral genomes and capsomeres spontaneously condense and package into organized, mature daughter virions.\n5. **Lysis & Release:** Progeny virions are liberated into extracellular fluids:\n   - Non-enveloped viruses typically induce **host cell lysis**, actively rupturing the host membrane and causing cellular destruction.\n   - Enveloped viruses bud through the host cell membrane, acquiring their outer lipid bilayer.\n   Both release mechanisms directly cause host tissue damage, necrosis, cytotoxic inflammation, pyrexia, organ dysfunction, and the observable clinical manifestations of viral infectious disease.\n\n---\n\n### MODULE 4: Selected High-Impact Viral Pathogens: COVID-19, Ebola, and H1N1\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"300\" viewBox=\"0 0 760 300\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"300\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPARATIVE EPIDEMIOLOGY: COVID-19, EBOLA &amp; H1N1</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">COVID-19 (SARS-CoV-2)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Genome:</text><text x=\"55\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Enveloped ssRNA</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Incubation:</text><text x=\"68\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">4 - 6 days (1-14 days)</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Respiratory droplets, fomites</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Anosmia, dry cough, ARDS</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Physical distancing (&gt;1 metre)</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Handwash / 68%+ alcohol sanitizer</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Mask wearing &amp; contact tracing</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Utensil separation</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">EBOLA (Filoviridae)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Reservoir:</text><text x=\"60\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Fruit bats (Pteropodidae)</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Spillover:</text><text x=\"58\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Rainforest bushmeat, primates</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Direct bodily fluids, blood</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Severe haemorrhage, vomiting</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#fee2e2\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Avoid bushmeat / forest carcass</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Full PPE suits &amp; isolation wards</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Strict safe burial protocols</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• 21-day contact surveillance</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">H1N1 (Swine Influenza)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Origin:</text><text x=\"48\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Swine, avian &amp; human genes</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Reassort:</text><text x=\"58\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Metamorphosed in pigs</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Airborne droplets, coughing</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Fever, rhinorrhea, myalgia</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#fef9c3\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Biosecurity barriers in pig farms</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Avoid crowded gatherings</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Annual vaccine updates</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Respiratory cough etiquette</text></g></svg>\n</div>\n\n#### 4.1 Coronavirus Disease 2019 (COVID-19)\n- **Causative Agent:** Severe Acute Respiratory Syndrome Coronavirus 2 (SARS-CoV-2), a member of the *Coronaviridae* family, genus *Betacoronavirus*. Structurally, it is an enveloped, positive-sense, single-stranded RNA virus ($+ssRNA$) exhibiting prominent surface glycoprotein spikes yielding a characteristic solar corona appearance under transmission electron microscopy. Phylogenetically related zoonotic human coronaviruses include SARS-CoV-1 (2002–2003 outbreak) and MERS-CoV (Middle East Respiratory Syndrome, camel reservoir).\n- **Incubation Period:** Defined as the temporal duration between initial inhalation/inoculation of the virus and the first emergence of clinical signs. For COVID-19, this interval typically averages **4 to 6 days**, with a full epidemiological latency window ranging from **1 to 14 days**.\n- **Transmission Pathways:**\n  - *Respiratory Droplets & Aerosols:* Inhalation of microscopic respiratory droplets (>5–10 $\\mu$m) and fine aerosol nuclei (<5 $\\mu$m) expelled during coughing, sneezing, talking, shouting, or singing by infected symptomatic or asymptomatic persons.\n  - *Direct Physical Contact:* Handshakes, embracing, and intimate bodily contact transferring infectious viral secretions.\n  - *Fomite Inoculation:* Touching inanimate environmental surfaces (desks, door handles, handrails) contaminated with viable virions, followed by inadvertent self-inoculation of mucosal membranes of the eyes, nose, or mouth.\n- **Clinical Manifestations:**\n  - *Common Symptoms:* Persistent dry cough, pyrexia/fever ($>38.0^\\circ\\text{C}$), severe fatigue, sore throat, headache, ageusia (total loss of taste), and anosmia (sudden, pathognomonic loss of the sense of smell).\n  - *Severe Clinical Complications:* Exertional dyspnea, hypoxemic respiratory failure, bilateral interstitial viral pneumonia with ground-glass opacities, Acute Respiratory Distress Syndrome (ARDS), cytokine storm syndrome, multi-organ failure, hypercoagulability (pulmonary embolism, stroke), and death.\n- **Epidemiological Prevention Protocols:**\n  - Strict physical social distancing of at least 1 to 2 metres (3 to 6 feet) in public gatherings.\n  - Rigorous hand hygiene: washing hands with soap under clean running water for at least 20 seconds, or applying $\\ge 68\\%–75\\%$ alcohol-based hand sanitizers.\n  - Universal public face mask usage covering both the nose and mouth.\n  - Practicing respiratory hygiene: coughing or sneezing into a disposable paper handkerchief (discarded in a closed bin) or into the crook of a flexed elbow.\n  - Avoiding the sharing of personal eating utensils, drinking cups, toothbrushes, and towels.\n  - Rapid case identification, diagnostic RT-PCR testing, active digital contact tracing, and quarantine of exposed individuals.\n\n#### 4.2 Ebola Virus Disease (EVD)\n- **Causative Agent:** Ebola virus (species *Zaire ebolavirus*, genus *Ebolavirus*, family *Filoviridae*). Structurally, it is an enveloped, non-segmented, negative-sense, single-stranded RNA virus ($-ssRNA$) possessing a characteristic filamentous, branched, thread-like or \"shepherd's crook\" morphology.\n- **Natural Reservoir Host:** Wild fruit bats belonging to the *Pteropodidae* family (specifically species *Hypsignathus monstrosus*, *Epomops franqueti*, and *Myonycteris torquata*) carry the virus asymptomatically in wild tropical rainforest ecosystems.\n- **Transmission Pathways:**\n  - *Wildlife Spillover (Zoonotic Entry):* Direct physical contact with, hunting, butchering, preparing, or consuming infected wild forest animals found sick or dead (chimpanzees, gorillas, fruit bats, forest duikers, monkeys, and porcupines) — commonly referred to as \"bushmeat\".\n  - *Human-to-Human Secondary Transmission:* Direct contact through broken skin (micro-abrasions) or mucous membranes with the infectious blood, vomit, watery diarrhea, saliva, urine, sweat, or semen of an infected symptomatic individual or convalescent carrier.\n  - *Fomite Vectoring:* Contact with beddings, clothing, needles, and medical equipment heavily soiled with virulent bodily secretions.\n  - *Traditional Funeral Practices:* Direct, unprotected tactile contact with the highly infectious cadaver of an Ebola victim during traditional funeral preparations and ceremonial corpse washings.\n- **Clinical Manifestations:**\n  Sudden onset of high fever, profound prostration, debilitating myalgia (muscle aches), severe frontal headache, and pharyngitis. Rapidly progresses to severe gastrointestinal collapse with intractable vomiting, watery secretory diarrhea, and abdominal pain. Terminally manifests with coagulopathy, extensive maculopapular rash, acute liver and renal failure, and massive internal and external hemorrhages (bleeding from the gums, mucosal membranes, gastrointestinal tract with hematemesis and melena, and venipuncture sites), culminating in irreversible hypovolemic septic shock and a case fatality rate of 50%–90%.\n- **Epidemiological Containment Protocols:**\n  - Total prohibition of handling, hunting, or consuming dead forest animals and raw bushmeat.\n  - Barrier nursing in specialized negative-pressure biocontainment isolation wards.\n  - Full Personal Protective Equipment (PPE) for healthcare workers: impermeable biohazard coverall suits, fluid-shield surgical hoods, N95/FFP3 respirators, double-layered nitrile gloves, waterproof aprons, and rubber safety boots.\n  - Strict adherence to dignified, safe burial protocols using leak-proof, sealed body bags handled exclusively by trained decontamination teams.\n  - Rigorous 21-day temperature monitoring and epidemiological surveillance of all identified contacts.\n\n#### 4.3 Swine Influenza A (H1N1)\n- **Nature, Origin, and Reassortment:** Swine influenza virus subtype H1N1 belongs to the *Orthomyxoviridae* family. Structurally, it is an enveloped, negative-sense, segmented single-stranded RNA virus featuring 8 distinct viral genome segments and two major immunogenic surface spikes: Hemagglutinin (H1, mediating host sialic acid attachment) and Neuraminidase (N1, mediating viral progeny cleavage and release). The pandemic H1N1/09 strain arose via **genetic reassortment** (antigenic shift) in domestic swine herds, combining genetic segments originating from North American swine influenza, North American avian influenza, human seasonal influenza, and Eurasian swine influenza viruses. Pigs serve as the biological \"mixing vessel\" host because respiratory epithelial cells in pigs express both $\\alpha$-2,3 (avian) and $\\alpha$-2,6 (human) sialic acid receptors.\n- **Modes of Transmission:** Initially transmitted zoonotically from infected domestic swine herds to farm workers through respiratory inhalation of swine secretions or dust, followed by rapid, sustained, and explosive human-to-human transmission through airborne droplet spray, coughing, and hand-to-face fomite transfer across immunologically naive human populations.\n- **Clinical Manifestations:** Acute onset of pyrexia/fever ($>38.5^\\circ\\text{C}$), severe paroxysmal cough, sore throat, profuse rhinorrhea (runny nose), body chills, debilitating generalized muscular aches (myalgia), headache, physical prostration, and prominent gastrointestinal symptoms including nausea, vomiting, and diarrhea.\n- **Prevention and Control Protocols:**\n  - Installation of strict biosecurity barriers on commercial pig farms, reducing occupational exposure and preventing wild bird contamination of swine feed and water supplies.\n  - Isolation and barrier nursing of febrile patients presenting with acute respiratory distress.\n  - Public crowd avoidance, wearing particulate surgical masks, and practicing strict respiratory cough etiquette.\n  - Annual seasonal influenza vaccination formulated with contemporary, antigenically updated H1N1 vaccine seed strains.\n\n---\n\n### MODULE 5: Comprehensive Compendium of Human and Animal Viral Diseases\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLINICAL TAXONOMY: VIRAL TRANSMISSION MODES &amp; TARGET ORGANS</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">MEASLES &amp; CHICKENPOX</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Mode: Airborne droplet inhalation</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Measles: Koplik spots &amp; skin rash</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Chickenpox: Itchy vesicular blisters</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Control: Childhood MMR / VZV Vaccines</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">RABIES (Hydrophobia)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Mode: Transcutaneous bite/scratch</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Vector: Infected dog or bat saliva</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Symptoms: Nervousness, spasms</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\">Control: Dog Immunization &amp; PEP</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HEPATITIS B (Liver Virus)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Mode: Blood, sexual, vertical</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Symptoms: Scleral jaundice, nausea</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Sequelae: Liver cirrhosis &amp; cancer</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Control: Hep-B Vaccine, Safe sex</text></g><g transform=\"translate(25, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">POLIOMYELITIS (Enterovirus)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Mode: Fecal-oral water contamination</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Target: Anterior horn motor neurons</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Effect: Irreversible flaccid paralysis</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">Control: OPV / IPV Infant Vaccination</text></g><g transform=\"translate(270, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">MUMPS &amp; INFLUENZA</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Mumps: Swelling of parotid glands</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Potential orchitis &amp; pancreatitis</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Flu: High fever, sweating sickness</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#6b21a8\">Control: MMR Vaccine, Cough Etiquette</text></g><g transform=\"translate(515, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#f5f5f4\" stroke=\"#78716c\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#44403c\" text-anchor=\"middle\">NEWCASTLE &amp; BIRD FLU</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Target: Domestic poultry flocks</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Newcastle: Sneezing, loss of voice</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Bird Flu: Cyanosis of comb &amp; death</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#44403c\">Control: Timely Vaccines &amp; Biosecurity</text></g></svg>\n</div>\n\n| Disease Entity | Causative Viral Agent & Family | Clinical Symptomatology & Target Organs | Primary Transmission Mode | Standard Prevention & Public Health Control |\n| :--- | :--- | :--- | :--- | :--- |\n| **Measles (Rubeola)** | *Measles morbillivirus* (Paramyxoviridae; $-ssRNA$, enveloped) | High fever, coryza, cough, conjunctivitis, pathognomonic **Koplik's spots** on buccal mucosa, followed by cephalocaudal maculopapular rash. | Inhalation of infectious airborne respiratory droplets; direct contact. | Routine childhood vaccination with two doses of Measles-Rubella (MR) vaccine; isolation of cases. |\n| **Mumps (Epidemic Parotitis)** | *Mumps orthorubulavirus* (Paramyxoviridae; $-ssRNA$, enveloped) | Painful bilateral or unilateral swelling of the parotid salivary glands, fever, headache; complications: orchitis, oophoritis, pancreatitis, hearing loss. | Inhalation of airborne droplets and direct saliva contact from infected individuals. | Routine childhood MMR/MR vaccination; isolation during active parotid swelling period. |\n| **Common Cold (Viral Rhinitis)** | *Human Rhinoviruses* (>50%), Coronaviruses, Adenoviruses (Picornaviridae, etc.) | Sneezing, nasal congestion, profuse watery rhinorrhea, scratchy sore throat, low-grade fever, malaise. | Airborne droplet inhalation; hand-to-nose or hand-to-eye contact after touching fomites. | Handwashing with soap, covering mouth/nose when sneezing, rest, hydration, and symptom relief. |\n| **Chickenpox (Varicella)** | *Varicella-Zoster Virus* (VZV; Human alphaherpesvirus 3; dsDNA) | Pruritic, generalized, polymorphic rash progressing from macules to papules, clear fluid vesicles (**\"dewdrops on rose petals\"**), and crusts; fever. | Inhalation of infectious respiratory droplets; direct contact with fluid from cutaneous vesicles. | Varicella live-attenuated vaccine; strict isolation until all cutaneous vesicles have crusted over. |\n| **Influenza (\"Sweating Sickness\")** | *Influenza viruses A, B, and C* (Orthomyxoviridae; segmented $-ssRNA$) | Sudden onset of high fever, rigors, drenching sweats, acute frontal headache, extreme prostration, and debilitating myalgia. | Airborne droplet nuclei from coughing/sneezing; hand-to-mucosa fomite transmission. | Annual trivalent/quadrivalent influenza vaccination, respiratory hygiene, and antiviral therapy (oseltamivir). |\n| **Poliomyelitis (Infantile Paralysis)** | *Poliovirus* types 1, 2, and 3 (Picornaviridae; $+ssRNA$, non-enveloped) | Fever, stiff neck, spinal stiffness; virus targets and lyses anterior horn motor neurons, causing asymmetric flaccid paralysis of limbs and diaphragm. | Fecal-oral route via ingestion of food or water contaminated with infected human feces. | Universal infant immunization using Oral Polio Vaccine (OPV) and Inactivated Polio Vaccine (IPV); sanitation. |\n| **Rabies (Hydrophobia)** | *Rabies lyssavirus* (Rhabdoviridae; bullet-shaped $-ssRNA$, enveloped) | Paresthesia at bite site, extreme anxiety, agitation, painful pharyngeal muscle spasms when attempting to swallow liquids (**hydrophobia**), autonomic failure, coma; ~100% fatal once clinical symptoms emerge. | Transcutaneous bite, scratch, or open-skin saliva contamination from an infected rabid mammal (dogs, bats, cats). | Mass annual immunization of domestic dogs/cats, immediate wound flushing with soap and water for 15 min, and urgent Post-Exposure Prophylaxis (PEP: vaccine + rabies immunoglobulin). |\n| **Hepatitis B** | *Hepatitis B virus* (HBV; Hepadnaviridae; partially dsDNA, enveloped) | Hepatocyte inflammation, deep scleral and cutaneous jaundice, dark tea-colored urine, clay-colored stools, fatigue; leads to liver cirrhosis and hepatocellular carcinoma. | Parenteral contact with infected blood, unsterilized needles/tattoos, unprotected sexual intercourse, and vertical transmission during childbirth. | Infant Hepatitis B vaccine series (pentavalent vaccine), blood donor screening, safe injection practices, and barrier contraception. |\n| **Newcastle Disease (Avian Pneumoencephalitis)** | *Avian orthoavulavirus 1* (Paramyxoviridae; $-ssRNA$, enveloped) | Devastating poultry disease: gasping, coughing, voice loss, greenish watery diarrhea, drop in egg production, twisted neck (**torticollis**), leg/wing paralysis, and up to 100% flock mortality. | Highly contagious via aerosol droplets, contaminated drinking water/feed, infected poultry droppings, and farm fomites. | Scheduled live-attenuated and inactivated vaccines (e.g., Hitchner B1, LaSota), farm biosecurity, and culling of infected flocks. |\n| **Avian Influenza (Bird Flu)** | *Avian Influenza Type A* (e.g., H5N1, H7N9; Orthomyxoviridae; segmented $-ssRNA$) | In Birds: cyanosis of comb/wattles, facial oedema, internal petechiae, sudden mass mortality. In Humans: severe viral pneumonia, high fever, and multi-organ failure. | Direct contact with infected wild aquatic waterfowl droppings, infected poultry, or contaminated farm machinery. | Rapid culling of exposed flocks, strict agricultural quarantine, PPE for poultry handlers, and surveillance. |\n\n---\n\n### MODULE 6: Quantitative Clinical Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Clinical Nutritional Anthropometry & Differential Diagnosis (Kwashiorkor vs. Marasmus in a Northern Ghana Health Centre)\n**Clinical / Field Scenario:**\nAt the Tamale West Hospital Pediatric Outpatient Clinic, two 18-month-old infants are brought in by their mothers presenting with severe growth faltering.\n- **Child A (Kofi):** Weighs 7.2 kg (expected: 11.5 kg). Physical examination reveals severe bilateral pitting oedema of the feet, lower legs, and hands, an enlarged distended abdomen, pale copper-reddish hair that is thin and easily detached, hyperpigmented desquamating skin patches on the thighs, and an enlarged smooth liver palpable 3 cm below the right costal margin. His mother states that since weaning at 7 months, Kofi's sole daily diet has been diluted fermented corn dough porridge (*koko*) sweetened with table sugar.\n- **Child B (Aminu):** Weighs 5.1 kg (expected: 11.5 kg). Physical examination reveals extreme somatic emaciation, complete disappearance of subcutaneous fat stores over the arms, thorax, and gluteal buttocks (loose folds of skin hanging like \"baggy trousers\"), sunken eyeballs with prominent zygomatic facial bones giving a \"wizened old man\" countenance, and visible prominent ribs. Aminu has no oedema, and his mother notes he demands food aggressively.\n\n**(a)** Provide the definitive scientific diagnosis for Child A and Child B, citing two distinct clinical hallmark signs for each infant.\n**(b)** Explain the biochemical mechanism responsible for the bilateral dependent pitting oedema and hepatomegaly observed exclusively in Child A.\n**(c)** Calculate the percentage of expected body weight for Child A and Child B, and outline the phased nutritional rehabilitation protocol for both children.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Clinical Differential Diagnosis:\n- Child A: Kwashiorkor (Severe Acute Protein Malnutrition). Hallmark signs: (1) Bilateral dependent pitting oedema (feet/legs); (2) Dyspigmented copper-red hair (flag sign) and flaky-paint dermatosis, accompanied by hepatomegaly.\n- Child B: Nutritional Marasmus (Severe Energy-Protein Starvation). Hallmark signs: (1) Severe, generalized somatic muscle wasting and loss of subcutaneous fat with redundant hanging skin folds; (2) Wizened 'old man' senile facial appearance with prominent sunken eyes and prominent ribs, in the total absence of oedema.\n\nStep 2: Biochemical Pathophysiological Mechanism for Child A:\n- Bilateral Dependent Pitting Oedema: In Kwashiorkor, prolonged dietary absence of essential amino acids severely impairs hepatic synthesis of plasma proteins, specifically serum albumin. Serum albumin drops below normal physiological concentrations (<20 g/L, hypoalbuminemia). According to Starling's forces of capillary dynamics, the intravascular plasma colloid oncotic pressure drops dramatically below the hydrostatic filtration pressure. Consequently, fluid cannot return to the venous end of capillaries and accumulates in the interstitial tissue spaces as dependent pitting oedema.\n- Hepatomegaly (Fatty Liver): The dietary excess of carbohydrates in corn porridge provides continuous glucose, which the liver converts into triglycerides via lipogenesis. However, because protein is absent, the hepatocytes cannot synthesize Apolipoprotein B-100, which is necessary to package triglycerides into Very Low-Density Lipoproteins (VLDL) for export. Triglycerides become trapped inside hepatocytes, causing diffuse steatosis and liver enlargement (hepatomegaly).\n\nStep 3: Quantitative Anthropometric Calculations:\n- Percentage of Expected Weight for Child A (Kofi):\n  $$\\text{Weight Deficit Ratio} = \\frac{\\text{Actual Weight}}{\\text{Expected Weight}} \\times 100 = \\frac{7.2\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 62.61\\%$$\n  (Note: Even this 62.6% is falsely elevated due to retained oedematous fluid mass; dry body mass is significantly lower).\n- Percentage of Expected Weight for Child B (Aminu):\n  $$\\text{Weight Deficit Ratio} = \\frac{5.1\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 44.35\\%$$\n  (Classified as severe acute malnutrition with >55% total weight deficit).\n\nStep 4: Phased Clinical Nutritional Rehabilitation Protocol:\n- Phase 1: Stabilization (Days 1–7): Treat or prevent hypoglycemia and hypothermia; correct fluid and electrolyte imbalances (using ResoMal — Rehydration Solution for Malnutrition, avoiding high sodium which triggers fatal heart failure); initiate cautious, low-protein, low-lactose therapeutic milk (WHO F-75 formula providing 75 kcal/100 mL and 0.9 g protein/100 mL) administered in small, frequent feeds.\n- Phase 2: Rehabilitation / Catch-Up Growth (Weeks 2–6): Transition to high-energy, high-protein formula (WHO F-100 providing 100 kcal/100 mL and 2.9 g protein/100 mL) or Ready-to-Use Therapeutic Food (RUTF, lipid-based peanut paste enriched with milk powder, vitamins, and minerals); gradually introduce local protein-dense complementary foods: blended beans, groundnut paste, egg yolk, and fish powder.\n- Phase 3: Follow-Up & Maternal Education: Comprehensive maternal guidance on food diversification, prolonged breastfeeding, complementary protein mixing (cereals + legumes), and growth monitoring.\n\n---\n\n#### Worked Example 2: Quantitative Micronutrient Prophylaxis & Biochemical Pathophysiology (Iodine & Vitamin A Intervention in Ghana)\n**Clinical / Field Scenario:**\nA public health survey conducted by the Ghana Health Service in a rural district assessed the nutritional micronutrient status of 2,000 junior high school students.\n- Analysis of household culinary salt samples indicated that 40% of the households consumed unfortified, raw crystalline sea salt containing 0 mg/kg potassium iodate ($KIO_3$), while 60% consumed adequately iodated table salt containing 40 mg/kg potassium iodate.\n- A clinical screening of 500 boarding students revealed that 65 students exhibited visible or palpable thyroid enlargement (Goitre), while 35 students reported difficulty seeing in dim light after sunset (Night Blindness) and showed conjunctival dryness.\n\n**(a)** Calculate the prevalence rate (%) of: (1) Goitre; (2) Clinical Night Blindness among the screened students.\n**(b)** Explain the molecular feedback mechanism through which lack of dietary iodine causes thyroid gland follicular cell hypertrophy (Goitre).\n**(c)** If an adolescent consumes 5.0 grams of the fortified table salt daily (containing 40 mg $KIO_3$ per kg of salt), calculate the daily intake of potassium iodate ($KIO_3$) in micrograms ($\\mu g$). Given that the molecular mass of $KIO_3$ is 214 g/mol and the atomic mass of Iodine is 127 g/mol, determine the actual elemental iodine delivered daily, and compare it against the WHO recommended adolescent daily allowance of 150 $\\mu g$.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Calculate Clinical Prevalence Rates:\n- Prevalence of Goitre:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Goitre Cases}}{\\text{Total Screened}} \\times 100 = \\frac{65}{500} \\times 100 = 13.0\\%$$\n  (A goitre prevalence of 13.0% indicates a severe public health endemicity requiring mandatory universal salt iodization enforcement).\n- Prevalence of Clinical Night Blindness:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Night Blindness Cases}}{\\text{Total Screened}} \\times 100 = \\frac{35}{500} \\times 100 = 7.0\\%$$\n  (Significantly exceeds the WHO public health problem threshold of 1.0%, indicating urgent need for high-potency Vitamin A distribution).\n\nStep 2: Molecular Endocrine Feedback Mechanism for Goitre Formation:\n1. Dietary Iodine ($I^-$) is absorbed and concentrated into the thyroid gland via the Sodium-Iodide Symporter (NIS).\n2. Inside thyroid follicles, thyroid peroxidase (TPO) incorporates iodine into tyrosine residues on thyroglobulin to synthesize monoiodotyrosine (MIT) and diiodotyrosine (DIT), which couple to produce thyroxine ($T_4$) and triiodothyronine ($T_3$).\n3. In dietary iodine deficiency, circulating free $T_4$ and $T_3$ levels drop.\n4. Decreased circulating $T_4$ removes the negative feedback inhibition exerted on the anterior pituitary gland and hypothalamus.\n5. The pituitary gland responds by hypersecreting Thyroid-Stimulating Hormone (TSH).\n6. Chronic elevated TSH binds to TSH receptors on thyroid follicular cells, stimulating accelerated cellular hypertrophy (cell enlargement) and follicular hyperplasia (cell multiplication) to scavenge every trace of available iodine, resulting in visible enlargement of the thyroid gland (Goitre).\n\nStep 3: Quantitative Salt Iodization & Elemental Iodine Delivery Calculation:\n- Daily Potassium Iodate ($KIO_3$) Ingested:\n  Salt consumption = 5.0 g = 0.005 kg of salt.\n  Fortification level = 40 mg $KIO_3$ per 1.0 kg of salt.\n  $$\\text{Daily } KIO_3 = 0.005\\text{ kg} \\times 40\\text{ mg/kg} = 0.20\\text{ mg} = 200\\text{ }\\mu g\\text{ of } KIO_3$$\n- Daily Elemental Iodine ($I$) Yield:\n  Molecular mass of $KIO_3 = 39\\text{ (K)} + 127\\text{ (I)} + 3 \\times 16\\text{ (O)} = 214\\text{ g/mol}$.\n  Fraction of elemental Iodine in $KIO_3 = \\frac{127}{214} = 0.59345$ (or 59.35%).\n  $$\\text{Daily Elemental Iodine} = 200\\text{ }\\mu g \\times 0.59345 = 118.69\\text{ }\\mu g$$\n- Comparison with WHO Adolescent Standard:\n  The adolescent daily allowance is 150 $\\mu g$. The 5.0 g of table salt yields ~118.7 $\\mu g$ (approximately 79.1% of the daily allowance), with the remainder easily met through dietary sea fish, cow's milk, or eggs, effectively preventing endemic goitre.\n\n---\n\n#### Worked Example 3: Epidemiological Transmission Dynamics & Herd Immunity Calculation (COVID-19 Outbreak in an Educational Institution)\n**Clinical / Field Scenario:**\nDuring a term in an Accra boarding secondary school with an unimmunized student population of $N = 1,200$, a student index case contracts COVID-19 (SARS-CoV-2) following an off-campus family event.\n- The index case attends classes and dining halls while pre-symptomatic for 3 days. Over an initial transmission generation cycle of 5 days, 4 primary contacts are infected. Each primary contact subsequently infects an average of 4 secondary contacts in the absence of public health interventions.\n- The basic reproduction number for the circulating viral variant is calculated as $R_0 = 4.0$.\n\n**(a)** Distinguish between the **incubation period** and the **infectious period** of COVID-19.\n**(b)** Calculate the theoretical total number of infected individuals at the end of the 3rd transmission generation cycle if transmission remains unmitigated.\n**(c)** Define the **Herd Immunity Threshold ($HIT$)**, and calculate the minimum percentage of the student population that must be successfully vaccinated to interrupt sustained community transmission of this viral variant ($R_0 = 4.0$).\n**(d)** List four non-pharmaceutical interventions (NPIs) that the school administration must immediately enforce to reduce the effective reproduction number ($R_e$) below 1.0.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Distinguish Incubation vs. Infectious Period:\n- Incubation Period: The time interval elapsed between initial exposure and viral entry into the host and the first manifestation of clinical symptoms or observable diagnostic signs (averages 4 to 6 days for COVID-19, with a range of 1 to 14 days).\n- Infectious Period: The time window during which an infected host sheds viable, replication-competent virions into the environment (via respiratory droplets/aerosols) and is capable of transmitting the pathogen to a susceptible contact (begins 1–2 days prior to symptom onset and lasts up to 8–10 days in mild-to-moderate cases).\n\nStep 2: Calculate Spread across Transmission Generations:\n- Generation 0 (Index Case): $I_0 = 1$\n- Generation 1: $I_1 = I_0 \\times R_0 = 1 \\times 4 = 4$\n- Generation 2: $I_2 = I_1 \\times R_0 = 4 \\times 4 = 16$\n- Generation 3: $I_3 = I_2 \\times R_0 = 16 \\times 4 = 64$\n- Cumulative Total Number of Infected Persons after Generation 3:\n  $$\\text{Total Cumulative Infections} = I_0 + I_1 + I_2 + I_3 = 1 + 4 + 16 + 64 = 85\\text{ individuals}$$\n\nStep 3: Calculate the Herd Immunity Threshold ($HIT$):\n- Definition: The minimum proportion of a population that must possess protective immunity (via vaccination or prior infection) such that the pathogen cannot achieve sustained chains of transmission, thereby indirectly shielding remaining susceptible individuals.\n- Mathematical Formula:\n  $$HIT = 1 - \\frac{1}{R_0}$$\n- Calculation for $R_0 = 4.0$:\n  $$HIT = 1 - \\frac{1}{4.0} = 1 - 0.25 = 0.75 = 75\\%$$\n- Application to School Population:\n  To achieve herd immunity, at least 75% of the 1,200 students ($0.75 \\times 1,200 = 900\\text{ students}$) must be fully vaccinated.\n\nStep 4: Immediate Non-Pharmaceutical Interventions (NPIs) to Drive $R_e < 1.0$:\n1. Rapid Case Isolation: Immediate removal and clinical isolation of all symptomatic individuals in a designated sickbay ward.\n2. Digital & Manual Contact Tracing: Identification and strict 10-day quarantine of all primary desk-mates and dorm-mates.\n3. Universal Mask Mandate: Compulsory indoor wearing of multi-layered medical/surgical masks covering both mouth and nose to reduce aerosol emission.\n4. Classroom Environmental Ventilation & Social Distancing: Opening all windows to increase cross-ventilation air exchanges (>6 air changes/hr) and spacing student desks $\\ge 1.5\\text{ metres}$ apart.\n\n---\n\n#### Worked Example 4: Zoonotic Spillover Biohazard Modeling & Chain of Transmission Interruption (Ebola Outbreak Containment Protocol)\n**Clinical / Field Scenario:**\nAn outbreak of Ebola Virus Disease (EVD) is detected in a forest border community following the consumption of a fruit bat carcass recovered by local hunters.\n- An index patient develops acute fever, severe hematemesis (vomiting blood), and profuse diarrhea. A relative nursing the patient at home without protective barriers and two community elders who participated in traditional unprotective washings of the patient's corpse contract the infection.\n- The local public health response team establishes an Emergency Operations Centre to contain the epidemic.\n\n**(a)** Identify the primary natural reservoir host of Ebola virus and describe the initial zoonotic spillover pathway into human populations.\n**(b)** Construct the complete direct human-to-human chain of transmission for this scenario, identifying the primary infectious biological vectors.\n**(c)** The field medical team prepares 0.5% (5,000 ppm) Sodium Hypochlorite (chlorine bleach) solution for environmental surface disinfection and cadaver decontamination from a commercial stock solution containing 5.0% sodium hypochlorite. Calculate the exact volume of water that must be added to 2.0 Litres of the 5.0% bleach stock to prepare the 0.5% disinfectant solution.\n**(d)** Outline the four cardinal pillars of the World Health Organization (WHO) Ebola Infection Prevention and Control (IPC) protocol required to terminate this outbreak.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Identify Reservoir & Spillover Pathway:\n- Natural Reservoir Host: Fruit bats belonging to the family *Pteropodidae* (e.g., *Hypsignathus monstrosus*, *Epomops franqueti*).\n- Zoonotic Spillover Mechanism: The Ebola virus circulates asymptomatically within bat colonies. When wild forest animals (primates, duikers) or human hunters come into direct contact with bat saliva, urine, or birthing fluids on dropped forest fruits, or when humans hunt, butcher, and handle raw bushmeat carcasses, the virus enters through micro-abrasions in the skin or mucous membranes.\n\nStep 2: Construct Human-to-Human Chain of Transmission:\n1. Primary Source: Index patient actively shedding ultra-high viral titers ($>10^7$ virions/mL) in blood, vomit, diarrhea, and sweat.\n2. Transmission Route 1 (Home Caregiver): Direct cutaneous/mucosal contact with vomitus and diarrheal fluids while nursing without gloves and protective clothing.\n3. Transmission Route 2 (Traditional Burial Washers): Direct skin contact with the virulent mucosal membranes, fluids, and blood of the deceased patient during traditional ceremonial body washing.\n4. Target Hosts: Family members, funeral attendees, and healthcare workers lacking barrier protection.\n\nStep 3: Disinfectant Dilution Calculation (Bleach Solution for Biohazards):\n- Using the volumetric dilution formula:\n  $$C_1 \\times V_1 = C_2 \\times V_2$$\n  Where:\n  - $C_1 = 5.0\\%$ (Initial concentration of commercial bleach)\n  - $V_1 = 2.0\\text{ Litres}$ (Volume of commercial bleach)\n  - $C_2 = 0.5\\%$ (Desired concentration for decontamination of body fluid spills and cadaver bags)\n  - $V_2 = \\text{Total final volume of diluted solution}$\n- Solve for $V_2$:\n  $$V_2 = \\frac{C_1 \\times V_1}{C_2} = \\frac{5.0\\% \\times 2.0\\text{ L}}{0.5\\%} = \\frac{10.0}{0.5} = 20.0\\text{ Litres}$$\n- Volume of Water to Add ($\\Delta V$):\n  $$\\Delta V = V_2 - V_1 = 20.0\\text{ L} - 2.0\\text{ L} = 18.0\\text{ Litres of clean water}$$\n  (Add 18.0 Litres of water to 2.0 Litres of 5.0% bleach to produce 20.0 Litres of 0.5% active chlorine disinfectant).\n\nStep 4: The Four Cardinal Pillars of WHO Ebola Containment Protocol:\n1. Immediate Strict Isolation & Barrier Nursing: House patients exclusively in dedicated negative-pressure Ebola Treatment Centres (ETCs) with strict one-way biocontainment flow corridors and full PPE suits.\n2. Safe and Dignified Burials: Complete suspension of traditional bodily washing; deceased corpses are immediately disinfected with 0.5% chlorine, placed into double hermetically sealed body bags, and buried immediately by trained, fully protected burial teams.\n3. Exhaustive Contact Tracing & 21-Day Quarantine: Identify 100% of direct and secondary contacts; monitor their body temperature twice daily for 21 days (the maximum incubation period of Ebola); immediately isolate any contact who develops fever ($>38.0^\\circ\\text{C}$).\n4. Community Engagement & Bushmeat Prohibition: Educational mobilization of chiefs, religious leaders, and youth to demystify hospital care and prohibit the hunting, sale, and consumption of wild bushmeat.\n\n---\n\n",
         "workedExamples": [
           {
             "id": "ex_b7_s16_1",
-            "title": "Worked Example: Clinical Diagnosis of Childhood Malnutrition",
-            "problem": "A community health nurse in a rural clinic examines two malnourished children: Child A is severely emaciated with skin tightly stretched over bones and an old-man face. Child B has swollen legs, an enlarged distended abdomen, pale thinned reddish hair, and skin lesions. Diagnose the specific condition of each child.",
+            "title": "Worked Example 1: Clinical Nutritional Anthropometry & Differential Diagnosis (Kwashiorkor vs. Marasmus in a Northern Ghana Health Centre)",
+            "problem": "At the Tamale West Hospital Pediatric Outpatient Clinic, two 18-month-old infants are brought in by their mothers presenting with severe growth faltering.\n- **Child A (Kofi):** Weighs 7.2 kg (expected: 11.5 kg). Physical examination reveals severe bilateral pitting oedema of the feet, lower legs, and hands, an enlarged distended abdomen, pale copper-reddish hair that is thin and easily detached, hyperpigmented desquamating skin patches on the thighs, and an enlarged smooth liver palpable 3 cm below the right costal margin. His mother states that since weaning at 7 months, Kofi's sole daily diet has been diluted fermented corn dough porridge (*koko*) sweetened with table sugar.\n- **Child B (Aminu):** Weighs 5.1 kg (expected: 11.5 kg). Physical examination reveals extreme somatic emaciation, complete disappearance of subcutaneous fat stores over the arms, thorax, and gluteal buttocks (loose folds of skin hanging like \"baggy trousers\"), sunken eyeballs with prominent zygomatic facial bones giving a \"wizened old man\" countenance, and visible prominent ribs. Aminu has no oedema, and his mother notes he demands food aggressively.\n\n**(a)** Provide the definitive scientific diagnosis for Child A and Child B, citing two distinct clinical hallmark signs for each infant.\n**(b)** Explain the biochemical mechanism responsible for the bilateral dependent pitting oedema and hepatomegaly observed exclusively in Child A.\n**(c)** Calculate the percentage of expected body weight for Child A and Child B, and outline the phased nutritional rehabilitation protocol for both children.",
             "steps": [
-              "Child A Diagnosis: Marasmus — Caused by severe total dietary deficiency of both energy calories (carbohydrates/fats) and proteins. The body breaks down its own muscle and subcutaneous fat, leaving a completely emaciated skeletal appearance.",
-              "Child B Diagnosis: Kwashiorkor — Caused by severe protein deficiency while consuming starchy carbohydrates. Low blood albumin causes fluid leakage into abdominal tissues (edema/ascites), causing the characteristic swollen belly and extremities, alongside depigmented hair and dermatitis."
+              "Step 1: Clinical Differential Diagnosis:\n- Child A: Kwashiorkor (Severe Acute Protein Malnutrition). Hallmark signs: (1) Bilateral dependent pitting oedema (feet/legs); (2) Dyspigmented copper-red hair (flag sign) and flaky-paint dermatosis, accompanied by hepatomegaly.\n- Child B: Nutritional Marasmus (Severe Energy-Protein Starvation). Hallmark signs: (1) Severe, generalized somatic muscle wasting and loss of subcutaneous fat with redundant hanging skin folds; (2) Wizened 'old man' senile facial appearance with prominent sunken eyes and prominent ribs, in the total absence of oedema.",
+              "Step 2: Biochemical Pathophysiological Mechanism for Child A:\n- Bilateral Dependent Pitting Oedema: In Kwashiorkor, prolonged dietary absence of essential amino acids severely impairs hepatic synthesis of plasma proteins, specifically serum albumin. Serum albumin drops below normal physiological concentrations (<20 g/L, hypoalbuminemia). According to Starling's forces of capillary dynamics, the intravascular plasma colloid oncotic pressure drops dramatically below the hydrostatic filtration pressure. Consequently, fluid cannot return to the venous end of capillaries and accumulates in the interstitial tissue spaces as dependent pitting oedema.\n- Hepatomegaly (Fatty Liver): The dietary excess of carbohydrates in corn porridge provides continuous glucose, which the liver converts into triglycerides via lipogenesis. However, because protein is absent, the hepatocytes cannot synthesize Apolipoprotein B-100, which is necessary to package triglycerides into Very Low-Density Lipoproteins (VLDL) for export. Triglycerides become trapped inside hepatocytes, causing diffuse steatosis and liver enlargement (hepatomegaly).",
+              "Step 3: Quantitative Anthropometric Calculations:\n- Percentage of Expected Weight for Child A (Kofi):\n  $$\\text{Weight Deficit Ratio} = \\frac{\\text{Actual Weight}}{\\text{Expected Weight}} \\times 100 = \\frac{7.2\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 62.61\\%$$\n  (Note: Even this 62.6% is falsely elevated due to retained oedematous fluid mass; dry body mass is significantly lower).\n- Percentage of Expected Weight for Child B (Aminu):\n  $$\\text{Weight Deficit Ratio} = \\frac{5.1\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 44.35\\%$$\n  (Classified as severe acute malnutrition with >55% total weight deficit).",
+              "Step 4: Phased Clinical Nutritional Rehabilitation Protocol:\n- Phase 1: Stabilization (Days 1–7): Treat or prevent hypoglycemia and hypothermia; correct fluid and electrolyte imbalances (using ResoMal — Rehydration Solution for Malnutrition, avoiding high sodium which triggers fatal heart failure); initiate cautious, low-protein, low-lactose therapeutic milk (WHO F-75 formula providing 75 kcal/100 mL and 0.9 g protein/100 mL) administered in small, frequent feeds.\n- Phase 2: Rehabilitation / Catch-Up Growth (Weeks 2–6): Transition to high-energy, high-protein formula (WHO F-100 providing 100 kcal/100 mL and 2.9 g protein/100 mL) or Ready-to-Use Therapeutic Food (RUTF, lipid-based peanut paste enriched with milk powder, vitamins, and minerals); gradually introduce local protein-dense complementary foods: blended beans, groundnut paste, egg yolk, and fish powder.\n- Phase 3: Follow-Up & Maternal Education: Comprehensive maternal guidance on food diversification, prolonged breastfeeding, complementary protein mixing (cereals + legumes), and growth monitoring."
             ],
-            "finalAnswer": "Examiner Tip: Remember: Kwashiorkor = protein deficiency with swollen belly (edema); Marasmus = total calorie/protein starvation with skeletal wasting."
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s16_2",
+            "title": "Worked Example 2: Quantitative Micronutrient Prophylaxis & Biochemical Pathophysiology (Iodine & Vitamin A Intervention in Ghana)",
+            "problem": "A public health survey conducted by the Ghana Health Service in a rural district assessed the nutritional micronutrient status of 2,000 junior high school students.\n- Analysis of household culinary salt samples indicated that 40% of the households consumed unfortified, raw crystalline sea salt containing 0 mg/kg potassium iodate ($KIO_3$), while 60% consumed adequately iodated table salt containing 40 mg/kg potassium iodate.\n- A clinical screening of 500 boarding students revealed that 65 students exhibited visible or palpable thyroid enlargement (Goitre), while 35 students reported difficulty seeing in dim light after sunset (Night Blindness) and showed conjunctival dryness.\n\n**(a)** Calculate the prevalence rate (%) of: (1) Goitre; (2) Clinical Night Blindness among the screened students.\n**(b)** Explain the molecular feedback mechanism through which lack of dietary iodine causes thyroid gland follicular cell hypertrophy (Goitre).\n**(c)** If an adolescent consumes 5.0 grams of the fortified table salt daily (containing 40 mg $KIO_3$ per kg of salt), calculate the daily intake of potassium iodate ($KIO_3$) in micrograms ($\\mu g$). Given that the molecular mass of $KIO_3$ is 214 g/mol and the atomic mass of Iodine is 127 g/mol, determine the actual elemental iodine delivered daily, and compare it against the WHO recommended adolescent daily allowance of 150 $\\mu g$.",
+            "steps": [
+              "Step 1: Calculate Clinical Prevalence Rates:\n- Prevalence of Goitre:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Goitre Cases}}{\\text{Total Screened}} \\times 100 = \\frac{65}{500} \\times 100 = 13.0\\%$$\n  (A goitre prevalence of 13.0% indicates a severe public health endemicity requiring mandatory universal salt iodization enforcement).\n- Prevalence of Clinical Night Blindness:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Night Blindness Cases}}{\\text{Total Screened}} \\times 100 = \\frac{35}{500} \\times 100 = 7.0\\%$$\n  (Significantly exceeds the WHO public health problem threshold of 1.0%, indicating urgent need for high-potency Vitamin A distribution).",
+              "Step 2: Molecular Endocrine Feedback Mechanism for Goitre Formation:\n1. Dietary Iodine ($I^-$) is absorbed and concentrated into the thyroid gland via the Sodium-Iodide Symporter (NIS).\n2. Inside thyroid follicles, thyroid peroxidase (TPO) incorporates iodine into tyrosine residues on thyroglobulin to synthesize monoiodotyrosine (MIT) and diiodotyrosine (DIT), which couple to produce thyroxine ($T_4$) and triiodothyronine ($T_3$).\n3. In dietary iodine deficiency, circulating free $T_4$ and $T_3$ levels drop.\n4. Decreased circulating $T_4$ removes the negative feedback inhibition exerted on the anterior pituitary gland and hypothalamus.\n5. The pituitary gland responds by hypersecreting Thyroid-Stimulating Hormone (TSH).\n6. Chronic elevated TSH binds to TSH receptors on thyroid follicular cells, stimulating accelerated cellular hypertrophy (cell enlargement) and follicular hyperplasia (cell multiplication) to scavenge every trace of available iodine, resulting in visible enlargement of the thyroid gland (Goitre).",
+              "Step 3: Quantitative Salt Iodization & Elemental Iodine Delivery Calculation:\n- Daily Potassium Iodate ($KIO_3$) Ingested:\n  Salt consumption = 5.0 g = 0.005 kg of salt.\n  Fortification level = 40 mg $KIO_3$ per 1.0 kg of salt.\n  $$\\text{Daily } KIO_3 = 0.005\\text{ kg} \\times 40\\text{ mg/kg} = 0.20\\text{ mg} = 200\\text{ }\\mu g\\text{ of } KIO_3$$\n- Daily Elemental Iodine ($I$) Yield:\n  Molecular mass of $KIO_3 = 39\\text{ (K)} + 127\\text{ (I)} + 3 \\times 16\\text{ (O)} = 214\\text{ g/mol}$.\n  Fraction of elemental Iodine in $KIO_3 = \\frac{127}{214} = 0.59345$ (or 59.35%).\n  $$\\text{Daily Elemental Iodine} = 200\\text{ }\\mu g \\times 0.59345 = 118.69\\text{ }\\mu g$$\n- Comparison with WHO Adolescent Standard:\n  The adolescent daily allowance is 150 $\\mu g$. The 5.0 g of table salt yields ~118.7 $\\mu g$ (approximately 79.1% of the daily allowance), with the remainder easily met through dietary sea fish, cow's milk, or eggs, effectively preventing endemic goitre."
+            ],
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s16_3",
+            "title": "Worked Example 3: Epidemiological Transmission Dynamics & Herd Immunity Calculation (COVID-19 Outbreak in an Educational Institution)",
+            "problem": "During a term in an Accra boarding secondary school with an unimmunized student population of $N = 1,200$, a student index case contracts COVID-19 (SARS-CoV-2) following an off-campus family event.\n- The index case attends classes and dining halls while pre-symptomatic for 3 days. Over an initial transmission generation cycle of 5 days, 4 primary contacts are infected. Each primary contact subsequently infects an average of 4 secondary contacts in the absence of public health interventions.\n- The basic reproduction number for the circulating viral variant is calculated as $R_0 = 4.0$.\n\n**(a)** Distinguish between the **incubation period** and the **infectious period** of COVID-19.\n**(b)** Calculate the theoretical total number of infected individuals at the end of the 3rd transmission generation cycle if transmission remains unmitigated.\n**(c)** Define the **Herd Immunity Threshold ($HIT$)**, and calculate the minimum percentage of the student population that must be successfully vaccinated to interrupt sustained community transmission of this viral variant ($R_0 = 4.0$).\n**(d)** List four non-pharmaceutical interventions (NPIs) that the school administration must immediately enforce to reduce the effective reproduction number ($R_e$) below 1.0.",
+            "steps": [
+              "Step 1: Distinguish Incubation vs. Infectious Period:\n- Incubation Period: The time interval elapsed between initial exposure and viral entry into the host and the first manifestation of clinical symptoms or observable diagnostic signs (averages 4 to 6 days for COVID-19, with a range of 1 to 14 days).\n- Infectious Period: The time window during which an infected host sheds viable, replication-competent virions into the environment (via respiratory droplets/aerosols) and is capable of transmitting the pathogen to a susceptible contact (begins 1–2 days prior to symptom onset and lasts up to 8–10 days in mild-to-moderate cases).",
+              "Step 2: Calculate Spread across Transmission Generations:\n- Generation 0 (Index Case): $I_0 = 1$\n- Generation 1: $I_1 = I_0 \\times R_0 = 1 \\times 4 = 4$\n- Generation 2: $I_2 = I_1 \\times R_0 = 4 \\times 4 = 16$\n- Generation 3: $I_3 = I_2 \\times R_0 = 16 \\times 4 = 64$\n- Cumulative Total Number of Infected Persons after Generation 3:\n  $$\\text{Total Cumulative Infections} = I_0 + I_1 + I_2 + I_3 = 1 + 4 + 16 + 64 = 85\\text{ individuals}$$",
+              "Step 3: Calculate the Herd Immunity Threshold ($HIT$):\n- Definition: The minimum proportion of a population that must possess protective immunity (via vaccination or prior infection) such that the pathogen cannot achieve sustained chains of transmission, thereby indirectly shielding remaining susceptible individuals.\n- Mathematical Formula:\n  $$HIT = 1 - \\frac{1}{R_0}$$\n- Calculation for $R_0 = 4.0$:\n  $$HIT = 1 - \\frac{1}{4.0} = 1 - 0.25 = 0.75 = 75\\%$$\n- Application to School Population:\n  To achieve herd immunity, at least 75% of the 1,200 students ($0.75 \\times 1,200 = 900\\text{ students}$) must be fully vaccinated.",
+              "Step 4: Immediate Non-Pharmaceutical Interventions (NPIs) to Drive $R_e < 1.0$:\n1. Rapid Case Isolation: Immediate removal and clinical isolation of all symptomatic individuals in a designated sickbay ward.\n2. Digital & Manual Contact Tracing: Identification and strict 10-day quarantine of all primary desk-mates and dorm-mates.\n3. Universal Mask Mandate: Compulsory indoor wearing of multi-layered medical/surgical masks covering both mouth and nose to reduce aerosol emission.\n4. Classroom Environmental Ventilation & Social Distancing: Opening all windows to increase cross-ventilation air exchanges (>6 air changes/hr) and spacing student desks $\\ge 1.5\\text{ metres}$ apart."
+            ],
+            "finalAnswer": ""
+          },
+          {
+            "id": "ex_b7_s16_4",
+            "title": "Worked Example 4: Zoonotic Spillover Biohazard Modeling & Chain of Transmission Interruption (Ebola Outbreak Containment Protocol)",
+            "problem": "An outbreak of Ebola Virus Disease (EVD) is detected in a forest border community following the consumption of a fruit bat carcass recovered by local hunters.\n- An index patient develops acute fever, severe hematemesis (vomiting blood), and profuse diarrhea. A relative nursing the patient at home without protective barriers and two community elders who participated in traditional unprotective washings of the patient's corpse contract the infection.\n- The local public health response team establishes an Emergency Operations Centre to contain the epidemic.\n\n**(a)** Identify the primary natural reservoir host of Ebola virus and describe the initial zoonotic spillover pathway into human populations.\n**(b)** Construct the complete direct human-to-human chain of transmission for this scenario, identifying the primary infectious biological vectors.\n**(c)** The field medical team prepares 0.5% (5,000 ppm) Sodium Hypochlorite (chlorine bleach) solution for environmental surface disinfection and cadaver decontamination from a commercial stock solution containing 5.0% sodium hypochlorite. Calculate the exact volume of water that must be added to 2.0 Litres of the 5.0% bleach stock to prepare the 0.5% disinfectant solution.\n**(d)** Outline the four cardinal pillars of the World Health Organization (WHO) Ebola Infection Prevention and Control (IPC) protocol required to terminate this outbreak.",
+            "steps": [
+              "Step 1: Identify Reservoir & Spillover Pathway:\n- Natural Reservoir Host: Fruit bats belonging to the family *Pteropodidae* (e.g., *Hypsignathus monstrosus*, *Epomops franqueti*).\n- Zoonotic Spillover Mechanism: The Ebola virus circulates asymptomatically within bat colonies. When wild forest animals (primates, duikers) or human hunters come into direct contact with bat saliva, urine, or birthing fluids on dropped forest fruits, or when humans hunt, butcher, and handle raw bushmeat carcasses, the virus enters through micro-abrasions in the skin or mucous membranes.",
+              "Step 2: Construct Human-to-Human Chain of Transmission:\n1. Primary Source: Index patient actively shedding ultra-high viral titers ($>10^7$ virions/mL) in blood, vomit, diarrhea, and sweat.\n2. Transmission Route 1 (Home Caregiver): Direct cutaneous/mucosal contact with vomitus and diarrheal fluids while nursing without gloves and protective clothing.\n3. Transmission Route 2 (Traditional Burial Washers): Direct skin contact with the virulent mucosal membranes, fluids, and blood of the deceased patient during traditional ceremonial body washing.\n4. Target Hosts: Family members, funeral attendees, and healthcare workers lacking barrier protection.",
+              "Step 3: Disinfectant Dilution Calculation (Bleach Solution for Biohazards):\n- Using the volumetric dilution formula:\n  $$C_1 \\times V_1 = C_2 \\times V_2$$\n  Where:\n  - $C_1 = 5.0\\%$ (Initial concentration of commercial bleach)\n  - $V_1 = 2.0\\text{ Litres}$ (Volume of commercial bleach)\n  - $C_2 = 0.5\\%$ (Desired concentration for decontamination of body fluid spills and cadaver bags)\n  - $V_2 = \\text{Total final volume of diluted solution}$\n- Solve for $V_2$:\n  $$V_2 = \\frac{C_1 \\times V_1}{C_2} = \\frac{5.0\\% \\times 2.0\\text{ L}}{0.5\\%} = \\frac{10.0}{0.5} = 20.0\\text{ Litres}$$\n- Volume of Water to Add ($\\Delta V$):\n  $$\\Delta V = V_2 - V_1 = 20.0\\text{ L} - 2.0\\text{ L} = 18.0\\text{ Litres of clean water}$$\n  (Add 18.0 Litres of water to 2.0 Litres of 5.0% bleach to produce 20.0 Litres of 0.5% active chlorine disinfectant).",
+              "Step 4: The Four Cardinal Pillars of WHO Ebola Containment Protocol:\n1. Immediate Strict Isolation & Barrier Nursing: House patients exclusively in dedicated negative-pressure Ebola Treatment Centres (ETCs) with strict one-way biocontainment flow corridors and full PPE suits.\n2. Safe and Dignified Burials: Complete suspension of traditional bodily washing; deceased corpses are immediately disinfected with 0.5% chlorine, placed into double hermetically sealed body bags, and buried immediately by trained, fully protected burial teams.\n3. Exhaustive Contact Tracing & 21-Day Quarantine: Identify 100% of direct and secondary contacts; monitor their body temperature twice daily for 21 days (the maximum incubation period of Ebola); immediately isolate any contact who develops fever ($>38.0^\\circ\\text{C}$).\n4. Community Engagement & Bushmeat Prohibition: Educational mobilization of chiefs, religious leaders, and youth to demystify hospital care and prohibit the hunting, sale, and consumption of wild bushmeat."
+            ],
+            "finalAnswer": ""
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s16_1",
+              "id": "B7_HH_F01",
               "difficulty": "low",
-              "prompt": "A child presenting with spongy, bleeding gums and loose teeth is suffering from a deficiency of:",
+              "prompt": "What is food scientifically defined as?",
               "options": [
-                "Vitamin A",
-                "Vitamin C",
-                "Vitamin D",
-                "Iron"
+                "A. Any material that only provides water to the body",
+                "B. Any substance that is edible and nourishes the body to support life and growth",
+                "C. Chemical compounds that prevent food from spoiling",
+                "D. Inorganic mineral salts extracted from sea water"
               ],
-              "correctAnswer": "Vitamin C",
-              "hint": "Citrus fruits like oranges and limes cure this disease (scurvy).",
-              "workedSolution": "Vitamin C (ascorbic acid) is vital for collagen synthesis. Deficiency causes scurvy, characterized by capillary fragility, bleeding gums, and poor wound healing.",
+              "correctAnswer": "B. Any substance that is edible and nourishes the body to support life and growth",
+              "hint": "Food is anything that we eat that is edible and actively nourishes the body to support life and growth.",
+              "workedSolution": "Food is anything that we eat that is edible and actively nourishes the body to support life and growth.",
               "points": 1,
-              "learningCompetency": "B7.5.2.1",
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F02",
+              "difficulty": "low",
+              "prompt": "Which of the following are the two essential characteristics required for any item to be considered food?",
+              "options": [
+                "A. It must be sweet and liquid",
+                "B. It must be expensive and cooked",
+                "C. It must be edible (worth eating) and must nourish the body",
+                "D. It must be of plant origin and green"
+              ],
+              "correctAnswer": "C. It must be edible (worth eating) and must nourish the body",
+              "hint": "The two important features for any item to be called food are: (i) it should be worth eating (edible), and (ii) it must nourish the body.",
+              "workedSolution": "The two important features for any item to be called food are: (i) it should be worth eating (edible), and (ii) it must nourish the body.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F03",
+              "difficulty": "low",
+              "prompt": "Chemical compounds in food utilized by the body to function properly and maintain health are called:",
+              "options": [
+                "A. Food nutrients",
+                "B. Preservatives",
+                "C. Food toxins",
+                "D. Roughages only"
+              ],
+              "correctAnswer": "A. Food nutrients",
+              "hint": "Food nutrients are chemical compounds in food that are used by the body to function properly and maintain good health.",
+              "workedSolution": "Food nutrients are chemical compounds in food that are used by the body to function properly and maintain good health.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F04",
+              "difficulty": "low",
+              "prompt": "Nutrients that are required by the body but cannot be synthesized internally and must be supplied in the diet are termed:",
+              "options": [
+                "A. Non-essential nutrients",
+                "B. Essential nutrients",
+                "C. Synthetic nutrients",
+                "D. Dietary fibres"
+              ],
+              "correctAnswer": "B. Essential nutrients",
+              "hint": "Essential nutrients are nutrients required by the body that cannot be synthesized by the body and must be provided in the diet.",
+              "workedSolution": "Essential nutrients are nutrients required by the body that cannot be synthesized by the body and must be provided in the diet.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F05",
+              "difficulty": "low",
+              "prompt": "A diet that contains all the classes of food substances in their correct proportions and quantities is a/an:",
+              "options": [
+                "A. Unbalanced diet",
+                "B. Balanced diet",
+                "C. Vegetarian diet",
+                "D. Fasting diet"
+              ],
+              "correctAnswer": "B. Balanced diet",
+              "hint": "A balanced diet contains all the classes of food substances in their correct proportions and quantities needed by the body for effective functioning.",
+              "workedSolution": "A balanced diet contains all the classes of food substances in their correct proportions and quantities needed by the body for effective functioning.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F06",
+              "difficulty": "low",
+              "prompt": "What is the primary role of protein obtained from maternal nutrition during pregnancy?",
+              "options": [
+                "A. To provide instant glucose for walking",
+                "B. To support growth and increase the size of the embryo or foetus and build foetal body systems",
+                "C. To prevent water from leaving the kidneys",
+                "D. To color the foetal skin"
+              ],
+              "correctAnswer": "B. To support growth and increase the size of the embryo or foetus and build foetal body systems",
+              "hint": "Protein obtained from nutrition is important for the growth or increase in size of the embryo/foetus and building foetal body systems.",
+              "workedSolution": "Protein obtained from nutrition is important for the growth or increase in size of the embryo/foetus and building foetal body systems.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F07",
+              "difficulty": "low",
+              "prompt": "Why are dietary fats and oils essential in the nutrition of a pregnant woman?",
+              "options": [
+                "A. For developing the foetal nervous system",
+                "B. To make the mother sleep longer",
+                "C. To dissolve stomach bones",
+                "D. To stop intestinal peristalsis"
+              ],
+              "correctAnswer": "A. For developing the foetal nervous system",
+              "hint": "Fats from food are important for the development of the foetal nervous system.",
+              "workedSolution": "Fats from food are important for the development of the foetal nervous system.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F08",
+              "difficulty": "low",
+              "prompt": "Which nutrient class provides the primary energy needed by the mother to remain active during pregnancy?",
+              "options": [
+                "A. Roughage",
+                "B. Carbohydrates",
+                "C. Water",
+                "D. Mineral salts"
+              ],
+              "correctAnswer": "B. Carbohydrates",
+              "hint": "Carbohydrates obtained from food provide energy for the mother to be active.",
+              "workedSolution": "Carbohydrates obtained from food provide energy for the mother to be active.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F09",
+              "difficulty": "low",
+              "prompt": "A condition in an organism where there is an insufficient intake or lack of required essential food nutrients in right proportions is:",
+              "options": [
+                "A. Dehydration",
+                "B. Malnutrition",
+                "C. Respiration",
+                "D. Digestion"
+              ],
+              "correctAnswer": "B. Malnutrition",
+              "hint": "Malnutrition is a condition or situation where there is insufficient or lack of required essential food nutrients in the right proportions.",
+              "workedSolution": "Malnutrition is a condition or situation where there is insufficient or lack of required essential food nutrients in the right proportions.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F10",
+              "difficulty": "low",
+              "prompt": "Which of the following is a physical effect of malnutrition in children?",
+              "options": [
+                "A. Rapid increase in bone density",
+                "B. Slow or stunted growth",
+                "C. Enhanced disease immunity",
+                "D. Elevated blood clotting speed"
+              ],
+              "correctAnswer": "B. Slow or stunted growth",
+              "hint": "Effects of malnutrition include fluid imbalance, slow or stunted growth, tissue malformation, and vulnerability to disease.",
+              "workedSolution": "Effects of malnutrition include fluid imbalance, slow or stunted growth, tissue malformation, and vulnerability to disease.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F11",
+              "difficulty": "low",
+              "prompt": "Which food nutrient class serves as the major and immediate source of energy to perform physical activities?",
+              "options": [
+                "A. Water",
+                "B. Carbohydrates",
+                "C. Roughage",
+                "D. Minerals"
+              ],
+              "correctAnswer": "B. Carbohydrates",
+              "hint": "Carbohydrates are the major energy needed in the body to perform any activity.",
+              "workedSolution": "Carbohydrates are the major energy needed in the body to perform any activity.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F12",
+              "difficulty": "low",
+              "prompt": "Glucose and fructose found in ripe fruits are classified under which division of carbohydrates?",
+              "options": [
+                "A. Polysaccharides",
+                "B. Disaccharides",
+                "C. Monosaccharides (simple sugars)",
+                "D. Dietary fibres"
+              ],
+              "correctAnswer": "C. Monosaccharides (simple sugars)",
+              "hint": "Monosaccharides are commonly known as simple sugars, with examples including glucose and fructose.",
+              "workedSolution": "Monosaccharides are commonly known as simple sugars, with examples including glucose and fructose.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F13",
+              "difficulty": "low",
+              "prompt": "Sucrose, the table sugar extracted from sugarcane, is scientifically categorized as a/an:",
+              "options": [
+                "A. Monosaccharide",
+                "B. Disaccharide (complex sugar)",
+                "C. Amino acid",
+                "D. Fatty acid"
+              ],
+              "correctAnswer": "B. Disaccharide (complex sugar)",
+              "hint": "Disaccharides are commonly called complex sugars, with sucrose as a prime example.",
+              "workedSolution": "Disaccharides are commonly called complex sugars, with sucrose as a prime example.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F14",
+              "difficulty": "low",
+              "prompt": "Which carbohydrate division consists of long chains of several monosaccharide units joined by chemical bonds (e.g., starch)?",
+              "options": [
+                "A. Polysaccharides",
+                "B. Monosaccharides",
+                "C. Lipids",
+                "D. Vitamins"
+              ],
+              "correctAnswer": "A. Polysaccharides",
+              "hint": "Polysaccharides are considered as chains of several monosaccharide units joined together by chemical bonds, such as starch.",
+              "workedSolution": "Polysaccharides are considered as chains of several monosaccharide units joined together by chemical bonds, such as starch.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F15",
+              "difficulty": "low",
+              "prompt": "Which of the following foods is a rich dietary source of carbohydrates?",
+              "options": [
+                "A. Sea fish",
+                "B. Bread, potatoes, and rice",
+                "C. Iodated salt",
+                "D. Pure water"
+              ],
+              "correctAnswer": "B. Bread, potatoes, and rice",
+              "hint": "Sources of carbohydrates include bread, potatoes, rice, corn, beans, and cookies.",
+              "workedSolution": "Sources of carbohydrates include bread, potatoes, rice, corn, beans, and cookies.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F16",
+              "difficulty": "low",
+              "prompt": "Proteins are food substances composed of which chemical elements?",
+              "options": [
+                "A. Carbon, hydrogen, oxygen, and nitrogen",
+                "B. Sodium and chlorine only",
+                "C. Carbon and hydrogen only",
+                "D. Calcium and phosphorus only"
+              ],
+              "correctAnswer": "A. Carbon, hydrogen, oxygen, and nitrogen",
+              "hint": "Proteins are food substances made of the elements carbon, hydrogen, oxygen, and nitrogen.",
+              "workedSolution": "Proteins are food substances made of the elements carbon, hydrogen, oxygen, and nitrogen.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F17",
+              "difficulty": "low",
+              "prompt": "What is the basic structural building unit of all proteins?",
+              "options": [
+                "A. Glucose",
+                "B. Fatty acid",
+                "C. Amino acid",
+                "D. Glycerol"
+              ],
+              "correctAnswer": "C. Amino acid",
+              "hint": "The main unit of protein is the amino acid.",
+              "workedSolution": "The main unit of protein is the amino acid.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F18",
+              "difficulty": "low",
+              "prompt": "First-class proteins are usually obtained from animal sources because they:",
+              "options": [
+                "A. Do not contain nitrogen",
+                "B. Contain all the essential amino acids necessary for proper growth and development",
+                "C. Are completely insoluble in water",
+                "D. Never spoil when kept at room temperature"
+              ],
+              "correctAnswer": "B. Contain all the essential amino acids necessary for proper growth and development",
+              "hint": "First class proteins are usually found in animals and contain all the essential amino acids necessary for proper growth.",
+              "workedSolution": "First class proteins are usually found in animals and contain all the essential amino acids necessary for proper growth.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F19",
+              "difficulty": "low",
+              "prompt": "Which of the following foods provides first-class proteins?",
+              "options": [
+                "A. Meat, fish, eggs, and milk",
+                "B. Cassava and plantain",
+                "C. Orange and lemon juice",
+                "D. Palm oil and coconut oil"
+              ],
+              "correctAnswer": "A. Meat, fish, eggs, and milk",
+              "hint": "Sources of animal protein including meat, fish, eggs, milk, and cheese provide first-class proteins.",
+              "workedSolution": "Sources of animal protein including meat, fish, eggs, milk, and cheese provide first-class proteins.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F20",
+              "difficulty": "low",
+              "prompt": "Second-class proteins are generally of plant origin because they:",
+              "options": [
+                "A. Lack some of the essential amino acids",
+                "B. Contain no chemical elements",
+                "C. Cannot be digested by humans",
+                "D. Cause immediate goitre"
+              ],
+              "correctAnswer": "A. Lack some of the essential amino acids",
+              "hint": "Second class proteins are usually of plant origin and lack some of the essential amino acids.",
+              "workedSolution": "Second class proteins are usually of plant origin and lack some of the essential amino acids.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F21",
+              "difficulty": "low",
+              "prompt": "Which of the following is a primary function of proteins in the human body?",
+              "options": [
+                "A. Providing material for growth and repair of worn-out body tissues",
+                "B. Supplying 99% of instant energy for sprinting",
+                "C. Cooling the skin surface through evaporation",
+                "D. Dissolving dietary cellulose"
+              ],
+              "correctAnswer": "A. Providing material for growth and repair of worn-out body tissues",
+              "hint": "Proteins help in the formation of enzymes/hormones/hairs, repair of body tissues, and provide materials for growth.",
+              "workedSolution": "Proteins help in the formation of enzymes/hormones/hairs, repair of body tissues, and provide materials for growth.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F22",
+              "difficulty": "low",
+              "prompt": "Fats and oils are collectively referred to in biochemistry as:",
+              "options": [
+                "A. Carbohydrates",
+                "B. Lipids",
+                "C. Polysaccharides",
+                "D. Minerals"
+              ],
+              "correctAnswer": "B. Lipids",
+              "hint": "Fats and oils are generally called lipids.",
+              "workedSolution": "Fats and oils are generally called lipids.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F23",
+              "difficulty": "low",
+              "prompt": "What is the physical state of fats compared to oils at room temperature?",
+              "options": [
+                "A. Fats exist in the solid state while oils exist in the liquid state",
+                "B. Fats are gases while oils are solids",
+                "C. Both fats and oils are always crystalline solids",
+                "D. Both fats and oils are always volatile vapors"
+              ],
+              "correctAnswer": "A. Fats exist in the solid state while oils exist in the liquid state",
+              "hint": "Lipids exist as fats in the solid state and as oils in the liquid state.",
+              "workedSolution": "Lipids exist as fats in the solid state and as oils in the liquid state.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F24",
+              "difficulty": "low",
+              "prompt": "Which of the following is an important physiological function of fats stored under mammalian skin?",
+              "options": [
+                "A. Provides insulation against heat loss",
+                "B. Senses light rays",
+                "C. Absorbs carbon dioxide from the air",
+                "D. Manufactures red blood cells"
+              ],
+              "correctAnswer": "A. Provides insulation against heat loss",
+              "hint": "Fat under the skin of mammals provides insulation against heat loss.",
+              "workedSolution": "Fat under the skin of mammals provides insulation against heat loss.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F25",
+              "difficulty": "low",
+              "prompt": "Lipids are biologically necessary in the human diet because they act as a solvent for:",
+              "options": [
+                "A. Water-soluble Vitamin C",
+                "B. Fat-soluble vitamins",
+                "C. Mineral table salt",
+                "D. Cellulose roughage"
+              ],
+              "correctAnswer": "B. Fat-soluble vitamins",
+              "hint": "Fats and oils act as a solvent for fat-soluble vitamins.",
+              "workedSolution": "Fats and oils act as a solvent for fat-soluble vitamins.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F26",
+              "difficulty": "low",
+              "prompt": "What is roughage (dietary fibre)?",
+              "options": [
+                "A. The indigestible part of plant food that adds bulk to diet and aids bowel movement",
+                "B. Synthetic plastic strands swallowed accidentally",
+                "C. Pure animal fat deposits",
+                "D. Concentrated liquid sugar"
+              ],
+              "correctAnswer": "A. The indigestible part of plant food that adds bulk to diet and aids bowel movement",
+              "hint": "Roughage aids digestion, makes food bulky, and helps food pass through the digestive system easily.",
+              "workedSolution": "Roughage aids digestion, makes food bulky, and helps food pass through the digestive system easily.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F27",
+              "difficulty": "low",
+              "prompt": "How does dietary roughage protect human gastrointestinal health?",
+              "options": [
+                "A. Facilitates free bowel movement to prevent constipation and reduces the risk of bowel cancer",
+                "B. Completely stops stomach digestion",
+                "C. Turns blood into water",
+                "D. Kills all intestinal enzymes"
+              ],
+              "correctAnswer": "A. Facilitates free bowel movement to prevent constipation and reduces the risk of bowel cancer",
+              "hint": "Roughage facilitates free bowel movement, prevents constipation, and reduces the risk of bowel cancer.",
+              "workedSolution": "Roughage facilitates free bowel movement, prevents constipation, and reduces the risk of bowel cancer.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F28",
+              "difficulty": "low",
+              "prompt": "Water forms approximately what proportion of the human body weight?",
+              "options": [
+                "A. One-tenth (10%)",
+                "B. One-third (33%)",
+                "C. Two-thirds (about 66%)",
+                "D. Ninety-nine percent (99%)"
+              ],
+              "correctAnswer": "C. Two-thirds (about 66%)",
+              "hint": "Water forms about two-thirds of the body weight.",
+              "workedSolution": "Water forms about two-thirds of the body weight.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F29",
+              "difficulty": "low",
+              "prompt": "How does water regulate human core body temperature in hot environments?",
+              "options": [
+                "A. By evaporating from the body surface as sweat to produce a cooling effect",
+                "B. By turning into ice under the skin",
+                "C. By stopping all chemical reactions",
+                "D. By freezing blood plasma"
+              ],
+              "correctAnswer": "A. By evaporating from the body surface as sweat to produce a cooling effect",
+              "hint": "Water cools the body when it evaporates from the body surface.",
+              "workedSolution": "Water cools the body when it evaporates from the body surface.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F30",
+              "difficulty": "low",
+              "prompt": "Which of the following is a primary dietary source of essential mineral salts like iodine?",
+              "options": [
+                "A. Sea fish and iodated table salt",
+                "B. White polished sugar",
+                "C. Pure palm oil",
+                "D. Filtered water"
+              ],
+              "correctAnswer": "A. Sea fish and iodated table salt",
+              "hint": "Sources of minerals include sea fish and iodated salts.",
+              "workedSolution": "Sources of minerals include sea fish and iodated salts.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F31",
+              "difficulty": "low",
+              "prompt": "What is a deficiency disease?",
+              "options": [
+                "A. A disease caused by a viral or bacterial infection",
+                "B. A disease caused by the absence or lack of a particular nutrient in the human diet",
+                "C. A condition resulting from physical bone fractures",
+                "D. An illness caused by drinking excess clean water"
+              ],
+              "correctAnswer": "B. A disease caused by the absence or lack of a particular nutrient in the human diet",
+              "hint": "Deficiency disease is the absence or lack of a particular nutrient in the diet of humans.",
+              "workedSolution": "Deficiency disease is the absence or lack of a particular nutrient in the diet of humans.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F32",
+              "difficulty": "low",
+              "prompt": "What nutritional deficiency causes Kwashiorkor in growing children?",
+              "options": [
+                "A. Lack of dietary protein",
+                "B. Lack of vitamin C",
+                "C. Lack of calcium",
+                "D. Lack of water"
+              ],
+              "correctAnswer": "A. Lack of dietary protein",
+              "hint": "Kwashiorkor is caused by a lack of protein in the human body.",
+              "workedSolution": "Kwashiorkor is caused by a lack of protein in the human body.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F33",
+              "difficulty": "low",
+              "prompt": "Which observable symptom is characteristic of a child suffering from Kwashiorkor?",
+              "options": [
+                "A. Severely swollen protruding abdomen (oedema) and reddish-brown hair",
+                "B. Extreme bone hardening",
+                "C. Complete absence of any body swelling",
+                "D. Bleeding gums and loose teeth"
+              ],
+              "correctAnswer": "A. Severely swollen protruding abdomen (oedema) and reddish-brown hair",
+              "hint": "Kwashiorkor presents clinically with a swollen, distended abdomen and altered, reddish hair.",
+              "workedSolution": "Kwashiorkor presents clinically with a swollen, distended abdomen and altered, reddish hair.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F34",
+              "difficulty": "low",
+              "prompt": "What nutritional deficiency causes Marasmus?",
+              "options": [
+                "A. Lack of carbohydrates (and total calories)",
+                "B. Lack of vitamin D",
+                "C. Lack of iodine",
+                "D. Lack of vitamin K"
+              ],
+              "correctAnswer": "A. Lack of carbohydrates (and total calories)",
+              "hint": "Marasmus is caused by a lack of carbohydrates and overall energy intake.",
+              "workedSolution": "Marasmus is caused by a lack of carbohydrates and overall energy intake.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F35",
+              "difficulty": "low",
+              "prompt": "Rickets, a disease resulting in soft bones and bowed legs in children, is caused by a lack of:",
+              "options": [
+                "A. Vitamin D (and Calcium)",
+                "B. Vitamin C",
+                "C. Vitamin B1",
+                "D. Protein only"
+              ],
+              "correctAnswer": "A. Vitamin D (and Calcium)",
+              "hint": "Rickets is caused by a lack of vitamin D (and calcium).",
+              "workedSolution": "Rickets is caused by a lack of vitamin D (and calcium).",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F36",
+              "difficulty": "low",
+              "prompt": "Which visible physical deformity is depicted in medical sketches of children suffering from Rickets?",
+              "options": [
+                "A. Bowed legs or knock-knees",
+                "B. Swollen neck thyroid gland",
+                "C. Yellow eyes and dark urine",
+                "D. Loss of finger nails"
+              ],
+              "correctAnswer": "A. Bowed legs or knock-knees",
+              "hint": "Rickets causes soft bones that bow under weight-bearing, resulting in bowed legs.",
+              "workedSolution": "Rickets causes soft bones that bow under weight-bearing, resulting in bowed legs.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F37",
+              "difficulty": "low",
+              "prompt": "The deficiency disease characterized by bleeding spongy gums and skin spots is Scurvy, caused by a lack of:",
+              "options": [
+                "A. Vitamin C",
+                "B. Vitamin A",
+                "C. Vitamin K",
+                "D. Iodine"
+              ],
+              "correctAnswer": "A. Vitamin C",
+              "hint": "Scurvy is caused by a lack of vitamin C in the diet.",
+              "workedSolution": "Scurvy is caused by a lack of vitamin C in the diet.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F38",
+              "difficulty": "low",
+              "prompt": "Goitre, the abnormal swelling of the thyroid gland in the neck, is caused by a lack of:",
+              "options": [
+                "A. Iodine",
+                "B. Iron",
+                "C. Vitamin D",
+                "D. Carbohydrates"
+              ],
+              "correctAnswer": "A. Iodine",
+              "hint": "Goiter is caused by a lack of the mineral nutrient iodine.",
+              "workedSolution": "Goiter is caused by a lack of the mineral nutrient iodine.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F39",
+              "difficulty": "low",
+              "prompt": "Lack of Vitamin A in the human diet causes which visual impairment?",
+              "options": [
+                "A. Night blindness",
+                "B. Scurvy",
+                "C. Beriberi",
+                "D. Goitre"
+              ],
+              "correctAnswer": "A. Night blindness",
+              "hint": "Night blindness is caused by a lack of vitamin A.",
+              "workedSolution": "Night blindness is caused by a lack of vitamin A.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F40",
+              "difficulty": "low",
+              "prompt": "Beriberi is caused by a dietary deficiency of which vitamin?",
+              "options": [
+                "A. Vitamin B1 (Thiamine)",
+                "B. Vitamin C",
+                "C. Vitamin D",
+                "D. Vitamin K"
+              ],
+              "correctAnswer": "A. Vitamin B1 (Thiamine)",
+              "hint": "Beriberi is caused by a lack of vitamin B1.",
+              "workedSolution": "Beriberi is caused by a lack of vitamin B1.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F41",
+              "difficulty": "low",
+              "prompt": "Pellagra is caused by a dietary deficiency of:",
+              "options": [
+                "A. Vitamin B3 (Niacin)",
+                "B. Vitamin A",
+                "C. Vitamin C",
+                "D. Vitamin D"
+              ],
+              "correctAnswer": "A. Vitamin B3 (Niacin)",
+              "hint": "Pellagra is caused by a lack of vitamin B3.",
+              "workedSolution": "Pellagra is caused by a lack of vitamin B3.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F42",
+              "difficulty": "low",
+              "prompt": "Prolonged and uncontrolled bleeding after an injury can result from a deficiency of:",
+              "options": [
+                "A. Vitamin K",
+                "B. Vitamin A",
+                "C. Vitamin B1",
+                "D. Carbohydrates"
+              ],
+              "correctAnswer": "A. Vitamin K",
+              "hint": "Prolonged bleeding is caused by a lack of vitamin K.",
+              "workedSolution": "Prolonged bleeding is caused by a lack of vitamin K.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F43",
+              "difficulty": "low",
+              "prompt": "What are viral diseases caused by?",
+              "options": [
+                "A. Microscopic worms",
+                "B. Viruses, which are tiny infectious agents that replicate inside living host cells",
+                "C. Fungi living only on dead wood",
+                "D. Drinking cold water"
+              ],
+              "correctAnswer": "B. Viruses, which are tiny infectious agents that replicate inside living host cells",
+              "hint": "Viral diseases are caused by viruses, which are tiny infectious agents that can only replicate inside the cells of living organisms.",
+              "workedSolution": "Viral diseases are caused by viruses, which are tiny infectious agents that can only replicate inside the cells of living organisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F44",
+              "difficulty": "low",
+              "prompt": "What is the basic structural composition of a virus particle?",
+              "options": [
+                "A. A nucleus surrounded by cytoplasm and cell wall",
+                "B. Genetic material (DNA or RNA) surrounded by a protein coat",
+                "C. Pure liquid water surrounded by sugar",
+                "D. Microscopic bone cells"
+              ],
+              "correctAnswer": "B. Genetic material (DNA or RNA) surrounded by a protein coat",
+              "hint": "Viruses are made up of genetic material, either DNA or RNA, surrounded by a protein coat.",
+              "workedSolution": "Viruses are made up of genetic material, either DNA or RNA, surrounded by a protein coat.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F45",
+              "difficulty": "low",
+              "prompt": "Why can viruses NOT survive or reproduce independently on their own?",
+              "options": [
+                "A. They are too cold",
+                "B. They lack metabolic cellular machinery and require a living host cell to multiply",
+                "C. They have no genetic code",
+                "D. They dissolve in air"
+              ],
+              "correctAnswer": "B. They lack metabolic cellular machinery and require a living host cell to multiply",
+              "hint": "Viruses cannot survive or reproduce on their own and require a host cell to multiply by taking over its cellular machinery.",
+              "workedSolution": "Viruses cannot survive or reproduce on their own and require a host cell to multiply by taking over its cellular machinery.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F46",
+              "difficulty": "low",
+              "prompt": "What novel viral pathogen causes Coronavirus disease 2019 (COVID-19)?",
+              "options": [
+                "A. SARS-CoV-2",
+                "B. HIV-1",
+                "C. Plasmodium falciparum",
+                "D. Vibrio cholerae"
+              ],
+              "correctAnswer": "A. SARS-CoV-2",
+              "hint": "COVID-19 is a disease caused by a new strain of corona virus known as SARS-CoV-2.",
+              "workedSolution": "COVID-19 is a disease caused by a new strain of corona virus known as SARS-CoV-2.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F47",
+              "difficulty": "low",
+              "prompt": "What is the medical definition of the 'incubation period' of a disease?",
+              "options": [
+                "A. The time taken to cook hospital food",
+                "B. The period between the entry of the virus into the host and the presentation of clinical symptoms or observable signs",
+                "C. The time taken for medicine to expire",
+                "D. The recovery period after hospital discharge"
+              ],
+              "correctAnswer": "B. The period between the entry of the virus into the host and the presentation of clinical symptoms or observable signs",
+              "hint": "The incubation period is the period between the entering of the virus into the human host and the presentation of clinical symptoms or observable signs.",
+              "workedSolution": "The incubation period is the period between the entering of the virus into the human host and the presentation of clinical symptoms or observable signs.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F48",
+              "difficulty": "low",
+              "prompt": "What is the typical incubation period of COVID-19 in humans?",
+              "options": [
+                "A. 1 hour",
+                "B. Between 4 to 6 days",
+                "C. Exactly 3 months",
+                "D. 1 year"
+              ],
+              "correctAnswer": "B. Between 4 to 6 days",
+              "hint": "The incubation period of corona virus disease is between 4 to 6 days.",
+              "workedSolution": "The incubation period of corona virus disease is between 4 to 6 days.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F49",
+              "difficulty": "low",
+              "prompt": "Which of the following wild animals serves as the primary natural host reservoir for the Ebola virus?",
+              "options": [
+                "A. Domestic fowls",
+                "B. Fruit bats",
+                "C. Tilapia fish",
+                "D. Earthworms"
+              ],
+              "correctAnswer": "B. Fruit bats",
+              "hint": "Fruit bats are the primary host of the Ebola virus.",
+              "workedSolution": "Fruit bats are the primary host of the Ebola virus.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_F50",
+              "difficulty": "low",
+              "prompt": "The H1N1 viral disease (Swine Flu) originally resulted from the transformation and genetic mixing of genes from:",
+              "options": [
+                "A. Swine, human, and avian (bird) genes in pigs",
+                "B. Plant and insect genes",
+                "C. Fish and frog genes",
+                "D. Mineral soil crystals"
+              ],
+              "correctAnswer": "A. Swine, human, and avian (bird) genes in pigs",
+              "hint": "The H1N1 virus is made of swine, human, and avian genes that metamorphosed or were transformed in pigs.",
+              "workedSolution": "The H1N1 virus is made of swine, human, and avian genes that metamorphosed or were transformed in pigs.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s16_2",
+              "id": "B7_HH_I01",
               "difficulty": "medium",
-              "prompt": "The abnormal enlargement of the thyroid gland in the human neck (goitre) is caused by a dietary deficiency of which mineral element?",
+              "prompt": "Which clinical condition is defined as the extreme, severe wasting of body fat and muscle in a child due to prolonged starvation of all food nutrients?",
               "options": [
-                "Calcium",
-                "Iron",
-                "Iodine",
-                "Potassium"
+                "A. Marasmus (cachexia)",
+                "B. Scurvy",
+                "C. Goitre",
+                "D. Rickets"
               ],
-              "correctAnswer": "Iodine",
-              "hint": "Table salt is iodized to prevent this condition.",
-              "workedSolution": "Iodine is an essential micronutrient required by the thyroid gland to synthesize thyroxine hormone. Iodine deficiency triggers thyroid hyperplasia, forming a goitre.",
+              "correctAnswer": "A. Marasmus (cachexia)",
+              "hint": "Diseases due to severe lack of protein and energy in the human body include kwashiorkor, marasmus, and cachexia.",
+              "workedSolution": "Diseases due to severe lack of protein and energy in the human body include kwashiorkor, marasmus, and cachexia.",
               "points": 1,
-              "learningCompetency": "B7.5.2.1",
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I02",
+              "difficulty": "medium",
+              "prompt": "How does water assist the human circulatory system?",
+              "options": [
+                "A. It acts as a solvent for the transportation of substances, food, and oxygen across tissues",
+                "B. It turns red blood cells into white cells",
+                "C. It stops blood from flowing",
+                "D. It removes all iron from haemoglobin"
+              ],
+              "correctAnswer": "A. It acts as a solvent for the transportation of substances, food, and oxygen across tissues",
+              "hint": "Water is involved in all chemical reactions and the transportation of substances, food, or oxygen in the body.",
+              "workedSolution": "Water is involved in all chemical reactions and the transportation of substances, food, or oxygen in the body.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I03",
+              "difficulty": "medium",
+              "prompt": "What is the physiological role of water in maintaining systemic osmotic balance in the body?",
+              "options": [
+                "A. It maintains the correct balance of fluids and dissolved mineral salts between cells and blood vessels",
+                "B. It creates bone fractures",
+                "C. It prevents the skin from sweating",
+                "D. It replaces digestive enzymes"
+              ],
+              "correctAnswer": "A. It maintains the correct balance of fluids and dissolved mineral salts between cells and blood vessels",
+              "hint": "Water maintains the osmotic balance of the body and provides a medium for metabolic activities.",
+              "workedSolution": "Water maintains the osmotic balance of the body and provides a medium for metabolic activities.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I04",
+              "difficulty": "medium",
+              "prompt": "Which of the following is a primary function of mineral salts in the human body?",
+              "options": [
+                "A. Regulation of metabolic activities and maintenance of good health",
+                "B. Providing 100% of calories for running",
+                "C. Supplying roughage for the bowels",
+                "D. Storing fat under the skin"
+              ],
+              "correctAnswer": "A. Regulation of metabolic activities and maintenance of good health",
+              "hint": "Mineral salts regulate metabolic activities and maintain good health.",
+              "workedSolution": "Mineral salts regulate metabolic activities and maintain good health.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I05",
+              "difficulty": "medium",
+              "prompt": "Why is adequate food nutrition essential for the development of the placenta and amniotic sac in a pregnant woman?",
+              "options": [
+                "A. To support weight gain in the placenta, maintain amniotic fluid, and ensure a healthy birth weight",
+                "B. To turn the baby's bones into cartilage",
+                "C. To prevent the mother from drinking water",
+                "D. To stop the foetus from moving"
+              ],
+              "correctAnswer": "A. To support weight gain in the placenta, maintain amniotic fluid, and ensure a healthy birth weight",
+              "hint": "Food is important for maternal weight gain, placenta and amniotic sac enlargement, and healthy birth weight.",
+              "workedSolution": "Food is important for maternal weight gain, placenta and amniotic sac enlargement, and healthy birth weight.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I06",
+              "difficulty": "medium",
+              "prompt": "What metabolic risk is prevented when carbohydrates are present in sufficient quantities to aid the breakdown of fatty acids?",
+              "options": [
+                "A. Ketosis",
+                "B. Rickets",
+                "C. Goitre",
+                "D. Beriberi"
+              ],
+              "correctAnswer": "A. Ketosis",
+              "hint": "Uses of carbohydrates include the breakdown of fatty acids and preventing ketosis.",
+              "workedSolution": "Uses of carbohydrates include the breakdown of fatty acids and preventing ketosis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I07",
+              "difficulty": "medium",
+              "prompt": "How do carbohydrates perform a 'protein-sparing' action in the human body?",
+              "options": [
+                "A. By supplying energy so that dietary proteins are spared for tissue repair and growth rather than burned for fuel",
+                "B. By converting all proteins into starch",
+                "C. By stopping protein absorption in the stomach",
+                "D. By destroying amino acids"
+              ],
+              "correctAnswer": "A. By supplying energy so that dietary proteins are spared for tissue repair and growth rather than burned for fuel",
+              "hint": "Carbohydrates function by sparing the use of protein for energy, preserving protein for tissue growth and repair.",
+              "workedSolution": "Carbohydrates function by sparing the use of protein for energy, preserving protein for tissue growth and repair.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I08",
+              "difficulty": "medium",
+              "prompt": "What is the primary mode of transmission of COVID-19 between humans?",
+              "options": [
+                "A. Contact with infected respiratory secretions through coughs, sneezes, handshakes, or touching contaminated surfaces",
+                "B. Mosquito bites in swamps",
+                "C. Swimming in clean ocean water",
+                "D. Eating thoroughly cooked poultry"
+              ],
+              "correctAnswer": "A. Contact with infected respiratory secretions through coughs, sneezes, handshakes, or touching contaminated surfaces",
+              "hint": "Human-to-human transmission happens through secretions from a cough, sneeze, handshake, or touching contaminated objects and then touching the mouth, nose, or eyes.",
+              "workedSolution": "Human-to-human transmission happens through secretions from a cough, sneeze, handshake, or touching contaminated objects and then touching the mouth, nose, or eyes.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I09",
+              "difficulty": "medium",
+              "prompt": "Which of the following is a classic clinical symptom of COVID-19 infection?",
+              "options": [
+                "A. Fever, cough, sore throat, and loss of sense of smell (anosmia)",
+                "B. Swelling of the thyroid gland in the neck",
+                "C. Bleeding from gums due to vitamin C lack",
+                "D. Formation of curved bowed legs"
+              ],
+              "correctAnswer": "A. Fever, cough, sore throat, and loss of sense of smell (anosmia)",
+              "hint": "Symptoms of COVID-19 include cough, fever, sore throat, loss of sense of smell (anosmia), breathing difficulties, and pneumonia.",
+              "workedSolution": "Symptoms of COVID-19 include cough, fever, sore throat, loss of sense of smell (anosmia), breathing difficulties, and pneumonia.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I10",
+              "difficulty": "medium",
+              "prompt": "What acute organ complication can occur in severe cases of COVID-19?",
+              "options": [
+                "A. Severe acute respiratory syndrome and kidney failure",
+                "B. Instant tooth loss",
+                "C. Hardening of skin into bone",
+                "D. Total loss of hair overnight"
+              ],
+              "correctAnswer": "A. Severe acute respiratory syndrome and kidney failure",
+              "hint": "In severe cases, infected persons can have severe acute respiratory syndrome, kidney failure, and death.",
+              "workedSolution": "In severe cases, infected persons can have severe acute respiratory syndrome, kidney failure, and death.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I11",
+              "difficulty": "medium",
+              "prompt": "What is the recommended minimum physical distance that should be maintained between individuals to reduce COVID-19 spread?",
+              "options": [
+                "A. At least one metre",
+                "B. 10 centimetres",
+                "C. 50 metres",
+                "D. 1 kilometre"
+              ],
+              "correctAnswer": "A. At least one metre",
+              "hint": "A key preventive measure is maintaining a physical distance of at least one metre from friends and others.",
+              "workedSolution": "A key preventive measure is maintaining a physical distance of at least one metre from friends and others.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I12",
+              "difficulty": "medium",
+              "prompt": "What minimum percentage of alcohol is recommended for hand sanitizers to effectively destroy enveloped viruses like SARS-CoV-2?",
+              "options": [
+                "A. 10%",
+                "B. 30%",
+                "C. 68% and above",
+                "D. Exactly 5%"
+              ],
+              "correctAnswer": "C. 68% and above",
+              "hint": "Clean hands with 68% and above alcohol-based sanitizer to destroy virus particles.",
+              "workedSolution": "Clean hands with 68% and above alcohol-based sanitizer to destroy virus particles.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I13",
+              "difficulty": "medium",
+              "prompt": "Why is the sharing of eating utensils (cutlery, cups, bowls) strongly discouraged during viral respiratory outbreaks?",
+              "options": [
+                "A. Saliva and infectious respiratory secretions on utensils can transmit the virus directly to others",
+                "B. Utensils dissolve in alcohol",
+                "C. Sharing makes food lose its protein content",
+                "D. Utensils become radioactive"
+              ],
+              "correctAnswer": "A. Saliva and infectious respiratory secretions on utensils can transmit the virus directly to others",
+              "hint": "Avoid sharing items like cutlery sets, drinking bottles, cups, and bowls to prevent viral cross-infection.",
+              "workedSolution": "Avoid sharing items like cutlery sets, drinking bottles, cups, and bowls to prevent viral cross-infection.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I14",
+              "difficulty": "medium",
+              "prompt": "How is Ebola virus disease primarily transmitted from wild animals to humans in tropical rainforests?",
+              "options": [
+                "A. Contact with blood, secretions, or bodily fluids of infected wild animals like fruit bats, monkeys, or antelopes found sick or dead",
+                "B. Inhaling dry desert dust",
+                "C. Drinking boiled river water",
+                "D. Eating harvested farm cassava"
+              ],
+              "correctAnswer": "A. Contact with blood, secretions, or bodily fluids of infected wild animals like fruit bats, monkeys, or antelopes found sick or dead",
+              "hint": "Ebola is transmitted through close contact with the blood, secretions, organs, or other bodily fluids of infected animals like bats, chimpanzees, monkeys, or antelopes found ill or dead.",
+              "workedSolution": "Ebola is transmitted through close contact with the blood, secretions, organs, or other bodily fluids of infected animals like bats, chimpanzees, monkeys, or antelopes found ill or dead.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I15",
+              "difficulty": "medium",
+              "prompt": "How does Ebola spread between humans during an outbreak?",
+              "options": [
+                "A. Direct contact with blood, vomit, feces, or bodily fluids of an infected person or someone who died from Ebola",
+                "B. Casual waves across the street",
+                "C. Looking into an infected person's eyes",
+                "D. Eating oranges"
+              ],
+              "correctAnswer": "A. Direct contact with blood, vomit, feces, or bodily fluids of an infected person or someone who died from Ebola",
+              "hint": "Ebola spreads through direct contact with blood or body fluids of a person who is sick with or died from Ebola, and contaminated objects.",
+              "workedSolution": "Ebola spreads through direct contact with blood or body fluids of a person who is sick with or died from Ebola, and contaminated objects.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I16",
+              "difficulty": "medium",
+              "prompt": "Which combination of symptoms is characteristic of acute Ebola virus disease?",
+              "options": [
+                "A. Fever, vomiting, muscle pain, diarrhea, headache, and fatigue",
+                "B. Progressive bone bowing in the legs",
+                "C. Enlargement of the thyroid gland in the neck",
+                "D. Loss of night vision only"
+              ],
+              "correctAnswer": "A. Fever, vomiting, muscle pain, diarrhea, headache, and fatigue",
+              "hint": "Symptoms of Ebola include fever, sore throat, vomiting, muscle pain, headache, diarrhoea, and fatigue.",
+              "workedSolution": "Symptoms of Ebola include fever, sore throat, vomiting, muscle pain, headache, diarrhoea, and fatigue.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I17",
+              "difficulty": "medium",
+              "prompt": "Why is contact tracing critical in the control of Ebola and COVID-19 outbreaks?",
+              "options": [
+                "A. It identifies and isolates individuals who came into contact with infected patients to halt further transmission chains",
+                "B. It measures rainfall in outbreak regions",
+                "C. It vaccinates animals in zoos",
+                "D. It registers citizens for voting"
+              ],
+              "correctAnswer": "A. It identifies and isolates individuals who came into contact with infected patients to halt further transmission chains",
+              "hint": "Contact tracing of persons who have come into contact with infected individuals is an essential control measure.",
+              "workedSolution": "Contact tracing of persons who have come into contact with infected individuals is an essential control measure.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I18",
+              "difficulty": "medium",
+              "prompt": "Why did the H1N1 virus spread so rapidly among humans during the 2009 pandemic?",
+              "options": [
+                "A. Humans had no pre-existing natural immunity to this reassorted viral strain",
+                "B. It was transmitted through electricity wires",
+                "C. It infected only people with goitre",
+                "D. It could only survive inside drinking water"
+              ],
+              "correctAnswer": "A. Humans had no pre-existing natural immunity to this reassorted viral strain",
+              "hint": "H1N1 spreads quickly among humans because they had no pre-existing immunity to it.",
+              "workedSolution": "H1N1 spreads quickly among humans because they had no pre-existing immunity to it.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I19",
+              "difficulty": "medium",
+              "prompt": "Which of the following is a common clinical symptom of H1N1 infection?",
+              "options": [
+                "A. Fever, cough, sore throat, runny nose, and diarrhea",
+                "B. Softening of leg bones",
+                "C. Severe swelling of the abdomen",
+                "D. Bleeding gums"
+              ],
+              "correctAnswer": "A. Fever, cough, sore throat, runny nose, and diarrhea",
+              "hint": "Symptoms of H1N1 include fever, cough, sore throat, runny nose, and diarrhoea.",
+              "workedSolution": "Symptoms of H1N1 include fever, cough, sore throat, runny nose, and diarrhoea.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I20",
+              "difficulty": "medium",
+              "prompt": "What is the primary mode of transmission of the Measles virus?",
+              "options": [
+                "A. Inhalation of airborne droplets and close contact with an infected person",
+                "B. Mosquito bites",
+                "C. Eating unwashed carrots",
+                "D. Drinking chlorinated tap water"
+              ],
+              "correctAnswer": "A. Inhalation of airborne droplets and close contact with an infected person",
+              "hint": "Measles is transmitted through droplets and close contact with an infected person.",
+              "workedSolution": "Measles is transmitted through droplets and close contact with an infected person.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I21",
+              "difficulty": "medium",
+              "prompt": "Which clinical symptoms characterize a child suffering from Measles?",
+              "options": [
+                "A. Sore throat, runny nose, watery red eyes, cough, fever, and skin rash",
+                "B. Swelling in the neck thyroid gland",
+                "C. Loss of blood clotting ability",
+                "D. Bowed legs"
+              ],
+              "correctAnswer": "A. Sore throat, runny nose, watery red eyes, cough, fever, and skin rash",
+              "hint": "Measles symptoms include sore throat, runny nose, watery eyes, cough, and fever.",
+              "workedSolution": "Measles symptoms include sore throat, runny nose, watery eyes, cough, and fever.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I22",
+              "difficulty": "medium",
+              "prompt": "How is Measles effectively prevented in young children?",
+              "options": [
+                "A. Routine vaccination of young children and avoiding overcrowding",
+                "B. Feeding the child only carbohydrates",
+                "C. Giving antibiotic pills daily",
+                "D. Washing hands in salt water"
+              ],
+              "correctAnswer": "A. Routine vaccination of young children and avoiding overcrowding",
+              "hint": "Prevention of measles involves vaccination of young children and avoiding overcrowding.",
+              "workedSolution": "Prevention of measles involves vaccination of young children and avoiding overcrowding.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I23",
+              "difficulty": "medium",
+              "prompt": "Mumps is a viral disease that primarily causes painful inflammation and swelling of which organs/glands?",
+              "options": [
+                "A. Salivary glands, testes, ovaries, and pancreas",
+                "B. Long leg bones",
+                "C. Tooth enamel",
+                "D. Finger nails"
+              ],
+              "correctAnswer": "A. Salivary glands, testes, ovaries, and pancreas",
+              "hint": "Mumps affects testes, ovaries, pancreas, and salivary glands.",
+              "workedSolution": "Mumps affects testes, ovaries, pancreas, and salivary glands.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I24",
+              "difficulty": "medium",
+              "prompt": "What control measure prevents the household transmission of Mumps from an infected child?",
+              "options": [
+                "A. Properly disinfecting the clothes and eating utensils of the patient and isolating them",
+                "B. Exposing the patient to sun all day",
+                "C. Applying palm oil to the neck",
+                "D. Feeding the patient extra starch"
+              ],
+              "correctAnswer": "A. Properly disinfecting the clothes and eating utensils of the patient and isolating them",
+              "hint": "Prevention of mumps includes disinfecting utensils and clothes of the patient and isolating the infected person.",
+              "workedSolution": "Prevention of mumps includes disinfecting utensils and clothes of the patient and isolating the infected person.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I25",
+              "difficulty": "medium",
+              "prompt": "Which viral infection presents with sneezing, nasal coughing, headache, chills, and fever, spreading via airborne droplets?",
+              "options": [
+                "A. Common cold",
+                "B. Kwashiorkor",
+                "C. Scurvy",
+                "D. Rickets"
+              ],
+              "correctAnswer": "A. Common cold",
+              "hint": "Common cold symptoms include sneezing, coughing, fever, headache, and chills.",
+              "workedSolution": "Common cold symptoms include sneezing, coughing, fever, headache, and chills.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I26",
+              "difficulty": "medium",
+              "prompt": "Chickenpox is a viral infection characterized by which observable sign on the human body?",
+              "options": [
+                "A. Itchy rashes and blisters on the skin accompanied by fever and headache",
+                "B. Large swelling in the thyroid gland",
+                "C. Bending of the tibia bones",
+                "D. Swollen distended abdomen"
+              ],
+              "correctAnswer": "A. Itchy rashes and blisters on the skin accompanied by fever and headache",
+              "hint": "Chicken pox causes fever, headache, and rashes on the skin.",
+              "workedSolution": "Chicken pox causes fever, headache, and rashes on the skin.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I27",
+              "difficulty": "medium",
+              "prompt": "Influenza (also referred to as 'sweating sickness') is characterized by:",
+              "options": [
+                "A. Sudden fever, headaches, sore throat, and severe muscular aches",
+                "B. Bleeding gums and loose teeth",
+                "C. Swelling of the lower legs due to fluid",
+                "D. Paralysis of the jaw only"
+              ],
+              "correctAnswer": "A. Sudden fever, headaches, sore throat, and severe muscular aches",
+              "hint": "Influenza presents with sudden fever with headaches, sore throat, and muscular aches.",
+              "workedSolution": "Influenza presents with sudden fever with headaches, sore throat, and muscular aches.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I28",
+              "difficulty": "medium",
+              "prompt": "Poliomyelitis (infantile paralysis) is caused by a virus that attacks the nervous system, leading to:",
+              "options": [
+                "A. Fever, headache, stiffness in the neck, and limb paralysis",
+                "B. Night blindness",
+                "C. Softening of teeth",
+                "D. Dermatitis on hands"
+              ],
+              "correctAnswer": "A. Fever, headache, stiffness in the neck, and limb paralysis",
+              "hint": "Poliomyelitis causes fever, headache, stiffness in neck, and muscle paralysis.",
+              "workedSolution": "Poliomyelitis causes fever, headache, stiffness in neck, and muscle paralysis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I29",
+              "difficulty": "medium",
+              "prompt": "What is the primary mode of transmission of Poliomyelitis?",
+              "options": [
+                "A. Ingestion of food or water contaminated by the virus (food-borne/water-borne) and airborne routes",
+                "B. Dog bites",
+                "C. Eating raw cassava",
+                "D. Mosquito bites"
+              ],
+              "correctAnswer": "A. Ingestion of food or water contaminated by the virus (food-borne/water-borne) and airborne routes",
+              "hint": "Polio transmission occurs via airborne, food-borne, or water contamination.",
+              "workedSolution": "Polio transmission occurs via airborne, food-borne, or water contamination.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I30",
+              "difficulty": "medium",
+              "prompt": "How is Poliomyelitis prevented in infants?",
+              "options": [
+                "A. Administering polio vaccines to children",
+                "B. Giving children iodine salt",
+                "C. Applying oil to their legs",
+                "D. Keeping them in air-conditioned rooms"
+              ],
+              "correctAnswer": "A. Administering polio vaccines to children",
+              "hint": "Poliomyelitis is prevented through polio vaccination administered to children.",
+              "workedSolution": "Poliomyelitis is prevented through polio vaccination administered to children.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I31",
+              "difficulty": "medium",
+              "prompt": "How is the Rabies virus transmitted to humans?",
+              "options": [
+                "A. Through the bite or saliva scratch of an infected rabid dog or animal",
+                "B. Inhaling dust in poultry pens",
+                "C. Drinking unpasteurized cow milk",
+                "D. Eating canned fish"
+              ],
+              "correctAnswer": "A. Through the bite or saliva scratch of an infected rabid dog or animal",
+              "hint": "Rabies is transmitted through the bites of an infected dog or animal.",
+              "workedSolution": "Rabies is transmitted through the bites of an infected dog or animal.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I32",
+              "difficulty": "medium",
+              "prompt": "What clinical neurological symptoms occur in humans infected with Rabies?",
+              "options": [
+                "A. Headaches, nervousness, fever, hydrophobia, and paralysis",
+                "B. Softening of rib bones",
+                "C. Red hair depigmentation",
+                "D. Bleeding from gums"
+              ],
+              "correctAnswer": "A. Headaches, nervousness, fever, hydrophobia, and paralysis",
+              "hint": "Symptoms of rabies include headaches, nervousness, fever, and paralysis.",
+              "workedSolution": "Symptoms of rabies include headaches, nervousness, fever, and paralysis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I33",
+              "difficulty": "medium",
+              "prompt": "Which public health measure is most effective in preventing the spread of Rabies in a community?",
+              "options": [
+                "A. Mass immunization of domestic dogs and humane destruction of infected animals",
+                "B. Spraying mosquito insecticides",
+                "C. Adding chlorine to tap water",
+                "D. Boiling all food twice"
+              ],
+              "correctAnswer": "A. Mass immunization of domestic dogs and humane destruction of infected animals",
+              "hint": "Rabies control requires the immunization of dogs and destruction of infected rabid animals.",
+              "workedSolution": "Rabies control requires the immunization of dogs and destruction of infected rabid animals.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I34",
+              "difficulty": "medium",
+              "prompt": "Hepatitis B is a viral disease that primarily targets and infects which internal organ?",
+              "options": [
+                "A. The liver",
+                "B. The lungs",
+                "C. The kidneys",
+                "D. The brain"
+              ],
+              "correctAnswer": "A. The liver",
+              "hint": "Hepatitis B specifically infects the liver.",
+              "workedSolution": "Hepatitis B specifically infects the liver.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I35",
+              "difficulty": "medium",
+              "prompt": "Which of the following clinical signs is characteristic of Hepatitis B infection?",
+              "options": [
+                "A. Jaundice (yellowing of skin/eyes), nausea, and severe loss of appetite",
+                "B. Rachitic rosary on ribs",
+                "C. Bowing of the leg bones",
+                "D. Swollen bleeding gums"
+              ],
+              "correctAnswer": "A. Jaundice (yellowing of skin/eyes), nausea, and severe loss of appetite",
+              "hint": "Hepatitis B presents with jaundice, nausea, and severe loss of appetite.",
+              "workedSolution": "Hepatitis B presents with jaundice, nausea, and severe loss of appetite.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I36",
+              "difficulty": "medium",
+              "prompt": "How is Hepatitis B transmitted among humans?",
+              "options": [
+                "A. Through contact with infected blood, water-borne contamination, and sexual intercourse",
+                "B. Inhaling dry grass pollen",
+                "C. Handshakes with dry hands",
+                "D. Mosquito bites"
+              ],
+              "correctAnswer": "A. Through contact with infected blood, water-borne contamination, and sexual intercourse",
+              "hint": "Hepatitis B transmission occurs through blood-borne routes, water-borne vectors, and sexual intercourse.",
+              "workedSolution": "Hepatitis B transmission occurs through blood-borne routes, water-borne vectors, and sexual intercourse.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I37",
+              "difficulty": "medium",
+              "prompt": "Which preventive measure protects individuals against Hepatitis B infection?",
+              "options": [
+                "A. Hepatitis B vaccination and boiling drinking water",
+                "B. Taking vitamin C tablets",
+                "C. Eating sea fish daily",
+                "D. Using hand fans in hot rooms"
+              ],
+              "correctAnswer": "A. Hepatitis B vaccination and boiling drinking water",
+              "hint": "Prevention includes Hepatitis B vaccination, boiling drinking water, and safe clinical practices.",
+              "workedSolution": "Prevention includes Hepatitis B vaccination, boiling drinking water, and safe clinical practices.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I38",
+              "difficulty": "medium",
+              "prompt": "Newcastle disease is a highly contagious viral illness that affects:",
+              "options": [
+                "A. Domestic poultry (chickens, turkeys)",
+                "B. Cattle and sheep only",
+                "C. Dogs and cats",
+                "D. Fish in ponds"
+              ],
+              "correctAnswer": "A. Domestic poultry (chickens, turkeys)",
+              "hint": "Newcastle disease is a highly contagious disease affecting domestic poultry.",
+              "workedSolution": "Newcastle disease is a highly contagious disease affecting domestic poultry.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I39",
+              "difficulty": "medium",
+              "prompt": "What clinical signs appear in poultry birds infected with Newcastle disease?",
+              "options": [
+                "A. Coughing, sneezing, and loss of voice",
+                "B. Enlargement of leg bones",
+                "C. Reddening of feathers",
+                "D. Loss of teeth"
+              ],
+              "correctAnswer": "A. Coughing, sneezing, and loss of voice",
+              "hint": "Symptoms of Newcastle disease in birds include coughing, sneezing, and loss of voice.",
+              "workedSolution": "Symptoms of Newcastle disease in birds include coughing, sneezing, and loss of voice.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I40",
+              "difficulty": "medium",
+              "prompt": "How can a poultry farmer effectively prevent Newcastle disease in a flock?",
+              "options": [
+                "A. Timely vaccination of chicks after hatching and effective water medication",
+                "B. Keeping chickens in total darkness",
+                "C. Feeding chickens with table salt",
+                "D. Washing chicken feathers with soap"
+              ],
+              "correctAnswer": "A. Timely vaccination of chicks after hatching and effective water medication",
+              "hint": "Control of Newcastle disease requires effective vaccination at the right times after hatching and water medication.",
+              "workedSolution": "Control of Newcastle disease requires effective vaccination at the right times after hatching and water medication.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I41",
+              "difficulty": "medium",
+              "prompt": "Avian influenza (Bird Flu) is transmitted to domestic poultry flocks directly from:",
+              "options": [
+                "A. Wild birds",
+                "B. Underground earthworms",
+                "C. Forest monkeys",
+                "D. Sea fish"
+              ],
+              "correctAnswer": "A. Wild birds",
+              "hint": "Avian influenza is transmitted directly from wild birds to domestic poultry or indirectly.",
+              "workedSolution": "Avian influenza is transmitted directly from wild birds to domestic poultry or indirectly.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I42",
+              "difficulty": "medium",
+              "prompt": "What clinical symptoms are observed in humans infected with Avian influenza?",
+              "options": [
+                "A. Severe cough, sore throat, and high fever",
+                "B. Bowing of the leg bones",
+                "C. Swelling of thyroid gland",
+                "D. Bleeding gums"
+              ],
+              "correctAnswer": "A. Severe cough, sore throat, and high fever",
+              "hint": "Symptoms of avian influenza in humans include cough, sore throat, and fever.",
+              "workedSolution": "Symptoms of avian influenza in humans include cough, sore throat, and fever.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I43",
+              "difficulty": "medium",
+              "prompt": "What medical management is required for a person suffering from severe respiratory distress due to Avian influenza?",
+              "options": [
+                "A. Breathing assistance using a mechanical ventilator machine and patient isolation",
+                "B. Feeding them with raw poultry meat",
+                "C. Giving them calcium tablets only",
+                "D. Rubbing alcohol on their chest"
+              ],
+              "correctAnswer": "A. Breathing assistance using a mechanical ventilator machine and patient isolation",
+              "hint": "Management involves support through a breathing machine (ventilator) and isolating the infected person.",
+              "workedSolution": "Management involves support through a breathing machine (ventilator) and isolating the infected person.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I44",
+              "difficulty": "medium",
+              "prompt": "Why is avoiding overcrowding important in preventing the transmission of respiratory viral diseases like Measles and COVID-19?",
+              "options": [
+                "A. It reduces the concentration of infectious airborne droplets shared between people in close proximity",
+                "B. It makes the air temperature colder",
+                "C. It destroys viral genetic RNA",
+                "D. It replaces the need for vaccination"
+              ],
+              "correctAnswer": "A. It reduces the concentration of infectious airborne droplets shared between people in close proximity",
+              "hint": "Avoiding overcrowding reduces droplet and aerosol contact between infected and susceptible individuals.",
+              "workedSolution": "Avoiding overcrowding reduces droplet and aerosol contact between infected and susceptible individuals.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I45",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of covering your mouth and nose with a handkerchief or tissue when sneezing?",
+              "options": [
+                "A. To trap expelled viral droplets and prevent them from contaminating air and surrounding people",
+                "B. To warm the nose",
+                "C. To prevent air from entering lungs",
+                "D. To clean facial skin"
+              ],
+              "correctAnswer": "A. To trap expelled viral droplets and prevent them from contaminating air and surrounding people",
+              "hint": "Covering the mouth and nose when sneezing captures respiratory droplets and halts disease spread.",
+              "workedSolution": "Covering the mouth and nose when sneezing captures respiratory droplets and halts disease spread.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I46",
+              "difficulty": "medium",
+              "prompt": "Which class of nutrients acts as structural cushions protecting internal organs such as kidneys from mechanical shock?",
+              "options": [
+                "A. Fats (lipids)",
+                "B. Carbohydrates",
+                "C. Water only",
+                "D. Roughage"
+              ],
+              "correctAnswer": "A. Fats (lipids)",
+              "hint": "Fat around organs protects such organs from mechanical shock.",
+              "workedSolution": "Fat around organs protects such organs from mechanical shock.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I47",
+              "difficulty": "medium",
+              "prompt": "Which of the following is a symptom of dietary lack of Vitamin B2 (Riboflavin)?",
+              "options": [
+                "A. Anaemia or dermatitis (cracked skin/mouth corners)",
+                "B. Goitre in the neck",
+                "C. Bowed legs",
+                "D. Night blindness"
+              ],
+              "correctAnswer": "A. Anaemia or dermatitis (cracked skin/mouth corners)",
+              "hint": "Lack of vitamin B2 causes anaemia or dermatitis.",
+              "workedSolution": "Lack of vitamin B2 causes anaemia or dermatitis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I48",
+              "difficulty": "medium",
+              "prompt": "Why does an individual suffering from Marasmus look like an 'old person' with wrinkled skin?",
+              "options": [
+                "A. Due to complete loss of subcutaneous fat and extreme muscle wasting from lack of carbohydrates and energy",
+                "B. Because of excess water accumulation in the skin",
+                "C. Due to an enlarged thyroid gland",
+                "D. Because of excess dietary protein intake"
+              ],
+              "correctAnswer": "A. Due to complete loss of subcutaneous fat and extreme muscle wasting from lack of carbohydrates and energy",
+              "hint": "Severe lack of carbohydrates and calories in marasmus wastes subcutaneous fat and muscle, wrinkling the skin.",
+              "workedSolution": "Severe lack of carbohydrates and calories in marasmus wastes subcutaneous fat and muscle, wrinkling the skin.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I49",
+              "difficulty": "medium",
+              "prompt": "How does prompt isolation of infected patients help control contagious viral outbreaks like Ebola and COVID-19?",
+              "options": [
+                "A. It breaks the chain of transmission by physically separating infectious hosts from susceptible populations",
+                "B. It changes the virus into a bacterium",
+                "C. It cures the patient instantly",
+                "D. It eliminates the need for doctors"
+              ],
+              "correctAnswer": "A. It breaks the chain of transmission by physically separating infectious hosts from susceptible populations",
+              "hint": "Isolating infected persons prevents pathogen transfer to uninfected contacts, stopping epidemic spread.",
+              "workedSolution": "Isolating infected persons prevents pathogen transfer to uninfected contacts, stopping epidemic spread.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_I50",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of routine childhood immunization programmes in public health?",
+              "options": [
+                "A. To stimulate the immune system to produce antibodies against specific viral pathogens before exposure occurs",
+                "B. To supply daily calories to the child",
+                "C. To treat bone fractures",
+                "D. To replace balanced diets completely"
+              ],
+              "correctAnswer": "A. To stimulate the immune system to produce antibodies against specific viral pathogens before exposure occurs",
+              "hint": "Vaccines stimulate protective immune antibodies, conferring resistance against lethal viral diseases.",
+              "workedSolution": "Vaccines stimulate protective immune antibodies, conferring resistance against lethal viral diseases.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_HH_A01",
+              "difficulty": "hard",
+              "prompt": "A clinical patient presents with severe bilateral pitting oedema in the lower legs and protruding abdomen, depigmented reddish hair, but normal subcutaneous fat in the cheeks. What is the diagnosis?",
+              "options": [
+                "A. Marasmus",
+                "B. Kwashiorkor",
+                "C. Scurvy",
+                "D. Rickets"
+              ],
+              "correctAnswer": "B. Kwashiorkor",
+              "hint": "Kwashiorkor is characterized by oedema (swollen belly/legs), depigmented hair, and fatty liver despite caloric intake.",
+              "workedSolution": "Kwashiorkor is characterized by oedema (swollen belly/legs), depigmented hair, and fatty liver despite caloric intake.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A02",
+              "difficulty": "hard",
+              "prompt": "Why does Kwashiorkor produce a distended abdomen (ascites) and oedema, whereas Marasmus does not?",
+              "options": [
+                "A. Protein deficiency lowers blood albumin, reducing intravascular oncotic pressure and causing fluid to leak into interstitial tissues",
+                "B. Marasmus patients drink no water",
+                "C. Kwashiorkor is caused by intestinal worms only",
+                "D. Marasmus produces excess blood proteins"
+              ],
+              "correctAnswer": "A. Protein deficiency lowers blood albumin, reducing intravascular oncotic pressure and causing fluid to leak into interstitial tissues",
+              "hint": "Lack of protein impairs liver albumin synthesis, collapsing oncotic pressure and driving fluid leakage (oedema).",
+              "workedSolution": "Lack of protein impairs liver albumin synthesis, collapsing oncotic pressure and driving fluid leakage (oedema).",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A03",
+              "difficulty": "hard",
+              "prompt": "Why does a pregnant woman require an increased intake of second-class proteins if first-class animal proteins are unavailable?",
+              "options": [
+                "A. Plant proteins lack certain essential amino acids and must be combined from complementary sources to provide complete amino acid profiles for foetal growth",
+                "B. Plant proteins contain excess calcium",
+                "C. Plant proteins turn directly into fats",
+                "D. Second-class proteins contain no nitrogen"
+              ],
+              "correctAnswer": "A. Plant proteins lack certain essential amino acids and must be combined from complementary sources to provide complete amino acid profiles for foetal growth",
+              "hint": "Second-class plant proteins lack specific essential amino acids; diverse mixtures must be consumed to provide all building blocks.",
+              "workedSolution": "Second-class plant proteins lack specific essential amino acids; diverse mixtures must be consumed to provide all building blocks.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A04",
+              "difficulty": "hard",
+              "prompt": "A child in an inland community eats cassava and maize without seafood or iodated salt and develops a swollen neck. What physiological mechanism caused this enlargement?",
+              "options": [
+                "A. Insufficient iodine prevents thyroid hormone (thyroxine) synthesis, causing the pituitary to oversecrete TSH, which overstimulates and enlarges the thyroid gland (Goitre)",
+                "B. Excess fat accumulates in the neck muscles",
+                "C. Bone marrow expands into the throat",
+                "D. Vitamin C dissolves throat cartilage"
+              ],
+              "correctAnswer": "A. Insufficient iodine prevents thyroid hormone (thyroxine) synthesis, causing the pituitary to oversecrete TSH, which overstimulates and enlarges the thyroid gland (Goitre)",
+              "hint": "Iodine deficiency blocks thyroxine synthesis, causing elevated TSH to trigger compensatory thyroid hypertrophy (Goitre).",
+              "workedSolution": "Iodine deficiency blocks thyroxine synthesis, causing elevated TSH to trigger compensatory thyroid hypertrophy (Goitre).",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A05",
+              "difficulty": "hard",
+              "prompt": "How does lack of dietary Vitamin D impair bone development, leading to the bowed legs seen in Rickets?",
+              "options": [
+                "A. Vitamin D is essential for intestinal calcium and phosphate absorption; its deficiency leaves the osteoid bone matrix soft and unmineralized, bowing under weight",
+                "B. Vitamin D breaks down bone minerals",
+                "C. Vitamin D makes leg bones too brittle",
+                "D. Vitamin D turns bone into muscle"
+              ],
+              "correctAnswer": "A. Vitamin D is essential for intestinal calcium and phosphate absorption; its deficiency leaves the osteoid bone matrix soft and unmineralized, bowing under weight",
+              "hint": "Vitamin D is required for calcium absorption; deficiency prevents bone mineralization, causing pliable bones to bow under weight.",
+              "workedSolution": "Vitamin D is required for calcium absorption; deficiency prevents bone mineralization, causing pliable bones to bow under weight.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A06",
+              "difficulty": "hard",
+              "prompt": "Why do patients suffering from Scurvy experience delayed wound healing and bleeding gums?",
+              "options": [
+                "A. Vitamin C is a critical co-factor for prolyl hydroxylase in collagen synthesis; without it, connective tissue and capillary walls become fragile and break",
+                "B. Vitamin C kills white blood cells",
+                "C. Blood pressure doubles without vitamin C",
+                "D. Vitamin C replaces red blood cells"
+              ],
+              "correctAnswer": "A. Vitamin C is a critical co-factor for prolyl hydroxylase in collagen synthesis; without it, connective tissue and capillary walls become fragile and break",
+              "hint": "Vitamin C is essential for collagen cross-linking; its absence causes blood vessel fragility, gum bleeding, and failed healing.",
+              "workedSolution": "Vitamin C is essential for collagen cross-linking; its absence causes blood vessel fragility, gum bleeding, and failed healing.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A07",
+              "difficulty": "hard",
+              "prompt": "Why does a dietary deficiency in Vitamin K lead to fatal haemorrhages from minor wounds?",
+              "options": [
+                "A. Vitamin K is required for the hepatic synthesis of blood clotting factors (such as prothrombin), without which the clotting cascade fails",
+                "B. Vitamin K dissolves platelets",
+                "C. Vitamin K increases heart rate",
+                "D. Vitamin K destroys blood vessels"
+              ],
+              "correctAnswer": "A. Vitamin K is required for the hepatic synthesis of blood clotting factors (such as prothrombin), without which the clotting cascade fails",
+              "hint": "Vitamin K is an obligate co-factor for synthesizing prothrombin and clotting factors; its absence causes prolonged bleeding.",
+              "workedSolution": "Vitamin K is an obligate co-factor for synthesizing prothrombin and clotting factors; its absence causes prolonged bleeding.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A08",
+              "difficulty": "hard",
+              "prompt": "How does the consumption of insoluble roughage reduce the incidence of colorectal cancer in humans?",
+              "options": [
+                "A. It accelerates transit time through the colon, decreasing the duration of mucosal exposure to potential fecal carcinogens",
+                "B. It neutralizes all stomach acids",
+                "C. It destroys intestinal blood vessels",
+                "D. It provides high glucose levels"
+              ],
+              "correctAnswer": "A. It accelerates transit time through the colon, decreasing the duration of mucosal exposure to potential fecal carcinogens",
+              "hint": "Roughage increases stool bulk and peristalsis, speeding passage and reducing the contact time of carcinogens with the bowel wall.",
+              "workedSolution": "Roughage increases stool bulk and peristalsis, speeding passage and reducing the contact time of carcinogens with the bowel wall.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A09",
+              "difficulty": "hard",
+              "prompt": "What is the biological mechanism by which a virus hijacks host cell machinery during infection?",
+              "options": [
+                "A. The viral genome enters the host cell and uses host ribosomes, amino acids, and ATP to synthesize viral proteins and replicate viral genomes",
+                "B. The virus eats the host cell cytoplasm directly",
+                "C. The virus supplies its own ribosomes and mitochondria",
+                "D. The virus converts into a bacterium"
+              ],
+              "correctAnswer": "A. The viral genome enters the host cell and uses host ribosomes, amino acids, and ATP to synthesize viral proteins and replicate viral genomes",
+              "hint": "Viruses inject genetic material and co-opt host cellular machinery (ribosomes and enzymes) to manufacture daughter virions.",
+              "workedSolution": "Viruses inject genetic material and co-opt host cellular machinery (ribosomes and enzymes) to manufacture daughter virions.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A10",
+              "difficulty": "hard",
+              "prompt": "Why are antibiotics like penicillin completely INEFFECTIVE against viral diseases such as COVID-19, Ebola, and Influenza?",
+              "options": [
+                "A. Antibiotics target bacterial structures (cell walls, ribosomes, metabolic pathways) that viruses lack",
+                "B. Viruses are too large for antibiotics to enter",
+                "C. Antibiotics turn viruses into fungi",
+                "D. Antibiotics only work inside cold water"
+              ],
+              "correctAnswer": "A. Antibiotics target bacterial structures (cell walls, ribosomes, metabolic pathways) that viruses lack",
+              "hint": "Viruses lack peptidoglycan cell walls, ribosomes, and metabolic machinery targeted by antibiotics; viral control requires antivirals/vaccines.",
+              "workedSolution": "Viruses lack peptidoglycan cell walls, ribosomes, and metabolic machinery targeted by antibiotics; viral control requires antivirals/vaccines.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A11",
+              "difficulty": "hard",
+              "prompt": "Why does SARS-CoV-2 (COVID-19) infection cause a sudden loss of the sense of smell (anosmia) in infected individuals?",
+              "options": [
+                "A. The virus binds to ACE2 receptors on supporting sustentacular cells of the olfactory epithelium, disrupting olfactory neuronal signaling",
+                "B. The virus destroys the nose bones",
+                "C. Nasal mucus turns into solid wax",
+                "D. The virus freezes facial nerves"
+              ],
+              "correctAnswer": "A. The virus binds to ACE2 receptors on supporting sustentacular cells of the olfactory epithelium, disrupting olfactory neuronal signaling",
+              "hint": "SARS-CoV-2 damages non-neuronal support cells in the olfactory epithelium, temporarily paralyzing the sense of smell (anosmia).",
+              "workedSolution": "SARS-CoV-2 damages non-neuronal support cells in the olfactory epithelium, temporarily paralyzing the sense of smell (anosmia).",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A12",
+              "difficulty": "hard",
+              "prompt": "What is the clinical significance of the 4 to 6 day incubation period of COVID-19 in epidemiological disease control?",
+              "options": [
+                "A. Infected individuals can be presymptomatic yet shed high viral loads, silently transmitting the disease to uninfected contacts",
+                "B. The virus is completely dead during this period",
+                "C. Patients are immune to all other diseases during these days",
+                "D. Vaccines cannot be given after day 6"
+              ],
+              "correctAnswer": "A. Infected individuals can be presymptomatic yet shed high viral loads, silently transmitting the disease to uninfected contacts",
+              "hint": "The asymptomatic incubation window enables silent community transmission before clinical signs manifest.",
+              "workedSolution": "The asymptomatic incubation window enables silent community transmission before clinical signs manifest.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A13",
+              "difficulty": "hard",
+              "prompt": "Why did the Ebola virus disease outbreaks in West Africa exhibit high fatality rates exceeding 50%?",
+              "options": [
+                "A. The virus causes severe vascular endothelial damage, cytokine storm, systemic internal/external hemorrhaging, and irreversible hypovolemic shock",
+                "B. The virus destroys only bone cartilage",
+                "C. Ebola is caused by water toxins",
+                "D. Fruit bats bite every human patient directly"
+              ],
+              "correctAnswer": "A. The virus causes severe vascular endothelial damage, cytokine storm, systemic internal/external hemorrhaging, and irreversible hypovolemic shock",
+              "hint": "Filoviral replication causes massive endothelial breakdown, widespread hemorrhaging, fluid loss, and fatal shock.",
+              "workedSolution": "Filoviral replication causes massive endothelial breakdown, widespread hemorrhaging, fluid loss, and fatal shock.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A14",
+              "difficulty": "hard",
+              "prompt": "Why are traditional funeral and burial rites involving the washing of deceased bodies dangerous during an Ebola outbreak?",
+              "options": [
+                "A. Post-mortem Ebola corpses carry peak viral loads in skin, blood, and fluids, exposing funeral attendees to lethal transmission",
+                "B. Dead bodies emit radioactive fumes",
+                "C. Burial water turns into acid",
+                "D. The virus flies into the air as dust"
+              ],
+              "correctAnswer": "A. Post-mortem Ebola corpses carry peak viral loads in skin, blood, and fluids, exposing funeral attendees to lethal transmission",
+              "hint": "Deceased bodies have extremely high viral titers; direct contact during burial washing transmits the virus efficiently.",
+              "workedSolution": "Deceased bodies have extremely high viral titers; direct contact during burial washing transmits the virus efficiently.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A15",
+              "difficulty": "hard",
+              "prompt": "How did the triple genetic reassortment in pigs generate the novel H1N1 influenza pandemic strain?",
+              "options": [
+                "A. Pigs possess receptors for both avian and mammalian flu strains, acting as 'mixing vessels' where segmented RNA genomes exchange fragments",
+                "B. Pigs were injected with snake venom",
+                "C. Avian flu viruses ate swine bacteria",
+                "D. The virus mutated from plant fertilizers"
+              ],
+              "correctAnswer": "A. Pigs possess receptors for both avian and mammalian flu strains, acting as 'mixing vessels' where segmented RNA genomes exchange fragments",
+              "hint": "Swine respiratory tracts support both bird and human flu strains, permitting RNA reassortment into hybrid pandemic strains.",
+              "workedSolution": "Swine respiratory tracts support both bird and human flu strains, permitting RNA reassortment into hybrid pandemic strains.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A16",
+              "difficulty": "hard",
+              "prompt": "Why does Poliomyelitis cause asymmetric flaccid paralysis predominantly in the lower limbs of infected children?",
+              "options": [
+                "A. The poliovirus selectively attacks and destroys motor neurons in the anterior horn of the spinal cord, cutting off nerve impulses to skeletal muscles",
+                "B. The virus dissolves leg bones",
+                "C. Blood vessels in the thigh clot permanently",
+                "D. Leg muscles lose all water content"
+              ],
+              "correctAnswer": "A. The poliovirus selectively attacks and destroys motor neurons in the anterior horn of the spinal cord, cutting off nerve impulses to skeletal muscles",
+              "hint": "Poliovirus replication in anterior horn spinal motor neurons denervates skeletal muscle fibers, causing flaccid paralysis.",
+              "workedSolution": "Poliovirus replication in anterior horn spinal motor neurons denervates skeletal muscle fibers, causing flaccid paralysis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A17",
+              "difficulty": "hard",
+              "prompt": "Why is clinical Rabies almost 100% fatal once neurological symptoms (such as hydrophobia) develop in a patient?",
+              "options": [
+                "A. The virus travels retrogradely along peripheral nerves into the central nervous system, causing widespread encephalomyelitis and autonomic failure",
+                "B. The virus destroys all red blood cells in 1 hour",
+                "C. Rabies causes stomach rupture",
+                "D. Rabies dissolves the spinal bone"
+              ],
+              "correctAnswer": "A. The virus travels retrogradely along peripheral nerves into the central nervous system, causing widespread encephalomyelitis and autonomic failure",
+              "hint": "Centripetal axonal migration shields the rabies virus from circulating antibodies, destroying brainstem centers.",
+              "workedSolution": "Centripetal axonal migration shields the rabies virus from circulating antibodies, destroying brainstem centers.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A18",
+              "difficulty": "hard",
+              "prompt": "What immediate post-exposure prophylaxis (PEP) is required if a person is bitten by a suspected rabid dog?",
+              "options": [
+                "A. Immediate wound washing with soap and running water for 15 minutes, followed by prompt administration of Rabies vaccine and immunoglobulin",
+                "B. Applying hot ash and tying the wound with string",
+                "C. Drinking herbal tea and resting",
+                "D. Waiting two months to see if fever begins"
+              ],
+              "correctAnswer": "A. Immediate wound washing with soap and running water for 15 minutes, followed by prompt administration of Rabies vaccine and immunoglobulin",
+              "hint": "Immediate flushing washes away viral saliva, while post-exposure vaccines and antibodies neutralize the virus before neural entry.",
+              "workedSolution": "Immediate flushing washes away viral saliva, while post-exposure vaccines and antibodies neutralize the virus before neural entry.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A19",
+              "difficulty": "hard",
+              "prompt": "Why is chronic Hepatitis B virus infection associated with liver cirrhosis and primary hepatocellular carcinoma?",
+              "options": [
+                "A. Persistent viral replication in hepatocytes triggers chronic immune inflammation, progressive fibrosis, and integration into the host genome",
+                "B. The virus converts liver cells into bone",
+                "C. The virus removes all bile from the body",
+                "D. The virus turns the liver into fat only"
+              ],
+              "correctAnswer": "A. Persistent viral replication in hepatocytes triggers chronic immune inflammation, progressive fibrosis, and integration into the host genome",
+              "hint": "Chronic HBV infection induces progressive inflammatory fibrosis (cirrhosis) and oncogenic transformation of liver cells.",
+              "workedSolution": "Chronic HBV infection induces progressive inflammatory fibrosis (cirrhosis) and oncogenic transformation of liver cells.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A20",
+              "difficulty": "hard",
+              "prompt": "How does Newcastle disease virus devastate commercial poultry production so rapidly?",
+              "options": [
+                "A. It spreads via virulent aerosol droplets and contaminated feed, producing severe respiratory distress, neurological torticollis, and flock mortality",
+                "B. It turns chicken eggs into stone",
+                "C. It stops chickens from growing feathers",
+                "D. It makes chickens fly away"
+              ],
+              "correctAnswer": "A. It spreads via virulent aerosol droplets and contaminated feed, producing severe respiratory distress, neurological torticollis, and flock mortality",
+              "hint": "Velogenic Newcastle virus causes high-mortality respiratory and neurological disease across entire poultry houses.",
+              "workedSolution": "Velogenic Newcastle virus causes high-mortality respiratory and neurological disease across entire poultry houses.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A21",
+              "difficulty": "hard",
+              "prompt": "Why is mass culling and biosecurity enforcement mandated on poultry farms during Avian Influenza (H5N1) outbreaks?",
+              "options": [
+                "A. To eradicate the viral reservoir and prevent genetic mutation or reassortment that could enable sustained human-to-human transmission",
+                "B. To make poultry meat cheaper",
+                "C. To prevent wild birds from flying",
+                "D. Because bird flu cannot be killed by heat"
+              ],
+              "correctAnswer": "A. To eradicate the viral reservoir and prevent genetic mutation or reassortment that could enable sustained human-to-human transmission",
+              "hint": "Culling infected flocks stops avian-to-human spillover and eliminates the risk of generating a human-transmissible pandemic strain.",
+              "workedSolution": "Culling infected flocks stops avian-to-human spillover and eliminates the risk of generating a human-transmissible pandemic strain.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A22",
+              "difficulty": "hard",
+              "prompt": "Why does a deficiency in Vitamin B3 (Niacin) manifest with the clinical triad of Dermatitis, Diarrhoea, and Dementia (Pellagra)?",
+              "options": [
+                "A. Niacin forms NAD and NADP, essential co-enzymes for cellular energy production; tissues with high turnover (skin, gut, brain) fail first",
+                "B. Niacin is needed only for hair color",
+                "C. Niacin prevents bone fractures",
+                "D. Niacin turns starch into sugar"
+              ],
+              "correctAnswer": "A. Niacin forms NAD and NADP, essential co-enzymes for cellular energy production; tissues with high turnover (skin, gut, brain) fail first",
+              "hint": "NAD/NADP coenzymes fuel cellular repair; their deficiency damages high-energy and high-turnover organs: skin, gut, and brain.",
+              "workedSolution": "NAD/NADP coenzymes fuel cellular repair; their deficiency damages high-energy and high-turnover organs: skin, gut, and brain.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A23",
+              "difficulty": "hard",
+              "prompt": "How does alcohol-based hand rub with 68% and above concentration destroy enveloped viruses like SARS-CoV-2 and Influenza?",
+              "options": [
+                "A. It dissolves the outer viral lipid bilayer envelope and denatures the spike surface glycoproteins needed to infect host cells",
+                "B. It cools the virus to absolute zero",
+                "C. It converts the virus into water",
+                "D. It feeds the virus with sugar"
+              ],
+              "correctAnswer": "A. It dissolves the outer viral lipid bilayer envelope and denatures the spike surface glycoproteins needed to infect host cells",
+              "hint": "Alcohol disrupts lipid membranes and denatures envelope glycoproteins, neutralizing viral infectivity.",
+              "workedSolution": "Alcohol disrupts lipid membranes and denatures envelope glycoproteins, neutralizing viral infectivity.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A24",
+              "difficulty": "hard",
+              "prompt": "What is the primary immunological difference between natural active immunity from surviving Measles versus artificial active immunity from the Measles vaccine?",
+              "options": [
+                "A. Both produce protective memory B and T lymphocytes, but the vaccine confers immunity without the patient suffering clinical disease or complications",
+                "B. Vaccines only protect for one hour",
+                "C. Natural infection produces no antibodies",
+                "D. Vaccines contain live bacterial toxins"
+              ],
+              "correctAnswer": "A. Both produce protective memory B and T lymphocytes, but the vaccine confers immunity without the patient suffering clinical disease or complications",
+              "hint": "Attenuated vaccines stimulate long-term protective immune memory without the morbidity, encephalitis, or mortality of wild infection.",
+              "workedSolution": "Attenuated vaccines stimulate long-term protective immune memory without the morbidity, encephalitis, or mortality of wild infection.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A25",
+              "difficulty": "hard",
+              "prompt": "Why does an unweaned infant whose diet is shifted abruptly to watery starchy cassava gruel develop Kwashiorkor?",
+              "options": [
+                "A. Cassava contains high carbohydrates but virtually zero protein, triggering severe hypoalbuminemia as breastmilk protein is withdrawn",
+                "B. Cassava contains excess vitamin C",
+                "C. Starch dissolves the child's bones",
+                "D. Cassava is a first-class animal protein"
+              ],
+              "correctAnswer": "A. Cassava contains high carbohydrates but virtually zero protein, triggering severe hypoalbuminemia as breastmilk protein is withdrawn",
+              "hint": "Replacing protein-rich breastmilk with pure starchy gruel provides calories without amino acids, inducing Kwashiorkor.",
+              "workedSolution": "Replacing protein-rich breastmilk with pure starchy gruel provides calories without amino acids, inducing Kwashiorkor.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A26",
+              "difficulty": "hard",
+              "prompt": "How does chronic fluid and electrolyte imbalance from malnutrition lead to cardiac failure in children?",
+              "options": [
+                "A. Depletion of intracellular potassium and magnesium weakens myocardial contractility, triggering fatal cardiac arrhythmias",
+                "B. Excess protein hardens the heart valves",
+                "C. Water turns into fat around the lungs",
+                "D. The heart stops pumping blood completely"
+              ],
+              "correctAnswer": "A. Depletion of intracellular potassium and magnesium weakens myocardial contractility, triggering fatal cardiac arrhythmias",
+              "hint": "Electrolyte shifts (hypokalemia and hypomagnesemia) impair myocyte membrane potentials, precipitating heart failure.",
+              "workedSolution": "Electrolyte shifts (hypokalemia and hypomagnesemia) impair myocyte membrane potentials, precipitating heart failure.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A27",
+              "difficulty": "hard",
+              "prompt": "Why does Vitamin A deficiency cause both night blindness (nyctalopia) and vulnerability to measles infections?",
+              "options": [
+                "A. Vitamin A is required for retinal rhodopsin synthesis and for maintaining the integrity of respiratory epithelial mucosal barriers and immune function",
+                "B. Vitamin A is an antibiotic medicine",
+                "C. Vitamin A kills all viruses on contact",
+                "D. Vitamin A supplies glucose to retinal cones"
+              ],
+              "correctAnswer": "A. Vitamin A is required for retinal rhodopsin synthesis and for maintaining the integrity of respiratory epithelial mucosal barriers and immune function",
+              "hint": "Retinol is vital for visual phototransduction in rods and maintaining immune mucosal defenses against pathogens.",
+              "workedSolution": "Retinol is vital for visual phototransduction in rods and maintaining immune mucosal defenses against pathogens.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A28",
+              "difficulty": "hard",
+              "prompt": "In a viral infection, what occurs during the 'assembly' stage of the intracellular replication cycle?",
+              "options": [
+                "A. Newly replicated viral nucleic acid genomes are packaged inside newly synthesized protein capsids to form mature virions",
+                "B. The host cell splits into two bacteria",
+                "C. The virus leaves the body in urine",
+                "D. The host cell repairs all damage"
+              ],
+              "correctAnswer": "A. Newly replicated viral nucleic acid genomes are packaged inside newly synthesized protein capsids to form mature virions",
+              "hint": "Assembly involves the packaging of viral genomes into structural capsomeres to create infectious virions.",
+              "workedSolution": "Assembly involves the packaging of viral genomes into structural capsomeres to create infectious virions.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A29",
+              "difficulty": "hard",
+              "prompt": "Why does the novel coronavirus SARS-CoV-2 spread via fomites in public places?",
+              "options": [
+                "A. Viral particles in expelled droplets settle on inanimate surfaces (door handles, railings), remaining infectious for hours to days until transferred by touch",
+                "B. The virus crawls across floors like an insect",
+                "C. The virus multiplies on metal surfaces without cells",
+                "D. The virus is magnetized to plastic"
+              ],
+              "correctAnswer": "A. Viral particles in expelled droplets settle on inanimate surfaces (door handles, railings), remaining infectious for hours to days until transferred by touch",
+              "hint": "Virions remain viable on non-porous surfaces; touching fomites and subsequent eye/nose/mouth contact transfers the infection.",
+              "workedSolution": "Virions remain viable on non-porous surfaces; touching fomites and subsequent eye/nose/mouth contact transfers the infection.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A30",
+              "difficulty": "hard",
+              "prompt": "What is the pathological cause of the 'rachitic rosary' observed on the rib cages of children with Rickets?",
+              "options": [
+                "A. Nodular enlargement and swelling at the costochondral junctions where ribs join the sternum due to defective cartilage calcification",
+                "B. Broken rib fractures caused by coughing",
+                "C. Bacterial skin boils on the chest",
+                "D. Fatty deposits under the chest skin"
+              ],
+              "correctAnswer": "A. Nodular enlargement and swelling at the costochondral junctions where ribs join the sternum due to defective cartilage calcification",
+              "hint": "Disorganized unmineralized osteoid expansion at costochondral joints produces bead-like prominences ('rachitic rosary').",
+              "workedSolution": "Disorganized unmineralized osteoid expansion at costochondral joints produces bead-like prominences ('rachitic rosary').",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A31",
+              "difficulty": "hard",
+              "prompt": "Why does personal protective equipment (PPE) for Ebola healthcare workers require complete biohazard coverage with zero exposed skin?",
+              "options": [
+                "A. The virus is extraordinarily infectious; contact of minute amounts of infected blood or body fluids with broken skin or mucous membranes transmits the disease",
+                "B. Ebola virus bites like an insect",
+                "C. PPE is needed to keep workers warm in tropical heat",
+                "D. The virus travels through radio signals"
+              ],
+              "correctAnswer": "A. The virus is extraordinarily infectious; contact of minute amounts of infected blood or body fluids with broken skin or mucous membranes transmits the disease",
+              "hint": "High viral load in fluids and low infectious dose demand total barrier isolation to protect healthcare staff.",
+              "workedSolution": "High viral load in fluids and low infectious dose demand total barrier isolation to protect healthcare staff.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A32",
+              "difficulty": "hard",
+              "prompt": "How does vertical transmission of the Hepatitis B virus occur?",
+              "options": [
+                "A. From an infected mother to her neonate during labor and childbirth through exposure to maternal blood and genital secretions",
+                "B. Through drinking contaminated well water",
+                "C. Through breathing dust in school classrooms",
+                "D. Through insect bites on the baby's skin"
+              ],
+              "correctAnswer": "A. From an infected mother to her neonate during labor and childbirth through exposure to maternal blood and genital secretions",
+              "hint": "Perinatal transmission occurs during delivery when maternal blood and vaginal secretions expose the newborn.",
+              "workedSolution": "Perinatal transmission occurs during delivery when maternal blood and vaginal secretions expose the newborn.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A33",
+              "difficulty": "hard",
+              "prompt": "Why do poultry birds infected with Avian influenza exhibit cyanosis (blue-purple discoloration) of the comb and wattles?",
+              "options": [
+                "A. Severe viral damage to pulmonary capillaries causes profound hypoxia and poor blood oxygenation throughout peripheral vascular tissues",
+                "B. The virus paints the comb with pigment",
+                "C. The bird eats blue plastic feed",
+                "D. Comb feathers turn into scales"
+              ],
+              "correctAnswer": "A. Severe viral damage to pulmonary capillaries causes profound hypoxia and poor blood oxygenation throughout peripheral vascular tissues",
+              "hint": "Systemic endothelial necrosis and acute respiratory failure cause deoxygenated blood pooling (cyanosis) in wattles.",
+              "workedSolution": "Systemic endothelial necrosis and acute respiratory failure cause deoxygenated blood pooling (cyanosis) in wattles.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A34",
+              "difficulty": "hard",
+              "prompt": "What is the biological role of essential fatty acids in the cognitive development of a human foetus?",
+              "options": [
+                "A. They are structural components of neuronal cell membranes, cerebral cortex gray matter, and myelin sheaths in the developing brain",
+                "B. They provide calcium for bone formation",
+                "C. They produce stomach acids for digestion",
+                "D. They stop the foetus from gaining weight"
+              ],
+              "correctAnswer": "A. They are structural components of neuronal cell membranes, cerebral cortex gray matter, and myelin sheaths in the developing brain",
+              "hint": "Omega lipids form the phospholipid matrix of neural synapses and cerebral tissue during gestation.",
+              "workedSolution": "Omega lipids form the phospholipid matrix of neural synapses and cerebral tissue during gestation.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A35",
+              "difficulty": "hard",
+              "prompt": "Why are individuals infected with Mumps monitored for testicular and abdominal pain?",
+              "options": [
+                "A. The mumps virus can spread via the bloodstream to cause severe orchitis in post-pubertal males and pancreatitis",
+                "B. Mumps causes immediate kidney stones",
+                "C. The virus dissolves intestinal walls",
+                "D. Mumps turns testes into bone"
+              ],
+              "correctAnswer": "A. The mumps virus can spread via the bloodstream to cause severe orchitis in post-pubertal males and pancreatitis",
+              "hint": "Mumps has glandular tropism; viremia can inflame testicular seminiferous tubules (orchitis) and pancreatic acinar cells.",
+              "workedSolution": "Mumps has glandular tropism; viremia can inflame testicular seminiferous tubules (orchitis) and pancreatic acinar cells.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A36",
+              "difficulty": "hard",
+              "prompt": "How does proper boiling of drinking water interrupt the transmission cycle of Hepatitis B and Poliomyelitis?",
+              "options": [
+                "A. Thermal energy denatures viral capsid proteins and destabilizes lipid envelopes, neutralizing viral infectivity",
+                "B. Boiling turns viruses into minerals",
+                "C. Boiling cools down the water molecules",
+                "D. Boiling adds chlorine to water"
+              ],
+              "correctAnswer": "A. Thermal energy denatures viral capsid proteins and destabilizes lipid envelopes, neutralizing viral infectivity",
+              "hint": "Heat breaks hydrogen bonds in viral capsids and nucleic acids, rendering water-borne viruses non-infectious.",
+              "workedSolution": "Heat breaks hydrogen bonds in viral capsids and nucleic acids, rendering water-borne viruses non-infectious.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A37",
+              "difficulty": "hard",
+              "prompt": "Why does a pregnant woman require a positive energy balance with adequate carbohydrates?",
+              "options": [
+                "A. To support increased maternal basal metabolic rate, cardiac output, uterine growth, and foetal caloric demands",
+                "B. To ensure the baby is born with teeth",
+                "C. To prevent all maternal weight gain",
+                "D. To turn maternal bones into muscle"
+              ],
+              "correctAnswer": "A. To support increased maternal basal metabolic rate, cardiac output, uterine growth, and foetal caloric demands",
+              "hint": "Maternal metabolism increases substantially to supply continuous transplacental glucose to the developing foetus.",
+              "workedSolution": "Maternal metabolism increases substantially to supply continuous transplacental glucose to the developing foetus.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A38",
+              "difficulty": "hard",
+              "prompt": "What is the histological hallmark of Chickenpox skin lesions compared to common bacterial boils?",
+              "options": [
+                "A. Successive crops of pruritic, clear fluid-filled vesicles ('dewdrops on a rose petal') that progress to pustules and crusts",
+                "B. Solid dry black horns",
+                "C. Deep open bone fractures",
+                "D. Permanent blue skin stains"
+              ],
+              "correctAnswer": "A. Successive crops of pruritic, clear fluid-filled vesicles ('dewdrops on a rose petal') that progress to pustules and crusts",
+              "hint": "Varicella presents with classic superficial, thin-walled, itchy clear blisters appearing in successive crops.",
+              "workedSolution": "Varicella presents with classic superficial, thin-walled, itchy clear blisters appearing in successive crops.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A39",
+              "difficulty": "hard",
+              "prompt": "How does the consumption of whole unpolished brown rice protect individuals against Beriberi?",
+              "options": [
+                "A. The outer bran layer (pericarp) of whole grains contains high concentrations of Thiamine (Vitamin B1), which is stripped off in polished white rice",
+                "B. Brown rice contains animal protein",
+                "C. Brown rice is an antibiotic drug",
+                "D. Brown rice destroys stomach acids"
+              ],
+              "correctAnswer": "A. The outer bran layer (pericarp) of whole grains contains high concentrations of Thiamine (Vitamin B1), which is stripped off in polished white rice",
+              "hint": "Thiamine is concentrated in grain aleurone/bran layers; milling produces white rice that induces Thiamine deficiency (Beriberi).",
+              "workedSolution": "Thiamine is concentrated in grain aleurone/bran layers; milling produces white rice that induces Thiamine deficiency (Beriberi).",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A40",
+              "difficulty": "hard",
+              "prompt": "Why does the human body require dietary intake of essential amino acids throughout adult life?",
+              "options": [
+                "A. Cellular proteins and enzymes undergo constant degradation and turnover, requiring ongoing amino acid supply for replacement synthesis",
+                "B. Amino acids are converted into oxygen",
+                "C. Adult bones dissolve without amino acids every week",
+                "D. Amino acids are the only source of body water"
+              ],
+              "correctAnswer": "A. Cellular proteins and enzymes undergo constant degradation and turnover, requiring ongoing amino acid supply for replacement synthesis",
+              "hint": "Structural and enzymatic proteins turn over continuously; essential amino acids must be replenished to sustain tissue synthesis.",
+              "workedSolution": "Structural and enzymatic proteins turn over continuously; essential amino acids must be replenished to sustain tissue synthesis.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A41",
+              "difficulty": "hard",
+              "prompt": "Why is the mortality rate of Rabies almost zero if Post-Exposure Prophylaxis (PEP) is administered immediately following a dog bite?",
+              "options": [
+                "A. The rabies virus has a relatively long incubation period; active immunization and passive antibodies neutralize the virus before it enters peripheral nerve axons",
+                "B. The vaccine kills the dog automatically",
+                "C. Rabies virus dies in room air instantly",
+                "D. The vaccine turns rabies into common cold"
+              ],
+              "correctAnswer": "A. The rabies virus has a relatively long incubation period; active immunization and passive antibodies neutralize the virus before it enters peripheral nerve axons",
+              "hint": "Slow centripetal neural transit gives a therapeutic window for vaccine-induced antibodies to neutralize the virus at the wound site.",
+              "workedSolution": "Slow centripetal neural transit gives a therapeutic window for vaccine-induced antibodies to neutralize the virus at the wound site.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A42",
+              "difficulty": "hard",
+              "prompt": "What is the underlying cause of severe muscle pain (myalgia) and prostration in patients infected with Influenza?",
+              "options": [
+                "A. Massive systemic release of pro-inflammatory cytokines (interferons, interleukins) responding to widespread respiratory viral replication",
+                "B. The virus eats muscle fibers directly",
+                "C. Blood calcium turns into gas",
+                "D. Bones bend out of shape"
+              ],
+              "correctAnswer": "A. Massive systemic release of pro-inflammatory cytokines (interferons, interleukins) responding to widespread respiratory viral replication",
+              "hint": "Innate antiviral interferon release triggers intense systemic inflammatory myalgia, fever, and constitutional malaise.",
+              "workedSolution": "Innate antiviral interferon release triggers intense systemic inflammatory myalgia, fever, and constitutional malaise.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A43",
+              "difficulty": "hard",
+              "prompt": "Why is universal household consumption of iodated salt considered a major public health victory in Ghana?",
+              "options": [
+                "A. It provides a simple, cost-effective micronutrient delivery vehicle that prevents endemic Goitre, cretinism, and mental impairment across the population",
+                "B. It makes table salt sweet like sugar",
+                "C. It eliminates the need for drinking water",
+                "D. It replaces all dietary proteins"
+              ],
+              "correctAnswer": "A. It provides a simple, cost-effective micronutrient delivery vehicle that prevents endemic Goitre, cretinism, and mental impairment across the population",
+              "hint": "Salt iodization delivers trace iodine to entire populations, preventing thyroid disorders and congenital cognitive deficits.",
+              "workedSolution": "Salt iodization delivers trace iodine to entire populations, preventing thyroid disorders and congenital cognitive deficits.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A44",
+              "difficulty": "hard",
+              "prompt": "How does the Influenza virus generate new seasonal antigenic strains that evade previous years' vaccine immunity?",
+              "options": [
+                "A. Through antigenic drift (point mutations in hemagglutinin/neuraminidase surface genes) and antigenic shift (reassortment of RNA segments)",
+                "B. By transforming into bacteria",
+                "C. By absorbing human DNA",
+                "D. By losing its protein coat"
+              ],
+              "correctAnswer": "A. Through antigenic drift (point mutations in hemagglutinin/neuraminidase surface genes) and antigenic shift (reassortment of RNA segments)",
+              "hint": "Error-prone RNA replication (antigenic drift) and segment reassortment (shift) alter viral surface antigens, escaping immunity.",
+              "workedSolution": "Error-prone RNA replication (antigenic drift) and segment reassortment (shift) alter viral surface antigens, escaping immunity.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A45",
+              "difficulty": "hard",
+              "prompt": "Why does a patient suffering from severe dehydration due to diarrhea experience rapid circulatory collapse?",
+              "options": [
+                "A. Loss of intravascular water reduces effective circulating blood volume, lowering blood pressure and starving vital organs of oxygen",
+                "B. Dehydration makes bones soft",
+                "C. Water loss increases stomach acid volume",
+                "D. The lungs expand and burst"
+              ],
+              "correctAnswer": "A. Loss of intravascular water reduces effective circulating blood volume, lowering blood pressure and starving vital organs of oxygen",
+              "hint": "Loss of plasma water reduces venous return and cardiac output, precipitating life-threatening hypovolemic shock.",
+              "workedSolution": "Loss of plasma water reduces venous return and cardiac output, precipitating life-threatening hypovolemic shock.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A46",
+              "difficulty": "hard",
+              "prompt": "What is the primary danger of administering live attenuated viral vaccines to severely immunocompromised individuals?",
+              "options": [
+                "A. The weakened virus can replicate unchecked in the absence of immune surveillance, causing disseminated clinical vaccine-strain disease",
+                "B. The vaccine turns into a bacterium",
+                "C. The vaccine makes the patient grow too fast",
+                "D. The vaccine freezes blood cells"
+              ],
+              "correctAnswer": "A. The weakened virus can replicate unchecked in the absence of immune surveillance, causing disseminated clinical vaccine-strain disease",
+              "hint": "Attenuated strains require an intact immune response; immunocompromised hosts cannot control replication, risking active infection.",
+              "workedSolution": "Attenuated strains require an intact immune response; immunocompromised hosts cannot control replication, risking active infection.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A47",
+              "difficulty": "hard",
+              "prompt": "Why are fruit bats unaffected natural reservoirs for the virulent Ebola virus?",
+              "options": [
+                "A. Co-evolutionary adaptations allow bats to carry and shed the filovirus without developing severe vascular damage or lethal inflammatory shock",
+                "B. Fruit bats have no blood vessels",
+                "C. Fruit bats are made of bone only",
+                "D. Ebola virus cannot infect bat cells"
+              ],
+              "correctAnswer": "A. Co-evolutionary adaptations allow bats to carry and shed the filovirus without developing severe vascular damage or lethal inflammatory shock",
+              "hint": "Reservoir species exhibit balanced immune tolerance, harboring pathogens asymptomatically without lethal inflammatory disease.",
+              "workedSolution": "Reservoir species exhibit balanced immune tolerance, harboring pathogens asymptomatically without lethal inflammatory disease.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A48",
+              "difficulty": "hard",
+              "prompt": "Why does an infant infected with Poliovirus show neck stiffness prior to the onset of limb paralysis?",
+              "options": [
+                "A. Viral invasion and multiplication in the meninges produce acute viral meningitis, irritating cervical spinal nerve roots",
+                "B. Neck bones fracture spontaneously",
+                "C. The thyroid gland bursts",
+                "D. Neck muscles turn into cartilage"
+              ],
+              "correctAnswer": "A. Viral invasion and multiplication in the meninges produce acute viral meningitis, irritating cervical spinal nerve roots",
+              "hint": "Meningeal inflammation (meningismus) precedes anterior horn neuronal lysis, causing classic nuchal rigidity.",
+              "workedSolution": "Meningeal inflammation (meningismus) precedes anterior horn neuronal lysis, causing classic nuchal rigidity.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A49",
+              "difficulty": "hard",
+              "prompt": "How does feeding colostrum (the first milk produced postpartum) provide critical immune defense to a newborn infant?",
+              "options": [
+                "A. It delivers concentrated maternal Secretory Immunoglobulin A (sIgA) antibodies that coat the infant's gut mucosa against viral and bacterial invasion",
+                "B. It contains pure mineral salt crystals",
+                "C. It acts as an antibiotic chemical drug",
+                "D. It replaces all future dietary needs"
+              ],
+              "correctAnswer": "A. It delivers concentrated maternal Secretory Immunoglobulin A (sIgA) antibodies that coat the infant's gut mucosa against viral and bacterial invasion",
+              "hint": "Colostrum provides passive mucosal immunity via maternal IgA, protecting the neonatal gastrointestinal tract.",
+              "workedSolution": "Colostrum provides passive mucosal immunity via maternal IgA, protecting the neonatal gastrointestinal tract.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B7_HH_A50",
+              "difficulty": "hard",
+              "prompt": "What is the ultimate public health objective of maintaining high population vaccine coverage ('herd immunity') against childhood viral diseases?",
+              "options": [
+                "A. To lower the proportion of susceptible hosts so the basic reproduction number ($R_0$) falls below 1, shielding vulnerable infants who cannot be vaccinated",
+                "B. To make viral pathogens grow larger",
+                "C. To eliminate the need for food and water",
+                "D. To make all medicines free of charge"
+              ],
+              "correctAnswer": "A. To lower the proportion of susceptible hosts so the basic reproduction number ($R_0$) falls below 1, shielding vulnerable infants who cannot be vaccinated",
+              "hint": "High population immunity disrupts transmission chains, protecting immunocompromised individuals who cannot receive vaccines.",
+              "workedSolution": "High population immunity disrupts transmission chains, protecting immunocompromised individuals who cannot receive vaccines.",
+              "points": 1,
+              "learningCompetency": "B7.5.2.1 / B7.5.2.2",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -36579,7 +39133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.622Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -36774,7 +39328,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.622Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -36970,7 +39524,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.622Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -37167,7 +39721,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T13:02:11.622Z"
+    "updatedAt": "2026-10-08T14:22:52.983Z"
   }
 ];
 
@@ -70776,48 +73330,2434 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Human Health & Disease Control (Deficiency, Viral, Bacterial, Communicable & Lifestyle Diseases)",
     "order": 46,
     "notes": {
-      "summaryMarkdown": "### Human Nutrition: Balanced Diets & Nutritional Deficiency Disorders\n* **NaCCA Curriculum Code:** `B7.5.2.1`\n* **Core Competency:** Classify food nutrients, design balanced adolescent diets, and diagnose common nutritional deficiency diseases.\n\n#### 1. Classes of Food Nutrients\n* **Carbohydrates:** Primary energetic fuel ($17\\text{ kJ/g}$) for cellular metabolism (e.g., starch in yam, cassava, maize, rice; glucose).\n* **Proteins:** Polymers of amino acids required for growth, somatic tissue repair, enzyme and antibody synthesis ($17\\text{ kJ/g}$) (e.g., fish, beans, eggs, meat, milk).\n* **Lipids (Fats & Oils):** Concentrated long-term energy storage ($38\\text{ kJ/g}$), structural cell membranes, thermal insulation, shock absorption for organs.\n* **Vitamins (Organic Micronutrients):** Fat-soluble (A, D, E, K) and Water-soluble (B-complex, C). Essential coenzymes in biochemical reactions.\n* **Minerals (Inorganic Micronutrients):** Calcium, Iron, Iodine, Sodium, Potassium.\n* **Dietary Fiber (Roughage):** Indigestible cellulose providing bulk to stimulate intestinal peristalsis and prevent constipation.\n* **Water:** Universal biological solvent, thermoregulation through sweat evaporation, metabolic reaction medium.\n\n#### 2. Major Nutritional Deficiency Disorders\n* **Kwashiorkor:** Severe protein deficiency with adequate caloric intake. Symptoms: protruding belly (ascites from fluid edema), reddish/brown thinned hair, flaky skin dermatosis, apathy.\n* **Marasmus:** Total caloric and protein starvation. Symptoms: extreme skeletal emaciation (\"skin and bones\"), sunken eyes, loose folded skin, elderly facial appearance.\n* **Scurvy (Vitamin C Deficiency):** Bleeding spongy gums, delayed wound healing, subcutaneous hemorrhages (bruises) due to defective collagen synthesis.\n* **Rickets (Vitamin D / Calcium Deficiency in Children):** Soft, pliable leg bones bowing under body weight (bowlegs, knock-knees), deformed ribcage (pigeon chest).\n* **Nutritional Anemia (Iron Deficiency):** Chronic fatigue, paleness of conjunctiva and fingernail beds, breathlessness due to reduced hemoglobin production.\n* **Goitre (Iodine Deficiency):** Abnormal enlargement of the thyroid gland in the neck due to lack of iodine for thyroxine synthesis.",
+      "summaryMarkdown": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 2: HUMAN HEALTH & DISEASE CONTROL\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Clinical Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 2 — Human Health\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standards:**\n  - **B7.5.2.1:** Demonstrate knowledge of common deficiency diseases of humans, their causes, symptoms, effects and prevention.\n  - **B7.5.2.2:** Demonstrate knowledge of the nature of selected viral diseases of humans, their causes, symptoms, effects and management.\n- **Indicators:**\n  - **B7.5.2.1.1:** Explain the relationship between food nutrients and common deficiency diseases and how they affect humans.\n  - **B7.5.2.2.1:** Explain the nature of viral diseases with special emphasis on corona virus (COVID-19), Ebola, and H1N1 disease: their causes, symptoms, effects on humans, and prevention.\n- **Pedagogical Strategy:** Clinical biochemistry classifications, operational definitions, maternal-foetal metabolic imperatives, obligate intracellular viral pathology, zoonotic transmission pathways, epidemiological containment protocols, and fully rendered SVG vector diagrams.\n\n---\n\n### MODULE 1: Food Nutrients, Balanced Diet, and Maternal-Foetal Nutrition\n\n#### 1.1 Foundational Scientific Definitions\n1. **Food:** Any substance containing essential biological nutrients that, when ingested, digested, and assimilated, nourishes the body, maintains metabolic life processes, and supports somatic growth and tissue repair. To qualify as food, an ingested substance must fulfill two mandatory scientific criteria:\n   - It must be non-toxic, digestible, and biologically edible (*worth eating*).\n   - It must actively nourish the body through metabolic energy yield, structural synthesis, or physiological regulation.\n2. **Food Nutrients:** Organic and inorganic biochemical compounds contained within food that biological cells absorb and utilize to synthesize cellular structures, drive enzymatic cascades, maintain electrolyte gradients, and sustain somatic vitality.\n3. **Nutrition:** The dynamic physiological process encompassing ingestion, enzymatic digestion, intestinal absorption, systemic vascular transport, cellular assimilation, and biological utilization of food nutrients by living organisms.\n4. **Essential Nutrients:** Biochemical molecules and inorganic elements indispensable for normal physiological and cellular functioning that the human body cannot synthesize *de novo* in adequate amounts (e.g., essential amino acids, essential fatty acids, vitamins, and trace minerals), thereby necessitating regular dietary intake.\n5. **Balanced Diet:** A dietary intake regimen containing all the essential classes of food substances (carbohydrates, proteins, lipids, vitamins, mineral salts, dietary fibre, and water) in correct physiological proportions and caloric quantities required to sustain metabolic homeostasis, physical activity, and tissue maintenance without nutritional excess or deficit. An unbalanced diet manifests as either primary undernutrition or overnutrition, precipitating systemic malnutrition.\n\n#### 1.2 Maternal and Foetal Nutrition Dynamics\nDuring pregnancy, maternal basal metabolic demand escalates significantly to orchestrate rapid embryogenesis, placental expansion, and organogenesis:\n- **Proteins:** Essential for continuous mitotic cell division, blastocyst organogenesis, maternal uterine hypertrophy, plasma volume expansion, and foetal muscular-skeletal tissue synthesis.\n- **Lipids (Fats & Oils):** Critical structural building blocks for foetal neural tube development, cerebral cortex encephalization, myelin sheath insulation around central and peripheral axons, and retinal photoreceptor membrane maturation.\n- **Carbohydrates:** Function as the primary bioenergetic substrate delivering continuous maternal blood glucose across the placental syncytiotrophoblast via facilitated diffusion (GLUT-1 transporters) to satisfy high foetal cerebral and cardiac ATP requirements.\n- **Gestational Homeostasis:** Adequate maternal macronutrient and micronutrient intake ensures healthy maternal weight gain, prevents placental insufficiency, maintains optimal amniotic fluid volume, and averts intrauterine growth restriction (IUGR) and low birth weight (<2.5 kg).\n\n#### 1.3 Biochemical Taxonomy of Food Classes\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">BIOCHEMICAL TAXONOMY OF ESSENTIAL FOOD CLASSES</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Carbohydrates (C, H, O)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Monosaccharides: Glucose, Fructose</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Disaccharides: Sucrose (Sugarcane)</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Polysaccharides: Starch (Rice, Yam)</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">Primary Role: Cellular Energy &amp; Glycemia</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Proteins (C, H, O, N)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• 1st Class: Animal origin (Complete)</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• 2nd Class: Plant origin (Incomplete)</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Subunits: Essential Amino Acids</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Primary Role: Tissue Repair, Enzymes</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"125\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Lipids: Fats &amp; Oils (C, H, O)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Fats: Solid at room temperature</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Oils: Liquid at room temperature</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Subcutaneous insulation cushion</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\">Primary Role: Solvent for A, D, E, K</text></g><g transform=\"translate(25, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Dietary Fibre (Roughage)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Indigestible plant cellulose bulk</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Promotes peristalsis contraction</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Prevents chronic constipation</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Primary Role: Reduces Colon Cancer</text></g><g transform=\"translate(270, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#f0fdfa\" stroke=\"#14b8a6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#115e59\" text-anchor=\"middle\">Water (H₂O - 66% Body Weight)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Universal metabolic reaction medium</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Thermoregulation via sweat cooling</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#134e4a\">• Transport of gases, ions &amp; glucose</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#115e59\">Primary Role: Osmotic Homeostasis</text></g><g transform=\"translate(515, 185)\"><rect width=\"220\" height=\"135\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.5\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">Micronutrients: Minerals &amp; Salts</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Potassium, Calcium, Iodine, Iron</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Sources: Sea fish, iodated table salt</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Maintain metabolic coordination</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#6b21a8\">Primary Role: Prevents Deficiency States</text></g></svg>\n</div>\n\n1. **Carbohydrates (Carbon, Hydrogen, Oxygen in ~1:2:1 Ratio):**\n   - *Monosaccharides:* Simple single-ring hexose and pentose sugars directly absorbable across the enterocyte brush border without preparatory enzymatic hydrolysis (e.g., Glucose, Fructose, Galactose).\n   - *Disaccharides:* Double-ring sugars linked by covalent glycosidic bonds that require specific brush-border disaccharidases (maltase, sucrase, lactase) for cleavage (e.g., Sucrose = Glucose + Fructose; Lactose = Glucose + Galactose; Maltose = Glucose + Glucose).\n   - *Polysaccharides:* High-molecular-weight polymers of repeating glucose subunits linked by $\\alpha$-1,4 and $\\alpha$-1,6 glycosidic bonds (e.g., Amylose and Amylopectin in Plant Starch; Glycogen in animal liver/muscle).\n   - *Dietary Sources:* Maize, cassava, yam, plantain, rice, millet, sorghum, potatoes, wheat bread, and sugar cane.\n   - *Physiological Functions:* Primary source of cellular adenosine triphosphate (ATP) via aerobic glycolysis and the Krebs cycle; maintains blood glucose homeostasis (3.9–5.6 mmol/L fasting); exerts a vital **protein-sparing effect** by preventing gluconeogenic catabolism of functional muscular proteins; facilitates complete fatty acid $\\beta$-oxidation, averting metabolic ketoacidosis; and contributes oligosaccharide chains to cell-surface glycoproteins and glycolipids.\n\n2. **Proteins (Polymers of Amino Acids containing C, H, O, N, and often S):**\n   - *First-Class (Complete) Proteins:* Principally derived from animal sources; supply all nine essential amino acids (Histidine, Isoleucine, Leucine, Lysine, Methionine, Phenylalanine, Threonine, Tryptophan, Valine) in optimal biological proportions matching human protein synthesis requirements (e.g., fresh fish, lean meat, eggs, cow's milk, cheese).\n   - *Second-Class (Incomplete) Proteins:* Primarily derived from plant tissues; deficient or limiting in one or more essential amino acids (e.g., cereals are limiting in lysine; legumes are limiting in methionine). Complementary mixing (such as consuming rice with cowpeas or maize with groundnuts) overcomes individual amino acid deficits.\n   - *Physiological Functions:* Structural synthesis of all somatic tissues (collagen, keratin, actin, myosin); biocatalytic synthesis of metabolic enzymes; production of peptide hormones (insulin, glucagon, growth hormone); humoral immunity synthesis of immunoglobulins (antibodies); osmotic pressure maintenance via blood serum albumin; and reserve energy generation during prolonged fasting.\n\n3. **Lipids — Fats and Oils (Hydrophobic Esters of Glycerol and Fatty Acids):**\n   - *Fats:* Triacylglycerols rich in saturated fatty acids with high melting points; solid at room temperature (25°C); typically of animal origin (beef tallow, lard, butter).\n   - *Oils:* Triacylglycerols containing mono- or polyunsaturated fatty acids with cis-double bonds and lower melting points; liquid at room temperature; typically of plant origin (groundnut oil, palm oil, coconut oil, soybean oil).\n   - *Physiological Functions:* Provide an ultra-dense metabolic energy store (37 kJ/g or 9 kcal/g, more than double that of carbohydrates or proteins); subcutaneous adipose layer provides thermal insulation against hypothermia; forms viscoelastic protective cushions enveloping vital viscera (kidneys, myocardium); constitutes the phospholipid bilayer of cellular membranes; and acts as the compulsory hydrophobic solvent required for the absorption, transport, and storage of fat-soluble vitamins (Vitamins A, D, E, and K).\n\n4. **Roughage (Dietary Fibre):**\n   - *Biochemical Nature:* Non-starch polysaccharides and structural plant cell-wall components (predominantly cellulose, hemicellulose, lignin, and pectin) containing $\\beta$-1,4 glycosidic linkages that resist enzymatic hydrolysis by human endogenous salivary, gastric, and pancreatic enzymes.\n   - *Dietary Sources:* Whole grains, legumes, bran, leafy greens (kontomire, amaranth), fruit peels, cabbage, and okra.\n   - *Physiological Functions:* Increases fecal bolus hydration and bulk, stimulating mechanical gastrointestinal stretch receptors and promoting coordinated peristaltic contractions; prevents chronic constipation, colonic diverticulosis, and hemorrhoids; adsorbs bile acids and luminal toxins, reducing reabsorption of cholesterol; and shortens fecal transit time, minimizing colonic mucosal contact with potential dietary carcinogens to decrease colorectal cancer risk.\n\n5. **Water ($H_2O$):**\n   - *Physiological Ubiquity:* Constitutes 60%–70% of total adult human body weight and over 75% of infant body mass.\n   - *Physiological Functions:* Universal biological solvent enabling intracellular and interstitial chemical solutes to dissolve and react; circulating transport vehicle in blood plasma for respiratory gases ($O_2, CO_2$), glucose, hormones, urea, and electrolytes; high specific heat capacity and latent heat of vaporization facilitate cutaneous evaporative cooling (perspiration thermoregulation); maintains systemic intravascular blood volume and arterial blood pressure; lubricates synovial joints, pericardial/pleural cavities, and intestinal tracts; and serves as a shock-absorbing fluid cushion protecting the brain (cerebrospinal fluid) and foetus (amniotic fluid).\n\n6. **Mineral Salts & Vitamins (Essential Micronutrients):**\n   - Organic vitamins and inorganic elemental minerals required in milligram or microgram quantities that do not yield energy directly, but function as indispensable enzymatic coenzymes, prosthetic groups, structural bone constituents, and electrochemical osmolytes.\n\n---\n\n### MODULE 2: Malnutrition and Clinical Pathology of Nutritional Deficiency Diseases\n\n#### 2.1 The Clinical Syndrome of Malnutrition\nMalnutrition denotes a pathological state resulting from relative or absolute nutritional deficiency (undernutrition), nutritional excess (overnutrition), or severe biological imbalance of essential dietary components relative to metabolic needs.\n- **Systemic Pathophysiological Sequelae:**\n  - Electrolyte shifts and interstitial fluid retention (loss of cellular membrane potassium and sodium-potassium ATPase pump dysfunction).\n  - Somatic growth arrest, failure to gain weight, and delayed ossification of epiphyseal growth plates.\n  - Progressive skeletal muscle proteolysis and subcutaneous lipolysis.\n  - Secondary immunodeficiency syndrome marked by thymic atrophy, depressed helper T-lymphocyte counts ($CD4^+$), impaired secretory IgA synthesis, and extreme vulnerability to opportunistic bacterial enteritis, measles, and bronchopneumonia.\n  - Multi-organ atrophy, impaired hepatic synthetic capacity, and high mortality if refeeding is unmanaged.\n\n#### 2.2 Clinical Profiles of Common Deficiency Pathologies\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLINICAL RECOGNITION SPECIMENS: DEFICIENCY PATHOLOGIES</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">SPECIMEN A: GOITRE</text><path d=\"M 70 80 Q 110 95 150 80 L 140 180 Q 110 200 80 180 Z\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><ellipse cx=\"110\" cy=\"145\" rx=\"35\" ry=\"40\" fill=\"#fdba74\" stroke=\"#c2410c\" stroke-width=\"2\"/><text x=\"110\" y=\"148\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Enlarged Thyroid</text><line x1=\"110\" y1=\"185\" x2=\"110\" y2=\"220\" stroke=\"#334155\" stroke-width=\"1\"/><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#eff6ff\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Cause: Dietary Iodine Deficiency</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Correction: Iodated salt &amp; Sea fish</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">SPECIMEN B: KWASHIORKOR</text><circle cx=\"110\" cy=\"65\" r=\"16\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><text x=\"110\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b45309\" text-anchor=\"middle\">Reddish Hair</text><line x1=\"110\" y1=\"81\" x2=\"110\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"4\"/><ellipse cx=\"110\" cy=\"140\" rx=\"36\" ry=\"30\" fill=\"#fdba74\" stroke=\"#c2410c\" stroke-width=\"2\"/><text x=\"110\" y=\"143\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7c2d12\" text-anchor=\"middle\">Protruding Abdomen</text><line x1=\"95\" y1=\"165\" x2=\"95\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"3\"/><line x1=\"125\" y1=\"165\" x2=\"125\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"3\"/><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#fefce8\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Cause: Protein Deficiency</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">Oedema + Muscle Wasting</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"270\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">SPECIMEN C: RICKETS</text><circle cx=\"110\" cy=\"65\" r=\"16\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><line x1=\"110\" y1=\"81\" x2=\"110\" y2=\"140\" stroke=\"#ea580c\" stroke-width=\"4\"/><path d=\"M 95 140 C 70 170, 70 195, 90 215\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"4.5\"/><path d=\"M 125 140 C 150 170, 150 195, 130 215\" fill=\"none\" stroke=\"#15803d\" stroke-width=\"4.5\"/><text x=\"110\" y=\"175\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">Bowed Legs</text><rect x=\"15\" y=\"225\" width=\"190\" height=\"35\" rx=\"4\" fill=\"#f0fdf4\"/><text x=\"110\" y=\"238\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cause: Vitamin D / Calcium Lack</text><text x=\"110\" y=\"251\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">Soft, poorly mineralized bones</text></g></svg>\n</div>\n\n1. **Kwashiorkor (Severe Acute Protein Deprivation):**\n   - *Etiology:* Severe primary dietary lack of high-biological-value protein in the presence of adequate or marginally sufficient caloric intake (predominantly carbohydrate-based weanling gruels such as refined corn dough or cassava pap).\n   - *Pathophysiology:* Severe hypoalbuminemia drops intravascular plasma colloid oncotic pressure below critical capillary hydrostatic threshold, driving fluid extravasation into the interstitial tissue spaces. Impaired apolipoprotein B synthesis impairs hepatic triglyceride export, resulting in severe fatty liver (steatosis).\n   - *Clinical Hallmarks:* Bilateral dependent pitting oedema starting in feet/shins and progressing to periorbital puffiness and ascites (\"moon face\"); hair depigmentation changing to a reddish-copper, blonde, or grey tint with alternating light and dark bands (**flag sign**); thin, brittle, easily pluckable hair; hyperkeratotic, desquamating skin lesions resembling peeling sun-baked paint (**flaky-paint dermatosis**); marked hepatomegaly; profound lethargy and apathy; and generalized muscle wasting masked by generalized fluid retention.\n   - *Correction Protocol:* Cautious therapeutic refeeding with milk-based therapeutic diets (WHO F-75 initial stabilization formula followed by F-100 catch-up formula) and gradual incorporation of eggs, fish powder, groundnuts, and soybean blends.\n\n2. **Marasmus (Severe Energy & Protein Starvation):**\n   - *Etiology:* Chronic, balanced starvation characterized by catastrophic inadequacy of both total dietary energy (calories) and dietary protein (often triggered by early termination of breastfeeding, diluted infant formula, or severe prolonged gastroenteritis).\n   - *Pathophysiology:* Deprived of external energy, the infant catabolizes both endogenous adipose reserves (lipolysis) and structural skeletal muscle proteins (proteolysis) to supply amino acid substrates for basal hepatic gluconeogenesis.\n   - *Clinical Hallmarks:* Severe, generalized muscle wasting; virtually complete disappearance of subcutaneous adipose tissue; dry, thin, papery skin hanging in loose redundant folds around the axillae, gluteal regions, and thighs (\"baggy pants\" appearance); prominent, visible ribs and scapulae; sunken eyes, hollow cheeks, and prominent zygomatic bones yielding an **\"old man\" (wizened/senile) facial appearance**; absence of oedema; and persistent voracious appetite.\n   - *Correction Protocol:* High-calorie, nutrient-dense nutritional rehabilitation using enriched lipid-based therapeutic food (RUTF), peanut-butter therapeutic pastes, and fortified whole milk.\n\n3. **Rickets (Infantile) & Osteomalacia (Adults):**\n   - *Etiology:* Dietary deficiency of Vitamin D (calciferol), inadequate dietary Calcium or Phosphorus, or insufficient cutaneous solar ultraviolet B (UVB) irradiation required for the photolysis of 7-dehydrocholesterol to cholecalciferol ($D_3$).\n   - *Pathophysiology:* In the absence of active 1,25-dihydroxycholecalciferol $[1,25(OH)_2D_3]$, intestinal enterocyte calbindin synthesis declines, reducing dietary calcium absorption from ~40% to <10%. Hypocalcemia stimulates parathyroid hormone (PTH) secretion, mobilizing calcium from bone while inducing renal phosphate wasting, which leads to failure of osteoid matrix mineralization at growth plates.\n   - *Clinical Hallmarks:* Soft, unmineralized, pliable long bones that deform under the mechanical strain of gravity and ambulation, producing **bowed legs (genu varum)** or **knock-knees (genu valgum)**; nodular swelling of costochondral junctions along the sternal border forming the **rachitic rosary**; widened epiphyseal wrists and ankles; delayed closure of the cranial anterior fontanelle; craniotabes; and prominent sternal protrusion (**pigeon-chest / pectus carinatum**).\n   - *Correction Protocol:* Oral cholecalciferol supplementation, regular safe morning sunlight exposure, and consumption of calcium-dense dairy milk, fortified margarines, and bone-in fish (sardines).\n\n4. **Endemic Goitre (Thyroid Hypertrophy):**\n   - *Etiology:* Chronic dietary deficiency of the essential trace mineral Iodine ($I$), endemic in soils and water supplies distant from marine environments (e.g., highland or leached inland terrains).\n   - *Pathophysiology:* Iodine is the essential chemical substrate for synthesizing the thyroid prohormone thyroxine ($T_4$) and active triiodothyronine ($T_3$). Low circulating free $T_4$ removes negative feedback on the anterior pituitary gland, triggering uncalibrated, sustained hypersecretion of Thyroid-Stimulating Hormone (TSH). Elevated TSH drives compensatory hyperplasia and hypertrophy of thyroid follicular epithelial cells, enlarging the entire gland.\n   - *Clinical Hallmarks:* Painless, symmetric or nodular visible swelling in the anterior cervical (neck) region below the larynx; feeling of throat constriction; and in severe cases, mechanical compression of the trachea and esophagus leading to stridor, hoarseness, and dysphagia. Untreated maternal iodine deficiency during pregnancy causes irreversible foetal neurological cretinism.\n   - *Correction Protocol:* Universal legislative iodization of all commercial food-grade table salt ($KIO_3$ at 25–50 ppm) and increased consumption of sea fish, crabs, shrimp, oysters, and marine seaweeds.\n\n5. **Scurvy (Vitamin C Deficiency):**\n   - *Etiology:* Prolonged dietary deficiency of L-Ascorbic Acid (Vitamin C), typically due to absence of fresh fruits and raw vegetables in the diet.\n   - *Pathophysiology:* Ascorbic acid is the essential reducing cofactor for prolyl 4-hydroxylase and lysyl hydroxylase enzymes responsible for the post-translational hydroxylation of proline and lysine residues in procollagen. Defective triple-helix collagen assembly causes extreme capillary endothelial fragility, defective connective tissue scaffolding, and impaired osteoid formation.\n   - *Clinical Hallmarks:* Swollen, hyperemic, spongy, purple gums that bleed profusely upon minimal contact or mastication; looseness and eventual loss of teeth; widespread subcutaneous petechiae, perifollicular hemorrhages, purpura, and large intramuscular hematomas; painful hemarthroses (bleeding into joint cavities); impaired wound healing; and secondary microcytic anemia.\n   - *Correction Protocol:* Daily dietary administration of citrus fruits (oranges, lemons, grapefruits, limes), guava, raw tomatoes, pawpaw, green bell peppers, and fresh leafy greens.\n\n6. **Night Blindness (Nyctalopia) & Xerophthalmia:**\n   - *Etiology:* Chronic dietary deficiency of Vitamin A (retinol or provitamin A carotenoids).\n   - *Pathophysiology:* Retinol is converted to 11-cis-retinal, which binds the apoprotein opsin in retinal rod photoreceptors to form the light-sensitive photopigment rhodopsin. Vitamin A is also essential for maintaining differentiated mucin-secreting goblet cells across mucosal epithelia.\n   - *Clinical Hallmarks:* Inability to visually adapt or perceive silhouettes in dim twilight or darkened conditions (**nyctalopia**); conjunctival drying and keratinization (**xerosis conjunctivae**); triangular, foamy, pearly plaques on the bulbar conjunctiva (**Bitot's spots**); dry, cloudy, ulcerating cornea (**corneal xerosis**); and irreversible full-thickness corneal liquefactive necrosis and perforation (**keratomalacia**), resulting in permanent blindness.\n   - *Correction Protocol:* Routine high-potency Vitamin A capsule distribution to children, consumption of red palm oil, egg yolks, liver, carrots, mangoes, sweet potatoes, and dark-green leafy vegetables.\n\n7. **Beriberi (Vitamin $B_1$ Deficiency):**\n   - *Etiology:* Dietary deficiency of Thiamine (Vitamin $B_1$), classically associated with diets consisting predominantly of polished white rice or refined, unfortified cassava flours where the thiamine-rich outer aleurone layer and cereal germ have been milled away.\n   - *Pathophysiology:* Thiamine pyrophosphate (TPP) is an indispensable coenzyme for the pyruvate dehydrogenase and $\\alpha$-ketoglutarate dehydrogenase complexes required for carbohydrate catabolism in the Krebs cycle. Deficits lead to intracellular energy failure, accumulation of pyruvate and lactate, peripheral nerve demyelination, and vasodilation.\n   - *Clinical Hallmarks:*\n     - *Wet Beriberi:* Cardiovascular failure characterized by peripheral vasodilation, elevated cardiac output, tachycardia, dyspnea, and extensive bilateral pitting peripheral oedema.\n     - *Dry Beriberi:* Neurological failure without oedema, presenting with symmetrical peripheral polyneuropathy, burning sensations in the feet, calf muscle tenderness, diminished deep tendon reflexes, wrist-drop/foot-drop, and severe progressive muscle wasting.\n   - *Correction Protocol:* Consumption of unpolished/brown rice, whole wheat, groundnuts, cowpeas, yeast extracts, lean meats, and food fortification.\n\n8. **Pellagra (Vitamin $B_3$ Deficiency):**\n   - *Etiology:* Deficiency of Niacin (Nicotinic acid / Nicotinamide, Vitamin $B_3$) or its metabolic precursor amino acid Tryptophan, common in populations subsisting almost entirely on untreated maize (where niacin is chemically bound as niacytin).\n   - *Pathophysiology:* Niacin is the functional constituent of the cellular redox dinucleotides $NAD^+$ and $NADP^+$, without which mitochondrial cellular respiration, DNA repair (poly-ADP-ribose polymerase), and lipid biosynthesis fail.\n   - *Clinical Hallmarks (The Classic \"Three Ds\"):*\n     - *Dermatitis:* Bilateral, symmetrical, sharply demarcated erythematous scaly hyperpigmented rash on sun-exposed cutaneous areas (especially the anterior neck and upper sternum, designated as **Casal's necklace**).\n     - *Diarrhoea:* Diffuse inflammation and atrophy of the gastrointestinal mucosal lining, nausea, vomiting, and intractable watery stools.\n     - *Dementia:* Neuropsychiatric degeneration manifesting as insomnia, irritability, memory impairment, confusion, hallucinations, and progressive encephalopathy (ending in the \"Fourth D\": *Death* if untreated).\n   - *Correction Protocol:* Administration of nicotinamide tablets and dietary inclusion of groundnuts, beans, fish, poultry, eggs, and milk.\n\n9. **Nutritional Anaemias & Mucocutaneous Lesions (Iron, Folate, $B_2$, $B_{12}$):**\n   - *Etiology:* Deficiency of iron, riboflavin ($B_2$), cobalamin ($B_{12}$), or pteroylglutamic acid (folic acid).\n   - *Clinical Hallmarks:* Paleness of the palpebral conjunctiva, tongue, and nailbeds; angular stomatitis (painful macerated fissures at the labial oral commissures); cheilosis (dry, cracked lips); glossitis (swollen, smooth, beefy-red or magenta tongue); systemic fatigue, shortness of breath on mild exertion, and tachycardia.\n   - *Correction Protocol:* Iron-folic acid supplementation, regular deworming (eradicating *Necator americanus* hookworm blood loss), consumption of green leafy vegetables, organ liver, beans, and fortified grains.\n\n10. **Hemorrhagic Disease / Prolonged Bleeding (Vitamin K Deficiency):**\n    - *Etiology:* Deficiency of Phylloquinone/Menaquinone (Vitamin K), seen in exclusively breastfed neonates lacking gut flora, or secondary to broad-spectrum antibiotic sterilization of colonic microflora or biliary obstruction.\n    - *Pathophysiology:* Vitamin K serves as the compulsory cofactor for hepatic $\\gamma$-glutamyl carboxylase, which carboxylates glutamic acid residues on blood coagulation Factors II (prothrombin), VII, IX, and X, enabling their calcium-dependent binding to platelet phospholipid surfaces.\n    - *Clinical Hallmarks:* Defective secondary hemostasis manifested by prolonged prothrombin time (PT/INR); excessive ecchymoses and hematomas after trivial trauma; recurrent unprovoked epistaxis (nosebleeds); mucosal gingival bleeding; melena (black tarry blood in stools); hematuria; and life-threatening intracranial hemorrhage in neonates.\n    - *Correction Protocol:* Prophylactic intramuscular Vitamin K injection at birth, consumption of dark green leafy vegetables (kale, spinach, cabbage, broccoli), and maintenance of healthy intestinal microbiota.\n\n---\n\n### MODULE 3: General Virology, Genomic Architecture, and Viral Pathogenesis\n\n#### 3.1 Biological Nature and Physical Structure of Viruses\nViruses represent ultra-microscopic (20–400 nm), non-cellular, obligate intracellular infectious agents incapable of autonomous metabolic activity, cellular division, or independent replication outside a permissive living biological host cell.\n- **Fundamental Architectural Components:**\n  1. *Viral Genetic Core:* Contains a single type of genetic nucleic acid — either Deoxyribonucleic Acid (DNA) or Ribonucleic Acid (RNA), which may be single-stranded (ss) or double-stranded (ds), linear or circular, segmented or non-segmented, but **never both DNA and RNA simultaneously within the same virion**.\n  2. *Protein Capsid:* A rigid, protective macromolecular shell composed of repeated protein morphological subunits termed **capsomeres**, arranged in symmetrical helical, icosahedral (polyhedral), or complex geometries to protect the viral genome from nucleases and harsh environmental stressors.\n  3. *Viral Envelope (Enveloped Viruses):* An external lipid bilayer membrane acquired during egress by budding through host plasma membranes or nuclear/endoplasmic membranes, studded with virus-encoded glycoprotein surface spikes (peplomers) that dictate viral tissue tropism and mediate host cellular receptor attachment. Non-enveloped (\"naked\") viruses lack this lipid membrane and are generally more resistant to environmental heat, drying, detergents, and gastric acidity.\n- **The Living vs. Non-Living Threshold:**\n  Outside of a host cell, a virus exists as an inert, crystalline macromolecular physical particle known as a **virion**, devoid of cytoplasm, organelles, ribosomes, metabolic respiration, and intrinsic ATP generation. However, upon breaching a living host cell, the viral genome commandeers the host's biochemical and genetic machinery to replicate, synthesize proteins, evolve, and assemble daughter progeny, fulfilling the core biological criteria of living systems.\n\n#### 3.2 Molecular Steps of Viral Pathogenesis\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><defs><marker id=\"arrBlue\" markerWidth=\"6\" markerHeight=\"6\" refX=\"4\" refY=\"3\" orient=\"auto\"><path d=\"M0,0 L0,6 L6,3 z\" fill=\"#0284c7\"/></marker></defs><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE MOLECULAR INFECTION CYCLE OF AN ANIMAL VIRUS</text><rect x=\"40\" y=\"45\" width=\"680\" height=\"215\" rx=\"10\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.5\" stroke-dasharray=\"4,4\"/><text x=\"60\" y=\"70\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#334155\">Host Eukaryotic Cell Boundary</text><g transform=\"translate(50, 95)\"><circle cx=\"35\" cy=\"35\" r=\"20\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><circle cx=\"35\" cy=\"35\" r=\"6\" fill=\"#991b1b\"/><text x=\"35\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1. Attachment</text><text x=\"35\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">Spikes bind receptor</text></g><line x1=\"115\" y1=\"130\" x2=\"160\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(170, 95)\"><ellipse cx=\"40\" cy=\"35\" rx=\"24\" ry=\"18\" fill=\"#fee2e2\" stroke=\"#dc2626\"/><path d=\"M 30 35 Q 40 25 50 35\" fill=\"none\" stroke=\"#991b1b\" stroke-width=\"2\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">2. Entry/Uncoat</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">RNA/DNA released</text></g><line x1=\"245\" y1=\"130\" x2=\"290\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(300, 95)\"><rect x=\"15\" y=\"15\" width=\"65\" height=\"45\" rx=\"4\" fill=\"#fef08a\" stroke=\"#ca8a04\"/><path d=\"M 25 35 Q 47 15 70 35\" fill=\"none\" stroke=\"#854d0e\" stroke-width=\"2\" stroke-dasharray=\"2,2\"/><text x=\"47\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. Replication</text><text x=\"47\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">Host mach. hijacked</text></g><line x1=\"390\" y1=\"130\" x2=\"435\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(445, 95)\"><circle cx=\"40\" cy=\"35\" r=\"22\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><circle cx=\"35\" cy=\"30\" r=\"5\" fill=\"#9a3412\"/><circle cx=\"45\" cy=\"40\" r=\"5\" fill=\"#9a3412\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">4. Assembly</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7c2d12\" text-anchor=\"middle\">Virions packaged</text></g><line x1=\"515\" y1=\"130\" x2=\"560\" y2=\"130\" stroke=\"#0284c7\" stroke-width=\"2\" marker-end=\"url(#arrBlue)\"/><g transform=\"translate(570, 95)\"><circle cx=\"40\" cy=\"20\" r=\"12\" fill=\"#fecaca\" stroke=\"#dc2626\"/><circle cx=\"55\" cy=\"45\" r=\"12\" fill=\"#fecaca\" stroke=\"#dc2626\"/><text x=\"40\" y=\"72\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5. Lysis / Release</text><text x=\"40\" y=\"84\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\" text-anchor=\"middle\">Cell death &amp; spread</text></g></svg>\n</div>\n\n1. **Attachment (Adsorption):** The viral surface attachment proteins or glycoprotein spikes bind with high stereochemical specificity to complementary receptor molecules and co-receptors situated on the outer membrane of the host eukaryotic target cell (e.g., SARS-CoV-2 spike protein binding the ACE2 receptor on human alveolar type II pneumocytes).\n2. **Penetration & Uncoating:** The virion enters the host cell cytoplasm via receptor-mediated endocytosis, pinocytosis, or direct membrane fusion between the viral lipid envelope and the host plasma membrane. Subsequent acidification or cellular protease activity degrades the viral protein capsid, uncoating and exposing the infectious viral nucleic acid core into the host cytoplasm or nucleoplasm.\n3. **Host Hijacking & Viral Replication:** The viral genome shuts down host cell macromolecular synthesis, commandeering host cell RNA/DNA polymerases, nucleoside triphosphates, and cellular energy systems (ATP) to drive explosive transcription of viral messenger RNAs (mRNAs) and replication of the viral genomic template.\n4. **Biosynthesis & Structural Assembly:** Host cell ribosomes and endoplasmic reticulum networks translate viral mRNAs into structural capsid proteins, envelope glycoproteins, and non-structural enzymatic proteins. Newly synthesized viral genomes and capsomeres spontaneously condense and package into organized, mature daughter virions.\n5. **Lysis & Release:** Progeny virions are liberated into extracellular fluids:\n   - Non-enveloped viruses typically induce **host cell lysis**, actively rupturing the host membrane and causing cellular destruction.\n   - Enveloped viruses bud through the host cell membrane, acquiring their outer lipid bilayer.\n   Both release mechanisms directly cause host tissue damage, necrosis, cytotoxic inflammation, pyrexia, organ dysfunction, and the observable clinical manifestations of viral infectious disease.\n\n---\n\n### MODULE 4: Selected High-Impact Viral Pathogens: COVID-19, Ebola, and H1N1\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"300\" viewBox=\"0 0 760 300\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"300\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">COMPARATIVE EPIDEMIOLOGY: COVID-19, EBOLA &amp; H1N1</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">COVID-19 (SARS-CoV-2)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Genome:</text><text x=\"55\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Enveloped ssRNA</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Incubation:</text><text x=\"68\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">4 - 6 days (1-14 days)</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Respiratory droplets, fomites</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e3a8a\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">Anosmia, dry cough, ARDS</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Physical distancing (&gt;1 metre)</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Handwash / 68%+ alcohol sanitizer</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Mask wearing &amp; contact tracing</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Utensil separation</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">EBOLA (Filoviridae)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Reservoir:</text><text x=\"60\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Fruit bats (Pteropodidae)</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Spillover:</text><text x=\"58\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Rainforest bushmeat, primates</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Direct bodily fluids, blood</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#7f1d1d\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">Severe haemorrhage, vomiting</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#fee2e2\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Avoid bushmeat / forest carcass</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Full PPE suits &amp; isolation wards</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Strict safe burial protocols</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• 21-day contact surveillance</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"230\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.5\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">H1N1 (Swine Influenza)</text><text x=\"10\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Origin:</text><text x=\"48\" y=\"45\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Swine, avian &amp; human genes</text><text x=\"10\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Reassort:</text><text x=\"58\" y=\"65\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Metamorphosed in pigs</text><text x=\"10\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Vector:</text><text x=\"50\" y=\"85\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Airborne droplets, coughing</text><text x=\"10\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#713f12\">Hallmarks:</text><text x=\"62\" y=\"105\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">Fever, rhinorrhea, myalgia</text><rect x=\"10\" y=\"120\" width=\"200\" height=\"95\" rx=\"4\" fill=\"#fef9c3\"/><text x=\"110\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Prevention Protocol</text><text x=\"15\" y=\"154\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Biosecurity barriers in pig farms</text><text x=\"15\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Avoid crowded gatherings</text><text x=\"15\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Annual vaccine updates</text><text x=\"15\" y=\"202\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\">• Respiratory cough etiquette</text></g></svg>\n</div>\n\n#### 4.1 Coronavirus Disease 2019 (COVID-19)\n- **Causative Agent:** Severe Acute Respiratory Syndrome Coronavirus 2 (SARS-CoV-2), a member of the *Coronaviridae* family, genus *Betacoronavirus*. Structurally, it is an enveloped, positive-sense, single-stranded RNA virus ($+ssRNA$) exhibiting prominent surface glycoprotein spikes yielding a characteristic solar corona appearance under transmission electron microscopy. Phylogenetically related zoonotic human coronaviruses include SARS-CoV-1 (2002–2003 outbreak) and MERS-CoV (Middle East Respiratory Syndrome, camel reservoir).\n- **Incubation Period:** Defined as the temporal duration between initial inhalation/inoculation of the virus and the first emergence of clinical signs. For COVID-19, this interval typically averages **4 to 6 days**, with a full epidemiological latency window ranging from **1 to 14 days**.\n- **Transmission Pathways:**\n  - *Respiratory Droplets & Aerosols:* Inhalation of microscopic respiratory droplets (>5–10 $\\mu$m) and fine aerosol nuclei (<5 $\\mu$m) expelled during coughing, sneezing, talking, shouting, or singing by infected symptomatic or asymptomatic persons.\n  - *Direct Physical Contact:* Handshakes, embracing, and intimate bodily contact transferring infectious viral secretions.\n  - *Fomite Inoculation:* Touching inanimate environmental surfaces (desks, door handles, handrails) contaminated with viable virions, followed by inadvertent self-inoculation of mucosal membranes of the eyes, nose, or mouth.\n- **Clinical Manifestations:**\n  - *Common Symptoms:* Persistent dry cough, pyrexia/fever ($>38.0^\\circ\\text{C}$), severe fatigue, sore throat, headache, ageusia (total loss of taste), and anosmia (sudden, pathognomonic loss of the sense of smell).\n  - *Severe Clinical Complications:* Exertional dyspnea, hypoxemic respiratory failure, bilateral interstitial viral pneumonia with ground-glass opacities, Acute Respiratory Distress Syndrome (ARDS), cytokine storm syndrome, multi-organ failure, hypercoagulability (pulmonary embolism, stroke), and death.\n- **Epidemiological Prevention Protocols:**\n  - Strict physical social distancing of at least 1 to 2 metres (3 to 6 feet) in public gatherings.\n  - Rigorous hand hygiene: washing hands with soap under clean running water for at least 20 seconds, or applying $\\ge 68\\%–75\\%$ alcohol-based hand sanitizers.\n  - Universal public face mask usage covering both the nose and mouth.\n  - Practicing respiratory hygiene: coughing or sneezing into a disposable paper handkerchief (discarded in a closed bin) or into the crook of a flexed elbow.\n  - Avoiding the sharing of personal eating utensils, drinking cups, toothbrushes, and towels.\n  - Rapid case identification, diagnostic RT-PCR testing, active digital contact tracing, and quarantine of exposed individuals.\n\n#### 4.2 Ebola Virus Disease (EVD)\n- **Causative Agent:** Ebola virus (species *Zaire ebolavirus*, genus *Ebolavirus*, family *Filoviridae*). Structurally, it is an enveloped, non-segmented, negative-sense, single-stranded RNA virus ($-ssRNA$) possessing a characteristic filamentous, branched, thread-like or \"shepherd's crook\" morphology.\n- **Natural Reservoir Host:** Wild fruit bats belonging to the *Pteropodidae* family (specifically species *Hypsignathus monstrosus*, *Epomops franqueti*, and *Myonycteris torquata*) carry the virus asymptomatically in wild tropical rainforest ecosystems.\n- **Transmission Pathways:**\n  - *Wildlife Spillover (Zoonotic Entry):* Direct physical contact with, hunting, butchering, preparing, or consuming infected wild forest animals found sick or dead (chimpanzees, gorillas, fruit bats, forest duikers, monkeys, and porcupines) — commonly referred to as \"bushmeat\".\n  - *Human-to-Human Secondary Transmission:* Direct contact through broken skin (micro-abrasions) or mucous membranes with the infectious blood, vomit, watery diarrhea, saliva, urine, sweat, or semen of an infected symptomatic individual or convalescent carrier.\n  - *Fomite Vectoring:* Contact with beddings, clothing, needles, and medical equipment heavily soiled with virulent bodily secretions.\n  - *Traditional Funeral Practices:* Direct, unprotected tactile contact with the highly infectious cadaver of an Ebola victim during traditional funeral preparations and ceremonial corpse washings.\n- **Clinical Manifestations:**\n  Sudden onset of high fever, profound prostration, debilitating myalgia (muscle aches), severe frontal headache, and pharyngitis. Rapidly progresses to severe gastrointestinal collapse with intractable vomiting, watery secretory diarrhea, and abdominal pain. Terminally manifests with coagulopathy, extensive maculopapular rash, acute liver and renal failure, and massive internal and external hemorrhages (bleeding from the gums, mucosal membranes, gastrointestinal tract with hematemesis and melena, and venipuncture sites), culminating in irreversible hypovolemic septic shock and a case fatality rate of 50%–90%.\n- **Epidemiological Containment Protocols:**\n  - Total prohibition of handling, hunting, or consuming dead forest animals and raw bushmeat.\n  - Barrier nursing in specialized negative-pressure biocontainment isolation wards.\n  - Full Personal Protective Equipment (PPE) for healthcare workers: impermeable biohazard coverall suits, fluid-shield surgical hoods, N95/FFP3 respirators, double-layered nitrile gloves, waterproof aprons, and rubber safety boots.\n  - Strict adherence to dignified, safe burial protocols using leak-proof, sealed body bags handled exclusively by trained decontamination teams.\n  - Rigorous 21-day temperature monitoring and epidemiological surveillance of all identified contacts.\n\n#### 4.3 Swine Influenza A (H1N1)\n- **Nature, Origin, and Reassortment:** Swine influenza virus subtype H1N1 belongs to the *Orthomyxoviridae* family. Structurally, it is an enveloped, negative-sense, segmented single-stranded RNA virus featuring 8 distinct viral genome segments and two major immunogenic surface spikes: Hemagglutinin (H1, mediating host sialic acid attachment) and Neuraminidase (N1, mediating viral progeny cleavage and release). The pandemic H1N1/09 strain arose via **genetic reassortment** (antigenic shift) in domestic swine herds, combining genetic segments originating from North American swine influenza, North American avian influenza, human seasonal influenza, and Eurasian swine influenza viruses. Pigs serve as the biological \"mixing vessel\" host because respiratory epithelial cells in pigs express both $\\alpha$-2,3 (avian) and $\\alpha$-2,6 (human) sialic acid receptors.\n- **Modes of Transmission:** Initially transmitted zoonotically from infected domestic swine herds to farm workers through respiratory inhalation of swine secretions or dust, followed by rapid, sustained, and explosive human-to-human transmission through airborne droplet spray, coughing, and hand-to-face fomite transfer across immunologically naive human populations.\n- **Clinical Manifestations:** Acute onset of pyrexia/fever ($>38.5^\\circ\\text{C}$), severe paroxysmal cough, sore throat, profuse rhinorrhea (runny nose), body chills, debilitating generalized muscular aches (myalgia), headache, physical prostration, and prominent gastrointestinal symptoms including nausea, vomiting, and diarrhea.\n- **Prevention and Control Protocols:**\n  - Installation of strict biosecurity barriers on commercial pig farms, reducing occupational exposure and preventing wild bird contamination of swine feed and water supplies.\n  - Isolation and barrier nursing of febrile patients presenting with acute respiratory distress.\n  - Public crowd avoidance, wearing particulate surgical masks, and practicing strict respiratory cough etiquette.\n  - Annual seasonal influenza vaccination formulated with contemporary, antigenically updated H1N1 vaccine seed strains.\n\n---\n\n### MODULE 5: Comprehensive Compendium of Human and Animal Viral Diseases\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLINICAL TAXONOMY: VIRAL TRANSMISSION MODES &amp; TARGET ORGANS</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">MEASLES &amp; CHICKENPOX</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Mode: Airborne droplet inhalation</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Measles: Koplik spots &amp; skin rash</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Chickenpox: Itchy vesicular blisters</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Control: Childhood MMR / VZV Vaccines</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">RABIES (Hydrophobia)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Mode: Transcutaneous bite/scratch</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Vector: Infected dog or bat saliva</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7f1d1d\">• Symptoms: Nervousness, spasms</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\">Control: Dog Immunization &amp; PEP</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#22c55e\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HEPATITIS B (Liver Virus)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Mode: Blood, sexual, vertical</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Symptoms: Scleral jaundice, nausea</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Sequelae: Liver cirrhosis &amp; cancer</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Control: Hep-B Vaccine, Safe sex</text></g><g transform=\"translate(25, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">POLIOMYELITIS (Enterovirus)</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Mode: Fecal-oral water contamination</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Target: Anterior horn motor neurons</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Effect: Irreversible flaccid paralysis</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">Control: OPV / IPV Infant Vaccination</text></g><g transform=\"translate(270, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#a855f7\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">MUMPS &amp; INFLUENZA</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Mumps: Swelling of parotid glands</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Potential orchitis &amp; pancreatitis</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Flu: High fever, sweating sickness</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#6b21a8\">Control: MMR Vaccine, Cough Etiquette</text></g><g transform=\"translate(515, 190)\"><rect width=\"220\" height=\"130\" rx=\"6\" fill=\"#f5f5f4\" stroke=\"#78716c\" stroke-width=\"1.2\"/><text x=\"110\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#44403c\" text-anchor=\"middle\">NEWCASTLE &amp; BIRD FLU</text><text x=\"10\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Target: Domestic poultry flocks</text><text x=\"10\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Newcastle: Sneezing, loss of voice</text><text x=\"10\" y=\"74\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#292524\">• Bird Flu: Cyanosis of comb &amp; death</text><text x=\"10\" y=\"94\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#44403c\">Control: Timely Vaccines &amp; Biosecurity</text></g></svg>\n</div>\n\n| Disease Entity | Causative Viral Agent & Family | Clinical Symptomatology & Target Organs | Primary Transmission Mode | Standard Prevention & Public Health Control |\n| :--- | :--- | :--- | :--- | :--- |\n| **Measles (Rubeola)** | *Measles morbillivirus* (Paramyxoviridae; $-ssRNA$, enveloped) | High fever, coryza, cough, conjunctivitis, pathognomonic **Koplik's spots** on buccal mucosa, followed by cephalocaudal maculopapular rash. | Inhalation of infectious airborne respiratory droplets; direct contact. | Routine childhood vaccination with two doses of Measles-Rubella (MR) vaccine; isolation of cases. |\n| **Mumps (Epidemic Parotitis)** | *Mumps orthorubulavirus* (Paramyxoviridae; $-ssRNA$, enveloped) | Painful bilateral or unilateral swelling of the parotid salivary glands, fever, headache; complications: orchitis, oophoritis, pancreatitis, hearing loss. | Inhalation of airborne droplets and direct saliva contact from infected individuals. | Routine childhood MMR/MR vaccination; isolation during active parotid swelling period. |\n| **Common Cold (Viral Rhinitis)** | *Human Rhinoviruses* (>50%), Coronaviruses, Adenoviruses (Picornaviridae, etc.) | Sneezing, nasal congestion, profuse watery rhinorrhea, scratchy sore throat, low-grade fever, malaise. | Airborne droplet inhalation; hand-to-nose or hand-to-eye contact after touching fomites. | Handwashing with soap, covering mouth/nose when sneezing, rest, hydration, and symptom relief. |\n| **Chickenpox (Varicella)** | *Varicella-Zoster Virus* (VZV; Human alphaherpesvirus 3; dsDNA) | Pruritic, generalized, polymorphic rash progressing from macules to papules, clear fluid vesicles (**\"dewdrops on rose petals\"**), and crusts; fever. | Inhalation of infectious respiratory droplets; direct contact with fluid from cutaneous vesicles. | Varicella live-attenuated vaccine; strict isolation until all cutaneous vesicles have crusted over. |\n| **Influenza (\"Sweating Sickness\")** | *Influenza viruses A, B, and C* (Orthomyxoviridae; segmented $-ssRNA$) | Sudden onset of high fever, rigors, drenching sweats, acute frontal headache, extreme prostration, and debilitating myalgia. | Airborne droplet nuclei from coughing/sneezing; hand-to-mucosa fomite transmission. | Annual trivalent/quadrivalent influenza vaccination, respiratory hygiene, and antiviral therapy (oseltamivir). |\n| **Poliomyelitis (Infantile Paralysis)** | *Poliovirus* types 1, 2, and 3 (Picornaviridae; $+ssRNA$, non-enveloped) | Fever, stiff neck, spinal stiffness; virus targets and lyses anterior horn motor neurons, causing asymmetric flaccid paralysis of limbs and diaphragm. | Fecal-oral route via ingestion of food or water contaminated with infected human feces. | Universal infant immunization using Oral Polio Vaccine (OPV) and Inactivated Polio Vaccine (IPV); sanitation. |\n| **Rabies (Hydrophobia)** | *Rabies lyssavirus* (Rhabdoviridae; bullet-shaped $-ssRNA$, enveloped) | Paresthesia at bite site, extreme anxiety, agitation, painful pharyngeal muscle spasms when attempting to swallow liquids (**hydrophobia**), autonomic failure, coma; ~100% fatal once clinical symptoms emerge. | Transcutaneous bite, scratch, or open-skin saliva contamination from an infected rabid mammal (dogs, bats, cats). | Mass annual immunization of domestic dogs/cats, immediate wound flushing with soap and water for 15 min, and urgent Post-Exposure Prophylaxis (PEP: vaccine + rabies immunoglobulin). |\n| **Hepatitis B** | *Hepatitis B virus* (HBV; Hepadnaviridae; partially dsDNA, enveloped) | Hepatocyte inflammation, deep scleral and cutaneous jaundice, dark tea-colored urine, clay-colored stools, fatigue; leads to liver cirrhosis and hepatocellular carcinoma. | Parenteral contact with infected blood, unsterilized needles/tattoos, unprotected sexual intercourse, and vertical transmission during childbirth. | Infant Hepatitis B vaccine series (pentavalent vaccine), blood donor screening, safe injection practices, and barrier contraception. |\n| **Newcastle Disease (Avian Pneumoencephalitis)** | *Avian orthoavulavirus 1* (Paramyxoviridae; $-ssRNA$, enveloped) | Devastating poultry disease: gasping, coughing, voice loss, greenish watery diarrhea, drop in egg production, twisted neck (**torticollis**), leg/wing paralysis, and up to 100% flock mortality. | Highly contagious via aerosol droplets, contaminated drinking water/feed, infected poultry droppings, and farm fomites. | Scheduled live-attenuated and inactivated vaccines (e.g., Hitchner B1, LaSota), farm biosecurity, and culling of infected flocks. |\n| **Avian Influenza (Bird Flu)** | *Avian Influenza Type A* (e.g., H5N1, H7N9; Orthomyxoviridae; segmented $-ssRNA$) | In Birds: cyanosis of comb/wattles, facial oedema, internal petechiae, sudden mass mortality. In Humans: severe viral pneumonia, high fever, and multi-organ failure. | Direct contact with infected wild aquatic waterfowl droppings, infected poultry, or contaminated farm machinery. | Rapid culling of exposed flocks, strict agricultural quarantine, PPE for poultry handlers, and surveillance. |\n\n---\n\n### MODULE 6: Quantitative Clinical Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Clinical Nutritional Anthropometry & Differential Diagnosis (Kwashiorkor vs. Marasmus in a Northern Ghana Health Centre)\n**Clinical / Field Scenario:**\nAt the Tamale West Hospital Pediatric Outpatient Clinic, two 18-month-old infants are brought in by their mothers presenting with severe growth faltering.\n- **Child A (Kofi):** Weighs 7.2 kg (expected: 11.5 kg). Physical examination reveals severe bilateral pitting oedema of the feet, lower legs, and hands, an enlarged distended abdomen, pale copper-reddish hair that is thin and easily detached, hyperpigmented desquamating skin patches on the thighs, and an enlarged smooth liver palpable 3 cm below the right costal margin. His mother states that since weaning at 7 months, Kofi's sole daily diet has been diluted fermented corn dough porridge (*koko*) sweetened with table sugar.\n- **Child B (Aminu):** Weighs 5.1 kg (expected: 11.5 kg). Physical examination reveals extreme somatic emaciation, complete disappearance of subcutaneous fat stores over the arms, thorax, and gluteal buttocks (loose folds of skin hanging like \"baggy trousers\"), sunken eyeballs with prominent zygomatic facial bones giving a \"wizened old man\" countenance, and visible prominent ribs. Aminu has no oedema, and his mother notes he demands food aggressively.\n\n**(a)** Provide the definitive scientific diagnosis for Child A and Child B, citing two distinct clinical hallmark signs for each infant.\n**(b)** Explain the biochemical mechanism responsible for the bilateral dependent pitting oedema and hepatomegaly observed exclusively in Child A.\n**(c)** Calculate the percentage of expected body weight for Child A and Child B, and outline the phased nutritional rehabilitation protocol for both children.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Clinical Differential Diagnosis:\n- Child A: Kwashiorkor (Severe Acute Protein Malnutrition). Hallmark signs: (1) Bilateral dependent pitting oedema (feet/legs); (2) Dyspigmented copper-red hair (flag sign) and flaky-paint dermatosis, accompanied by hepatomegaly.\n- Child B: Nutritional Marasmus (Severe Energy-Protein Starvation). Hallmark signs: (1) Severe, generalized somatic muscle wasting and loss of subcutaneous fat with redundant hanging skin folds; (2) Wizened 'old man' senile facial appearance with prominent sunken eyes and prominent ribs, in the total absence of oedema.\n\nStep 2: Biochemical Pathophysiological Mechanism for Child A:\n- Bilateral Dependent Pitting Oedema: In Kwashiorkor, prolonged dietary absence of essential amino acids severely impairs hepatic synthesis of plasma proteins, specifically serum albumin. Serum albumin drops below normal physiological concentrations (<20 g/L, hypoalbuminemia). According to Starling's forces of capillary dynamics, the intravascular plasma colloid oncotic pressure drops dramatically below the hydrostatic filtration pressure. Consequently, fluid cannot return to the venous end of capillaries and accumulates in the interstitial tissue spaces as dependent pitting oedema.\n- Hepatomegaly (Fatty Liver): The dietary excess of carbohydrates in corn porridge provides continuous glucose, which the liver converts into triglycerides via lipogenesis. However, because protein is absent, the hepatocytes cannot synthesize Apolipoprotein B-100, which is necessary to package triglycerides into Very Low-Density Lipoproteins (VLDL) for export. Triglycerides become trapped inside hepatocytes, causing diffuse steatosis and liver enlargement (hepatomegaly).\n\nStep 3: Quantitative Anthropometric Calculations:\n- Percentage of Expected Weight for Child A (Kofi):\n  $$\\text{Weight Deficit Ratio} = \\frac{\\text{Actual Weight}}{\\text{Expected Weight}} \\times 100 = \\frac{7.2\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 62.61\\%$$\n  (Note: Even this 62.6% is falsely elevated due to retained oedematous fluid mass; dry body mass is significantly lower).\n- Percentage of Expected Weight for Child B (Aminu):\n  $$\\text{Weight Deficit Ratio} = \\frac{5.1\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 44.35\\%$$\n  (Classified as severe acute malnutrition with >55% total weight deficit).\n\nStep 4: Phased Clinical Nutritional Rehabilitation Protocol:\n- Phase 1: Stabilization (Days 1–7): Treat or prevent hypoglycemia and hypothermia; correct fluid and electrolyte imbalances (using ResoMal — Rehydration Solution for Malnutrition, avoiding high sodium which triggers fatal heart failure); initiate cautious, low-protein, low-lactose therapeutic milk (WHO F-75 formula providing 75 kcal/100 mL and 0.9 g protein/100 mL) administered in small, frequent feeds.\n- Phase 2: Rehabilitation / Catch-Up Growth (Weeks 2–6): Transition to high-energy, high-protein formula (WHO F-100 providing 100 kcal/100 mL and 2.9 g protein/100 mL) or Ready-to-Use Therapeutic Food (RUTF, lipid-based peanut paste enriched with milk powder, vitamins, and minerals); gradually introduce local protein-dense complementary foods: blended beans, groundnut paste, egg yolk, and fish powder.\n- Phase 3: Follow-Up & Maternal Education: Comprehensive maternal guidance on food diversification, prolonged breastfeeding, complementary protein mixing (cereals + legumes), and growth monitoring.\n\n---\n\n#### Worked Example 2: Quantitative Micronutrient Prophylaxis & Biochemical Pathophysiology (Iodine & Vitamin A Intervention in Ghana)\n**Clinical / Field Scenario:**\nA public health survey conducted by the Ghana Health Service in a rural district assessed the nutritional micronutrient status of 2,000 junior high school students.\n- Analysis of household culinary salt samples indicated that 40% of the households consumed unfortified, raw crystalline sea salt containing 0 mg/kg potassium iodate ($KIO_3$), while 60% consumed adequately iodated table salt containing 40 mg/kg potassium iodate.\n- A clinical screening of 500 boarding students revealed that 65 students exhibited visible or palpable thyroid enlargement (Goitre), while 35 students reported difficulty seeing in dim light after sunset (Night Blindness) and showed conjunctival dryness.\n\n**(a)** Calculate the prevalence rate (%) of: (1) Goitre; (2) Clinical Night Blindness among the screened students.\n**(b)** Explain the molecular feedback mechanism through which lack of dietary iodine causes thyroid gland follicular cell hypertrophy (Goitre).\n**(c)** If an adolescent consumes 5.0 grams of the fortified table salt daily (containing 40 mg $KIO_3$ per kg of salt), calculate the daily intake of potassium iodate ($KIO_3$) in micrograms ($\\mu g$). Given that the molecular mass of $KIO_3$ is 214 g/mol and the atomic mass of Iodine is 127 g/mol, determine the actual elemental iodine delivered daily, and compare it against the WHO recommended adolescent daily allowance of 150 $\\mu g$.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Calculate Clinical Prevalence Rates:\n- Prevalence of Goitre:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Goitre Cases}}{\\text{Total Screened}} \\times 100 = \\frac{65}{500} \\times 100 = 13.0\\%$$\n  (A goitre prevalence of 13.0% indicates a severe public health endemicity requiring mandatory universal salt iodization enforcement).\n- Prevalence of Clinical Night Blindness:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Night Blindness Cases}}{\\text{Total Screened}} \\times 100 = \\frac{35}{500} \\times 100 = 7.0\\%$$\n  (Significantly exceeds the WHO public health problem threshold of 1.0%, indicating urgent need for high-potency Vitamin A distribution).\n\nStep 2: Molecular Endocrine Feedback Mechanism for Goitre Formation:\n1. Dietary Iodine ($I^-$) is absorbed and concentrated into the thyroid gland via the Sodium-Iodide Symporter (NIS).\n2. Inside thyroid follicles, thyroid peroxidase (TPO) incorporates iodine into tyrosine residues on thyroglobulin to synthesize monoiodotyrosine (MIT) and diiodotyrosine (DIT), which couple to produce thyroxine ($T_4$) and triiodothyronine ($T_3$).\n3. In dietary iodine deficiency, circulating free $T_4$ and $T_3$ levels drop.\n4. Decreased circulating $T_4$ removes the negative feedback inhibition exerted on the anterior pituitary gland and hypothalamus.\n5. The pituitary gland responds by hypersecreting Thyroid-Stimulating Hormone (TSH).\n6. Chronic elevated TSH binds to TSH receptors on thyroid follicular cells, stimulating accelerated cellular hypertrophy (cell enlargement) and follicular hyperplasia (cell multiplication) to scavenge every trace of available iodine, resulting in visible enlargement of the thyroid gland (Goitre).\n\nStep 3: Quantitative Salt Iodization & Elemental Iodine Delivery Calculation:\n- Daily Potassium Iodate ($KIO_3$) Ingested:\n  Salt consumption = 5.0 g = 0.005 kg of salt.\n  Fortification level = 40 mg $KIO_3$ per 1.0 kg of salt.\n  $$\\text{Daily } KIO_3 = 0.005\\text{ kg} \\times 40\\text{ mg/kg} = 0.20\\text{ mg} = 200\\text{ }\\mu g\\text{ of } KIO_3$$\n- Daily Elemental Iodine ($I$) Yield:\n  Molecular mass of $KIO_3 = 39\\text{ (K)} + 127\\text{ (I)} + 3 \\times 16\\text{ (O)} = 214\\text{ g/mol}$.\n  Fraction of elemental Iodine in $KIO_3 = \\frac{127}{214} = 0.59345$ (or 59.35%).\n  $$\\text{Daily Elemental Iodine} = 200\\text{ }\\mu g \\times 0.59345 = 118.69\\text{ }\\mu g$$\n- Comparison with WHO Adolescent Standard:\n  The adolescent daily allowance is 150 $\\mu g$. The 5.0 g of table salt yields ~118.7 $\\mu g$ (approximately 79.1% of the daily allowance), with the remainder easily met through dietary sea fish, cow's milk, or eggs, effectively preventing endemic goitre.\n\n---\n\n#### Worked Example 3: Epidemiological Transmission Dynamics & Herd Immunity Calculation (COVID-19 Outbreak in an Educational Institution)\n**Clinical / Field Scenario:**\nDuring a term in an Accra boarding secondary school with an unimmunized student population of $N = 1,200$, a student index case contracts COVID-19 (SARS-CoV-2) following an off-campus family event.\n- The index case attends classes and dining halls while pre-symptomatic for 3 days. Over an initial transmission generation cycle of 5 days, 4 primary contacts are infected. Each primary contact subsequently infects an average of 4 secondary contacts in the absence of public health interventions.\n- The basic reproduction number for the circulating viral variant is calculated as $R_0 = 4.0$.\n\n**(a)** Distinguish between the **incubation period** and the **infectious period** of COVID-19.\n**(b)** Calculate the theoretical total number of infected individuals at the end of the 3rd transmission generation cycle if transmission remains unmitigated.\n**(c)** Define the **Herd Immunity Threshold ($HIT$)**, and calculate the minimum percentage of the student population that must be successfully vaccinated to interrupt sustained community transmission of this viral variant ($R_0 = 4.0$).\n**(d)** List four non-pharmaceutical interventions (NPIs) that the school administration must immediately enforce to reduce the effective reproduction number ($R_e$) below 1.0.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Distinguish Incubation vs. Infectious Period:\n- Incubation Period: The time interval elapsed between initial exposure and viral entry into the host and the first manifestation of clinical symptoms or observable diagnostic signs (averages 4 to 6 days for COVID-19, with a range of 1 to 14 days).\n- Infectious Period: The time window during which an infected host sheds viable, replication-competent virions into the environment (via respiratory droplets/aerosols) and is capable of transmitting the pathogen to a susceptible contact (begins 1–2 days prior to symptom onset and lasts up to 8–10 days in mild-to-moderate cases).\n\nStep 2: Calculate Spread across Transmission Generations:\n- Generation 0 (Index Case): $I_0 = 1$\n- Generation 1: $I_1 = I_0 \\times R_0 = 1 \\times 4 = 4$\n- Generation 2: $I_2 = I_1 \\times R_0 = 4 \\times 4 = 16$\n- Generation 3: $I_3 = I_2 \\times R_0 = 16 \\times 4 = 64$\n- Cumulative Total Number of Infected Persons after Generation 3:\n  $$\\text{Total Cumulative Infections} = I_0 + I_1 + I_2 + I_3 = 1 + 4 + 16 + 64 = 85\\text{ individuals}$$\n\nStep 3: Calculate the Herd Immunity Threshold ($HIT$):\n- Definition: The minimum proportion of a population that must possess protective immunity (via vaccination or prior infection) such that the pathogen cannot achieve sustained chains of transmission, thereby indirectly shielding remaining susceptible individuals.\n- Mathematical Formula:\n  $$HIT = 1 - \\frac{1}{R_0}$$\n- Calculation for $R_0 = 4.0$:\n  $$HIT = 1 - \\frac{1}{4.0} = 1 - 0.25 = 0.75 = 75\\%$$\n- Application to School Population:\n  To achieve herd immunity, at least 75% of the 1,200 students ($0.75 \\times 1,200 = 900\\text{ students}$) must be fully vaccinated.\n\nStep 4: Immediate Non-Pharmaceutical Interventions (NPIs) to Drive $R_e < 1.0$:\n1. Rapid Case Isolation: Immediate removal and clinical isolation of all symptomatic individuals in a designated sickbay ward.\n2. Digital & Manual Contact Tracing: Identification and strict 10-day quarantine of all primary desk-mates and dorm-mates.\n3. Universal Mask Mandate: Compulsory indoor wearing of multi-layered medical/surgical masks covering both mouth and nose to reduce aerosol emission.\n4. Classroom Environmental Ventilation & Social Distancing: Opening all windows to increase cross-ventilation air exchanges (>6 air changes/hr) and spacing student desks $\\ge 1.5\\text{ metres}$ apart.\n\n---\n\n#### Worked Example 4: Zoonotic Spillover Biohazard Modeling & Chain of Transmission Interruption (Ebola Outbreak Containment Protocol)\n**Clinical / Field Scenario:**\nAn outbreak of Ebola Virus Disease (EVD) is detected in a forest border community following the consumption of a fruit bat carcass recovered by local hunters.\n- An index patient develops acute fever, severe hematemesis (vomiting blood), and profuse diarrhea. A relative nursing the patient at home without protective barriers and two community elders who participated in traditional unprotective washings of the patient's corpse contract the infection.\n- The local public health response team establishes an Emergency Operations Centre to contain the epidemic.\n\n**(a)** Identify the primary natural reservoir host of Ebola virus and describe the initial zoonotic spillover pathway into human populations.\n**(b)** Construct the complete direct human-to-human chain of transmission for this scenario, identifying the primary infectious biological vectors.\n**(c)** The field medical team prepares 0.5% (5,000 ppm) Sodium Hypochlorite (chlorine bleach) solution for environmental surface disinfection and cadaver decontamination from a commercial stock solution containing 5.0% sodium hypochlorite. Calculate the exact volume of water that must be added to 2.0 Litres of the 5.0% bleach stock to prepare the 0.5% disinfectant solution.\n**(d)** Outline the four cardinal pillars of the World Health Organization (WHO) Ebola Infection Prevention and Control (IPC) protocol required to terminate this outbreak.\n\n**Detailed Step-by-Step Solution & Scientific Formulation:**\nStep 1: Identify Reservoir & Spillover Pathway:\n- Natural Reservoir Host: Fruit bats belonging to the family *Pteropodidae* (e.g., *Hypsignathus monstrosus*, *Epomops franqueti*).\n- Zoonotic Spillover Mechanism: The Ebola virus circulates asymptomatically within bat colonies. When wild forest animals (primates, duikers) or human hunters come into direct contact with bat saliva, urine, or birthing fluids on dropped forest fruits, or when humans hunt, butcher, and handle raw bushmeat carcasses, the virus enters through micro-abrasions in the skin or mucous membranes.\n\nStep 2: Construct Human-to-Human Chain of Transmission:\n1. Primary Source: Index patient actively shedding ultra-high viral titers ($>10^7$ virions/mL) in blood, vomit, diarrhea, and sweat.\n2. Transmission Route 1 (Home Caregiver): Direct cutaneous/mucosal contact with vomitus and diarrheal fluids while nursing without gloves and protective clothing.\n3. Transmission Route 2 (Traditional Burial Washers): Direct skin contact with the virulent mucosal membranes, fluids, and blood of the deceased patient during traditional ceremonial body washing.\n4. Target Hosts: Family members, funeral attendees, and healthcare workers lacking barrier protection.\n\nStep 3: Disinfectant Dilution Calculation (Bleach Solution for Biohazards):\n- Using the volumetric dilution formula:\n  $$C_1 \\times V_1 = C_2 \\times V_2$$\n  Where:\n  - $C_1 = 5.0\\%$ (Initial concentration of commercial bleach)\n  - $V_1 = 2.0\\text{ Litres}$ (Volume of commercial bleach)\n  - $C_2 = 0.5\\%$ (Desired concentration for decontamination of body fluid spills and cadaver bags)\n  - $V_2 = \\text{Total final volume of diluted solution}$\n- Solve for $V_2$:\n  $$V_2 = \\frac{C_1 \\times V_1}{C_2} = \\frac{5.0\\% \\times 2.0\\text{ L}}{0.5\\%} = \\frac{10.0}{0.5} = 20.0\\text{ Litres}$$\n- Volume of Water to Add ($\\Delta V$):\n  $$\\Delta V = V_2 - V_1 = 20.0\\text{ L} - 2.0\\text{ L} = 18.0\\text{ Litres of clean water}$$\n  (Add 18.0 Litres of water to 2.0 Litres of 5.0% bleach to produce 20.0 Litres of 0.5% active chlorine disinfectant).\n\nStep 4: The Four Cardinal Pillars of WHO Ebola Containment Protocol:\n1. Immediate Strict Isolation & Barrier Nursing: House patients exclusively in dedicated negative-pressure Ebola Treatment Centres (ETCs) with strict one-way biocontainment flow corridors and full PPE suits.\n2. Safe and Dignified Burials: Complete suspension of traditional bodily washing; deceased corpses are immediately disinfected with 0.5% chlorine, placed into double hermetically sealed body bags, and buried immediately by trained, fully protected burial teams.\n3. Exhaustive Contact Tracing & 21-Day Quarantine: Identify 100% of direct and secondary contacts; monitor their body temperature twice daily for 21 days (the maximum incubation period of Ebola); immediately isolate any contact who develops fever ($>38.0^\\circ\\text{C}$).\n4. Community Engagement & Bushmeat Prohibition: Educational mobilization of chiefs, religious leaders, and youth to demystify hospital care and prohibit the hunting, sale, and consumption of wild bushmeat.\n\n---\n\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
         "id": "ex_b7_s16_1",
-        "questionPrompt": "A community health nurse in a rural clinic examines two malnourished children: Child A is severely emaciated with skin tightly stretched over bones and an old-man face. Child B has swollen legs, an enlarged distended abdomen, pale thinned reddish hair, and skin lesions. Diagnose the specific condition of each child.",
-        "stepByStepSolution": "Child A Diagnosis: Marasmus — Caused by severe total dietary deficiency of both energy calories (carbohydrates/fats) and proteins. The body breaks down its own muscle and subcutaneous fat, leaving a completely emaciated skeletal appearance.\nChild B Diagnosis: Kwashiorkor — Caused by severe protein deficiency while consuming starchy carbohydrates. Low blood albumin causes fluid leakage into abdominal tissues (edema/ascites), causing the characteristic swollen belly and extremities, alongside depigmented hair and dermatitis.",
-        "examinerTip": "Examiner Tip: Remember: Kwashiorkor = protein deficiency with swollen belly (edema); Marasmus = total calorie/protein starvation with skeletal wasting."
+        "questionPrompt": "At the Tamale West Hospital Pediatric Outpatient Clinic, two 18-month-old infants are brought in by their mothers presenting with severe growth faltering.\n- **Child A (Kofi):** Weighs 7.2 kg (expected: 11.5 kg). Physical examination reveals severe bilateral pitting oedema of the feet, lower legs, and hands, an enlarged distended abdomen, pale copper-reddish hair that is thin and easily detached, hyperpigmented desquamating skin patches on the thighs, and an enlarged smooth liver palpable 3 cm below the right costal margin. His mother states that since weaning at 7 months, Kofi's sole daily diet has been diluted fermented corn dough porridge (*koko*) sweetened with table sugar.\n- **Child B (Aminu):** Weighs 5.1 kg (expected: 11.5 kg). Physical examination reveals extreme somatic emaciation, complete disappearance of subcutaneous fat stores over the arms, thorax, and gluteal buttocks (loose folds of skin hanging like \"baggy trousers\"), sunken eyeballs with prominent zygomatic facial bones giving a \"wizened old man\" countenance, and visible prominent ribs. Aminu has no oedema, and his mother notes he demands food aggressively.\n\n**(a)** Provide the definitive scientific diagnosis for Child A and Child B, citing two distinct clinical hallmark signs for each infant.\n**(b)** Explain the biochemical mechanism responsible for the bilateral dependent pitting oedema and hepatomegaly observed exclusively in Child A.\n**(c)** Calculate the percentage of expected body weight for Child A and Child B, and outline the phased nutritional rehabilitation protocol for both children.",
+        "stepByStepSolution": "Step 1: Clinical Differential Diagnosis:\n- Child A: Kwashiorkor (Severe Acute Protein Malnutrition). Hallmark signs: (1) Bilateral dependent pitting oedema (feet/legs); (2) Dyspigmented copper-red hair (flag sign) and flaky-paint dermatosis, accompanied by hepatomegaly.\n- Child B: Nutritional Marasmus (Severe Energy-Protein Starvation). Hallmark signs: (1) Severe, generalized somatic muscle wasting and loss of subcutaneous fat with redundant hanging skin folds; (2) Wizened 'old man' senile facial appearance with prominent sunken eyes and prominent ribs, in the total absence of oedema.\nStep 2: Biochemical Pathophysiological Mechanism for Child A:\n- Bilateral Dependent Pitting Oedema: In Kwashiorkor, prolonged dietary absence of essential amino acids severely impairs hepatic synthesis of plasma proteins, specifically serum albumin. Serum albumin drops below normal physiological concentrations (<20 g/L, hypoalbuminemia). According to Starling's forces of capillary dynamics, the intravascular plasma colloid oncotic pressure drops dramatically below the hydrostatic filtration pressure. Consequently, fluid cannot return to the venous end of capillaries and accumulates in the interstitial tissue spaces as dependent pitting oedema.\n- Hepatomegaly (Fatty Liver): The dietary excess of carbohydrates in corn porridge provides continuous glucose, which the liver converts into triglycerides via lipogenesis. However, because protein is absent, the hepatocytes cannot synthesize Apolipoprotein B-100, which is necessary to package triglycerides into Very Low-Density Lipoproteins (VLDL) for export. Triglycerides become trapped inside hepatocytes, causing diffuse steatosis and liver enlargement (hepatomegaly).\nStep 3: Quantitative Anthropometric Calculations:\n- Percentage of Expected Weight for Child A (Kofi):\n  $$\\text{Weight Deficit Ratio} = \\frac{\\text{Actual Weight}}{\\text{Expected Weight}} \\times 100 = \\frac{7.2\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 62.61\\%$$\n  (Note: Even this 62.6% is falsely elevated due to retained oedematous fluid mass; dry body mass is significantly lower).\n- Percentage of Expected Weight for Child B (Aminu):\n  $$\\text{Weight Deficit Ratio} = \\frac{5.1\\text{ kg}}{11.5\\text{ kg}} \\times 100 = 44.35\\%$$\n  (Classified as severe acute malnutrition with >55% total weight deficit).\nStep 4: Phased Clinical Nutritional Rehabilitation Protocol:\n- Phase 1: Stabilization (Days 1–7): Treat or prevent hypoglycemia and hypothermia; correct fluid and electrolyte imbalances (using ResoMal — Rehydration Solution for Malnutrition, avoiding high sodium which triggers fatal heart failure); initiate cautious, low-protein, low-lactose therapeutic milk (WHO F-75 formula providing 75 kcal/100 mL and 0.9 g protein/100 mL) administered in small, frequent feeds.\n- Phase 2: Rehabilitation / Catch-Up Growth (Weeks 2–6): Transition to high-energy, high-protein formula (WHO F-100 providing 100 kcal/100 mL and 2.9 g protein/100 mL) or Ready-to-Use Therapeutic Food (RUTF, lipid-based peanut paste enriched with milk powder, vitamins, and minerals); gradually introduce local protein-dense complementary foods: blended beans, groundnut paste, egg yolk, and fish powder.\n- Phase 3: Follow-Up & Maternal Education: Comprehensive maternal guidance on food diversification, prolonged breastfeeding, complementary protein mixing (cereals + legumes), and growth monitoring.",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s16_2",
+        "questionPrompt": "A public health survey conducted by the Ghana Health Service in a rural district assessed the nutritional micronutrient status of 2,000 junior high school students.\n- Analysis of household culinary salt samples indicated that 40% of the households consumed unfortified, raw crystalline sea salt containing 0 mg/kg potassium iodate ($KIO_3$), while 60% consumed adequately iodated table salt containing 40 mg/kg potassium iodate.\n- A clinical screening of 500 boarding students revealed that 65 students exhibited visible or palpable thyroid enlargement (Goitre), while 35 students reported difficulty seeing in dim light after sunset (Night Blindness) and showed conjunctival dryness.\n\n**(a)** Calculate the prevalence rate (%) of: (1) Goitre; (2) Clinical Night Blindness among the screened students.\n**(b)** Explain the molecular feedback mechanism through which lack of dietary iodine causes thyroid gland follicular cell hypertrophy (Goitre).\n**(c)** If an adolescent consumes 5.0 grams of the fortified table salt daily (containing 40 mg $KIO_3$ per kg of salt), calculate the daily intake of potassium iodate ($KIO_3$) in micrograms ($\\mu g$). Given that the molecular mass of $KIO_3$ is 214 g/mol and the atomic mass of Iodine is 127 g/mol, determine the actual elemental iodine delivered daily, and compare it against the WHO recommended adolescent daily allowance of 150 $\\mu g$.",
+        "stepByStepSolution": "Step 1: Calculate Clinical Prevalence Rates:\n- Prevalence of Goitre:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Goitre Cases}}{\\text{Total Screened}} \\times 100 = \\frac{65}{500} \\times 100 = 13.0\\%$$\n  (A goitre prevalence of 13.0% indicates a severe public health endemicity requiring mandatory universal salt iodization enforcement).\n- Prevalence of Clinical Night Blindness:\n  $$\\text{Prevalence} = \\frac{\\text{Number of Night Blindness Cases}}{\\text{Total Screened}} \\times 100 = \\frac{35}{500} \\times 100 = 7.0\\%$$\n  (Significantly exceeds the WHO public health problem threshold of 1.0%, indicating urgent need for high-potency Vitamin A distribution).\nStep 2: Molecular Endocrine Feedback Mechanism for Goitre Formation:\n1. Dietary Iodine ($I^-$) is absorbed and concentrated into the thyroid gland via the Sodium-Iodide Symporter (NIS).\n2. Inside thyroid follicles, thyroid peroxidase (TPO) incorporates iodine into tyrosine residues on thyroglobulin to synthesize monoiodotyrosine (MIT) and diiodotyrosine (DIT), which couple to produce thyroxine ($T_4$) and triiodothyronine ($T_3$).\n3. In dietary iodine deficiency, circulating free $T_4$ and $T_3$ levels drop.\n4. Decreased circulating $T_4$ removes the negative feedback inhibition exerted on the anterior pituitary gland and hypothalamus.\n5. The pituitary gland responds by hypersecreting Thyroid-Stimulating Hormone (TSH).\n6. Chronic elevated TSH binds to TSH receptors on thyroid follicular cells, stimulating accelerated cellular hypertrophy (cell enlargement) and follicular hyperplasia (cell multiplication) to scavenge every trace of available iodine, resulting in visible enlargement of the thyroid gland (Goitre).\nStep 3: Quantitative Salt Iodization & Elemental Iodine Delivery Calculation:\n- Daily Potassium Iodate ($KIO_3$) Ingested:\n  Salt consumption = 5.0 g = 0.005 kg of salt.\n  Fortification level = 40 mg $KIO_3$ per 1.0 kg of salt.\n  $$\\text{Daily } KIO_3 = 0.005\\text{ kg} \\times 40\\text{ mg/kg} = 0.20\\text{ mg} = 200\\text{ }\\mu g\\text{ of } KIO_3$$\n- Daily Elemental Iodine ($I$) Yield:\n  Molecular mass of $KIO_3 = 39\\text{ (K)} + 127\\text{ (I)} + 3 \\times 16\\text{ (O)} = 214\\text{ g/mol}$.\n  Fraction of elemental Iodine in $KIO_3 = \\frac{127}{214} = 0.59345$ (or 59.35%).\n  $$\\text{Daily Elemental Iodine} = 200\\text{ }\\mu g \\times 0.59345 = 118.69\\text{ }\\mu g$$\n- Comparison with WHO Adolescent Standard:\n  The adolescent daily allowance is 150 $\\mu g$. The 5.0 g of table salt yields ~118.7 $\\mu g$ (approximately 79.1% of the daily allowance), with the remainder easily met through dietary sea fish, cow's milk, or eggs, effectively preventing endemic goitre.",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s16_3",
+        "questionPrompt": "During a term in an Accra boarding secondary school with an unimmunized student population of $N = 1,200$, a student index case contracts COVID-19 (SARS-CoV-2) following an off-campus family event.\n- The index case attends classes and dining halls while pre-symptomatic for 3 days. Over an initial transmission generation cycle of 5 days, 4 primary contacts are infected. Each primary contact subsequently infects an average of 4 secondary contacts in the absence of public health interventions.\n- The basic reproduction number for the circulating viral variant is calculated as $R_0 = 4.0$.\n\n**(a)** Distinguish between the **incubation period** and the **infectious period** of COVID-19.\n**(b)** Calculate the theoretical total number of infected individuals at the end of the 3rd transmission generation cycle if transmission remains unmitigated.\n**(c)** Define the **Herd Immunity Threshold ($HIT$)**, and calculate the minimum percentage of the student population that must be successfully vaccinated to interrupt sustained community transmission of this viral variant ($R_0 = 4.0$).\n**(d)** List four non-pharmaceutical interventions (NPIs) that the school administration must immediately enforce to reduce the effective reproduction number ($R_e$) below 1.0.",
+        "stepByStepSolution": "Step 1: Distinguish Incubation vs. Infectious Period:\n- Incubation Period: The time interval elapsed between initial exposure and viral entry into the host and the first manifestation of clinical symptoms or observable diagnostic signs (averages 4 to 6 days for COVID-19, with a range of 1 to 14 days).\n- Infectious Period: The time window during which an infected host sheds viable, replication-competent virions into the environment (via respiratory droplets/aerosols) and is capable of transmitting the pathogen to a susceptible contact (begins 1–2 days prior to symptom onset and lasts up to 8–10 days in mild-to-moderate cases).\nStep 2: Calculate Spread across Transmission Generations:\n- Generation 0 (Index Case): $I_0 = 1$\n- Generation 1: $I_1 = I_0 \\times R_0 = 1 \\times 4 = 4$\n- Generation 2: $I_2 = I_1 \\times R_0 = 4 \\times 4 = 16$\n- Generation 3: $I_3 = I_2 \\times R_0 = 16 \\times 4 = 64$\n- Cumulative Total Number of Infected Persons after Generation 3:\n  $$\\text{Total Cumulative Infections} = I_0 + I_1 + I_2 + I_3 = 1 + 4 + 16 + 64 = 85\\text{ individuals}$$\nStep 3: Calculate the Herd Immunity Threshold ($HIT$):\n- Definition: The minimum proportion of a population that must possess protective immunity (via vaccination or prior infection) such that the pathogen cannot achieve sustained chains of transmission, thereby indirectly shielding remaining susceptible individuals.\n- Mathematical Formula:\n  $$HIT = 1 - \\frac{1}{R_0}$$\n- Calculation for $R_0 = 4.0$:\n  $$HIT = 1 - \\frac{1}{4.0} = 1 - 0.25 = 0.75 = 75\\%$$\n- Application to School Population:\n  To achieve herd immunity, at least 75% of the 1,200 students ($0.75 \\times 1,200 = 900\\text{ students}$) must be fully vaccinated.\nStep 4: Immediate Non-Pharmaceutical Interventions (NPIs) to Drive $R_e < 1.0$:\n1. Rapid Case Isolation: Immediate removal and clinical isolation of all symptomatic individuals in a designated sickbay ward.\n2. Digital & Manual Contact Tracing: Identification and strict 10-day quarantine of all primary desk-mates and dorm-mates.\n3. Universal Mask Mandate: Compulsory indoor wearing of multi-layered medical/surgical masks covering both mouth and nose to reduce aerosol emission.\n4. Classroom Environmental Ventilation & Social Distancing: Opening all windows to increase cross-ventilation air exchanges (>6 air changes/hr) and spacing student desks $\\ge 1.5\\text{ metres}$ apart.",
+        "examinerTip": ""
+      },
+      {
+        "id": "ex_b7_s16_4",
+        "questionPrompt": "An outbreak of Ebola Virus Disease (EVD) is detected in a forest border community following the consumption of a fruit bat carcass recovered by local hunters.\n- An index patient develops acute fever, severe hematemesis (vomiting blood), and profuse diarrhea. A relative nursing the patient at home without protective barriers and two community elders who participated in traditional unprotective washings of the patient's corpse contract the infection.\n- The local public health response team establishes an Emergency Operations Centre to contain the epidemic.\n\n**(a)** Identify the primary natural reservoir host of Ebola virus and describe the initial zoonotic spillover pathway into human populations.\n**(b)** Construct the complete direct human-to-human chain of transmission for this scenario, identifying the primary infectious biological vectors.\n**(c)** The field medical team prepares 0.5% (5,000 ppm) Sodium Hypochlorite (chlorine bleach) solution for environmental surface disinfection and cadaver decontamination from a commercial stock solution containing 5.0% sodium hypochlorite. Calculate the exact volume of water that must be added to 2.0 Litres of the 5.0% bleach stock to prepare the 0.5% disinfectant solution.\n**(d)** Outline the four cardinal pillars of the World Health Organization (WHO) Ebola Infection Prevention and Control (IPC) protocol required to terminate this outbreak.",
+        "stepByStepSolution": "Step 1: Identify Reservoir & Spillover Pathway:\n- Natural Reservoir Host: Fruit bats belonging to the family *Pteropodidae* (e.g., *Hypsignathus monstrosus*, *Epomops franqueti*).\n- Zoonotic Spillover Mechanism: The Ebola virus circulates asymptomatically within bat colonies. When wild forest animals (primates, duikers) or human hunters come into direct contact with bat saliva, urine, or birthing fluids on dropped forest fruits, or when humans hunt, butcher, and handle raw bushmeat carcasses, the virus enters through micro-abrasions in the skin or mucous membranes.\nStep 2: Construct Human-to-Human Chain of Transmission:\n1. Primary Source: Index patient actively shedding ultra-high viral titers ($>10^7$ virions/mL) in blood, vomit, diarrhea, and sweat.\n2. Transmission Route 1 (Home Caregiver): Direct cutaneous/mucosal contact with vomitus and diarrheal fluids while nursing without gloves and protective clothing.\n3. Transmission Route 2 (Traditional Burial Washers): Direct skin contact with the virulent mucosal membranes, fluids, and blood of the deceased patient during traditional ceremonial body washing.\n4. Target Hosts: Family members, funeral attendees, and healthcare workers lacking barrier protection.\nStep 3: Disinfectant Dilution Calculation (Bleach Solution for Biohazards):\n- Using the volumetric dilution formula:\n  $$C_1 \\times V_1 = C_2 \\times V_2$$\n  Where:\n  - $C_1 = 5.0\\%$ (Initial concentration of commercial bleach)\n  - $V_1 = 2.0\\text{ Litres}$ (Volume of commercial bleach)\n  - $C_2 = 0.5\\%$ (Desired concentration for decontamination of body fluid spills and cadaver bags)\n  - $V_2 = \\text{Total final volume of diluted solution}$\n- Solve for $V_2$:\n  $$V_2 = \\frac{C_1 \\times V_1}{C_2} = \\frac{5.0\\% \\times 2.0\\text{ L}}{0.5\\%} = \\frac{10.0}{0.5} = 20.0\\text{ Litres}$$\n- Volume of Water to Add ($\\Delta V$):\n  $$\\Delta V = V_2 - V_1 = 20.0\\text{ L} - 2.0\\text{ L} = 18.0\\text{ Litres of clean water}$$\n  (Add 18.0 Litres of water to 2.0 Litres of 5.0% bleach to produce 20.0 Litres of 0.5% active chlorine disinfectant).\nStep 4: The Four Cardinal Pillars of WHO Ebola Containment Protocol:\n1. Immediate Strict Isolation & Barrier Nursing: House patients exclusively in dedicated negative-pressure Ebola Treatment Centres (ETCs) with strict one-way biocontainment flow corridors and full PPE suits.\n2. Safe and Dignified Burials: Complete suspension of traditional bodily washing; deceased corpses are immediately disinfected with 0.5% chlorine, placed into double hermetically sealed body bags, and buried immediately by trained, fully protected burial teams.\n3. Exhaustive Contact Tracing & 21-Day Quarantine: Identify 100% of direct and secondary contacts; monitor their body temperature twice daily for 21 days (the maximum incubation period of Ebola); immediately isolate any contact who develops fever ($>38.0^\\circ\\text{C}$).\n4. Community Engagement & Bushmeat Prohibition: Educational mobilization of chiefs, religious leaders, and youth to demystify hospital care and prohibit the hunting, sale, and consumption of wild bushmeat.",
+        "examinerTip": ""
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s16_1",
+        "id": "B7_HH_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "A child presenting with spongy, bleeding gums and loose teeth is suffering from a deficiency of:",
+        "prompt": "What is food scientifically defined as?",
         "options": [
-          "Vitamin A",
-          "Vitamin C",
-          "Vitamin D",
-          "Iron"
+          "A. Any material that only provides water to the body",
+          "B. Any substance that is edible and nourishes the body to support life and growth",
+          "C. Chemical compounds that prevent food from spoiling",
+          "D. Inorganic mineral salts extracted from sea water"
         ],
-        "correctAnswer": "Vitamin C",
-        "hint": "Citrus fruits like oranges and limes cure this disease (scurvy).",
-        "workedSolution": "Vitamin C (ascorbic acid) is vital for collagen synthesis. Deficiency causes scurvy, characterized by capillary fragility, bleeding gums, and poor wound healing.",
+        "correctAnswer": "B. Any substance that is edible and nourishes the body to support life and growth",
+        "hint": "Food is anything that we eat that is edible and actively nourishes the body to support life and growth.",
+        "workedSolution": "Food is anything that we eat that is edible and actively nourishes the body to support life and growth.",
         "points": 1
       },
       {
-        "id": "q_b7_s16_2",
+        "id": "B7_HH_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following are the two essential characteristics required for any item to be considered food?",
+        "options": [
+          "A. It must be sweet and liquid",
+          "B. It must be expensive and cooked",
+          "C. It must be edible (worth eating) and must nourish the body",
+          "D. It must be of plant origin and green"
+        ],
+        "correctAnswer": "C. It must be edible (worth eating) and must nourish the body",
+        "hint": "The two important features for any item to be called food are: (i) it should be worth eating (edible), and (ii) it must nourish the body.",
+        "workedSolution": "The two important features for any item to be called food are: (i) it should be worth eating (edible), and (ii) it must nourish the body.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Chemical compounds in food utilized by the body to function properly and maintain health are called:",
+        "options": [
+          "A. Food nutrients",
+          "B. Preservatives",
+          "C. Food toxins",
+          "D. Roughages only"
+        ],
+        "correctAnswer": "A. Food nutrients",
+        "hint": "Food nutrients are chemical compounds in food that are used by the body to function properly and maintain good health.",
+        "workedSolution": "Food nutrients are chemical compounds in food that are used by the body to function properly and maintain good health.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Nutrients that are required by the body but cannot be synthesized internally and must be supplied in the diet are termed:",
+        "options": [
+          "A. Non-essential nutrients",
+          "B. Essential nutrients",
+          "C. Synthetic nutrients",
+          "D. Dietary fibres"
+        ],
+        "correctAnswer": "B. Essential nutrients",
+        "hint": "Essential nutrients are nutrients required by the body that cannot be synthesized by the body and must be provided in the diet.",
+        "workedSolution": "Essential nutrients are nutrients required by the body that cannot be synthesized by the body and must be provided in the diet.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A diet that contains all the classes of food substances in their correct proportions and quantities is a/an:",
+        "options": [
+          "A. Unbalanced diet",
+          "B. Balanced diet",
+          "C. Vegetarian diet",
+          "D. Fasting diet"
+        ],
+        "correctAnswer": "B. Balanced diet",
+        "hint": "A balanced diet contains all the classes of food substances in their correct proportions and quantities needed by the body for effective functioning.",
+        "workedSolution": "A balanced diet contains all the classes of food substances in their correct proportions and quantities needed by the body for effective functioning.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary role of protein obtained from maternal nutrition during pregnancy?",
+        "options": [
+          "A. To provide instant glucose for walking",
+          "B. To support growth and increase the size of the embryo or foetus and build foetal body systems",
+          "C. To prevent water from leaving the kidneys",
+          "D. To color the foetal skin"
+        ],
+        "correctAnswer": "B. To support growth and increase the size of the embryo or foetus and build foetal body systems",
+        "hint": "Protein obtained from nutrition is important for the growth or increase in size of the embryo/foetus and building foetal body systems.",
+        "workedSolution": "Protein obtained from nutrition is important for the growth or increase in size of the embryo/foetus and building foetal body systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why are dietary fats and oils essential in the nutrition of a pregnant woman?",
+        "options": [
+          "A. For developing the foetal nervous system",
+          "B. To make the mother sleep longer",
+          "C. To dissolve stomach bones",
+          "D. To stop intestinal peristalsis"
+        ],
+        "correctAnswer": "A. For developing the foetal nervous system",
+        "hint": "Fats from food are important for the development of the foetal nervous system.",
+        "workedSolution": "Fats from food are important for the development of the foetal nervous system.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which nutrient class provides the primary energy needed by the mother to remain active during pregnancy?",
+        "options": [
+          "A. Roughage",
+          "B. Carbohydrates",
+          "C. Water",
+          "D. Mineral salts"
+        ],
+        "correctAnswer": "B. Carbohydrates",
+        "hint": "Carbohydrates obtained from food provide energy for the mother to be active.",
+        "workedSolution": "Carbohydrates obtained from food provide energy for the mother to be active.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A condition in an organism where there is an insufficient intake or lack of required essential food nutrients in right proportions is:",
+        "options": [
+          "A. Dehydration",
+          "B. Malnutrition",
+          "C. Respiration",
+          "D. Digestion"
+        ],
+        "correctAnswer": "B. Malnutrition",
+        "hint": "Malnutrition is a condition or situation where there is insufficient or lack of required essential food nutrients in the right proportions.",
+        "workedSolution": "Malnutrition is a condition or situation where there is insufficient or lack of required essential food nutrients in the right proportions.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a physical effect of malnutrition in children?",
+        "options": [
+          "A. Rapid increase in bone density",
+          "B. Slow or stunted growth",
+          "C. Enhanced disease immunity",
+          "D. Elevated blood clotting speed"
+        ],
+        "correctAnswer": "B. Slow or stunted growth",
+        "hint": "Effects of malnutrition include fluid imbalance, slow or stunted growth, tissue malformation, and vulnerability to disease.",
+        "workedSolution": "Effects of malnutrition include fluid imbalance, slow or stunted growth, tissue malformation, and vulnerability to disease.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which food nutrient class serves as the major and immediate source of energy to perform physical activities?",
+        "options": [
+          "A. Water",
+          "B. Carbohydrates",
+          "C. Roughage",
+          "D. Minerals"
+        ],
+        "correctAnswer": "B. Carbohydrates",
+        "hint": "Carbohydrates are the major energy needed in the body to perform any activity.",
+        "workedSolution": "Carbohydrates are the major energy needed in the body to perform any activity.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Glucose and fructose found in ripe fruits are classified under which division of carbohydrates?",
+        "options": [
+          "A. Polysaccharides",
+          "B. Disaccharides",
+          "C. Monosaccharides (simple sugars)",
+          "D. Dietary fibres"
+        ],
+        "correctAnswer": "C. Monosaccharides (simple sugars)",
+        "hint": "Monosaccharides are commonly known as simple sugars, with examples including glucose and fructose.",
+        "workedSolution": "Monosaccharides are commonly known as simple sugars, with examples including glucose and fructose.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Sucrose, the table sugar extracted from sugarcane, is scientifically categorized as a/an:",
+        "options": [
+          "A. Monosaccharide",
+          "B. Disaccharide (complex sugar)",
+          "C. Amino acid",
+          "D. Fatty acid"
+        ],
+        "correctAnswer": "B. Disaccharide (complex sugar)",
+        "hint": "Disaccharides are commonly called complex sugars, with sucrose as a prime example.",
+        "workedSolution": "Disaccharides are commonly called complex sugars, with sucrose as a prime example.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which carbohydrate division consists of long chains of several monosaccharide units joined by chemical bonds (e.g., starch)?",
+        "options": [
+          "A. Polysaccharides",
+          "B. Monosaccharides",
+          "C. Lipids",
+          "D. Vitamins"
+        ],
+        "correctAnswer": "A. Polysaccharides",
+        "hint": "Polysaccharides are considered as chains of several monosaccharide units joined together by chemical bonds, such as starch.",
+        "workedSolution": "Polysaccharides are considered as chains of several monosaccharide units joined together by chemical bonds, such as starch.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following foods is a rich dietary source of carbohydrates?",
+        "options": [
+          "A. Sea fish",
+          "B. Bread, potatoes, and rice",
+          "C. Iodated salt",
+          "D. Pure water"
+        ],
+        "correctAnswer": "B. Bread, potatoes, and rice",
+        "hint": "Sources of carbohydrates include bread, potatoes, rice, corn, beans, and cookies.",
+        "workedSolution": "Sources of carbohydrates include bread, potatoes, rice, corn, beans, and cookies.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Proteins are food substances composed of which chemical elements?",
+        "options": [
+          "A. Carbon, hydrogen, oxygen, and nitrogen",
+          "B. Sodium and chlorine only",
+          "C. Carbon and hydrogen only",
+          "D. Calcium and phosphorus only"
+        ],
+        "correctAnswer": "A. Carbon, hydrogen, oxygen, and nitrogen",
+        "hint": "Proteins are food substances made of the elements carbon, hydrogen, oxygen, and nitrogen.",
+        "workedSolution": "Proteins are food substances made of the elements carbon, hydrogen, oxygen, and nitrogen.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the basic structural building unit of all proteins?",
+        "options": [
+          "A. Glucose",
+          "B. Fatty acid",
+          "C. Amino acid",
+          "D. Glycerol"
+        ],
+        "correctAnswer": "C. Amino acid",
+        "hint": "The main unit of protein is the amino acid.",
+        "workedSolution": "The main unit of protein is the amino acid.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "First-class proteins are usually obtained from animal sources because they:",
+        "options": [
+          "A. Do not contain nitrogen",
+          "B. Contain all the essential amino acids necessary for proper growth and development",
+          "C. Are completely insoluble in water",
+          "D. Never spoil when kept at room temperature"
+        ],
+        "correctAnswer": "B. Contain all the essential amino acids necessary for proper growth and development",
+        "hint": "First class proteins are usually found in animals and contain all the essential amino acids necessary for proper growth.",
+        "workedSolution": "First class proteins are usually found in animals and contain all the essential amino acids necessary for proper growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following foods provides first-class proteins?",
+        "options": [
+          "A. Meat, fish, eggs, and milk",
+          "B. Cassava and plantain",
+          "C. Orange and lemon juice",
+          "D. Palm oil and coconut oil"
+        ],
+        "correctAnswer": "A. Meat, fish, eggs, and milk",
+        "hint": "Sources of animal protein including meat, fish, eggs, milk, and cheese provide first-class proteins.",
+        "workedSolution": "Sources of animal protein including meat, fish, eggs, milk, and cheese provide first-class proteins.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Second-class proteins are generally of plant origin because they:",
+        "options": [
+          "A. Lack some of the essential amino acids",
+          "B. Contain no chemical elements",
+          "C. Cannot be digested by humans",
+          "D. Cause immediate goitre"
+        ],
+        "correctAnswer": "A. Lack some of the essential amino acids",
+        "hint": "Second class proteins are usually of plant origin and lack some of the essential amino acids.",
+        "workedSolution": "Second class proteins are usually of plant origin and lack some of the essential amino acids.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a primary function of proteins in the human body?",
+        "options": [
+          "A. Providing material for growth and repair of worn-out body tissues",
+          "B. Supplying 99% of instant energy for sprinting",
+          "C. Cooling the skin surface through evaporation",
+          "D. Dissolving dietary cellulose"
+        ],
+        "correctAnswer": "A. Providing material for growth and repair of worn-out body tissues",
+        "hint": "Proteins help in the formation of enzymes/hormones/hairs, repair of body tissues, and provide materials for growth.",
+        "workedSolution": "Proteins help in the formation of enzymes/hormones/hairs, repair of body tissues, and provide materials for growth.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Fats and oils are collectively referred to in biochemistry as:",
+        "options": [
+          "A. Carbohydrates",
+          "B. Lipids",
+          "C. Polysaccharides",
+          "D. Minerals"
+        ],
+        "correctAnswer": "B. Lipids",
+        "hint": "Fats and oils are generally called lipids.",
+        "workedSolution": "Fats and oils are generally called lipids.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the physical state of fats compared to oils at room temperature?",
+        "options": [
+          "A. Fats exist in the solid state while oils exist in the liquid state",
+          "B. Fats are gases while oils are solids",
+          "C. Both fats and oils are always crystalline solids",
+          "D. Both fats and oils are always volatile vapors"
+        ],
+        "correctAnswer": "A. Fats exist in the solid state while oils exist in the liquid state",
+        "hint": "Lipids exist as fats in the solid state and as oils in the liquid state.",
+        "workedSolution": "Lipids exist as fats in the solid state and as oils in the liquid state.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an important physiological function of fats stored under mammalian skin?",
+        "options": [
+          "A. Provides insulation against heat loss",
+          "B. Senses light rays",
+          "C. Absorbs carbon dioxide from the air",
+          "D. Manufactures red blood cells"
+        ],
+        "correctAnswer": "A. Provides insulation against heat loss",
+        "hint": "Fat under the skin of mammals provides insulation against heat loss.",
+        "workedSolution": "Fat under the skin of mammals provides insulation against heat loss.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Lipids are biologically necessary in the human diet because they act as a solvent for:",
+        "options": [
+          "A. Water-soluble Vitamin C",
+          "B. Fat-soluble vitamins",
+          "C. Mineral table salt",
+          "D. Cellulose roughage"
+        ],
+        "correctAnswer": "B. Fat-soluble vitamins",
+        "hint": "Fats and oils act as a solvent for fat-soluble vitamins.",
+        "workedSolution": "Fats and oils act as a solvent for fat-soluble vitamins.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is roughage (dietary fibre)?",
+        "options": [
+          "A. The indigestible part of plant food that adds bulk to diet and aids bowel movement",
+          "B. Synthetic plastic strands swallowed accidentally",
+          "C. Pure animal fat deposits",
+          "D. Concentrated liquid sugar"
+        ],
+        "correctAnswer": "A. The indigestible part of plant food that adds bulk to diet and aids bowel movement",
+        "hint": "Roughage aids digestion, makes food bulky, and helps food pass through the digestive system easily.",
+        "workedSolution": "Roughage aids digestion, makes food bulky, and helps food pass through the digestive system easily.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does dietary roughage protect human gastrointestinal health?",
+        "options": [
+          "A. Facilitates free bowel movement to prevent constipation and reduces the risk of bowel cancer",
+          "B. Completely stops stomach digestion",
+          "C. Turns blood into water",
+          "D. Kills all intestinal enzymes"
+        ],
+        "correctAnswer": "A. Facilitates free bowel movement to prevent constipation and reduces the risk of bowel cancer",
+        "hint": "Roughage facilitates free bowel movement, prevents constipation, and reduces the risk of bowel cancer.",
+        "workedSolution": "Roughage facilitates free bowel movement, prevents constipation, and reduces the risk of bowel cancer.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Water forms approximately what proportion of the human body weight?",
+        "options": [
+          "A. One-tenth (10%)",
+          "B. One-third (33%)",
+          "C. Two-thirds (about 66%)",
+          "D. Ninety-nine percent (99%)"
+        ],
+        "correctAnswer": "C. Two-thirds (about 66%)",
+        "hint": "Water forms about two-thirds of the body weight.",
+        "workedSolution": "Water forms about two-thirds of the body weight.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does water regulate human core body temperature in hot environments?",
+        "options": [
+          "A. By evaporating from the body surface as sweat to produce a cooling effect",
+          "B. By turning into ice under the skin",
+          "C. By stopping all chemical reactions",
+          "D. By freezing blood plasma"
+        ],
+        "correctAnswer": "A. By evaporating from the body surface as sweat to produce a cooling effect",
+        "hint": "Water cools the body when it evaporates from the body surface.",
+        "workedSolution": "Water cools the body when it evaporates from the body surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a primary dietary source of essential mineral salts like iodine?",
+        "options": [
+          "A. Sea fish and iodated table salt",
+          "B. White polished sugar",
+          "C. Pure palm oil",
+          "D. Filtered water"
+        ],
+        "correctAnswer": "A. Sea fish and iodated table salt",
+        "hint": "Sources of minerals include sea fish and iodated salts.",
+        "workedSolution": "Sources of minerals include sea fish and iodated salts.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a deficiency disease?",
+        "options": [
+          "A. A disease caused by a viral or bacterial infection",
+          "B. A disease caused by the absence or lack of a particular nutrient in the human diet",
+          "C. A condition resulting from physical bone fractures",
+          "D. An illness caused by drinking excess clean water"
+        ],
+        "correctAnswer": "B. A disease caused by the absence or lack of a particular nutrient in the human diet",
+        "hint": "Deficiency disease is the absence or lack of a particular nutrient in the diet of humans.",
+        "workedSolution": "Deficiency disease is the absence or lack of a particular nutrient in the diet of humans.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What nutritional deficiency causes Kwashiorkor in growing children?",
+        "options": [
+          "A. Lack of dietary protein",
+          "B. Lack of vitamin C",
+          "C. Lack of calcium",
+          "D. Lack of water"
+        ],
+        "correctAnswer": "A. Lack of dietary protein",
+        "hint": "Kwashiorkor is caused by a lack of protein in the human body.",
+        "workedSolution": "Kwashiorkor is caused by a lack of protein in the human body.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which observable symptom is characteristic of a child suffering from Kwashiorkor?",
+        "options": [
+          "A. Severely swollen protruding abdomen (oedema) and reddish-brown hair",
+          "B. Extreme bone hardening",
+          "C. Complete absence of any body swelling",
+          "D. Bleeding gums and loose teeth"
+        ],
+        "correctAnswer": "A. Severely swollen protruding abdomen (oedema) and reddish-brown hair",
+        "hint": "Kwashiorkor presents clinically with a swollen, distended abdomen and altered, reddish hair.",
+        "workedSolution": "Kwashiorkor presents clinically with a swollen, distended abdomen and altered, reddish hair.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What nutritional deficiency causes Marasmus?",
+        "options": [
+          "A. Lack of carbohydrates (and total calories)",
+          "B. Lack of vitamin D",
+          "C. Lack of iodine",
+          "D. Lack of vitamin K"
+        ],
+        "correctAnswer": "A. Lack of carbohydrates (and total calories)",
+        "hint": "Marasmus is caused by a lack of carbohydrates and overall energy intake.",
+        "workedSolution": "Marasmus is caused by a lack of carbohydrates and overall energy intake.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Rickets, a disease resulting in soft bones and bowed legs in children, is caused by a lack of:",
+        "options": [
+          "A. Vitamin D (and Calcium)",
+          "B. Vitamin C",
+          "C. Vitamin B1",
+          "D. Protein only"
+        ],
+        "correctAnswer": "A. Vitamin D (and Calcium)",
+        "hint": "Rickets is caused by a lack of vitamin D (and calcium).",
+        "workedSolution": "Rickets is caused by a lack of vitamin D (and calcium).",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which visible physical deformity is depicted in medical sketches of children suffering from Rickets?",
+        "options": [
+          "A. Bowed legs or knock-knees",
+          "B. Swollen neck thyroid gland",
+          "C. Yellow eyes and dark urine",
+          "D. Loss of finger nails"
+        ],
+        "correctAnswer": "A. Bowed legs or knock-knees",
+        "hint": "Rickets causes soft bones that bow under weight-bearing, resulting in bowed legs.",
+        "workedSolution": "Rickets causes soft bones that bow under weight-bearing, resulting in bowed legs.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The deficiency disease characterized by bleeding spongy gums and skin spots is Scurvy, caused by a lack of:",
+        "options": [
+          "A. Vitamin C",
+          "B. Vitamin A",
+          "C. Vitamin K",
+          "D. Iodine"
+        ],
+        "correctAnswer": "A. Vitamin C",
+        "hint": "Scurvy is caused by a lack of vitamin C in the diet.",
+        "workedSolution": "Scurvy is caused by a lack of vitamin C in the diet.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Goitre, the abnormal swelling of the thyroid gland in the neck, is caused by a lack of:",
+        "options": [
+          "A. Iodine",
+          "B. Iron",
+          "C. Vitamin D",
+          "D. Carbohydrates"
+        ],
+        "correctAnswer": "A. Iodine",
+        "hint": "Goiter is caused by a lack of the mineral nutrient iodine.",
+        "workedSolution": "Goiter is caused by a lack of the mineral nutrient iodine.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Lack of Vitamin A in the human diet causes which visual impairment?",
+        "options": [
+          "A. Night blindness",
+          "B. Scurvy",
+          "C. Beriberi",
+          "D. Goitre"
+        ],
+        "correctAnswer": "A. Night blindness",
+        "hint": "Night blindness is caused by a lack of vitamin A.",
+        "workedSolution": "Night blindness is caused by a lack of vitamin A.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Beriberi is caused by a dietary deficiency of which vitamin?",
+        "options": [
+          "A. Vitamin B1 (Thiamine)",
+          "B. Vitamin C",
+          "C. Vitamin D",
+          "D. Vitamin K"
+        ],
+        "correctAnswer": "A. Vitamin B1 (Thiamine)",
+        "hint": "Beriberi is caused by a lack of vitamin B1.",
+        "workedSolution": "Beriberi is caused by a lack of vitamin B1.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Pellagra is caused by a dietary deficiency of:",
+        "options": [
+          "A. Vitamin B3 (Niacin)",
+          "B. Vitamin A",
+          "C. Vitamin C",
+          "D. Vitamin D"
+        ],
+        "correctAnswer": "A. Vitamin B3 (Niacin)",
+        "hint": "Pellagra is caused by a lack of vitamin B3.",
+        "workedSolution": "Pellagra is caused by a lack of vitamin B3.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Prolonged and uncontrolled bleeding after an injury can result from a deficiency of:",
+        "options": [
+          "A. Vitamin K",
+          "B. Vitamin A",
+          "C. Vitamin B1",
+          "D. Carbohydrates"
+        ],
+        "correctAnswer": "A. Vitamin K",
+        "hint": "Prolonged bleeding is caused by a lack of vitamin K.",
+        "workedSolution": "Prolonged bleeding is caused by a lack of vitamin K.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are viral diseases caused by?",
+        "options": [
+          "A. Microscopic worms",
+          "B. Viruses, which are tiny infectious agents that replicate inside living host cells",
+          "C. Fungi living only on dead wood",
+          "D. Drinking cold water"
+        ],
+        "correctAnswer": "B. Viruses, which are tiny infectious agents that replicate inside living host cells",
+        "hint": "Viral diseases are caused by viruses, which are tiny infectious agents that can only replicate inside the cells of living organisms.",
+        "workedSolution": "Viral diseases are caused by viruses, which are tiny infectious agents that can only replicate inside the cells of living organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the basic structural composition of a virus particle?",
+        "options": [
+          "A. A nucleus surrounded by cytoplasm and cell wall",
+          "B. Genetic material (DNA or RNA) surrounded by a protein coat",
+          "C. Pure liquid water surrounded by sugar",
+          "D. Microscopic bone cells"
+        ],
+        "correctAnswer": "B. Genetic material (DNA or RNA) surrounded by a protein coat",
+        "hint": "Viruses are made up of genetic material, either DNA or RNA, surrounded by a protein coat.",
+        "workedSolution": "Viruses are made up of genetic material, either DNA or RNA, surrounded by a protein coat.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why can viruses NOT survive or reproduce independently on their own?",
+        "options": [
+          "A. They are too cold",
+          "B. They lack metabolic cellular machinery and require a living host cell to multiply",
+          "C. They have no genetic code",
+          "D. They dissolve in air"
+        ],
+        "correctAnswer": "B. They lack metabolic cellular machinery and require a living host cell to multiply",
+        "hint": "Viruses cannot survive or reproduce on their own and require a host cell to multiply by taking over its cellular machinery.",
+        "workedSolution": "Viruses cannot survive or reproduce on their own and require a host cell to multiply by taking over its cellular machinery.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What novel viral pathogen causes Coronavirus disease 2019 (COVID-19)?",
+        "options": [
+          "A. SARS-CoV-2",
+          "B. HIV-1",
+          "C. Plasmodium falciparum",
+          "D. Vibrio cholerae"
+        ],
+        "correctAnswer": "A. SARS-CoV-2",
+        "hint": "COVID-19 is a disease caused by a new strain of corona virus known as SARS-CoV-2.",
+        "workedSolution": "COVID-19 is a disease caused by a new strain of corona virus known as SARS-CoV-2.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the medical definition of the 'incubation period' of a disease?",
+        "options": [
+          "A. The time taken to cook hospital food",
+          "B. The period between the entry of the virus into the host and the presentation of clinical symptoms or observable signs",
+          "C. The time taken for medicine to expire",
+          "D. The recovery period after hospital discharge"
+        ],
+        "correctAnswer": "B. The period between the entry of the virus into the host and the presentation of clinical symptoms or observable signs",
+        "hint": "The incubation period is the period between the entering of the virus into the human host and the presentation of clinical symptoms or observable signs.",
+        "workedSolution": "The incubation period is the period between the entering of the virus into the human host and the presentation of clinical symptoms or observable signs.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the typical incubation period of COVID-19 in humans?",
+        "options": [
+          "A. 1 hour",
+          "B. Between 4 to 6 days",
+          "C. Exactly 3 months",
+          "D. 1 year"
+        ],
+        "correctAnswer": "B. Between 4 to 6 days",
+        "hint": "The incubation period of corona virus disease is between 4 to 6 days.",
+        "workedSolution": "The incubation period of corona virus disease is between 4 to 6 days.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following wild animals serves as the primary natural host reservoir for the Ebola virus?",
+        "options": [
+          "A. Domestic fowls",
+          "B. Fruit bats",
+          "C. Tilapia fish",
+          "D. Earthworms"
+        ],
+        "correctAnswer": "B. Fruit bats",
+        "hint": "Fruit bats are the primary host of the Ebola virus.",
+        "workedSolution": "Fruit bats are the primary host of the Ebola virus.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The H1N1 viral disease (Swine Flu) originally resulted from the transformation and genetic mixing of genes from:",
+        "options": [
+          "A. Swine, human, and avian (bird) genes in pigs",
+          "B. Plant and insect genes",
+          "C. Fish and frog genes",
+          "D. Mineral soil crystals"
+        ],
+        "correctAnswer": "A. Swine, human, and avian (bird) genes in pigs",
+        "hint": "The H1N1 virus is made of swine, human, and avian genes that metamorphosed or were transformed in pigs.",
+        "workedSolution": "The H1N1 virus is made of swine, human, and avian genes that metamorphosed or were transformed in pigs.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "The abnormal enlargement of the thyroid gland in the human neck (goitre) is caused by a dietary deficiency of which mineral element?",
+        "prompt": "Which clinical condition is defined as the extreme, severe wasting of body fat and muscle in a child due to prolonged starvation of all food nutrients?",
         "options": [
-          "Calcium",
-          "Iron",
-          "Iodine",
-          "Potassium"
+          "A. Marasmus (cachexia)",
+          "B. Scurvy",
+          "C. Goitre",
+          "D. Rickets"
         ],
-        "correctAnswer": "Iodine",
-        "hint": "Table salt is iodized to prevent this condition.",
-        "workedSolution": "Iodine is an essential micronutrient required by the thyroid gland to synthesize thyroxine hormone. Iodine deficiency triggers thyroid hyperplasia, forming a goitre.",
+        "correctAnswer": "A. Marasmus (cachexia)",
+        "hint": "Diseases due to severe lack of protein and energy in the human body include kwashiorkor, marasmus, and cachexia.",
+        "workedSolution": "Diseases due to severe lack of protein and energy in the human body include kwashiorkor, marasmus, and cachexia.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does water assist the human circulatory system?",
+        "options": [
+          "A. It acts as a solvent for the transportation of substances, food, and oxygen across tissues",
+          "B. It turns red blood cells into white cells",
+          "C. It stops blood from flowing",
+          "D. It removes all iron from haemoglobin"
+        ],
+        "correctAnswer": "A. It acts as a solvent for the transportation of substances, food, and oxygen across tissues",
+        "hint": "Water is involved in all chemical reactions and the transportation of substances, food, or oxygen in the body.",
+        "workedSolution": "Water is involved in all chemical reactions and the transportation of substances, food, or oxygen in the body.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the physiological role of water in maintaining systemic osmotic balance in the body?",
+        "options": [
+          "A. It maintains the correct balance of fluids and dissolved mineral salts between cells and blood vessels",
+          "B. It creates bone fractures",
+          "C. It prevents the skin from sweating",
+          "D. It replaces digestive enzymes"
+        ],
+        "correctAnswer": "A. It maintains the correct balance of fluids and dissolved mineral salts between cells and blood vessels",
+        "hint": "Water maintains the osmotic balance of the body and provides a medium for metabolic activities.",
+        "workedSolution": "Water maintains the osmotic balance of the body and provides a medium for metabolic activities.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is a primary function of mineral salts in the human body?",
+        "options": [
+          "A. Regulation of metabolic activities and maintenance of good health",
+          "B. Providing 100% of calories for running",
+          "C. Supplying roughage for the bowels",
+          "D. Storing fat under the skin"
+        ],
+        "correctAnswer": "A. Regulation of metabolic activities and maintenance of good health",
+        "hint": "Mineral salts regulate metabolic activities and maintain good health.",
+        "workedSolution": "Mineral salts regulate metabolic activities and maintain good health.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is adequate food nutrition essential for the development of the placenta and amniotic sac in a pregnant woman?",
+        "options": [
+          "A. To support weight gain in the placenta, maintain amniotic fluid, and ensure a healthy birth weight",
+          "B. To turn the baby's bones into cartilage",
+          "C. To prevent the mother from drinking water",
+          "D. To stop the foetus from moving"
+        ],
+        "correctAnswer": "A. To support weight gain in the placenta, maintain amniotic fluid, and ensure a healthy birth weight",
+        "hint": "Food is important for maternal weight gain, placenta and amniotic sac enlargement, and healthy birth weight.",
+        "workedSolution": "Food is important for maternal weight gain, placenta and amniotic sac enlargement, and healthy birth weight.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What metabolic risk is prevented when carbohydrates are present in sufficient quantities to aid the breakdown of fatty acids?",
+        "options": [
+          "A. Ketosis",
+          "B. Rickets",
+          "C. Goitre",
+          "D. Beriberi"
+        ],
+        "correctAnswer": "A. Ketosis",
+        "hint": "Uses of carbohydrates include the breakdown of fatty acids and preventing ketosis.",
+        "workedSolution": "Uses of carbohydrates include the breakdown of fatty acids and preventing ketosis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do carbohydrates perform a 'protein-sparing' action in the human body?",
+        "options": [
+          "A. By supplying energy so that dietary proteins are spared for tissue repair and growth rather than burned for fuel",
+          "B. By converting all proteins into starch",
+          "C. By stopping protein absorption in the stomach",
+          "D. By destroying amino acids"
+        ],
+        "correctAnswer": "A. By supplying energy so that dietary proteins are spared for tissue repair and growth rather than burned for fuel",
+        "hint": "Carbohydrates function by sparing the use of protein for energy, preserving protein for tissue growth and repair.",
+        "workedSolution": "Carbohydrates function by sparing the use of protein for energy, preserving protein for tissue growth and repair.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary mode of transmission of COVID-19 between humans?",
+        "options": [
+          "A. Contact with infected respiratory secretions through coughs, sneezes, handshakes, or touching contaminated surfaces",
+          "B. Mosquito bites in swamps",
+          "C. Swimming in clean ocean water",
+          "D. Eating thoroughly cooked poultry"
+        ],
+        "correctAnswer": "A. Contact with infected respiratory secretions through coughs, sneezes, handshakes, or touching contaminated surfaces",
+        "hint": "Human-to-human transmission happens through secretions from a cough, sneeze, handshake, or touching contaminated objects and then touching the mouth, nose, or eyes.",
+        "workedSolution": "Human-to-human transmission happens through secretions from a cough, sneeze, handshake, or touching contaminated objects and then touching the mouth, nose, or eyes.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is a classic clinical symptom of COVID-19 infection?",
+        "options": [
+          "A. Fever, cough, sore throat, and loss of sense of smell (anosmia)",
+          "B. Swelling of the thyroid gland in the neck",
+          "C. Bleeding from gums due to vitamin C lack",
+          "D. Formation of curved bowed legs"
+        ],
+        "correctAnswer": "A. Fever, cough, sore throat, and loss of sense of smell (anosmia)",
+        "hint": "Symptoms of COVID-19 include cough, fever, sore throat, loss of sense of smell (anosmia), breathing difficulties, and pneumonia.",
+        "workedSolution": "Symptoms of COVID-19 include cough, fever, sore throat, loss of sense of smell (anosmia), breathing difficulties, and pneumonia.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What acute organ complication can occur in severe cases of COVID-19?",
+        "options": [
+          "A. Severe acute respiratory syndrome and kidney failure",
+          "B. Instant tooth loss",
+          "C. Hardening of skin into bone",
+          "D. Total loss of hair overnight"
+        ],
+        "correctAnswer": "A. Severe acute respiratory syndrome and kidney failure",
+        "hint": "In severe cases, infected persons can have severe acute respiratory syndrome, kidney failure, and death.",
+        "workedSolution": "In severe cases, infected persons can have severe acute respiratory syndrome, kidney failure, and death.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the recommended minimum physical distance that should be maintained between individuals to reduce COVID-19 spread?",
+        "options": [
+          "A. At least one metre",
+          "B. 10 centimetres",
+          "C. 50 metres",
+          "D. 1 kilometre"
+        ],
+        "correctAnswer": "A. At least one metre",
+        "hint": "A key preventive measure is maintaining a physical distance of at least one metre from friends and others.",
+        "workedSolution": "A key preventive measure is maintaining a physical distance of at least one metre from friends and others.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What minimum percentage of alcohol is recommended for hand sanitizers to effectively destroy enveloped viruses like SARS-CoV-2?",
+        "options": [
+          "A. 10%",
+          "B. 30%",
+          "C. 68% and above",
+          "D. Exactly 5%"
+        ],
+        "correctAnswer": "C. 68% and above",
+        "hint": "Clean hands with 68% and above alcohol-based sanitizer to destroy virus particles.",
+        "workedSolution": "Clean hands with 68% and above alcohol-based sanitizer to destroy virus particles.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the sharing of eating utensils (cutlery, cups, bowls) strongly discouraged during viral respiratory outbreaks?",
+        "options": [
+          "A. Saliva and infectious respiratory secretions on utensils can transmit the virus directly to others",
+          "B. Utensils dissolve in alcohol",
+          "C. Sharing makes food lose its protein content",
+          "D. Utensils become radioactive"
+        ],
+        "correctAnswer": "A. Saliva and infectious respiratory secretions on utensils can transmit the virus directly to others",
+        "hint": "Avoid sharing items like cutlery sets, drinking bottles, cups, and bowls to prevent viral cross-infection.",
+        "workedSolution": "Avoid sharing items like cutlery sets, drinking bottles, cups, and bowls to prevent viral cross-infection.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How is Ebola virus disease primarily transmitted from wild animals to humans in tropical rainforests?",
+        "options": [
+          "A. Contact with blood, secretions, or bodily fluids of infected wild animals like fruit bats, monkeys, or antelopes found sick or dead",
+          "B. Inhaling dry desert dust",
+          "C. Drinking boiled river water",
+          "D. Eating harvested farm cassava"
+        ],
+        "correctAnswer": "A. Contact with blood, secretions, or bodily fluids of infected wild animals like fruit bats, monkeys, or antelopes found sick or dead",
+        "hint": "Ebola is transmitted through close contact with the blood, secretions, organs, or other bodily fluids of infected animals like bats, chimpanzees, monkeys, or antelopes found ill or dead.",
+        "workedSolution": "Ebola is transmitted through close contact with the blood, secretions, organs, or other bodily fluids of infected animals like bats, chimpanzees, monkeys, or antelopes found ill or dead.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does Ebola spread between humans during an outbreak?",
+        "options": [
+          "A. Direct contact with blood, vomit, feces, or bodily fluids of an infected person or someone who died from Ebola",
+          "B. Casual waves across the street",
+          "C. Looking into an infected person's eyes",
+          "D. Eating oranges"
+        ],
+        "correctAnswer": "A. Direct contact with blood, vomit, feces, or bodily fluids of an infected person or someone who died from Ebola",
+        "hint": "Ebola spreads through direct contact with blood or body fluids of a person who is sick with or died from Ebola, and contaminated objects.",
+        "workedSolution": "Ebola spreads through direct contact with blood or body fluids of a person who is sick with or died from Ebola, and contaminated objects.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which combination of symptoms is characteristic of acute Ebola virus disease?",
+        "options": [
+          "A. Fever, vomiting, muscle pain, diarrhea, headache, and fatigue",
+          "B. Progressive bone bowing in the legs",
+          "C. Enlargement of the thyroid gland in the neck",
+          "D. Loss of night vision only"
+        ],
+        "correctAnswer": "A. Fever, vomiting, muscle pain, diarrhea, headache, and fatigue",
+        "hint": "Symptoms of Ebola include fever, sore throat, vomiting, muscle pain, headache, diarrhoea, and fatigue.",
+        "workedSolution": "Symptoms of Ebola include fever, sore throat, vomiting, muscle pain, headache, diarrhoea, and fatigue.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is contact tracing critical in the control of Ebola and COVID-19 outbreaks?",
+        "options": [
+          "A. It identifies and isolates individuals who came into contact with infected patients to halt further transmission chains",
+          "B. It measures rainfall in outbreak regions",
+          "C. It vaccinates animals in zoos",
+          "D. It registers citizens for voting"
+        ],
+        "correctAnswer": "A. It identifies and isolates individuals who came into contact with infected patients to halt further transmission chains",
+        "hint": "Contact tracing of persons who have come into contact with infected individuals is an essential control measure.",
+        "workedSolution": "Contact tracing of persons who have come into contact with infected individuals is an essential control measure.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why did the H1N1 virus spread so rapidly among humans during the 2009 pandemic?",
+        "options": [
+          "A. Humans had no pre-existing natural immunity to this reassorted viral strain",
+          "B. It was transmitted through electricity wires",
+          "C. It infected only people with goitre",
+          "D. It could only survive inside drinking water"
+        ],
+        "correctAnswer": "A. Humans had no pre-existing natural immunity to this reassorted viral strain",
+        "hint": "H1N1 spreads quickly among humans because they had no pre-existing immunity to it.",
+        "workedSolution": "H1N1 spreads quickly among humans because they had no pre-existing immunity to it.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is a common clinical symptom of H1N1 infection?",
+        "options": [
+          "A. Fever, cough, sore throat, runny nose, and diarrhea",
+          "B. Softening of leg bones",
+          "C. Severe swelling of the abdomen",
+          "D. Bleeding gums"
+        ],
+        "correctAnswer": "A. Fever, cough, sore throat, runny nose, and diarrhea",
+        "hint": "Symptoms of H1N1 include fever, cough, sore throat, runny nose, and diarrhoea.",
+        "workedSolution": "Symptoms of H1N1 include fever, cough, sore throat, runny nose, and diarrhoea.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary mode of transmission of the Measles virus?",
+        "options": [
+          "A. Inhalation of airborne droplets and close contact with an infected person",
+          "B. Mosquito bites",
+          "C. Eating unwashed carrots",
+          "D. Drinking chlorinated tap water"
+        ],
+        "correctAnswer": "A. Inhalation of airborne droplets and close contact with an infected person",
+        "hint": "Measles is transmitted through droplets and close contact with an infected person.",
+        "workedSolution": "Measles is transmitted through droplets and close contact with an infected person.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which clinical symptoms characterize a child suffering from Measles?",
+        "options": [
+          "A. Sore throat, runny nose, watery red eyes, cough, fever, and skin rash",
+          "B. Swelling in the neck thyroid gland",
+          "C. Loss of blood clotting ability",
+          "D. Bowed legs"
+        ],
+        "correctAnswer": "A. Sore throat, runny nose, watery red eyes, cough, fever, and skin rash",
+        "hint": "Measles symptoms include sore throat, runny nose, watery eyes, cough, and fever.",
+        "workedSolution": "Measles symptoms include sore throat, runny nose, watery eyes, cough, and fever.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How is Measles effectively prevented in young children?",
+        "options": [
+          "A. Routine vaccination of young children and avoiding overcrowding",
+          "B. Feeding the child only carbohydrates",
+          "C. Giving antibiotic pills daily",
+          "D. Washing hands in salt water"
+        ],
+        "correctAnswer": "A. Routine vaccination of young children and avoiding overcrowding",
+        "hint": "Prevention of measles involves vaccination of young children and avoiding overcrowding.",
+        "workedSolution": "Prevention of measles involves vaccination of young children and avoiding overcrowding.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Mumps is a viral disease that primarily causes painful inflammation and swelling of which organs/glands?",
+        "options": [
+          "A. Salivary glands, testes, ovaries, and pancreas",
+          "B. Long leg bones",
+          "C. Tooth enamel",
+          "D. Finger nails"
+        ],
+        "correctAnswer": "A. Salivary glands, testes, ovaries, and pancreas",
+        "hint": "Mumps affects testes, ovaries, pancreas, and salivary glands.",
+        "workedSolution": "Mumps affects testes, ovaries, pancreas, and salivary glands.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What control measure prevents the household transmission of Mumps from an infected child?",
+        "options": [
+          "A. Properly disinfecting the clothes and eating utensils of the patient and isolating them",
+          "B. Exposing the patient to sun all day",
+          "C. Applying palm oil to the neck",
+          "D. Feeding the patient extra starch"
+        ],
+        "correctAnswer": "A. Properly disinfecting the clothes and eating utensils of the patient and isolating them",
+        "hint": "Prevention of mumps includes disinfecting utensils and clothes of the patient and isolating the infected person.",
+        "workedSolution": "Prevention of mumps includes disinfecting utensils and clothes of the patient and isolating the infected person.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which viral infection presents with sneezing, nasal coughing, headache, chills, and fever, spreading via airborne droplets?",
+        "options": [
+          "A. Common cold",
+          "B. Kwashiorkor",
+          "C. Scurvy",
+          "D. Rickets"
+        ],
+        "correctAnswer": "A. Common cold",
+        "hint": "Common cold symptoms include sneezing, coughing, fever, headache, and chills.",
+        "workedSolution": "Common cold symptoms include sneezing, coughing, fever, headache, and chills.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Chickenpox is a viral infection characterized by which observable sign on the human body?",
+        "options": [
+          "A. Itchy rashes and blisters on the skin accompanied by fever and headache",
+          "B. Large swelling in the thyroid gland",
+          "C. Bending of the tibia bones",
+          "D. Swollen distended abdomen"
+        ],
+        "correctAnswer": "A. Itchy rashes and blisters on the skin accompanied by fever and headache",
+        "hint": "Chicken pox causes fever, headache, and rashes on the skin.",
+        "workedSolution": "Chicken pox causes fever, headache, and rashes on the skin.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Influenza (also referred to as 'sweating sickness') is characterized by:",
+        "options": [
+          "A. Sudden fever, headaches, sore throat, and severe muscular aches",
+          "B. Bleeding gums and loose teeth",
+          "C. Swelling of the lower legs due to fluid",
+          "D. Paralysis of the jaw only"
+        ],
+        "correctAnswer": "A. Sudden fever, headaches, sore throat, and severe muscular aches",
+        "hint": "Influenza presents with sudden fever with headaches, sore throat, and muscular aches.",
+        "workedSolution": "Influenza presents with sudden fever with headaches, sore throat, and muscular aches.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Poliomyelitis (infantile paralysis) is caused by a virus that attacks the nervous system, leading to:",
+        "options": [
+          "A. Fever, headache, stiffness in the neck, and limb paralysis",
+          "B. Night blindness",
+          "C. Softening of teeth",
+          "D. Dermatitis on hands"
+        ],
+        "correctAnswer": "A. Fever, headache, stiffness in the neck, and limb paralysis",
+        "hint": "Poliomyelitis causes fever, headache, stiffness in neck, and muscle paralysis.",
+        "workedSolution": "Poliomyelitis causes fever, headache, stiffness in neck, and muscle paralysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary mode of transmission of Poliomyelitis?",
+        "options": [
+          "A. Ingestion of food or water contaminated by the virus (food-borne/water-borne) and airborne routes",
+          "B. Dog bites",
+          "C. Eating raw cassava",
+          "D. Mosquito bites"
+        ],
+        "correctAnswer": "A. Ingestion of food or water contaminated by the virus (food-borne/water-borne) and airborne routes",
+        "hint": "Polio transmission occurs via airborne, food-borne, or water contamination.",
+        "workedSolution": "Polio transmission occurs via airborne, food-borne, or water contamination.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How is Poliomyelitis prevented in infants?",
+        "options": [
+          "A. Administering polio vaccines to children",
+          "B. Giving children iodine salt",
+          "C. Applying oil to their legs",
+          "D. Keeping them in air-conditioned rooms"
+        ],
+        "correctAnswer": "A. Administering polio vaccines to children",
+        "hint": "Poliomyelitis is prevented through polio vaccination administered to children.",
+        "workedSolution": "Poliomyelitis is prevented through polio vaccination administered to children.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How is the Rabies virus transmitted to humans?",
+        "options": [
+          "A. Through the bite or saliva scratch of an infected rabid dog or animal",
+          "B. Inhaling dust in poultry pens",
+          "C. Drinking unpasteurized cow milk",
+          "D. Eating canned fish"
+        ],
+        "correctAnswer": "A. Through the bite or saliva scratch of an infected rabid dog or animal",
+        "hint": "Rabies is transmitted through the bites of an infected dog or animal.",
+        "workedSolution": "Rabies is transmitted through the bites of an infected dog or animal.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What clinical neurological symptoms occur in humans infected with Rabies?",
+        "options": [
+          "A. Headaches, nervousness, fever, hydrophobia, and paralysis",
+          "B. Softening of rib bones",
+          "C. Red hair depigmentation",
+          "D. Bleeding from gums"
+        ],
+        "correctAnswer": "A. Headaches, nervousness, fever, hydrophobia, and paralysis",
+        "hint": "Symptoms of rabies include headaches, nervousness, fever, and paralysis.",
+        "workedSolution": "Symptoms of rabies include headaches, nervousness, fever, and paralysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which public health measure is most effective in preventing the spread of Rabies in a community?",
+        "options": [
+          "A. Mass immunization of domestic dogs and humane destruction of infected animals",
+          "B. Spraying mosquito insecticides",
+          "C. Adding chlorine to tap water",
+          "D. Boiling all food twice"
+        ],
+        "correctAnswer": "A. Mass immunization of domestic dogs and humane destruction of infected animals",
+        "hint": "Rabies control requires the immunization of dogs and destruction of infected rabid animals.",
+        "workedSolution": "Rabies control requires the immunization of dogs and destruction of infected rabid animals.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Hepatitis B is a viral disease that primarily targets and infects which internal organ?",
+        "options": [
+          "A. The liver",
+          "B. The lungs",
+          "C. The kidneys",
+          "D. The brain"
+        ],
+        "correctAnswer": "A. The liver",
+        "hint": "Hepatitis B specifically infects the liver.",
+        "workedSolution": "Hepatitis B specifically infects the liver.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following clinical signs is characteristic of Hepatitis B infection?",
+        "options": [
+          "A. Jaundice (yellowing of skin/eyes), nausea, and severe loss of appetite",
+          "B. Rachitic rosary on ribs",
+          "C. Bowing of the leg bones",
+          "D. Swollen bleeding gums"
+        ],
+        "correctAnswer": "A. Jaundice (yellowing of skin/eyes), nausea, and severe loss of appetite",
+        "hint": "Hepatitis B presents with jaundice, nausea, and severe loss of appetite.",
+        "workedSolution": "Hepatitis B presents with jaundice, nausea, and severe loss of appetite.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How is Hepatitis B transmitted among humans?",
+        "options": [
+          "A. Through contact with infected blood, water-borne contamination, and sexual intercourse",
+          "B. Inhaling dry grass pollen",
+          "C. Handshakes with dry hands",
+          "D. Mosquito bites"
+        ],
+        "correctAnswer": "A. Through contact with infected blood, water-borne contamination, and sexual intercourse",
+        "hint": "Hepatitis B transmission occurs through blood-borne routes, water-borne vectors, and sexual intercourse.",
+        "workedSolution": "Hepatitis B transmission occurs through blood-borne routes, water-borne vectors, and sexual intercourse.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which preventive measure protects individuals against Hepatitis B infection?",
+        "options": [
+          "A. Hepatitis B vaccination and boiling drinking water",
+          "B. Taking vitamin C tablets",
+          "C. Eating sea fish daily",
+          "D. Using hand fans in hot rooms"
+        ],
+        "correctAnswer": "A. Hepatitis B vaccination and boiling drinking water",
+        "hint": "Prevention includes Hepatitis B vaccination, boiling drinking water, and safe clinical practices.",
+        "workedSolution": "Prevention includes Hepatitis B vaccination, boiling drinking water, and safe clinical practices.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Newcastle disease is a highly contagious viral illness that affects:",
+        "options": [
+          "A. Domestic poultry (chickens, turkeys)",
+          "B. Cattle and sheep only",
+          "C. Dogs and cats",
+          "D. Fish in ponds"
+        ],
+        "correctAnswer": "A. Domestic poultry (chickens, turkeys)",
+        "hint": "Newcastle disease is a highly contagious disease affecting domestic poultry.",
+        "workedSolution": "Newcastle disease is a highly contagious disease affecting domestic poultry.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What clinical signs appear in poultry birds infected with Newcastle disease?",
+        "options": [
+          "A. Coughing, sneezing, and loss of voice",
+          "B. Enlargement of leg bones",
+          "C. Reddening of feathers",
+          "D. Loss of teeth"
+        ],
+        "correctAnswer": "A. Coughing, sneezing, and loss of voice",
+        "hint": "Symptoms of Newcastle disease in birds include coughing, sneezing, and loss of voice.",
+        "workedSolution": "Symptoms of Newcastle disease in birds include coughing, sneezing, and loss of voice.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How can a poultry farmer effectively prevent Newcastle disease in a flock?",
+        "options": [
+          "A. Timely vaccination of chicks after hatching and effective water medication",
+          "B. Keeping chickens in total darkness",
+          "C. Feeding chickens with table salt",
+          "D. Washing chicken feathers with soap"
+        ],
+        "correctAnswer": "A. Timely vaccination of chicks after hatching and effective water medication",
+        "hint": "Control of Newcastle disease requires effective vaccination at the right times after hatching and water medication.",
+        "workedSolution": "Control of Newcastle disease requires effective vaccination at the right times after hatching and water medication.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Avian influenza (Bird Flu) is transmitted to domestic poultry flocks directly from:",
+        "options": [
+          "A. Wild birds",
+          "B. Underground earthworms",
+          "C. Forest monkeys",
+          "D. Sea fish"
+        ],
+        "correctAnswer": "A. Wild birds",
+        "hint": "Avian influenza is transmitted directly from wild birds to domestic poultry or indirectly.",
+        "workedSolution": "Avian influenza is transmitted directly from wild birds to domestic poultry or indirectly.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What clinical symptoms are observed in humans infected with Avian influenza?",
+        "options": [
+          "A. Severe cough, sore throat, and high fever",
+          "B. Bowing of the leg bones",
+          "C. Swelling of thyroid gland",
+          "D. Bleeding gums"
+        ],
+        "correctAnswer": "A. Severe cough, sore throat, and high fever",
+        "hint": "Symptoms of avian influenza in humans include cough, sore throat, and fever.",
+        "workedSolution": "Symptoms of avian influenza in humans include cough, sore throat, and fever.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What medical management is required for a person suffering from severe respiratory distress due to Avian influenza?",
+        "options": [
+          "A. Breathing assistance using a mechanical ventilator machine and patient isolation",
+          "B. Feeding them with raw poultry meat",
+          "C. Giving them calcium tablets only",
+          "D. Rubbing alcohol on their chest"
+        ],
+        "correctAnswer": "A. Breathing assistance using a mechanical ventilator machine and patient isolation",
+        "hint": "Management involves support through a breathing machine (ventilator) and isolating the infected person.",
+        "workedSolution": "Management involves support through a breathing machine (ventilator) and isolating the infected person.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is avoiding overcrowding important in preventing the transmission of respiratory viral diseases like Measles and COVID-19?",
+        "options": [
+          "A. It reduces the concentration of infectious airborne droplets shared between people in close proximity",
+          "B. It makes the air temperature colder",
+          "C. It destroys viral genetic RNA",
+          "D. It replaces the need for vaccination"
+        ],
+        "correctAnswer": "A. It reduces the concentration of infectious airborne droplets shared between people in close proximity",
+        "hint": "Avoiding overcrowding reduces droplet and aerosol contact between infected and susceptible individuals.",
+        "workedSolution": "Avoiding overcrowding reduces droplet and aerosol contact between infected and susceptible individuals.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of covering your mouth and nose with a handkerchief or tissue when sneezing?",
+        "options": [
+          "A. To trap expelled viral droplets and prevent them from contaminating air and surrounding people",
+          "B. To warm the nose",
+          "C. To prevent air from entering lungs",
+          "D. To clean facial skin"
+        ],
+        "correctAnswer": "A. To trap expelled viral droplets and prevent them from contaminating air and surrounding people",
+        "hint": "Covering the mouth and nose when sneezing captures respiratory droplets and halts disease spread.",
+        "workedSolution": "Covering the mouth and nose when sneezing captures respiratory droplets and halts disease spread.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which class of nutrients acts as structural cushions protecting internal organs such as kidneys from mechanical shock?",
+        "options": [
+          "A. Fats (lipids)",
+          "B. Carbohydrates",
+          "C. Water only",
+          "D. Roughage"
+        ],
+        "correctAnswer": "A. Fats (lipids)",
+        "hint": "Fat around organs protects such organs from mechanical shock.",
+        "workedSolution": "Fat around organs protects such organs from mechanical shock.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is a symptom of dietary lack of Vitamin B2 (Riboflavin)?",
+        "options": [
+          "A. Anaemia or dermatitis (cracked skin/mouth corners)",
+          "B. Goitre in the neck",
+          "C. Bowed legs",
+          "D. Night blindness"
+        ],
+        "correctAnswer": "A. Anaemia or dermatitis (cracked skin/mouth corners)",
+        "hint": "Lack of vitamin B2 causes anaemia or dermatitis.",
+        "workedSolution": "Lack of vitamin B2 causes anaemia or dermatitis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does an individual suffering from Marasmus look like an 'old person' with wrinkled skin?",
+        "options": [
+          "A. Due to complete loss of subcutaneous fat and extreme muscle wasting from lack of carbohydrates and energy",
+          "B. Because of excess water accumulation in the skin",
+          "C. Due to an enlarged thyroid gland",
+          "D. Because of excess dietary protein intake"
+        ],
+        "correctAnswer": "A. Due to complete loss of subcutaneous fat and extreme muscle wasting from lack of carbohydrates and energy",
+        "hint": "Severe lack of carbohydrates and calories in marasmus wastes subcutaneous fat and muscle, wrinkling the skin.",
+        "workedSolution": "Severe lack of carbohydrates and calories in marasmus wastes subcutaneous fat and muscle, wrinkling the skin.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does prompt isolation of infected patients help control contagious viral outbreaks like Ebola and COVID-19?",
+        "options": [
+          "A. It breaks the chain of transmission by physically separating infectious hosts from susceptible populations",
+          "B. It changes the virus into a bacterium",
+          "C. It cures the patient instantly",
+          "D. It eliminates the need for doctors"
+        ],
+        "correctAnswer": "A. It breaks the chain of transmission by physically separating infectious hosts from susceptible populations",
+        "hint": "Isolating infected persons prevents pathogen transfer to uninfected contacts, stopping epidemic spread.",
+        "workedSolution": "Isolating infected persons prevents pathogen transfer to uninfected contacts, stopping epidemic spread.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of routine childhood immunization programmes in public health?",
+        "options": [
+          "A. To stimulate the immune system to produce antibodies against specific viral pathogens before exposure occurs",
+          "B. To supply daily calories to the child",
+          "C. To treat bone fractures",
+          "D. To replace balanced diets completely"
+        ],
+        "correctAnswer": "A. To stimulate the immune system to produce antibodies against specific viral pathogens before exposure occurs",
+        "hint": "Vaccines stimulate protective immune antibodies, conferring resistance against lethal viral diseases.",
+        "workedSolution": "Vaccines stimulate protective immune antibodies, conferring resistance against lethal viral diseases.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A clinical patient presents with severe bilateral pitting oedema in the lower legs and protruding abdomen, depigmented reddish hair, but normal subcutaneous fat in the cheeks. What is the diagnosis?",
+        "options": [
+          "A. Marasmus",
+          "B. Kwashiorkor",
+          "C. Scurvy",
+          "D. Rickets"
+        ],
+        "correctAnswer": "B. Kwashiorkor",
+        "hint": "Kwashiorkor is characterized by oedema (swollen belly/legs), depigmented hair, and fatty liver despite caloric intake.",
+        "workedSolution": "Kwashiorkor is characterized by oedema (swollen belly/legs), depigmented hair, and fatty liver despite caloric intake.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Kwashiorkor produce a distended abdomen (ascites) and oedema, whereas Marasmus does not?",
+        "options": [
+          "A. Protein deficiency lowers blood albumin, reducing intravascular oncotic pressure and causing fluid to leak into interstitial tissues",
+          "B. Marasmus patients drink no water",
+          "C. Kwashiorkor is caused by intestinal worms only",
+          "D. Marasmus produces excess blood proteins"
+        ],
+        "correctAnswer": "A. Protein deficiency lowers blood albumin, reducing intravascular oncotic pressure and causing fluid to leak into interstitial tissues",
+        "hint": "Lack of protein impairs liver albumin synthesis, collapsing oncotic pressure and driving fluid leakage (oedema).",
+        "workedSolution": "Lack of protein impairs liver albumin synthesis, collapsing oncotic pressure and driving fluid leakage (oedema).",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a pregnant woman require an increased intake of second-class proteins if first-class animal proteins are unavailable?",
+        "options": [
+          "A. Plant proteins lack certain essential amino acids and must be combined from complementary sources to provide complete amino acid profiles for foetal growth",
+          "B. Plant proteins contain excess calcium",
+          "C. Plant proteins turn directly into fats",
+          "D. Second-class proteins contain no nitrogen"
+        ],
+        "correctAnswer": "A. Plant proteins lack certain essential amino acids and must be combined from complementary sources to provide complete amino acid profiles for foetal growth",
+        "hint": "Second-class plant proteins lack specific essential amino acids; diverse mixtures must be consumed to provide all building blocks.",
+        "workedSolution": "Second-class plant proteins lack specific essential amino acids; diverse mixtures must be consumed to provide all building blocks.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A child in an inland community eats cassava and maize without seafood or iodated salt and develops a swollen neck. What physiological mechanism caused this enlargement?",
+        "options": [
+          "A. Insufficient iodine prevents thyroid hormone (thyroxine) synthesis, causing the pituitary to oversecrete TSH, which overstimulates and enlarges the thyroid gland (Goitre)",
+          "B. Excess fat accumulates in the neck muscles",
+          "C. Bone marrow expands into the throat",
+          "D. Vitamin C dissolves throat cartilage"
+        ],
+        "correctAnswer": "A. Insufficient iodine prevents thyroid hormone (thyroxine) synthesis, causing the pituitary to oversecrete TSH, which overstimulates and enlarges the thyroid gland (Goitre)",
+        "hint": "Iodine deficiency blocks thyroxine synthesis, causing elevated TSH to trigger compensatory thyroid hypertrophy (Goitre).",
+        "workedSolution": "Iodine deficiency blocks thyroxine synthesis, causing elevated TSH to trigger compensatory thyroid hypertrophy (Goitre).",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does lack of dietary Vitamin D impair bone development, leading to the bowed legs seen in Rickets?",
+        "options": [
+          "A. Vitamin D is essential for intestinal calcium and phosphate absorption; its deficiency leaves the osteoid bone matrix soft and unmineralized, bowing under weight",
+          "B. Vitamin D breaks down bone minerals",
+          "C. Vitamin D makes leg bones too brittle",
+          "D. Vitamin D turns bone into muscle"
+        ],
+        "correctAnswer": "A. Vitamin D is essential for intestinal calcium and phosphate absorption; its deficiency leaves the osteoid bone matrix soft and unmineralized, bowing under weight",
+        "hint": "Vitamin D is required for calcium absorption; deficiency prevents bone mineralization, causing pliable bones to bow under weight.",
+        "workedSolution": "Vitamin D is required for calcium absorption; deficiency prevents bone mineralization, causing pliable bones to bow under weight.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do patients suffering from Scurvy experience delayed wound healing and bleeding gums?",
+        "options": [
+          "A. Vitamin C is a critical co-factor for prolyl hydroxylase in collagen synthesis; without it, connective tissue and capillary walls become fragile and break",
+          "B. Vitamin C kills white blood cells",
+          "C. Blood pressure doubles without vitamin C",
+          "D. Vitamin C replaces red blood cells"
+        ],
+        "correctAnswer": "A. Vitamin C is a critical co-factor for prolyl hydroxylase in collagen synthesis; without it, connective tissue and capillary walls become fragile and break",
+        "hint": "Vitamin C is essential for collagen cross-linking; its absence causes blood vessel fragility, gum bleeding, and failed healing.",
+        "workedSolution": "Vitamin C is essential for collagen cross-linking; its absence causes blood vessel fragility, gum bleeding, and failed healing.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a dietary deficiency in Vitamin K lead to fatal haemorrhages from minor wounds?",
+        "options": [
+          "A. Vitamin K is required for the hepatic synthesis of blood clotting factors (such as prothrombin), without which the clotting cascade fails",
+          "B. Vitamin K dissolves platelets",
+          "C. Vitamin K increases heart rate",
+          "D. Vitamin K destroys blood vessels"
+        ],
+        "correctAnswer": "A. Vitamin K is required for the hepatic synthesis of blood clotting factors (such as prothrombin), without which the clotting cascade fails",
+        "hint": "Vitamin K is an obligate co-factor for synthesizing prothrombin and clotting factors; its absence causes prolonged bleeding.",
+        "workedSolution": "Vitamin K is an obligate co-factor for synthesizing prothrombin and clotting factors; its absence causes prolonged bleeding.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the consumption of insoluble roughage reduce the incidence of colorectal cancer in humans?",
+        "options": [
+          "A. It accelerates transit time through the colon, decreasing the duration of mucosal exposure to potential fecal carcinogens",
+          "B. It neutralizes all stomach acids",
+          "C. It destroys intestinal blood vessels",
+          "D. It provides high glucose levels"
+        ],
+        "correctAnswer": "A. It accelerates transit time through the colon, decreasing the duration of mucosal exposure to potential fecal carcinogens",
+        "hint": "Roughage increases stool bulk and peristalsis, speeding passage and reducing the contact time of carcinogens with the bowel wall.",
+        "workedSolution": "Roughage increases stool bulk and peristalsis, speeding passage and reducing the contact time of carcinogens with the bowel wall.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological mechanism by which a virus hijacks host cell machinery during infection?",
+        "options": [
+          "A. The viral genome enters the host cell and uses host ribosomes, amino acids, and ATP to synthesize viral proteins and replicate viral genomes",
+          "B. The virus eats the host cell cytoplasm directly",
+          "C. The virus supplies its own ribosomes and mitochondria",
+          "D. The virus converts into a bacterium"
+        ],
+        "correctAnswer": "A. The viral genome enters the host cell and uses host ribosomes, amino acids, and ATP to synthesize viral proteins and replicate viral genomes",
+        "hint": "Viruses inject genetic material and co-opt host cellular machinery (ribosomes and enzymes) to manufacture daughter virions.",
+        "workedSolution": "Viruses inject genetic material and co-opt host cellular machinery (ribosomes and enzymes) to manufacture daughter virions.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are antibiotics like penicillin completely INEFFECTIVE against viral diseases such as COVID-19, Ebola, and Influenza?",
+        "options": [
+          "A. Antibiotics target bacterial structures (cell walls, ribosomes, metabolic pathways) that viruses lack",
+          "B. Viruses are too large for antibiotics to enter",
+          "C. Antibiotics turn viruses into fungi",
+          "D. Antibiotics only work inside cold water"
+        ],
+        "correctAnswer": "A. Antibiotics target bacterial structures (cell walls, ribosomes, metabolic pathways) that viruses lack",
+        "hint": "Viruses lack peptidoglycan cell walls, ribosomes, and metabolic machinery targeted by antibiotics; viral control requires antivirals/vaccines.",
+        "workedSolution": "Viruses lack peptidoglycan cell walls, ribosomes, and metabolic machinery targeted by antibiotics; viral control requires antivirals/vaccines.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does SARS-CoV-2 (COVID-19) infection cause a sudden loss of the sense of smell (anosmia) in infected individuals?",
+        "options": [
+          "A. The virus binds to ACE2 receptors on supporting sustentacular cells of the olfactory epithelium, disrupting olfactory neuronal signaling",
+          "B. The virus destroys the nose bones",
+          "C. Nasal mucus turns into solid wax",
+          "D. The virus freezes facial nerves"
+        ],
+        "correctAnswer": "A. The virus binds to ACE2 receptors on supporting sustentacular cells of the olfactory epithelium, disrupting olfactory neuronal signaling",
+        "hint": "SARS-CoV-2 damages non-neuronal support cells in the olfactory epithelium, temporarily paralyzing the sense of smell (anosmia).",
+        "workedSolution": "SARS-CoV-2 damages non-neuronal support cells in the olfactory epithelium, temporarily paralyzing the sense of smell (anosmia).",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the clinical significance of the 4 to 6 day incubation period of COVID-19 in epidemiological disease control?",
+        "options": [
+          "A. Infected individuals can be presymptomatic yet shed high viral loads, silently transmitting the disease to uninfected contacts",
+          "B. The virus is completely dead during this period",
+          "C. Patients are immune to all other diseases during these days",
+          "D. Vaccines cannot be given after day 6"
+        ],
+        "correctAnswer": "A. Infected individuals can be presymptomatic yet shed high viral loads, silently transmitting the disease to uninfected contacts",
+        "hint": "The asymptomatic incubation window enables silent community transmission before clinical signs manifest.",
+        "workedSolution": "The asymptomatic incubation window enables silent community transmission before clinical signs manifest.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why did the Ebola virus disease outbreaks in West Africa exhibit high fatality rates exceeding 50%?",
+        "options": [
+          "A. The virus causes severe vascular endothelial damage, cytokine storm, systemic internal/external hemorrhaging, and irreversible hypovolemic shock",
+          "B. The virus destroys only bone cartilage",
+          "C. Ebola is caused by water toxins",
+          "D. Fruit bats bite every human patient directly"
+        ],
+        "correctAnswer": "A. The virus causes severe vascular endothelial damage, cytokine storm, systemic internal/external hemorrhaging, and irreversible hypovolemic shock",
+        "hint": "Filoviral replication causes massive endothelial breakdown, widespread hemorrhaging, fluid loss, and fatal shock.",
+        "workedSolution": "Filoviral replication causes massive endothelial breakdown, widespread hemorrhaging, fluid loss, and fatal shock.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are traditional funeral and burial rites involving the washing of deceased bodies dangerous during an Ebola outbreak?",
+        "options": [
+          "A. Post-mortem Ebola corpses carry peak viral loads in skin, blood, and fluids, exposing funeral attendees to lethal transmission",
+          "B. Dead bodies emit radioactive fumes",
+          "C. Burial water turns into acid",
+          "D. The virus flies into the air as dust"
+        ],
+        "correctAnswer": "A. Post-mortem Ebola corpses carry peak viral loads in skin, blood, and fluids, exposing funeral attendees to lethal transmission",
+        "hint": "Deceased bodies have extremely high viral titers; direct contact during burial washing transmits the virus efficiently.",
+        "workedSolution": "Deceased bodies have extremely high viral titers; direct contact during burial washing transmits the virus efficiently.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How did the triple genetic reassortment in pigs generate the novel H1N1 influenza pandemic strain?",
+        "options": [
+          "A. Pigs possess receptors for both avian and mammalian flu strains, acting as 'mixing vessels' where segmented RNA genomes exchange fragments",
+          "B. Pigs were injected with snake venom",
+          "C. Avian flu viruses ate swine bacteria",
+          "D. The virus mutated from plant fertilizers"
+        ],
+        "correctAnswer": "A. Pigs possess receptors for both avian and mammalian flu strains, acting as 'mixing vessels' where segmented RNA genomes exchange fragments",
+        "hint": "Swine respiratory tracts support both bird and human flu strains, permitting RNA reassortment into hybrid pandemic strains.",
+        "workedSolution": "Swine respiratory tracts support both bird and human flu strains, permitting RNA reassortment into hybrid pandemic strains.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Poliomyelitis cause asymmetric flaccid paralysis predominantly in the lower limbs of infected children?",
+        "options": [
+          "A. The poliovirus selectively attacks and destroys motor neurons in the anterior horn of the spinal cord, cutting off nerve impulses to skeletal muscles",
+          "B. The virus dissolves leg bones",
+          "C. Blood vessels in the thigh clot permanently",
+          "D. Leg muscles lose all water content"
+        ],
+        "correctAnswer": "A. The poliovirus selectively attacks and destroys motor neurons in the anterior horn of the spinal cord, cutting off nerve impulses to skeletal muscles",
+        "hint": "Poliovirus replication in anterior horn spinal motor neurons denervates skeletal muscle fibers, causing flaccid paralysis.",
+        "workedSolution": "Poliovirus replication in anterior horn spinal motor neurons denervates skeletal muscle fibers, causing flaccid paralysis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is clinical Rabies almost 100% fatal once neurological symptoms (such as hydrophobia) develop in a patient?",
+        "options": [
+          "A. The virus travels retrogradely along peripheral nerves into the central nervous system, causing widespread encephalomyelitis and autonomic failure",
+          "B. The virus destroys all red blood cells in 1 hour",
+          "C. Rabies causes stomach rupture",
+          "D. Rabies dissolves the spinal bone"
+        ],
+        "correctAnswer": "A. The virus travels retrogradely along peripheral nerves into the central nervous system, causing widespread encephalomyelitis and autonomic failure",
+        "hint": "Centripetal axonal migration shields the rabies virus from circulating antibodies, destroying brainstem centers.",
+        "workedSolution": "Centripetal axonal migration shields the rabies virus from circulating antibodies, destroying brainstem centers.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What immediate post-exposure prophylaxis (PEP) is required if a person is bitten by a suspected rabid dog?",
+        "options": [
+          "A. Immediate wound washing with soap and running water for 15 minutes, followed by prompt administration of Rabies vaccine and immunoglobulin",
+          "B. Applying hot ash and tying the wound with string",
+          "C. Drinking herbal tea and resting",
+          "D. Waiting two months to see if fever begins"
+        ],
+        "correctAnswer": "A. Immediate wound washing with soap and running water for 15 minutes, followed by prompt administration of Rabies vaccine and immunoglobulin",
+        "hint": "Immediate flushing washes away viral saliva, while post-exposure vaccines and antibodies neutralize the virus before neural entry.",
+        "workedSolution": "Immediate flushing washes away viral saliva, while post-exposure vaccines and antibodies neutralize the virus before neural entry.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is chronic Hepatitis B virus infection associated with liver cirrhosis and primary hepatocellular carcinoma?",
+        "options": [
+          "A. Persistent viral replication in hepatocytes triggers chronic immune inflammation, progressive fibrosis, and integration into the host genome",
+          "B. The virus converts liver cells into bone",
+          "C. The virus removes all bile from the body",
+          "D. The virus turns the liver into fat only"
+        ],
+        "correctAnswer": "A. Persistent viral replication in hepatocytes triggers chronic immune inflammation, progressive fibrosis, and integration into the host genome",
+        "hint": "Chronic HBV infection induces progressive inflammatory fibrosis (cirrhosis) and oncogenic transformation of liver cells.",
+        "workedSolution": "Chronic HBV infection induces progressive inflammatory fibrosis (cirrhosis) and oncogenic transformation of liver cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does Newcastle disease virus devastate commercial poultry production so rapidly?",
+        "options": [
+          "A. It spreads via virulent aerosol droplets and contaminated feed, producing severe respiratory distress, neurological torticollis, and flock mortality",
+          "B. It turns chicken eggs into stone",
+          "C. It stops chickens from growing feathers",
+          "D. It makes chickens fly away"
+        ],
+        "correctAnswer": "A. It spreads via virulent aerosol droplets and contaminated feed, producing severe respiratory distress, neurological torticollis, and flock mortality",
+        "hint": "Velogenic Newcastle virus causes high-mortality respiratory and neurological disease across entire poultry houses.",
+        "workedSolution": "Velogenic Newcastle virus causes high-mortality respiratory and neurological disease across entire poultry houses.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is mass culling and biosecurity enforcement mandated on poultry farms during Avian Influenza (H5N1) outbreaks?",
+        "options": [
+          "A. To eradicate the viral reservoir and prevent genetic mutation or reassortment that could enable sustained human-to-human transmission",
+          "B. To make poultry meat cheaper",
+          "C. To prevent wild birds from flying",
+          "D. Because bird flu cannot be killed by heat"
+        ],
+        "correctAnswer": "A. To eradicate the viral reservoir and prevent genetic mutation or reassortment that could enable sustained human-to-human transmission",
+        "hint": "Culling infected flocks stops avian-to-human spillover and eliminates the risk of generating a human-transmissible pandemic strain.",
+        "workedSolution": "Culling infected flocks stops avian-to-human spillover and eliminates the risk of generating a human-transmissible pandemic strain.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a deficiency in Vitamin B3 (Niacin) manifest with the clinical triad of Dermatitis, Diarrhoea, and Dementia (Pellagra)?",
+        "options": [
+          "A. Niacin forms NAD and NADP, essential co-enzymes for cellular energy production; tissues with high turnover (skin, gut, brain) fail first",
+          "B. Niacin is needed only for hair color",
+          "C. Niacin prevents bone fractures",
+          "D. Niacin turns starch into sugar"
+        ],
+        "correctAnswer": "A. Niacin forms NAD and NADP, essential co-enzymes for cellular energy production; tissues with high turnover (skin, gut, brain) fail first",
+        "hint": "NAD/NADP coenzymes fuel cellular repair; their deficiency damages high-energy and high-turnover organs: skin, gut, and brain.",
+        "workedSolution": "NAD/NADP coenzymes fuel cellular repair; their deficiency damages high-energy and high-turnover organs: skin, gut, and brain.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does alcohol-based hand rub with 68% and above concentration destroy enveloped viruses like SARS-CoV-2 and Influenza?",
+        "options": [
+          "A. It dissolves the outer viral lipid bilayer envelope and denatures the spike surface glycoproteins needed to infect host cells",
+          "B. It cools the virus to absolute zero",
+          "C. It converts the virus into water",
+          "D. It feeds the virus with sugar"
+        ],
+        "correctAnswer": "A. It dissolves the outer viral lipid bilayer envelope and denatures the spike surface glycoproteins needed to infect host cells",
+        "hint": "Alcohol disrupts lipid membranes and denatures envelope glycoproteins, neutralizing viral infectivity.",
+        "workedSolution": "Alcohol disrupts lipid membranes and denatures envelope glycoproteins, neutralizing viral infectivity.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary immunological difference between natural active immunity from surviving Measles versus artificial active immunity from the Measles vaccine?",
+        "options": [
+          "A. Both produce protective memory B and T lymphocytes, but the vaccine confers immunity without the patient suffering clinical disease or complications",
+          "B. Vaccines only protect for one hour",
+          "C. Natural infection produces no antibodies",
+          "D. Vaccines contain live bacterial toxins"
+        ],
+        "correctAnswer": "A. Both produce protective memory B and T lymphocytes, but the vaccine confers immunity without the patient suffering clinical disease or complications",
+        "hint": "Attenuated vaccines stimulate long-term protective immune memory without the morbidity, encephalitis, or mortality of wild infection.",
+        "workedSolution": "Attenuated vaccines stimulate long-term protective immune memory without the morbidity, encephalitis, or mortality of wild infection.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an unweaned infant whose diet is shifted abruptly to watery starchy cassava gruel develop Kwashiorkor?",
+        "options": [
+          "A. Cassava contains high carbohydrates but virtually zero protein, triggering severe hypoalbuminemia as breastmilk protein is withdrawn",
+          "B. Cassava contains excess vitamin C",
+          "C. Starch dissolves the child's bones",
+          "D. Cassava is a first-class animal protein"
+        ],
+        "correctAnswer": "A. Cassava contains high carbohydrates but virtually zero protein, triggering severe hypoalbuminemia as breastmilk protein is withdrawn",
+        "hint": "Replacing protein-rich breastmilk with pure starchy gruel provides calories without amino acids, inducing Kwashiorkor.",
+        "workedSolution": "Replacing protein-rich breastmilk with pure starchy gruel provides calories without amino acids, inducing Kwashiorkor.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chronic fluid and electrolyte imbalance from malnutrition lead to cardiac failure in children?",
+        "options": [
+          "A. Depletion of intracellular potassium and magnesium weakens myocardial contractility, triggering fatal cardiac arrhythmias",
+          "B. Excess protein hardens the heart valves",
+          "C. Water turns into fat around the lungs",
+          "D. The heart stops pumping blood completely"
+        ],
+        "correctAnswer": "A. Depletion of intracellular potassium and magnesium weakens myocardial contractility, triggering fatal cardiac arrhythmias",
+        "hint": "Electrolyte shifts (hypokalemia and hypomagnesemia) impair myocyte membrane potentials, precipitating heart failure.",
+        "workedSolution": "Electrolyte shifts (hypokalemia and hypomagnesemia) impair myocyte membrane potentials, precipitating heart failure.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Vitamin A deficiency cause both night blindness (nyctalopia) and vulnerability to measles infections?",
+        "options": [
+          "A. Vitamin A is required for retinal rhodopsin synthesis and for maintaining the integrity of respiratory epithelial mucosal barriers and immune function",
+          "B. Vitamin A is an antibiotic medicine",
+          "C. Vitamin A kills all viruses on contact",
+          "D. Vitamin A supplies glucose to retinal cones"
+        ],
+        "correctAnswer": "A. Vitamin A is required for retinal rhodopsin synthesis and for maintaining the integrity of respiratory epithelial mucosal barriers and immune function",
+        "hint": "Retinol is vital for visual phototransduction in rods and maintaining immune mucosal defenses against pathogens.",
+        "workedSolution": "Retinol is vital for visual phototransduction in rods and maintaining immune mucosal defenses against pathogens.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a viral infection, what occurs during the 'assembly' stage of the intracellular replication cycle?",
+        "options": [
+          "A. Newly replicated viral nucleic acid genomes are packaged inside newly synthesized protein capsids to form mature virions",
+          "B. The host cell splits into two bacteria",
+          "C. The virus leaves the body in urine",
+          "D. The host cell repairs all damage"
+        ],
+        "correctAnswer": "A. Newly replicated viral nucleic acid genomes are packaged inside newly synthesized protein capsids to form mature virions",
+        "hint": "Assembly involves the packaging of viral genomes into structural capsomeres to create infectious virions.",
+        "workedSolution": "Assembly involves the packaging of viral genomes into structural capsomeres to create infectious virions.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the novel coronavirus SARS-CoV-2 spread via fomites in public places?",
+        "options": [
+          "A. Viral particles in expelled droplets settle on inanimate surfaces (door handles, railings), remaining infectious for hours to days until transferred by touch",
+          "B. The virus crawls across floors like an insect",
+          "C. The virus multiplies on metal surfaces without cells",
+          "D. The virus is magnetized to plastic"
+        ],
+        "correctAnswer": "A. Viral particles in expelled droplets settle on inanimate surfaces (door handles, railings), remaining infectious for hours to days until transferred by touch",
+        "hint": "Virions remain viable on non-porous surfaces; touching fomites and subsequent eye/nose/mouth contact transfers the infection.",
+        "workedSolution": "Virions remain viable on non-porous surfaces; touching fomites and subsequent eye/nose/mouth contact transfers the infection.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the pathological cause of the 'rachitic rosary' observed on the rib cages of children with Rickets?",
+        "options": [
+          "A. Nodular enlargement and swelling at the costochondral junctions where ribs join the sternum due to defective cartilage calcification",
+          "B. Broken rib fractures caused by coughing",
+          "C. Bacterial skin boils on the chest",
+          "D. Fatty deposits under the chest skin"
+        ],
+        "correctAnswer": "A. Nodular enlargement and swelling at the costochondral junctions where ribs join the sternum due to defective cartilage calcification",
+        "hint": "Disorganized unmineralized osteoid expansion at costochondral joints produces bead-like prominences ('rachitic rosary').",
+        "workedSolution": "Disorganized unmineralized osteoid expansion at costochondral joints produces bead-like prominences ('rachitic rosary').",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does personal protective equipment (PPE) for Ebola healthcare workers require complete biohazard coverage with zero exposed skin?",
+        "options": [
+          "A. The virus is extraordinarily infectious; contact of minute amounts of infected blood or body fluids with broken skin or mucous membranes transmits the disease",
+          "B. Ebola virus bites like an insect",
+          "C. PPE is needed to keep workers warm in tropical heat",
+          "D. The virus travels through radio signals"
+        ],
+        "correctAnswer": "A. The virus is extraordinarily infectious; contact of minute amounts of infected blood or body fluids with broken skin or mucous membranes transmits the disease",
+        "hint": "High viral load in fluids and low infectious dose demand total barrier isolation to protect healthcare staff.",
+        "workedSolution": "High viral load in fluids and low infectious dose demand total barrier isolation to protect healthcare staff.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does vertical transmission of the Hepatitis B virus occur?",
+        "options": [
+          "A. From an infected mother to her neonate during labor and childbirth through exposure to maternal blood and genital secretions",
+          "B. Through drinking contaminated well water",
+          "C. Through breathing dust in school classrooms",
+          "D. Through insect bites on the baby's skin"
+        ],
+        "correctAnswer": "A. From an infected mother to her neonate during labor and childbirth through exposure to maternal blood and genital secretions",
+        "hint": "Perinatal transmission occurs during delivery when maternal blood and vaginal secretions expose the newborn.",
+        "workedSolution": "Perinatal transmission occurs during delivery when maternal blood and vaginal secretions expose the newborn.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do poultry birds infected with Avian influenza exhibit cyanosis (blue-purple discoloration) of the comb and wattles?",
+        "options": [
+          "A. Severe viral damage to pulmonary capillaries causes profound hypoxia and poor blood oxygenation throughout peripheral vascular tissues",
+          "B. The virus paints the comb with pigment",
+          "C. The bird eats blue plastic feed",
+          "D. Comb feathers turn into scales"
+        ],
+        "correctAnswer": "A. Severe viral damage to pulmonary capillaries causes profound hypoxia and poor blood oxygenation throughout peripheral vascular tissues",
+        "hint": "Systemic endothelial necrosis and acute respiratory failure cause deoxygenated blood pooling (cyanosis) in wattles.",
+        "workedSolution": "Systemic endothelial necrosis and acute respiratory failure cause deoxygenated blood pooling (cyanosis) in wattles.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological role of essential fatty acids in the cognitive development of a human foetus?",
+        "options": [
+          "A. They are structural components of neuronal cell membranes, cerebral cortex gray matter, and myelin sheaths in the developing brain",
+          "B. They provide calcium for bone formation",
+          "C. They produce stomach acids for digestion",
+          "D. They stop the foetus from gaining weight"
+        ],
+        "correctAnswer": "A. They are structural components of neuronal cell membranes, cerebral cortex gray matter, and myelin sheaths in the developing brain",
+        "hint": "Omega lipids form the phospholipid matrix of neural synapses and cerebral tissue during gestation.",
+        "workedSolution": "Omega lipids form the phospholipid matrix of neural synapses and cerebral tissue during gestation.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are individuals infected with Mumps monitored for testicular and abdominal pain?",
+        "options": [
+          "A. The mumps virus can spread via the bloodstream to cause severe orchitis in post-pubertal males and pancreatitis",
+          "B. Mumps causes immediate kidney stones",
+          "C. The virus dissolves intestinal walls",
+          "D. Mumps turns testes into bone"
+        ],
+        "correctAnswer": "A. The mumps virus can spread via the bloodstream to cause severe orchitis in post-pubertal males and pancreatitis",
+        "hint": "Mumps has glandular tropism; viremia can inflame testicular seminiferous tubules (orchitis) and pancreatic acinar cells.",
+        "workedSolution": "Mumps has glandular tropism; viremia can inflame testicular seminiferous tubules (orchitis) and pancreatic acinar cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does proper boiling of drinking water interrupt the transmission cycle of Hepatitis B and Poliomyelitis?",
+        "options": [
+          "A. Thermal energy denatures viral capsid proteins and destabilizes lipid envelopes, neutralizing viral infectivity",
+          "B. Boiling turns viruses into minerals",
+          "C. Boiling cools down the water molecules",
+          "D. Boiling adds chlorine to water"
+        ],
+        "correctAnswer": "A. Thermal energy denatures viral capsid proteins and destabilizes lipid envelopes, neutralizing viral infectivity",
+        "hint": "Heat breaks hydrogen bonds in viral capsids and nucleic acids, rendering water-borne viruses non-infectious.",
+        "workedSolution": "Heat breaks hydrogen bonds in viral capsids and nucleic acids, rendering water-borne viruses non-infectious.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a pregnant woman require a positive energy balance with adequate carbohydrates?",
+        "options": [
+          "A. To support increased maternal basal metabolic rate, cardiac output, uterine growth, and foetal caloric demands",
+          "B. To ensure the baby is born with teeth",
+          "C. To prevent all maternal weight gain",
+          "D. To turn maternal bones into muscle"
+        ],
+        "correctAnswer": "A. To support increased maternal basal metabolic rate, cardiac output, uterine growth, and foetal caloric demands",
+        "hint": "Maternal metabolism increases substantially to supply continuous transplacental glucose to the developing foetus.",
+        "workedSolution": "Maternal metabolism increases substantially to supply continuous transplacental glucose to the developing foetus.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the histological hallmark of Chickenpox skin lesions compared to common bacterial boils?",
+        "options": [
+          "A. Successive crops of pruritic, clear fluid-filled vesicles ('dewdrops on a rose petal') that progress to pustules and crusts",
+          "B. Solid dry black horns",
+          "C. Deep open bone fractures",
+          "D. Permanent blue skin stains"
+        ],
+        "correctAnswer": "A. Successive crops of pruritic, clear fluid-filled vesicles ('dewdrops on a rose petal') that progress to pustules and crusts",
+        "hint": "Varicella presents with classic superficial, thin-walled, itchy clear blisters appearing in successive crops.",
+        "workedSolution": "Varicella presents with classic superficial, thin-walled, itchy clear blisters appearing in successive crops.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the consumption of whole unpolished brown rice protect individuals against Beriberi?",
+        "options": [
+          "A. The outer bran layer (pericarp) of whole grains contains high concentrations of Thiamine (Vitamin B1), which is stripped off in polished white rice",
+          "B. Brown rice contains animal protein",
+          "C. Brown rice is an antibiotic drug",
+          "D. Brown rice destroys stomach acids"
+        ],
+        "correctAnswer": "A. The outer bran layer (pericarp) of whole grains contains high concentrations of Thiamine (Vitamin B1), which is stripped off in polished white rice",
+        "hint": "Thiamine is concentrated in grain aleurone/bran layers; milling produces white rice that induces Thiamine deficiency (Beriberi).",
+        "workedSolution": "Thiamine is concentrated in grain aleurone/bran layers; milling produces white rice that induces Thiamine deficiency (Beriberi).",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the human body require dietary intake of essential amino acids throughout adult life?",
+        "options": [
+          "A. Cellular proteins and enzymes undergo constant degradation and turnover, requiring ongoing amino acid supply for replacement synthesis",
+          "B. Amino acids are converted into oxygen",
+          "C. Adult bones dissolve without amino acids every week",
+          "D. Amino acids are the only source of body water"
+        ],
+        "correctAnswer": "A. Cellular proteins and enzymes undergo constant degradation and turnover, requiring ongoing amino acid supply for replacement synthesis",
+        "hint": "Structural and enzymatic proteins turn over continuously; essential amino acids must be replenished to sustain tissue synthesis.",
+        "workedSolution": "Structural and enzymatic proteins turn over continuously; essential amino acids must be replenished to sustain tissue synthesis.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the mortality rate of Rabies almost zero if Post-Exposure Prophylaxis (PEP) is administered immediately following a dog bite?",
+        "options": [
+          "A. The rabies virus has a relatively long incubation period; active immunization and passive antibodies neutralize the virus before it enters peripheral nerve axons",
+          "B. The vaccine kills the dog automatically",
+          "C. Rabies virus dies in room air instantly",
+          "D. The vaccine turns rabies into common cold"
+        ],
+        "correctAnswer": "A. The rabies virus has a relatively long incubation period; active immunization and passive antibodies neutralize the virus before it enters peripheral nerve axons",
+        "hint": "Slow centripetal neural transit gives a therapeutic window for vaccine-induced antibodies to neutralize the virus at the wound site.",
+        "workedSolution": "Slow centripetal neural transit gives a therapeutic window for vaccine-induced antibodies to neutralize the virus at the wound site.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the underlying cause of severe muscle pain (myalgia) and prostration in patients infected with Influenza?",
+        "options": [
+          "A. Massive systemic release of pro-inflammatory cytokines (interferons, interleukins) responding to widespread respiratory viral replication",
+          "B. The virus eats muscle fibers directly",
+          "C. Blood calcium turns into gas",
+          "D. Bones bend out of shape"
+        ],
+        "correctAnswer": "A. Massive systemic release of pro-inflammatory cytokines (interferons, interleukins) responding to widespread respiratory viral replication",
+        "hint": "Innate antiviral interferon release triggers intense systemic inflammatory myalgia, fever, and constitutional malaise.",
+        "workedSolution": "Innate antiviral interferon release triggers intense systemic inflammatory myalgia, fever, and constitutional malaise.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is universal household consumption of iodated salt considered a major public health victory in Ghana?",
+        "options": [
+          "A. It provides a simple, cost-effective micronutrient delivery vehicle that prevents endemic Goitre, cretinism, and mental impairment across the population",
+          "B. It makes table salt sweet like sugar",
+          "C. It eliminates the need for drinking water",
+          "D. It replaces all dietary proteins"
+        ],
+        "correctAnswer": "A. It provides a simple, cost-effective micronutrient delivery vehicle that prevents endemic Goitre, cretinism, and mental impairment across the population",
+        "hint": "Salt iodization delivers trace iodine to entire populations, preventing thyroid disorders and congenital cognitive deficits.",
+        "workedSolution": "Salt iodization delivers trace iodine to entire populations, preventing thyroid disorders and congenital cognitive deficits.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Influenza virus generate new seasonal antigenic strains that evade previous years' vaccine immunity?",
+        "options": [
+          "A. Through antigenic drift (point mutations in hemagglutinin/neuraminidase surface genes) and antigenic shift (reassortment of RNA segments)",
+          "B. By transforming into bacteria",
+          "C. By absorbing human DNA",
+          "D. By losing its protein coat"
+        ],
+        "correctAnswer": "A. Through antigenic drift (point mutations in hemagglutinin/neuraminidase surface genes) and antigenic shift (reassortment of RNA segments)",
+        "hint": "Error-prone RNA replication (antigenic drift) and segment reassortment (shift) alter viral surface antigens, escaping immunity.",
+        "workedSolution": "Error-prone RNA replication (antigenic drift) and segment reassortment (shift) alter viral surface antigens, escaping immunity.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a patient suffering from severe dehydration due to diarrhea experience rapid circulatory collapse?",
+        "options": [
+          "A. Loss of intravascular water reduces effective circulating blood volume, lowering blood pressure and starving vital organs of oxygen",
+          "B. Dehydration makes bones soft",
+          "C. Water loss increases stomach acid volume",
+          "D. The lungs expand and burst"
+        ],
+        "correctAnswer": "A. Loss of intravascular water reduces effective circulating blood volume, lowering blood pressure and starving vital organs of oxygen",
+        "hint": "Loss of plasma water reduces venous return and cardiac output, precipitating life-threatening hypovolemic shock.",
+        "workedSolution": "Loss of plasma water reduces venous return and cardiac output, precipitating life-threatening hypovolemic shock.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary danger of administering live attenuated viral vaccines to severely immunocompromised individuals?",
+        "options": [
+          "A. The weakened virus can replicate unchecked in the absence of immune surveillance, causing disseminated clinical vaccine-strain disease",
+          "B. The vaccine turns into a bacterium",
+          "C. The vaccine makes the patient grow too fast",
+          "D. The vaccine freezes blood cells"
+        ],
+        "correctAnswer": "A. The weakened virus can replicate unchecked in the absence of immune surveillance, causing disseminated clinical vaccine-strain disease",
+        "hint": "Attenuated strains require an intact immune response; immunocompromised hosts cannot control replication, risking active infection.",
+        "workedSolution": "Attenuated strains require an intact immune response; immunocompromised hosts cannot control replication, risking active infection.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are fruit bats unaffected natural reservoirs for the virulent Ebola virus?",
+        "options": [
+          "A. Co-evolutionary adaptations allow bats to carry and shed the filovirus without developing severe vascular damage or lethal inflammatory shock",
+          "B. Fruit bats have no blood vessels",
+          "C. Fruit bats are made of bone only",
+          "D. Ebola virus cannot infect bat cells"
+        ],
+        "correctAnswer": "A. Co-evolutionary adaptations allow bats to carry and shed the filovirus without developing severe vascular damage or lethal inflammatory shock",
+        "hint": "Reservoir species exhibit balanced immune tolerance, harboring pathogens asymptomatically without lethal inflammatory disease.",
+        "workedSolution": "Reservoir species exhibit balanced immune tolerance, harboring pathogens asymptomatically without lethal inflammatory disease.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an infant infected with Poliovirus show neck stiffness prior to the onset of limb paralysis?",
+        "options": [
+          "A. Viral invasion and multiplication in the meninges produce acute viral meningitis, irritating cervical spinal nerve roots",
+          "B. Neck bones fracture spontaneously",
+          "C. The thyroid gland bursts",
+          "D. Neck muscles turn into cartilage"
+        ],
+        "correctAnswer": "A. Viral invasion and multiplication in the meninges produce acute viral meningitis, irritating cervical spinal nerve roots",
+        "hint": "Meningeal inflammation (meningismus) precedes anterior horn neuronal lysis, causing classic nuchal rigidity.",
+        "workedSolution": "Meningeal inflammation (meningismus) precedes anterior horn neuronal lysis, causing classic nuchal rigidity.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does feeding colostrum (the first milk produced postpartum) provide critical immune defense to a newborn infant?",
+        "options": [
+          "A. It delivers concentrated maternal Secretory Immunoglobulin A (sIgA) antibodies that coat the infant's gut mucosa against viral and bacterial invasion",
+          "B. It contains pure mineral salt crystals",
+          "C. It acts as an antibiotic chemical drug",
+          "D. It replaces all future dietary needs"
+        ],
+        "correctAnswer": "A. It delivers concentrated maternal Secretory Immunoglobulin A (sIgA) antibodies that coat the infant's gut mucosa against viral and bacterial invasion",
+        "hint": "Colostrum provides passive mucosal immunity via maternal IgA, protecting the neonatal gastrointestinal tract.",
+        "workedSolution": "Colostrum provides passive mucosal immunity via maternal IgA, protecting the neonatal gastrointestinal tract.",
+        "points": 1
+      },
+      {
+        "id": "B7_HH_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ultimate public health objective of maintaining high population vaccine coverage ('herd immunity') against childhood viral diseases?",
+        "options": [
+          "A. To lower the proportion of susceptible hosts so the basic reproduction number ($R_0$) falls below 1, shielding vulnerable infants who cannot be vaccinated",
+          "B. To make viral pathogens grow larger",
+          "C. To eliminate the need for food and water",
+          "D. To make all medicines free of charge"
+        ],
+        "correctAnswer": "A. To lower the proportion of susceptible hosts so the basic reproduction number ($R_0$) falls below 1, shielding vulnerable infants who cannot be vaccinated",
+        "hint": "High population immunity disrupts transmission chains, protecting immunocompromised individuals who cannot receive vaccines.",
+        "workedSolution": "High population immunity disrupts transmission chains, protecting immunocompromised individuals who cannot receive vaccines.",
         "points": 1
       }
     ]
