@@ -41,7 +41,7 @@ export async function createNewUser(
   email: string,
   password: string,
   role?: string,
-  details?: { firstName: string, lastName: string },
+  details?: { firstName: string, lastName: string, phone?: string },
   schoolId?: string,
   idToken?: string
 ) {

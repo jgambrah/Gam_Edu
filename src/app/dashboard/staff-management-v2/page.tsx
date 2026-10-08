@@ -23,7 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
-  UserCog, UserPlus, Trash2, Loader2, Search,
+  UserCog, UserPlus, Trash2, Loader2, Search, Phone,
   RefreshCw, Edit, Globe, GraduationCap, Heart, FileText, Save, KeyRound, BookOpen
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
