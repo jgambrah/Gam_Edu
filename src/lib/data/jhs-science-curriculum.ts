@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.525Z"
+    "updatedAt": "2026-10-08T13:02:11.619Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.530Z"
+    "updatedAt": "2026-10-08T13:02:11.620Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.530Z"
+    "updatedAt": "2026-10-08T13:02:11.620Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.530Z"
+    "updatedAt": "2026-10-08T13:02:11.620Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.530Z"
+    "updatedAt": "2026-10-08T13:02:11.620Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.530Z"
+    "updatedAt": "2026-10-08T13:02:11.620Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22324,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25064,7 +25064,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27840,7 +27840,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30603,7 +30603,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33402,7 +33402,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33600,7 +33600,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.621Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -33613,7 +33613,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Design sustainable waste management infrastructures for residential, agricultural, and industrial scenarios. Simulates solid and hazardous waste sorting, aerobic compost bioreactors, plastic valorization recycling loops, and sanitary landfill operations.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [],
     "levels": {
@@ -33710,18 +33710,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s15_1",
+              "id": "B7_WM_F01",
               "difficulty": "low",
-              "prompt": "Which of the following household waste items is completely biodegradable?",
+              "prompt": "What is waste scientifically defined as?",
               "options": [
-                "Plastic water sachet (polythene)",
-                "Cassava peelings",
-                "Broken glass bottle",
-                "Aluminum beverage can"
+                "A. Any material that can only be dissolved in water",
+                "B. Any unwanted, discarded, or unusable material that is no longer needed after its primary use",
+                "C. Chemical elements found exclusively in petroleum fuels",
+                "D. Natural biological soil formed from crushed rocks"
               ],
-              "correctAnswer": "Cassava peelings",
-              "hint": "It is an organic plant residue that decomposes naturally.",
-              "workedSolution": "Cassava peelings are organic vegetable matter that soil saprophytic bacteria and fungi can enzymatically break down into harmless organic compost.",
+              "correctAnswer": "B. Any unwanted, discarded, or unusable material that is no longer needed after its primary use",
+              "hint": "Waste is defined as an unwanted material that is no longer needed and is discarded after primary use.",
+              "workedSolution": "Waste is defined as an unwanted material that is no longer needed and is discarded after primary use.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F02",
+              "difficulty": "low",
+              "prompt": "Solid waste from households, street sweepings, packaging, and demolition debris managed by local assemblies is called:",
+              "options": [
+                "A. Municipal solid waste",
+                "B. Radioactive waste",
+                "C. Industrial effluent",
+                "D. Medical waste"
+              ],
+              "correctAnswer": "A. Municipal solid waste",
+              "hint": "Municipal solid waste includes household garbage, rubbish, packaging, and demolition debris managed by local authorities.",
+              "workedSolution": "Municipal solid waste includes household garbage, rubbish, packaging, and demolition debris managed by local authorities.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F03",
+              "difficulty": "low",
+              "prompt": "Waste generated from manufacturing and processing factories such as chemical refineries and paper mills is classified as:",
+              "options": [
+                "A. Municipal waste",
+                "B. Industrial waste",
+                "C. Fishery waste",
+                "D. Agricultural waste"
+              ],
+              "correctAnswer": "B. Industrial waste",
+              "hint": "Industrial wastes are liquid and solid wastes generated by manufacturing and processing industries.",
+              "workedSolution": "Industrial wastes are liquid and solid wastes generated by manufacturing and processing industries.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F04",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of institutional waste?",
+              "options": [
+                "A. Broken desks, obsolete examination files, and scrap paper from schools",
+                "B. Chemical sludge from petroleum refineries",
+                "C. Fish viscera and scales from a beach landing site",
+                "D. Livestock manure from a dairy barn"
+              ],
+              "correctAnswer": "A. Broken desks, obsolete examination files, and scrap paper from schools",
+              "hint": "Institutional wastes originate from schools, universities, and offices, consisting of paper, furniture, and old files.",
+              "workedSolution": "Institutional wastes originate from schools, universities, and offices, consisting of paper, furniture, and old files.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F05",
+              "difficulty": "low",
+              "prompt": "Organic refuse produced from farming activities such as crop stalks, husks, and animal dung is called:",
+              "options": [
+                "A. Agricultural waste",
+                "B. Radioactive waste",
+                "C. E-waste",
+                "D. Municipal solid waste"
+              ],
+              "correctAnswer": "A. Agricultural waste",
+              "hint": "Agricultural wastes are substances generated from farming operations, which are mostly biodegradable.",
+              "workedSolution": "Agricultural wastes are substances generated from farming operations, which are mostly biodegradable.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F06",
+              "difficulty": "low",
+              "prompt": "Waste originating from marine fish netting, gutting, and beach fish-market operations is termed:",
+              "options": [
+                "A. Fishery waste",
+                "B. Electronic waste",
+                "C. Institutional waste",
+                "D. Municipal sludge"
+              ],
+              "correctAnswer": "A. Fishery waste",
+              "hint": "Fishery wastes are wastes generated due to fishery activities, often found in coastal and estuarine landing sites.",
+              "workedSolution": "Fishery wastes are wastes generated due to fishery activities, often found in coastal and estuarine landing sites.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F07",
+              "difficulty": "low",
+              "prompt": "Discarded electronic equipment such as obsolete mobile phones, computers, and television sets is referred to as:",
+              "options": [
+                "A. Medical waste",
+                "B. E-waste (electronic waste)",
+                "C. Agricultural waste",
+                "D. Biodegradable waste"
+              ],
+              "correctAnswer": "B. E-waste (electronic waste)",
+              "hint": "E-waste comprises end-of-life electrical and electronic equipment such as phones, computers, and appliances.",
+              "workedSolution": "E-waste comprises end-of-life electrical and electronic equipment such as phones, computers, and appliances.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F08",
+              "difficulty": "low",
+              "prompt": "Waste produced in hospitals containing soiled bandages, syringes, expired medicines, and bodily fluids is called:",
+              "options": [
+                "A. Agricultural waste",
+                "B. Medical waste",
+                "C. Institutional waste",
+                "D. Fishery waste"
+              ],
+              "correctAnswer": "B. Medical waste",
+              "hint": "Medical waste originates from healthcare facilities and consists of pharmaceuticals, bandages, body parts, and sharps.",
+              "workedSolution": "Medical waste originates from healthcare facilities and consists of pharmaceuticals, bandages, body parts, and sharps.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F09",
+              "difficulty": "low",
+              "prompt": "What is biodegradable waste?",
+              "options": [
+                "A. Waste that cannot be broken down by any natural agent",
+                "B. Waste that can be broken down or decomposed into simple forms by the action of microorganisms",
+                "C. Waste that is permanently radioactive",
+                "D. Synthetic plastic waste that melts in rainwater"
+              ],
+              "correctAnswer": "B. Waste that can be broken down or decomposed into simple forms by the action of microorganisms",
+              "hint": "Biodegradable waste can be broken down into simple forms in nature by microorganisms such as bacteria.",
+              "workedSolution": "Biodegradable waste can be broken down into simple forms in nature by microorganisms such as bacteria.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F10",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of biodegradable waste?",
+              "options": [
+                "A. Food scraps and plant peelings",
+                "B. Polythene shopping bags",
+                "C. Glass drink bottles",
+                "D. Metal beverage cans"
+              ],
+              "correctAnswer": "A. Food scraps and plant peelings",
+              "hint": "Food waste, green waste, and plant trimmings are biodegradable and broken down by decomposers.",
+              "workedSolution": "Food waste, green waste, and plant trimmings are biodegradable and broken down by decomposers.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F11",
+              "difficulty": "low",
+              "prompt": "What is non-biodegradable waste?",
+              "options": [
+                "A. Waste that decomposes within twenty-four hours in soil",
+                "B. Waste that cannot be decomposed or broken down by natural organisms or agents",
+                "C. Waste composed exclusively of vegetable kitchen scraps",
+                "D. Waste that dissolves completely in clean drinking water"
+              ],
+              "correctAnswer": "B. Waste that cannot be decomposed or broken down by natural organisms or agents",
+              "hint": "Non-biodegradable wastes cannot be broken down by natural organisms and remain in the environment for centuries.",
+              "workedSolution": "Non-biodegradable wastes cannot be broken down by natural organisms and remain in the environment for centuries.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F12",
+              "difficulty": "low",
+              "prompt": "Which of the following items is classified as non-biodegradable?",
+              "options": [
+                "A. Banana peel",
+                "B. Plastic water bottle",
+                "C. Wood shaving",
+                "D. Cotton cloth"
+              ],
+              "correctAnswer": "B. Plastic water bottle",
+              "hint": "Plastic water bottles, metals, and glass cannot be digested by natural decomposers and are non-biodegradable.",
+              "workedSolution": "Plastic water bottles, metals, and glass cannot be digested by natural decomposers and are non-biodegradable.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F13",
+              "difficulty": "low",
+              "prompt": "Wastes that have the potential to cause significant harm to human health or the environment are termed:",
+              "options": [
+                "A. Hazardous wastes",
+                "B. Non-hazardous wastes",
+                "C. Compostable wastes",
+                "D. Natural wastes"
+              ],
+              "correctAnswer": "A. Hazardous wastes",
+              "hint": "Hazardous wastes have the potential to harm the environment and human health, requiring specialized handling.",
+              "workedSolution": "Hazardous wastes have the potential to harm the environment and human health, requiring specialized handling.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F14",
+              "difficulty": "low",
+              "prompt": "Which of the following is a characteristic of hazardous waste?",
+              "options": [
+                "A. Flammability",
+                "B. Corrosiveness",
+                "C. Toxicity",
+                "D. All of the above"
+              ],
+              "correctAnswer": "D. All of the above",
+              "hint": "Hazardous wastes exhibit characteristics including flammability, corrosiveness, reactivity, explosiveness, and toxicity.",
+              "workedSolution": "Hazardous wastes exhibit characteristics including flammability, corrosiveness, reactivity, explosiveness, and toxicity.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F15",
+              "difficulty": "low",
+              "prompt": "Wastes that are safe to handle and process commercially without danger of toxic poisoning are classified as:",
+              "options": [
+                "A. Hazardous wastes",
+                "B. Non-hazardous wastes",
+                "C. Radioactive wastes",
+                "D. Infectious wastes"
+              ],
+              "correctAnswer": "B. Non-hazardous wastes",
+              "hint": "Non-hazardous wastes do not possess dangerous traits like high toxicity, flammability, or corrosiveness.",
+              "workedSolution": "Non-hazardous wastes do not possess dangerous traits like high toxicity, flammability, or corrosiveness.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F16",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of non-hazardous solid waste?",
+              "options": [
+                "A. Clean scrap paper and cardboard boxes",
+                "B. Radioactive isotopes",
+                "C. Lead-acid battery acid",
+                "D. Expired chemical chemotherapy drugs"
+              ],
+              "correctAnswer": "A. Clean scrap paper and cardboard boxes",
+              "hint": "Paper, cardboard, clean glass, and beverage cans are standard non-hazardous commercial wastes.",
+              "workedSolution": "Paper, cardboard, clean glass, and beverage cans are standard non-hazardous commercial wastes.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F17",
+              "difficulty": "low",
+              "prompt": "What potent greenhouse gas is formed when organic waste breaks down under anaerobic conditions in landfills?",
+              "options": [
+                "A. Oxygen",
+                "B. Methane",
+                "C. Argon",
+                "D. Helium"
+              ],
+              "correctAnswer": "B. Methane",
+              "hint": "Waste breaking down in landfills generates methane gas, which is a potent greenhouse gas driving climate change.",
+              "workedSolution": "Waste breaking down in landfills generates methane gas, which is a potent greenhouse gas driving climate change.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F18",
+              "difficulty": "low",
+              "prompt": "What highly toxic substances are produced when plastic wastes are incinerated in open bonfires?",
+              "options": [
+                "A. Clean water vapor",
+                "B. Dioxins",
+                "C. Pure nitrogen gas",
+                "D. Ozone gas"
+              ],
+              "correctAnswer": "B. Dioxins",
+              "hint": "Incinerating plastics produces toxic substances such as carcinogenic dioxins.",
+              "workedSolution": "Incinerating plastics produces toxic substances such as carcinogenic dioxins.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F19",
+              "difficulty": "low",
+              "prompt": "Unfiltered flue gases emitted from open burning and poor incineration contribute directly to:",
+              "options": [
+                "A. Acid rain",
+                "B. Soil enrichment",
+                "C. Ground cooling",
+                "D. Purified oxygen"
+              ],
+              "correctAnswer": "A. Acid rain",
+              "hint": "Gases produced from burning waste cause air pollution and contribute directly to acid rain.",
+              "workedSolution": "Gases produced from burning waste cause air pollution and contribute directly to acid rain.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F20",
+              "difficulty": "low",
+              "prompt": "The ash remaining from municipal incinerators often contains hazardous concentrations of:",
+              "options": [
+                "A. Pure calcium carbonate",
+                "B. Heavy metals and other toxins",
+                "C. Sugar crystals",
+                "D. Plant vitamins"
+              ],
+              "correctAnswer": "B. Heavy metals and other toxins",
+              "hint": "Ash from incinerators may contain heavy metals and concentrated chemical toxins.",
+              "workedSolution": "Ash from incinerators may contain heavy metals and concentrated chemical toxins.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F21",
+              "difficulty": "low",
+              "prompt": "What toxic heavy metal increases in concentration in freshwater fish when industrial and galamsey mining effluents are discharged into rivers?",
+              "options": [
+                "A. Mercury",
+                "B. Sodium",
+                "C. Potassium",
+                "D. Magnesium"
+              ],
+              "correctAnswer": "A. Mercury",
+              "hint": "Disposing of chemical effluents in river bodies leads to an increase in mercury levels in fish.",
+              "workedSolution": "Disposing of chemical effluents in river bodies leads to an increase in mercury levels in fish.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F22",
+              "difficulty": "low",
+              "prompt": "What common marine pollutant is frequently ingested by seabirds and sea turtles, causing digestive blockages?",
+              "options": [
+                "A. Floating plastic debris",
+                "B. Wooden planks",
+                "C. Clay mud",
+                "D. River sand"
+              ],
+              "correctAnswer": "A. Floating plastic debris",
+              "hint": "Plastic waste discarded into oceans is mistakenly ingested by marine birds and aquatic animals.",
+              "workedSolution": "Plastic waste discarded into oceans is mistakenly ingested by marine birds and aquatic animals.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F23",
+              "difficulty": "low",
+              "prompt": "Excessive disposal of untreated sewage and organic waste into rivers triggers blooms of which organism?",
+              "options": [
+                "A. Algae (algal blooms)",
+                "B. Water lilies only",
+                "C. Tilapia fish",
+                "D. Mangrove trees"
+              ],
+              "correctAnswer": "A. Algae (algal blooms)",
+              "hint": "Nutrient-rich organic waste dumped into water bodies results in high algal populations (algal blooms).",
+              "workedSolution": "Nutrient-rich organic waste dumped into water bodies results in high algal populations (algal blooms).",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F24",
+              "difficulty": "low",
+              "prompt": "Indiscriminate dumping of solid and liquid chemical waste leads to the degradation of:",
+              "options": [
+                "A. Water and soil quality",
+                "B. Solar radiation speed",
+                "C. Gravitational pull",
+                "D. Moon phases"
+              ],
+              "correctAnswer": "A. Water and soil quality",
+              "hint": "Uncontrolled dumping of waste degrades both water bodies and soil quality.",
+              "workedSolution": "Uncontrolled dumping of waste degrades both water bodies and soil quality.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F25",
+              "difficulty": "low",
+              "prompt": "What acute health hazard is caused by inhaling toxic smoke from burning community refuse dumps?",
+              "options": [
+                "A. Chemical poisoning and respiratory irritation",
+                "B. Broken limbs",
+                "C. Tooth decay",
+                "D. Muscle sprains"
+              ],
+              "correctAnswer": "A. Chemical poisoning and respiratory irritation",
+              "hint": "Inhaling toxic chemical smoke from burning waste leads to chemical poisoning and severe respiratory damage.",
+              "workedSolution": "Inhaling toxic chemical smoke from burning waste leads to chemical poisoning and severe respiratory damage.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F26",
+              "difficulty": "low",
+              "prompt": "Studies show that residents living near hazardous waste dumpsites experience an increase in:",
+              "options": [
+                "A. Hospitalization rates",
+                "B. Natural immunity",
+                "C. Vision strength",
+                "D. Bone thickness"
+              ],
+              "correctAnswer": "A. Hospitalization rates",
+              "hint": "Living in close proximity to hazardous waste sites leads to increased hospitalization of vulnerable residents.",
+              "workedSolution": "Living in close proximity to hazardous waste sites leads to increased hospitalization of vulnerable residents.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F27",
+              "difficulty": "low",
+              "prompt": "The scientific waste management principle that focuses on preventing waste generation at the point of origin is:",
+              "options": [
+                "A. Source reduction",
+                "B. Landfill compaction",
+                "C. Deep-well injection",
+                "D. Open burning"
+              ],
+              "correctAnswer": "A. Source reduction",
+              "hint": "Source reduction focuses on minimizing the amount of waste generated at the source.",
+              "workedSolution": "Source reduction focuses on minimizing the amount of waste generated at the source.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F28",
+              "difficulty": "low",
+              "prompt": "Which of the following practices is an example of source reduction?",
+              "options": [
+                "A. Using durable, reusable bags and reducing packaging materials",
+                "B. Burning refuse in home backyards",
+                "C. Dumping garbage into open gutters",
+                "D. Buying single-use plastics daily"
+              ],
+              "correctAnswer": "A. Using durable, reusable bags and reducing packaging materials",
+              "hint": "Source reduction involves practices such as reducing packaging and using durable, reusable products.",
+              "workedSolution": "Source reduction involves practices such as reducing packaging and using durable, reusable products.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F29",
+              "difficulty": "low",
+              "prompt": "The process of converting discarded waste materials into new, usable commercial products is called:",
+              "options": [
+                "A. Recycling",
+                "B. Incineration",
+                "C. Deforestation",
+                "D. Gasification"
+              ],
+              "correctAnswer": "A. Recycling",
+              "hint": "Recycling is based on the principle of converting waste materials into new products.",
+              "workedSolution": "Recycling is based on the principle of converting waste materials into new products.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F30",
+              "difficulty": "low",
+              "prompt": "Which set of materials is commonly collected and sorted for recycling?",
+              "options": [
+                "A. Paper, plastic, glass, and metal",
+                "B. Radioactive spent fuel rods",
+                "C. Syringes containing infected blood",
+                "D. Human anatomical tissues"
+              ],
+              "correctAnswer": "A. Paper, plastic, glass, and metal",
+              "hint": "Standard recycling collects, sorts, and reprocesses materials such as paper, plastic, glass, and metal.",
+              "workedSolution": "Standard recycling collects, sorts, and reprocesses materials such as paper, plastic, glass, and metal.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F31",
+              "difficulty": "low",
+              "prompt": "What natural biological process converts organic food scraps and yard trimmings into nutrient-rich soil amendment?",
+              "options": [
+                "A. Composting",
+                "B. Pyrolysis",
+                "C. Nuclear fission",
+                "D. Polymerization"
+              ],
+              "correctAnswer": "A. Composting",
+              "hint": "Composting is a natural process that converts organic waste like food scraps into nutrient-rich compost.",
+              "workedSolution": "Composting is a natural process that converts organic waste like food scraps into nutrient-rich compost.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F32",
+              "difficulty": "low",
+              "prompt": "Composting relies fundamentally on the scientific principles of:",
+              "options": [
+                "A. Biological decomposition and nutrient cycling",
+                "B. Acid dissolution of metals",
+                "C. High-voltage electrical arcing",
+                "D. Magnetic separation"
+              ],
+              "correctAnswer": "A. Biological decomposition and nutrient cycling",
+              "hint": "Composting is based on natural principles of biological decomposition and ecological nutrient cycling.",
+              "workedSolution": "Composting is based on natural principles of biological decomposition and ecological nutrient cycling.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F33",
+              "difficulty": "low",
+              "prompt": "Converting non-recyclable combustible waste into usable heat, electricity, or biofuels is termed:",
+              "options": [
+                "A. Waste-to-energy",
+                "B. Open composting",
+                "C. Surface runoff",
+                "D. Ocean dumping"
+              ],
+              "correctAnswer": "A. Waste-to-energy",
+              "hint": "Waste-to-energy technologies convert solid waste into usable energy like electricity, heat, or biofuels.",
+              "workedSolution": "Waste-to-energy technologies convert solid waste into usable energy like electricity, heat, or biofuels.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F34",
+              "difficulty": "low",
+              "prompt": "Which of the following is a waste-to-energy conversion method?",
+              "options": [
+                "A. Controlled incineration with heat capture",
+                "B. Gasification",
+                "C. Anaerobic digestion",
+                "D. All of the above"
+              ],
+              "correctAnswer": "D. All of the above",
+              "hint": "Waste-to-energy methods include controlled incineration, gasification, and anaerobic digestion.",
+              "workedSolution": "Waste-to-energy methods include controlled incineration, gasification, and anaerobic digestion.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F35",
+              "difficulty": "low",
+              "prompt": "The method of waste disposal that involves burying non-recyclable solid waste in designated engineered sites is called:",
+              "options": [
+                "A. Landfilling",
+                "B. Open littering",
+                "C. Composting",
+                "D. Galamsey mining"
+              ],
+              "correctAnswer": "A. Landfilling",
+              "hint": "Landfilling involves burying waste in designated containment sites engineered for environmental protection.",
+              "workedSolution": "Landfilling involves burying waste in designated containment sites engineered for environmental protection.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F36",
+              "difficulty": "low",
+              "prompt": "Engineered sanitary landfills are built specifically to minimize the release of pollutants into:",
+              "options": [
+                "A. Soil and groundwater resources",
+                "B. Solar panels",
+                "C. High clouds",
+                "D. Outer space"
+              ],
+              "correctAnswer": "A. Soil and groundwater resources",
+              "hint": "Sanitary landfills are designed to minimize pollutant release and prevent contamination of soil and water resources.",
+              "workedSolution": "Sanitary landfills are designed to minimize pollutant release and prevent contamination of soil and water resources.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F37",
+              "difficulty": "low",
+              "prompt": "Which of the following items constitutes fishery waste along Ghanaian coastal beaches?",
+              "options": [
+                "A. Discarded fish gills, entrails, and spoiled fish catch",
+                "B. Old car batteries",
+                "C. Demolished brick walls",
+                "D. Broken glass bottles"
+              ],
+              "correctAnswer": "A. Discarded fish gills, entrails, and spoiled fish catch",
+              "hint": "Fishery wastes comprise fish parts, damaged nets, and biological residues produced from fishing activities.",
+              "workedSolution": "Fishery wastes comprise fish parts, damaged nets, and biological residues produced from fishing activities.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F38",
+              "difficulty": "low",
+              "prompt": "Which of the following represents radioactive waste?",
+              "options": [
+                "A. Spent radioactive isotopes and contaminated medical radiotherapy equipment",
+                "B. Rotten plantain peelings",
+                "C. Discarded cardboard boxes",
+                "D. Plastic mineral water sachets"
+              ],
+              "correctAnswer": "A. Spent radioactive isotopes and contaminated medical radiotherapy equipment",
+              "hint": "Radioactive wastes contain radioactive isotopes generated by nuclear, industrial, or medical radiotherapy processes.",
+              "workedSolution": "Radioactive wastes contain radioactive isotopes generated by nuclear, industrial, or medical radiotherapy processes.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F39",
+              "difficulty": "low",
+              "prompt": "Why is e-waste dangerous if discarded into open refuse dumps?",
+              "options": [
+                "A. It leaches toxic heavy metals like lead, mercury, and cadmium into soil and drinking water",
+                "B. It turns into liquid mud within one hour",
+                "C. It multiplies into living insects",
+                "D. It freezes surrounding farmland"
+              ],
+              "correctAnswer": "A. It leaches toxic heavy metals like lead, mercury, and cadmium into soil and drinking water",
+              "hint": "Electronic components contain toxic heavy metals that contaminate groundwater when dumped indiscriminately.",
+              "workedSolution": "Electronic components contain toxic heavy metals that contaminate groundwater when dumped indiscriminately.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F40",
+              "difficulty": "low",
+              "prompt": "Why is medical waste treated with extreme precaution before disposal?",
+              "options": [
+                "A. It contains pathogenic bacteria, viruses, and infectious biological materials",
+                "B. It is too heavy to carry",
+                "C. It cannot be buried in soil",
+                "D. It generates solar electricity"
+              ],
+              "correctAnswer": "A. It contains pathogenic bacteria, viruses, and infectious biological materials",
+              "hint": "Medical waste can be infectious, toxic, and contain bacteria and harmful microorganisms that transmit diseases.",
+              "workedSolution": "Medical waste can be infectious, toxic, and contain bacteria and harmful microorganisms that transmit diseases.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F41",
+              "difficulty": "low",
+              "prompt": "What is the primary characteristic of flammable hazardous waste?",
+              "options": [
+                "A. It catches fire easily at relatively low temperatures",
+                "B. It dissolves plastic containers",
+                "C. It produces cold air",
+                "D. It has zero mass"
+              ],
+              "correctAnswer": "A. It catches fire easily at relatively low temperatures",
+              "hint": "Flammability means a waste material ignites easily and burns vigorously, posing fire hazards.",
+              "workedSolution": "Flammability means a waste material ignites easily and burns vigorously, posing fire hazards.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F42",
+              "difficulty": "low",
+              "prompt": "A chemical waste that corrodes and eats away metal storage drums is classified as:",
+              "options": [
+                "A. Corrosive",
+                "B. Biodegradable",
+                "C. Inactive",
+                "D. Combustible"
+              ],
+              "correctAnswer": "A. Corrosive",
+              "hint": "Corrosive wastes are highly acidic or alkaline substances that chemically eat away metal drums or living tissue.",
+              "workedSolution": "Corrosive wastes are highly acidic or alkaline substances that chemically eat away metal drums or living tissue.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F43",
+              "difficulty": "low",
+              "prompt": "What is a reactive hazardous waste?",
+              "options": [
+                "A. A substance that is chemically unstable and can explode or release toxic gases when mixed with water",
+                "B. A substance that turns into rich soil fertilizer",
+                "C. A substance that does not react with anything",
+                "D. A material made entirely of glass"
+              ],
+              "correctAnswer": "A. A substance that is chemically unstable and can explode or release toxic gases when mixed with water",
+              "hint": "Reactivity refers to unstable substances that react violently, explode, or emit toxic gases when mixed with water or air.",
+              "workedSolution": "Reactivity refers to unstable substances that react violently, explode, or emit toxic gases when mixed with water or air.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F44",
+              "difficulty": "low",
+              "prompt": "Toxicity as a characteristic of hazardous waste refers to the ability to:",
+              "options": [
+                "A. Cause injury, illness, genetic mutations, or death to living organisms",
+                "B. Provide healthy nutrition to plants",
+                "C. Melt snow in cold climates",
+                "D. Make materials transparent"
+              ],
+              "correctAnswer": "A. Cause injury, illness, genetic mutations, or death to living organisms",
+              "hint": "Toxicity is the capacity of a substance to cause illness, poisoning, physiological harm, or death to organisms.",
+              "workedSolution": "Toxicity is the capacity of a substance to cause illness, poisoning, physiological harm, or death to organisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F45",
+              "difficulty": "low",
+              "prompt": "How does recycling conserve national natural resources?",
+              "options": [
+                "A. By reusing processed materials so fewer virgin raw materials (timber, metal ores, petroleum) are extracted",
+                "B. By stopping all agricultural activities",
+                "C. By generating new mineral rocks underground",
+                "D. By increasing municipal water volume"
+              ],
+              "correctAnswer": "A. By reusing processed materials so fewer virgin raw materials (timber, metal ores, petroleum) are extracted",
+              "hint": "Recycling reprocesses waste materials, which directly conserves natural resources and raw materials.",
+              "workedSolution": "Recycling reprocesses waste materials, which directly conserves natural resources and raw materials.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F46",
+              "difficulty": "low",
+              "prompt": "How does recycling help save industrial energy?",
+              "options": [
+                "A. Manufacturing goods from recycled materials requires significantly less energy than refining virgin raw ores",
+                "B. Recycled materials generate their own electricity",
+                "C. It forces factories to shut down permanently",
+                "D. It removes the need for fuel in trucks"
+              ],
+              "correctAnswer": "A. Manufacturing goods from recycled materials requires significantly less energy than refining virgin raw ores",
+              "hint": "Remelting and repulping recycled materials consumes far less energy than extracting and refining virgin raw resources.",
+              "workedSolution": "Remelting and repulping recycled materials consumes far less energy than extracting and refining virgin raw resources.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F47",
+              "difficulty": "low",
+              "prompt": "What is a valuable agricultural benefit of compost produced from organic food waste?",
+              "options": [
+                "A. It serves as an organic soil amendment that improves soil structure, aeration, and fertility",
+                "B. It turns soil into solid granite",
+                "C. It prevents earthworms from entering soil",
+                "D. It poisons farm weeds chemically"
+              ],
+              "correctAnswer": "A. It serves as an organic soil amendment that improves soil structure, aeration, and fertility",
+              "hint": "Compost produces a valuable soil amendment that enriches soil structure and fertility for gardening and farming.",
+              "workedSolution": "Compost produces a valuable soil amendment that enriches soil structure and fertility for gardening and farming.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F48",
+              "difficulty": "low",
+              "prompt": "By diverting organic kitchen waste into composting heaps, communities directly reduce the emission of which greenhouse gas from landfills?",
+              "options": [
+                "A. Methane",
+                "B. Argon",
+                "C. Helium",
+                "D. Neon"
+              ],
+              "correctAnswer": "A. Methane",
+              "hint": "Composting diverts organic waste away from anaerobic landfills, directly reducing greenhouse methane emissions.",
+              "workedSolution": "Composting diverts organic waste away from anaerobic landfills, directly reducing greenhouse methane emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F49",
+              "difficulty": "low",
+              "prompt": "Why is open dumping of municipal refuse in unmanaged borrow pits environmentally unacceptable?",
+              "options": [
+                "A. It lacks environmental protection barriers, leading to groundwater pollution, odor, disease vectors, and fires",
+                "B. It makes borrow pits too deep",
+                "C. It turns waste into gold too quickly",
+                "D. It stops grass from growing nearby"
+              ],
+              "correctAnswer": "A. It lacks environmental protection barriers, leading to groundwater pollution, odor, disease vectors, and fires",
+              "hint": "Open dumps lack protective barriers, contaminating water tables with toxic leachate and polluting surrounding air.",
+              "workedSolution": "Open dumps lack protective barriers, contaminating water tables with toxic leachate and polluting surrounding air.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_F50",
+              "difficulty": "low",
+              "prompt": "Which of the following waste management hierarchies ranks practices from the most preferred to the least preferred?",
+              "options": [
+                "A. Source Reduction → Recycling → Composting → Waste-to-Energy → Landfilling",
+                "B. Landfilling → Incineration → Recycling → Source Reduction",
+                "C. Open Burning → Ocean Dumping → Landfilling",
+                "D. Composting → Waste Generation → Open Dumping"
+              ],
+              "correctAnswer": "A. Source Reduction → Recycling → Composting → Waste-to-Energy → Landfilling",
+              "hint": "The scientific hierarchy prioritizes prevention (source reduction), followed by recycling, biological recovery, energy recovery, and disposal.",
+              "workedSolution": "The scientific hierarchy prioritizes prevention (source reduction), followed by recycling, biological recovery, energy recovery, and disposal.",
               "points": 1,
               "learningCompetency": "B7.5.1.1",
               "type": "objective"
@@ -33729,24 +34562,1708 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "q_b7_s15_2",
+              "id": "B7_WM_I01",
               "difficulty": "medium",
-              "prompt": "What is the toxic liquid called that forms when rainwater percolates through unsealed open garbage dumps?",
+              "prompt": "Under what environmental condition inside a deep landfill does biodegradable waste produce methane gas?",
               "options": [
-                "Filtrate",
-                "Leachate",
-                "Chyme",
-                "Distillate"
+                "A. Anaerobic conditions (absence of dissolved oxygen)",
+                "B. Hyper-aerobic conditions with high wind flow",
+                "C. Freezing temperatures below 0°C",
+                "D. Constant exposure to ultraviolet sunlight"
               ],
-              "correctAnswer": "Leachate",
-              "hint": "It contaminates groundwater aquifers.",
-              "workedSolution": "Leachate is the highly toxic, concentrated liquid that dissolves and leaches heavy metals and pathogens as rainwater drains through decomposing landfill garbage.",
+              "correctAnswer": "A. Anaerobic conditions (absence of dissolved oxygen)",
+              "hint": "When biodegradable waste is buried deep without oxygen, methanogenic bacteria ferment it into methane gas.",
+              "workedSolution": "When biodegradable waste is buried deep without oxygen, methanogenic bacteria ferment it into methane gas.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I02",
+              "difficulty": "medium",
+              "prompt": "Why is methane gas from landfills considered dangerous to the global climate?",
+              "options": [
+                "A. It is a potent greenhouse gas that traps substantial heat in the atmosphere, driving climate change",
+                "B. It freezes cloud water into ice crystals",
+                "C. It destroys all oxygen molecules in the oceans",
+                "D. It changes sunlight into infrared radio waves"
+              ],
+              "correctAnswer": "A. It is a potent greenhouse gas that traps substantial heat in the atmosphere, driving climate change",
+              "hint": "Methane is a potent greenhouse gas with a high global warming potential that traps heat in the atmosphere.",
+              "workedSolution": "Methane is a potent greenhouse gas with a high global warming potential that traps heat in the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I03",
+              "difficulty": "medium",
+              "prompt": "What is the primary environmental risk of open incineration of polyvinyl chloride (PVC) plastics in community dumps?",
+              "options": [
+                "A. Release of chlorinated dioxins and furans, which are persistent organic pollutants and carcinogens",
+                "B. Production of liquid nitrogen",
+                "C. Destruction of atmospheric gravity",
+                "D. Formation of edible sugar ash"
+              ],
+              "correctAnswer": "A. Release of chlorinated dioxins and furans, which are persistent organic pollutants and carcinogens",
+              "hint": "Incinerating plastics produces toxic chlorinated compounds like dioxins, which are carcinogenic and persistent.",
+              "workedSolution": "Incinerating plastics produces toxic chlorinated compounds like dioxins, which are carcinogenic and persistent.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I04",
+              "difficulty": "medium",
+              "prompt": "How do acidic gases like sulfur dioxide ($SO_2$) emitted from burning industrial waste affect rainfall?",
+              "options": [
+                "A. They react with atmospheric moisture to form sulfuric acid, precipitating as harmful acid rain",
+                "B. They turn rainwater into alkaline ammonia",
+                "C. They stop all rainfall from occurring",
+                "D. They convert rain into sweet drinking water"
+              ],
+              "correctAnswer": "A. They react with atmospheric moisture to form sulfuric acid, precipitating as harmful acid rain",
+              "hint": "Incineration gases containing sulfur and nitrogen oxides react with water vapor, contributing directly to acid rain.",
+              "workedSolution": "Incineration gases containing sulfur and nitrogen oxides react with water vapor, contributing directly to acid rain.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I05",
+              "difficulty": "medium",
+              "prompt": "What happens when toxic incinerator ash containing heavy metals is dumped onto open, unlined soil?",
+              "options": [
+                "A. Rainwater leaches heavy metals (e.g., lead, cadmium) into the subsoil, contaminating groundwater aquifers",
+                "B. The ash turns into natural limestone",
+                "C. The soil becomes permanently immune to bacteria",
+                "D. The heavy metals evaporate into the stratosphere"
+              ],
+              "correctAnswer": "A. Rainwater leaches heavy metals (e.g., lead, cadmium) into the subsoil, contaminating groundwater aquifers",
+              "hint": "Heavy metals in residual incinerator ash dissolve in percolating rainwater, leaching down into underground drinking water.",
+              "workedSolution": "Heavy metals in residual incinerator ash dissolve in percolating rainwater, leaching down into underground drinking water.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I06",
+              "difficulty": "medium",
+              "prompt": "How does mercury dumped into river bodies enter human food supplies?",
+              "options": [
+                "A. Aquatic bacteria convert elemental mercury to methylmercury, which bioaccumulates in fish consumed by humans",
+                "B. Mercury evaporates into drinking water pipes",
+                "C. Mercury is absorbed through tree leaves and eaten as fruit",
+                "D. Mercury turns into salt in ocean water"
+              ],
+              "correctAnswer": "A. Aquatic bacteria convert elemental mercury to methylmercury, which bioaccumulates in fish consumed by humans",
+              "hint": "Mercury in river ecosystems bioaccumulates in fish tissue, exposing humans who eat contaminated fish.",
+              "workedSolution": "Mercury in river ecosystems bioaccumulates in fish tissue, exposing humans who eat contaminated fish.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I07",
+              "difficulty": "medium",
+              "prompt": "Why do marine seabirds ingest floating plastic waste in oceans?",
+              "options": [
+                "A. Floating plastic debris visually mimics fish eggs, squid, or prey, leading to mistaken ingestion",
+                "B. Birds use plastic to drink water",
+                "C. Plastic provides high caloric nutrition to birds",
+                "D. Birds sharpen their beaks on floating plastic"
+              ],
+              "correctAnswer": "A. Floating plastic debris visually mimics fish eggs, squid, or prey, leading to mistaken ingestion",
+              "hint": "Marine birds mistake colorful floating plastic debris for natural prey, ingesting it and suffering digestive blockages.",
+              "workedSolution": "Marine birds mistake colorful floating plastic debris for natural prey, ingesting it and suffering digestive blockages.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I08",
+              "difficulty": "medium",
+              "prompt": "What biological phenomenon occurs when agricultural fertilizer runoff and untreated sewage enter a lake?",
+              "options": [
+                "A. Eutrophication, resulting in an explosive growth of algae",
+                "B. Immediate freezing of the lake surface",
+                "C. Complete desiccation of all lake water",
+                "D. Rapid decline in bacterial populations"
+              ],
+              "correctAnswer": "A. Eutrophication, resulting in an explosive growth of algae",
+              "hint": "Excess nutrient enrichment from organic and farm wastes results in dense algal blooms (eutrophication).",
+              "workedSolution": "Excess nutrient enrichment from organic and farm wastes results in dense algal blooms (eutrophication).",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I09",
+              "difficulty": "medium",
+              "prompt": "Why do fish die in large numbers during the final stages of aquatic eutrophication?",
+              "options": [
+                "A. Bacterial decomposers consuming dead algae multiply rapidly, exhausting all dissolved oxygen in the water",
+                "B. The water temperature reaches boiling point",
+                "C. The algae physically eat the fish",
+                "D. Fish jump out of the water to escape light"
+              ],
+              "correctAnswer": "A. Bacterial decomposers consuming dead algae multiply rapidly, exhausting all dissolved oxygen in the water",
+              "hint": "When algal blooms die, decomposers consume the dissolved oxygen, creating hypoxic conditions that suffocate fish.",
+              "workedSolution": "When algal blooms die, decomposers consume the dissolved oxygen, creating hypoxic conditions that suffocate fish.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I10",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger of disposing of expired pharmaceutical antibiotics into domestic refuse pits?",
+              "options": [
+                "A. They contaminate soil and groundwater, fostering the emergence of antibiotic-resistant bacterial strains",
+                "B. They turn the soil into plastic",
+                "C. They cause volcanic eruptions in the pit",
+                "D. They generate nuclear radiation"
+              ],
+              "correctAnswer": "A. They contaminate soil and groundwater, fostering the emergence of antibiotic-resistant bacterial strains",
+              "hint": "Antibiotic residues select for resistant environmental bacteria, contributing to dangerous drug-resistant infections.",
+              "workedSolution": "Antibiotic residues select for resistant environmental bacteria, contributing to dangerous drug-resistant infections.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I11",
+              "difficulty": "medium",
+              "prompt": "How does source reduction differ from recycling in waste management?",
+              "options": [
+                "A. Source reduction stops waste from being created in the first place, whereas recycling processes waste after it exists",
+                "B. Source reduction involves burning waste in ovens",
+                "C. Recycling only applies to radioactive materials",
+                "D. Source reduction requires building larger landfills"
+              ],
+              "correctAnswer": "A. Source reduction stops waste from being created in the first place, whereas recycling processes waste after it exists",
+              "hint": "Source reduction minimizes waste generation at the origin, eliminating the need for subsequent disposal.",
+              "workedSolution": "Source reduction minimizes waste generation at the origin, eliminating the need for subsequent disposal.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I12",
+              "difficulty": "medium",
+              "prompt": "Which of the following actions best illustrates source reduction in a school canteen?",
+              "options": [
+                "A. Serving food in durable, washable plates rather than single-use disposable styrofoam containers",
+                "B. Burning plastic plates behind the classroom block",
+                "C. Burying styrofoam packs in the school garden",
+                "D. Throwing food containers into roadside gutters"
+              ],
+              "correctAnswer": "A. Serving food in durable, washable plates rather than single-use disposable styrofoam containers",
+              "hint": "Using reusable and durable plates eliminates the creation of disposable packaging waste at the source.",
+              "workedSolution": "Using reusable and durable plates eliminates the creation of disposable packaging waste at the source.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I13",
+              "difficulty": "medium",
+              "prompt": "What is the main environmental benefit of recycling aluminum beverage cans compared to smelting new aluminum from bauxite?",
+              "options": [
+                "A. Recycling aluminum saves up to 95% of the electrical energy required to smelt primary bauxite ore",
+                "B. Recycled aluminum is magnetic",
+                "C. Smelting bauxite produces no waste",
+                "D. Recycled cans become biodegradable"
+              ],
+              "correctAnswer": "A. Recycling aluminum saves up to 95% of the electrical energy required to smelt primary bauxite ore",
+              "hint": "Reprocessing scrap aluminum uses a fraction of the energy needed for primary bauxite smelting, cutting power demand.",
+              "workedSolution": "Reprocessing scrap aluminum uses a fraction of the energy needed for primary bauxite smelting, cutting power demand.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I14",
+              "difficulty": "medium",
+              "prompt": "What essential biological factor must be maintained in a compost heap to ensure aerobic decomposition without bad odors?",
+              "options": [
+                "A. Adequate oxygen circulation through regular turning",
+                "B. Total exclusion of all atmospheric air",
+                "C. Addition of non-biodegradable plastics",
+                "D. Flooding the heap with engine oil"
+              ],
+              "correctAnswer": "A. Adequate oxygen circulation through regular turning",
+              "hint": "Aerobic composting requires oxygen; turning the heap provides aeration, preventing foul-smelling anaerobic decay.",
+              "workedSolution": "Aerobic composting requires oxygen; turning the heap provides aeration, preventing foul-smelling anaerobic decay.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I15",
+              "difficulty": "medium",
+              "prompt": "What gas produced during the anaerobic digestion of animal manure can be harnessed as renewable energy?",
+              "options": [
+                "A. Biogas (methane)",
+                "B. Sulfur hexafluoride",
+                "C. Pure oxygen",
+                "D. Carbon monoxide"
+              ],
+              "correctAnswer": "A. Biogas (methane)",
+              "hint": "Anaerobic digestion of organic wastes produces biogas (chiefly methane), which can be burned for heat or power.",
+              "workedSolution": "Anaerobic digestion of organic wastes produces biogas (chiefly methane), which can be burned for heat or power.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I16",
+              "difficulty": "medium",
+              "prompt": "How does gasification differ from simple open-air incineration in waste-to-energy systems?",
+              "options": [
+                "A. Gasification converts waste into synthesis gas (syngas) under high temperatures with controlled, limited oxygen",
+                "B. Gasification produces cold ice",
+                "C. Incineration produces zero smoke or ash",
+                "D. Gasification uses boiling water only"
+              ],
+              "correctAnswer": "A. Gasification converts waste into synthesis gas (syngas) under high temperatures with controlled, limited oxygen",
+              "hint": "Gasification heats waste in starved oxygen to synthesize syngas ($CO + H_2$), which can be burned cleanly for electricity.",
+              "workedSolution": "Gasification heats waste in starved oxygen to synthesize syngas ($CO + H_2$), which can be burned cleanly for electricity.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I17",
+              "difficulty": "medium",
+              "prompt": "What is the primary engineering feature installed at the base of a modern sanitary landfill to protect groundwater?",
+              "options": [
+                "A. An impermeable composite liner of compacted clay and high-density polyethylene (HDPE) geomembrane",
+                "B. A layer of porous beach sand",
+                "C. Wooden planks laid side-by-side",
+                "D. Iron wire mesh"
+              ],
+              "correctAnswer": "A. An impermeable composite liner of compacted clay and high-density polyethylene (HDPE) geomembrane",
+              "hint": "Sanitary landfills use impermeable clay and synthetic geomembrane liners to contain toxic leachate.",
+              "workedSolution": "Sanitary landfills use impermeable clay and synthetic geomembrane liners to contain toxic leachate.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I18",
+              "difficulty": "medium",
+              "prompt": "The toxic dark liquid that drains from rotting landfill waste after absorbing rainwater is termed:",
+              "options": [
+                "A. Leachate",
+                "B. Distillate",
+                "C. Biofuel",
+                "D. Syngas"
+              ],
+              "correctAnswer": "A. Leachate",
+              "hint": "Leachate is the contaminated liquid that percolates through solid waste, picking up dissolved toxins.",
+              "workedSolution": "Leachate is the contaminated liquid that percolates through solid waste, picking up dissolved toxins.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I19",
+              "difficulty": "medium",
+              "prompt": "Why are daily soil covers applied over compacted garbage in an engineered sanitary landfill?",
+              "options": [
+                "A. To control odors, prevent flies and rodents from breeding, and reduce wind-blown litter",
+                "B. To make the landfill look like a sports field",
+                "C. To prevent the garbage from ever decomposing",
+                "D. To turn the garbage into diamond"
+              ],
+              "correctAnswer": "A. To control odors, prevent flies and rodents from breeding, and reduce wind-blown litter",
+              "hint": "Daily soil covers seal the waste layer, suppressing disease vectors, foul odors, and litter scattering.",
+              "workedSolution": "Daily soil covers seal the waste layer, suppressing disease vectors, foul odors, and litter scattering.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I20",
+              "difficulty": "medium",
+              "prompt": "What pipe system is installed vertically in sanitary landfills to prevent underground gas explosions?",
+              "options": [
+                "A. Methane gas extraction and venting network",
+                "B. Water supply pipes",
+                "C. Compressed oxygen injection tubes",
+                "D. Electrical transmission lines"
+              ],
+              "correctAnswer": "A. Methane gas extraction and venting network",
+              "hint": "Gas extraction wells collect migrating methane, preventing dangerous subterranean pressure buildup and explosions.",
+              "workedSolution": "Gas extraction wells collect migrating methane, preventing dangerous subterranean pressure buildup and explosions.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I21",
+              "difficulty": "medium",
+              "prompt": "Which of the following is considered an acute health impact of toxic electronic waste recycling involving open burning?",
+              "options": [
+                "A. Heavy metal poisoning affecting the central nervous system, kidneys, and lungs",
+                "B. Increased cardiovascular fitness",
+                "C. Rapid bone growth",
+                "D. Improved eyesight"
+              ],
+              "correctAnswer": "A. Heavy metal poisoning affecting the central nervous system, kidneys, and lungs",
+              "hint": "Burning e-waste releases lead, mercury, and halogenated flame retardants that cause severe neurological and organ damage.",
+              "workedSolution": "Burning e-waste releases lead, mercury, and halogenated flame retardants that cause severe neurological and organ damage.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I22",
+              "difficulty": "medium",
+              "prompt": "Why do uncollected solid waste piles in urban centers cause seasonal flooding during heavy downpours?",
+              "options": [
+                "A. Waste chokes storm drains, culverts, and natural waterways, blocking stormwater discharge",
+                "B. Waste creates artificial clouds that produce more rain",
+                "C. Solid waste liquefies and turns into river water",
+                "D. Plastic waste absorbs all groundwater"
+              ],
+              "correctAnswer": "A. Waste chokes storm drains, culverts, and natural waterways, blocking stormwater discharge",
+              "hint": "Discarded plastic and refuse block municipal gutters and culverts, causing rainwater to back up into city streets.",
+              "workedSolution": "Discarded plastic and refuse block municipal gutters and culverts, causing rainwater to back up into city streets.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I23",
+              "difficulty": "medium",
+              "prompt": "What public health risk is created when plastic containers and car tires collect stagnant rainwater in dumpsites?",
+              "options": [
+                "A. They create ideal breeding habitats for Aedes and Anopheles mosquitoes that transmit yellow fever and malaria",
+                "B. They purify rainwater into distilled water",
+                "C. They generate solar energy",
+                "D. They attract edible sea fish"
+              ],
+              "correctAnswer": "A. They create ideal breeding habitats for Aedes and Anopheles mosquitoes that transmit yellow fever and malaria",
+              "hint": "Water-retaining plastic waste and tires provide artificial breeding sites for disease-transmitting mosquito vectors.",
+              "workedSolution": "Water-retaining plastic waste and tires provide artificial breeding sites for disease-transmitting mosquito vectors.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I24",
+              "difficulty": "medium",
+              "prompt": "Which category of waste includes discarded anatomical body parts removed during surgical operations?",
+              "options": [
+                "A. Pathological / anatomical medical waste",
+                "B. Municipal solid waste",
+                "C. Institutional paper waste",
+                "D. E-waste"
+              ],
+              "correctAnswer": "A. Pathological / anatomical medical waste",
+              "hint": "Surgically removed tissues, fluids, and organs are classified as hazardous pathological/anatomical medical waste.",
+              "workedSolution": "Surgically removed tissues, fluids, and organs are classified as hazardous pathological/anatomical medical waste.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I25",
+              "difficulty": "medium",
+              "prompt": "How are clinical sharps (such as infected hypodermic needles) safely disposed of in modern hospitals?",
+              "options": [
+                "A. Placed in puncture-proof sharps boxes and destroyed via high-temperature medical incineration",
+                "B. Thrown into domestic refuse bins",
+                "C. Washed and thrown into the sea",
+                "D. Buried in backyard school gardens"
+              ],
+              "correctAnswer": "A. Placed in puncture-proof sharps boxes and destroyed via high-temperature medical incineration",
+              "hint": "Sharps are isolated in puncture-proof containers and incinerated at high temperatures to destroy pathogens.",
+              "workedSolution": "Sharps are isolated in puncture-proof containers and incinerated at high temperatures to destroy pathogens.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I26",
+              "difficulty": "medium",
+              "prompt": "Why should discarded lead-acid automotive batteries never be broken open on bare ground?",
+              "options": [
+                "A. Corrosive sulfuric acid burns soil and toxic lead salts leach into drinking water aquifers",
+                "B. The lead will turn into gold",
+                "C. Acid generates edible salt",
+                "D. Lead is biodegradable"
+              ],
+              "correctAnswer": "A. Corrosive sulfuric acid burns soil and toxic lead salts leach into drinking water aquifers",
+              "hint": "Battery acid is corrosive and lead is a potent neurotoxin that permanently contaminates soil and groundwater.",
+              "workedSolution": "Battery acid is corrosive and lead is a potent neurotoxin that permanently contaminates soil and groundwater.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I27",
+              "difficulty": "medium",
+              "prompt": "What is an effective way to minimize paper waste in an administrative institution or school?",
+              "options": [
+                "A. Transitioning to digital filing, electronic communication, and double-sided printing",
+                "B. Printing every email on glossy paper",
+                "C. Burning student notebooks weekly",
+                "D. Replacing paper with plastic sheets"
+              ],
+              "correctAnswer": "A. Transitioning to digital filing, electronic communication, and double-sided printing",
+              "hint": "Digitization and two-sided printing reduce paper consumption at the source.",
+              "workedSolution": "Digitization and two-sided printing reduce paper consumption at the source.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I28",
+              "difficulty": "medium",
+              "prompt": "Which of the following organic wastes should NOT be added to a backyard compost bin to avoid attracting rodents?",
+              "options": [
+                "A. Meat bones, oily cooked food, and dairy products",
+                "B. Dry brown leaves",
+                "C. Cassava peelings",
+                "D. Vegetable stems"
+              ],
+              "correctAnswer": "A. Meat bones, oily cooked food, and dairy products",
+              "hint": "Fats, meats, and oils decompose slowly with foul odors, attracting rats and scavenging pests to compost heaps.",
+              "workedSolution": "Fats, meats, and oils decompose slowly with foul odors, attracting rats and scavenging pests to compost heaps.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I29",
+              "difficulty": "medium",
+              "prompt": "What is the chemical reason why plastic carrier bags take hundreds of years to break down in nature?",
+              "options": [
+                "A. They are composed of synthetic long-chain hydrocarbon polymers with strong covalent bonds that decomposers cannot enzymatically break",
+                "B. They are made of radioactive metals",
+                "C. They freeze natural decomposers on contact",
+                "D. They are made of pure stone"
+              ],
+              "correctAnswer": "A. They are composed of synthetic long-chain hydrocarbon polymers with strong covalent bonds that decomposers cannot enzymatically break",
+              "hint": "Synthetic polymers have chemical structures that natural microbial enzymes cannot digest, causing persistent pollution.",
+              "workedSolution": "Synthetic polymers have chemical structures that natural microbial enzymes cannot digest, causing persistent pollution.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I30",
+              "difficulty": "medium",
+              "prompt": "How do microplastics form in the marine environment?",
+              "options": [
+                "A. Large plastic debris physically fragments into microscopic particles under ocean wave action and solar ultraviolet radiation",
+                "B. Fish chew plastics into molecules",
+                "C. Water dissolves plastics into salt",
+                "D. Microplastics grow from algae"
+              ],
+              "correctAnswer": "A. Large plastic debris physically fragments into microscopic particles under ocean wave action and solar ultraviolet radiation",
+              "hint": "Wave friction and UV weathering physically break down macroplastics into microscopic fragments in marine waters.",
+              "workedSolution": "Wave friction and UV weathering physically break down macroplastics into microscopic fragments in marine waters.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I31",
+              "difficulty": "medium",
+              "prompt": "What is the biological hazard of microplastics entering marine food chains?",
+              "options": [
+                "A. Zooplankton and small fish ingest microplastics, absorbing toxic plasticizers that magnify up the food chain to human consumers",
+                "B. Microplastics turn ocean water into freshwater",
+                "C. Microplastics feed marine plants",
+                "D. Microplastics make fish grow larger"
+              ],
+              "correctAnswer": "A. Zooplankton and small fish ingest microplastics, absorbing toxic plasticizers that magnify up the food chain to human consumers",
+              "hint": "Microplastics carry persistent organic pollutants and are ingested by marine organisms, entering human seafood chains.",
+              "workedSolution": "Microplastics carry persistent organic pollutants and are ingested by marine organisms, entering human seafood chains.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I32",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of a municipal materials recovery facility (MRF)?",
+              "options": [
+                "A. To mechanically and manually separate commingled recyclables into distinct fractions (paper, metal, plastic, glass)",
+                "B. To bury all waste underground",
+                "C. To burn garbage in open fields",
+                "D. To dump refuse into coastal lagoons"
+              ],
+              "correctAnswer": "A. To mechanically and manually separate commingled recyclables into distinct fractions (paper, metal, plastic, glass)",
+              "hint": "A recovery facility sorts mixed recyclables into pure, baled material streams ready for industrial manufacturing.",
+              "workedSolution": "A recovery facility sorts mixed recyclables into pure, baled material streams ready for industrial manufacturing.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I33",
+              "difficulty": "medium",
+              "prompt": "How does source segregation (separating waste into color-coded bins at home) improve recycling efficiency?",
+              "options": [
+                "A. It prevents clean recyclables from being contaminated by moist organic food wastes",
+                "B. It makes garbage weigh more",
+                "C. It speeds up combustion in the kitchen",
+                "D. It turns plastic into paper"
+              ],
+              "correctAnswer": "A. It prevents clean recyclables from being contaminated by moist organic food wastes",
+              "hint": "Sorting waste at the point of origin keeps paper, glass, and plastics clean, avoiding cross-contamination from food scraps.",
+              "workedSolution": "Sorting waste at the point of origin keeps paper, glass, and plastics clean, avoiding cross-contamination from food scraps.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I34",
+              "difficulty": "medium",
+              "prompt": "Why is the composting of organic market waste in urban areas like Kumasi beneficial to surrounding peri-urban farming?",
+              "options": [
+                "A. It converts massive urban organic waste into affordable organic fertilizer, reducing chemical fertilizer dependency",
+                "B. It replaces irrigation water completely",
+                "C. It eliminates farm labor",
+                "D. It kills all insects in the region"
+              ],
+              "correctAnswer": "A. It converts massive urban organic waste into affordable organic fertilizer, reducing chemical fertilizer dependency",
+              "hint": "Market composting produces rich soil conditioner that improves agricultural yields and diverts municipal waste.",
+              "workedSolution": "Market composting produces rich soil conditioner that improves agricultural yields and diverts municipal waste.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I35",
+              "difficulty": "medium",
+              "prompt": "What toxic chemical element is found inside fluorescent tube lamps, requiring specialized disposal?",
+              "options": [
+                "A. Mercury vapor",
+                "B. Table salt",
+                "C. Calcium carbonate",
+                "D. Iron filings"
+              ],
+              "correctAnswer": "A. Mercury vapor",
+              "hint": "Fluorescent tubes contain toxic mercury vapor that damages the nervous system if lamps are smashed in refuse bins.",
+              "workedSolution": "Fluorescent tubes contain toxic mercury vapor that damages the nervous system if lamps are smashed in refuse bins.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I36",
+              "difficulty": "medium",
+              "prompt": "What happens when non-biodegradable polythene bags are ingested by livestock grazing in urban areas?",
+              "options": [
+                "A. The plastic accumulates in the rumen (first stomach), forming a dense compaction block that causes starvation and death",
+                "B. The animal digests the plastic for energy",
+                "C. The animal produces plastic milk",
+                "D. The plastic strengthens the animal's bones"
+              ],
+              "correctAnswer": "A. The plastic accumulates in the rumen (first stomach), forming a dense compaction block that causes starvation and death",
+              "hint": "Indigestible plastic accumulates in cattle stomachs, forming impactions that obstruct digestion and kill the animals.",
+              "workedSolution": "Indigestible plastic accumulates in cattle stomachs, forming impactions that obstruct digestion and kill the animals.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I37",
+              "difficulty": "medium",
+              "prompt": "Why is open burning of municipal solid waste prohibited under Ghanaian environmental sanitation laws?",
+              "options": [
+                "A. It releases uncontrolled emissions of smoke, carbon monoxide, particulates, and dioxins that endanger public health",
+                "B. It makes garbage too heavy to transport",
+                "C. It uses too much water",
+                "D. It produces too much clean soil"
+              ],
+              "correctAnswer": "A. It releases uncontrolled emissions of smoke, carbon monoxide, particulates, and dioxins that endanger public health",
+              "hint": "Uncontrolled burning generates toxic smoke, carbon monoxide, and carcinogens that violate environmental clean-air laws.",
+              "workedSolution": "Uncontrolled burning generates toxic smoke, carbon monoxide, and carcinogens that violate environmental clean-air laws.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I38",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of the Environmental Protection Agency (EPA) in Ghana regarding industrial waste?",
+              "options": [
+                "A. Regulating industrial discharges, enforcing environmental standards, and prosecuting polluters",
+                "B. Buying scrap paper from schools",
+                "C. Constructing domestic gutters",
+                "D. Supplying drinking water to homes"
+              ],
+              "correctAnswer": "A. Regulating industrial discharges, enforcing environmental standards, and prosecuting polluters",
+              "hint": "The EPA enforces effluent and emission limits, monitors industrial waste, and ensures compliance with environmental standards.",
+              "workedSolution": "The EPA enforces effluent and emission limits, monitors industrial waste, and ensures compliance with environmental standards.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I39",
+              "difficulty": "medium",
+              "prompt": "How does recycling scrap iron and steel into iron rods help prevent environmental degradation in mining zones?",
+              "options": [
+                "A. It reduces the demand for open-cast iron ore mining, conserving forest vegetation and preventing soil erosion",
+                "B. It eliminates the need for steel in construction",
+                "C. It turns iron ore into gold",
+                "D. It makes steel trees grow"
+              ],
+              "correctAnswer": "A. It reduces the demand for open-cast iron ore mining, conserving forest vegetation and preventing soil erosion",
+              "hint": "Secondary scrap melting reduces the need to clear forests and excavate virgin iron ore deposits.",
+              "workedSolution": "Secondary scrap melting reduces the need to clear forests and excavate virgin iron ore deposits.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I40",
+              "difficulty": "medium",
+              "prompt": "Why should discarded glass bottles be separated from household garbage before disposal?",
+              "options": [
+                "A. Broken glass creates puncture and laceration hazards for waste collection workers and can be infinitely recycled into new containers",
+                "B. Glass turns into poison in soil",
+                "C. Glass dissolves in rain",
+                "D. Glass catches fire spontaneously"
+              ],
+              "correctAnswer": "A. Broken glass creates puncture and laceration hazards for waste collection workers and can be infinitely recycled into new containers",
+              "hint": "Glass is 100% recyclable, and separating it prevents severe cuts to waste handlers and sorting personnel.",
+              "workedSolution": "Glass is 100% recyclable, and separating it prevents severe cuts to waste handlers and sorting personnel.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I41",
+              "difficulty": "medium",
+              "prompt": "What is the function of an electrostatic precipitator or scrubber fitted onto a modern municipal incinerator chimney?",
+              "options": [
+                "A. To capture particulate matter, fly ash, and acidic gases before flue gases exit into the atmosphere",
+                "B. To speed up the burning of waste",
+                "C. To cool down the furnace fire",
+                "D. To change smoke into perfume"
+              ],
+              "correctAnswer": "A. To capture particulate matter, fly ash, and acidic gases before flue gases exit into the atmosphere",
+              "hint": "Scrubbers and filters clean flue gases, removing acidic toxins, heavy metals, and fly ash from emissions.",
+              "workedSolution": "Scrubbers and filters clean flue gases, removing acidic toxins, heavy metals, and fly ash from emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I42",
+              "difficulty": "medium",
+              "prompt": "Why is organic waste mixed with high amounts of plastic unsuitable for composting?",
+              "options": [
+                "A. Plastic fragments contaminate the compost, block aeration, and remain as non-biodegradable debris in the final product",
+                "B. Plastic makes compost decompose too fast",
+                "C. Plastic adds too much nitrogen to compost",
+                "D. Plastic turns compost into water"
+              ],
+              "correctAnswer": "A. Plastic fragments contaminate the compost, block aeration, and remain as non-biodegradable debris in the final product",
+              "hint": "Plastics do not rot, ruining compost purity and leaving sharp, non-biodegradable contamination in farm soils.",
+              "workedSolution": "Plastics do not rot, ruining compost purity and leaving sharp, non-biodegradable contamination in farm soils.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I43",
+              "difficulty": "medium",
+              "prompt": "How does proper municipal waste collection prevent the spread of cholera during rainy seasons?",
+              "options": [
+                "A. It prevents refuse from blocking drainage paths and stops sewage-contaminated floodwaters from reaching drinking wells",
+                "B. It filters drinking water pipes",
+                "C. It makes rainwater acidic",
+                "D. It eliminates all houseflies instantly"
+              ],
+              "correctAnswer": "A. It prevents refuse from blocking drainage paths and stops sewage-contaminated floodwaters from reaching drinking wells",
+              "hint": "Clearing refuse keeps drainage lines flowing, preventing contaminated floodwaters from mixing with shallow drinking wells.",
+              "workedSolution": "Clearing refuse keeps drainage lines flowing, preventing contaminated floodwaters from mixing with shallow drinking wells.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I44",
+              "difficulty": "medium",
+              "prompt": "What is the primary objective of compacting waste with heavy bulldozers inside a sanitary landfill?",
+              "options": [
+                "A. To reduce the volume of the waste, maximizing the usable lifespan of the landfill cell",
+                "B. To make the waste heavier",
+                "C. To squeeze all moisture into the air",
+                "D. To turn waste into rock"
+              ],
+              "correctAnswer": "A. To reduce the volume of the waste, maximizing the usable lifespan of the landfill cell",
+              "hint": "Compaction crushes bulky refuse, saving air space and extending the working lifespan of the landfill facility.",
+              "workedSolution": "Compaction crushes bulky refuse, saving air space and extending the working lifespan of the landfill facility.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I45",
+              "difficulty": "medium",
+              "prompt": "Why should discarded car tires never be burned in open yards to recover scrap steel wires?",
+              "options": [
+                "A. Burning tires releases black toxic plumes laden with mutagenic soot, heavy metals, and carcinogenic pyrolytic oils",
+                "B. The steel wire turns into ashes",
+                "C. Burning tires causes cold weather",
+                "D. The tires will explode like dynamite"
+              ],
+              "correctAnswer": "A. Burning tires releases black toxic plumes laden with mutagenic soot, heavy metals, and carcinogenic pyrolytic oils",
+              "hint": "Open tire fires generate uncontrolled toxic soot, polycyclic hydrocarbons, and oily runoff that pollutes groundwater.",
+              "workedSolution": "Open tire fires generate uncontrolled toxic soot, polycyclic hydrocarbons, and oily runoff that pollutes groundwater.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I46",
+              "difficulty": "medium",
+              "prompt": "What is the difference between upcycling and downcycling in material recycling?",
+              "options": [
+                "A. Upcycling turns waste into products of higher value or quality, while downcycling breaks materials into lower-grade products",
+                "B. Upcycling means burning waste; downcycling means burying it",
+                "C. Upcycling applies only to food; downcycling applies only to glass",
+                "D. Upcycling is illegal"
+              ],
+              "correctAnswer": "A. Upcycling turns waste into products of higher value or quality, while downcycling breaks materials into lower-grade products",
+              "hint": "Upcycling transforms waste into premium items, whereas downcycling (like melting mixed plastic into park benches) lowers quality.",
+              "workedSolution": "Upcycling transforms waste into premium items, whereas downcycling (like melting mixed plastic into park benches) lowers quality.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I47",
+              "difficulty": "medium",
+              "prompt": "Why is the disposal of untreated timber sawdust into freshwater rivers considered harmful?",
+              "options": [
+                "A. Decomposing sawdust consumes dissolved oxygen, releasing wood tannins that acidify and discolour the aquatic habitat",
+                "B. Sawdust turns river water into solid timber",
+                "C. Sawdust is radioactive",
+                "D. Fish eat sawdust and turn into birds"
+              ],
+              "correctAnswer": "A. Decomposing sawdust consumes dissolved oxygen, releasing wood tannins that acidify and discolour the aquatic habitat",
+              "hint": "Decaying wood particles deplete dissolved oxygen and leach acidic organic compounds that suffocate fish and degrade water quality.",
+              "workedSolution": "Decaying wood particles deplete dissolved oxygen and leach acidic organic compounds that suffocate fish and degrade water quality.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I48",
+              "difficulty": "medium",
+              "prompt": "How does planting green vegetative covers over a closed landfill site protect the local environment?",
+              "options": [
+                "A. Plant roots bind the soil cap against erosion and transpire rainwater, minimizing the volume of water entering the waste to form leachate",
+                "B. Plants pump the buried garbage into the air",
+                "C. Plants produce plastic fruits",
+                "D. Plants stop landfill gas from burning"
+              ],
+              "correctAnswer": "A. Plant roots bind the soil cap against erosion and transpire rainwater, minimizing the volume of water entering the waste to form leachate",
+              "hint": "Vegetation stabilizes the soil cap, prevents erosion, and absorbs rainwater, reducing leachate production.",
+              "workedSolution": "Vegetation stabilizes the soil cap, prevents erosion, and absorbs rainwater, reducing leachate production.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I49",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger associated with improper storage of reactive calcium carbide waste from acetylene gas plants?",
+              "options": [
+                "A. On contact with water, it releases highly flammable and explosive acetylene gas",
+                "B. It turns water into stone",
+                "C. It freezes the surrounding air",
+                "D. It generates radioactive rays"
+              ],
+              "correctAnswer": "A. On contact with water, it releases highly flammable and explosive acetylene gas",
+              "hint": "Calcium carbide reacts violently with water, releasing acetylene gas ($C_2H_2$) which can ignite and explode.",
+              "workedSolution": "Calcium carbide reacts violently with water, releasing acetylene gas ($C_2H_2$) which can ignite and explode.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_I50",
+              "difficulty": "medium",
+              "prompt": "Why should consumers avoid purchasing products packaged in multi-layered, composite materials (e.g., plastic fused to aluminum foil)?",
+              "options": [
+                "A. Multi-layer bonded packaging cannot be easily separated, making them virtually impossible to recycle in standard facilities",
+                "B. Multi-layer packaging is always radioactive",
+                "C. The food inside spoils in one hour",
+                "D. Composite materials are too heavy"
+              ],
+              "correctAnswer": "A. Multi-layer bonded packaging cannot be easily separated, making them virtually impossible to recycle in standard facilities",
+              "hint": "Composite laminated layers resist mechanical separation and sorting, destined for permanent landfill burial.",
+              "workedSolution": "Composite laminated layers resist mechanical separation and sorting, destined for permanent landfill burial.",
               "points": 1,
               "learningCompetency": "B7.5.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_WM_A01",
+              "difficulty": "hard",
+              "prompt": "A municipality generates 500 metric tons of municipal solid waste daily, of which 60% is biodegradable organic waste. If all organic waste is diverted to an aerobic composting plant, how many tons of waste are diverted from the landfill each day?",
+              "options": [
+                "A. 150 metric tons",
+                "B. 200 metric tons",
+                "C. 300 metric tons",
+                "D. 400 metric tons"
+              ],
+              "correctAnswer": "C. 300 metric tons",
+              "hint": "Diverted Organic Waste = 60% of 500 tons = 0.60 × 500 = 300 metric tons per day.",
+              "workedSolution": "Diverted Organic Waste = 60% of 500 tons = 0.60 × 500 = 300 metric tons per day.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A02",
+              "difficulty": "hard",
+              "prompt": "In Question B7_WM_A01, if 300 metric tons of organic waste yields finished compost at a 40% conversion rate by mass, what weight of finished compost is produced daily?",
+              "options": [
+                "A. 60 metric tons",
+                "B. 120 metric tons",
+                "C. 150 metric tons",
+                "D. 200 metric tons"
+              ],
+              "correctAnswer": "B. 120 metric tons",
+              "hint": "Finished Compost Mass = 40% of 300 tons = 0.40 × 300 = 120 metric tons daily.",
+              "workedSolution": "Finished Compost Mass = 40% of 300 tons = 0.40 × 300 = 120 metric tons daily.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A03",
+              "difficulty": "hard",
+              "prompt": "Why does anaerobic decomposition of 1 ton of food waste in a landfill generate methane, whereas aerobic composting produces carbon dioxide?",
+              "options": [
+                "A. In the absence of terminal electron acceptors (oxygen), anaerobic methanogens reduce carbon intermediates into methane ($CH_4$), whereas aerobic microbes oxidize carbon completely to $CO_2$",
+                "B. Anaerobic bacteria are made of metal",
+                "C. Aerobic microbes destroy all carbon atoms",
+                "D. Methane only forms in freezing weather"
+              ],
+              "correctAnswer": "A. In the absence of terminal electron acceptors (oxygen), anaerobic methanogens reduce carbon intermediates into methane ($CH_4$), whereas aerobic microbes oxidize carbon completely to $CO_2$",
+              "hint": "Methanogenic bacteria operate without oxygen, reducing organic acids to methane; aerobic respiration oxidizes carbon into $CO_2$.",
+              "workedSolution": "Methanogenic bacteria operate without oxygen, reducing organic acids to methane; aerobic respiration oxidizes carbon into $CO_2$.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A04",
+              "difficulty": "hard",
+              "prompt": "Given that methane ($CH_4$) has a global warming potential 28 times greater than carbon dioxide ($CO_2$) over a 100-year timeframe, diverting 100 tons of organic waste that would have produced 5 tons of methane avoids the equivalent of how many tons of $CO_2$?",
+              "options": [
+                "A. 28 metric tons $CO_2$ equivalent",
+                "B. 140 metric tons $CO_2$ equivalent",
+                "C. 280 metric tons $CO_2$ equivalent",
+                "D. 500 metric tons $CO_2$ equivalent"
+              ],
+              "correctAnswer": "B. 140 metric tons $CO_2$ equivalent",
+              "hint": "$CO_2$ Equivalent = 5 tons $CH_4$ × 28 = 140 metric tons of $CO_2$ equivalent avoided.",
+              "workedSolution": "$CO_2$ Equivalent = 5 tons $CH_4$ × 28 = 140 metric tons of $CO_2$ equivalent avoided.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A05",
+              "difficulty": "hard",
+              "prompt": "How does chlorinated dioxin formation occur during low-temperature combustion of municipal solid waste containing PVC plastics?",
+              "options": [
+                "A. Chlorine atoms released from PVC react with aromatic hydrocarbon precursors between 250°C and 450°C in the presence of trace metal catalysts like copper",
+                "B. Dioxins are added as liquid fuel to the incinerator",
+                "C. Plastics react with oxygen to form sugar",
+                "D. Dioxins only form when burning clean paper"
+              ],
+              "correctAnswer": "A. Chlorine atoms released from PVC react with aromatic hydrocarbon precursors between 250°C and 450°C in the presence of trace metal catalysts like copper",
+              "hint": "Incomplete combustion of organochlorines at sub-optimal temperatures synthesizes polychlorinated dibenzo-dioxins.",
+              "workedSolution": "Incomplete combustion of organochlorines at sub-optimal temperatures synthesizes polychlorinated dibenzo-dioxins.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A06",
+              "difficulty": "hard",
+              "prompt": "Why must high-temperature modern waste incinerators maintain combustion chamber temperatures above 1,100°C with at least a 2-second residence time?",
+              "options": [
+                "A. To ensure the complete thermal destruction and molecular cracking of toxic dioxins and furans into harmless basic compounds",
+                "B. To melt all concrete walls",
+                "C. To turn heavy metals into steam",
+                "D. To freeze the chimney gases"
+              ],
+              "correctAnswer": "A. To ensure the complete thermal destruction and molecular cracking of toxic dioxins and furans into harmless basic compounds",
+              "hint": "Sustained high temperatures over 1,100°C thermally decompose persistent chlorinated aromatic toxins into basic molecules.",
+              "workedSolution": "Sustained high temperatures over 1,100°C thermally decompose persistent chlorinated aromatic toxins into basic molecules.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A07",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical mechanism of methylmercury bioaccumulation in aquatic food webs?",
+              "options": [
+                "A. Methylmercury binds to sulfhydryl groups in cellular proteins, resisting metabolic excretion and multiplying in concentration at each higher trophic level",
+                "B. Mercury is excreted instantly by fish kidneys",
+                "C. Mercury dissolves harmlessly in water molecules",
+                "D. Phytoplankton convert mercury into oxygen"
+              ],
+              "correctAnswer": "A. Methylmercury binds to sulfhydryl groups in cellular proteins, resisting metabolic excretion and multiplying in concentration at each higher trophic level",
+              "hint": "Methylmercury binds to protein cysteines, concentrating up trophic levels (biomagnification) to reach toxic levels in predators.",
+              "workedSolution": "Methylmercury binds to protein cysteines, concentrating up trophic levels (biomagnification) to reach toxic levels in predators.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A08",
+              "difficulty": "hard",
+              "prompt": "A rural gold-mining stream contains 0.02 ppm of methylmercury. If the biomagnification factor is 10× per trophic tier, what is the expected concentration in top predatory catfish operating three trophic tiers above the baseline water flora?",
+              "options": [
+                "A. 0.2 ppm",
+                "B. 2.0 ppm",
+                "C. 20.0 ppm",
+                "D. 200.0 ppm"
+              ],
+              "correctAnswer": "C. 20.0 ppm",
+              "hint": "Tier 1: 0.02 × 10 = 0.2 ppm.",
+              "workedSolution": "Tier 1: 0.02 × 10 = 0.2 ppm. Tier 2: 0.2 × 10 = 2.0 ppm. Tier 3: 2.0 × 10 = 20.0 ppm.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A09",
+              "difficulty": "hard",
+              "prompt": "Why are pregnant mothers advised to strictly avoid eating predatory fish contaminated with methylmercury?",
+              "options": [
+                "A. Methylmercury crosses the placental and blood-brain barriers, causing irreversible neurological and cerebral damage in the developing fetus",
+                "B. Fish bones dissolve fetal bones",
+                "C. Mercury causes immediate tooth loss in mothers",
+                "D. Fish meat prevents normal labor"
+              ],
+              "correctAnswer": "A. Methylmercury crosses the placental and blood-brain barriers, causing irreversible neurological and cerebral damage in the developing fetus",
+              "hint": "Lipophilic methylmercury penetrates placental and blood-brain barriers, disrupting fetal brain and neurodevelopment.",
+              "workedSolution": "Lipophilic methylmercury penetrates placental and blood-brain barriers, disrupting fetal brain and neurodevelopment.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A10",
+              "difficulty": "hard",
+              "prompt": "In a sanitary landfill, how does a leachate collection and removal system (LCRS) function to protect underlying groundwater aquifers?",
+              "options": [
+                "A. Perforated HDPE collector pipes embedded in a drainage gravel blanket siphon leachate to a sump pump for chemical and biological treatment",
+                "B. It pumps river water into the landfill to dilute the waste",
+                "C. It heats the bottom of the landfill to boil off liquid waste",
+                "D. It injects cement into the garbage to freeze the liquid"
+              ],
+              "correctAnswer": "A. Perforated HDPE collector pipes embedded in a drainage gravel blanket siphon leachate to a sump pump for chemical and biological treatment",
+              "hint": "Drainage blankets and slotted pipes direct toxic leachate to treatment plants, preventing hydraulic seepage into aquifers.",
+              "workedSolution": "Drainage blankets and slotted pipes direct toxic leachate to treatment plants, preventing hydraulic seepage into aquifers.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A11",
+              "difficulty": "hard",
+              "prompt": "What is the chemical composition of landfill gas generated during the mature methanogenic phase of anaerobic decomposition?",
+              "options": [
+                "A. Approximately 50% to 55% Methane ($CH_4$) and 45% to 50% Carbon Dioxide ($CO_2$), with trace volatile organic compounds",
+                "B. 100% pure Nitrogen gas",
+                "C. 90% Oxygen and 10% Hydrogen",
+                "D. 100% pure Helium"
+              ],
+              "correctAnswer": "A. Approximately 50% to 55% Methane ($CH_4$) and 45% to 50% Carbon Dioxide ($CO_2$), with trace volatile organic compounds",
+              "hint": "Mature landfill gas is roughly an equal mixture of methane and carbon dioxide, formed by anaerobic digestion.",
+              "workedSolution": "Mature landfill gas is roughly an equal mixture of methane and carbon dioxide, formed by anaerobic digestion.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A12",
+              "difficulty": "hard",
+              "prompt": "Why does the biological oxygen demand (BOD) of a river surge dramatically when untreated domestic sewage is discharged into it?",
+              "options": [
+                "A. Aerobic heterotrophic bacteria rapidly multiply to decompose the massive influx of organic matter, consuming dissolved oxygen at high rates",
+                "B. Sewage absorbs all water molecules directly",
+                "C. The bacteria create oxygen gas",
+                "D. Algae stop photosynthesizing permanently"
+              ],
+              "correctAnswer": "A. Aerobic heterotrophic bacteria rapidly multiply to decompose the massive influx of organic matter, consuming dissolved oxygen at high rates",
+              "hint": "Decomposers metabolize sewage organics, consuming massive amounts of oxygen and driving BOD levels up.",
+              "workedSolution": "Decomposers metabolize sewage organics, consuming massive amounts of oxygen and driving BOD levels up.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A13",
+              "difficulty": "hard",
+              "prompt": "How does source segregation of organic kitchen waste from municipal solid waste improve the economic feasibility of waste-to-energy incineration?",
+              "options": [
+                "A. Removing wet organic waste (which has high moisture content) increases the net calorific heating value of the remaining combustible solid waste stream",
+                "B. It stops the incinerator from using electricity",
+                "C. It turns the incinerator into a freezer",
+                "D. It eliminates the need for furnace chimneys"
+              ],
+              "correctAnswer": "A. Removing wet organic waste (which has high moisture content) increases the net calorific heating value of the remaining combustible solid waste stream",
+              "hint": "Wet organic waste absorbs furnace heat to evaporate water; removing it boosts the net calorific value of combustible refuse.",
+              "workedSolution": "Wet organic waste absorbs furnace heat to evaporate water; removing it boosts the net calorific value of combustible refuse.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A14",
+              "difficulty": "hard",
+              "prompt": "What is the function of the carbon-to-nitrogen (C:N) ratio in maintaining an efficient, odor-free aerobic composting operation?",
+              "options": [
+                "A. Maintaining an optimal C:N ratio of approximately 30:1 provides balanced carbon for microbial energy and nitrogen for protein synthesis",
+                "B. It stops the compost pile from catching fire",
+                "C. It converts plastic bags into fertile organic soil",
+                "D. It eliminates all moisture from the compost"
+              ],
+              "correctAnswer": "A. Maintaining an optimal C:N ratio of approximately 30:1 provides balanced carbon for microbial energy and nitrogen for protein synthesis",
+              "hint": "A balanced 30:1 C:N ratio (browns to greens) fuels microbial metabolism without causing ammonia release or sluggish decay.",
+              "workedSolution": "A balanced 30:1 C:N ratio (browns to greens) fuels microbial metabolism without causing ammonia release or sluggish decay.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A15",
+              "difficulty": "hard",
+              "prompt": "What serious environmental issue occurs if a compost pile has an excessively low C:N ratio (e.g., 10:1 due to excessive fresh animal manure)?",
+              "options": [
+                "A. Excess nitrogen cannot be assimilated by microorganisms and is lost to the atmosphere as foul-smelling, volatile ammonia gas ($NH_3$)",
+                "B. The compost pile turns into granite rock",
+                "C. The compost pile freezes",
+                "D. The pile stops producing carbon"
+              ],
+              "correctAnswer": "A. Excess nitrogen cannot be assimilated by microorganisms and is lost to the atmosphere as foul-smelling, volatile ammonia gas ($NH_3$)",
+              "hint": "Low C:N ratios leave surplus nitrogen that volatilizes into pungent ammonia gas, creating offensive odors.",
+              "workedSolution": "Low C:N ratios leave surplus nitrogen that volatilizes into pungent ammonia gas, creating offensive odors.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A16",
+              "difficulty": "hard",
+              "prompt": "Why is the recycling of electronic circuit boards (e-waste) via informal open-pan acid leaching environmentally catastrophic?",
+              "options": [
+                "A. Aqua regia and nitric acid baths release toxic nitrogen dioxide fumes and discharge heavy metal residues directly into surrounding surface soils",
+                "B. It consumes all atmospheric nitrogen",
+                "C. It causes immediate earthquakes",
+                "D. Acid baths produce edible salt crystals"
+              ],
+              "correctAnswer": "A. Aqua regia and nitric acid baths release toxic nitrogen dioxide fumes and discharge heavy metal residues directly into surrounding surface soils",
+              "hint": "Informal wet-chemical leaching creates corrosive fumes and dumps untreated cyanide, lead, and acid onto soil.",
+              "workedSolution": "Informal wet-chemical leaching creates corrosive fumes and dumps untreated cyanide, lead, and acid onto soil.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A17",
+              "difficulty": "hard",
+              "prompt": "How does the extended producer responsibility (EPR) policy promote source reduction in industrial manufacturing?",
+              "options": [
+                "A. It mandates that manufacturers are financially and physically responsible for the post-consumer treatment and recycling of their packaging and products",
+                "B. It subsidizes the production of single-use plastic bottles",
+                "C. It eliminates all government taxes for factories",
+                "D. It forbids companies from making durable goods"
+              ],
+              "correctAnswer": "A. It mandates that manufacturers are financially and physically responsible for the post-consumer treatment and recycling of their packaging and products",
+              "hint": "EPR incentivizes manufacturers to design recyclable, durable products with minimal packaging to lower end-of-life disposal liabilities.",
+              "workedSolution": "EPR incentivizes manufacturers to design recyclable, durable products with minimal packaging to lower end-of-life disposal liabilities.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A18",
+              "difficulty": "hard",
+              "prompt": "In a municipal waste audit, a town of 100,000 residents has a per capita waste generation rate of 0.5 kg per person per day. What is the total annual waste tonnage generated?",
+              "options": [
+                "A. 1,825 metric tons",
+                "B. 5,000 metric tons",
+                "C. 18,250 metric tons",
+                "D. 36,500 metric tons"
+              ],
+              "correctAnswer": "C. 18,250 metric tons",
+              "hint": "Daily Waste = 100,000 × 0.5 kg = 50,000 kg = 50 metric tons/day.",
+              "workedSolution": "Daily Waste = 100,000 × 0.5 kg = 50,000 kg = 50 metric tons/day. Annual Waste = 50 tons × 365 days = 18,250 metric tons.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A19",
+              "difficulty": "hard",
+              "prompt": "In Question B7_WM_A18, if a recycling initiative achieves a 20% diversion rate, how many metric tons of waste are diverted from landfills annually?",
+              "options": [
+                "A. 1,825 metric tons",
+                "B. 3,650 metric tons",
+                "C. 7,300 metric tons",
+                "D. 9,125 metric tons"
+              ],
+              "correctAnswer": "B. 3,650 metric tons",
+              "hint": "Diverted Waste = 20% of 18,250 tons = 0.20 × 18,250 = 3,650 metric tons per year.",
+              "workedSolution": "Diverted Waste = 20% of 18,250 tons = 0.20 × 18,250 = 3,650 metric tons per year.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A20",
+              "difficulty": "hard",
+              "prompt": "What is the thermodynamic principle utilized in a Refuse-Derived Fuel (RDF) power generation plant?",
+              "options": [
+                "A. Recovering high-calorific non-recyclable combustible waste to generate high-pressure steam that drives a turbine-generator set for electricity",
+                "B. Converting mechanical friction into radioactive rays",
+                "C. Melting glass bottles to produce electrical sparks",
+                "D. Storing cold rainwater to turn turbines"
+              ],
+              "correctAnswer": "A. Recovering high-calorific non-recyclable combustible waste to generate high-pressure steam that drives a turbine-generator set for electricity",
+              "hint": "RDF processes high-energy combustibles to fuel boilers, driving steam turbines to generate electricity.",
+              "workedSolution": "RDF processes high-energy combustibles to fuel boilers, driving steam turbines to generate electricity.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A21",
+              "difficulty": "hard",
+              "prompt": "How do chemical coagulants and polymer flocculants treat industrial wastewater before it is discharged into rivers?",
+              "options": [
+                "A. They neutralize negative surface charges on suspended colloidal particles, causing them to aggregate into large flocs that settle out by gravity",
+                "B. They turn the wastewater into petroleum fuel",
+                "C. They freeze the water into ice cubes",
+                "D. They convert heavy metals into oxygen gas"
+              ],
+              "correctAnswer": "A. They neutralize negative surface charges on suspended colloidal particles, causing them to aggregate into large flocs that settle out by gravity",
+              "hint": "Coagulation-flocculation binds tiny suspended solids and chemical colloids together so they can be filtered out.",
+              "workedSolution": "Coagulation-flocculation binds tiny suspended solids and chemical colloids together so they can be filtered out.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A22",
+              "difficulty": "hard",
+              "prompt": "What is the primary operational hazard of disposing of volatile organic solvents (such as acetone and paint thinners) in domestic garbage bins?",
+              "options": [
+                "A. They emit flammable vapors that can ignite upon friction inside garbage compactor trucks, causing catastrophic vehicle fires",
+                "B. They dissolve the metal wheels of trucks",
+                "C. They cause the truck to run out of diesel",
+                "D. They turn into solid ice"
+              ],
+              "correctAnswer": "A. They emit flammable vapors that can ignite upon friction inside garbage compactor trucks, causing catastrophic vehicle fires",
+              "hint": "Low-flashpoint volatile solvents ignite readily from mechanical sparks during compaction, sparking truck fires.",
+              "workedSolution": "Low-flashpoint volatile solvents ignite readily from mechanical sparks during compaction, sparking truck fires.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A23",
+              "difficulty": "hard",
+              "prompt": "Why are radioactive medical wastes containing Technetium-99m stored in lead-lined decay vaults before final disposal?",
+              "options": [
+                "A. To allow their short half-life radioactivity (6 hours) to decay naturally over ten half-lives until radiation drops to safe background levels",
+                "B. To turn the radio-isotopes into gold",
+                "C. To prevent the isotope from melting the hospital floor",
+                "D. To cool down the isotope's temperature"
+              ],
+              "correctAnswer": "A. To allow their short half-life radioactivity (6 hours) to decay naturally over ten half-lives until radiation drops to safe background levels",
+              "hint": "Decay-in-storage holds short-lived medical radionuclides until activity drops to safe, unregulated levels.",
+              "workedSolution": "Decay-in-storage holds short-lived medical radionuclides until activity drops to safe, unregulated levels.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A24",
+              "difficulty": "hard",
+              "prompt": "How does the ecological concept of a 'circular economy' challenge the traditional 'linear economy' model of waste generation?",
+              "options": [
+                "A. It replaces the linear 'take-make-dispose' model with a closed-loop system where products are designed for durability, reuse, remanufacture, and biological cycling",
+                "B. It promotes dumping waste in circular pits rather than square pits",
+                "C. It requires all consumer products to be round in shape",
+                "D. It mandates the open burning of all manufactured goods"
+              ],
+              "correctAnswer": "A. It replaces the linear 'take-make-dispose' model with a closed-loop system where products are designed for durability, reuse, remanufacture, and biological cycling",
+              "hint": "Circular economies eliminate waste by keeping materials and technical components in continuous restorative cycles.",
+              "workedSolution": "Circular economies eliminate waste by keeping materials and technical components in continuous restorative cycles.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A25",
+              "difficulty": "hard",
+              "prompt": "What is the environmental effect of using shredded agricultural crop residues as soil surface mulches rather than burning them in the field?",
+              "options": [
+                "A. It suppresses weeds, retains soil moisture, prevents splash erosion, and replenishes organic carbon without releasing $CO_2$ and smoke into the air",
+                "B. It turns the farm soil into rock",
+                "C. It prevents rainwater from reaching the roots",
+                "D. It makes the soil cold enough to freeze"
+              ],
+              "correctAnswer": "A. It suppresses weeds, retains soil moisture, prevents splash erosion, and replenishes organic carbon without releasing $CO_2$ and smoke into the air",
+              "hint": "Mulching recycles agricultural biomass in place, protecting soil moisture and avoiding smoke pollution.",
+              "workedSolution": "Mulching recycles agricultural biomass in place, protecting soil moisture and avoiding smoke pollution.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A26",
+              "difficulty": "hard",
+              "prompt": "Why is the biological process of vermicomposting (using red earthworms like *Eisenia fetida*) faster than conventional thermal composting?",
+              "options": [
+                "A. Earthworms mechanically ingest, grind, and excrete organic waste as castings while enriching it with digestive enzymes and beneficial gut bacteria",
+                "B. Earthworms heat the compost to 100°C",
+                "C. Earthworms eat all non-biodegradable plastics",
+                "D. Earthworms convert waste into synthetic fertilizer"
+              ],
+              "correctAnswer": "A. Earthworms mechanically ingest, grind, and excrete organic waste as castings while enriching it with digestive enzymes and beneficial gut bacteria",
+              "hint": "Worms pulverize organic matter and coat castings with enzymes, accelerating decay into nutrient-rich vermicast.",
+              "workedSolution": "Worms pulverize organic matter and coat castings with enzymes, accelerating decay into nutrient-rich vermicast.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A27",
+              "difficulty": "hard",
+              "prompt": "Why are plastic sachet water bags (LDPE) a major cause of urban flooding in cities like Accra?",
+              "options": [
+                "A. Their lightweight, flat sheet geometry allows them to be carried by stormwater into storm drains, where they interlock and form impermeable water dams",
+                "B. Sachet bags dissolve into heavy cement in water",
+                "C. Sachet bags absorb all the stormwater",
+                "D. Sachet bags create earthquakes"
+              ],
+              "correctAnswer": "A. Their lightweight, flat sheet geometry allows them to be carried by stormwater into storm drains, where they interlock and form impermeable water dams",
+              "hint": "Flexible plastic films snag in culverts, binding silt and garbage into impermeable mats that block flood waters.",
+              "workedSolution": "Flexible plastic films snag in culverts, binding silt and garbage into impermeable mats that block flood waters.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A28",
+              "difficulty": "hard",
+              "prompt": "How does life cycle assessment (LCA) assist environmental engineers in evaluating waste management strategies?",
+              "options": [
+                "A. By quantifying total environmental impacts, raw material consumption, and emissions across every stage from raw extraction through product disposal",
+                "B. By measuring only the weight of the garbage truck",
+                "C. By testing the color of the waste bin",
+                "D. By replacing all recycling facilities"
+              ],
+              "correctAnswer": "A. By quantifying total environmental impacts, raw material consumption, and emissions across every stage from raw extraction through product disposal",
+              "hint": "LCA compiles inputs, outputs, and impacts across the entire life cycle, identifying optimal waste minimization pathways.",
+              "workedSolution": "LCA compiles inputs, outputs, and impacts across the entire life cycle, identifying optimal waste minimization pathways.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A29",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of a geomembrane extrusion weld in sanitary landfill base liner construction?",
+              "options": [
+                "A. To fuse adjacent sheets of HDPE into a single continuous, impermeable, leak-proof barrier across the entire containment floor",
+                "B. To make the landfill look shiny",
+                "C. To conduct electricity into the garbage",
+                "D. To allow leachate to seep into the subsoil"
+              ],
+              "correctAnswer": "A. To fuse adjacent sheets of HDPE into a single continuous, impermeable, leak-proof barrier across the entire containment floor",
+              "hint": "Extrusion and wedge welding fuse plastic panels into a continuous basin liner that stops leachate leaks.",
+              "workedSolution": "Extrusion and wedge welding fuse plastic panels into a continuous basin liner that stops leachate leaks.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A30",
+              "difficulty": "hard",
+              "prompt": "Why are batteries containing lithium-ion chemistry dangerous if crushed inside standard municipal garbage compactor trucks?",
+              "options": [
+                "A. Mechanical crushing punctures internal separators, causing electrical short-circuits and thermal runaway explosions that ignite surrounding dry refuse",
+                "B. Lithium batteries turn into ice water",
+                "C. Lithium dissolves the truck's tires",
+                "D. Crushed batteries emit oxygen gas"
+              ],
+              "correctAnswer": "A. Mechanical crushing punctures internal separators, causing electrical short-circuits and thermal runaway explosions that ignite surrounding dry refuse",
+              "hint": "Crushing punctures separator layers, sparking violent thermal runaway and energetic fires in dry refuse loads.",
+              "workedSolution": "Crushing punctures separator layers, sparking violent thermal runaway and energetic fires in dry refuse loads.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A31",
+              "difficulty": "hard",
+              "prompt": "How does biochar production through biomass pyrolysis differ from open field burning of crop residues?",
+              "options": [
+                "A. Pyrolysis heats biomass in the absence of oxygen to produce stable solid carbon that sequesters carbon in soils, avoiding open smoke emissions",
+                "B. Pyrolysis produces large open bonfires",
+                "C. Pyrolysis requires no crop residues",
+                "D. Open burning sequesters more carbon"
+              ],
+              "correctAnswer": "A. Pyrolysis heats biomass in the absence of oxygen to produce stable solid carbon that sequesters carbon in soils, avoiding open smoke emissions",
+              "hint": "Oxygen-starved pyrolysis locks carbon into recalcitrant biochar, improving soil without releasing air pollutants.",
+              "workedSolution": "Oxygen-starved pyrolysis locks carbon into recalcitrant biochar, improving soil without releasing air pollutants.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A32",
+              "difficulty": "hard",
+              "prompt": "What is the role of an autoclave in treating infectious healthcare waste before final disposal?",
+              "options": [
+                "A. Utilizing high-pressure saturated steam (e.g., 121°C at 15 psi) to denature bacterial and viral proteins, sterilizing the waste",
+                "B. Freezing the waste to kill bacteria",
+                "C. Grinding the waste into liquid fertilizer",
+                "D. Burning the waste with open flames"
+              ],
+              "correctAnswer": "A. Utilizing high-pressure saturated steam (e.g., 121°C at 15 psi) to denature bacterial and viral proteins, sterilizing the waste",
+              "hint": "Autoclaving uses pressurized steam to kill spores and pathogens, turning infectious waste into non-hazardous refuse.",
+              "workedSolution": "Autoclaving uses pressurized steam to kill spores and pathogens, turning infectious waste into non-hazardous refuse.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A33",
+              "difficulty": "hard",
+              "prompt": "Why is the disposal of untreated acidic industrial wastewater directly into municipal concrete sewers damaging to urban infrastructure?",
+              "options": [
+                "A. Acid attacks the calcium carbonate compounds in concrete via chemical dissolution, causing structural sewer pipe collapse",
+                "B. Acid turns concrete into diamond",
+                "C. Acid causes sewer pipes to expand into rubber",
+                "D. Acid makes concrete grow roots"
+              ],
+              "correctAnswer": "A. Acid attacks the calcium carbonate compounds in concrete via chemical dissolution, causing structural sewer pipe collapse",
+              "hint": "Acid effluents dissolve cementitious binders, corroding pipelines and triggering sewer collapses.",
+              "workedSolution": "Acid effluents dissolve cementitious binders, corroding pipelines and triggering sewer collapses.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A34",
+              "difficulty": "hard",
+              "prompt": "What is the environmental significance of recovering methane gas from closed landfills to generate electricity?",
+              "options": [
+                "A. It prevents fugitive atmospheric greenhouse methane emissions while displacing the combustion of fossil fuels for power",
+                "B. It creates more plastic waste",
+                "C. It makes the landfill colder",
+                "D. It stops all rain from falling"
+              ],
+              "correctAnswer": "A. It prevents fugitive atmospheric greenhouse methane emissions while displacing the combustion of fossil fuels for power",
+              "hint": "Capturing methane mitigates climate warming while supplying renewable energy, replacing fossil fuel burning.",
+              "workedSolution": "Capturing methane mitigates climate warming while supplying renewable energy, replacing fossil fuel burning.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A35",
+              "difficulty": "hard",
+              "prompt": "How does industrial recycling of post-consumer PET plastic bottles into polyester textile fibers illustrate mechanical recycling?",
+              "options": [
+                "A. Bottles are sorted, flaked, washed, remelted, and extruded into fine synthetic fibers without changing their chemical polymer backbone",
+                "B. Bottles are dissolved into crude oil",
+                "C. Bottles are burned into ash",
+                "D. Bottles are converted into natural cotton"
+              ],
+              "correctAnswer": "A. Bottles are sorted, flaked, washed, remelted, and extruded into fine synthetic fibers without changing their chemical polymer backbone",
+              "hint": "Mechanical recycling washes and extrudes thermoplastic polymers into yarn without breaking chemical bonds.",
+              "workedSolution": "Mechanical recycling washes and extrudes thermoplastic polymers into yarn without breaking chemical bonds.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A36",
+              "difficulty": "hard",
+              "prompt": "Why is fly ash from municipal solid waste incinerators classified as hazardous waste, whereas bottom ash is often non-hazardous?",
+              "options": [
+                "A. Fly ash condenses and concentrates volatile heavy metals (lead, cadmium) and dioxins filtered from the flue gas stream",
+                "B. Fly ash is magnetic",
+                "C. Bottom ash is radioactive",
+                "D. Fly ash contains pure water"
+              ],
+              "correctAnswer": "A. Fly ash condenses and concentrates volatile heavy metals (lead, cadmium) and dioxins filtered from the flue gas stream",
+              "hint": "Fly ash precipitates fine particulates that bind volatile heavy metals and dioxins, requiring hazardous waste containment.",
+              "workedSolution": "Fly ash precipitates fine particulates that bind volatile heavy metals and dioxins, requiring hazardous waste containment.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A37",
+              "difficulty": "hard",
+              "prompt": "What is the purpose of a flare stack in an active sanitary landfill?",
+              "options": [
+                "A. To burn off excess migrating methane gas safely, converting it to less harmful carbon dioxide when gas generators are offline",
+                "B. To illuminate the landfill at night",
+                "C. To heat the landfill workers' offices",
+                "D. To attract flying insects"
+              ],
+              "correctAnswer": "A. To burn off excess migrating methane gas safely, converting it to less harmful carbon dioxide when gas generators are offline",
+              "hint": "Landfill flares oxidize excess methane into carbon dioxide and water, preventing explosion hazards and reducing warming impact.",
+              "workedSolution": "Landfill flares oxidize excess methane into carbon dioxide and water, preventing explosion hazards and reducing warming impact.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A38",
+              "difficulty": "hard",
+              "prompt": "Why does excessive moisture (over 65%) inside a compost pile halt the composting process and cause foul odors?",
+              "options": [
+                "A. Water fills structural air pores, displacing oxygen and shifting microbial decomposition from aerobic to anaerobic decay",
+                "B. Excess water kills all bacteria permanently",
+                "C. Excess water turns the compost into glass",
+                "D. Excess water stops heat from leaving"
+              ],
+              "correctAnswer": "A. Water fills structural air pores, displacing oxygen and shifting microbial decomposition from aerobic to anaerobic decay",
+              "hint": "Over-watering drowns pore spaces, cutting off oxygen and allowing anaerobic bacteria to produce foul gases.",
+              "workedSolution": "Over-watering drowns pore spaces, cutting off oxygen and allowing anaerobic bacteria to produce foul gases.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A39",
+              "difficulty": "hard",
+              "prompt": "How does chemical neutralization treat corrosive acid waste from battery manufacturing before disposal?",
+              "options": [
+                "A. Adding a calculated alkaline base (such as slaked lime or sodium hydroxide) to bring the pH close to neutral (pH 7.0)",
+                "B. Boiling the acid until it disappears",
+                "C. Adding more acid to make it pure",
+                "D. Freezing the acid in lead containers"
+              ],
+              "correctAnswer": "A. Adding a calculated alkaline base (such as slaked lime or sodium hydroxide) to bring the pH close to neutral (pH 7.0)",
+              "hint": "Adding basic lime neutralizes acidity ($\text{Acid} + \text{Base} \rightarrow \text{Salt} + \text{Water}$), rendering the effluent safe.",
+              "workedSolution": "Adding basic lime neutralizes acidity ($\text{Acid} + \text{Base} \rightarrow \text{Salt} + \text{Water}$), rendering the effluent safe.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A40",
+              "difficulty": "hard",
+              "prompt": "What is the primary advantage of decentralized community composting centers over centralized mega-composting plants?",
+              "options": [
+                "A. Reduced long-distance hauling costs and transport emissions, coupled with direct local reuse of organic compost by urban farmers",
+                "B. Decentralized plants use no land",
+                "C. Small centers process nuclear waste safely",
+                "D. Small centers operate with zero human labor"
+              ],
+              "correctAnswer": "A. Reduced long-distance hauling costs and transport emissions, coupled with direct local reuse of organic compost by urban farmers",
+              "hint": "Neighborhood composting processes waste where it is generated, cutting trucking costs and providing local fertilizer.",
+              "workedSolution": "Neighborhood composting processes waste where it is generated, cutting trucking costs and providing local fertilizer.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A41",
+              "difficulty": "hard",
+              "prompt": "Why are halogenated flame retardants in plastics from e-waste considered persistent organic pollutants (POPs)?",
+              "options": [
+                "A. They resist chemical, photolytic, and biological degradation, bioaccumulate in fatty tissues, and pose chronic toxic hazards",
+                "B. They dissolve in water within one minute",
+                "C. They convert into vitamins in the body",
+                "D. They evaporate into clean oxygen"
+              ],
+              "correctAnswer": "A. They resist chemical, photolytic, and biological degradation, bioaccumulate in fatty tissues, and pose chronic toxic hazards",
+              "hint": "Brominated flame retardants have persistent molecular bonds that resist environmental decay, bioaccumulating in organisms.",
+              "workedSolution": "Brominated flame retardants have persistent molecular bonds that resist environmental decay, bioaccumulating in organisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A42",
+              "difficulty": "hard",
+              "prompt": "How does installing a leachate recirculation system (bioreactor landfill) speed up landfill stabilization?",
+              "options": [
+                "A. Pumping collected leachate back through the waste bed maintains optimal moisture for bacteria, speeding up anaerobic digestion and gas production",
+                "B. It turns the garbage into dry sand",
+                "C. It stops the generation of all gases",
+                "D. It dissolves the plastic liners"
+              ],
+              "correctAnswer": "A. Pumping collected leachate back through the waste bed maintains optimal moisture for bacteria, speeding up anaerobic digestion and gas production",
+              "hint": "Bioreactor landfills circulate moisture to accelerate biological decay, shortening stabilization from decades to years.",
+              "workedSolution": "Bioreactor landfills circulate moisture to accelerate biological decay, shortening stabilization from decades to years.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A43",
+              "difficulty": "hard",
+              "prompt": "What is the environmental risk of disposing of polychlorinated biphenyls (PCBs) from old electrical transformers in scrap yards?",
+              "options": [
+                "A. PCBs are potent endocrine disruptors that persist in the food chain, causing reproductive failure, immune suppression, and cancers",
+                "B. PCBs turn into clean cooking oil",
+                "C. PCBs cause instant global freezing",
+                "D. PCBs dissolve scrap steel"
+              ],
+              "correctAnswer": "A. PCBs are potent endocrine disruptors that persist in the food chain, causing reproductive failure, immune suppression, and cancers",
+              "hint": "PCBs are stable, toxic transformer oils that bioaccumulate, causing severe hormonal disruption and cancers in humans.",
+              "workedSolution": "PCBs are stable, toxic transformer oils that bioaccumulate, causing severe hormonal disruption and cancers in humans.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A44",
+              "difficulty": "hard",
+              "prompt": "Why is tire shredding required before discarded automotive tires can be accepted into engineered landfills?",
+              "options": [
+                "A. Whole tires trap methane gas and 'float' up through the compacted soil cover to rupture the landfill cap",
+                "B. Shredded tires turn into water",
+                "C. Whole tires are radioactive",
+                "D. Whole tires eat the clay liner"
+              ],
+              "correctAnswer": "A. Whole tires trap methane gas and 'float' up through the compacted soil cover to rupture the landfill cap",
+              "hint": "Whole tires trap air and spring back, gradually rising through waste layers to punch holes in the surface clay cap.",
+              "workedSolution": "Whole tires trap air and spring back, gradually rising through waste layers to punch holes in the surface clay cap.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A45",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of a phytoremediation buffer zone planted around an industrial waste dumpsite?",
+              "options": [
+                "A. Specially selected deep-rooted plants absorb, immobilize, or degrade toxic chemical contaminants in subsoil and runoff",
+                "B. To make the dumpsite invisible from the road",
+                "C. To harvest chemical wood for timber",
+                "D. To cool down the dumpsite temperature"
+              ],
+              "correctAnswer": "A. Specially selected deep-rooted plants absorb, immobilize, or degrade toxic chemical contaminants in subsoil and runoff",
+              "hint": "Phytoremediation uses plants to extract, sequester, or bio-filter heavy metals and pollutants from contaminated soils.",
+              "workedSolution": "Phytoremediation uses plants to extract, sequester, or bio-filter heavy metals and pollutants from contaminated soils.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A46",
+              "difficulty": "hard",
+              "prompt": "Why does thermal gasification of municipal solid waste produce lower emissions of dioxins and furans than open-hearth mass burning?",
+              "options": [
+                "A. Gasification operates in an oxygen-deficient atmosphere, depriving chlorine and aromatic rings of the free oxygen required to synthesize dioxins",
+                "B. Gasification produces zero heat",
+                "C. Gasification uses cold water instead of fire",
+                "D. Gasification turns all plastics into nitrogen"
+              ],
+              "correctAnswer": "A. Gasification operates in an oxygen-deficient atmosphere, depriving chlorine and aromatic rings of the free oxygen required to synthesize dioxins",
+              "hint": "Starving the reaction of excess oxygen suppresses the chemical pathways that synthesize chlorinated dioxin molecules.",
+              "workedSolution": "Starving the reaction of excess oxygen suppresses the chemical pathways that synthesize chlorinated dioxin molecules.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A47",
+              "difficulty": "hard",
+              "prompt": "What is the ecological hazard of disposing of chemical agrochemical washings into farm drainage ditches?",
+              "options": [
+                "A. Pesticide runoff leaches into community irrigation ditches, poisoning non-target pollinators, soil worms, and downstream aquatic ecosystems",
+                "B. Pesticides evaporate into clean rain",
+                "C. Ditches turn into concrete",
+                "D. Pesticides produce organic fertilizer"
+              ],
+              "correctAnswer": "A. Pesticide runoff leaches into community irrigation ditches, poisoning non-target pollinators, soil worms, and downstream aquatic ecosystems",
+              "hint": "Uncontained pesticide washings contaminate aquatic food chains, killing beneficial insects, fish, and microorganisms.",
+              "workedSolution": "Uncontained pesticide washings contaminate aquatic food chains, killing beneficial insects, fish, and microorganisms.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A48",
+              "difficulty": "hard",
+              "prompt": "How does using an anaerobic biodigester to manage abattoir slaughterhouse waste solve both sanitation and energy needs?",
+              "options": [
+                "A. It treats highly pathogenic blood and visceral wastes in a sealed system, destroying pathogens while generating methane for cooking and lighting",
+                "B. It turns animal blood into drinking water",
+                "C. It converts bones into gold",
+                "D. It eliminates the need for animal meat"
+              ],
+              "correctAnswer": "A. It treats highly pathogenic blood and visceral wastes in a sealed system, destroying pathogens while generating methane for cooking and lighting",
+              "hint": "Biogas digesters neutralize pathogenic biological effluents while producing valuable methane fuel and bio-fertilizer.",
+              "workedSolution": "Biogas digesters neutralize pathogenic biological effluents while producing valuable methane fuel and bio-fertilizer.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A49",
+              "difficulty": "hard",
+              "prompt": "What is the primary barrier preventing the recycling of thermosetting plastics (such as bakelite or epoxy resins)?",
+              "options": [
+                "A. Thermosetting polymers form irreversible cross-linked covalent molecular networks that decompose or char upon heating rather than melting",
+                "B. They dissolve in water instantly",
+                "C. They are made entirely of wood",
+                "D. They are too soft to process"
+              ],
+              "correctAnswer": "A. Thermosetting polymers form irreversible cross-linked covalent molecular networks that decompose or char upon heating rather than melting",
+              "hint": "Cross-linked thermosets cannot be re-melted and reshaped like thermoplastics; heating simply chars and burns the material.",
+              "workedSolution": "Cross-linked thermosets cannot be re-melted and reshaped like thermoplastics; heating simply chars and burns the material.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_WM_A50",
+              "difficulty": "hard",
+              "prompt": "What is the ultimate environmental and economic objective of an integrated solid waste management (ISWM) framework?",
+              "options": [
+                "A. Combining source reduction, recycling, biological recovery, and waste-to-energy to minimize the final volume of waste sent to landfills",
+                "B. Burning all waste in household backyards",
+                "C. Dumping all waste in open oceans",
+                "D. Exporting all waste to other countries"
+              ],
+              "correctAnswer": "A. Combining source reduction, recycling, biological recovery, and waste-to-energy to minimize the final volume of waste sent to landfills",
+              "hint": "ISWM integrates complementary management techniques to recover resources and protect health while reducing landfilling.",
+              "workedSolution": "ISWM integrates complementary management techniques to recover resources and protect health while reducing landfilling.",
+              "points": 1,
+              "learningCompetency": "B7.5.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -33867,7 +36384,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.622Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -34062,7 +36579,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.622Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -34257,7 +36774,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.622Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -34453,7 +36970,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.622Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -34650,7 +37167,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T12:55:58.531Z"
+    "updatedAt": "2026-10-08T13:02:11.622Z"
   }
 ];
 
@@ -65742,35 +68259,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s15_1",
+        "id": "B7_WM_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which of the following household waste items is completely biodegradable?",
+        "prompt": "What is waste scientifically defined as?",
         "options": [
-          "Plastic water sachet (polythene)",
-          "Cassava peelings",
-          "Broken glass bottle",
-          "Aluminum beverage can"
+          "A. Any material that can only be dissolved in water",
+          "B. Any unwanted, discarded, or unusable material that is no longer needed after its primary use",
+          "C. Chemical elements found exclusively in petroleum fuels",
+          "D. Natural biological soil formed from crushed rocks"
         ],
-        "correctAnswer": "Cassava peelings",
-        "hint": "It is an organic plant residue that decomposes naturally.",
-        "workedSolution": "Cassava peelings are organic vegetable matter that soil saprophytic bacteria and fungi can enzymatically break down into harmless organic compost.",
+        "correctAnswer": "B. Any unwanted, discarded, or unusable material that is no longer needed after its primary use",
+        "hint": "Waste is defined as an unwanted material that is no longer needed and is discarded after primary use.",
+        "workedSolution": "Waste is defined as an unwanted material that is no longer needed and is discarded after primary use.",
         "points": 1
       },
       {
-        "id": "q_b7_s15_2",
+        "id": "B7_WM_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Solid waste from households, street sweepings, packaging, and demolition debris managed by local assemblies is called:",
+        "options": [
+          "A. Municipal solid waste",
+          "B. Radioactive waste",
+          "C. Industrial effluent",
+          "D. Medical waste"
+        ],
+        "correctAnswer": "A. Municipal solid waste",
+        "hint": "Municipal solid waste includes household garbage, rubbish, packaging, and demolition debris managed by local authorities.",
+        "workedSolution": "Municipal solid waste includes household garbage, rubbish, packaging, and demolition debris managed by local authorities.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Waste generated from manufacturing and processing factories such as chemical refineries and paper mills is classified as:",
+        "options": [
+          "A. Municipal waste",
+          "B. Industrial waste",
+          "C. Fishery waste",
+          "D. Agricultural waste"
+        ],
+        "correctAnswer": "B. Industrial waste",
+        "hint": "Industrial wastes are liquid and solid wastes generated by manufacturing and processing industries.",
+        "workedSolution": "Industrial wastes are liquid and solid wastes generated by manufacturing and processing industries.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of institutional waste?",
+        "options": [
+          "A. Broken desks, obsolete examination files, and scrap paper from schools",
+          "B. Chemical sludge from petroleum refineries",
+          "C. Fish viscera and scales from a beach landing site",
+          "D. Livestock manure from a dairy barn"
+        ],
+        "correctAnswer": "A. Broken desks, obsolete examination files, and scrap paper from schools",
+        "hint": "Institutional wastes originate from schools, universities, and offices, consisting of paper, furniture, and old files.",
+        "workedSolution": "Institutional wastes originate from schools, universities, and offices, consisting of paper, furniture, and old files.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Organic refuse produced from farming activities such as crop stalks, husks, and animal dung is called:",
+        "options": [
+          "A. Agricultural waste",
+          "B. Radioactive waste",
+          "C. E-waste",
+          "D. Municipal solid waste"
+        ],
+        "correctAnswer": "A. Agricultural waste",
+        "hint": "Agricultural wastes are substances generated from farming operations, which are mostly biodegradable.",
+        "workedSolution": "Agricultural wastes are substances generated from farming operations, which are mostly biodegradable.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Waste originating from marine fish netting, gutting, and beach fish-market operations is termed:",
+        "options": [
+          "A. Fishery waste",
+          "B. Electronic waste",
+          "C. Institutional waste",
+          "D. Municipal sludge"
+        ],
+        "correctAnswer": "A. Fishery waste",
+        "hint": "Fishery wastes are wastes generated due to fishery activities, often found in coastal and estuarine landing sites.",
+        "workedSolution": "Fishery wastes are wastes generated due to fishery activities, often found in coastal and estuarine landing sites.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Discarded electronic equipment such as obsolete mobile phones, computers, and television sets is referred to as:",
+        "options": [
+          "A. Medical waste",
+          "B. E-waste (electronic waste)",
+          "C. Agricultural waste",
+          "D. Biodegradable waste"
+        ],
+        "correctAnswer": "B. E-waste (electronic waste)",
+        "hint": "E-waste comprises end-of-life electrical and electronic equipment such as phones, computers, and appliances.",
+        "workedSolution": "E-waste comprises end-of-life electrical and electronic equipment such as phones, computers, and appliances.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Waste produced in hospitals containing soiled bandages, syringes, expired medicines, and bodily fluids is called:",
+        "options": [
+          "A. Agricultural waste",
+          "B. Medical waste",
+          "C. Institutional waste",
+          "D. Fishery waste"
+        ],
+        "correctAnswer": "B. Medical waste",
+        "hint": "Medical waste originates from healthcare facilities and consists of pharmaceuticals, bandages, body parts, and sharps.",
+        "workedSolution": "Medical waste originates from healthcare facilities and consists of pharmaceuticals, bandages, body parts, and sharps.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is biodegradable waste?",
+        "options": [
+          "A. Waste that cannot be broken down by any natural agent",
+          "B. Waste that can be broken down or decomposed into simple forms by the action of microorganisms",
+          "C. Waste that is permanently radioactive",
+          "D. Synthetic plastic waste that melts in rainwater"
+        ],
+        "correctAnswer": "B. Waste that can be broken down or decomposed into simple forms by the action of microorganisms",
+        "hint": "Biodegradable waste can be broken down into simple forms in nature by microorganisms such as bacteria.",
+        "workedSolution": "Biodegradable waste can be broken down into simple forms in nature by microorganisms such as bacteria.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of biodegradable waste?",
+        "options": [
+          "A. Food scraps and plant peelings",
+          "B. Polythene shopping bags",
+          "C. Glass drink bottles",
+          "D. Metal beverage cans"
+        ],
+        "correctAnswer": "A. Food scraps and plant peelings",
+        "hint": "Food waste, green waste, and plant trimmings are biodegradable and broken down by decomposers.",
+        "workedSolution": "Food waste, green waste, and plant trimmings are biodegradable and broken down by decomposers.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is non-biodegradable waste?",
+        "options": [
+          "A. Waste that decomposes within twenty-four hours in soil",
+          "B. Waste that cannot be decomposed or broken down by natural organisms or agents",
+          "C. Waste composed exclusively of vegetable kitchen scraps",
+          "D. Waste that dissolves completely in clean drinking water"
+        ],
+        "correctAnswer": "B. Waste that cannot be decomposed or broken down by natural organisms or agents",
+        "hint": "Non-biodegradable wastes cannot be broken down by natural organisms and remain in the environment for centuries.",
+        "workedSolution": "Non-biodegradable wastes cannot be broken down by natural organisms and remain in the environment for centuries.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following items is classified as non-biodegradable?",
+        "options": [
+          "A. Banana peel",
+          "B. Plastic water bottle",
+          "C. Wood shaving",
+          "D. Cotton cloth"
+        ],
+        "correctAnswer": "B. Plastic water bottle",
+        "hint": "Plastic water bottles, metals, and glass cannot be digested by natural decomposers and are non-biodegradable.",
+        "workedSolution": "Plastic water bottles, metals, and glass cannot be digested by natural decomposers and are non-biodegradable.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Wastes that have the potential to cause significant harm to human health or the environment are termed:",
+        "options": [
+          "A. Hazardous wastes",
+          "B. Non-hazardous wastes",
+          "C. Compostable wastes",
+          "D. Natural wastes"
+        ],
+        "correctAnswer": "A. Hazardous wastes",
+        "hint": "Hazardous wastes have the potential to harm the environment and human health, requiring specialized handling.",
+        "workedSolution": "Hazardous wastes have the potential to harm the environment and human health, requiring specialized handling.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a characteristic of hazardous waste?",
+        "options": [
+          "A. Flammability",
+          "B. Corrosiveness",
+          "C. Toxicity",
+          "D. All of the above"
+        ],
+        "correctAnswer": "D. All of the above",
+        "hint": "Hazardous wastes exhibit characteristics including flammability, corrosiveness, reactivity, explosiveness, and toxicity.",
+        "workedSolution": "Hazardous wastes exhibit characteristics including flammability, corrosiveness, reactivity, explosiveness, and toxicity.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Wastes that are safe to handle and process commercially without danger of toxic poisoning are classified as:",
+        "options": [
+          "A. Hazardous wastes",
+          "B. Non-hazardous wastes",
+          "C. Radioactive wastes",
+          "D. Infectious wastes"
+        ],
+        "correctAnswer": "B. Non-hazardous wastes",
+        "hint": "Non-hazardous wastes do not possess dangerous traits like high toxicity, flammability, or corrosiveness.",
+        "workedSolution": "Non-hazardous wastes do not possess dangerous traits like high toxicity, flammability, or corrosiveness.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of non-hazardous solid waste?",
+        "options": [
+          "A. Clean scrap paper and cardboard boxes",
+          "B. Radioactive isotopes",
+          "C. Lead-acid battery acid",
+          "D. Expired chemical chemotherapy drugs"
+        ],
+        "correctAnswer": "A. Clean scrap paper and cardboard boxes",
+        "hint": "Paper, cardboard, clean glass, and beverage cans are standard non-hazardous commercial wastes.",
+        "workedSolution": "Paper, cardboard, clean glass, and beverage cans are standard non-hazardous commercial wastes.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What potent greenhouse gas is formed when organic waste breaks down under anaerobic conditions in landfills?",
+        "options": [
+          "A. Oxygen",
+          "B. Methane",
+          "C. Argon",
+          "D. Helium"
+        ],
+        "correctAnswer": "B. Methane",
+        "hint": "Waste breaking down in landfills generates methane gas, which is a potent greenhouse gas driving climate change.",
+        "workedSolution": "Waste breaking down in landfills generates methane gas, which is a potent greenhouse gas driving climate change.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What highly toxic substances are produced when plastic wastes are incinerated in open bonfires?",
+        "options": [
+          "A. Clean water vapor",
+          "B. Dioxins",
+          "C. Pure nitrogen gas",
+          "D. Ozone gas"
+        ],
+        "correctAnswer": "B. Dioxins",
+        "hint": "Incinerating plastics produces toxic substances such as carcinogenic dioxins.",
+        "workedSolution": "Incinerating plastics produces toxic substances such as carcinogenic dioxins.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Unfiltered flue gases emitted from open burning and poor incineration contribute directly to:",
+        "options": [
+          "A. Acid rain",
+          "B. Soil enrichment",
+          "C. Ground cooling",
+          "D. Purified oxygen"
+        ],
+        "correctAnswer": "A. Acid rain",
+        "hint": "Gases produced from burning waste cause air pollution and contribute directly to acid rain.",
+        "workedSolution": "Gases produced from burning waste cause air pollution and contribute directly to acid rain.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The ash remaining from municipal incinerators often contains hazardous concentrations of:",
+        "options": [
+          "A. Pure calcium carbonate",
+          "B. Heavy metals and other toxins",
+          "C. Sugar crystals",
+          "D. Plant vitamins"
+        ],
+        "correctAnswer": "B. Heavy metals and other toxins",
+        "hint": "Ash from incinerators may contain heavy metals and concentrated chemical toxins.",
+        "workedSolution": "Ash from incinerators may contain heavy metals and concentrated chemical toxins.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What toxic heavy metal increases in concentration in freshwater fish when industrial and galamsey mining effluents are discharged into rivers?",
+        "options": [
+          "A. Mercury",
+          "B. Sodium",
+          "C. Potassium",
+          "D. Magnesium"
+        ],
+        "correctAnswer": "A. Mercury",
+        "hint": "Disposing of chemical effluents in river bodies leads to an increase in mercury levels in fish.",
+        "workedSolution": "Disposing of chemical effluents in river bodies leads to an increase in mercury levels in fish.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What common marine pollutant is frequently ingested by seabirds and sea turtles, causing digestive blockages?",
+        "options": [
+          "A. Floating plastic debris",
+          "B. Wooden planks",
+          "C. Clay mud",
+          "D. River sand"
+        ],
+        "correctAnswer": "A. Floating plastic debris",
+        "hint": "Plastic waste discarded into oceans is mistakenly ingested by marine birds and aquatic animals.",
+        "workedSolution": "Plastic waste discarded into oceans is mistakenly ingested by marine birds and aquatic animals.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Excessive disposal of untreated sewage and organic waste into rivers triggers blooms of which organism?",
+        "options": [
+          "A. Algae (algal blooms)",
+          "B. Water lilies only",
+          "C. Tilapia fish",
+          "D. Mangrove trees"
+        ],
+        "correctAnswer": "A. Algae (algal blooms)",
+        "hint": "Nutrient-rich organic waste dumped into water bodies results in high algal populations (algal blooms).",
+        "workedSolution": "Nutrient-rich organic waste dumped into water bodies results in high algal populations (algal blooms).",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Indiscriminate dumping of solid and liquid chemical waste leads to the degradation of:",
+        "options": [
+          "A. Water and soil quality",
+          "B. Solar radiation speed",
+          "C. Gravitational pull",
+          "D. Moon phases"
+        ],
+        "correctAnswer": "A. Water and soil quality",
+        "hint": "Uncontrolled dumping of waste degrades both water bodies and soil quality.",
+        "workedSolution": "Uncontrolled dumping of waste degrades both water bodies and soil quality.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What acute health hazard is caused by inhaling toxic smoke from burning community refuse dumps?",
+        "options": [
+          "A. Chemical poisoning and respiratory irritation",
+          "B. Broken limbs",
+          "C. Tooth decay",
+          "D. Muscle sprains"
+        ],
+        "correctAnswer": "A. Chemical poisoning and respiratory irritation",
+        "hint": "Inhaling toxic chemical smoke from burning waste leads to chemical poisoning and severe respiratory damage.",
+        "workedSolution": "Inhaling toxic chemical smoke from burning waste leads to chemical poisoning and severe respiratory damage.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Studies show that residents living near hazardous waste dumpsites experience an increase in:",
+        "options": [
+          "A. Hospitalization rates",
+          "B. Natural immunity",
+          "C. Vision strength",
+          "D. Bone thickness"
+        ],
+        "correctAnswer": "A. Hospitalization rates",
+        "hint": "Living in close proximity to hazardous waste sites leads to increased hospitalization of vulnerable residents.",
+        "workedSolution": "Living in close proximity to hazardous waste sites leads to increased hospitalization of vulnerable residents.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The scientific waste management principle that focuses on preventing waste generation at the point of origin is:",
+        "options": [
+          "A. Source reduction",
+          "B. Landfill compaction",
+          "C. Deep-well injection",
+          "D. Open burning"
+        ],
+        "correctAnswer": "A. Source reduction",
+        "hint": "Source reduction focuses on minimizing the amount of waste generated at the source.",
+        "workedSolution": "Source reduction focuses on minimizing the amount of waste generated at the source.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following practices is an example of source reduction?",
+        "options": [
+          "A. Using durable, reusable bags and reducing packaging materials",
+          "B. Burning refuse in home backyards",
+          "C. Dumping garbage into open gutters",
+          "D. Buying single-use plastics daily"
+        ],
+        "correctAnswer": "A. Using durable, reusable bags and reducing packaging materials",
+        "hint": "Source reduction involves practices such as reducing packaging and using durable, reusable products.",
+        "workedSolution": "Source reduction involves practices such as reducing packaging and using durable, reusable products.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The process of converting discarded waste materials into new, usable commercial products is called:",
+        "options": [
+          "A. Recycling",
+          "B. Incineration",
+          "C. Deforestation",
+          "D. Gasification"
+        ],
+        "correctAnswer": "A. Recycling",
+        "hint": "Recycling is based on the principle of converting waste materials into new products.",
+        "workedSolution": "Recycling is based on the principle of converting waste materials into new products.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which set of materials is commonly collected and sorted for recycling?",
+        "options": [
+          "A. Paper, plastic, glass, and metal",
+          "B. Radioactive spent fuel rods",
+          "C. Syringes containing infected blood",
+          "D. Human anatomical tissues"
+        ],
+        "correctAnswer": "A. Paper, plastic, glass, and metal",
+        "hint": "Standard recycling collects, sorts, and reprocesses materials such as paper, plastic, glass, and metal.",
+        "workedSolution": "Standard recycling collects, sorts, and reprocesses materials such as paper, plastic, glass, and metal.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What natural biological process converts organic food scraps and yard trimmings into nutrient-rich soil amendment?",
+        "options": [
+          "A. Composting",
+          "B. Pyrolysis",
+          "C. Nuclear fission",
+          "D. Polymerization"
+        ],
+        "correctAnswer": "A. Composting",
+        "hint": "Composting is a natural process that converts organic waste like food scraps into nutrient-rich compost.",
+        "workedSolution": "Composting is a natural process that converts organic waste like food scraps into nutrient-rich compost.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Composting relies fundamentally on the scientific principles of:",
+        "options": [
+          "A. Biological decomposition and nutrient cycling",
+          "B. Acid dissolution of metals",
+          "C. High-voltage electrical arcing",
+          "D. Magnetic separation"
+        ],
+        "correctAnswer": "A. Biological decomposition and nutrient cycling",
+        "hint": "Composting is based on natural principles of biological decomposition and ecological nutrient cycling.",
+        "workedSolution": "Composting is based on natural principles of biological decomposition and ecological nutrient cycling.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Converting non-recyclable combustible waste into usable heat, electricity, or biofuels is termed:",
+        "options": [
+          "A. Waste-to-energy",
+          "B. Open composting",
+          "C. Surface runoff",
+          "D. Ocean dumping"
+        ],
+        "correctAnswer": "A. Waste-to-energy",
+        "hint": "Waste-to-energy technologies convert solid waste into usable energy like electricity, heat, or biofuels.",
+        "workedSolution": "Waste-to-energy technologies convert solid waste into usable energy like electricity, heat, or biofuels.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a waste-to-energy conversion method?",
+        "options": [
+          "A. Controlled incineration with heat capture",
+          "B. Gasification",
+          "C. Anaerobic digestion",
+          "D. All of the above"
+        ],
+        "correctAnswer": "D. All of the above",
+        "hint": "Waste-to-energy methods include controlled incineration, gasification, and anaerobic digestion.",
+        "workedSolution": "Waste-to-energy methods include controlled incineration, gasification, and anaerobic digestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The method of waste disposal that involves burying non-recyclable solid waste in designated engineered sites is called:",
+        "options": [
+          "A. Landfilling",
+          "B. Open littering",
+          "C. Composting",
+          "D. Galamsey mining"
+        ],
+        "correctAnswer": "A. Landfilling",
+        "hint": "Landfilling involves burying waste in designated containment sites engineered for environmental protection.",
+        "workedSolution": "Landfilling involves burying waste in designated containment sites engineered for environmental protection.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Engineered sanitary landfills are built specifically to minimize the release of pollutants into:",
+        "options": [
+          "A. Soil and groundwater resources",
+          "B. Solar panels",
+          "C. High clouds",
+          "D. Outer space"
+        ],
+        "correctAnswer": "A. Soil and groundwater resources",
+        "hint": "Sanitary landfills are designed to minimize pollutant release and prevent contamination of soil and water resources.",
+        "workedSolution": "Sanitary landfills are designed to minimize pollutant release and prevent contamination of soil and water resources.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following items constitutes fishery waste along Ghanaian coastal beaches?",
+        "options": [
+          "A. Discarded fish gills, entrails, and spoiled fish catch",
+          "B. Old car batteries",
+          "C. Demolished brick walls",
+          "D. Broken glass bottles"
+        ],
+        "correctAnswer": "A. Discarded fish gills, entrails, and spoiled fish catch",
+        "hint": "Fishery wastes comprise fish parts, damaged nets, and biological residues produced from fishing activities.",
+        "workedSolution": "Fishery wastes comprise fish parts, damaged nets, and biological residues produced from fishing activities.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following represents radioactive waste?",
+        "options": [
+          "A. Spent radioactive isotopes and contaminated medical radiotherapy equipment",
+          "B. Rotten plantain peelings",
+          "C. Discarded cardboard boxes",
+          "D. Plastic mineral water sachets"
+        ],
+        "correctAnswer": "A. Spent radioactive isotopes and contaminated medical radiotherapy equipment",
+        "hint": "Radioactive wastes contain radioactive isotopes generated by nuclear, industrial, or medical radiotherapy processes.",
+        "workedSolution": "Radioactive wastes contain radioactive isotopes generated by nuclear, industrial, or medical radiotherapy processes.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is e-waste dangerous if discarded into open refuse dumps?",
+        "options": [
+          "A. It leaches toxic heavy metals like lead, mercury, and cadmium into soil and drinking water",
+          "B. It turns into liquid mud within one hour",
+          "C. It multiplies into living insects",
+          "D. It freezes surrounding farmland"
+        ],
+        "correctAnswer": "A. It leaches toxic heavy metals like lead, mercury, and cadmium into soil and drinking water",
+        "hint": "Electronic components contain toxic heavy metals that contaminate groundwater when dumped indiscriminately.",
+        "workedSolution": "Electronic components contain toxic heavy metals that contaminate groundwater when dumped indiscriminately.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is medical waste treated with extreme precaution before disposal?",
+        "options": [
+          "A. It contains pathogenic bacteria, viruses, and infectious biological materials",
+          "B. It is too heavy to carry",
+          "C. It cannot be buried in soil",
+          "D. It generates solar electricity"
+        ],
+        "correctAnswer": "A. It contains pathogenic bacteria, viruses, and infectious biological materials",
+        "hint": "Medical waste can be infectious, toxic, and contain bacteria and harmful microorganisms that transmit diseases.",
+        "workedSolution": "Medical waste can be infectious, toxic, and contain bacteria and harmful microorganisms that transmit diseases.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary characteristic of flammable hazardous waste?",
+        "options": [
+          "A. It catches fire easily at relatively low temperatures",
+          "B. It dissolves plastic containers",
+          "C. It produces cold air",
+          "D. It has zero mass"
+        ],
+        "correctAnswer": "A. It catches fire easily at relatively low temperatures",
+        "hint": "Flammability means a waste material ignites easily and burns vigorously, posing fire hazards.",
+        "workedSolution": "Flammability means a waste material ignites easily and burns vigorously, posing fire hazards.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A chemical waste that corrodes and eats away metal storage drums is classified as:",
+        "options": [
+          "A. Corrosive",
+          "B. Biodegradable",
+          "C. Inactive",
+          "D. Combustible"
+        ],
+        "correctAnswer": "A. Corrosive",
+        "hint": "Corrosive wastes are highly acidic or alkaline substances that chemically eat away metal drums or living tissue.",
+        "workedSolution": "Corrosive wastes are highly acidic or alkaline substances that chemically eat away metal drums or living tissue.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a reactive hazardous waste?",
+        "options": [
+          "A. A substance that is chemically unstable and can explode or release toxic gases when mixed with water",
+          "B. A substance that turns into rich soil fertilizer",
+          "C. A substance that does not react with anything",
+          "D. A material made entirely of glass"
+        ],
+        "correctAnswer": "A. A substance that is chemically unstable and can explode or release toxic gases when mixed with water",
+        "hint": "Reactivity refers to unstable substances that react violently, explode, or emit toxic gases when mixed with water or air.",
+        "workedSolution": "Reactivity refers to unstable substances that react violently, explode, or emit toxic gases when mixed with water or air.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Toxicity as a characteristic of hazardous waste refers to the ability to:",
+        "options": [
+          "A. Cause injury, illness, genetic mutations, or death to living organisms",
+          "B. Provide healthy nutrition to plants",
+          "C. Melt snow in cold climates",
+          "D. Make materials transparent"
+        ],
+        "correctAnswer": "A. Cause injury, illness, genetic mutations, or death to living organisms",
+        "hint": "Toxicity is the capacity of a substance to cause illness, poisoning, physiological harm, or death to organisms.",
+        "workedSolution": "Toxicity is the capacity of a substance to cause illness, poisoning, physiological harm, or death to organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does recycling conserve national natural resources?",
+        "options": [
+          "A. By reusing processed materials so fewer virgin raw materials (timber, metal ores, petroleum) are extracted",
+          "B. By stopping all agricultural activities",
+          "C. By generating new mineral rocks underground",
+          "D. By increasing municipal water volume"
+        ],
+        "correctAnswer": "A. By reusing processed materials so fewer virgin raw materials (timber, metal ores, petroleum) are extracted",
+        "hint": "Recycling reprocesses waste materials, which directly conserves natural resources and raw materials.",
+        "workedSolution": "Recycling reprocesses waste materials, which directly conserves natural resources and raw materials.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does recycling help save industrial energy?",
+        "options": [
+          "A. Manufacturing goods from recycled materials requires significantly less energy than refining virgin raw ores",
+          "B. Recycled materials generate their own electricity",
+          "C. It forces factories to shut down permanently",
+          "D. It removes the need for fuel in trucks"
+        ],
+        "correctAnswer": "A. Manufacturing goods from recycled materials requires significantly less energy than refining virgin raw ores",
+        "hint": "Remelting and repulping recycled materials consumes far less energy than extracting and refining virgin raw resources.",
+        "workedSolution": "Remelting and repulping recycled materials consumes far less energy than extracting and refining virgin raw resources.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a valuable agricultural benefit of compost produced from organic food waste?",
+        "options": [
+          "A. It serves as an organic soil amendment that improves soil structure, aeration, and fertility",
+          "B. It turns soil into solid granite",
+          "C. It prevents earthworms from entering soil",
+          "D. It poisons farm weeds chemically"
+        ],
+        "correctAnswer": "A. It serves as an organic soil amendment that improves soil structure, aeration, and fertility",
+        "hint": "Compost produces a valuable soil amendment that enriches soil structure and fertility for gardening and farming.",
+        "workedSolution": "Compost produces a valuable soil amendment that enriches soil structure and fertility for gardening and farming.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "By diverting organic kitchen waste into composting heaps, communities directly reduce the emission of which greenhouse gas from landfills?",
+        "options": [
+          "A. Methane",
+          "B. Argon",
+          "C. Helium",
+          "D. Neon"
+        ],
+        "correctAnswer": "A. Methane",
+        "hint": "Composting diverts organic waste away from anaerobic landfills, directly reducing greenhouse methane emissions.",
+        "workedSolution": "Composting diverts organic waste away from anaerobic landfills, directly reducing greenhouse methane emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is open dumping of municipal refuse in unmanaged borrow pits environmentally unacceptable?",
+        "options": [
+          "A. It lacks environmental protection barriers, leading to groundwater pollution, odor, disease vectors, and fires",
+          "B. It makes borrow pits too deep",
+          "C. It turns waste into gold too quickly",
+          "D. It stops grass from growing nearby"
+        ],
+        "correctAnswer": "A. It lacks environmental protection barriers, leading to groundwater pollution, odor, disease vectors, and fires",
+        "hint": "Open dumps lack protective barriers, contaminating water tables with toxic leachate and polluting surrounding air.",
+        "workedSolution": "Open dumps lack protective barriers, contaminating water tables with toxic leachate and polluting surrounding air.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following waste management hierarchies ranks practices from the most preferred to the least preferred?",
+        "options": [
+          "A. Source Reduction → Recycling → Composting → Waste-to-Energy → Landfilling",
+          "B. Landfilling → Incineration → Recycling → Source Reduction",
+          "C. Open Burning → Ocean Dumping → Landfilling",
+          "D. Composting → Waste Generation → Open Dumping"
+        ],
+        "correctAnswer": "A. Source Reduction → Recycling → Composting → Waste-to-Energy → Landfilling",
+        "hint": "The scientific hierarchy prioritizes prevention (source reduction), followed by recycling, biological recovery, energy recovery, and disposal.",
+        "workedSolution": "The scientific hierarchy prioritizes prevention (source reduction), followed by recycling, biological recovery, energy recovery, and disposal.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "What is the toxic liquid called that forms when rainwater percolates through unsealed open garbage dumps?",
+        "prompt": "Under what environmental condition inside a deep landfill does biodegradable waste produce methane gas?",
         "options": [
-          "Filtrate",
-          "Leachate",
-          "Chyme",
-          "Distillate"
+          "A. Anaerobic conditions (absence of dissolved oxygen)",
+          "B. Hyper-aerobic conditions with high wind flow",
+          "C. Freezing temperatures below 0°C",
+          "D. Constant exposure to ultraviolet sunlight"
         ],
-        "correctAnswer": "Leachate",
-        "hint": "It contaminates groundwater aquifers.",
-        "workedSolution": "Leachate is the highly toxic, concentrated liquid that dissolves and leaches heavy metals and pathogens as rainwater drains through decomposing landfill garbage.",
+        "correctAnswer": "A. Anaerobic conditions (absence of dissolved oxygen)",
+        "hint": "When biodegradable waste is buried deep without oxygen, methanogenic bacteria ferment it into methane gas.",
+        "workedSolution": "When biodegradable waste is buried deep without oxygen, methanogenic bacteria ferment it into methane gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is methane gas from landfills considered dangerous to the global climate?",
+        "options": [
+          "A. It is a potent greenhouse gas that traps substantial heat in the atmosphere, driving climate change",
+          "B. It freezes cloud water into ice crystals",
+          "C. It destroys all oxygen molecules in the oceans",
+          "D. It changes sunlight into infrared radio waves"
+        ],
+        "correctAnswer": "A. It is a potent greenhouse gas that traps substantial heat in the atmosphere, driving climate change",
+        "hint": "Methane is a potent greenhouse gas with a high global warming potential that traps heat in the atmosphere.",
+        "workedSolution": "Methane is a potent greenhouse gas with a high global warming potential that traps heat in the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary environmental risk of open incineration of polyvinyl chloride (PVC) plastics in community dumps?",
+        "options": [
+          "A. Release of chlorinated dioxins and furans, which are persistent organic pollutants and carcinogens",
+          "B. Production of liquid nitrogen",
+          "C. Destruction of atmospheric gravity",
+          "D. Formation of edible sugar ash"
+        ],
+        "correctAnswer": "A. Release of chlorinated dioxins and furans, which are persistent organic pollutants and carcinogens",
+        "hint": "Incinerating plastics produces toxic chlorinated compounds like dioxins, which are carcinogenic and persistent.",
+        "workedSolution": "Incinerating plastics produces toxic chlorinated compounds like dioxins, which are carcinogenic and persistent.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do acidic gases like sulfur dioxide ($SO_2$) emitted from burning industrial waste affect rainfall?",
+        "options": [
+          "A. They react with atmospheric moisture to form sulfuric acid, precipitating as harmful acid rain",
+          "B. They turn rainwater into alkaline ammonia",
+          "C. They stop all rainfall from occurring",
+          "D. They convert rain into sweet drinking water"
+        ],
+        "correctAnswer": "A. They react with atmospheric moisture to form sulfuric acid, precipitating as harmful acid rain",
+        "hint": "Incineration gases containing sulfur and nitrogen oxides react with water vapor, contributing directly to acid rain.",
+        "workedSolution": "Incineration gases containing sulfur and nitrogen oxides react with water vapor, contributing directly to acid rain.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens when toxic incinerator ash containing heavy metals is dumped onto open, unlined soil?",
+        "options": [
+          "A. Rainwater leaches heavy metals (e.g., lead, cadmium) into the subsoil, contaminating groundwater aquifers",
+          "B. The ash turns into natural limestone",
+          "C. The soil becomes permanently immune to bacteria",
+          "D. The heavy metals evaporate into the stratosphere"
+        ],
+        "correctAnswer": "A. Rainwater leaches heavy metals (e.g., lead, cadmium) into the subsoil, contaminating groundwater aquifers",
+        "hint": "Heavy metals in residual incinerator ash dissolve in percolating rainwater, leaching down into underground drinking water.",
+        "workedSolution": "Heavy metals in residual incinerator ash dissolve in percolating rainwater, leaching down into underground drinking water.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does mercury dumped into river bodies enter human food supplies?",
+        "options": [
+          "A. Aquatic bacteria convert elemental mercury to methylmercury, which bioaccumulates in fish consumed by humans",
+          "B. Mercury evaporates into drinking water pipes",
+          "C. Mercury is absorbed through tree leaves and eaten as fruit",
+          "D. Mercury turns into salt in ocean water"
+        ],
+        "correctAnswer": "A. Aquatic bacteria convert elemental mercury to methylmercury, which bioaccumulates in fish consumed by humans",
+        "hint": "Mercury in river ecosystems bioaccumulates in fish tissue, exposing humans who eat contaminated fish.",
+        "workedSolution": "Mercury in river ecosystems bioaccumulates in fish tissue, exposing humans who eat contaminated fish.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do marine seabirds ingest floating plastic waste in oceans?",
+        "options": [
+          "A. Floating plastic debris visually mimics fish eggs, squid, or prey, leading to mistaken ingestion",
+          "B. Birds use plastic to drink water",
+          "C. Plastic provides high caloric nutrition to birds",
+          "D. Birds sharpen their beaks on floating plastic"
+        ],
+        "correctAnswer": "A. Floating plastic debris visually mimics fish eggs, squid, or prey, leading to mistaken ingestion",
+        "hint": "Marine birds mistake colorful floating plastic debris for natural prey, ingesting it and suffering digestive blockages.",
+        "workedSolution": "Marine birds mistake colorful floating plastic debris for natural prey, ingesting it and suffering digestive blockages.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What biological phenomenon occurs when agricultural fertilizer runoff and untreated sewage enter a lake?",
+        "options": [
+          "A. Eutrophication, resulting in an explosive growth of algae",
+          "B. Immediate freezing of the lake surface",
+          "C. Complete desiccation of all lake water",
+          "D. Rapid decline in bacterial populations"
+        ],
+        "correctAnswer": "A. Eutrophication, resulting in an explosive growth of algae",
+        "hint": "Excess nutrient enrichment from organic and farm wastes results in dense algal blooms (eutrophication).",
+        "workedSolution": "Excess nutrient enrichment from organic and farm wastes results in dense algal blooms (eutrophication).",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do fish die in large numbers during the final stages of aquatic eutrophication?",
+        "options": [
+          "A. Bacterial decomposers consuming dead algae multiply rapidly, exhausting all dissolved oxygen in the water",
+          "B. The water temperature reaches boiling point",
+          "C. The algae physically eat the fish",
+          "D. Fish jump out of the water to escape light"
+        ],
+        "correctAnswer": "A. Bacterial decomposers consuming dead algae multiply rapidly, exhausting all dissolved oxygen in the water",
+        "hint": "When algal blooms die, decomposers consume the dissolved oxygen, creating hypoxic conditions that suffocate fish.",
+        "workedSolution": "When algal blooms die, decomposers consume the dissolved oxygen, creating hypoxic conditions that suffocate fish.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger of disposing of expired pharmaceutical antibiotics into domestic refuse pits?",
+        "options": [
+          "A. They contaminate soil and groundwater, fostering the emergence of antibiotic-resistant bacterial strains",
+          "B. They turn the soil into plastic",
+          "C. They cause volcanic eruptions in the pit",
+          "D. They generate nuclear radiation"
+        ],
+        "correctAnswer": "A. They contaminate soil and groundwater, fostering the emergence of antibiotic-resistant bacterial strains",
+        "hint": "Antibiotic residues select for resistant environmental bacteria, contributing to dangerous drug-resistant infections.",
+        "workedSolution": "Antibiotic residues select for resistant environmental bacteria, contributing to dangerous drug-resistant infections.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does source reduction differ from recycling in waste management?",
+        "options": [
+          "A. Source reduction stops waste from being created in the first place, whereas recycling processes waste after it exists",
+          "B. Source reduction involves burning waste in ovens",
+          "C. Recycling only applies to radioactive materials",
+          "D. Source reduction requires building larger landfills"
+        ],
+        "correctAnswer": "A. Source reduction stops waste from being created in the first place, whereas recycling processes waste after it exists",
+        "hint": "Source reduction minimizes waste generation at the origin, eliminating the need for subsequent disposal.",
+        "workedSolution": "Source reduction minimizes waste generation at the origin, eliminating the need for subsequent disposal.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following actions best illustrates source reduction in a school canteen?",
+        "options": [
+          "A. Serving food in durable, washable plates rather than single-use disposable styrofoam containers",
+          "B. Burning plastic plates behind the classroom block",
+          "C. Burying styrofoam packs in the school garden",
+          "D. Throwing food containers into roadside gutters"
+        ],
+        "correctAnswer": "A. Serving food in durable, washable plates rather than single-use disposable styrofoam containers",
+        "hint": "Using reusable and durable plates eliminates the creation of disposable packaging waste at the source.",
+        "workedSolution": "Using reusable and durable plates eliminates the creation of disposable packaging waste at the source.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the main environmental benefit of recycling aluminum beverage cans compared to smelting new aluminum from bauxite?",
+        "options": [
+          "A. Recycling aluminum saves up to 95% of the electrical energy required to smelt primary bauxite ore",
+          "B. Recycled aluminum is magnetic",
+          "C. Smelting bauxite produces no waste",
+          "D. Recycled cans become biodegradable"
+        ],
+        "correctAnswer": "A. Recycling aluminum saves up to 95% of the electrical energy required to smelt primary bauxite ore",
+        "hint": "Reprocessing scrap aluminum uses a fraction of the energy needed for primary bauxite smelting, cutting power demand.",
+        "workedSolution": "Reprocessing scrap aluminum uses a fraction of the energy needed for primary bauxite smelting, cutting power demand.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What essential biological factor must be maintained in a compost heap to ensure aerobic decomposition without bad odors?",
+        "options": [
+          "A. Adequate oxygen circulation through regular turning",
+          "B. Total exclusion of all atmospheric air",
+          "C. Addition of non-biodegradable plastics",
+          "D. Flooding the heap with engine oil"
+        ],
+        "correctAnswer": "A. Adequate oxygen circulation through regular turning",
+        "hint": "Aerobic composting requires oxygen; turning the heap provides aeration, preventing foul-smelling anaerobic decay.",
+        "workedSolution": "Aerobic composting requires oxygen; turning the heap provides aeration, preventing foul-smelling anaerobic decay.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What gas produced during the anaerobic digestion of animal manure can be harnessed as renewable energy?",
+        "options": [
+          "A. Biogas (methane)",
+          "B. Sulfur hexafluoride",
+          "C. Pure oxygen",
+          "D. Carbon monoxide"
+        ],
+        "correctAnswer": "A. Biogas (methane)",
+        "hint": "Anaerobic digestion of organic wastes produces biogas (chiefly methane), which can be burned for heat or power.",
+        "workedSolution": "Anaerobic digestion of organic wastes produces biogas (chiefly methane), which can be burned for heat or power.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does gasification differ from simple open-air incineration in waste-to-energy systems?",
+        "options": [
+          "A. Gasification converts waste into synthesis gas (syngas) under high temperatures with controlled, limited oxygen",
+          "B. Gasification produces cold ice",
+          "C. Incineration produces zero smoke or ash",
+          "D. Gasification uses boiling water only"
+        ],
+        "correctAnswer": "A. Gasification converts waste into synthesis gas (syngas) under high temperatures with controlled, limited oxygen",
+        "hint": "Gasification heats waste in starved oxygen to synthesize syngas ($CO + H_2$), which can be burned cleanly for electricity.",
+        "workedSolution": "Gasification heats waste in starved oxygen to synthesize syngas ($CO + H_2$), which can be burned cleanly for electricity.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary engineering feature installed at the base of a modern sanitary landfill to protect groundwater?",
+        "options": [
+          "A. An impermeable composite liner of compacted clay and high-density polyethylene (HDPE) geomembrane",
+          "B. A layer of porous beach sand",
+          "C. Wooden planks laid side-by-side",
+          "D. Iron wire mesh"
+        ],
+        "correctAnswer": "A. An impermeable composite liner of compacted clay and high-density polyethylene (HDPE) geomembrane",
+        "hint": "Sanitary landfills use impermeable clay and synthetic geomembrane liners to contain toxic leachate.",
+        "workedSolution": "Sanitary landfills use impermeable clay and synthetic geomembrane liners to contain toxic leachate.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "The toxic dark liquid that drains from rotting landfill waste after absorbing rainwater is termed:",
+        "options": [
+          "A. Leachate",
+          "B. Distillate",
+          "C. Biofuel",
+          "D. Syngas"
+        ],
+        "correctAnswer": "A. Leachate",
+        "hint": "Leachate is the contaminated liquid that percolates through solid waste, picking up dissolved toxins.",
+        "workedSolution": "Leachate is the contaminated liquid that percolates through solid waste, picking up dissolved toxins.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are daily soil covers applied over compacted garbage in an engineered sanitary landfill?",
+        "options": [
+          "A. To control odors, prevent flies and rodents from breeding, and reduce wind-blown litter",
+          "B. To make the landfill look like a sports field",
+          "C. To prevent the garbage from ever decomposing",
+          "D. To turn the garbage into diamond"
+        ],
+        "correctAnswer": "A. To control odors, prevent flies and rodents from breeding, and reduce wind-blown litter",
+        "hint": "Daily soil covers seal the waste layer, suppressing disease vectors, foul odors, and litter scattering.",
+        "workedSolution": "Daily soil covers seal the waste layer, suppressing disease vectors, foul odors, and litter scattering.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What pipe system is installed vertically in sanitary landfills to prevent underground gas explosions?",
+        "options": [
+          "A. Methane gas extraction and venting network",
+          "B. Water supply pipes",
+          "C. Compressed oxygen injection tubes",
+          "D. Electrical transmission lines"
+        ],
+        "correctAnswer": "A. Methane gas extraction and venting network",
+        "hint": "Gas extraction wells collect migrating methane, preventing dangerous subterranean pressure buildup and explosions.",
+        "workedSolution": "Gas extraction wells collect migrating methane, preventing dangerous subterranean pressure buildup and explosions.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following is considered an acute health impact of toxic electronic waste recycling involving open burning?",
+        "options": [
+          "A. Heavy metal poisoning affecting the central nervous system, kidneys, and lungs",
+          "B. Increased cardiovascular fitness",
+          "C. Rapid bone growth",
+          "D. Improved eyesight"
+        ],
+        "correctAnswer": "A. Heavy metal poisoning affecting the central nervous system, kidneys, and lungs",
+        "hint": "Burning e-waste releases lead, mercury, and halogenated flame retardants that cause severe neurological and organ damage.",
+        "workedSolution": "Burning e-waste releases lead, mercury, and halogenated flame retardants that cause severe neurological and organ damage.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do uncollected solid waste piles in urban centers cause seasonal flooding during heavy downpours?",
+        "options": [
+          "A. Waste chokes storm drains, culverts, and natural waterways, blocking stormwater discharge",
+          "B. Waste creates artificial clouds that produce more rain",
+          "C. Solid waste liquefies and turns into river water",
+          "D. Plastic waste absorbs all groundwater"
+        ],
+        "correctAnswer": "A. Waste chokes storm drains, culverts, and natural waterways, blocking stormwater discharge",
+        "hint": "Discarded plastic and refuse block municipal gutters and culverts, causing rainwater to back up into city streets.",
+        "workedSolution": "Discarded plastic and refuse block municipal gutters and culverts, causing rainwater to back up into city streets.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What public health risk is created when plastic containers and car tires collect stagnant rainwater in dumpsites?",
+        "options": [
+          "A. They create ideal breeding habitats for Aedes and Anopheles mosquitoes that transmit yellow fever and malaria",
+          "B. They purify rainwater into distilled water",
+          "C. They generate solar energy",
+          "D. They attract edible sea fish"
+        ],
+        "correctAnswer": "A. They create ideal breeding habitats for Aedes and Anopheles mosquitoes that transmit yellow fever and malaria",
+        "hint": "Water-retaining plastic waste and tires provide artificial breeding sites for disease-transmitting mosquito vectors.",
+        "workedSolution": "Water-retaining plastic waste and tires provide artificial breeding sites for disease-transmitting mosquito vectors.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which category of waste includes discarded anatomical body parts removed during surgical operations?",
+        "options": [
+          "A. Pathological / anatomical medical waste",
+          "B. Municipal solid waste",
+          "C. Institutional paper waste",
+          "D. E-waste"
+        ],
+        "correctAnswer": "A. Pathological / anatomical medical waste",
+        "hint": "Surgically removed tissues, fluids, and organs are classified as hazardous pathological/anatomical medical waste.",
+        "workedSolution": "Surgically removed tissues, fluids, and organs are classified as hazardous pathological/anatomical medical waste.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How are clinical sharps (such as infected hypodermic needles) safely disposed of in modern hospitals?",
+        "options": [
+          "A. Placed in puncture-proof sharps boxes and destroyed via high-temperature medical incineration",
+          "B. Thrown into domestic refuse bins",
+          "C. Washed and thrown into the sea",
+          "D. Buried in backyard school gardens"
+        ],
+        "correctAnswer": "A. Placed in puncture-proof sharps boxes and destroyed via high-temperature medical incineration",
+        "hint": "Sharps are isolated in puncture-proof containers and incinerated at high temperatures to destroy pathogens.",
+        "workedSolution": "Sharps are isolated in puncture-proof containers and incinerated at high temperatures to destroy pathogens.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should discarded lead-acid automotive batteries never be broken open on bare ground?",
+        "options": [
+          "A. Corrosive sulfuric acid burns soil and toxic lead salts leach into drinking water aquifers",
+          "B. The lead will turn into gold",
+          "C. Acid generates edible salt",
+          "D. Lead is biodegradable"
+        ],
+        "correctAnswer": "A. Corrosive sulfuric acid burns soil and toxic lead salts leach into drinking water aquifers",
+        "hint": "Battery acid is corrosive and lead is a potent neurotoxin that permanently contaminates soil and groundwater.",
+        "workedSolution": "Battery acid is corrosive and lead is a potent neurotoxin that permanently contaminates soil and groundwater.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is an effective way to minimize paper waste in an administrative institution or school?",
+        "options": [
+          "A. Transitioning to digital filing, electronic communication, and double-sided printing",
+          "B. Printing every email on glossy paper",
+          "C. Burning student notebooks weekly",
+          "D. Replacing paper with plastic sheets"
+        ],
+        "correctAnswer": "A. Transitioning to digital filing, electronic communication, and double-sided printing",
+        "hint": "Digitization and two-sided printing reduce paper consumption at the source.",
+        "workedSolution": "Digitization and two-sided printing reduce paper consumption at the source.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following organic wastes should NOT be added to a backyard compost bin to avoid attracting rodents?",
+        "options": [
+          "A. Meat bones, oily cooked food, and dairy products",
+          "B. Dry brown leaves",
+          "C. Cassava peelings",
+          "D. Vegetable stems"
+        ],
+        "correctAnswer": "A. Meat bones, oily cooked food, and dairy products",
+        "hint": "Fats, meats, and oils decompose slowly with foul odors, attracting rats and scavenging pests to compost heaps.",
+        "workedSolution": "Fats, meats, and oils decompose slowly with foul odors, attracting rats and scavenging pests to compost heaps.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical reason why plastic carrier bags take hundreds of years to break down in nature?",
+        "options": [
+          "A. They are composed of synthetic long-chain hydrocarbon polymers with strong covalent bonds that decomposers cannot enzymatically break",
+          "B. They are made of radioactive metals",
+          "C. They freeze natural decomposers on contact",
+          "D. They are made of pure stone"
+        ],
+        "correctAnswer": "A. They are composed of synthetic long-chain hydrocarbon polymers with strong covalent bonds that decomposers cannot enzymatically break",
+        "hint": "Synthetic polymers have chemical structures that natural microbial enzymes cannot digest, causing persistent pollution.",
+        "workedSolution": "Synthetic polymers have chemical structures that natural microbial enzymes cannot digest, causing persistent pollution.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do microplastics form in the marine environment?",
+        "options": [
+          "A. Large plastic debris physically fragments into microscopic particles under ocean wave action and solar ultraviolet radiation",
+          "B. Fish chew plastics into molecules",
+          "C. Water dissolves plastics into salt",
+          "D. Microplastics grow from algae"
+        ],
+        "correctAnswer": "A. Large plastic debris physically fragments into microscopic particles under ocean wave action and solar ultraviolet radiation",
+        "hint": "Wave friction and UV weathering physically break down macroplastics into microscopic fragments in marine waters.",
+        "workedSolution": "Wave friction and UV weathering physically break down macroplastics into microscopic fragments in marine waters.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological hazard of microplastics entering marine food chains?",
+        "options": [
+          "A. Zooplankton and small fish ingest microplastics, absorbing toxic plasticizers that magnify up the food chain to human consumers",
+          "B. Microplastics turn ocean water into freshwater",
+          "C. Microplastics feed marine plants",
+          "D. Microplastics make fish grow larger"
+        ],
+        "correctAnswer": "A. Zooplankton and small fish ingest microplastics, absorbing toxic plasticizers that magnify up the food chain to human consumers",
+        "hint": "Microplastics carry persistent organic pollutants and are ingested by marine organisms, entering human seafood chains.",
+        "workedSolution": "Microplastics carry persistent organic pollutants and are ingested by marine organisms, entering human seafood chains.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of a municipal materials recovery facility (MRF)?",
+        "options": [
+          "A. To mechanically and manually separate commingled recyclables into distinct fractions (paper, metal, plastic, glass)",
+          "B. To bury all waste underground",
+          "C. To burn garbage in open fields",
+          "D. To dump refuse into coastal lagoons"
+        ],
+        "correctAnswer": "A. To mechanically and manually separate commingled recyclables into distinct fractions (paper, metal, plastic, glass)",
+        "hint": "A recovery facility sorts mixed recyclables into pure, baled material streams ready for industrial manufacturing.",
+        "workedSolution": "A recovery facility sorts mixed recyclables into pure, baled material streams ready for industrial manufacturing.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does source segregation (separating waste into color-coded bins at home) improve recycling efficiency?",
+        "options": [
+          "A. It prevents clean recyclables from being contaminated by moist organic food wastes",
+          "B. It makes garbage weigh more",
+          "C. It speeds up combustion in the kitchen",
+          "D. It turns plastic into paper"
+        ],
+        "correctAnswer": "A. It prevents clean recyclables from being contaminated by moist organic food wastes",
+        "hint": "Sorting waste at the point of origin keeps paper, glass, and plastics clean, avoiding cross-contamination from food scraps.",
+        "workedSolution": "Sorting waste at the point of origin keeps paper, glass, and plastics clean, avoiding cross-contamination from food scraps.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the composting of organic market waste in urban areas like Kumasi beneficial to surrounding peri-urban farming?",
+        "options": [
+          "A. It converts massive urban organic waste into affordable organic fertilizer, reducing chemical fertilizer dependency",
+          "B. It replaces irrigation water completely",
+          "C. It eliminates farm labor",
+          "D. It kills all insects in the region"
+        ],
+        "correctAnswer": "A. It converts massive urban organic waste into affordable organic fertilizer, reducing chemical fertilizer dependency",
+        "hint": "Market composting produces rich soil conditioner that improves agricultural yields and diverts municipal waste.",
+        "workedSolution": "Market composting produces rich soil conditioner that improves agricultural yields and diverts municipal waste.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What toxic chemical element is found inside fluorescent tube lamps, requiring specialized disposal?",
+        "options": [
+          "A. Mercury vapor",
+          "B. Table salt",
+          "C. Calcium carbonate",
+          "D. Iron filings"
+        ],
+        "correctAnswer": "A. Mercury vapor",
+        "hint": "Fluorescent tubes contain toxic mercury vapor that damages the nervous system if lamps are smashed in refuse bins.",
+        "workedSolution": "Fluorescent tubes contain toxic mercury vapor that damages the nervous system if lamps are smashed in refuse bins.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens when non-biodegradable polythene bags are ingested by livestock grazing in urban areas?",
+        "options": [
+          "A. The plastic accumulates in the rumen (first stomach), forming a dense compaction block that causes starvation and death",
+          "B. The animal digests the plastic for energy",
+          "C. The animal produces plastic milk",
+          "D. The plastic strengthens the animal's bones"
+        ],
+        "correctAnswer": "A. The plastic accumulates in the rumen (first stomach), forming a dense compaction block that causes starvation and death",
+        "hint": "Indigestible plastic accumulates in cattle stomachs, forming impactions that obstruct digestion and kill the animals.",
+        "workedSolution": "Indigestible plastic accumulates in cattle stomachs, forming impactions that obstruct digestion and kill the animals.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is open burning of municipal solid waste prohibited under Ghanaian environmental sanitation laws?",
+        "options": [
+          "A. It releases uncontrolled emissions of smoke, carbon monoxide, particulates, and dioxins that endanger public health",
+          "B. It makes garbage too heavy to transport",
+          "C. It uses too much water",
+          "D. It produces too much clean soil"
+        ],
+        "correctAnswer": "A. It releases uncontrolled emissions of smoke, carbon monoxide, particulates, and dioxins that endanger public health",
+        "hint": "Uncontrolled burning generates toxic smoke, carbon monoxide, and carcinogens that violate environmental clean-air laws.",
+        "workedSolution": "Uncontrolled burning generates toxic smoke, carbon monoxide, and carcinogens that violate environmental clean-air laws.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of the Environmental Protection Agency (EPA) in Ghana regarding industrial waste?",
+        "options": [
+          "A. Regulating industrial discharges, enforcing environmental standards, and prosecuting polluters",
+          "B. Buying scrap paper from schools",
+          "C. Constructing domestic gutters",
+          "D. Supplying drinking water to homes"
+        ],
+        "correctAnswer": "A. Regulating industrial discharges, enforcing environmental standards, and prosecuting polluters",
+        "hint": "The EPA enforces effluent and emission limits, monitors industrial waste, and ensures compliance with environmental standards.",
+        "workedSolution": "The EPA enforces effluent and emission limits, monitors industrial waste, and ensures compliance with environmental standards.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does recycling scrap iron and steel into iron rods help prevent environmental degradation in mining zones?",
+        "options": [
+          "A. It reduces the demand for open-cast iron ore mining, conserving forest vegetation and preventing soil erosion",
+          "B. It eliminates the need for steel in construction",
+          "C. It turns iron ore into gold",
+          "D. It makes steel trees grow"
+        ],
+        "correctAnswer": "A. It reduces the demand for open-cast iron ore mining, conserving forest vegetation and preventing soil erosion",
+        "hint": "Secondary scrap melting reduces the need to clear forests and excavate virgin iron ore deposits.",
+        "workedSolution": "Secondary scrap melting reduces the need to clear forests and excavate virgin iron ore deposits.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should discarded glass bottles be separated from household garbage before disposal?",
+        "options": [
+          "A. Broken glass creates puncture and laceration hazards for waste collection workers and can be infinitely recycled into new containers",
+          "B. Glass turns into poison in soil",
+          "C. Glass dissolves in rain",
+          "D. Glass catches fire spontaneously"
+        ],
+        "correctAnswer": "A. Broken glass creates puncture and laceration hazards for waste collection workers and can be infinitely recycled into new containers",
+        "hint": "Glass is 100% recyclable, and separating it prevents severe cuts to waste handlers and sorting personnel.",
+        "workedSolution": "Glass is 100% recyclable, and separating it prevents severe cuts to waste handlers and sorting personnel.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of an electrostatic precipitator or scrubber fitted onto a modern municipal incinerator chimney?",
+        "options": [
+          "A. To capture particulate matter, fly ash, and acidic gases before flue gases exit into the atmosphere",
+          "B. To speed up the burning of waste",
+          "C. To cool down the furnace fire",
+          "D. To change smoke into perfume"
+        ],
+        "correctAnswer": "A. To capture particulate matter, fly ash, and acidic gases before flue gases exit into the atmosphere",
+        "hint": "Scrubbers and filters clean flue gases, removing acidic toxins, heavy metals, and fly ash from emissions.",
+        "workedSolution": "Scrubbers and filters clean flue gases, removing acidic toxins, heavy metals, and fly ash from emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is organic waste mixed with high amounts of plastic unsuitable for composting?",
+        "options": [
+          "A. Plastic fragments contaminate the compost, block aeration, and remain as non-biodegradable debris in the final product",
+          "B. Plastic makes compost decompose too fast",
+          "C. Plastic adds too much nitrogen to compost",
+          "D. Plastic turns compost into water"
+        ],
+        "correctAnswer": "A. Plastic fragments contaminate the compost, block aeration, and remain as non-biodegradable debris in the final product",
+        "hint": "Plastics do not rot, ruining compost purity and leaving sharp, non-biodegradable contamination in farm soils.",
+        "workedSolution": "Plastics do not rot, ruining compost purity and leaving sharp, non-biodegradable contamination in farm soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does proper municipal waste collection prevent the spread of cholera during rainy seasons?",
+        "options": [
+          "A. It prevents refuse from blocking drainage paths and stops sewage-contaminated floodwaters from reaching drinking wells",
+          "B. It filters drinking water pipes",
+          "C. It makes rainwater acidic",
+          "D. It eliminates all houseflies instantly"
+        ],
+        "correctAnswer": "A. It prevents refuse from blocking drainage paths and stops sewage-contaminated floodwaters from reaching drinking wells",
+        "hint": "Clearing refuse keeps drainage lines flowing, preventing contaminated floodwaters from mixing with shallow drinking wells.",
+        "workedSolution": "Clearing refuse keeps drainage lines flowing, preventing contaminated floodwaters from mixing with shallow drinking wells.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary objective of compacting waste with heavy bulldozers inside a sanitary landfill?",
+        "options": [
+          "A. To reduce the volume of the waste, maximizing the usable lifespan of the landfill cell",
+          "B. To make the waste heavier",
+          "C. To squeeze all moisture into the air",
+          "D. To turn waste into rock"
+        ],
+        "correctAnswer": "A. To reduce the volume of the waste, maximizing the usable lifespan of the landfill cell",
+        "hint": "Compaction crushes bulky refuse, saving air space and extending the working lifespan of the landfill facility.",
+        "workedSolution": "Compaction crushes bulky refuse, saving air space and extending the working lifespan of the landfill facility.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should discarded car tires never be burned in open yards to recover scrap steel wires?",
+        "options": [
+          "A. Burning tires releases black toxic plumes laden with mutagenic soot, heavy metals, and carcinogenic pyrolytic oils",
+          "B. The steel wire turns into ashes",
+          "C. Burning tires causes cold weather",
+          "D. The tires will explode like dynamite"
+        ],
+        "correctAnswer": "A. Burning tires releases black toxic plumes laden with mutagenic soot, heavy metals, and carcinogenic pyrolytic oils",
+        "hint": "Open tire fires generate uncontrolled toxic soot, polycyclic hydrocarbons, and oily runoff that pollutes groundwater.",
+        "workedSolution": "Open tire fires generate uncontrolled toxic soot, polycyclic hydrocarbons, and oily runoff that pollutes groundwater.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the difference between upcycling and downcycling in material recycling?",
+        "options": [
+          "A. Upcycling turns waste into products of higher value or quality, while downcycling breaks materials into lower-grade products",
+          "B. Upcycling means burning waste; downcycling means burying it",
+          "C. Upcycling applies only to food; downcycling applies only to glass",
+          "D. Upcycling is illegal"
+        ],
+        "correctAnswer": "A. Upcycling turns waste into products of higher value or quality, while downcycling breaks materials into lower-grade products",
+        "hint": "Upcycling transforms waste into premium items, whereas downcycling (like melting mixed plastic into park benches) lowers quality.",
+        "workedSolution": "Upcycling transforms waste into premium items, whereas downcycling (like melting mixed plastic into park benches) lowers quality.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the disposal of untreated timber sawdust into freshwater rivers considered harmful?",
+        "options": [
+          "A. Decomposing sawdust consumes dissolved oxygen, releasing wood tannins that acidify and discolour the aquatic habitat",
+          "B. Sawdust turns river water into solid timber",
+          "C. Sawdust is radioactive",
+          "D. Fish eat sawdust and turn into birds"
+        ],
+        "correctAnswer": "A. Decomposing sawdust consumes dissolved oxygen, releasing wood tannins that acidify and discolour the aquatic habitat",
+        "hint": "Decaying wood particles deplete dissolved oxygen and leach acidic organic compounds that suffocate fish and degrade water quality.",
+        "workedSolution": "Decaying wood particles deplete dissolved oxygen and leach acidic organic compounds that suffocate fish and degrade water quality.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does planting green vegetative covers over a closed landfill site protect the local environment?",
+        "options": [
+          "A. Plant roots bind the soil cap against erosion and transpire rainwater, minimizing the volume of water entering the waste to form leachate",
+          "B. Plants pump the buried garbage into the air",
+          "C. Plants produce plastic fruits",
+          "D. Plants stop landfill gas from burning"
+        ],
+        "correctAnswer": "A. Plant roots bind the soil cap against erosion and transpire rainwater, minimizing the volume of water entering the waste to form leachate",
+        "hint": "Vegetation stabilizes the soil cap, prevents erosion, and absorbs rainwater, reducing leachate production.",
+        "workedSolution": "Vegetation stabilizes the soil cap, prevents erosion, and absorbs rainwater, reducing leachate production.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger associated with improper storage of reactive calcium carbide waste from acetylene gas plants?",
+        "options": [
+          "A. On contact with water, it releases highly flammable and explosive acetylene gas",
+          "B. It turns water into stone",
+          "C. It freezes the surrounding air",
+          "D. It generates radioactive rays"
+        ],
+        "correctAnswer": "A. On contact with water, it releases highly flammable and explosive acetylene gas",
+        "hint": "Calcium carbide reacts violently with water, releasing acetylene gas ($C_2H_2$) which can ignite and explode.",
+        "workedSolution": "Calcium carbide reacts violently with water, releasing acetylene gas ($C_2H_2$) which can ignite and explode.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why should consumers avoid purchasing products packaged in multi-layered, composite materials (e.g., plastic fused to aluminum foil)?",
+        "options": [
+          "A. Multi-layer bonded packaging cannot be easily separated, making them virtually impossible to recycle in standard facilities",
+          "B. Multi-layer packaging is always radioactive",
+          "C. The food inside spoils in one hour",
+          "D. Composite materials are too heavy"
+        ],
+        "correctAnswer": "A. Multi-layer bonded packaging cannot be easily separated, making them virtually impossible to recycle in standard facilities",
+        "hint": "Composite laminated layers resist mechanical separation and sorting, destined for permanent landfill burial.",
+        "workedSolution": "Composite laminated layers resist mechanical separation and sorting, destined for permanent landfill burial.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A municipality generates 500 metric tons of municipal solid waste daily, of which 60% is biodegradable organic waste. If all organic waste is diverted to an aerobic composting plant, how many tons of waste are diverted from the landfill each day?",
+        "options": [
+          "A. 150 metric tons",
+          "B. 200 metric tons",
+          "C. 300 metric tons",
+          "D. 400 metric tons"
+        ],
+        "correctAnswer": "C. 300 metric tons",
+        "hint": "Diverted Organic Waste = 60% of 500 tons = 0.60 × 500 = 300 metric tons per day.",
+        "workedSolution": "Diverted Organic Waste = 60% of 500 tons = 0.60 × 500 = 300 metric tons per day.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In Question B7_WM_A01, if 300 metric tons of organic waste yields finished compost at a 40% conversion rate by mass, what weight of finished compost is produced daily?",
+        "options": [
+          "A. 60 metric tons",
+          "B. 120 metric tons",
+          "C. 150 metric tons",
+          "D. 200 metric tons"
+        ],
+        "correctAnswer": "B. 120 metric tons",
+        "hint": "Finished Compost Mass = 40% of 300 tons = 0.40 × 300 = 120 metric tons daily.",
+        "workedSolution": "Finished Compost Mass = 40% of 300 tons = 0.40 × 300 = 120 metric tons daily.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does anaerobic decomposition of 1 ton of food waste in a landfill generate methane, whereas aerobic composting produces carbon dioxide?",
+        "options": [
+          "A. In the absence of terminal electron acceptors (oxygen), anaerobic methanogens reduce carbon intermediates into methane ($CH_4$), whereas aerobic microbes oxidize carbon completely to $CO_2$",
+          "B. Anaerobic bacteria are made of metal",
+          "C. Aerobic microbes destroy all carbon atoms",
+          "D. Methane only forms in freezing weather"
+        ],
+        "correctAnswer": "A. In the absence of terminal electron acceptors (oxygen), anaerobic methanogens reduce carbon intermediates into methane ($CH_4$), whereas aerobic microbes oxidize carbon completely to $CO_2$",
+        "hint": "Methanogenic bacteria operate without oxygen, reducing organic acids to methane; aerobic respiration oxidizes carbon into $CO_2$.",
+        "workedSolution": "Methanogenic bacteria operate without oxygen, reducing organic acids to methane; aerobic respiration oxidizes carbon into $CO_2$.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Given that methane ($CH_4$) has a global warming potential 28 times greater than carbon dioxide ($CO_2$) over a 100-year timeframe, diverting 100 tons of organic waste that would have produced 5 tons of methane avoids the equivalent of how many tons of $CO_2$?",
+        "options": [
+          "A. 28 metric tons $CO_2$ equivalent",
+          "B. 140 metric tons $CO_2$ equivalent",
+          "C. 280 metric tons $CO_2$ equivalent",
+          "D. 500 metric tons $CO_2$ equivalent"
+        ],
+        "correctAnswer": "B. 140 metric tons $CO_2$ equivalent",
+        "hint": "$CO_2$ Equivalent = 5 tons $CH_4$ × 28 = 140 metric tons of $CO_2$ equivalent avoided.",
+        "workedSolution": "$CO_2$ Equivalent = 5 tons $CH_4$ × 28 = 140 metric tons of $CO_2$ equivalent avoided.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chlorinated dioxin formation occur during low-temperature combustion of municipal solid waste containing PVC plastics?",
+        "options": [
+          "A. Chlorine atoms released from PVC react with aromatic hydrocarbon precursors between 250°C and 450°C in the presence of trace metal catalysts like copper",
+          "B. Dioxins are added as liquid fuel to the incinerator",
+          "C. Plastics react with oxygen to form sugar",
+          "D. Dioxins only form when burning clean paper"
+        ],
+        "correctAnswer": "A. Chlorine atoms released from PVC react with aromatic hydrocarbon precursors between 250°C and 450°C in the presence of trace metal catalysts like copper",
+        "hint": "Incomplete combustion of organochlorines at sub-optimal temperatures synthesizes polychlorinated dibenzo-dioxins.",
+        "workedSolution": "Incomplete combustion of organochlorines at sub-optimal temperatures synthesizes polychlorinated dibenzo-dioxins.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why must high-temperature modern waste incinerators maintain combustion chamber temperatures above 1,100°C with at least a 2-second residence time?",
+        "options": [
+          "A. To ensure the complete thermal destruction and molecular cracking of toxic dioxins and furans into harmless basic compounds",
+          "B. To melt all concrete walls",
+          "C. To turn heavy metals into steam",
+          "D. To freeze the chimney gases"
+        ],
+        "correctAnswer": "A. To ensure the complete thermal destruction and molecular cracking of toxic dioxins and furans into harmless basic compounds",
+        "hint": "Sustained high temperatures over 1,100°C thermally decompose persistent chlorinated aromatic toxins into basic molecules.",
+        "workedSolution": "Sustained high temperatures over 1,100°C thermally decompose persistent chlorinated aromatic toxins into basic molecules.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical mechanism of methylmercury bioaccumulation in aquatic food webs?",
+        "options": [
+          "A. Methylmercury binds to sulfhydryl groups in cellular proteins, resisting metabolic excretion and multiplying in concentration at each higher trophic level",
+          "B. Mercury is excreted instantly by fish kidneys",
+          "C. Mercury dissolves harmlessly in water molecules",
+          "D. Phytoplankton convert mercury into oxygen"
+        ],
+        "correctAnswer": "A. Methylmercury binds to sulfhydryl groups in cellular proteins, resisting metabolic excretion and multiplying in concentration at each higher trophic level",
+        "hint": "Methylmercury binds to protein cysteines, concentrating up trophic levels (biomagnification) to reach toxic levels in predators.",
+        "workedSolution": "Methylmercury binds to protein cysteines, concentrating up trophic levels (biomagnification) to reach toxic levels in predators.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A rural gold-mining stream contains 0.02 ppm of methylmercury. If the biomagnification factor is 10× per trophic tier, what is the expected concentration in top predatory catfish operating three trophic tiers above the baseline water flora?",
+        "options": [
+          "A. 0.2 ppm",
+          "B. 2.0 ppm",
+          "C. 20.0 ppm",
+          "D. 200.0 ppm"
+        ],
+        "correctAnswer": "C. 20.0 ppm",
+        "hint": "Tier 1: 0.02 × 10 = 0.2 ppm.",
+        "workedSolution": "Tier 1: 0.02 × 10 = 0.2 ppm. Tier 2: 0.2 × 10 = 2.0 ppm. Tier 3: 2.0 × 10 = 20.0 ppm.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are pregnant mothers advised to strictly avoid eating predatory fish contaminated with methylmercury?",
+        "options": [
+          "A. Methylmercury crosses the placental and blood-brain barriers, causing irreversible neurological and cerebral damage in the developing fetus",
+          "B. Fish bones dissolve fetal bones",
+          "C. Mercury causes immediate tooth loss in mothers",
+          "D. Fish meat prevents normal labor"
+        ],
+        "correctAnswer": "A. Methylmercury crosses the placental and blood-brain barriers, causing irreversible neurological and cerebral damage in the developing fetus",
+        "hint": "Lipophilic methylmercury penetrates placental and blood-brain barriers, disrupting fetal brain and neurodevelopment.",
+        "workedSolution": "Lipophilic methylmercury penetrates placental and blood-brain barriers, disrupting fetal brain and neurodevelopment.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a sanitary landfill, how does a leachate collection and removal system (LCRS) function to protect underlying groundwater aquifers?",
+        "options": [
+          "A. Perforated HDPE collector pipes embedded in a drainage gravel blanket siphon leachate to a sump pump for chemical and biological treatment",
+          "B. It pumps river water into the landfill to dilute the waste",
+          "C. It heats the bottom of the landfill to boil off liquid waste",
+          "D. It injects cement into the garbage to freeze the liquid"
+        ],
+        "correctAnswer": "A. Perforated HDPE collector pipes embedded in a drainage gravel blanket siphon leachate to a sump pump for chemical and biological treatment",
+        "hint": "Drainage blankets and slotted pipes direct toxic leachate to treatment plants, preventing hydraulic seepage into aquifers.",
+        "workedSolution": "Drainage blankets and slotted pipes direct toxic leachate to treatment plants, preventing hydraulic seepage into aquifers.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the chemical composition of landfill gas generated during the mature methanogenic phase of anaerobic decomposition?",
+        "options": [
+          "A. Approximately 50% to 55% Methane ($CH_4$) and 45% to 50% Carbon Dioxide ($CO_2$), with trace volatile organic compounds",
+          "B. 100% pure Nitrogen gas",
+          "C. 90% Oxygen and 10% Hydrogen",
+          "D. 100% pure Helium"
+        ],
+        "correctAnswer": "A. Approximately 50% to 55% Methane ($CH_4$) and 45% to 50% Carbon Dioxide ($CO_2$), with trace volatile organic compounds",
+        "hint": "Mature landfill gas is roughly an equal mixture of methane and carbon dioxide, formed by anaerobic digestion.",
+        "workedSolution": "Mature landfill gas is roughly an equal mixture of methane and carbon dioxide, formed by anaerobic digestion.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the biological oxygen demand (BOD) of a river surge dramatically when untreated domestic sewage is discharged into it?",
+        "options": [
+          "A. Aerobic heterotrophic bacteria rapidly multiply to decompose the massive influx of organic matter, consuming dissolved oxygen at high rates",
+          "B. Sewage absorbs all water molecules directly",
+          "C. The bacteria create oxygen gas",
+          "D. Algae stop photosynthesizing permanently"
+        ],
+        "correctAnswer": "A. Aerobic heterotrophic bacteria rapidly multiply to decompose the massive influx of organic matter, consuming dissolved oxygen at high rates",
+        "hint": "Decomposers metabolize sewage organics, consuming massive amounts of oxygen and driving BOD levels up.",
+        "workedSolution": "Decomposers metabolize sewage organics, consuming massive amounts of oxygen and driving BOD levels up.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does source segregation of organic kitchen waste from municipal solid waste improve the economic feasibility of waste-to-energy incineration?",
+        "options": [
+          "A. Removing wet organic waste (which has high moisture content) increases the net calorific heating value of the remaining combustible solid waste stream",
+          "B. It stops the incinerator from using electricity",
+          "C. It turns the incinerator into a freezer",
+          "D. It eliminates the need for furnace chimneys"
+        ],
+        "correctAnswer": "A. Removing wet organic waste (which has high moisture content) increases the net calorific heating value of the remaining combustible solid waste stream",
+        "hint": "Wet organic waste absorbs furnace heat to evaporate water; removing it boosts the net calorific value of combustible refuse.",
+        "workedSolution": "Wet organic waste absorbs furnace heat to evaporate water; removing it boosts the net calorific value of combustible refuse.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the function of the carbon-to-nitrogen (C:N) ratio in maintaining an efficient, odor-free aerobic composting operation?",
+        "options": [
+          "A. Maintaining an optimal C:N ratio of approximately 30:1 provides balanced carbon for microbial energy and nitrogen for protein synthesis",
+          "B. It stops the compost pile from catching fire",
+          "C. It converts plastic bags into fertile organic soil",
+          "D. It eliminates all moisture from the compost"
+        ],
+        "correctAnswer": "A. Maintaining an optimal C:N ratio of approximately 30:1 provides balanced carbon for microbial energy and nitrogen for protein synthesis",
+        "hint": "A balanced 30:1 C:N ratio (browns to greens) fuels microbial metabolism without causing ammonia release or sluggish decay.",
+        "workedSolution": "A balanced 30:1 C:N ratio (browns to greens) fuels microbial metabolism without causing ammonia release or sluggish decay.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What serious environmental issue occurs if a compost pile has an excessively low C:N ratio (e.g., 10:1 due to excessive fresh animal manure)?",
+        "options": [
+          "A. Excess nitrogen cannot be assimilated by microorganisms and is lost to the atmosphere as foul-smelling, volatile ammonia gas ($NH_3$)",
+          "B. The compost pile turns into granite rock",
+          "C. The compost pile freezes",
+          "D. The pile stops producing carbon"
+        ],
+        "correctAnswer": "A. Excess nitrogen cannot be assimilated by microorganisms and is lost to the atmosphere as foul-smelling, volatile ammonia gas ($NH_3$)",
+        "hint": "Low C:N ratios leave surplus nitrogen that volatilizes into pungent ammonia gas, creating offensive odors.",
+        "workedSolution": "Low C:N ratios leave surplus nitrogen that volatilizes into pungent ammonia gas, creating offensive odors.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the recycling of electronic circuit boards (e-waste) via informal open-pan acid leaching environmentally catastrophic?",
+        "options": [
+          "A. Aqua regia and nitric acid baths release toxic nitrogen dioxide fumes and discharge heavy metal residues directly into surrounding surface soils",
+          "B. It consumes all atmospheric nitrogen",
+          "C. It causes immediate earthquakes",
+          "D. Acid baths produce edible salt crystals"
+        ],
+        "correctAnswer": "A. Aqua regia and nitric acid baths release toxic nitrogen dioxide fumes and discharge heavy metal residues directly into surrounding surface soils",
+        "hint": "Informal wet-chemical leaching creates corrosive fumes and dumps untreated cyanide, lead, and acid onto soil.",
+        "workedSolution": "Informal wet-chemical leaching creates corrosive fumes and dumps untreated cyanide, lead, and acid onto soil.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the extended producer responsibility (EPR) policy promote source reduction in industrial manufacturing?",
+        "options": [
+          "A. It mandates that manufacturers are financially and physically responsible for the post-consumer treatment and recycling of their packaging and products",
+          "B. It subsidizes the production of single-use plastic bottles",
+          "C. It eliminates all government taxes for factories",
+          "D. It forbids companies from making durable goods"
+        ],
+        "correctAnswer": "A. It mandates that manufacturers are financially and physically responsible for the post-consumer treatment and recycling of their packaging and products",
+        "hint": "EPR incentivizes manufacturers to design recyclable, durable products with minimal packaging to lower end-of-life disposal liabilities.",
+        "workedSolution": "EPR incentivizes manufacturers to design recyclable, durable products with minimal packaging to lower end-of-life disposal liabilities.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a municipal waste audit, a town of 100,000 residents has a per capita waste generation rate of 0.5 kg per person per day. What is the total annual waste tonnage generated?",
+        "options": [
+          "A. 1,825 metric tons",
+          "B. 5,000 metric tons",
+          "C. 18,250 metric tons",
+          "D. 36,500 metric tons"
+        ],
+        "correctAnswer": "C. 18,250 metric tons",
+        "hint": "Daily Waste = 100,000 × 0.5 kg = 50,000 kg = 50 metric tons/day.",
+        "workedSolution": "Daily Waste = 100,000 × 0.5 kg = 50,000 kg = 50 metric tons/day. Annual Waste = 50 tons × 365 days = 18,250 metric tons.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In Question B7_WM_A18, if a recycling initiative achieves a 20% diversion rate, how many metric tons of waste are diverted from landfills annually?",
+        "options": [
+          "A. 1,825 metric tons",
+          "B. 3,650 metric tons",
+          "C. 7,300 metric tons",
+          "D. 9,125 metric tons"
+        ],
+        "correctAnswer": "B. 3,650 metric tons",
+        "hint": "Diverted Waste = 20% of 18,250 tons = 0.20 × 18,250 = 3,650 metric tons per year.",
+        "workedSolution": "Diverted Waste = 20% of 18,250 tons = 0.20 × 18,250 = 3,650 metric tons per year.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the thermodynamic principle utilized in a Refuse-Derived Fuel (RDF) power generation plant?",
+        "options": [
+          "A. Recovering high-calorific non-recyclable combustible waste to generate high-pressure steam that drives a turbine-generator set for electricity",
+          "B. Converting mechanical friction into radioactive rays",
+          "C. Melting glass bottles to produce electrical sparks",
+          "D. Storing cold rainwater to turn turbines"
+        ],
+        "correctAnswer": "A. Recovering high-calorific non-recyclable combustible waste to generate high-pressure steam that drives a turbine-generator set for electricity",
+        "hint": "RDF processes high-energy combustibles to fuel boilers, driving steam turbines to generate electricity.",
+        "workedSolution": "RDF processes high-energy combustibles to fuel boilers, driving steam turbines to generate electricity.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do chemical coagulants and polymer flocculants treat industrial wastewater before it is discharged into rivers?",
+        "options": [
+          "A. They neutralize negative surface charges on suspended colloidal particles, causing them to aggregate into large flocs that settle out by gravity",
+          "B. They turn the wastewater into petroleum fuel",
+          "C. They freeze the water into ice cubes",
+          "D. They convert heavy metals into oxygen gas"
+        ],
+        "correctAnswer": "A. They neutralize negative surface charges on suspended colloidal particles, causing them to aggregate into large flocs that settle out by gravity",
+        "hint": "Coagulation-flocculation binds tiny suspended solids and chemical colloids together so they can be filtered out.",
+        "workedSolution": "Coagulation-flocculation binds tiny suspended solids and chemical colloids together so they can be filtered out.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary operational hazard of disposing of volatile organic solvents (such as acetone and paint thinners) in domestic garbage bins?",
+        "options": [
+          "A. They emit flammable vapors that can ignite upon friction inside garbage compactor trucks, causing catastrophic vehicle fires",
+          "B. They dissolve the metal wheels of trucks",
+          "C. They cause the truck to run out of diesel",
+          "D. They turn into solid ice"
+        ],
+        "correctAnswer": "A. They emit flammable vapors that can ignite upon friction inside garbage compactor trucks, causing catastrophic vehicle fires",
+        "hint": "Low-flashpoint volatile solvents ignite readily from mechanical sparks during compaction, sparking truck fires.",
+        "workedSolution": "Low-flashpoint volatile solvents ignite readily from mechanical sparks during compaction, sparking truck fires.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are radioactive medical wastes containing Technetium-99m stored in lead-lined decay vaults before final disposal?",
+        "options": [
+          "A. To allow their short half-life radioactivity (6 hours) to decay naturally over ten half-lives until radiation drops to safe background levels",
+          "B. To turn the radio-isotopes into gold",
+          "C. To prevent the isotope from melting the hospital floor",
+          "D. To cool down the isotope's temperature"
+        ],
+        "correctAnswer": "A. To allow their short half-life radioactivity (6 hours) to decay naturally over ten half-lives until radiation drops to safe background levels",
+        "hint": "Decay-in-storage holds short-lived medical radionuclides until activity drops to safe, unregulated levels.",
+        "workedSolution": "Decay-in-storage holds short-lived medical radionuclides until activity drops to safe, unregulated levels.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the ecological concept of a 'circular economy' challenge the traditional 'linear economy' model of waste generation?",
+        "options": [
+          "A. It replaces the linear 'take-make-dispose' model with a closed-loop system where products are designed for durability, reuse, remanufacture, and biological cycling",
+          "B. It promotes dumping waste in circular pits rather than square pits",
+          "C. It requires all consumer products to be round in shape",
+          "D. It mandates the open burning of all manufactured goods"
+        ],
+        "correctAnswer": "A. It replaces the linear 'take-make-dispose' model with a closed-loop system where products are designed for durability, reuse, remanufacture, and biological cycling",
+        "hint": "Circular economies eliminate waste by keeping materials and technical components in continuous restorative cycles.",
+        "workedSolution": "Circular economies eliminate waste by keeping materials and technical components in continuous restorative cycles.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the environmental effect of using shredded agricultural crop residues as soil surface mulches rather than burning them in the field?",
+        "options": [
+          "A. It suppresses weeds, retains soil moisture, prevents splash erosion, and replenishes organic carbon without releasing $CO_2$ and smoke into the air",
+          "B. It turns the farm soil into rock",
+          "C. It prevents rainwater from reaching the roots",
+          "D. It makes the soil cold enough to freeze"
+        ],
+        "correctAnswer": "A. It suppresses weeds, retains soil moisture, prevents splash erosion, and replenishes organic carbon without releasing $CO_2$ and smoke into the air",
+        "hint": "Mulching recycles agricultural biomass in place, protecting soil moisture and avoiding smoke pollution.",
+        "workedSolution": "Mulching recycles agricultural biomass in place, protecting soil moisture and avoiding smoke pollution.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the biological process of vermicomposting (using red earthworms like *Eisenia fetida*) faster than conventional thermal composting?",
+        "options": [
+          "A. Earthworms mechanically ingest, grind, and excrete organic waste as castings while enriching it with digestive enzymes and beneficial gut bacteria",
+          "B. Earthworms heat the compost to 100°C",
+          "C. Earthworms eat all non-biodegradable plastics",
+          "D. Earthworms convert waste into synthetic fertilizer"
+        ],
+        "correctAnswer": "A. Earthworms mechanically ingest, grind, and excrete organic waste as castings while enriching it with digestive enzymes and beneficial gut bacteria",
+        "hint": "Worms pulverize organic matter and coat castings with enzymes, accelerating decay into nutrient-rich vermicast.",
+        "workedSolution": "Worms pulverize organic matter and coat castings with enzymes, accelerating decay into nutrient-rich vermicast.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are plastic sachet water bags (LDPE) a major cause of urban flooding in cities like Accra?",
+        "options": [
+          "A. Their lightweight, flat sheet geometry allows them to be carried by stormwater into storm drains, where they interlock and form impermeable water dams",
+          "B. Sachet bags dissolve into heavy cement in water",
+          "C. Sachet bags absorb all the stormwater",
+          "D. Sachet bags create earthquakes"
+        ],
+        "correctAnswer": "A. Their lightweight, flat sheet geometry allows them to be carried by stormwater into storm drains, where they interlock and form impermeable water dams",
+        "hint": "Flexible plastic films snag in culverts, binding silt and garbage into impermeable mats that block flood waters.",
+        "workedSolution": "Flexible plastic films snag in culverts, binding silt and garbage into impermeable mats that block flood waters.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does life cycle assessment (LCA) assist environmental engineers in evaluating waste management strategies?",
+        "options": [
+          "A. By quantifying total environmental impacts, raw material consumption, and emissions across every stage from raw extraction through product disposal",
+          "B. By measuring only the weight of the garbage truck",
+          "C. By testing the color of the waste bin",
+          "D. By replacing all recycling facilities"
+        ],
+        "correctAnswer": "A. By quantifying total environmental impacts, raw material consumption, and emissions across every stage from raw extraction through product disposal",
+        "hint": "LCA compiles inputs, outputs, and impacts across the entire life cycle, identifying optimal waste minimization pathways.",
+        "workedSolution": "LCA compiles inputs, outputs, and impacts across the entire life cycle, identifying optimal waste minimization pathways.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of a geomembrane extrusion weld in sanitary landfill base liner construction?",
+        "options": [
+          "A. To fuse adjacent sheets of HDPE into a single continuous, impermeable, leak-proof barrier across the entire containment floor",
+          "B. To make the landfill look shiny",
+          "C. To conduct electricity into the garbage",
+          "D. To allow leachate to seep into the subsoil"
+        ],
+        "correctAnswer": "A. To fuse adjacent sheets of HDPE into a single continuous, impermeable, leak-proof barrier across the entire containment floor",
+        "hint": "Extrusion and wedge welding fuse plastic panels into a continuous basin liner that stops leachate leaks.",
+        "workedSolution": "Extrusion and wedge welding fuse plastic panels into a continuous basin liner that stops leachate leaks.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are batteries containing lithium-ion chemistry dangerous if crushed inside standard municipal garbage compactor trucks?",
+        "options": [
+          "A. Mechanical crushing punctures internal separators, causing electrical short-circuits and thermal runaway explosions that ignite surrounding dry refuse",
+          "B. Lithium batteries turn into ice water",
+          "C. Lithium dissolves the truck's tires",
+          "D. Crushed batteries emit oxygen gas"
+        ],
+        "correctAnswer": "A. Mechanical crushing punctures internal separators, causing electrical short-circuits and thermal runaway explosions that ignite surrounding dry refuse",
+        "hint": "Crushing punctures separator layers, sparking violent thermal runaway and energetic fires in dry refuse loads.",
+        "workedSolution": "Crushing punctures separator layers, sparking violent thermal runaway and energetic fires in dry refuse loads.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does biochar production through biomass pyrolysis differ from open field burning of crop residues?",
+        "options": [
+          "A. Pyrolysis heats biomass in the absence of oxygen to produce stable solid carbon that sequesters carbon in soils, avoiding open smoke emissions",
+          "B. Pyrolysis produces large open bonfires",
+          "C. Pyrolysis requires no crop residues",
+          "D. Open burning sequesters more carbon"
+        ],
+        "correctAnswer": "A. Pyrolysis heats biomass in the absence of oxygen to produce stable solid carbon that sequesters carbon in soils, avoiding open smoke emissions",
+        "hint": "Oxygen-starved pyrolysis locks carbon into recalcitrant biochar, improving soil without releasing air pollutants.",
+        "workedSolution": "Oxygen-starved pyrolysis locks carbon into recalcitrant biochar, improving soil without releasing air pollutants.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of an autoclave in treating infectious healthcare waste before final disposal?",
+        "options": [
+          "A. Utilizing high-pressure saturated steam (e.g., 121°C at 15 psi) to denature bacterial and viral proteins, sterilizing the waste",
+          "B. Freezing the waste to kill bacteria",
+          "C. Grinding the waste into liquid fertilizer",
+          "D. Burning the waste with open flames"
+        ],
+        "correctAnswer": "A. Utilizing high-pressure saturated steam (e.g., 121°C at 15 psi) to denature bacterial and viral proteins, sterilizing the waste",
+        "hint": "Autoclaving uses pressurized steam to kill spores and pathogens, turning infectious waste into non-hazardous refuse.",
+        "workedSolution": "Autoclaving uses pressurized steam to kill spores and pathogens, turning infectious waste into non-hazardous refuse.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the disposal of untreated acidic industrial wastewater directly into municipal concrete sewers damaging to urban infrastructure?",
+        "options": [
+          "A. Acid attacks the calcium carbonate compounds in concrete via chemical dissolution, causing structural sewer pipe collapse",
+          "B. Acid turns concrete into diamond",
+          "C. Acid causes sewer pipes to expand into rubber",
+          "D. Acid makes concrete grow roots"
+        ],
+        "correctAnswer": "A. Acid attacks the calcium carbonate compounds in concrete via chemical dissolution, causing structural sewer pipe collapse",
+        "hint": "Acid effluents dissolve cementitious binders, corroding pipelines and triggering sewer collapses.",
+        "workedSolution": "Acid effluents dissolve cementitious binders, corroding pipelines and triggering sewer collapses.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the environmental significance of recovering methane gas from closed landfills to generate electricity?",
+        "options": [
+          "A. It prevents fugitive atmospheric greenhouse methane emissions while displacing the combustion of fossil fuels for power",
+          "B. It creates more plastic waste",
+          "C. It makes the landfill colder",
+          "D. It stops all rain from falling"
+        ],
+        "correctAnswer": "A. It prevents fugitive atmospheric greenhouse methane emissions while displacing the combustion of fossil fuels for power",
+        "hint": "Capturing methane mitigates climate warming while supplying renewable energy, replacing fossil fuel burning.",
+        "workedSolution": "Capturing methane mitigates climate warming while supplying renewable energy, replacing fossil fuel burning.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does industrial recycling of post-consumer PET plastic bottles into polyester textile fibers illustrate mechanical recycling?",
+        "options": [
+          "A. Bottles are sorted, flaked, washed, remelted, and extruded into fine synthetic fibers without changing their chemical polymer backbone",
+          "B. Bottles are dissolved into crude oil",
+          "C. Bottles are burned into ash",
+          "D. Bottles are converted into natural cotton"
+        ],
+        "correctAnswer": "A. Bottles are sorted, flaked, washed, remelted, and extruded into fine synthetic fibers without changing their chemical polymer backbone",
+        "hint": "Mechanical recycling washes and extrudes thermoplastic polymers into yarn without breaking chemical bonds.",
+        "workedSolution": "Mechanical recycling washes and extrudes thermoplastic polymers into yarn without breaking chemical bonds.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is fly ash from municipal solid waste incinerators classified as hazardous waste, whereas bottom ash is often non-hazardous?",
+        "options": [
+          "A. Fly ash condenses and concentrates volatile heavy metals (lead, cadmium) and dioxins filtered from the flue gas stream",
+          "B. Fly ash is magnetic",
+          "C. Bottom ash is radioactive",
+          "D. Fly ash contains pure water"
+        ],
+        "correctAnswer": "A. Fly ash condenses and concentrates volatile heavy metals (lead, cadmium) and dioxins filtered from the flue gas stream",
+        "hint": "Fly ash precipitates fine particulates that bind volatile heavy metals and dioxins, requiring hazardous waste containment.",
+        "workedSolution": "Fly ash precipitates fine particulates that bind volatile heavy metals and dioxins, requiring hazardous waste containment.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the purpose of a flare stack in an active sanitary landfill?",
+        "options": [
+          "A. To burn off excess migrating methane gas safely, converting it to less harmful carbon dioxide when gas generators are offline",
+          "B. To illuminate the landfill at night",
+          "C. To heat the landfill workers' offices",
+          "D. To attract flying insects"
+        ],
+        "correctAnswer": "A. To burn off excess migrating methane gas safely, converting it to less harmful carbon dioxide when gas generators are offline",
+        "hint": "Landfill flares oxidize excess methane into carbon dioxide and water, preventing explosion hazards and reducing warming impact.",
+        "workedSolution": "Landfill flares oxidize excess methane into carbon dioxide and water, preventing explosion hazards and reducing warming impact.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does excessive moisture (over 65%) inside a compost pile halt the composting process and cause foul odors?",
+        "options": [
+          "A. Water fills structural air pores, displacing oxygen and shifting microbial decomposition from aerobic to anaerobic decay",
+          "B. Excess water kills all bacteria permanently",
+          "C. Excess water turns the compost into glass",
+          "D. Excess water stops heat from leaving"
+        ],
+        "correctAnswer": "A. Water fills structural air pores, displacing oxygen and shifting microbial decomposition from aerobic to anaerobic decay",
+        "hint": "Over-watering drowns pore spaces, cutting off oxygen and allowing anaerobic bacteria to produce foul gases.",
+        "workedSolution": "Over-watering drowns pore spaces, cutting off oxygen and allowing anaerobic bacteria to produce foul gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does chemical neutralization treat corrosive acid waste from battery manufacturing before disposal?",
+        "options": [
+          "A. Adding a calculated alkaline base (such as slaked lime or sodium hydroxide) to bring the pH close to neutral (pH 7.0)",
+          "B. Boiling the acid until it disappears",
+          "C. Adding more acid to make it pure",
+          "D. Freezing the acid in lead containers"
+        ],
+        "correctAnswer": "A. Adding a calculated alkaline base (such as slaked lime or sodium hydroxide) to bring the pH close to neutral (pH 7.0)",
+        "hint": "Adding basic lime neutralizes acidity ($\text{Acid} + \text{Base} \rightarrow \text{Salt} + \text{Water}$), rendering the effluent safe.",
+        "workedSolution": "Adding basic lime neutralizes acidity ($\text{Acid} + \text{Base} \rightarrow \text{Salt} + \text{Water}$), rendering the effluent safe.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary advantage of decentralized community composting centers over centralized mega-composting plants?",
+        "options": [
+          "A. Reduced long-distance hauling costs and transport emissions, coupled with direct local reuse of organic compost by urban farmers",
+          "B. Decentralized plants use no land",
+          "C. Small centers process nuclear waste safely",
+          "D. Small centers operate with zero human labor"
+        ],
+        "correctAnswer": "A. Reduced long-distance hauling costs and transport emissions, coupled with direct local reuse of organic compost by urban farmers",
+        "hint": "Neighborhood composting processes waste where it is generated, cutting trucking costs and providing local fertilizer.",
+        "workedSolution": "Neighborhood composting processes waste where it is generated, cutting trucking costs and providing local fertilizer.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are halogenated flame retardants in plastics from e-waste considered persistent organic pollutants (POPs)?",
+        "options": [
+          "A. They resist chemical, photolytic, and biological degradation, bioaccumulate in fatty tissues, and pose chronic toxic hazards",
+          "B. They dissolve in water within one minute",
+          "C. They convert into vitamins in the body",
+          "D. They evaporate into clean oxygen"
+        ],
+        "correctAnswer": "A. They resist chemical, photolytic, and biological degradation, bioaccumulate in fatty tissues, and pose chronic toxic hazards",
+        "hint": "Brominated flame retardants have persistent molecular bonds that resist environmental decay, bioaccumulating in organisms.",
+        "workedSolution": "Brominated flame retardants have persistent molecular bonds that resist environmental decay, bioaccumulating in organisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does installing a leachate recirculation system (bioreactor landfill) speed up landfill stabilization?",
+        "options": [
+          "A. Pumping collected leachate back through the waste bed maintains optimal moisture for bacteria, speeding up anaerobic digestion and gas production",
+          "B. It turns the garbage into dry sand",
+          "C. It stops the generation of all gases",
+          "D. It dissolves the plastic liners"
+        ],
+        "correctAnswer": "A. Pumping collected leachate back through the waste bed maintains optimal moisture for bacteria, speeding up anaerobic digestion and gas production",
+        "hint": "Bioreactor landfills circulate moisture to accelerate biological decay, shortening stabilization from decades to years.",
+        "workedSolution": "Bioreactor landfills circulate moisture to accelerate biological decay, shortening stabilization from decades to years.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the environmental risk of disposing of polychlorinated biphenyls (PCBs) from old electrical transformers in scrap yards?",
+        "options": [
+          "A. PCBs are potent endocrine disruptors that persist in the food chain, causing reproductive failure, immune suppression, and cancers",
+          "B. PCBs turn into clean cooking oil",
+          "C. PCBs cause instant global freezing",
+          "D. PCBs dissolve scrap steel"
+        ],
+        "correctAnswer": "A. PCBs are potent endocrine disruptors that persist in the food chain, causing reproductive failure, immune suppression, and cancers",
+        "hint": "PCBs are stable, toxic transformer oils that bioaccumulate, causing severe hormonal disruption and cancers in humans.",
+        "workedSolution": "PCBs are stable, toxic transformer oils that bioaccumulate, causing severe hormonal disruption and cancers in humans.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is tire shredding required before discarded automotive tires can be accepted into engineered landfills?",
+        "options": [
+          "A. Whole tires trap methane gas and 'float' up through the compacted soil cover to rupture the landfill cap",
+          "B. Shredded tires turn into water",
+          "C. Whole tires are radioactive",
+          "D. Whole tires eat the clay liner"
+        ],
+        "correctAnswer": "A. Whole tires trap methane gas and 'float' up through the compacted soil cover to rupture the landfill cap",
+        "hint": "Whole tires trap air and spring back, gradually rising through waste layers to punch holes in the surface clay cap.",
+        "workedSolution": "Whole tires trap air and spring back, gradually rising through waste layers to punch holes in the surface clay cap.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of a phytoremediation buffer zone planted around an industrial waste dumpsite?",
+        "options": [
+          "A. Specially selected deep-rooted plants absorb, immobilize, or degrade toxic chemical contaminants in subsoil and runoff",
+          "B. To make the dumpsite invisible from the road",
+          "C. To harvest chemical wood for timber",
+          "D. To cool down the dumpsite temperature"
+        ],
+        "correctAnswer": "A. Specially selected deep-rooted plants absorb, immobilize, or degrade toxic chemical contaminants in subsoil and runoff",
+        "hint": "Phytoremediation uses plants to extract, sequester, or bio-filter heavy metals and pollutants from contaminated soils.",
+        "workedSolution": "Phytoremediation uses plants to extract, sequester, or bio-filter heavy metals and pollutants from contaminated soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does thermal gasification of municipal solid waste produce lower emissions of dioxins and furans than open-hearth mass burning?",
+        "options": [
+          "A. Gasification operates in an oxygen-deficient atmosphere, depriving chlorine and aromatic rings of the free oxygen required to synthesize dioxins",
+          "B. Gasification produces zero heat",
+          "C. Gasification uses cold water instead of fire",
+          "D. Gasification turns all plastics into nitrogen"
+        ],
+        "correctAnswer": "A. Gasification operates in an oxygen-deficient atmosphere, depriving chlorine and aromatic rings of the free oxygen required to synthesize dioxins",
+        "hint": "Starving the reaction of excess oxygen suppresses the chemical pathways that synthesize chlorinated dioxin molecules.",
+        "workedSolution": "Starving the reaction of excess oxygen suppresses the chemical pathways that synthesize chlorinated dioxin molecules.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ecological hazard of disposing of chemical agrochemical washings into farm drainage ditches?",
+        "options": [
+          "A. Pesticide runoff leaches into community irrigation ditches, poisoning non-target pollinators, soil worms, and downstream aquatic ecosystems",
+          "B. Pesticides evaporate into clean rain",
+          "C. Ditches turn into concrete",
+          "D. Pesticides produce organic fertilizer"
+        ],
+        "correctAnswer": "A. Pesticide runoff leaches into community irrigation ditches, poisoning non-target pollinators, soil worms, and downstream aquatic ecosystems",
+        "hint": "Uncontained pesticide washings contaminate aquatic food chains, killing beneficial insects, fish, and microorganisms.",
+        "workedSolution": "Uncontained pesticide washings contaminate aquatic food chains, killing beneficial insects, fish, and microorganisms.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does using an anaerobic biodigester to manage abattoir slaughterhouse waste solve both sanitation and energy needs?",
+        "options": [
+          "A. It treats highly pathogenic blood and visceral wastes in a sealed system, destroying pathogens while generating methane for cooking and lighting",
+          "B. It turns animal blood into drinking water",
+          "C. It converts bones into gold",
+          "D. It eliminates the need for animal meat"
+        ],
+        "correctAnswer": "A. It treats highly pathogenic blood and visceral wastes in a sealed system, destroying pathogens while generating methane for cooking and lighting",
+        "hint": "Biogas digesters neutralize pathogenic biological effluents while producing valuable methane fuel and bio-fertilizer.",
+        "workedSolution": "Biogas digesters neutralize pathogenic biological effluents while producing valuable methane fuel and bio-fertilizer.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary barrier preventing the recycling of thermosetting plastics (such as bakelite or epoxy resins)?",
+        "options": [
+          "A. Thermosetting polymers form irreversible cross-linked covalent molecular networks that decompose or char upon heating rather than melting",
+          "B. They dissolve in water instantly",
+          "C. They are made entirely of wood",
+          "D. They are too soft to process"
+        ],
+        "correctAnswer": "A. Thermosetting polymers form irreversible cross-linked covalent molecular networks that decompose or char upon heating rather than melting",
+        "hint": "Cross-linked thermosets cannot be re-melted and reshaped like thermoplastics; heating simply chars and burns the material.",
+        "workedSolution": "Cross-linked thermosets cannot be re-melted and reshaped like thermoplastics; heating simply chars and burns the material.",
+        "points": 1
+      },
+      {
+        "id": "B7_WM_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ultimate environmental and economic objective of an integrated solid waste management (ISWM) framework?",
+        "options": [
+          "A. Combining source reduction, recycling, biological recovery, and waste-to-energy to minimize the final volume of waste sent to landfills",
+          "B. Burning all waste in household backyards",
+          "C. Dumping all waste in open oceans",
+          "D. Exporting all waste to other countries"
+        ],
+        "correctAnswer": "A. Combining source reduction, recycling, biological recovery, and waste-to-energy to minimize the final volume of waste sent to landfills",
+        "hint": "ISWM integrates complementary management techniques to recover resources and protect health while reducing landfilling.",
+        "workedSolution": "ISWM integrates complementary management techniques to recover resources and protect health while reducing landfilling.",
         "points": 1
       }
     ]
