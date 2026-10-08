@@ -272,12 +272,12 @@ function AdminApplicationDashboard() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const apps = snapshot.docs
                 .map(doc => {
-                    const data = doc.data() as any;
+                    const data = (doc.data() || {}) as any;
                     const rawStudent = data.student || {};
                     const student = {
                         fullName: rawStudent.fullName || data.fullName || data.studentName || 'Unknown Applicant',
                         dateOfBirth: rawStudent.dateOfBirth || data.dateOfBirth || null,
-                        desiredGrade: rawStudent.desiredGrade || data.desiredGrade || data.grade || 'N/A',
+                        desiredGrade: rawStudent.desiredGrade || data.desiredGrade || data.gradeApplyingFor || data.grade || 'N/A',
                         gender: rawStudent.gender || data.gender || 'Other',
                         address: rawStudent.address || data.address || '',
                         previousSchool: rawStudent.previousSchool || data.previousSchool || '',
@@ -286,7 +286,43 @@ function AdminApplicationDashboard() {
                         relationship: rawStudent.relationship || data.relationship || '',
                         ...rawStudent,
                     };
-                    return { id: doc.id, ...data, student };
+                    const rawParent1 = data.parent1 || {};
+                    const parent1 = {
+                        name: rawParent1.name || data.parentName || 'Parent',
+                        relationship: rawParent1.relationship || data.relationship || 'Parent/Guardian',
+                        phone: rawParent1.phone || data.phone || data.parentPhone || '',
+                        email: rawParent1.email || data.email || data.parentEmail || '',
+                        address: rawParent1.address || data.address || '',
+                        addressSameAsStudent: rawParent1.addressSameAsStudent !== undefined ? rawParent1.addressSameAsStudent : true,
+                        ...rawParent1,
+                    };
+                    const rawParent2 = data.parent2 || null;
+                    const parent2 = rawParent2 ? {
+                        name: rawParent2.name || '',
+                        relationship: rawParent2.relationship || '',
+                        phone: rawParent2.phone || '',
+                        email: rawParent2.email || '',
+                        address: rawParent2.address || '',
+                        addressSameAsStudent: rawParent2.addressSameAsStudent !== undefined ? rawParent2.addressSameAsStudent : false,
+                        ...rawParent2,
+                    } : null;
+                    const rawEmergency = data.emergencyContact || {};
+                    const emergencyContact = {
+                        name: rawEmergency.name || parent1.name || '',
+                        relationship: rawEmergency.relationship || parent1.relationship || 'Parent/Guardian',
+                        phone: rawEmergency.phone || parent1.phone || '',
+                        ...rawEmergency,
+                    };
+                    const applicationId = data.applicationId || doc.id;
+                    return { 
+                        id: doc.id, 
+                        ...data, 
+                        applicationId,
+                        student, 
+                        parent1, 
+                        parent2, 
+                        emergencyContact 
+                    };
                 })
                 .filter((a: any) => a.isArchived !== true);
             apps.sort((a: any, b: any) => {
@@ -574,7 +610,7 @@ function AdminApplicationDashboard() {
                 }
                 
                 const newStudentId = await generateNextStudentId(firestore, schoolId);
-                const fullName = (selectedApp.student.fullName || '').trim();
+                const fullName = (selectedApp.student?.fullName || selectedApp.studentName || selectedApp.fullName || '').trim();
                 const nameParts = fullName.split(' ');
                 const firstName = nameParts[0] || 'New';
                 const lastName = nameParts.slice(1).join(' ') || 'Student';
@@ -616,9 +652,9 @@ function AdminApplicationDashboard() {
                     lastName: lastName,
                     email: studentEmail.trim(),
                     classId: assignedClass,
-                    gender: selectedApp.student.gender,
-                    dateOfBirth: selectedApp.student.dateOfBirth,
-                    address: selectedApp.student.address,
+                    gender: selectedApp.student?.gender || selectedApp.gender || 'Other',
+                    dateOfBirth: selectedApp.student?.dateOfBirth || selectedApp.dateOfBirth || null,
+                    address: selectedApp.student?.address || selectedApp.address || '',
                     enrollmentStatus: 'Active',
                     schoolId: schoolId,
                     parentId: selectedApp.submittedByParentId || null,
@@ -724,9 +760,9 @@ function AdminApplicationDashboard() {
             }
         }
 
-        const desiredGrade = student.desiredGrade || '';
+        const desiredGrade = student.desiredGrade || app?.desiredGrade || app?.gradeApplyingFor || '';
         if (desiredGrade) {
-            const targetClasses = availableClasses.filter(c => c.name.includes(desiredGrade));
+            const targetClasses = (availableClasses || []).filter(c => (c.name || '').toLowerCase().includes(desiredGrade.toLowerCase()));
             if (targetClasses.length > 0 && targetClasses.every(c => c.currentStudents >= c.capacity)) {
                 flags.push({type: 'info', text: 'AI Flag: Waitlist Recommended (Class Full)'});
             }
@@ -779,9 +815,9 @@ function AdminApplicationDashboard() {
                                                 Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{desiredGrade}</Badge>
                                             </span>
                                             <span className="text-slate-300">•</span>
-                                            <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId}</code></span>
+                                            <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId || app.id}</code></span>
                                             <span className="text-slate-300">•</span>
-                                            <span>Parent: <strong className="text-slate-600 font-medium">{app.parent1.name}</strong></span>
+                                            <span>Parent: <strong className="text-slate-600 font-medium">{app.parent1?.name || app.parentName || 'N/A'}</strong></span>
                                             {app.submittedAt && (
                                                 <>
                                                     <span className="text-slate-300">•</span>
@@ -814,13 +850,13 @@ function AdminApplicationDashboard() {
         }
         const headers = ['Application ID', 'Student Name', 'Desired Grade', 'Gender', 'Parent Name', 'Parent Phone', 'Parent Email', 'Status', 'Submitted Date'];
         const rows = applications.map(a => [
-            `"${a.applicationId || ''}"`,
-            `"${a.student?.fullName || ''}"`,
-            `"${a.student?.desiredGrade || ''}"`,
+            `"${a.applicationId || a.id || ''}"`,
+            `"${a.student?.fullName || a.studentName || ''}"`,
+            `"${a.student?.desiredGrade || a.gradeApplyingFor || ''}"`,
             `"${a.student?.gender || ''}"`,
-            `"${a.parent1?.name || ''}"`,
-            `"${a.parent1?.phone || ''}"`,
-            `"${a.parent1?.email || ''}"`,
+            `"${a.parent1?.name || a.parentName || ''}"`,
+            `"${a.parent1?.phone || a.phone || ''}"`,
+            `"${a.parent1?.email || a.email || ''}"`,
             `"${a.status || ''}"`,
             `"${a.submittedAt?.toDate ? format(a.submittedAt.toDate(), 'yyyy-MM-dd') : ''}"`
         ]);
@@ -1233,24 +1269,24 @@ function AdminApplicationDashboard() {
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm pt-2">
                                             <div className="col-span-2">
                                                 <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Parent 2 (Secondary)</span>
-                                                <span className="font-bold text-slate-800 text-base">{selectedApp.parent2.name}</span>
+                                                <span className="font-bold text-slate-800 text-base">{selectedApp.parent2?.name || 'N/A'}</span>
                                             </div>
                                             <div>
                                                 <span className="text-slate-400 text-xs block">Relationship</span>
-                                                <span className="font-semibold text-slate-700">{selectedApp.parent2.relationship}</span>
+                                                <span className="font-semibold text-slate-700">{selectedApp.parent2?.relationship || 'N/A'}</span>
                                             </div>
                                             <div>
                                                 <span className="text-slate-400 text-xs block">Phone</span>
-                                                <span className="font-semibold text-slate-700">{selectedApp.parent2.phone}</span>
+                                                <span className="font-semibold text-slate-700">{selectedApp.parent2?.phone || 'N/A'}</span>
                                             </div>
                                             <div className="col-span-2">
                                                 <span className="text-slate-400 text-xs block">Email</span>
-                                                <span className="font-semibold text-slate-700 break-all">{selectedApp.parent2.email}</span>
+                                                <span className="font-semibold text-slate-700 break-all">{selectedApp.parent2?.email || 'N/A'}</span>
                                             </div>
                                             <div className="col-span-2">
                                                 <span className="text-slate-400 text-xs block">Address</span>
                                                 <span className="font-medium text-slate-700">
-                                                    {selectedApp.parent2.addressSameAsStudent ? 'Same as Student' : selectedApp.parent2.address}
+                                                    {selectedApp.parent2?.addressSameAsStudent ? 'Same as Student' : (selectedApp.parent2?.address || 'N/A')}
                                                 </span>
                                             </div>
                                         </div>
@@ -1265,15 +1301,15 @@ function AdminApplicationDashboard() {
                                     <div className="text-sm space-y-2">
                                         <div>
                                             <span className="text-slate-400 text-xs block">Contact Name</span>
-                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.name}</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.name || selectedApp.parent1?.name || selectedApp.parentName || 'N/A'}</span>
                                         </div>
                                         <div>
                                             <span className="text-slate-400 text-xs block">Relationship</span>
-                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.relationship}</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.relationship || selectedApp.parent1?.relationship || 'Parent/Guardian'}</span>
                                         </div>
                                         <div>
                                             <span className="text-slate-400 text-xs block">Phone</span>
-                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.phone}</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.phone || selectedApp.parent1?.phone || selectedApp.phone || 'N/A'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1643,7 +1679,7 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
                             <CardHeader className="pb-4 border-b bg-slate-50/50">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <CardTitle className="text-lg font-bold text-slate-800">{app.student.fullName}</CardTitle>
+                                        <CardTitle className="text-lg font-bold text-slate-800">{app.student?.fullName || app.studentName || 'Application'}</CardTitle>
                                         <CardDescription className="text-xs font-mono mt-0.5 text-slate-500">Application ID: {app.applicationId}</CardDescription>
                                     </div>
                                     <Badge className={cn(
@@ -1664,7 +1700,7 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
                                 <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div className="flex justify-between sm:justify-start sm:gap-6 py-1.5 border-b border-slate-50 sm:border-none">
                                         <span className="text-slate-500 w-28">Desired Grade:</span>
-                                        <span className="font-semibold text-slate-800 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 text-xs">{app.student.desiredGrade}</span>
+                                        <span className="font-semibold text-slate-800 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 text-xs">{app.student?.desiredGrade || app.gradeApplyingFor || 'N/A'}</span>
                                     </div>
                                     <div className="flex justify-between sm:justify-start sm:gap-6 py-1.5 border-b border-slate-50 sm:border-none">
                                         <span className="text-slate-500 w-28">Submitted On:</span>

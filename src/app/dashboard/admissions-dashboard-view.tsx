@@ -144,7 +144,7 @@ export function AdmissionsDashboardView({
     const classIdToNameMap = new Map<string, string>();
 
     classes?.forEach((c: any) => {
-      classIdToNameMap.set(c.id, c.name);
+      classIdToNameMap.set(c.id, c.name || c.id);
     });
 
     students?.forEach((s: any) => {
@@ -415,14 +415,14 @@ export function AdmissionsDashboardView({
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{app.studentName || 'New Applicant'}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Grade: {app.gradeApplyingFor || 'N/A'}</p>
+                          <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{app.studentName || app.student?.fullName || 'New Applicant'}</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Grade: {app.gradeApplyingFor || app.student?.desiredGrade || 'N/A'}</p>
                         </div>
                         {getStatusBadge(app.status)}
                       </div>
                       
                       <div className="flex justify-between items-center text-[10px] text-slate-500 border-t pt-2 border-slate-200/50">
-                        <span className="font-semibold">{app.parentName || 'Parent'}</span>
+                        <span className="font-semibold">{app.parentName || app.parent1?.name || 'Parent'}</span>
                         <span className="font-mono text-slate-400">{dateStr}</span>
                       </div>
                     </div>
@@ -479,13 +479,13 @@ export function AdmissionsDashboardView({
 
                     return (
                       <TableRow key={app.id || idx} className="hover:bg-slate-50/50 border-slate-100 transition-colors">
-                        <TableCell className="font-black text-xs text-slate-700 py-4">{app.studentName}</TableCell>
-                        <TableCell className="font-bold text-xs text-slate-500 py-4">{app.gradeApplyingFor || 'N/A'}</TableCell>
-                        <TableCell className="font-bold text-xs text-slate-650 py-4">{app.parentName}</TableCell>
+                        <TableCell className="font-black text-xs text-slate-700 py-4">{app.studentName || app.student?.fullName || 'N/A'}</TableCell>
+                        <TableCell className="font-bold text-xs text-slate-500 py-4">{app.gradeApplyingFor || app.student?.desiredGrade || 'N/A'}</TableCell>
+                        <TableCell className="font-bold text-xs text-slate-650 py-4">{app.parentName || app.parent1?.name || 'N/A'}</TableCell>
                         <TableCell className="py-4">
                           <div className="flex flex-col gap-0.5 text-xs text-slate-500 font-semibold">
-                            <span>{app.email}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">{app.phone}</span>
+                            <span>{app.email || app.parent1?.email || 'N/A'}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">{app.phone || app.parent1?.phone || 'N/A'}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-xs font-semibold text-slate-400 py-4">{dateStr}</TableCell>
