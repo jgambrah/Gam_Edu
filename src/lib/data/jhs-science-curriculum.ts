@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.573Z"
+    "updatedAt": "2026-10-08T16:09:26.223Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.580Z"
+    "updatedAt": "2026-10-08T16:09:26.226Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.580Z"
+    "updatedAt": "2026-10-08T16:09:26.226Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.580Z"
+    "updatedAt": "2026-10-08T16:09:26.226Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.580Z"
+    "updatedAt": "2026-10-08T16:09:26.226Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.580Z"
+    "updatedAt": "2026-10-08T16:09:26.226Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.581Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.581Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22324,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.581Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25064,7 +25064,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27840,7 +27840,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30603,7 +30603,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33402,7 +33402,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33600,7 +33600,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -36384,7 +36384,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -39133,7 +39133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.227Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -41880,7 +41880,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.228Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -41893,69 +41893,2603 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Simulate Earth's atmospheric energy balance and climate change scenarios using real-world meteorological datasets. Investigates greenhouse radiative forcing, coastal erosion in coastal West Africa, drought mitigation agronomy, and renewable energy transitions.",
-    "totalPracticeQuestions": 9,
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
       "b9_strand5_climate_change"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • The Greenhouse Effect & Drivers of Global Warming",
-        "summary": "Model natural vs. enhanced greenhouse effect; correlate greenhouse gas emissions with rising global mean surface temperatures.",
-        "notes": "### The Greenhouse Effect & Global Warming Dynamics\n* **NaCCA Curriculum Code:** `B7.5.4.1`\n* **Core Competency:** Explain the natural and enhanced greenhouse effect and identify major anthropogenic greenhouse gas sources.\n\n#### 1. The Natural Greenhouse Effect\n* Solar shortwave electromagnetic radiation (visible light, ultraviolet) penetrates Earth's atmosphere unimpeded and is absorbed by the surface.\n* The warmed Earth re-emits energy as **longer-wavelength infrared radiation** (thermal heat).\n* Naturally occurring atmospheric greenhouse gases absorb and re-radiate this outgoing infrared radiation in all directions, trapping heat in the troposphere.\n* **Without the natural greenhouse effect**, Earth's average surface temperature would plummet to $-18^\\circ\\text{C}$ (instead of the hospitable $+15^\\circ\\text{C}$), freezing the oceans solid.\n\n#### 2. Major Greenhouse Gases & Anthropogenic Sources\n* **Carbon Dioxide ($CO_2$):** Responsible for $\\approx 65\\%$ of enhanced radiative forcing. Emitted from combustion of fossil fuels (coal, oil, gas) for electricity and transport; widespread deforestation (reducing photosynthetic sinks).\n* **Methane ($CH_4$):** 28 times more potent than $CO_2$. Emitted from enteric fermentation in ruminant livestock (cattle belching), anaerobic decomposition in flooded paddy rice fields, and organic landfill off-gassing.\n* **Nitrous Oxide ($N_2O$):** 265 times more potent than $CO_2$. Over-application of synthetic nitrogen fertilizers on agricultural soils; industrial nitric acid production.\n* **Fluorinated Gases (CFCs, HFCs):** Synthetic refrigerants, aerosol propellants, and semiconductor manufacturing solvents.\n\n#### 3. The Enhanced Greenhouse Effect\nExcessive human emissions over the past 150 years have drastically increased greenhouse gas concentrations, thickening the thermal atmospheric blanket, trapping excess infrared energy, and driving unprecedented **anthropogenic global warming**.",
+        "levelTitle": "Basic 7 (JHS 1) • Climate Change Drivers, Atmospheric Physics & Sustainable Green Economy",
+        "summary": "Master meteorological concepts (weather vs. climate vs. climate change), physical mechanisms of uneven planetary solar heating (Earth curvature, 23.5° axial tilt, differential land-water heat capacity, and Coriolis force), natural and anthropogenic drivers of climate change, the 5-stage physics of the greenhouse effect and greenhouse gas properties (CO2, CH4, N2O, H2O vapor, O3, CFCs), systemic ecological consequences of global warming (sea-level rise, glacial melt, crop failure, biodiversity loss), stratospheric ozone shield dynamics and catalytic CFC depletion kinetics, clean sustainable energy technologies (solar PV, wind, hydroelectric Akosombo Dam, geothermal, biomass/biogas), comparative analysis of solar vs fossil fuels, and the three pillars of the green economy (low-carbon growth, resource efficiency, social inclusivity) with high-impact climate mitigation strategies.",
+        "notes": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 4: CLIMATE CHANGE AND GREEN ECONOMY\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 4 — Climate Change and Green Economy\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.4.1:** Demonstrate understanding of sustainable energy choices and their impact on the environment.\n- **Indicator:**\n  - **B7.5.4.1.1:** Search for information on ways sustainable energy choices and scientific ideas are used to protect the environment.\n- **Pedagogical Approach:** Direct instructional notes incorporating meteorological definitions, astronomical and terrestrial drivers of climate change, the physics of the greenhouse effect, global warming dynamics, stratospheric ozone depletion kinetics, clean sustainable energy technologies, green economy frameworks, and fully enclosed vector SVGs.\n- **Core Competencies:** Critical Thinking and Problem Solving, Environmental Literacy, Digital Literacy, and Cultural Identity and Global Citizenship.\n\n---\n\n### MODULE 1: Meteorological Concepts, Drivers of Climate Change, and Uneven Planetary Heating\n\n#### 1.1 Meteorological and Atmospheric Definitions\n1. **Weather:**\n   - *Scientific Definition:* The localized atmospheric condition of a specific geographic area over a brief, short-term interval of time (measured in hours, days, or weeks).\n   - *Atmospheric Parameters:* It is quantified through direct physical measurements of ambient air temperature (degrees of hotness or coldness), atmospheric pressure, relative humidity (wetness or dryness), wind velocity and direction (calm or stormy conditions), cloud cover, precipitation types, and visibility.\n2. **Climate:**\n   - *Scientific Definition:* The aggregate, statistical condition of the atmosphere recorded over a prolonged duration of time (conventionally defined by the World Meteorological Organization [WMO] as **30 years or more**).\n   - *Significance:* Climate represents the baseline statistical summation, mean patterns, and frequency of extreme variations of atmospheric parameters across large biomes (e.g., Tropical Savannah, Equatorial Rainforest, Semi-Arid Sahelian).\n3. **Climate Change:**\n   - *Scientific Definition:* Statistically significant, long-term modifications, shifts, or disturbances in the baseline average weather patterns (such as mean surface temperature, annual precipitation volume, prevailing wind currents, and the frequency and intensity of catastrophic storms) that endure for extended epochs across regional or global planetary systems.\n   - *Origin:* Driven by a confluence of natural cosmic/geological cycles and intensified by anthropogenic activities that perturb planetary radiative equilibrium.\n\n---\n\n#### 1.2 Physics of Uneven Planetary Heating\nSolar energy is distributed unequally across the Earth's surface, creating atmospheric pressure gradients, global trade winds, oceanic circulation belts, and distinct thermal zones through four primary physical mechanisms:\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"320\" viewBox=\"0 0 760 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"320\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY PHYSICS: SOLAR INCIDENCE ANGLE &amp; UNEVEN HEATING</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"245\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Solar Angle of Incidence</text><path d=\"M 180 40 A 100 100 0 0 1 180 220\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"4\"/><line x1=\"180\" y1=\"130\" x2=\"280\" y2=\"130\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><text x=\"210\" y=\"122\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#dc2626\">Equator (0°)</text><text x=\"190\" y=\"55\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e40af\">North Pole</text><text x=\"190\" y=\"215\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e40af\">South Pole</text><line x1=\"30\" y1=\"60\" x2=\"170\" y2=\"60\" stroke=\"#ea580c\" stroke-width=\"2\" marker-end=\"url(#arr)\"/><line x1=\"30\" y1=\"130\" x2=\"180\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"3\"/><line x1=\"30\" y1=\"200\" x2=\"170\" y2=\"200\" stroke=\"#ea580c\" stroke-width=\"2\"/><rect x=\"25\" y=\"150\" width=\"135\" height=\"80\" rx=\"4\" fill=\"#eff6ff\"/><text x=\"92\" y=\"166\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Curvature Effects:</text><text x=\"32\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Equator: Direct perpendicular</text><text x=\"38\" y=\"194\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">  rays (concentrated heat)</text><text x=\"32\" y=\"210\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Poles: Slanted oblique rays</text><text x=\"38\" y=\"222\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">  (spread over larger area)</text></g><g transform=\"translate(395, 45)\"><rect width=\"335\" height=\"245\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"167\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Thermal Land-Water Differential</text><rect x=\"25\" y=\"45\" width=\"135\" height=\"75\" rx=\"4\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><text x=\"92\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Continental Land</text><text x=\"92\" y=\"84\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\" text-anchor=\"middle\">Low specific heat capacity</text><text x=\"92\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\" text-anchor=\"middle\">Heats &amp; cools rapidly</text><rect x=\"175\" y=\"45\" width=\"135\" height=\"75\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\"/><text x=\"242\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Oceanic Water</text><text x=\"242\" y=\"84\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#075985\" text-anchor=\"middle\">High specific heat capacity</text><text x=\"242\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#075985\" text-anchor=\"middle\">Heats &amp; cools slowly</text><rect x=\"25\" y=\"135\" width=\"285\" height=\"95\" rx=\"4\" fill=\"#f0fdf4\" stroke=\"#bbf7d0\"/><text x=\"167\" y=\"152\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Net Climatic Consequences</text><text x=\"35\" y=\"170\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">1. Generation of sea breezes and trade winds</text><text x=\"35\" y=\"186\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">2. Global atmospheric Hadley and Ferrel cell circulation</text><text x=\"35\" y=\"202\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">3. Formation of regional monsoons and rainfall belts</text></g></svg>\n</div>\n\n1. **Earth Curvature and Angle of Solar Incidence:**\n   - The Earth is an oblate spheroid. At equatorial latitudes ($0^\\circ$), incoming solar radiation strikes the surface at an angle close to **$90^\\circ$ (perpendicular incidence)**. Solar rays pass through a thinner atmospheric column and concentrate their electromagnetic energy over a minimal surface area, generating intense, high-density surface heating.\n   - Conversely, at polar latitudes, solar rays strike the curved surface at an **oblique, slanted angle**, traversing a longer path through the atmosphere (which scatters and absorbs more photons) and spreading the same radiant energy over a vastly larger geographical area. Consequently, equatorial zones accumulate massive heat surpluses, whereas polar zones experience persistent heat deficits.\n2. **Axial Tilt ($23.5^\\circ$) and Orbital Revolution:**\n   - The Earth revolves around the Sun along an elliptical orbit once every $365.25\\text{ days}$, maintaining a permanent axial tilt of **$23.5^\\circ$** relative to its orbital plane (the ecliptic).\n   - This fixed orientation alters the solar declination angle throughout the year, changing the Sun's zenith position between the Tropic of Cancer ($23.5^\\circ\\text{ N}$) and the Tropic of Capricorn ($23.5^\\circ\\text{ S}$). This variation governs seasonal changes, alters day length, and drives cyclical shifts in regional temperature and rainfall belts (such as the latitudinal migration of the Inter-Tropical Convergence Zone [ITCZ] across Ghana).\n3. **Differential Thermal Properties of Land and Water Masses:**\n   - The continental crust (rock and soil) and oceanic water bodies possess radically different thermal physical constants.\n   - **Specific Heat Capacity ($c$):** Liquid water has an exceptionally high specific heat capacity ($c_{\\text{water}} \\approx 4,184\\text{ J}/(\\text{kg}\\cdot\\text{K})$), whereas dry land/granite has a low specific heat capacity ($c_{\\text{land}} \\approx 800\\text{ J}/(\\text{kg}\\cdot\\text{K})$).\n   - Continental land masses heat up rapidly during solar irradiation and cool down rapidly at night or during winter. In contrast, oceanic water bodies heat up very slowly and retain thermal energy for prolonged periods.\n   - This thermal inertia differential creates localized diurnal pressure gradients (producing daytime **sea breezes** and nighttime **land breezes**) as well as seasonal continental monsoons (such as the moisture-laden South-West Monsoon winds and dry North-East Harmattan winds across West Africa).\n4. **Axial Diurnal Rotation and the Coriolis Effect:**\n   - The Earth completes one full rotation on its geographic axis every 24 hours, generating the diurnal day-night cycle that governs heating and cooling periods.\n   - Furthermore, planetary rotation generates the **Coriolis force**, an apparent inertial force that deflects moving air currents and oceanic gyres to the right in the Northern Hemisphere and to the left in the Southern Hemisphere. This deflection breaks global convection into three distinct atmospheric circulation cells per hemisphere (**Hadley, Ferrel, and Polar cells**), shaping global climate zones.\n\n---\n\n#### 1.3 Natural Drivers of Planetary Climate Variability\nOver geological timescales, natural mechanisms have driven climate fluctuations:\n- **Solar Irradiance Cycles:** Periodic variations in the Sun's core thermonuclear output, 11-year sunspot cycles, and Milankovitch orbital cycles (variations in eccentricity, axial tilt, and precession over 20,000 to 100,000 years) modulate total solar energy reaching Earth.\n- **Stratospheric Volcanic Eruptions:** Violent plinian eruptions eject massive quantities of sulfur dioxide ($SO_2$) gas, ash, and silicate particulates into the stratosphere. $SO_2$ reacts with atmospheric water vapor to form microscopic sulfuric acid ($H_2SO_4$) aerosols that reflect incoming solar radiation, creating global radiative cooling for 1 to 3 years (e.g., Mount Pinatubo, 1991).\n- **Oceanic Circulations & Teleconnections:** Dynamic ocean-atmosphere oscillations, such as the **El Niño-Southern Oscillation (ENSO)**, periodically warm or cool the equatorial Pacific Ocean surface, disrupting global jet streams and shifting rainfall patterns worldwide.\n- **Natural Greenhouse Equilibrium:** Baseline pre-industrial concentrations of naturally occurring atmospheric gases maintain the planet's average surface temperature at a habitable $+15^\\circ\\text{C}$ (preventing a frozen equilibrium of $-18^\\circ\\text{C}$).\n\n---\n\n#### 1.4 Anthropogenic Drivers of Contemporary Climate Change\nSince the Industrial Revolution (circa 1750), human industrial, agricultural, and urban activities have massively amplified radiative forcing:\n1. **Fossil Fuel Combustion:** The burning of bituminous coal, refined petroleum (gasoline, diesel, heavy fuel oil), and natural gas in thermoelectric generation stations, motor vehicles, aircraft, and industrial furnaces releases over 36 billion metric tonnes of concentrated carbon dioxide ($CO_2$) into the atmosphere annually.\n2. **Deforestation and Land-Use Conversion:** Extensive clear-felling, commercial logging, and slash-and-burn clearing of tropical rainforests (such as the Upper Guinean forests in Ghana and the Amazon basin) eliminate critical photosynthetic carbon sinks. The felled timber either decomposes or is burned, rapidly releasing stored organic carbon back into the atmosphere as $CO_2$.\n3. **Heavy Industrial Processes:** High-temperature calcination in limestone cement kilns (converting $CaCO_3 \\rightarrow CaO + CO_2$), petrochemical synthesis, aluminum smelting, and chemical manufacturing discharge massive streams of $CO_2$, nitrous oxide ($N_2O$), and synthetic fluorinated gases.\n4. **Agricultural Activities and Ruminant Husbandry:**\n   - Enteric fermentation by ruminant livestock (cattle, sheep, goats) produces methanogenic microbes that generate and emit large volumes of methane ($CH_4$) gas.\n   - Flooded anaerobic paddy rice cultivation produces biogenic methane.\n   - The widespread application of synthetic nitrogen fertilizers ($NH_4NO_3$, urea) stimulates soil nitrifying and denitrifying bacteria to emit nitrous oxide ($N_2O$), a greenhouse gas with a global warming potential nearly 300 times that of $CO_2$.\n5. **Open Refuse Burning and Surface Mining:** Indiscriminate burning of municipal solid waste, plastic bonfires, and forest clearing for illegal artisanal gold mining (*galamsey*) generate soot, black carbon particulates, and greenhouse gases that coat vegetative surfaces and lower surface albedo.\n\n---\n\n### MODULE 2: The Greenhouse Effect, Global Warming, and Stratospheric Ozone Depletion\n\n#### 2.1 The Physics of the Greenhouse Effect\nThe **Greenhouse Effect** is a natural physical-chemical phenomenon whereby trace atmospheric gases absorb and re-radiate thermal infrared energy, insulating the planet.\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE GREENHOUSE MECHANISM &amp; STRATOSPHERIC OZONE LAYER</text><g transform=\"translate(40, 45)\"><path d=\"M 40 250 A 280 280 0 0 1 640 250\" fill=\"#f1f5f9\" stroke=\"#64748b\" stroke-width=\"2\"/><path d=\"M 70 250 A 250 250 0 0 1 610 250\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6,4\"/><text x=\"340\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Ozone Layer (O₃) Shield (Absorbs UV)</text><path d=\"M 100 250 A 220 220 0 0 1 580 250\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"1.5\"/><text x=\"340\" y=\"120\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Atmosphere (CO₂, CH₄, N₂O, H₂O vapor)</text><circle cx=\"90\" cy=\"50\" r=\"26\" fill=\"#facc15\" stroke=\"#eab308\" stroke-width=\"2\"/><text x=\"90\" y=\"54\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">SUN</text><line x1=\"115\" y1=\"65\" x2=\"220\" y2=\"195\" stroke=\"#ea580c\" stroke-width=\"2.5\"/><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\">1. Solar Rays</text><path d=\"M 220 195 A 160 160 0 0 1 460 195\" fill=\"#86efac\" stroke=\"#16a34a\" stroke-width=\"2\"/><text x=\"340\" y=\"215\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">EARTH SURFACE</text><line x1=\"220\" y1=\"195\" x2=\"280\" y2=\"110\" stroke=\"#ca8a04\" stroke-width=\"2\" stroke-dasharray=\"3,3\"/><text x=\"260\" y=\"145\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#854d0e\">3. Reflected</text><line x1=\"340\" y1=\"195\" x2=\"400\" y2=\"120\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><text x=\"395\" y=\"165\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#dc2626\">4. Infrared Heat</text><path d=\"M 400 120 L 440 170 L 480 120 L 520 170\" fill=\"none\" stroke=\"#b91c1c\" stroke-width=\"2\"/><text x=\"470\" y=\"140\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#b91c1c\">5. Heat Trapped</text><rect x=\"450\" y=\"225\" width=\"210\" height=\"55\" rx=\"4\" fill=\"#fee2e2\" stroke=\"#ef4444\"/><text x=\"555\" y=\"242\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Greenhouse Consequences:</text><text x=\"460\" y=\"258\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Enhanced trapping raises temperatures</text><text x=\"460\" y=\"270\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Drives polar ice melt &amp; sea-level rise</text></g></svg>\n</div>\n\nThe phenomenon operates through a **five-stage radiative sequence**:\n- **Stage 1 (Incident Solar Radiation):** High-energy, short-wavelength electromagnetic radiation emitted by the Sun (predominantly ultraviolet, visible light, and near-infrared, with wavelengths $\\lambda < 4\\,\\mu\\text{m}$) penetrates the atmosphere with minimal absorption by greenhouse gases.\n- **Stage 2 (Surface Absorption & Thermalization):** Approximately $50\\%$ of incident solar radiation is absorbed directly by continental rocks, soils, vegetation, and oceanic water bodies, converting electromagnetic energy into thermal kinetic energy and elevating surface temperatures.\n- **Stage 3 (Atmospheric & Surface Reflection / Albedo):** Approximately $30\\%$ of incoming radiation is reflected back into outer space by bright clouds, atmospheric aerosol particulates, and high-albedo surfaces (polar ice sheets, snow, and desert sands) without heating the planet.\n- **Stage 4 (Terrestrial Infrared Reradiation):** In accordance with **Planck's Law** and the **Stefan-Boltzmann Law** ($E = \\sigma T^4$), the warmed Earth re-emits thermal energy outward toward space. Because the Earth's average surface temperature ($approx 288\\text{ K}$) is much lower than the Sun's surface ($approx 5,778\\text{ K}$), terrestrial radiation shifts to **long-wavelength, low-frequency infrared thermal radiation** (peak emission $\\lambda \\approx 10\\,\\mu\\text{m}$).\n- **Stage 5 (Infrared Absorption & Atmospheric Back-Radiation):** Diatomic atmospheric gases (nitrogen $N_2$ at $\\approx 78\\%$ and oxygen $O_2$ at $\\approx 21\\%$) are symmetrical, non-polar molecules unable to absorb infrared radiation. However, heteronuclear triatomic and polyatomic greenhouse gas molecules possess vibrational and rotational dipole moments that resonant-absorb outgoing infrared photons. The excited greenhouse molecules re-emit this thermal energy isotropically in all directions — both toward outer space and back toward the Earth's surface (**back-radiation**), effectively trapping heat within the troposphere.\n\n---\n\n#### 2.2 Taxonomy and Properties of Major Greenhouse Gases (GHGs)\n\n| Greenhouse Gas | Chemical Formula | Pre-Industrial Baseline | Contemporary Concentration | Atmospheric Lifetime | 100-Year Global Warming Potential (GWP) | Anthropogenic Primary Sources |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Carbon Dioxide** | $CO_2$ | $\\approx 280\\text{ ppm}$ | $> 420\\text{ ppm}$ | $100\\text{--}1,000\\text{ years}$ | **1** (Reference Standard) | Fossil fuel combustion, deforestation, cement manufacturing, flaring. |\n| **Methane** | $CH_4$ | $\\approx 722\\text{ ppb}$ | $> 1,900\\text{ ppb}$ | $\\approx 12\\text{ years}$ | **$28\\text{--}36$** | Enteric ruminant fermentation, anaerobic landfills, natural gas leakage, rice paddies. |\n| **Nitrous Oxide** | $N_2O$ | $\\approx 270\\text{ ppb}$ | $> 335\\text{ ppb}$ | $\\approx 114\\text{ years}$ | **$265\\text{--}298$** | Synthetic nitrogen fertilizers, chemical nylon synthesis, biomass combustion. |\n| **Water Vapor** | $H_2O$ | Variable | Increasing with warming | $9\\text{--}10\\text{ days}$ | Variable (Amplifier) | Natural oceanic evaporation; amplifies warming via positive thermal feedback loops. |\n| **Tropospheric Ozone** | $O_3$ | $\\approx 25\\text{ ppb}$ | $\\approx 38\\text{ ppb}$ | Weeks to months | $\\approx 1,000$ | Photochemical smog from vehicle $NO_x$ and volatile organic compound (VOC) emissions. |\n| **Chlorofluorocarbons** | $\\text{CFC-11, CFC-12}$ | $0\\text{ ppt}$ (Synthetic) | Trace (Regulated) | $50\\text{--}100\\text{ years}$ | **$4,000\\text{--}10,000+$** | Air conditioning refrigerants, aerosol spray propellants, foam blowing agents. |\n\n---\n\n#### 2.3 Global Warming: Systemic Environmental & Ecological Consequences\n**Global Warming** is the progressive, continuous rise in the average global surface and atmospheric temperatures of the Earth driven by the enhanced anthropogenic greenhouse effect.\n\n1. **Escalating Atmospheric & Oceanic Temperatures:** Induces frequent, severe, and prolonged heatwaves, altering global atmospheric pressure belts and disrupting human physiological comfort.\n2. **Thermal Expansion of Oceans & Glacial Melting:**\n   - As ocean water warms, thermal kinetic agitation increases the physical volume occupied by water molecules (**thermal expansion**).\n   - Simultaneously, high temperatures accelerate the melting of polar continental glaciers (Greenland and Antarctic ice sheets) and alpine ice packs, discharging billions of tonnes of meltwater into the global oceans.\n3. **Sea-Level Rise & Coastal Inundation:**\n   - The combined effect of thermal expansion and land-ice melt drives rapid sea-level rise ($approx 3.7\\text{ mm/year}$ and accelerating).\n   - Low-lying coastal settlements, coastal wetlands, and estuarine communities across West Africa (notably **Keta, Ada Foah, Axim, and Jamestown** in Ghana) suffer catastrophic coastal shoreline erosion, saltwater intrusion into freshwater aquifers, and destructive tidal surges.\n4. **Depletion of Freshwater Reservoirs:** Accelerated evaporation from reservoirs, lakes, and rivers causes severe shrinkage of freshwater storage basins, lowering groundwater recharge and threatening municipal water security.\n5. **Agricultural Disruption & Crop Failure:** Shifts in seasonal rainfall onsets, prolonged drought spells, and intense flash flooding disrupt traditional planting calendars. Heat stress stunts cereal crop germination (maize, sorghum, millet), accelerates evapotranspiration, and damages tropical agricultural outputs.\n6. **Accelerated Soil Degradation & Fertilizer Dependency:** Desiccated topsoils lose structural organic humus, forcing farmers to apply increasing quantities of synthetic chemical fertilizers to sustain crop yields, which exacerbates nitrogen runoff and aquatic eutrophication.\n7. **Severe Biodiversity Loss & Coral Bleaching:**\n   - Terrestrial plant and animal species fail to adapt or migrate fast enough to track changing temperature isotherms.\n   - In marine ecosystems, sustained ocean warming causes corals to expel their symbiotic photosynthetic zooxanthellae algae (**coral bleaching**), leading to the death of tropical coral reef ecosystems.\n8. **Human Population Displacement & Climate Refugees:** Coastal land loss, desertification of agricultural savannahs, and recurrent famine force rural populations to migrate into overcrowded urban centers, fueling resource competition and socio-economic stress.\n\n---\n\n#### 2.4 Stratospheric Ozone Layer Dynamics & Depletion Kinetics\n1. **Nature and Function of the Ozone Layer:**\n   - The ozone layer is a specialized band situated within the **stratosphere** (approximately $15\\text{ to }35\\text{ km}$ above the Earth's surface) characterized by elevated concentrations of triatomic ozone molecules ($O_3$).\n   - *Protective Shield:* It absorbs the vast majority of biologically lethal, high-energy solar **Ultraviolet-B (UV-B, $280\\text{--}315\\text{ nm}$)** and **Ultraviolet-C (UV-C, $100\\text{--}280\\text{ nm}$)** radiation, preventing dangerous ionizing radiation from penetrating the troposphere.\n2. **Mechanism of Stratospheric Ozone Depletion:**\n   - Ozone depletion is caused by the release of synthetic volatile halogenated hydrocarbons, predominantly **Chlorofluorocarbons (CFCs, e.g., $CFCl_3, CF_2Cl_2$)**, halons, and carbon tetrachloride, historically used in refrigeration compressors, air conditioners, and aerosol propellants.\n   - CFCs are chemically inert in the lower atmosphere, allowing them to diffuse intact across decades into the upper stratosphere.\n   - Upon encountering intense solar UV radiation, photolytic cleavage occurs, liberating free chlorine radicals ($Cl^\\bullet$):\n     $$CFCl_3 + h\\nu (\\text{UV}) \\rightarrow CFCl_2 + Cl^\\bullet$$\n   - The free chlorine radical acts as a catalytic destruction agent in a rapid chain reaction:\n     $$Cl^\\bullet + O_3 \\rightarrow ClO^\\bullet + O_2$$\n     $$ClO^\\bullet + O \\rightarrow Cl^\\bullet + O_2$$\n   - **Catalytic Potency:** A single chlorine free radical ($Cl^\\bullet$) continuously breaks down and destroys upwards of **100,000 ozone molecules ($O_3$)** before being bound into a stable reservoir species.\n3. **Biological & Environmental Impacts of Ozone Depletion:**\n   - *Human Health Hazards:* Increased UV-B radiation penetrates the biosphere, damaging cellular DNA and leading to high rates of cutaneous malignant melanoma (skin cancer), solar keratitis, cataracts in human eyes, and systemic immunosuppression.\n   - *Agricultural & Ecological Disruption:* High UV-B radiation suppresses photosynthesis, damages phytoplankton at the base of marine food webs, and disrupts beneficial soil microorganisms — specifically **nitrogen-fixing soil bacteria (*Rhizobium*, *Azotobacter*)**, sharply reducing biological nitrogen fixation and depressing agricultural crop yields.\n\n---\n\n### MODULE 3: Sustainable Clean Energy Technologies and Comparative Energy Analysis\n\n#### 3.1 Scientific Definition and Foundations of Sustainable Energy\n**Sustainable Clean Energy** is formally defined as:\n> **Energy derived from naturally replenished, non-depletable environmental resources that satisfies current operational industrial and residential power demands without exhausting finite planetary reserves, generating toxic environmental pollutants, or compromising the ecological and climatic stability of future generations.**\n\n---\n\n#### 3.2 Deep-Dive into the Six Primary Clean Energy Technologies\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLEAN ENERGY GENERATION TECHNOLOGIES</text><g transform=\"translate(30, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/><circle cx=\"107\" cy=\"45\" r=\"16\" fill=\"#facc15\"/><rect x=\"45\" y=\"80\" width=\"125\" height=\"60\" rx=\"4\" fill=\"#0284c7\" stroke=\"#0369a1\"/><line x1=\"85\" y1=\"80\" x2=\"85\" y2=\"140\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><line x1=\"130\" y1=\"80\" x2=\"130\" y2=\"140\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><line x1=\"45\" y1=\"110\" x2=\"170\" y2=\"110\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Solar Photovoltaic</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">Converts solar radiation</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">into direct electricity</text></g><g transform=\"translate(272, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><line x1=\"107\" y1=\"75\" x2=\"107\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"4\"/><circle cx=\"107\" cy=\"75\" r=\"6\" fill=\"#334155\"/><line x1=\"107\" y1=\"75\" x2=\"80\" y2=\"45\" stroke=\"#16a34a\" stroke-width=\"3\"/><line x1=\"107\" y1=\"75\" x2=\"135\" y2=\"45\" stroke=\"#16a34a\" stroke-width=\"3\"/><line x1=\"107\" y1=\"75\" x2=\"107\" y2=\"110\" stroke=\"#16a34a\" stroke-width=\"3\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Wind Turbine Farms</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">Kinetic wind motion</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">drives generator rotation</text></g><g transform=\"translate(515, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><path d=\"M 35 125 L 75 75 L 140 75 L 180 125 Z\" fill=\"#94a3b8\" stroke=\"#475569\"/><path d=\"M 75 75 Q 107 100 140 75 L 140 140 L 75 140 Z\" fill=\"#38bdf8\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Hydroelectric Power</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Akosombo Dam model:</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Falling water turns turbines</text></g></svg>\n</div>\n\n1. **Solar Energy (Photovoltaic and Solar-Thermal Systems):**\n   - *Operating Principle:* Photovoltaic (PV) cells exploit the quantum mechanical **photoelectric effect** within doped semiconductor silicon wafers. When solar photons with energy greater than the bandgap ($E = h\nu > E_g$) strike the silicon p-n junction, electrons are excited into the conduction band, generating a direct electrical current (DC).\n   - *Solar Thermal:* Concentrated solar collectors use parabolic mirrors to focus sunlight onto heat-transfer fluids, boiling water into high-pressure steam that drives electric turbogenerators.\n   - *Advantages:* Abundant, infinitely replenished resource, zero direct emissions during operational lifespan, and ideal for decentralized off-grid rural electrification (e.g., mini-grids in Northern Ghana).\n2. **Wind Energy (Aerodynamic Kinetic Conversion):**\n   - *Operating Principle:* Atmospheric kinetic energy is harnessed by wind turbines. Moving air currents exert aerodynamic lift across curved rotor blades, rotating a central low-speed shaft linked to a mechanical gearbox and electromagnetic generator to produce alternating current (AC) power.\n   - *Output Dynamics:* Power output is proportional to the cube of wind velocity ($P = \\frac{1}{2} \\rho A v^3$).\n   - *Advantages:* Completely emission-free operation, infinite asset lifespan, minimal water footprint, and compatible with dual agricultural land-use (onshore wind farming).\n3. **Hydroelectric Power (Gravitational Potential Harnessing):**\n   - *Operating Principle:* Harnesses the gravitational potential energy of water held behind dams at elevated heads ($E_p = mgh$). Controlled release through high-pressure penstocks directs water to hydraulic turbines (Francis, Kaplan, or Pelton), driving generators to produce high-capacity base-load electricity.\n   - *Ghanaian Keystone Application:* The **Akosombo Hydroelectric Dam** on the Volta River (commissioned in 1965, generating $1,020\\text{ MW}$) and the **Bui Hydroelectric Dam** on the Black Volta River ($400\\text{ MW}$) provide clean, renewable electricity to Ghana's national grid.\n4. **Geothermal Energy (Subterranean Hydrothermal Systems):**\n   - *Operating Principle:* Deep injection wells tap superheated steam and pressurized hot water reservoirs ($150^\\circ\\text{C}\\text{--}350^\\circ\\text{C}$) located within volcanically and tectonically active subterranean rock strata. The rising steam spins electric turbines before being condensed and reinjected into the aquifer.\n   - *Limitations:* Geographically restricted to continental rift zones (such as the East African Rift System) and plate boundaries.\n5. **Ocean, Tidal, and Wave Energy:**\n   - *Operating Principle:* Converts the kinetic energy of ocean surface swell waves into mechanical pressure via oscillating water columns or hydraulic rams, and harnesses lunar-solar gravitational ocean tides through tidal barrages and sub-sea current turbines.\n   - *Advantages:* Highly predictable energy generation with zero atmospheric emissions.\n6. **Biomass & Bioenergy (Biological Carbon Recycling):**\n   - *Operating Principle:* Derives usable thermal and electrical energy from organic biomass, including agricultural harvest residues, dedicated energy crops, and anaerobic digestion of livestock manure.\n   - *Anaerobic Biogas:* Biogas digesters employ methanogenic bacteria to ferment organic wastes into combustible biogas ($55\\text{--}70\\%\\text{ }CH_4, 30\\text{--}45\\%\\text{ }CO_2$), which is scrubbed and burned for smokeless cooking and electricity generation, turning biological waste into a clean energy asset.\n\n---\n\n#### 3.3 Comparative Analysis: Solar Clean Energy vs. Fossil Fuels\n\n| Comparative Parameter | Solar Clean Energy | Conventional Fossil Fuels (Coal, Petroleum, Gas) |\n| :--- | :--- | :--- |\n| **Resource Depletability** | **Renewable:** Infinitely replenished by solar thermonuclear fusion for the next 5 billion years. | **Non-Renewable:** Finite geological deposits formed over millions of years; rapidly depleting. |\n| **National Energy Security** | **Decentralized Independence:** Generates power locally from ambient sunshine, eliminating dependence on foreign oil imports. | **Geopolitical Vulnerability:** Heavily reliant on volatile international oil cartels, shipping routes, and pipelines. |\n| **Operational Atmospheric Emissions** | **Zero Direct Emissions:** Operates with zero release of $CO_2$, $CH_4$, sulfur oxides ($SO_x$), or nitrogen oxides ($NO_x$). | **Heavy Toxic Emissions:** Releases billions of tonnes of $CO_2$, particulate matter, toxic carbon monoxide, and acid rain precursors. |\n| **Operational & Fuel Costs** | **Zero Fuel Cost:** Free solar fuel; expenditures are limited to initial capital investment and routine panel cleaning. | **Perpetual Recurring Fuel Costs:** Continuous, unpredictable fuel purchase expenses subject to inflation. |\n| **Water Consumption** | Minimal water footprint (used exclusively for periodic surface dust cleaning). | Massive water volumes consumed for continuous cooling towers and boiler feed. |\n| **Public Health Impact** | Non-polluting; eliminates respiratory and cardiovascular illnesses linked to combustion smog. | Major cause of urban smog, asthma, chronic bronchitis, lung carcinomas, and premature mortality. |\n\n---\n\n#### 3.4 Strategic Imperatives for Sustainable Energy Adoption\n1. **Mitigating Anthropogenic Climate Breakdown:** Displacing fossil-fueled power plants with zero-carbon renewables is the single most effective intervention to halt greenhouse gas emissions and stabilize global temperatures below dangerous thresholds.\n2. **Infinite Asset Security:** Renewable technologies exploit inexhaustible natural cycles (sunlight, wind, and river runoff) that will never deplete, ensuring sustainable power for future generations.\n3. **Protecting Public Health:** Transitioning away from coal and heavy diesel power eliminates hazardous atmospheric particulate matter ($PM_{2.5}$ and $PM_{10}$), sulfur dioxide, and toxic ozone smog that trigger chronic respiratory and cardiovascular disorders.\n4. **Fostering National Economic Resilience:** Developing domestic renewable resources insulates emerging economies from foreign exchange shocks and international fuel price spikes.\n\n---\n\n### MODULE 4: The Green Economy, Climate Mitigation, and Environmental Sustainability\n\n#### 4.1 The Theoretical Framework of a Green Economy\nAccording to the United Nations Environment Programme (UNEP), a **Green Economy** is defined as:\n> **An economic development model that results in improved human well-being and social equity, while significantly reducing environmental risks and ecological scarcities. In its simplest expression, a green economy is low-carbon, resource-efficient, and socially inclusive.**\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE CORE PILLARS OF A GREEN ECONOMY</text><g transform=\"translate(30, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. Low Carbon Growth</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Shift to solar, wind &amp; hydro power</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Electric vehicles &amp; mass transit</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Energy efficiency (LEDs &amp; CFLs)</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Transition to LPG &amp; biogas fuels</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#dcfce7\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Climate Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#14532d\" text-anchor=\"middle\">Drastic reduction in net CO₂</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#14532d\" text-anchor=\"middle\">&amp; methane emissions</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">2. Resource Efficiency</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Circular 3Rs (Reduce, Reuse, Recycle)</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Industrial water recycling &amp; care</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Green building architecture</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Sustainable organic agroforestry</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Resource Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\" text-anchor=\"middle\">Decoupling GDP growth from</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\" text-anchor=\"middle\">raw virgin resource extraction</text></g><g transform=\"translate(510, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. Social Inclusivity</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#fef08a\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Local green enterprise support</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Public health protection from smog</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Climate equity for vulnerable groups</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Sustainable green job creation</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#fef9c3\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Societal Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">Equitable prosperity aligned</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">with ecological resilience</text></g></svg>\n</div>\n\nThe green economy framework rests on **three foundational pillars**:\n1. **Low-Carbon Growth:** Decarbonizing industrial manufacturing, energy grids, and transportation fleets to reduce net emissions of carbon dioxide and methane.\n2. **Resource Efficiency & Circularity:** Decoupling economic gross domestic product (GDP) growth from raw virgin material extraction through circular recycling, industrial water reclamation, and minimal waste generation.\n3. **Social Inclusivity & Climate Justice:** Ensuring the economic benefits of the green transition are distributed equitably, generating sustainable green jobs, safeguarding vulnerable agrarian communities, and protecting public health.\n\n---\n\n#### 4.2 Ten Actionable Green Economy Practices\nTo transition toward a sustainable green economy, societies must integrate actionable practices across industrial, agricultural, and domestic domains:\n\n1. **Deploying the Circular 3Rs (Reduce, Reuse, Recycle):** Minimizing raw material consumption, reusing functional containers, and sorting plastics, paper, metals, and glass for industrial recycling.\n2. **Scaling Renewable Energy Infrastructures:** Replacing fossil fuel generation plants with utility-scale and rooftop solar arrays, wind turbine farms, and decentralized mini-grids.\n3. **Water and Energy Conservation Protocols:** Installing low-flow plumbing fixtures, rainwater harvesting cisterns, fixing municipal distribution leaks, and turning off idle electrical appliances.\n4. **Adopting Sustainable Organic Agroforestry:** Integrating indigenous tree species with crop cultivation, utilizing organic bio-fertilizers, and minimizing synthetic agrochemical inputs to regenerate degraded topsoils and protect river basins.\n5. **Promoting Low-Carbon Eco-Friendly Transportation:** Investing in electric vehicles (EVs), expanding electric mass transit rail, dedicated urban bus rapid transit (BRT), carpooling, and safe bicycle corridors.\n6. **Eliminating Single-Use Packaging:** Banning non-biodegradable single-use thin carrier bags, promoting biodegradable packaging alternatives, and purchasing bulk goods.\n7. **Adopting Sustainable Green Building Architecture:** Designing modern residential and commercial buildings that utilize natural daylighting, bioclimatic cross-ventilation, rooftop solar panels, and low-embodied-energy local building materials.\n8. **Directing Capital into Green Technological R&D:** Establishing green venture funds and tax credits for startups engineering high-efficiency batteries, industrial biocatalysts, and clean fabrication systems.\n9. **Patronizing Local and Sustainable Businesses:** Supporting community enterprises that employ certified sustainable sourcing, fair-trade ethical labor, and zero-waste manufacturing.\n10. **Enforcing Environmental Legislation & Carbon Standards:** Supporting strict statutory regulations that enforce national emission caps, penalize illegal mining, mandate environmental impact assessments (EIAs), and establish protected forest reserves.\n\n---\n\n#### 4.3 High-Impact Climate Mitigation Actions\n**Climate Mitigation** entails deliberate human interventions to reduce anthropogenic greenhouse gas emissions or enhance the capacity of biological carbon sinks to remove $CO_2$ from the atmosphere.\n\n1. **Reforestation and Afforestation (Biological Carbon Sinks):**\n   - *Scientific Principle:* Terrestrial trees and woody vegetation function as living biological carbon sinks, absorbing atmospheric carbon dioxide via oxygenic photosynthesis:\n     $$6CO_2 + 6H_2O + h\nu \\xrightarrow{\\text{Chlorophyll}} C_6H_{12}O_6 + 6O_2$$\n   - *Afforestation:* Planting new forests on lands that historically have not contained trees.\n   - *Reforestation:* Replanting native tree species across deforested landscapes (e.g., the **Green Ghana Day** national tree-planting initiative).\n   - *Carbon Sequestration:* A single mature tropical tree can sequester upwards of $22\\text{ kg}$ of atmospheric $CO_2$ per year, locking carbon into cellulose and lignin plant biomass for centuries.\n2. **Energy Efficiency and Demand-Side Management:**\n   - Upgrading lighting infrastructures by replacing obsolete, inefficient incandescent tungsten filament bulbs (which convert $90\\%$ of consumed electrical energy into wasted heat) with **Light-Emitting Diodes (LEDs)** or Compact Fluorescent Lamps (CFLs), achieving an **$80\\text{--}85\\%$ reduction in power consumption** for identical lumen output.\n   - Enforcing mandatory national appliance energy-efficiency labeling (Ghana Energy Commission star-rating standards) on imported refrigerators, air conditioners, and electric motors.\n3. **Adopting Clean Modern Cooking Fuels:**\n   - Transitioning households away from burning traditional biomass (firewood and lump charcoal in inefficient cookstoves) to **Liquefied Petroleum Gas (LPG)**, electricity, or **anaerobic biogas digesters**.\n   - Halts unsustainable logging of tropical forests, eliminates destructive indoor smoke inhalation (preventing childhood pneumonia and chronic obstructive pulmonary disease), and drastically reduces black carbon emissions.\n\n---\n\n### MODULE 5: Quantitative Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Solar Photovoltaic Sizing and Carbon Abatement (Navrongo Solar Power Facility)\n\n**Problem Statement:**\nA rural educational complex near Navrongo in the Upper East Region of Ghana installs a rooftop grid-tied solar photovoltaic (PV) array with a total rated peak power capacity of $P_{\\text{peak}} = 10\\text{ kWp}$.\nThe regional meteorological station records an average daily solar insolation of $H = 5.5\\text{ peak sun hours (h/day)}$.\nDue to dust accumulation, ambient tropical heat, and inverter conversion losses, the solar system operates with an overall performance ratio of $PR = 0.78$ ($78\\%$).\n\n**(a)** Calculate the total electrical energy generated by the solar array in one year ($365\\text{ days}$), expressed in kilowatt-hours ($\\text{kWh}$).  \n**(b)** Prior to installing the solar panels, the school relied on a diesel fuel generator that emitted $0.85\\text{ kg of } CO_2$ for every $1\\text{ kWh}$ of electrical energy generated. Calculate the total mass of carbon dioxide ($CO_2$) emissions abated (prevented) per year by this solar installation, expressed in metric tonnes ($1\\text{ metric tonne} = 1,000\\text{ kg}$).\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Annual Electrical Energy Generated ($E_{\\text{annual}}$):**\n1. Determine the daily electrical energy output ($E_{\\text{daily}}$):\n   $$E_{\\text{daily}} = P_{\\text{peak}} \\times H \\times PR$$\n   $$E_{\\text{daily}} = 10\\text{ kWp} \\times 5.5\\text{ h/day} \\times 0.78$$\n   $$E_{\\text{daily}} = 42.9\\text{ kWh/day}$$\n\n2. Calculate the annual electrical output over 365 days:\n   $$E_{\\text{annual}} = E_{\\text{daily}} \\times 365\\text{ days}$$\n   $$E_{\\text{annual}} = 42.9\\text{ kWh/day} \\times 365\\text{ days} = 15,658.5\\text{ kWh/year}$$\n\n**(b) Mass of Carbon Dioxide Emissions Abated ($M_{CO_2}$):**\n1. Multiply the total electrical energy generated by the diesel emissions factor:\n   $$M_{CO_2\\text{ (kg)}} = E_{\\text{annual}} \\times \\text{Emission Factor}$$\n   $$M_{CO_2\\text{ (kg)}} = 15,658.5\\text{ kWh} \\times 0.85\\text{ kg } CO_2/\\text{kWh}$$\n   $$M_{CO_2\\text{ (kg)}} = 13,309.725\\text{ kg of } CO_2$$\n\n2. Convert the mass from kilograms to metric tonnes:\n   $$M_{CO_2\\text{ (tonnes)}} = \\frac{13,309.725\\text{ kg}}{1,000\\text{ kg/tonne}} \\approx 13.31\\text{ metric tonnes of } CO_2\\text{ per year}$$\n\n*Pedagogical Conclusion:* The $10\\text{ kWp}$ solar array prevents **$13.31\\text{ metric tonnes}$** of greenhouse gas emissions annually, while providing reliable, clean power to the educational community.\n\n---\n\n#### Worked Example 2: Landfill Methane Biogas Thermodynamics & Waste-to-Energy (Kumasi Oti Sanitary Landfill)\n\n**Problem Statement:**\nThe Kumasi Oti Landfill site receives $1,000\\text{ metric tonnes}$ ($1,000,000\\text{ kg}$) of municipal solid waste per week, of which $60\\%$ by mass is biodegradable organic matter.\nThrough anaerobic microbial methanogenesis within the compacted landfill cells, the decomposed organic waste produces biogenic methane ($CH_4$) at a yield of $0.08\\text{ m}^3$ of pure methane per kilogram of organic waste.\n- The volumetric energy density (calorific value) of pure methane is $36\\text{ MJ/m}^3$.\n- An on-site combined heat and power (CHP) gas generator converts this captured methane into electrical energy with an efficiency of $\\eta = 35\\%$ ($0.35$).\n- Note that $1\\text{ kilowatt-hour (kWh)} = 3.6\\text{ MJ}$.\n\n**(a)** Determine the total volume of pure methane gas ($CH_4$) generated per week from this organic waste mass.  \n**(b)** Calculate the total electrical energy output generated per week in kilowatt-hours ($\\text{kWh}$).  \n**(c)** If uncaptured, methane released into the atmosphere has a 100-year Global Warming Potential (GWP) of $28$ (meaning $1\\text{ kg}$ of $CH_4$ warms the atmosphere as much as $28\\text{ kg}$ of $CO_2$). Given the density of methane is $\\rho = 0.717\\text{ kg/m}^3$, calculate the equivalent carbon dioxide warming impact ($CO_{2\\text{-eq}}$) prevented per week by capturing and combusting this methane.\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Total Volume of Methane Generated ($V_{CH_4}$):**\n1. Calculate the mass of organic waste:\n   $$M_{\\text{organic}} = 1,000,000\\text{ kg} \\times 0.60 = 600,000\\text{ kg}$$\n\n2. Multiply by the methane yield coefficient:\n   $$V_{CH_4} = 600,000\\text{ kg} \\times 0.08\\text{ m}^3/\\text{kg} = 48,000\\text{ m}^3\\text{ of pure } CH_4$$\n\n**(b) Weekly Electrical Energy Output ($E_{\\text{elec}}$):**\n1. Compute the total chemical energy contained in the captured methane gas:\n   $$E_{\\text{chemical}} = V_{CH_4} \\times \\text{Calorific Value}$$\n   $$E_{\\text{chemical}} = 48,000\\text{ m}^3 \\times 36\\text{ MJ/m}^3 = 1,728,000\\text{ MJ}$$\n\n2. Apply the electrical conversion efficiency of $35\\%$ ($0.35$):\n   $$E_{\\text{thermal-to-elec}} = E_{\\text{chemical}} \\times 0.35 = 1,728,000\\text{ MJ} \\times 0.35 = 604,800\\text{ MJ}$$\n\n3. Convert megajoules to kilowatt-hours:\n   $$E_{\\text{elec}} = \\frac{604,800\\text{ MJ}}{3.6\\text{ MJ/kWh}} = 168,000\\text{ kWh/week}$$\n\n**(c) Equivalent Carbon Dioxide Warming Impact Prevented ($M_{CO_2\\text{-eq}}$):**\n1. Determine the physical mass of captured methane:\n   $$M_{CH_4\\text{ (kg)}} = V_{CH_4} \\times \\rho_{CH_4}$$\n   $$M_{CH_4\\text{ (kg)}} = 48,000\\text{ m}^3 \\times 0.717\\text{ kg/m}^3 = 34,416\\text{ kg of } CH_4$$\n\n2. Calculate the equivalent $CO_2$ mass prevented based on a GWP of 28:\n   $$M_{CO_2\\text{-eq}} = M_{CH_4} \\times \\text{GWP}$$\n   $$M_{CO_2\\text{-eq}} = 34,416\\text{ kg} \\times 28 = 963,648\\text{ kg of } CO_{2\\text{-eq}}$$\n   $$M_{CO_2\\text{-eq}} = \\frac{963,648\\text{ kg}}{1,000\\text{ kg/tonne}} \\approx 963.65\\text{ metric tonnes of } CO_{2\\text{-eq}}\\text{ per week}$$\n\n*Pedagogical Conclusion:* Capturing landfill gas transforms a potent climate hazard into **$168,000\\text{ kWh}$** of clean electricity weekly, while averting **$963.65\\text{ metric tonnes}$** of greenhouse warming impact.\n\n---\n\n#### Worked Example 3: Coastal Sea-Level Rise, Thermal Expansion & Inundation in Keta (Volta Delta Basin)\n\n**Problem Statement:**\nThe coastal town of Keta along the Gulf of Guinea is situated on a low-lying sandy spit vulnerable to rising sea levels.\nOceanographers model the upper mixed layer of the coastal ocean column off Keta to an effective depth of $h_0 = 250\\text{ m}$.\nDue to ongoing climate change, the average temperature of this ocean layer rises by $\\Delta T = 1.2^\\circ\\text{C}$.\n- The volumetric coefficient of thermal expansion for seawater at this temperature is $\\beta = 2.1 \\times 10^{-4}\\text{ }^\\circ\\text{C}^{-1}$.\n- The linear vertical expansion of the water column is calculated as:\n  $$\\Delta h = h_0 \\cdot \\beta \\cdot \\Delta T$$\n- The sandy beach along this coastline has an average topographic slope of $1:80$ (meaning every $1\\text{ cm}$ of vertical sea-level rise causes the shoreline to retreat horizontally inland by $80\\text{ cm}$, or $0.8\\text{ m}$).\n\n**(a)** Calculate the vertical sea-level rise ($\\Delta h$) caused solely by the thermal expansion of this $250\\text{ m}$ ocean column, expressed in centimeters ($\\text{cm}$).  \n**(b)** Using the beach slope ratio, determine the horizontal inland shoreline retreat (coastal erosion distance) in meters ($\\text{m}$).  \n**(c)** Explain two engineering or ecological interventions implemented under Ghana's coastal zone management framework to protect coastal settlements like Keta.\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Vertical Sea-Level Rise ($\\Delta h$):**\n1. Substitute the known physical parameters into the thermal expansion equation:\n   $$\\Delta h = 250\\text{ m} \\times (2.1 \\times 10^{-4}\\text{ }^\\circ\\text{C}^{-1}) \\times 1.2^\\circ\\text{C}$$\n   $$\\Delta h = 250 \\times 0.00021 \\times 1.2 = 0.063\\text{ m}$$\n\n2. Convert meters to centimeters:\n   $$\\Delta h = 0.063\\text{ m} \\times 100\\text{ cm/m} = 6.3\\text{ cm}$$\n\n**(b) Horizontal Shoreline Retreat ($D_{\\text{retreat}}$):**\n1. Apply the $1:80$ topographic beach slope relationship:\n   $$D_{\\text{retreat}} = \\Delta h\\text{ (cm)} \\times 80$$\n   $$D_{\\text{retreat}} = 6.3\\text{ cm} \\times 80 = 504\\text{ cm}$$\n\n2. Convert centimeters to meters:\n   $$D_{\\text{retreat}} = \\frac{504\\text{ cm}}{100\\text{ cm/m}} = 5.04\\text{ meters}$$\n\n**(c) Coastal Protection Interventions:**\n1. **Engineered Hard Defense Structures (Keta Sea Defense Project):** Constructing heavy granitic rock armor **groynes** perpendicular to the shoreline and offshore **breakwaters** to dissipate incoming wave kinetic energy, trap littoral longshore sand drift, and physically stabilize the beach berm.\n2. **Ecological Soft Defenses (Mangrove Reforestation & Dune Stabilization):** Planting indigenous red and black mangrove forests (*Rhizophora* and *Avicennia*) across the Keta Lagoon estuary and cultivating salt-tolerant creeping vegetation along sand dunes to bind the coastal soil matrix and absorb tidal surge energy naturally.\n\n---\n\n#### Worked Example 4: Energy Efficiency Transition & Household Economics in Accra\n\n**Problem Statement:**\nA domestic household in Dansoman, Accra, currently illuminates its rooms and compound using $10$ incandescent tungsten filament light bulbs, each rated at $60\\text{ W}$.\nThe bulbs operate for an average of $6\\text{ hours}$ each night ($365\\text{ days/year}$).\nThe family decides to replace all $10$ incandescent bulbs with energy-efficient **Light-Emitting Diode (LED)** bulbs, each providing equivalent brightness (lumens) while drawing only $9\\text{ W}$ of electrical power.\n- The Electricity Company of Ghana (ECG) domestic residential tariff is $\\text{GHS } 1.35\\text{ per kWh}$.\n- The carbon emission intensity factor of Ghana's national electricity grid (a mix of hydroelectricity, natural gas, and thermal plants) is $0.40\\text{ kg } CO_2\\text{ per kWh}$.\n\n**(a)** Calculate the total annual electrical energy consumed by the incandescent bulbs in kilowatt-hours ($\\text{kWh}$).  \n**(b)** Calculate the total annual electrical energy consumed by the replacement LED bulbs in kilowatt-hours ($\\text{kWh}$).  \n**(c)** Determine the total annual electricity cost savings achieved by the household in Ghana Cedis ($\\text{GHS}$).  \n**(d)** Calculate the net reduction in carbon dioxide ($CO_2$) emissions resulting from this lighting transition per year in kilograms ($\\text{kg}$).\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Annual Energy Consumption of Incandescent Bulbs ($E_{\\text{incandescent}}$):**\n1. Total wattage of 10 incandescent bulbs:\n   $$P_{\\text{incandescent}} = 10 \\times 60\\text{ W} = 600\\text{ W} = 0.60\\text{ kW}$$\n\n2. Annual operational hours:\n   $$T = 6\\text{ hours/day} \\times 365\\text{ days/year} = 2,190\\text{ hours/year}$$\n\n3. Total annual energy consumed:\n   $$E_{\\text{incandescent}} = 0.60\\text{ kW} \\times 2,190\\text{ hours} = 1,314.0\\text{ kWh/year}$$\n\n**(b) Annual Energy Consumption of LED Bulbs ($E_{\\text{LED}}$):**\n1. Total wattage of 10 LED bulbs:\n   $$P_{\\text{LED}} = 10 \\times 9\\text{ W} = 90\\text{ W} = 0.09\\text{ kW}$$\n\n2. Total annual energy consumed:\n   $$E_{\\text{LED}} = 0.09\\text{ kW} \\times 2,190\\text{ hours} = 197.1\\text{ kWh/year}$$\n\n**(c) Annual Financial Savings ($\\text{Savings}_{\\text{GHS}}$):**\n1. Calculate the net energy saved:\n   $$\\Delta E = E_{\\text{incandescent}} - E_{\\text{LED}}$$\n   $$\\Delta E = 1,314.0\\text{ kWh} - 197.1\\text{ kWh} = 1,116.9\\text{ kWh/year}$$\n   *(Percentage Energy Reduction: $\\frac{1,116.9}{1,314.0} \\times 100\\% = 85.0\\%$)*\n\n2. Multiply the saved kilowatt-hours by the tariff:\n   $$\\text{Savings}_{\\text{GHS}} = 1,116.9\\text{ kWh} \\times \\text{GHS } 1.35/\\text{kWh} = \\text{GHS } 1,507.815 \\approx \\text{GHS } 1,507.82\\text{ per year}$$\n\n**(d) Net Reduction in Carbon Dioxide Emissions ($\\Delta M_{CO_2}$):**\n1. Multiply the conserved electrical energy by the grid emission factor:\n   $$\\Delta M_{CO_2} = \\Delta E \\times 0.40\\text{ kg } CO_2/\\text{kWh}$$\n   $$\\Delta M_{CO_2} = 1,116.9\\text{ kWh} \\times 0.40\\text{ kg/kWh} = 446.76\\text{ kg of } CO_2\\text{ per year}$$\n\n*Pedagogical Conclusion:* Switching to LED lighting cuts domestic lighting power consumption by **$85\\%$**, saves the household **$\\text{GHS } 1,507.82$** annually on electricity bills, and prevents **$446.76\\text{ kg}$** of carbon emissions.\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s18_1",
-            "title": "Worked Example: The Electromagnetic Wavelength Shift in the Greenhouse Effect",
-            "problem": "Explain why greenhouse gases allow incoming solar radiation to reach Earth's surface but trap outgoing radiation attempting to escape into space.",
-            "steps": [
-              "Step 1: Incident solar radiation — The Sun is extremely hot (~5,500°C surface temperature) and emits shortwave electromagnetic radiation (visible light and UV). Greenhouse gases in Earth's atmosphere are transparent to short wavelengths, allowing solar rays to pass through directly and warm the Earth's surface.",
-              "Step 2: Terrestrial re-emission — The warmed Earth is much cooler (~15°C) and re-radiates thermal energy as longwave infrared radiation.",
-              "Step 3: Molecular absorption — Greenhouse gas molecules (CO2, CH4, H2O vapor) possess molecular bond vibrational frequencies that resonate with and absorb longwave infrared photons, re-radiating heat back down toward Earth and preventing its escape into deep space."
-            ],
-            "finalAnswer": "Examiner Tip: Highlight the physical difference: incoming radiation is shortwave (passes through); outgoing terrestrial radiation is longwave infrared (absorbed)."
+            "id": "WE_B7_CC_01",
+            "title": "Worked Example 1: Solar Photovoltaic Sizing and Carbon Abatement (Navrongo Solar Power Facility)",
+            "problem": "A rural educational complex near Navrongo installs a 10 kWp grid-tied solar photovoltaic array. The regional daily solar insolation averages 5.5 peak sun hours (h/day), and the system operates with an overall performance ratio of PR = 0.78 (78%). (a) Calculate the total annual electrical energy generated (kWh/year). (b) If this replaces a diesel generator emitting 0.85 kg CO2/kWh, calculate the mass of CO2 abated annually in metric tonnes.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_CC_02",
+            "title": "Worked Example 2: Landfill Methane Biogas Thermodynamics & Waste-to-Energy (Kumasi Oti Sanitary Landfill)",
+            "problem": "The Kumasi Oti Landfill receives 1,000 metric tonnes (1,000,000 kg) of municipal waste weekly, of which 60% is biodegradable organic matter yielding 0.08 m^3 of pure methane per kg. Methane has a calorific value of 36 MJ/m^3 and an electrical generation efficiency of 35% (1 kWh = 3.6 MJ). Density of CH4 = 0.717 kg/m^3; GWP = 28. (a) Find the weekly volume of methane generated (m^3). (b) Determine weekly electrical output (kWh). (c) Calculate the equivalent CO2 warming impact (CO2-eq) prevented per week.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_CC_03",
+            "title": "Worked Example 3: Coastal Sea-Level Rise, Thermal Expansion & Inundation in Keta (Volta Delta Basin)",
+            "problem": "The upper ocean column off Keta has an effective depth of h0 = 250 m and warms by ΔT = 1.2°C. The volumetric thermal expansion coefficient of seawater is β = 2.1 * 10^-4 °C^-1 (Δh = h0 * β * ΔT). The sandy beach has a topographic slope of 1:80 (1 cm vertical rise causes 80 cm horizontal inland retreat). (a) Calculate vertical sea-level rise (Δh in cm). (b) Determine horizontal inland retreat (meters). (c) State two coastal defense interventions.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_CC_04",
+            "title": "Worked Example 4: Energy Efficiency Transition & Household Economics in Accra",
+            "problem": "A household in Dansoman, Accra, uses 10 incandescent 60 W bulbs operating 6 hours daily (365 days/year). They replace them with 10 LED bulbs drawing 9 W each. Tariff = GHS 1.35 per kWh; national grid emission factor = 0.40 kg CO2/kWh. (a) Calculate annual kWh consumed by incandescent bulbs. (b) Calculate annual kWh consumed by LED bulbs. (c) Determine annual financial savings in GHS. (d) Calculate annual CO2 reduction in kg.",
+            "steps": [],
+            "finalAnswer": ""
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s18_1",
+              "id": "B7_CC_F01",
               "difficulty": "low",
-              "prompt": "Which atmospheric gas accounts for the largest proportion of human-induced enhanced greenhouse warming?",
+              "prompt": "What is weather defined as in meteorological science?",
               "options": [
-                "Nitrogen (N2)",
-                "Carbon dioxide (CO2)",
-                "Oxygen (O2)",
-                "Argon (Ar)"
+                "A. The long-term condition of the atmosphere over 30 years",
+                "B. The condition of the atmosphere over a short period of time describing hotness, coldness, or rain",
+                "C. The gravitational pull of the moon on ocean tides",
+                "D. The movement of tectonic plates inside the Earth"
               ],
-              "correctAnswer": "Carbon dioxide (CO2)",
-              "hint": "Emitted from burning fossil fuels like coal, petrol, and diesel.",
-              "workedSolution": "Carbon dioxide is the principal anthropogenic greenhouse gas driving enhanced global warming, emitted in massive volumes from fossil fuel combustion and deforestation.",
+              "correctAnswer": "B. The condition of the atmosphere over a short period of time describing hotness, coldness, or rain",
+              "hint": "Weather describes the short-term condition of the atmosphere regarding temperature, wetness, cloudiness, and calm or stormy skies.",
+              "workedSolution": "Weather describes the short-term condition of the atmosphere regarding temperature, wetness, cloudiness, and calm or stormy skies.",
               "points": 1,
-              "learningCompetency": "B7.5.4.1",
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F02",
+              "difficulty": "low",
+              "prompt": "What is climate?",
+              "options": [
+                "A. Daily rainfall changes over 24 hours",
+                "B. The condition of the atmosphere at a particular location over a long period of time",
+                "C. The speed at which clouds move across the sky",
+                "D. The temperature of ocean water on a single morning"
+              ],
+              "correctAnswer": "B. The condition of the atmosphere at a particular location over a long period of time",
+              "hint": "Climate is the long-term pattern and average variation of atmospheric elements recorded over an extended period.",
+              "workedSolution": "Climate is the long-term pattern and average variation of atmospheric elements recorded over an extended period.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F03",
+              "difficulty": "low",
+              "prompt": "Significant long-term alterations in global or regional weather patterns caused by human and natural activities are called:",
+              "options": [
+                "A. Seasonal drift",
+                "B. Climate change",
+                "C. Tidal shift",
+                "D. Cloud seeding"
+              ],
+              "correctAnswer": "B. Climate change",
+              "hint": "Climate change refers to persistent, long-term changes in average weather patterns and temperatures across regions or the planet.",
+              "workedSolution": "Climate change refers to persistent, long-term changes in average weather patterns and temperatures across regions or the planet.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F04",
+              "difficulty": "low",
+              "prompt": "Which of the following is a major human activity driving modern climate change?",
+              "options": [
+                "A. Burning fossil fuels (coal, oil, and natural gas)",
+                "B. Planting trees in community school gardens",
+                "C. Walking to school rather than driving cars",
+                "D. Generating clean electricity with solar panels"
+              ],
+              "correctAnswer": "A. Burning fossil fuels (coal, oil, and natural gas)",
+              "hint": "Burning fossil fuels releases massive amounts of heat-trapping carbon dioxide into the atmosphere.",
+              "workedSolution": "Burning fossil fuels releases massive amounts of heat-trapping carbon dioxide into the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F05",
+              "difficulty": "low",
+              "prompt": "How does deforestation contribute to the increase of carbon dioxide in the atmosphere?",
+              "options": [
+                "A. Trees produce carbon dioxide during photosynthesis",
+                "B. Clearing forests removes natural carbon sinks that absorb CO2, releasing stored carbon into the air",
+                "C. Cutting down trees adds cold water to rivers",
+                "D. Fallen logs turn directly into ozone gas"
+              ],
+              "correctAnswer": "B. Clearing forests removes natural carbon sinks that absorb CO2, releasing stored carbon into the air",
+              "hint": "Trees take in carbon dioxide during photosynthesis; destroying forests eliminates this absorption and releases stored carbon.",
+              "workedSolution": "Trees take in carbon dioxide during photosynthesis; destroying forests eliminates this absorption and releases stored carbon.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F06",
+              "difficulty": "low",
+              "prompt": "Which human activity releases large quantities of methane (CH4) gas into the atmosphere?",
+              "options": [
+                "A. Ruminant livestock farming (cattle rearing) and burying garbage in landfills",
+                "B. Catching fish with nylon nets in oceans",
+                "C. Pumping water from deep boreholes",
+                "D. Installing solar street lights"
+              ],
+              "correctAnswer": "A. Ruminant livestock farming (cattle rearing) and burying garbage in landfills",
+              "hint": "Methane is produced when organic garbage decays in landfills and from enteric fermentation in cattle.",
+              "workedSolution": "Methane is produced when organic garbage decays in landfills and from enteric fermentation in cattle.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F07",
+              "difficulty": "low",
+              "prompt": "Which of the following natural factors influences regional and global climate patterns?",
+              "options": [
+                "A. Periodic volcanic eruptions that eject ash and gases into the atmosphere",
+                "B. Building concrete houses in towns",
+                "C. Digging agricultural drainage gutters",
+                "D. Paving footpaths in school compounds"
+              ],
+              "correctAnswer": "A. Periodic volcanic eruptions that eject ash and gases into the atmosphere",
+              "hint": "Volcanic eruptions release large quantities of gases and dust particles that can block sunlight and influence global climate.",
+              "workedSolution": "Volcanic eruptions release large quantities of gases and dust particles that can block sunlight and influence global climate.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F08",
+              "difficulty": "low",
+              "prompt": "What is the primary cause of uneven solar heating across the Earth's surface?",
+              "options": [
+                "A. The Earth is a curved sphere where the equator receives more perpendicular rays than the poles",
+                "B. The Sun only shines on Africa",
+                "C. Oceans do not receive sunlight",
+                "D. Clouds only form over deserts"
+              ],
+              "correctAnswer": "A. The Earth is a curved sphere where the equator receives more perpendicular rays than the poles",
+              "hint": "Because of Earth's spherical curvature, the sun's rays strike the equator directly, heating it more intensely than the poles.",
+              "workedSolution": "Because of Earth's spherical curvature, the sun's rays strike the equator directly, heating it more intensely than the poles.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F09",
+              "difficulty": "low",
+              "prompt": "Why do landmasses and ocean bodies heat up and cool down at different rates?",
+              "options": [
+                "A. Water has a higher specific heat capacity than land, meaning water heats up and cools down much slower than land",
+                "B. Land is transparent to solar light",
+                "C. Ocean water generates its own heat",
+                "D. Land surfaces absorb zero solar radiation"
+              ],
+              "correctAnswer": "A. Water has a higher specific heat capacity than land, meaning water heats up and cools down much slower than land",
+              "hint": "Land and water absorb and release heat at different rates, leading to coastal temperature differences and wind patterns.",
+              "workedSolution": "Land and water absorb and release heat at different rates, leading to coastal temperature differences and wind patterns.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F10",
+              "difficulty": "low",
+              "prompt": "What is global warming defined as?",
+              "options": [
+                "A. An increase in the average global atmospheric temperature of the Earth",
+                "B. The seasonal arrival of harmattan winds",
+                "C. A temporary rise in soil temperature at noon",
+                "D. The warming of water inside an electric kettle"
+              ],
+              "correctAnswer": "A. An increase in the average global atmospheric temperature of the Earth",
+              "hint": "Global warming is the persistent increase in average global temperatures caused by accumulating greenhouse gases.",
+              "workedSolution": "Global warming is the persistent increase in average global temperatures caused by accumulating greenhouse gases.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F11",
+              "difficulty": "low",
+              "prompt": "What natural atmospheric phenomenon traps heat on Earth, keeping it warm enough to sustain biological life?",
+              "options": [
+                "A. The greenhouse effect",
+                "B. The Coriolis effect",
+                "C. Thermal inversion",
+                "D. Magnetic deflection"
+              ],
+              "correctAnswer": "A. The greenhouse effect",
+              "hint": "The greenhouse effect is the natural trapping of infrared heat radiation by atmospheric gases to keep Earth warm.",
+              "workedSolution": "The greenhouse effect is the natural trapping of infrared heat radiation by atmospheric gases to keep Earth warm.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F12",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a greenhouse gas?",
+              "options": [
+                "A. Carbon dioxide (CO2)",
+                "B. Pure Argon",
+                "C. Helium",
+                "D. Pure Hydrogen"
+              ],
+              "correctAnswer": "A. Carbon dioxide (CO2)",
+              "hint": "Carbon dioxide, methane, nitrous oxide, and water vapor are primary greenhouse gases that trap heat in the atmosphere.",
+              "workedSolution": "Carbon dioxide, methane, nitrous oxide, and water vapor are primary greenhouse gases that trap heat in the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F13",
+              "difficulty": "low",
+              "prompt": "Which gas is considered the single largest contributor to human-induced global warming?",
+              "options": [
+                "A. Carbon dioxide (CO2)",
+                "B. Oxygen",
+                "C. Nitrogen",
+                "D. Neon"
+              ],
+              "correctAnswer": "A. Carbon dioxide (CO2)",
+              "hint": "Carbon dioxide emitted from burning fossil fuels is the most prominent anthropogenic greenhouse gas.",
+              "workedSolution": "Carbon dioxide emitted from burning fossil fuels is the most prominent anthropogenic greenhouse gas.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F14",
+              "difficulty": "low",
+              "prompt": "Which greenhouse gas is added in large volumes to the atmosphere as atmospheric temperatures rise and oceanic evaporation increases?",
+              "options": [
+                "A. Water vapor",
+                "B. Liquid nitrogen",
+                "C. Argon gas",
+                "D. Chlorine gas"
+              ],
+              "correctAnswer": "A. Water vapor",
+              "hint": "As temperatures rise, evaporation from water bodies increases, adding more water vapor to the atmosphere.",
+              "workedSolution": "As temperatures rise, evaporation from water bodies increases, adding more water vapor to the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F15",
+              "difficulty": "low",
+              "prompt": "What primary effect does global warming have on polar ice caps and glaciers?",
+              "options": [
+                "A. It causes them to freeze harder into stone",
+                "B. It causes icebergs and glaciers to melt rapidly",
+                "C. It turns ice into snow crystals",
+                "D. It lifts ice into the stratosphere"
+              ],
+              "correctAnswer": "B. It causes icebergs and glaciers to melt rapidly",
+              "hint": "Elevated global temperatures cause icebergs and polar ice sheets to melt, contributing to rising sea levels.",
+              "workedSolution": "Elevated global temperatures cause icebergs and polar ice sheets to melt, contributing to rising sea levels.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F16",
+              "difficulty": "low",
+              "prompt": "How does the melting of continental ice caps affect coastal communities in Ghana?",
+              "options": [
+                "A. It leads to sea-level rise and coastal submersion or flooding",
+                "B. It dries up the ocean completely",
+                "C. It stops ocean tides from moving",
+                "D. It cools the ocean into ice"
+              ],
+              "correctAnswer": "A. It leads to sea-level rise and coastal submersion or flooding",
+              "hint": "Melting land ice and thermal expansion of seawater cause sea levels to rise, submerging and eroding low-lying coastal areas.",
+              "workedSolution": "Melting land ice and thermal expansion of seawater cause sea levels to rise, submerging and eroding low-lying coastal areas.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F17",
+              "difficulty": "low",
+              "prompt": "What is the ozone layer?",
+              "options": [
+                "A. A blanket of smog over industrial cities",
+                "B. A region of the upper stratosphere containing a higher concentration of ozone molecules that absorbs harmful UV rays",
+                "C. A layer of plastic waste floating in oceans",
+                "D. A cloud of carbon monoxide produced by cars"
+              ],
+              "correctAnswer": "B. A region of the upper stratosphere containing a higher concentration of ozone molecules that absorbs harmful UV rays",
+              "hint": "The ozone layer is a stratospheric region rich in ozone molecules that absorbs harmful ultraviolet (UV) radiation from the Sun.",
+              "workedSolution": "The ozone layer is a stratospheric region rich in ozone molecules that absorbs harmful ultraviolet (UV) radiation from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F18",
+              "difficulty": "low",
+              "prompt": "What is the chemical formula of an ozone molecule?",
+              "options": [
+                "A. O2",
+                "B. O3",
+                "C. CO2",
+                "D. H2O"
+              ],
+              "correctAnswer": "B. O3",
+              "hint": "Ozone is a triatomic molecule made of three oxygen atoms bonded together (O3).",
+              "workedSolution": "Ozone is a triatomic molecule made of three oxygen atoms bonded together (O3).",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F19",
+              "difficulty": "low",
+              "prompt": "What is the primary class of synthetic chemicals responsible for the depletion of the stratospheric ozone layer?",
+              "options": [
+                "A. Chlorofluorocarbons (CFCs)",
+                "B. Pure water vapor",
+                "C. Table salt",
+                "D. Nitrogen gas"
+              ],
+              "correctAnswer": "A. Chlorofluorocarbons (CFCs)",
+              "hint": "Chlorofluorocarbons (CFCs) used in old cooling systems and aerosol propellants are the main agents of ozone destruction.",
+              "workedSolution": "Chlorofluorocarbons (CFCs) used in old cooling systems and aerosol propellants are the main agents of ozone destruction.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F20",
+              "difficulty": "low",
+              "prompt": "Which severe human health condition is directly caused by increased exposure to solar ultraviolet (UV) rays penetrating depleted ozone?",
+              "options": [
+                "A. Skin cancer",
+                "B. Kwashiorkor",
+                "C. Goitre",
+                "D. Rickets"
+              ],
+              "correctAnswer": "A. Skin cancer",
+              "hint": "Excess UV radiation penetrating through thinned ozone damages skin cellular DNA, triggering skin cancer and burns.",
+              "workedSolution": "Excess UV radiation penetrating through thinned ozone damages skin cellular DNA, triggering skin cancer and burns.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F21",
+              "difficulty": "low",
+              "prompt": "How does excessive ultraviolet (UV) radiation penetrating the ozone layer harm agricultural crops?",
+              "options": [
+                "A. It makes crops grow three times faster",
+                "B. It damages soil microorganisms that help absorb and fix nitrogen, reducing food crop yield",
+                "C. It turns crops into sugar",
+                "D. It eliminates all crop pests"
+              ],
+              "correctAnswer": "B. It damages soil microorganisms that help absorb and fix nitrogen, reducing food crop yield",
+              "hint": "UV radiation damages beneficial soil bacteria that fix nitrogen, impairing plant nutrition and reducing harvest yields.",
+              "workedSolution": "UV radiation damages beneficial soil bacteria that fix nitrogen, impairing plant nutrition and reducing harvest yields.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F22",
+              "difficulty": "low",
+              "prompt": "What are sustainable energy choices?",
+              "options": [
+                "A. Energy derived from resources that can maintain operations without endangering future energy needs or the climate",
+                "B. Energy produced exclusively by burning coal",
+                "C. Energy that pollutes rivers",
+                "D. Using only non-renewable crude petroleum"
+              ],
+              "correctAnswer": "A. Energy derived from resources that can maintain operations without endangering future energy needs or the climate",
+              "hint": "Sustainable energy choices meet current energy demands without depleting finite resources or harming the environment.",
+              "workedSolution": "Sustainable energy choices meet current energy demands without depleting finite resources or harming the environment.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F23",
+              "difficulty": "low",
+              "prompt": "Which of the following is categorized as a renewable sustainable energy source?",
+              "options": [
+                "A. Solar energy",
+                "B. Diesel fuel",
+                "C. Anthracite coal",
+                "D. Kerosene"
+              ],
+              "correctAnswer": "A. Solar energy",
+              "hint": "Solar energy is naturally replenished and sustainable, unlike finite fossil fuels.",
+              "workedSolution": "Solar energy is naturally replenished and sustainable, unlike finite fossil fuels.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F24",
+              "difficulty": "low",
+              "prompt": "What device is used to convert sunlight directly into electricity?",
+              "options": [
+                "A. Solar photovoltaic (PV) cell or panel",
+                "B. Diesel generator",
+                "C. Kerosene stove",
+                "D. Incandescent light bulb"
+              ],
+              "correctAnswer": "A. Solar photovoltaic (PV) cell or panel",
+              "hint": "Solar photovoltaic (PV) systems capture radiant sunlight and convert it directly into electrical current.",
+              "workedSolution": "Solar photovoltaic (PV) systems capture radiant sunlight and convert it directly into electrical current.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F25",
+              "difficulty": "low",
+              "prompt": "Which renewable energy technology captures the kinetic energy of moving air to spin electric generators?",
+              "options": [
+                "A. Wind turbines",
+                "B. Solar water heaters",
+                "C. Coal boilers",
+                "D. Hand fans"
+              ],
+              "correctAnswer": "A. Wind turbines",
+              "hint": "Wind turbines capture the kinetic energy of blowing wind and convert it into electrical power.",
+              "workedSolution": "Wind turbines capture the kinetic energy of blowing wind and convert it into electrical power.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F26",
+              "difficulty": "low",
+              "prompt": "What clean energy technology captures the natural thermal heat coming from deep inside the Earth?",
+              "options": [
+                "A. Geothermal energy",
+                "B. Biomass power",
+                "C. Hydroelectric power",
+                "D. Solar photovoltaic"
+              ],
+              "correctAnswer": "A. Geothermal energy",
+              "hint": "Geothermal energy extracts steam and hot water from beneath the Earth's crust to generate electricity.",
+              "workedSolution": "Geothermal energy extracts steam and hot water from beneath the Earth's crust to generate electricity.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F27",
+              "difficulty": "low",
+              "prompt": "Hydroelectric power stations generate electricity by capturing the energy of:",
+              "options": [
+                "A. Moving or falling water from rivers and dams",
+                "B. Burning plastic waste",
+                "C. Splitting atoms in reactors",
+                "D. Solar flares"
+              ],
+              "correctAnswer": "A. Moving or falling water from rivers and dams",
+              "hint": "Hydroelectric power plants harness flowing or falling river water to spin hydraulic turbines and drive generators.",
+              "workedSolution": "Hydroelectric power plants harness flowing or falling river water to spin hydraulic turbines and drive generators.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F28",
+              "difficulty": "low",
+              "prompt": "Which major hydroelectric power facility supplies a significant portion of Ghana's national electricity?",
+              "options": [
+                "A. The Akosombo Dam",
+                "B. Hoover Dam",
+                "C. Kariba Dam",
+                "D. Aswan Dam"
+              ],
+              "correctAnswer": "A. The Akosombo Dam",
+              "hint": "The Akosombo Dam on the Volta River is Ghana's primary hydroelectric installation.",
+              "workedSolution": "The Akosombo Dam on the Volta River is Ghana's primary hydroelectric installation.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F29",
+              "difficulty": "low",
+              "prompt": "Renewable energy derived from organic matter such as wood, plant residues, and animal dung is termed:",
+              "options": [
+                "A. Biomass energy (bioenergy)",
+                "B. Geothermal power",
+                "C. Tidal power",
+                "D. Nuclear power"
+              ],
+              "correctAnswer": "A. Biomass energy (bioenergy)",
+              "hint": "Biomass energy is derived from organic plant and animal matter, including wood, crop residues, and dung.",
+              "workedSolution": "Biomass energy is derived from organic plant and animal matter, including wood, crop residues, and dung.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F30",
+              "difficulty": "low",
+              "prompt": "What major environmental advantage does solar energy have over fossil fuels?",
+              "options": [
+                "A. Solar power generates electricity without releasing greenhouse gases or air pollution",
+                "B. Solar power works only at night",
+                "C. Solar power uses coal as a backup fuel",
+                "D. Solar energy causes severe smog in cities"
+              ],
+              "correctAnswer": "A. Solar power generates electricity without releasing greenhouse gases or air pollution",
+              "hint": "Solar energy generation produces zero greenhouse gas emissions, protecting air quality and public health.",
+              "workedSolution": "Solar energy generation produces zero greenhouse gas emissions, protecting air quality and public health.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F31",
+              "difficulty": "low",
+              "prompt": "Why is solar energy considered an energy-independent power choice?",
+              "options": [
+                "A. Sunlight is free and available locally, reducing reliance on imported foreign fuels",
+                "B. Solar panels can only be manufactured in one country",
+                "C. Solar energy requires fuel pipelines",
+                "D. Solar energy uses gasoline every week"
+              ],
+              "correctAnswer": "A. Sunlight is free and available locally, reducing reliance on imported foreign fuels",
+              "hint": "Solar power harnesses local sunlight, making users independent of volatile international fossil fuel supplies.",
+              "workedSolution": "Solar power harnesses local sunlight, making users independent of volatile international fossil fuel supplies.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F32",
+              "difficulty": "low",
+              "prompt": "What respiratory health hazard is caused by inhaling smog generated from burning fossil fuels?",
+              "options": [
+                "A. Lung irritation and aggravated respiratory diseases",
+                "B. Stronger tooth enamel",
+                "C. Improved athletic endurance",
+                "D. Faster hair growth"
+              ],
+              "correctAnswer": "A. Lung irritation and aggravated respiratory diseases",
+              "hint": "Combustion smog and particulate matter irritate lung tissue, triggering asthma and chronic respiratory illnesses.",
+              "workedSolution": "Combustion smog and particulate matter irritate lung tissue, triggering asthma and chronic respiratory illnesses.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F33",
+              "difficulty": "low",
+              "prompt": "What is a green economy defined as?",
+              "options": [
+                "A. An economy that reduces environmental risks and ecological scarcities while promoting sustainable development",
+                "B. An economy where all paper money is printed in green ink",
+                "C. An economy based only on cutting down trees",
+                "D. An economy that prohibits all agricultural trade"
+              ],
+              "correctAnswer": "A. An economy that reduces environmental risks and ecological scarcities while promoting sustainable development",
+              "hint": "A green economy is low-carbon, resource-efficient, and socially inclusive, balancing growth with environmental safety.",
+              "workedSolution": "A green economy is low-carbon, resource-efficient, and socially inclusive, balancing growth with environmental safety.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F34",
+              "difficulty": "low",
+              "prompt": "Which of the following is a primary characteristic of a green economy?",
+              "options": [
+                "A. Low carbon emissions, resource efficiency, and social inclusivity",
+                "B. High fossil fuel consumption and open deforestation",
+                "C. Maximizing toxic waste generation",
+                "D. Relying strictly on diesel trucks"
+              ],
+              "correctAnswer": "A. Low carbon emissions, resource efficiency, and social inclusivity",
+              "hint": "A green economy prioritizes low greenhouse emissions, efficient resource utilization, and inclusive prosperity.",
+              "workedSolution": "A green economy prioritizes low greenhouse emissions, efficient resource utilization, and inclusive prosperity.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F35",
+              "difficulty": "low",
+              "prompt": "Which actionable practice supports the transition to a green economy in our communities?",
+              "options": [
+                "A. Reduce, reuse, and recycle materials",
+                "B. Burn plastic waste in street gutters",
+                "C. Leave electrical lights on all day",
+                "D. Throw food scraps into rivers"
+              ],
+              "correctAnswer": "A. Reduce, reuse, and recycle materials",
+              "hint": "The circular practice of reducing, reusing, and recycling is a core pillar of a resource-efficient green economy.",
+              "workedSolution": "The circular practice of reducing, reusing, and recycling is a core pillar of a resource-efficient green economy.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F36",
+              "difficulty": "low",
+              "prompt": "How does using public transportation or carpooling help protect the climate?",
+              "options": [
+                "A. It reduces the number of vehicles on the road, lowering overall exhaust emissions and fuel consumption",
+                "B. It makes cars travel twice as fast",
+                "C. It converts gasoline into water vapor",
+                "D. It eliminates road maintenance"
+              ],
+              "correctAnswer": "A. It reduces the number of vehicles on the road, lowering overall exhaust emissions and fuel consumption",
+              "hint": "Shared and public transport lowers per-capita fossil fuel consumption, reducing vehicle greenhouse gas emissions.",
+              "workedSolution": "Shared and public transport lowers per-capita fossil fuel consumption, reducing vehicle greenhouse gas emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F37",
+              "difficulty": "low",
+              "prompt": "What is reforestation?",
+              "options": [
+                "A. Planting trees on deforested land where a forest previously existed",
+                "B. Cutting down all trees to build shopping centers",
+                "C. Burning bush for cattle grazing",
+                "D. Paving land with asphalt"
+              ],
+              "correctAnswer": "A. Planting trees on deforested land where a forest previously existed",
+              "hint": "Reforestation is the ecological process of replanting trees on deforested or degraded forest land.",
+              "workedSolution": "Reforestation is the ecological process of replanting trees on deforested or degraded forest land.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F38",
+              "difficulty": "low",
+              "prompt": "What is afforestation?",
+              "options": [
+                "A. Establishing a new forest by planting trees on land that was not previously forested",
+                "B. Felling trees for commercial timber export",
+                "C. Clearing vegetation for surface mining",
+                "D. Removing sand from riverbanks"
+              ],
+              "correctAnswer": "A. Establishing a new forest by planting trees on land that was not previously forested",
+              "hint": "Afforestation involves creating new forests on previously non-forested land, expanding natural carbon sinks.",
+              "workedSolution": "Afforestation involves creating new forests on previously non-forested land, expanding natural carbon sinks.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F39",
+              "difficulty": "low",
+              "prompt": "How do tree planting initiatives help mitigate the greenhouse effect?",
+              "options": [
+                "A. Trees act as natural carbon sinks, absorbing carbon dioxide from the air during photosynthesis",
+                "B. Trees produce fossil fuel reserves",
+                "C. Trees block sunlight from reaching the Earth",
+                "D. Trees stop all rainfall"
+              ],
+              "correctAnswer": "A. Trees act as natural carbon sinks, absorbing carbon dioxide from the air during photosynthesis",
+              "hint": "Trees absorb atmospheric CO2 through photosynthetic respiration, storing carbon in their trunks, leaves, and roots.",
+              "workedSolution": "Trees absorb atmospheric CO2 through photosynthetic respiration, storing carbon in their trunks, leaves, and roots.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F40",
+              "difficulty": "low",
+              "prompt": "Which of the following household actions directly conserves electrical energy and reduces emissions?",
+              "options": [
+                "A. Replacing incandescent light bulbs with compact fluorescent lamps (CFLs) or LEDs",
+                "B. Leaving television sets running overnight",
+                "C. Using old, inefficient air conditioners with open windows",
+                "D. Ironing clothes with diesel-heated irons"
+              ],
+              "correctAnswer": "A. Replacing incandescent light bulbs with compact fluorescent lamps (CFLs) or LEDs",
+              "hint": "Energy-efficient compact fluorescent and LED bulbs consume significantly less electricity, reducing generation demands.",
+              "workedSolution": "Energy-efficient compact fluorescent and LED bulbs consume significantly less electricity, reducing generation demands.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F41",
+              "difficulty": "low",
+              "prompt": "Why is switching from firewood to liquefied petroleum gas (LPG) beneficial for the environment?",
+              "options": [
+                "A. It reduces tree cutting and lowers household smoke and soot pollution",
+                "B. LPG produces zero heat",
+                "C. Firewood is a non-renewable fossil mineral",
+                "D. LPG cools the kitchen to freezing point"
+              ],
+              "correctAnswer": "A. It reduces tree cutting and lowers household smoke and soot pollution",
+              "hint": "Using LPG for domestic cooking curbs deforestation from wood fuel collection and eliminates indoor smoke exposure.",
+              "workedSolution": "Using LPG for domestic cooking curbs deforestation from wood fuel collection and eliminates indoor smoke exposure.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F42",
+              "difficulty": "low",
+              "prompt": "How does sustainable organic agriculture support environmental protection?",
+              "options": [
+                "A. It avoids synthetic chemical fertilizers and pesticides, improving soil health and water conservation",
+                "B. It clears all trees from farm borders",
+                "C. It turns crop fields into concrete surfaces",
+                "D. It requires burning fields after every harvest"
+              ],
+              "correctAnswer": "A. It avoids synthetic chemical fertilizers and pesticides, improving soil health and water conservation",
+              "hint": "Sustainable organic farming improves soil structure, preserves biodiversity, and cuts nitrous oxide emissions.",
+              "workedSolution": "Sustainable organic farming improves soil structure, preserves biodiversity, and cuts nitrous oxide emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F43",
+              "difficulty": "low",
+              "prompt": "What is green building technology?",
+              "options": [
+                "A. Designing buildings that use energy, water, and building materials efficiently to reduce environmental impacts",
+                "B. Painting every house wall green",
+                "C. Constructing buildings without doors or windows",
+                "D. Building houses out of wet mud only"
+              ],
+              "correctAnswer": "A. Designing buildings that use energy, water, and building materials efficiently to reduce environmental impacts",
+              "hint": "Green building architecture maximizes energy efficiency, natural lighting, and water conservation throughout a structure's life.",
+              "workedSolution": "Green building architecture maximizes energy efficiency, natural lighting, and water conservation throughout a structure's life.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F44",
+              "difficulty": "low",
+              "prompt": "What impact does global warming have on freshwater availability in rivers, streams, and lakes?",
+              "options": [
+                "A. High evaporation rates reduce water volume, leading to freshwater shortages and shrinking lakes",
+                "B. It turns river water into pure diesel",
+                "C. It causes all lakes to double in depth",
+                "D. It stops rivers from flowing into the sea"
+              ],
+              "correctAnswer": "A. High evaporation rates reduce water volume, leading to freshwater shortages and shrinking lakes",
+              "hint": "Elevated temperatures accelerate evaporation, depleting freshwater reserves in lakes and seasonal river systems.",
+              "workedSolution": "Elevated temperatures accelerate evaporation, depleting freshwater reserves in lakes and seasonal river systems.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F45",
+              "difficulty": "low",
+              "prompt": "Which of the following is a direct consequence of global warming on terrestrial ecosystems?",
+              "options": [
+                "A. Disruption of plant life cycles and widespread extinction of vulnerable species",
+                "B. Immediate conversion of deserts into oceans",
+                "C. Plants growing without needing water",
+                "D. Wild animals losing all fur"
+              ],
+              "correctAnswer": "A. Disruption of plant life cycles and widespread extinction of vulnerable species",
+              "hint": "Thermal shifts disrupt flowering times, migration patterns, and habitat ranges, driving extinction risks.",
+              "workedSolution": "Thermal shifts disrupt flowering times, migration patterns, and habitat ranges, driving extinction risks.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F46",
+              "difficulty": "low",
+              "prompt": "Why do farmers apply more chemical fertilizers to crops during prolonged droughts caused by climate change?",
+              "options": [
+                "A. To stimulate struggling crops in degraded, moisture-stressed soils, despite higher environmental costs",
+                "B. To make the field soil colder",
+                "C. Because fertilizer turns into water",
+                "D. To kill all earthworms"
+              ],
+              "correctAnswer": "A. To stimulate struggling crops in degraded, moisture-stressed soils, despite higher environmental costs",
+              "hint": "Struggling crop yields on degraded land often push farmers to increase fertilizer applications to maintain output.",
+              "workedSolution": "Struggling crop yields on degraded land often push farmers to increase fertilizer applications to maintain output.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F47",
+              "difficulty": "low",
+              "prompt": "What is the primary function of clean ocean wave and tidal energy systems?",
+              "options": [
+                "A. Converting the kinetic and potential energy of ocean tides and waves into electricity",
+                "B. Removing all salt from the sea",
+                "C. Heating ocean water to boil fish",
+                "D. Pumping sea water into clouds"
+              ],
+              "correctAnswer": "A. Converting the kinetic and potential energy of ocean tides and waves into electricity",
+              "hint": "Ocean energy technologies convert surface wave motion and tidal rises into mechanical and electrical power.",
+              "workedSolution": "Ocean energy technologies convert surface wave motion and tidal rises into mechanical and electrical power.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F48",
+              "difficulty": "low",
+              "prompt": "Why are fossil fuels classified as non-renewable energy sources?",
+              "options": [
+                "A. They take millions of years to form and exist in finite geological deposits that will eventually run out",
+                "B. They are made of water",
+                "C. They replenish themselves every night",
+                "D. They can be grown in vegetable gardens"
+              ],
+              "correctAnswer": "A. They take millions of years to form and exist in finite geological deposits that will eventually run out",
+              "hint": "Fossil fuels are finite geologic deposits of ancient biomass that cannot be replaced once exhausted.",
+              "workedSolution": "Fossil fuels are finite geologic deposits of ancient biomass that cannot be replaced once exhausted.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F49",
+              "difficulty": "low",
+              "prompt": "How can citizens support green businesses in their local communities?",
+              "options": [
+                "A. By purchasing eco-friendly, energy-efficient, and recyclable locally made products",
+                "B. By dumping plastic litter near stores",
+                "C. By avoiding local markets completely",
+                "D. By burning business packaging"
+              ],
+              "correctAnswer": "A. By purchasing eco-friendly, energy-efficient, and recyclable locally made products",
+              "hint": "Patronizing eco-certified and sustainable local enterprises encourages green commerce and sustainable manufacturing.",
+              "workedSolution": "Patronizing eco-certified and sustainable local enterprises encourages green commerce and sustainable manufacturing.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_F50",
+              "difficulty": "low",
+              "prompt": "What is the overall goal of implementing sustainable environmental policies and regulations?",
+              "options": [
+                "A. To protect natural ecosystems, minimize pollution, and guarantee resources for future generations",
+                "B. To stop all economic trade in the country",
+                "C. To prevent people from farming",
+                "D. To ban all technology usage"
+              ],
+              "correctAnswer": "A. To protect natural ecosystems, minimize pollution, and guarantee resources for future generations",
+              "hint": "Environmental regulations exist to protect biospheric health, prevent resource depletion, and ensure sustainability.",
+              "workedSolution": "Environmental regulations exist to protect biospheric health, prevent resource depletion, and ensure sustainability.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s18_2",
+              "id": "B7_CC_I01",
               "difficulty": "medium",
-              "prompt": "Agricultural activities contribute significantly to methane emissions into the atmosphere primarily through:",
+              "prompt": "What step in the greenhouse effect occurs when the warmed Earth radiates heat back toward space?",
               "options": [
-                "Photosynthesis in orange trees",
-                "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
-                "Harvesting ripe cocoa pods",
-                "Spraying water on vegetable beds"
+                "A. Emission of long-wavelength infrared (heat) radiation from the Earth's surface",
+                "B. Influx of high-energy ultraviolet rays from soil",
+                "C. Direct reflection of visible light by ocean beds",
+                "D. Absorption of oxygen by clouds"
               ],
-              "correctAnswer": "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
-              "hint": "Anaerobic microbes in cattle stomachs and flooded rice mud produce methane.",
-              "workedSolution": "Methanogenic bacteria inside the rumen of cattle and in waterlogged anaerobic rice paddies produce large amounts of methane gas (CH4), which is released into the atmosphere.",
+              "correctAnswer": "A. Emission of long-wavelength infrared (heat) radiation from the Earth's surface",
+              "hint": "The Earth absorbs shortwave solar radiation and reradiates it upward as longer-wavelength infrared heat.",
+              "workedSolution": "The Earth absorbs shortwave solar radiation and reradiates it upward as longer-wavelength infrared heat.",
               "points": 1,
-              "learningCompetency": "B7.5.4.1",
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I02",
+              "difficulty": "medium",
+              "prompt": "How do greenhouse gas molecules in the atmosphere prevent heat from escaping into outer space?",
+              "options": [
+                "A. They absorb outgoing infrared radiation and reradiate thermal energy in all directions, including back toward the Earth",
+                "B. They build an airtight solid ceiling of ice",
+                "C. They reflect all sunlight back to the Sun",
+                "D. They convert heat energy into sound waves"
+              ],
+              "correctAnswer": "A. They absorb outgoing infrared radiation and reradiate thermal energy in all directions, including back toward the Earth",
+              "hint": "Greenhouse gases absorb infrared radiation and emit it isotropically, retaining thermal energy in the lower atmosphere.",
+              "workedSolution": "Greenhouse gases absorb infrared radiation and emit it isotropically, retaining thermal energy in the lower atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I03",
+              "difficulty": "medium",
+              "prompt": "Why does deforestation amplify global warming through two distinct mechanisms?",
+              "options": [
+                "A. It releases stored carbon when vegetation is burned or rots, and eliminates future photosynthetic absorption of CO2",
+                "B. It stops all wind from blowing and cools the soil",
+                "C. It turns trees into water vapor",
+                "D. It causes the Sun to emit more solar flares"
+              ],
+              "correctAnswer": "A. It releases stored carbon when vegetation is burned or rots, and eliminates future photosynthetic absorption of CO2",
+              "hint": "Clearing trees halts carbon sequestration and directly releases stored biospheric carbon as carbon dioxide gas.",
+              "workedSolution": "Clearing trees halts carbon sequestration and directly releases stored biospheric carbon as carbon dioxide gas.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I04",
+              "difficulty": "medium",
+              "prompt": "How do periodic El Niño and La Niña events in the Pacific Ocean alter global climate?",
+              "options": [
+                "A. They shift ocean surface water temperatures, altering atmospheric jet streams and global precipitation patterns",
+                "B. They change the tilt of the Earth's axis",
+                "C. They stop the rotation of the Earth on its axis",
+                "D. They increase the distance between Earth and the Sun"
+              ],
+              "correctAnswer": "A. They shift ocean surface water temperatures, altering atmospheric jet streams and global precipitation patterns",
+              "hint": "El Niño and La Niña alter equatorial Pacific sea-surface temperatures, shifting global wind and rainfall patterns.",
+              "workedSolution": "El Niño and La Niña alter equatorial Pacific sea-surface temperatures, shifting global wind and rainfall patterns.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I05",
+              "difficulty": "medium",
+              "prompt": "Why do explosive volcanic eruptions cause short-term global cooling rather than warming?",
+              "options": [
+                "A. Sulfuric gases and fine ash ejected into the stratosphere form reflective aerosol veils that scatter incoming solar radiation",
+                "B. Lava cools down the ocean waters",
+                "C. Volcanic ash absorbs all greenhouse gases",
+                "D. Volcanoes emit frozen carbon ice"
+              ],
+              "correctAnswer": "A. Sulfuric gases and fine ash ejected into the stratosphere form reflective aerosol veils that scatter incoming solar radiation",
+              "hint": "Stratospheric sulfate aerosols and volcanic dust increase Earth's albedo, reflecting solar rays and cooling surface temperatures.",
+              "workedSolution": "Stratospheric sulfate aerosols and volcanic dust increase Earth's albedo, reflecting solar rays and cooling surface temperatures.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I06",
+              "difficulty": "medium",
+              "prompt": "How does the annual revolution of the tilted Earth ($23.5^\\circ$) around the Sun create seasonal climate cycles?",
+              "options": [
+                "A. It continuously changes the angle of solar incidence and duration of daylight received by each hemisphere throughout the year",
+                "B. It brings the Earth physically closer to the Sun in summer",
+                "C. It stops solar radiation during winter months",
+                "D. It turns atmospheric nitrogen into oxygen"
+              ],
+              "correctAnswer": "A. It continuously changes the angle of solar incidence and duration of daylight received by each hemisphere throughout the year",
+              "hint": "Earth's axial tilt alters the angle of sunlight and daylight duration during its annual orbit, driving the seasons.",
+              "workedSolution": "Earth's axial tilt alters the angle of sunlight and daylight duration during its annual orbit, driving the seasons.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I07",
+              "difficulty": "medium",
+              "prompt": "Why is the daytime sea breeze generated along the Ghanaian coast during sunny afternoons?",
+              "options": [
+                "A. Continental land heats up faster than ocean water, creating rising warm air over land that pulls in cooler air from the sea",
+                "B. Ocean water heats up faster than dry land",
+                "C. Waves push air onto the beach mechanically",
+                "D. The Sun sets over the ocean first"
+              ],
+              "correctAnswer": "A. Continental land heats up faster than ocean water, creating rising warm air over land that pulls in cooler air from the sea",
+              "hint": "Lower heat capacity causes land to warm faster, forming a low-pressure area that draws cooler maritime air inland.",
+              "workedSolution": "Lower heat capacity causes land to warm faster, forming a low-pressure area that draws cooler maritime air inland.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I08",
+              "difficulty": "medium",
+              "prompt": "What chemical process in landfills produces combustible methane gas from organic municipal waste?",
+              "options": [
+                "A. Anaerobic biological decomposition by methanogenic bacteria in the absence of oxygen",
+                "B. Aerobic oxidation in the presence of strong winds",
+                "C. Direct photosynthesis by buried grass",
+                "D. Nuclear fission of plastic containers"
+              ],
+              "correctAnswer": "A. Anaerobic biological decomposition by methanogenic bacteria in the absence of oxygen",
+              "hint": "When organic waste is buried without oxygen in landfills, anaerobic microbes ferment it into methane gas.",
+              "workedSolution": "When organic waste is buried without oxygen in landfills, anaerobic microbes ferment it into methane gas.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I09",
+              "difficulty": "medium",
+              "prompt": "Why does elevated atmospheric temperature cause a positive feedback loop involving water vapor?",
+              "options": [
+                "A. Warmer air holds more evaporated water vapor, and since water vapor is a greenhouse gas, it traps more heat and warms the air further",
+                "B. Evaporation removes all clouds from the sky",
+                "C. Water vapor destroys carbon dioxide molecules",
+                "D. Warmer air freezes water droplets instantly"
+              ],
+              "correctAnswer": "A. Warmer air holds more evaporated water vapor, and since water vapor is a greenhouse gas, it traps more heat and warms the air further",
+              "hint": "Warming enhances evaporation; higher water vapor levels increase thermal absorption, accelerating the greenhouse effect.",
+              "workedSolution": "Warming enhances evaporation; higher water vapor levels increase thermal absorption, accelerating the greenhouse effect.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I10",
+              "difficulty": "medium",
+              "prompt": "How do Chlorofluorocarbons (CFCs) destroy stratospheric ozone molecules?",
+              "options": [
+                "A. Solar UV radiation breaks CFC molecules, releasing free chlorine atoms that catalytically convert ozone ($O_3$) into ordinary oxygen ($O_2$)",
+                "B. CFCs freeze ozone molecules into solid ice",
+                "C. CFCs absorb all oxygen from the atmosphere",
+                "D. CFCs reflect all sunlight away from the stratosphere"
+              ],
+              "correctAnswer": "A. Solar UV radiation breaks CFC molecules, releasing free chlorine atoms that catalytically convert ozone ($O_3$) into ordinary oxygen ($O_2$)",
+              "hint": "UV photolysis releases chlorine free radicals from CFCs, which break down ozone molecules in a repeating catalytic cycle.",
+              "workedSolution": "UV photolysis releases chlorine free radicals from CFCs, which break down ozone molecules in a repeating catalytic cycle.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I11",
+              "difficulty": "medium",
+              "prompt": "Why is the destruction of nitrogen-fixing soil bacteria by UV radiation a serious threat to food security?",
+              "options": [
+                "A. Legumes and crops cannot obtain biological nitrogen needed for protein synthesis, stunting crop growth and reducing harvest yields",
+                "B. Soil turns into solid rock",
+                "C. Crops absorb too much water and rot",
+                "D. It causes weeds to turn into trees"
+              ],
+              "correctAnswer": "A. Legumes and crops cannot obtain biological nitrogen needed for protein synthesis, stunting crop growth and reducing harvest yields",
+              "hint": "Excess UV damages rhizobial bacteria, disrupting natural nitrogen fixation and stunting plant protein development.",
+              "workedSolution": "Excess UV damages rhizobial bacteria, disrupting natural nitrogen fixation and stunting plant protein development.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I12",
+              "difficulty": "medium",
+              "prompt": "How does sea-level rise cause freshwater contamination in coastal lagoons and estuaries?",
+              "options": [
+                "A. Rising ocean salt water intrudes into coastal freshwater aquifers and shallow wells (saltwater intrusion)",
+                "B. Salt water evaporates and leaves only salt in wells",
+                "C. Sea water turns freshwater into acid",
+                "D. Rising seas push freshwater into the clouds"
+              ],
+              "correctAnswer": "A. Rising ocean salt water intrudes into coastal freshwater aquifers and shallow wells (saltwater intrusion)",
+              "hint": "Sea-level rise drives saline intrusion into coastal water tables, contaminating drinking water and agricultural soils.",
+              "workedSolution": "Sea-level rise drives saline intrusion into coastal water tables, contaminating drinking water and agricultural soils.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I13",
+              "difficulty": "medium",
+              "prompt": "Why does climate change shift vegetative zones and agricultural planting seasons in West Africa?",
+              "options": [
+                "A. Changes in rainfall onset, duration, and temperature extremes alter the moisture availability required for crop growth",
+                "B. The soil moves geographically to new regions",
+                "C. The Sun changes its position in space",
+                "D. Plant seeds refuse to germinate in daylight"
+              ],
+              "correctAnswer": "A. Changes in rainfall onset, duration, and temperature extremes alter the moisture availability required for crop growth",
+              "hint": "Erratic precipitation and temperature patterns shift agro-ecological belts, altering traditional planting calendars.",
+              "workedSolution": "Erratic precipitation and temperature patterns shift agro-ecological belts, altering traditional planting calendars.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I14",
+              "difficulty": "medium",
+              "prompt": "What is the primary constraint limiting the widespread deployment of geothermal power plants?",
+              "options": [
+                "A. High underground heat is geographically restricted to areas with tectonic plate boundaries and volcanic activity",
+                "B. Geothermal energy emits massive greenhouse gases",
+                "C. Geothermal steam is too cold to turn turbines",
+                "D. Geothermal power only works during rainy seasons"
+              ],
+              "correctAnswer": "A. High underground heat is geographically restricted to areas with tectonic plate boundaries and volcanic activity",
+              "hint": "Geothermal power requires accessible underground hydrothermal reservoirs, which are confined to volcanically active regions.",
+              "workedSolution": "Geothermal power requires accessible underground hydrothermal reservoirs, which are confined to volcanically active regions.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I15",
+              "difficulty": "medium",
+              "prompt": "How does the Akosombo Dam generate electricity without consuming fossil fuels?",
+              "options": [
+                "A. Potential energy of water stored in Lake Volta is converted into kinetic energy that spins hydraulic turbines connected to generators",
+                "B. Water in the dam is boiled using diesel fuel",
+                "C. Solar panels are floating on the entire dam surface",
+                "D. Electric cables are dropped into deep mud"
+              ],
+              "correctAnswer": "A. Potential energy of water stored in Lake Volta is converted into kinetic energy that spins hydraulic turbines connected to generators",
+              "hint": "Hydroelectric plants harness the hydraulic head of dammed water to spin turbines, producing clean mechanical power.",
+              "workedSolution": "Hydroelectric plants harness the hydraulic head of dammed water to spin turbines, producing clean mechanical power.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I16",
+              "difficulty": "medium",
+              "prompt": "Why does biomass energy derived from sustainably replanted wood have lower net carbon impact than coal?",
+              "options": [
+                "A. The carbon dioxide released during combustion was recently absorbed from the atmosphere by the growing plants during photosynthesis",
+                "B. Wood does not contain carbon atoms",
+                "C. Burning wood produces zero smoke",
+                "D. Coal does not burn in oxygen"
+              ],
+              "correctAnswer": "A. The carbon dioxide released during combustion was recently absorbed from the atmosphere by the growing plants during photosynthesis",
+              "hint": "Sustainable biomass recycles modern biological carbon within the carbon cycle, unlike fossil fuels which add ancient stored carbon.",
+              "workedSolution": "Sustainable biomass recycles modern biological carbon within the carbon cycle, unlike fossil fuels which add ancient stored carbon.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I17",
+              "difficulty": "medium",
+              "prompt": "Why is the reliance on imported crude oil and petroleum an economic risk for developing nations?",
+              "options": [
+                "A. Fluctuating global market prices and currency exchange rates inflate domestic transportation and electricity costs",
+                "B. Petroleum cannot be transported in ships",
+                "C. Imported oil turns into water during transport",
+                "D. Crude oil expires after 24 hours"
+              ],
+              "correctAnswer": "A. Fluctuating global market prices and currency exchange rates inflate domestic transportation and electricity costs",
+              "hint": "Import dependence exposes economies to volatile global oil prices, straining foreign reserves and inflating energy tariffs.",
+              "workedSolution": "Import dependence exposes economies to volatile global oil prices, straining foreign reserves and inflating energy tariffs.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I18",
+              "difficulty": "medium",
+              "prompt": "How do energy-efficient light bulbs like LEDs reduce greenhouse gas emissions at power stations?",
+              "options": [
+                "A. They use up to 80% less electricity to produce the same light, reducing the quantity of fossil fuel burned at generation plants",
+                "B. They absorb carbon dioxide from bedroom air",
+                "C. They generate their own diesel fuel",
+                "D. They emit cold air that cools the house"
+              ],
+              "correctAnswer": "A. They use up to 80% less electricity to produce the same light, reducing the quantity of fossil fuel burned at generation plants",
+              "hint": "Lower electrical demand reduces fossil fuel consumption at thermal power stations, cutting emissions at the source.",
+              "workedSolution": "Lower electrical demand reduces fossil fuel consumption at thermal power stations, cutting emissions at the source.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I19",
+              "difficulty": "medium",
+              "prompt": "What is the primary objective of agroforestry in sustainable agriculture?",
+              "options": [
+                "A. Integrating trees and shrubs into crop and livestock fields to sequester carbon, conserve soil moisture, and improve fertility",
+                "B. Cutting down all forest trees to grow maize",
+                "C. Painting farm plants with chemical dyes",
+                "D. Feeding crops with chemical weedicides"
+              ],
+              "correctAnswer": "A. Integrating trees and shrubs into crop and livestock fields to sequester carbon, conserve soil moisture, and improve fertility",
+              "hint": "Agroforestry combines forestry with farming, enhancing soil organic matter, sequestering carbon, and stabilizing microclimates.",
+              "workedSolution": "Agroforestry combines forestry with farming, enhancing soil organic matter, sequestering carbon, and stabilizing microclimates.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I20",
+              "difficulty": "medium",
+              "prompt": "How does green building design maximize passive cooling in tropical climates like Ghana?",
+              "options": [
+                "A. Utilizing wide roof overhangs, orientation away from direct solar glare, and large windows for natural cross-ventilation",
+                "B. Sealing all windows with airtight metal plates",
+                "C. Installing five air conditioners in every room",
+                "D. Building houses completely underground in water"
+              ],
+              "correctAnswer": "A. Utilizing wide roof overhangs, orientation away from direct solar glare, and large windows for natural cross-ventilation",
+              "hint": "Passive design uses shading, building orientation, and cross-ventilation to keep interiors cool without heavy air conditioning.",
+              "workedSolution": "Passive design uses shading, building orientation, and cross-ventilation to keep interiors cool without heavy air conditioning.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I21",
+              "difficulty": "medium",
+              "prompt": "Why is recycling plastic containers beneficial to the climate compared to producing new plastics?",
+              "options": [
+                "A. Reprocessing scrap plastic uses significantly less energy than extracting and refining crude petroleum into virgin polymers",
+                "B. Recycled plastic is completely biodegradable",
+                "C. Plastic recycling removes salt from the ocean",
+                "D. Recycled plastic cannot catch fire"
+              ],
+              "correctAnswer": "A. Reprocessing scrap plastic uses significantly less energy than extracting and refining crude petroleum into virgin polymers",
+              "hint": "Mechanical recycling bypasses fossil fuel refining and cracking, slashing industrial energy use and associated emissions.",
+              "workedSolution": "Mechanical recycling bypasses fossil fuel refining and cracking, slashing industrial energy use and associated emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I22",
+              "difficulty": "medium",
+              "prompt": "How do anaerobic biogas digesters improve sanitation while generating clean energy in rural communities?",
+              "options": [
+                "A. They treat pathogen-rich livestock dung and organic waste in sealed digesters, producing biogas for cooking and bio-fertilizer for crops",
+                "B. They turn livestock dung into solid plastic",
+                "C. They freeze animal waste into ice cubes",
+                "D. They release methane directly into the clouds"
+              ],
+              "correctAnswer": "A. They treat pathogen-rich livestock dung and organic waste in sealed digesters, producing biogas for cooking and bio-fertilizer for crops",
+              "hint": "Biogas digestion destroys manure pathogens in sealed tanks, generating clean cooking gas and rich organic fertilizer.",
+              "workedSolution": "Biogas digestion destroys manure pathogens in sealed tanks, generating clean cooking gas and rich organic fertilizer.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I23",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of environmental advocacy and green regulations in national development?",
+              "options": [
+                "A. Mandating emission limits, promoting renewable energy standards, and discouraging polluting industrial practices",
+                "B. Banning all commercial transport vehicles",
+                "C. Forbidding the use of electricity in hospitals",
+                "D. Forcing citizens to live in forests"
+              ],
+              "correctAnswer": "A. Mandating emission limits, promoting renewable energy standards, and discouraging polluting industrial practices",
+              "hint": "Environmental regulations set enforceable pollution caps and incentivize adoption of clean technology across industries.",
+              "workedSolution": "Environmental regulations set enforceable pollution caps and incentivize adoption of clean technology across industries.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I24",
+              "difficulty": "medium",
+              "prompt": "Why do electric vehicles (EVs) have lower lifetime carbon footprints when charged on clean electrical grids?",
+              "options": [
+                "A. They have zero tailpipe emissions and utilize renewable hydro or solar power rather than burning petroleum in combustion engines",
+                "B. They are powered by compressed coal",
+                "C. Their tires do not touch the ground",
+                "D. They run on distilled river water"
+              ],
+              "correctAnswer": "A. They have zero tailpipe emissions and utilize renewable hydro or solar power rather than burning petroleum in combustion engines",
+              "hint": "EVs eliminate petroleum combustion, producing zero direct emissions and running cleanly when charged by renewable grids.",
+              "workedSolution": "EVs eliminate petroleum combustion, producing zero direct emissions and running cleanly when charged by renewable grids.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I25",
+              "difficulty": "medium",
+              "prompt": "How does bush burning during traditional land preparation exacerbate the greenhouse effect?",
+              "options": [
+                "A. It rapidly oxidizes biomass, releasing large plumes of carbon dioxide, nitrous oxide, and soot aerosols into the atmosphere",
+                "B. It cools the soil down to freezing point",
+                "C. It converts carbon into pure diamond",
+                "D. It adds liquid nitrogen to the clouds"
+              ],
+              "correctAnswer": "A. It rapidly oxidizes biomass, releasing large plumes of carbon dioxide, nitrous oxide, and soot aerosols into the atmosphere",
+              "hint": "Open bush burning releases stored plant carbon as greenhouse gases and particulates, contributing to global warming.",
+              "workedSolution": "Open bush burning releases stored plant carbon as greenhouse gases and particulates, contributing to global warming.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I26",
+              "difficulty": "medium",
+              "prompt": "What occurs during thermal expansion of seawater caused by global warming?",
+              "options": [
+                "A. As ocean water absorbs heat and warms up, water molecules expand and occupy greater volume, raising global sea levels",
+                "B. Ocean water boils and evaporates completely",
+                "C. Ocean water turns into solid ice crystals",
+                "D. Ocean water loses all salt content"
+              ],
+              "correctAnswer": "A. As ocean water absorbs heat and warms up, water molecules expand and occupy greater volume, raising global sea levels",
+              "hint": "Thermal expansion means water expands as it warms; this physical expansion accounts for a large portion of sea-level rise.",
+              "workedSolution": "Thermal expansion means water expands as it warms; this physical expansion accounts for a large portion of sea-level rise.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I27",
+              "difficulty": "medium",
+              "prompt": "How does climate change accelerate the process of desertification in savanna ecosystems?",
+              "options": [
+                "A. Higher temperatures and recurrent droughts dry out topsoil, destroying vegetative cover and allowing wind erosion to expand deserts",
+                "B. Rain falls every day in deserts",
+                "C. Desert sand turns into fertile mud",
+                "D. Trees grow faster in desert heat"
+              ],
+              "correctAnswer": "A. Higher temperatures and recurrent droughts dry out topsoil, destroying vegetative cover and allowing wind erosion to expand deserts",
+              "hint": "Persistent drought and heat deplete soil moisture, stripping vegetation and converting semi-arid margins into desert.",
+              "workedSolution": "Persistent drought and heat deplete soil moisture, stripping vegetation and converting semi-arid margins into desert.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I28",
+              "difficulty": "medium",
+              "prompt": "Why are ocean wave energy plants considered advantageous for coastal nations?",
+              "options": [
+                "A. Ocean waves and tides are constant, highly predictable, and produce zero greenhouse emissions during operation",
+                "B. Ocean waves work only on sunny days",
+                "C. Ocean wave turbines destroy all ocean waves",
+                "D. Wave energy plants use diesel fuel to create waves"
+              ],
+              "correctAnswer": "A. Ocean waves and tides are constant, highly predictable, and produce zero greenhouse emissions during operation",
+              "hint": "Waves deliver continuous kinetic power, providing predictable, emission-free electricity to coastal power grids.",
+              "workedSolution": "Waves deliver continuous kinetic power, providing predictable, emission-free electricity to coastal power grids.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I29",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of planting vegetative cover crops on bare farmland?",
+              "options": [
+                "A. Protecting topsoil from solar baking and erosion while maintaining soil microbial moisture and carbon",
+                "B. Reflecting all sunlight into space",
+                "C. Stopping crops from absorbing water",
+                "D. Turning soil into sand"
+              ],
+              "correctAnswer": "A. Protecting topsoil from solar baking and erosion while maintaining soil microbial moisture and carbon",
+              "hint": "Cover crops shield soil from heat and rainfall erosion, improving organic carbon and moisture retention.",
+              "workedSolution": "Cover crops shield soil from heat and rainfall erosion, improving organic carbon and moisture retention.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I30",
+              "difficulty": "medium",
+              "prompt": "How does the international Montreal Protocol protect the Earth's atmosphere?",
+              "options": [
+                "A. By legally phasing out the global production and use of ozone-depleting Chlorofluorocarbons (CFCs)",
+                "B. By banning the use of solar energy",
+                "C. By making tree planting illegal",
+                "D. By requiring factories to burn more coal"
+              ],
+              "correctAnswer": "A. By legally phasing out the global production and use of ozone-depleting Chlorofluorocarbons (CFCs)",
+              "hint": "The Montreal Protocol phased out CFCs, enabling the stratospheric ozone layer to begin gradual recovery.",
+              "workedSolution": "The Montreal Protocol phased out CFCs, enabling the stratospheric ozone layer to begin gradual recovery.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I31",
+              "difficulty": "medium",
+              "prompt": "Why does a green economy emphasize 'resource efficiency' in manufacturing industries?",
+              "options": [
+                "A. To decouple economic growth from resource consumption by producing more goods with less raw material and minimal waste",
+                "B. To force factories to stop manufacturing goods",
+                "C. To increase industrial smoke emissions",
+                "D. To use only imported virgin raw materials"
+              ],
+              "correctAnswer": "A. To decouple economic growth from resource consumption by producing more goods with less raw material and minimal waste",
+              "hint": "Resource efficiency maximizes product yield per unit of raw material, lowering waste and environmental strain.",
+              "workedSolution": "Resource efficiency maximizes product yield per unit of raw material, lowering waste and environmental strain.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I32",
+              "difficulty": "medium",
+              "prompt": "How does the adoption of solar water heaters reduce urban electrical load?",
+              "options": [
+                "A. They use direct solar thermal collectors to heat water, eliminating the need for high-wattage electric immersion heaters",
+                "B. They cool domestic water to freezing point",
+                "C. They generate electricity using wood fire",
+                "D. They require diesel generators to operate"
+              ],
+              "correctAnswer": "A. They use direct solar thermal collectors to heat water, eliminating the need for high-wattage electric immersion heaters",
+              "hint": "Solar thermal collectors heat water directly from sunlight, avoiding heavy electrical heating loads on the grid.",
+              "workedSolution": "Solar thermal collectors heat water directly from sunlight, avoiding heavy electrical heating loads on the grid.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I33",
+              "difficulty": "medium",
+              "prompt": "What is the link between climate change and the spread of vector-borne tropical diseases?",
+              "options": [
+                "A. Rising temperatures and altered rainfall expand the geographical breeding habitats of disease vectors like mosquitoes",
+                "B. Warmer weather freezes all mosquito larvae",
+                "C. Climate change kills all bacteria",
+                "D. Vectors cannot fly in warm air"
+              ],
+              "correctAnswer": "A. Rising temperatures and altered rainfall expand the geographical breeding habitats of disease vectors like mosquitoes",
+              "hint": "Warming temperatures and changing precipitation extend the altitude and range where malaria-carrying mosquitoes thrive.",
+              "workedSolution": "Warming temperatures and changing precipitation extend the altitude and range where malaria-carrying mosquitoes thrive.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I34",
+              "difficulty": "medium",
+              "prompt": "Why is regular energy auditing recommended for commercial public buildings?",
+              "options": [
+                "A. To identify areas of power wastage, optimize lighting/cooling efficiency, and lower operational utility costs and emissions",
+                "B. To measure the physical weight of the building",
+                "C. To turn off all electricity permanently",
+                "D. To check if the building is painted green"
+              ],
+              "correctAnswer": "A. To identify areas of power wastage, optimize lighting/cooling efficiency, and lower operational utility costs and emissions",
+              "hint": "Energy audits pinpoint thermal leaks and inefficient equipment, guiding retrofits that cut power consumption.",
+              "workedSolution": "Energy audits pinpoint thermal leaks and inefficient equipment, guiding retrofits that cut power consumption.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I35",
+              "difficulty": "medium",
+              "prompt": "How does conserving water in homes help reduce greenhouse gas emissions?",
+              "options": [
+                "A. Pumping, treating, and heating municipal water requires substantial electrical energy, so using less water reduces energy generation",
+                "B. Water contains carbon dioxide gas",
+                "C. Running taps create cloud storms",
+                "D. Saving water stops global rainfall"
+              ],
+              "correctAnswer": "A. Pumping, treating, and heating municipal water requires substantial electrical energy, so using less water reduces energy generation",
+              "hint": "Water treatment and distribution consume large amounts of electrical power; water conservation cuts this municipal energy demand.",
+              "workedSolution": "Water treatment and distribution consume large amounts of electrical power; water conservation cuts this municipal energy demand.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I36",
+              "difficulty": "medium",
+              "prompt": "What is the primary benefit of installing rainwater harvesting systems in schools?",
+              "options": [
+                "A. Collecting roof runoff provides sustainable non-potable water, reducing reliance on treated municipal supply and conserving groundwater",
+                "B. Rainwater cools down the school roof completely",
+                "C. Rainwater harvesting stops rainy seasons",
+                "D. Harvested water turns into electricity"
+              ],
+              "correctAnswer": "A. Collecting roof runoff provides sustainable non-potable water, reducing reliance on treated municipal supply and conserving groundwater",
+              "hint": "Rainwater harvesting captures free precipitation for sanitation and irrigation, buffering against municipal water shortages.",
+              "workedSolution": "Rainwater harvesting captures free precipitation for sanitation and irrigation, buffering against municipal water shortages.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I37",
+              "difficulty": "medium",
+              "prompt": "Why does increased chemical fertilizer use on farmland contribute to atmospheric global warming?",
+              "options": [
+                "A. Soil microbes convert excess synthetic nitrogen fertilizer into nitrous oxide (N2O), a potent greenhouse gas",
+                "B. Chemical fertilizers absorb all oxygen from the air",
+                "C. Fertilizers generate solar flares",
+                "D. Fertilizers cause volcanoes to erupt"
+              ],
+              "correctAnswer": "A. Soil microbes convert excess synthetic nitrogen fertilizer into nitrous oxide (N2O), a potent greenhouse gas",
+              "hint": "Microbial nitrification and denitrification of synthetic nitrogen fertilizers release nitrous oxide, a potent greenhouse gas.",
+              "workedSolution": "Microbial nitrification and denitrification of synthetic nitrogen fertilizers release nitrous oxide, a potent greenhouse gas.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I38",
+              "difficulty": "medium",
+              "prompt": "How does transitioning to a low-carbon transport sector benefit public health in cities like Kumasi and Accra?",
+              "options": [
+                "A. It reduces toxic vehicle exhaust pollutants (particulate matter PM2.5, carbon monoxide), lowering asthma and respiratory hospitalizations",
+                "B. It eliminates traffic congestion permanently",
+                "C. It makes motor vehicles completely free",
+                "D. It prevents rainfall from causing puddles"
+              ],
+              "correctAnswer": "A. It reduces toxic vehicle exhaust pollutants (particulate matter PM2.5, carbon monoxide), lowering asthma and respiratory hospitalizations",
+              "hint": "Low-emission transport cuts urban air pollutants, preventing chronic cardiorespiratory and asthmatic illnesses.",
+              "workedSolution": "Low-emission transport cuts urban air pollutants, preventing chronic cardiorespiratory and asthmatic illnesses.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I39",
+              "difficulty": "medium",
+              "prompt": "What ecological consequence occurs when warmer oceans trigger coral reef bleaching?",
+              "options": [
+                "A. Elevated seawater temperatures cause corals to expel their symbiotic algae, turning them white and collapsing reef marine biodiversity",
+                "B. Corals turn into edible fish",
+                "C. Coral reefs grow into mountains",
+                "D. The ocean water turns into freshwater"
+              ],
+              "correctAnswer": "A. Elevated seawater temperatures cause corals to expel their symbiotic algae, turning them white and collapsing reef marine biodiversity",
+              "hint": "Thermal stress forces coral polyps to expel photosynthetic zooxanthellae, starving the coral and degrading marine habitats.",
+              "workedSolution": "Thermal stress forces coral polyps to expel photosynthetic zooxanthellae, starving the coral and degrading marine habitats.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I40",
+              "difficulty": "medium",
+              "prompt": "Why is replacing old home appliances with energy-efficient models an effective personal climate action?",
+              "options": [
+                "A. Modern appliances use advanced compressors and microprocessors that consume far less power, lowering household electricity usage",
+                "B. Old appliances generate carbon dioxide directly",
+                "C. New appliances never use electricity",
+                "D. Old appliances attract termites"
+              ],
+              "correctAnswer": "A. Modern appliances use advanced compressors and microprocessors that consume far less power, lowering household electricity usage",
+              "hint": "Energy-rated appliances draw significantly less current, reducing overall demand on national power generation grids.",
+              "workedSolution": "Energy-rated appliances draw significantly less current, reducing overall demand on national power generation grids.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I41",
+              "difficulty": "medium",
+              "prompt": "How does the Earth's axial rotation affect planetary climate zones?",
+              "options": [
+                "A. The rotation creates the Coriolis effect, deflecting moving winds and ocean currents into clockwise or counterclockwise global circulation cells",
+                "B. Rotation stops solar rays from reaching the equator",
+                "C. Rotation makes polar ice caps melt every day",
+                "D. Rotation changes the distance to the Moon"
+              ],
+              "correctAnswer": "A. The rotation creates the Coriolis effect, deflecting moving winds and ocean currents into clockwise or counterclockwise global circulation cells",
+              "hint": "Axial rotation produces the Coriolis force, which steers global trade winds and westerlies into organized circulation cells.",
+              "workedSolution": "Axial rotation produces the Coriolis force, which steers global trade winds and westerlies into organized circulation cells.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I42",
+              "difficulty": "medium",
+              "prompt": "Why does a healthy forest act as an active 'carbon sink'?",
+              "options": [
+                "A. Trees absorb more carbon dioxide through photosynthesis during growth than they release through respiration, sequestering carbon in biomass",
+                "B. Trees bury carbon into deep rock layers",
+                "C. Trees convert carbon dioxide into nitrogen",
+                "D. Forest soil burns carbon underground"
+              ],
+              "correctAnswer": "A. Trees absorb more carbon dioxide through photosynthesis during growth than they release through respiration, sequestering carbon in biomass",
+              "hint": "Growing trees sequester carbon in wood, roots, and soil, removing large volumes of carbon dioxide from the atmosphere.",
+              "workedSolution": "Growing trees sequester carbon in wood, roots, and soil, removing large volumes of carbon dioxide from the atmosphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I43",
+              "difficulty": "medium",
+              "prompt": "How does the practice of 'reduce, reuse, and recycle' conserve national energy reserves?",
+              "options": [
+                "A. Manufacturing goods from recycled materials requires far less energy than extracting, transporting, and refining virgin natural resources",
+                "B. Recycled products generate electricity in homes",
+                "C. It eliminates the need for power lines",
+                "D. It stops factory machines from using power"
+              ],
+              "correctAnswer": "A. Manufacturing goods from recycled materials requires far less energy than extracting, transporting, and refining virgin natural resources",
+              "hint": "Recycling circumvents energy-intensive raw resource extraction and primary smelting, saving industrial power.",
+              "workedSolution": "Recycling circumvents energy-intensive raw resource extraction and primary smelting, saving industrial power.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I44",
+              "difficulty": "medium",
+              "prompt": "What is the primary environmental risk of continuing to burn coal in electricity generation?",
+              "options": [
+                "A. Coal is the most carbon-intensive fossil fuel, releasing massive amounts of CO2, sulfur dioxide, mercury, and fly ash",
+                "B. Coal burns with zero heat output",
+                "C. Coal turns into clean water vapor",
+                "D. Coal makes power lines freeze"
+              ],
+              "correctAnswer": "A. Coal is the most carbon-intensive fossil fuel, releasing massive amounts of CO2, sulfur dioxide, mercury, and fly ash",
+              "hint": "Coal combustion emits dense $CO_2$ and toxic air pollutants, driving global warming, smog, and acid rain.",
+              "workedSolution": "Coal combustion emits dense $CO_2$ and toxic air pollutants, driving global warming, smog, and acid rain.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I45",
+              "difficulty": "medium",
+              "prompt": "How does climate change trigger population displacement and environmental migration?",
+              "options": [
+                "A. Rising sea levels submerge coastal settlements, while severe droughts destroy agricultural livelihoods and water supplies",
+                "B. People move to look for colder winter snow in Africa",
+                "C. Governments ban living in cities",
+                "D. Deserts turn into modern shopping malls"
+              ],
+              "correctAnswer": "A. Rising sea levels submerge coastal settlements, while severe droughts destroy agricultural livelihoods and water supplies",
+              "hint": "Sea-level encroachment and agricultural collapse force vulnerable communities to abandon homes as climate refugees.",
+              "workedSolution": "Sea-level encroachment and agricultural collapse force vulnerable communities to abandon homes as climate refugees.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I46",
+              "difficulty": "medium",
+              "prompt": "Why are wind turbines mounted on tall support towers in commercial wind farms?",
+              "options": [
+                "A. Wind speeds are faster, stronger, and less turbulent at higher altitudes, allowing turbines to generate more electricity",
+                "B. To keep turbines away from farm animals",
+                "C. To bring turbines closer to the Sun",
+                "D. To catch rain water"
+              ],
+              "correctAnswer": "A. Wind speeds are faster, stronger, and less turbulent at higher altitudes, allowing turbines to generate more electricity",
+              "hint": "Wind velocity increases with altitude away from ground friction, maximizing kinetic power generation.",
+              "workedSolution": "Wind velocity increases with altitude away from ground friction, maximizing kinetic power generation.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I47",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of a solar charge controller in a domestic solar home system?",
+              "options": [
+                "A. Regulating voltage and current from the solar panels to prevent battery banks from overcharging or deep discharging",
+                "B. Turning sunlight into diesel fuel",
+                "C. Keeping the solar panels cold with water",
+                "D. Making the solar lights shine in green color"
+              ],
+              "correctAnswer": "A. Regulating voltage and current from the solar panels to prevent battery banks from overcharging or deep discharging",
+              "hint": "Charge controllers manage power flow, preventing battery damage from overcharging and extending storage life.",
+              "workedSolution": "Charge controllers manage power flow, preventing battery damage from overcharging and extending storage life.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I48",
+              "difficulty": "medium",
+              "prompt": "How does adopting precision farming technology minimize agricultural greenhouse emissions?",
+              "options": [
+                "A. GPS-guided equipment applies water and fertilizers in exact localized amounts, avoiding over-application and volatilization of N2O",
+                "B. It stops crops from absorbing nitrogen",
+                "C. It harvests crops before they grow",
+                "D. It replaces tractors with manual hoeing"
+              ],
+              "correctAnswer": "A. GPS-guided equipment applies water and fertilizers in exact localized amounts, avoiding over-application and volatilization of N2O",
+              "hint": "Precision agriculture applies inputs only where needed, cutting fertilizer waste and reducing nitrous oxide emissions.",
+              "workedSolution": "Precision agriculture applies inputs only where needed, cutting fertilizer waste and reducing nitrous oxide emissions.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I49",
+              "difficulty": "medium",
+              "prompt": "Why is public awareness and climate education essential in building national climate resilience?",
+              "options": [
+                "A. It empowers communities to adopt sustainable habits, implement conservation practices, and support clean policies",
+                "B. It makes climate change disappear immediately",
+                "C. It allows citizens to ignore weather forecasts",
+                "D. It makes imported goods cheaper"
+              ],
+              "correctAnswer": "A. It empowers communities to adopt sustainable habits, implement conservation practices, and support clean policies",
+              "hint": "Climate literacy mobilizes community action, driving behavioral changes and policy support for sustainability.",
+              "workedSolution": "Climate literacy mobilizes community action, driving behavioral changes and policy support for sustainability.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_I50",
+              "difficulty": "medium",
+              "prompt": "What is the ultimate objective of integrating sustainable energy choices into Ghana's national development strategy?",
+              "options": [
+                "A. Achieving reliable, clean, and affordable energy access while preserving the climate and ecosystems for future generations",
+                "B. Banning all manufacturing factories",
+                "C. Stopping the use of electricity in homes",
+                "D. Exporting all national water resources"
+              ],
+              "correctAnswer": "A. Achieving reliable, clean, and affordable energy access while preserving the climate and ecosystems for future generations",
+              "hint": "Sustainable energy integration provides reliable, low-carbon power that drives development without degrading the environment.",
+              "workedSolution": "Sustainable energy integration provides reliable, low-carbon power that drives development without degrading the environment.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_CC_A01",
+              "difficulty": "hard",
+              "prompt": "A coastal metropolitan district consumes 1,200 MWh of electricity generated by a heavy fuel oil thermal plant daily. If switching to a solar photovoltaic farm reduces carbon emissions by 0.75 metric tons of CO2 per MWh generated, how many metric tons of CO2 emissions are avoided each week?",
+              "options": [
+                "A. 900 metric tons CO2",
+                "B. 4,500 metric tons CO2",
+                "C. 6,300 metric tons CO2",
+                "D. 8,400 metric tons CO2"
+              ],
+              "correctAnswer": "C. 6,300 metric tons CO2",
+              "hint": "Daily Avoided CO2 = 1,200 MWh × 0.75 tons/MWh = 900 tons/day. Weekly Avoided CO2 = 900 tons/day × 7 days = 6,300 metric tons.",
+              "workedSolution": "Daily Avoided CO2 = 1,200 MWh × 0.75 tons/MWh = 900 tons/day. Weekly Avoided CO2 = 900 tons/day × 7 days = 6,300 metric tons.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A02",
+              "difficulty": "hard",
+              "prompt": "Why does a 1-meter rise in sea level cause coastal shoreline retreat far greater than 1 meter inland in sandy coastal plains like Keta?",
+              "options": [
+                "A. Under the Bruun Rule of coastal erosion, every meter of vertical sea-level rise typically induces 50 to 100 meters of horizontal shoreline erosion inland",
+                "B. Sand dissolves in warm seawater",
+                "C. Waves stop moving near the beach",
+                "D. Sea water turns sand into clay"
+              ],
+              "correctAnswer": "A. Under the Bruun Rule of coastal erosion, every meter of vertical sea-level rise typically induces 50 to 100 meters of horizontal shoreline erosion inland",
+              "hint": "The Bruun Rule shows that vertical sea rise forces the coastal beach profile upward and landward, eroding 50–100 times the vertical rise horizontally.",
+              "workedSolution": "The Bruun Rule shows that vertical sea rise forces the coastal beach profile upward and landward, eroding 50–100 times the vertical rise horizontally.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A03",
+              "difficulty": "hard",
+              "prompt": "In radiative thermodynamics, why does incoming shortwave solar radiation penetrate the atmosphere easily, while outgoing longwave terrestrial radiation is trapped by greenhouse gases?",
+              "options": [
+                "A. The Sun's high surface temperature (~5,500°C) emits shortwave radiation to which greenhouse gases are transparent; the Earth's cooler surface emits infrared radiation that matches the vibrational absorption frequencies of greenhouse gas bonds",
+                "B. Solar rays have no energy",
+                "C. Greenhouse gases are made of metal mirrors",
+                "D. The Earth emits high-energy X-rays"
+              ],
+              "correctAnswer": "A. The Sun's high surface temperature (~5,500°C) emits shortwave radiation to which greenhouse gases are transparent; the Earth's cooler surface emits infrared radiation that matches the vibrational absorption frequencies of greenhouse gas bonds",
+              "hint": "Wien's displacement law dictates that Earth's cool surface reradiates infrared, whose wavelengths resonate with and are absorbed by greenhouse gas molecular bonds.",
+              "workedSolution": "Wien's displacement law dictates that Earth's cool surface reradiates infrared, whose wavelengths resonate with and are absorbed by greenhouse gas molecular bonds.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A04",
+              "difficulty": "hard",
+              "prompt": "A hectare of mature tropical rainforest sequesters approximately 12 metric tons of carbon annually. If a 500-hectare forest reserve is protected from deforestation, what total mass of CO2 is removed from the atmosphere over a 5-year period? (take the molecular weight ratio of CO2 to C as 44/12 = 3.67)",
+              "options": [
+                "A. 6,000 metric tons CO2",
+                "B. 30,000 metric tons CO2",
+                "C. 110,100 metric tons CO2",
+                "D. 220,000 metric tons CO2"
+              ],
+              "correctAnswer": "C. 110,100 metric tons CO2",
+              "hint": "Total Carbon = 500 ha × 12 tons/ha/yr × 5 yrs = 30,000 tons C. Total CO2 = 30,000 tons × (44/12) = 110,100 metric tons of CO2.",
+              "workedSolution": "Total Carbon = 500 ha × 12 tons/ha/yr × 5 yrs = 30,000 tons C. Total CO2 = 30,000 tons × (44/12) = 110,100 metric tons of CO2.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A05",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical mechanism by which stratospheric ozone destruction by CFCs is sustained as a catalytic chain reaction?",
+              "options": [
+                "A. A single chlorine radical ($Cl^\\bullet$) reacts with ozone to form chlorine monoxide ($ClO$), which then reacts with free oxygen atoms to regenerate the active chlorine radical, destroying thousands of ozone molecules",
+                "B. Chlorine radicals turn into water droplets",
+                "C. Ozone molecules convert chlorine into nitrogen",
+                "D. UV radiation destroys chlorine immediately"
+              ],
+              "correctAnswer": "A. A single chlorine radical ($Cl^\\bullet$) reacts with ozone to form chlorine monoxide ($ClO$), which then reacts with free oxygen atoms to regenerate the active chlorine radical, destroying thousands of ozone molecules",
+              "hint": "The catalytic cycle ($Cl + O_3 \\rightarrow ClO + O_2$; $ClO + O \\rightarrow Cl + O_2$) regenerates free chlorine, allowing one radical to break down over 100,000 ozone molecules.",
+              "workedSolution": "The catalytic cycle ($Cl + O_3 \\rightarrow ClO + O_2$; $ClO + O \\rightarrow Cl + O_2$) regenerates free chlorine, allowing one radical to break down over 100,000 ozone molecules.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A06",
+              "difficulty": "hard",
+              "prompt": "Why does ocean acidification, driven by elevated atmospheric CO2 absorption, impair marine calcifying organisms like mollusks and coral polyps?",
+              "options": [
+                "A. Dissolved CO2 reacts with water to form carbonic acid, lowering seawater pH and depleting the carbonate ions ($CO_3^{2-}$) required to build calcium carbonate shells",
+                "B. Carbonic acid turns ocean water into ice",
+                "C. Dissolved carbon turns shells into pure gold",
+                "D. Acid makes shells grow too thick for animals to move"
+              ],
+              "correctAnswer": "A. Dissolved CO2 reacts with water to form carbonic acid, lowering seawater pH and depleting the carbonate ions ($CO_3^{2-}$) required to build calcium carbonate shells",
+              "hint": "Acidification ($CO_2 + H_2O \\rightarrow H_2CO_3 \\rightarrow H^+ + HCO_3^-$) consumes free carbonate ions, dissolving shells and inhibiting calcification.",
+              "workedSolution": "Acidification ($CO_2 + H_2O \\rightarrow H_2CO_3 \\rightarrow H^+ + HCO_3^-$) consumes free carbonate ions, dissolving shells and inhibiting calcification.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A07",
+              "difficulty": "hard",
+              "prompt": "In a municipal biogas digester operating at optimal mesophilic temperatures (35°C–37°C), why must the internal anaerobic atmosphere be maintained with zero dissolved oxygen?",
+              "options": [
+                "A. Methanogenic archaea are obligate anaerobes whose key metabolic enzymes are poisoned and inactivated by molecular oxygen",
+                "B. Oxygen turns methane into solid rock",
+                "C. Anaerobic bacteria breathe nitrogen gas",
+                "D. Oxygen makes the digester too cold"
+              ],
+              "correctAnswer": "A. Methanogenic archaea are obligate anaerobes whose key metabolic enzymes are poisoned and inactivated by molecular oxygen",
+              "hint": "Methanogens are strict anaerobes; exposure to dissolved oxygen halts methane synthesis and kills the bacterial consortium.",
+              "workedSolution": "Methanogens are strict anaerobes; exposure to dissolved oxygen halts methane synthesis and kills the bacterial consortium.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A08",
+              "difficulty": "hard",
+              "prompt": "How does the Albedo Effect create an amplifying positive feedback loop in polar climate warming?",
+              "options": [
+                "A. Melting highly reflective white ice exposes darker ocean water, which absorbs more solar radiation, warming the ocean and melting more ice",
+                "B. Melting ice makes the polar air colder",
+                "C. Dark ocean water reflects more light than white ice",
+                "D. White ice absorbs 100% of solar radiation"
+              ],
+              "correctAnswer": "A. Melting highly reflective white ice exposes darker ocean water, which absorbs more solar radiation, warming the ocean and melting more ice",
+              "hint": "Ice-albedo feedback: replacing high-albedo sea ice (reflects ~80%) with low-albedo open water (absorbs ~90%) accelerates thermal absorption and warming.",
+              "workedSolution": "Ice-albedo feedback: replacing high-albedo sea ice (reflects ~80%) with low-albedo open water (absorbs ~90%) accelerates thermal absorption and warming.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A09",
+              "difficulty": "hard",
+              "prompt": "Why is the global warming potential (GWP) of nitrous oxide (N2O) evaluated as approximately 273 times greater than that of carbon dioxide over a 100-year timescale?",
+              "options": [
+                "A. N2O has a long atmospheric lifetime (~114 years) and molecular bonds that absorb infrared radiation within a spectral atmospheric window where CO2 is transparent",
+                "B. N2O is a radioactive element",
+                "C. N2O molecules are 273 times heavier than CO2",
+                "D. N2O burns spontaneously in cloud water"
+              ],
+              "correctAnswer": "A. N2O has a long atmospheric lifetime (~114 years) and molecular bonds that absorb infrared radiation within a spectral atmospheric window where CO2 is transparent",
+              "hint": "Nitrous oxide absorbs strongly in the unblocked infrared window and has high chemical stability, conferring an elevated warming potential.",
+              "workedSolution": "Nitrous oxide absorbs strongly in the unblocked infrared window and has high chemical stability, conferring an elevated warming potential.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A10",
+              "difficulty": "hard",
+              "prompt": "A village installs an off-grid solar mini-grid with an array efficiency of 18% and total panel surface area of 200 m². If average solar irradiance is 800 W/m² for 5 peak hours daily, what electrical energy is produced per day?",
+              "options": [
+                "A. 28.8 kWh",
+                "B. 144.0 kWh",
+                "C. 288.0 kWh",
+                "D. 576.0 kWh"
+              ],
+              "correctAnswer": "B. 144.0 kWh",
+              "hint": "Peak Power = 200 m² × 800 W/m² × 0.18 = 28,800 W = 28.8 kW. Daily Energy = 28.8 kW × 5 hours = 144.0 kWh.",
+              "workedSolution": "Peak Power = 200 m² × 800 W/m² × 0.18 = 28,800 W = 28.8 kW. Daily Energy = 28.8 kW × 5 hours = 144.0 kWh.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A11",
+              "difficulty": "hard",
+              "prompt": "What is the primary thermodynamic challenge associated with deep-water ocean thermal energy conversion (OTEC)?",
+              "options": [
+                "A. The temperature difference between warm surface water (25°C) and cold deep water (5°C) is relatively small (~20°C), resulting in low theoretical Carnot thermal efficiency (6%–7%)",
+                "B. Ocean water contains too much salt to boil",
+                "C. Deep ocean water freezes all turbine blades",
+                "D. OTEC plants produce heavy greenhouse gases"
+              ],
+              "correctAnswer": "A. The temperature difference between warm surface water (25°C) and cold deep water (5°C) is relatively small (~20°C), resulting in low theoretical Carnot thermal efficiency (6%–7%)",
+              "hint": "Carnot efficiency is governed by $\\Delta T / T_H$; a small temperature gradient yields low thermodynamic efficiency, requiring massive flow volumes.",
+              "workedSolution": "Carnot efficiency is governed by $\\Delta T / T_H$; a small temperature gradient yields low thermodynamic efficiency, requiring massive flow volumes.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A12",
+              "difficulty": "hard",
+              "prompt": "Why does the conversion of savanna grasslands into irrigated monoculture rice paddies significantly increase regional greenhouse gas emissions?",
+              "options": [
+                "A. Continuous flooding creates waterlogged, anaerobic soil conditions where methanogenic bacteria thrive, releasing high volumes of methane",
+                "B. Rice plants do not perform photosynthesis",
+                "C. Irrigation water dissolves atmospheric oxygen permanently",
+                "D. Rice paddies emit CFC refrigerants"
+              ],
+              "correctAnswer": "A. Continuous flooding creates waterlogged, anaerobic soil conditions where methanogenic bacteria thrive, releasing high volumes of methane",
+              "hint": "Flooded paddy soils create anoxic environments where organic matter is decomposed by methanogens, venting substantial methane.",
+              "workedSolution": "Flooded paddy soils create anoxic environments where organic matter is decomposed by methanogens, venting substantial methane.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A13",
+              "difficulty": "hard",
+              "prompt": "How does installing a grid-tied inverter with maximum power point tracking (MPPT) optimize a commercial solar photovoltaic installation?",
+              "options": [
+                "A. It dynamically adjusts electrical load impedance to extract the maximum available power from solar arrays under fluctuating irradiance and temperature",
+                "B. It stores electrical current without batteries",
+                "C. It converts sunlight into liquid fuel",
+                "D. It cools the solar panels with fans"
+              ],
+              "correctAnswer": "A. It dynamically adjusts electrical load impedance to extract the maximum available power from solar arrays under fluctuating irradiance and temperature",
+              "hint": "MPPT algorithms track the solar panel's non-linear IV curve, ensuring the array operates at its peak power output point.",
+              "workedSolution": "MPPT algorithms track the solar panel's non-linear IV curve, ensuring the array operates at its peak power output point.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A14",
+              "difficulty": "hard",
+              "prompt": "Why is the preservation of mangrove wetland ecosystems along the Ghanaian coast critical for blue carbon sequestration?",
+              "options": [
+                "A. Mangrove waterlogged, anaerobic soils prevent the rapid decomposition of organic matter, storing carbon in sediments for centuries at rates 4 to 10 times higher than terrestrial forests",
+                "B. Mangroves turn carbon into salt crystals",
+                "C. Mangrove trees do not produce oxygen",
+                "D. Mangrove leaves are made of pure carbon fibers"
+              ],
+              "correctAnswer": "A. Mangrove waterlogged, anaerobic soils prevent the rapid decomposition of organic matter, storing carbon in sediments for centuries at rates 4 to 10 times higher than terrestrial forests",
+              "hint": "Anoxic mangrove sediments inhibit bacterial oxidation, locking buried organic carbon into long-term coastal sinks.",
+              "workedSolution": "Anoxic mangrove sediments inhibit bacterial oxidation, locking buried organic carbon into long-term coastal sinks.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A15",
+              "difficulty": "hard",
+              "prompt": "What is the mechanical cause of turbine aerodynamic stall in wind energy systems during severe storm gusts?",
+              "options": [
+                "A. Excessive wind angle of attack causes boundary-layer airflow separation on the suction side of the blade, collapsing lift and reducing rotor speed to prevent mechanical destruction",
+                "B. The wind turns into a vacuum",
+                "C. Storm winds freeze the generator magnets",
+                "D. Turbine blades become too heavy to spin"
+              ],
+              "correctAnswer": "A. Excessive wind angle of attack causes boundary-layer airflow separation on the suction side of the blade, collapsing lift and reducing rotor speed to prevent mechanical destruction",
+              "hint": "Aerodynamic stall or pitch control feathers the blades, detaching airflow to reduce lift and protect the drive train from overload.",
+              "workedSolution": "Aerodynamic stall or pitch control feathers the blades, detaching airflow to reduce lift and protect the drive train from overload.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A16",
+              "difficulty": "hard",
+              "prompt": "Why does the combustion of sulfur-rich heavy fuel oil in thermal power stations generate secondary aerosols that cause both acid rain and localized solar dimming?",
+              "options": [
+                "A. Emitted SO2 oxidizes in the troposphere to form sulfuric acid droplets ($H_2SO_4$), which acidify precipitation and back-scatter incoming solar radiation",
+                "B. Sulfur reacts with water to form pure carbon",
+                "C. Fuel oil contains nuclear isotopes",
+                "D. Sulfur droplets destroy the Earth's gravity"
+              ],
+              "correctAnswer": "A. Emitted SO2 oxidizes in the troposphere to form sulfuric acid droplets ($H_2SO_4$), which acidify precipitation and back-scatter incoming solar radiation",
+              "hint": "Tropospheric sulfate aerosols act as cloud condensation nuclei and scatter solar radiation (dimming), while raining out as acid precipitation.",
+              "workedSolution": "Tropospheric sulfate aerosols act as cloud condensation nuclei and scatter solar radiation (dimming), while raining out as acid precipitation.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A17",
+              "difficulty": "hard",
+              "prompt": "How does biochar application to agricultural soils contribute to climate change mitigation?",
+              "options": [
+                "A. Pyrolyzed stable aromatic carbon remains recalcitrant in soil for hundreds of years, sequestering carbon while improving soil cation exchange capacity and moisture retention",
+                "B. Biochar releases methane into the clouds",
+                "C. Biochar turns soil into limestone",
+                "D. Biochar heats the farm soil to 100°C"
+              ],
+              "correctAnswer": "A. Pyrolyzed stable aromatic carbon remains recalcitrant in soil for hundreds of years, sequestering carbon while improving soil cation exchange capacity and moisture retention",
+              "hint": "Biochar locks labile biomass carbon into recalcitrant aromatic rings that resist microbial oxidation, creating long-term soil carbon storage.",
+              "workedSolution": "Biochar locks labile biomass carbon into recalcitrant aromatic rings that resist microbial oxidation, creating long-term soil carbon storage.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A18",
+              "difficulty": "hard",
+              "prompt": "In a municipal water utility, how does the adoption of variable frequency drives (VFDs) on high-pressure booster pumps reduce carbon emissions?",
+              "options": [
+                "A. By modulating electric motor speed to match fluctuating hydraulic demand exactly, eliminating throttling energy losses and lowering electrical consumption",
+                "B. VFDs generate their own solar power",
+                "C. VFDs filter all bacteria from water",
+                "D. VFDs eliminate the need for water pipes"
+              ],
+              "correctAnswer": "A. By modulating electric motor speed to match fluctuating hydraulic demand exactly, eliminating throttling energy losses and lowering electrical consumption",
+              "hint": "VFDs adjust pump speeds according to affinity laws ($Power \\propto Speed^3$), drastically cutting energy use during partial-load periods.",
+              "workedSolution": "VFDs adjust pump speeds according to affinity laws ($Power \\propto Speed^3$), drastically cutting energy use during partial-load periods.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A19",
+              "difficulty": "hard",
+              "prompt": "Why does black carbon (soot) deposition on snow and glacial ice accelerate cryospheric melting rates?",
+              "options": [
+                "A. Dark soot particles darken the snow surface, lowering its albedo and increasing the absorption of solar radiation, which accelerates surface melting",
+                "B. Soot freezes the snow permanently",
+                "C. Soot dissolves ice into carbon dioxide gas",
+                "D. Soot makes the ice reflect all sunlight"
+              ],
+              "correctAnswer": "A. Dark soot particles darken the snow surface, lowering its albedo and increasing the absorption of solar radiation, which accelerates surface melting",
+              "hint": "Soot lowers surface reflectivity, absorbing radiant energy and accelerating heat transfer to underlying ice.",
+              "workedSolution": "Soot lowers surface reflectivity, absorbing radiant energy and accelerating heat transfer to underlying ice.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A20",
+              "difficulty": "hard",
+              "prompt": "What is the role of an environmental life cycle assessment (LCA) when evaluating the sustainability of biofuels compared to fossil petroleum?",
+              "options": [
+                "A. Quantifying net greenhouse emissions across all stages: feedstock planting, fertilizer inputs, harvesting, processing distillation, and final engine tailpipe combustion",
+                "B. Testing only the color of the fuel",
+                "C. Measuring how fast the fuel burns in a lamp",
+                "D. Calculating the retail price of the fuel"
+              ],
+              "correctAnswer": "A. Quantifying net greenhouse emissions across all stages: feedstock planting, fertilizer inputs, harvesting, processing distillation, and final engine tailpipe combustion",
+              "hint": "LCA accounts for energy inputs, fertilizer nitrous oxide, and processing emissions, determining true net well-to-wheel carbon savings.",
+              "workedSolution": "LCA accounts for energy inputs, fertilizer nitrous oxide, and processing emissions, determining true net well-to-wheel carbon savings.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A21",
+              "difficulty": "hard",
+              "prompt": "Why does groundwater over-extraction in coastal agricultural belts exacerbate the local impacts of sea-level rise?",
+              "options": [
+                "A. Land subsidence caused by depressurized sediment compaction lowers the ground elevation, while saline seawater moves inland to contaminate remaining aquifers",
+                "B. Over-pumping turns groundwater into oil",
+                "C. It causes the sea level to drop globally",
+                "D. It stops all rainfall over the coast"
+              ],
+              "correctAnswer": "A. Land subsidence caused by depressurized sediment compaction lowers the ground elevation, while saline seawater moves inland to contaminate remaining aquifers",
+              "hint": "Pumping out groundwater induces aquifer compaction and land subsidence, worsening relative sea-level rise and saltwater intrusion.",
+              "workedSolution": "Pumping out groundwater induces aquifer compaction and land subsidence, worsening relative sea-level rise and saltwater intrusion.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A22",
+              "difficulty": "hard",
+              "prompt": "In atmospheric physics, what is the 'infrared atmospheric window' ($8\\ \\mu\\text{m} - 14\\ \\mu\\text{m}$)?",
+              "options": [
+                "A. A spectral band where water vapor and CO2 absorb very little infrared radiation, allowing surface heat to escape directly into space unless blocked by gases like CFCs or ozone",
+                "B. A hole in the clouds over the equator",
+                "C. A glass window installed on satellites",
+                "D. A layer where sunlight turns into radio waves"
+              ],
+              "correctAnswer": "A. A spectral band where water vapor and CO2 absorb very little infrared radiation, allowing surface heat to escape directly into space unless blocked by gases like CFCs or ozone",
+              "hint": "The atmospheric window is a spectral gap where thermal radiation escapes; pollutant gases absorbing in this window exert high warming impact.",
+              "workedSolution": "The atmospheric window is a spectral gap where thermal radiation escapes; pollutant gases absorbing in this window exert high warming impact.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A23",
+              "difficulty": "hard",
+              "prompt": "How does conservation tillage (zero-till or minimum-till farming) support climate change mitigation in agriculture?",
+              "options": [
+                "A. Avoiding soil inversion preserves soil aggregate structure and prevents the microbial oxidation of buried organic matter into atmospheric CO2",
+                "B. It turns the farm soil into rock",
+                "C. It prevents crops from growing roots",
+                "D. It removes all water from the soil"
+              ],
+              "correctAnswer": "A. Avoiding soil inversion preserves soil aggregate structure and prevents the microbial oxidation of buried organic matter into atmospheric CO2",
+              "hint": "Tillage aerates soil, accelerating microbial respiration and carbon loss; no-till keeps carbon stabilized within soil aggregates.",
+              "workedSolution": "Tillage aerates soil, accelerating microbial respiration and carbon loss; no-till keeps carbon stabilized within soil aggregates.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A24",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of a thermal energy storage (TES) system utilizing molten salts in concentrated solar power (CSP) plants?",
+              "options": [
+                "A. Storing thermal energy during high-sunlight hours so steam turbines can continue generating electricity during nighttime and cloudy periods",
+                "B. Producing edible table salt from sunlight",
+                "C. Cooling down the solar mirrors",
+                "D. Generating magnetic fields"
+              ],
+              "correctAnswer": "A. Storing thermal energy during high-sunlight hours so steam turbines can continue generating electricity during nighttime and cloudy periods",
+              "hint": "Molten salt reservoirs store high-temperature heat, enabling CSP facilities to generate dispatchable base-load power after sunset.",
+              "workedSolution": "Molten salt reservoirs store high-temperature heat, enabling CSP facilities to generate dispatchable base-load power after sunset.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A25",
+              "difficulty": "hard",
+              "prompt": "Why does permafrost thawing in sub-arctic regions pose a major tipping point in global climate change?",
+              "options": [
+                "A. Thawing anaerobic soils stimulate microbial decay of ancient frozen biomass, triggering massive releases of trapped methane and CO2 that accelerate warming",
+                "B. Thawing permafrost turns all ocean water fresh",
+                "C. It cools down the tropical equator",
+                "D. It stops volcanic eruptions permanently"
+              ],
+              "correctAnswer": "A. Thawing anaerobic soils stimulate microbial decay of ancient frozen biomass, triggering massive releases of trapped methane and CO2 that accelerate warming",
+              "hint": "Thawing permafrost unlocks vast pools of organic carbon to methanogenic decay, triggering a dangerous self-reinforcing warming feedback.",
+              "workedSolution": "Thawing permafrost unlocks vast pools of organic carbon to methanogenic decay, triggering a dangerous self-reinforcing warming feedback.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A26",
+              "difficulty": "hard",
+              "prompt": "How does an anaerobic digester's hydraulic retention time (HRT) influence biological methane yield?",
+              "options": [
+                "A. Adequate retention time ensures slow-growing methanogenic archaea have sufficient time to fully convert volatile fatty acids into methane without being washed out",
+                "B. Shorter retention times turn waste into gasoline",
+                "C. HRT measures the temperature of the digester fire",
+                "D. Retention time has no effect on bacteria"
+              ],
+              "correctAnswer": "A. Adequate retention time ensures slow-growing methanogenic archaea have sufficient time to fully convert volatile fatty acids into methane without being washed out",
+              "hint": "Sufficient HRT is essential because methanogens reproduce slowly; short retention times wash out microbes before digestion is complete.",
+              "workedSolution": "Sufficient HRT is essential because methanogens reproduce slowly; short retention times wash out microbes before digestion is complete.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A27",
+              "difficulty": "hard",
+              "prompt": "Why is the integration of distributed solar rooftop generation supported by net metering policies in modern green economies?",
+              "options": [
+                "A. It allows consumers to export surplus clean daytime solar electricity back to the grid for financial credit, incentivizing private renewable investments",
+                "B. It forces all houses to disconnect from the grid",
+                "C. It eliminates the need for power meters",
+                "D. It makes the national grid generate diesel fuel"
+              ],
+              "correctAnswer": "A. It allows consumers to export surplus clean daytime solar electricity back to the grid for financial credit, incentivizing private renewable investments",
+              "hint": "Net metering credits prosumers for exported power, improving solar return on investment and decentralizing generation.",
+              "workedSolution": "Net metering credits prosumers for exported power, improving solar return on investment and decentralizing generation.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A28",
+              "difficulty": "hard",
+              "prompt": "What is the role of selective catalytic reduction (SCR) systems in mitigating atmospheric pollution from industrial boilers?",
+              "options": [
+                "A. Injecting ammonia or urea over a catalyst bed to convert nitrogen oxides (NOx) into harmless nitrogen gas ($N_2$) and water vapor",
+                "B. Converting carbon dioxide into solid gold",
+                "C. Freezing boiler flue gas",
+                "D. Producing methane for cooking"
+              ],
+              "correctAnswer": "A. Injecting ammonia or urea over a catalyst bed to convert nitrogen oxides (NOx) into harmless nitrogen gas ($N_2$) and water vapor",
+              "hint": "SCR uses ammonia reduction catalysts to remove smog-forming and acid-rain-precursor NOx from flue gases.",
+              "workedSolution": "SCR uses ammonia reduction catalysts to remove smog-forming and acid-rain-precursor NOx from flue gases.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A29",
+              "difficulty": "hard",
+              "prompt": "How does the preservation of high urban canopy cover (urban forestry) reduce the 'urban heat island' (UHI) effect?",
+              "options": [
+                "A. Tree canopies provide shade and transpire moisture, converting sensible heat into latent heat and lowering surrounding ambient air temperatures",
+                "B. Trees absorb all car headlights",
+                "C. Trees turn asphalt roads into mud",
+                "D. Trees stop all city winds from blowing"
+              ],
+              "correctAnswer": "A. Tree canopies provide shade and transpire moisture, converting sensible heat into latent heat and lowering surrounding ambient air temperatures",
+              "hint": "Shading and evapotranspiration cool urban surfaces, countering heat retention in concrete and asphalt infrastructure.",
+              "workedSolution": "Shading and evapotranspiration cool urban surfaces, countering heat retention in concrete and asphalt infrastructure.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A30",
+              "difficulty": "hard",
+              "prompt": "Why does a photovoltaic solar panel's electrical conversion efficiency decline as its operating surface temperature rises?",
+              "options": [
+                "A. Elevated semiconductor temperatures increase internal electron-hole thermal recombination rates, reducing the open-circuit voltage ($V_{oc}$) of the cell",
+                "B. The panel begins to reflect all light",
+                "C. High heat freezes the silicon atoms",
+                "D. The copper wires dissolve in heat"
+              ],
+              "correctAnswer": "A. Elevated semiconductor temperatures increase internal electron-hole thermal recombination rates, reducing the open-circuit voltage ($V_{oc}$) of the cell",
+              "hint": "Thermal excitation increases intrinsic carrier concentration, lowering the band gap and reducing cell operating voltage.",
+              "workedSolution": "Thermal excitation increases intrinsic carrier concentration, lowering the band gap and reducing cell operating voltage.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A31",
+              "difficulty": "hard",
+              "prompt": "What is the environmental objective of establishing marine protected areas (MPAs) in the context of global climate resilience?",
+              "options": [
+                "A. Preventing overfishing and habitat destruction, allowing marine ecosystems and coral reefs to maintain biological resilience against ocean warming and acidification",
+                "B. Banning all transport ships globally",
+                "C. Making ocean water completely fresh",
+                "D. Harvesting all fish for commercial exports"
+              ],
+              "correctAnswer": "A. Preventing overfishing and habitat destruction, allowing marine ecosystems and coral reefs to maintain biological resilience against ocean warming and acidification",
+              "hint": "MPAs protect intact marine food webs, bolstering the natural capacity of reefs and fisheries to buffer thermal shocks.",
+              "workedSolution": "MPAs protect intact marine food webs, bolstering the natural capacity of reefs and fisheries to buffer thermal shocks.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A32",
+              "difficulty": "hard",
+              "prompt": "Why is the energy return on investment (EROI) of modern solar and wind technologies significantly superior to tar sands and oil shales?",
+              "options": [
+                "A. Renewable generation yields many times more useful electrical energy over its operational life than the energy expended during manufacturing and installation",
+                "B. Solar panels generate energy without manufacturing",
+                "C. Oil shales require no extraction energy",
+                "D. Wind turbines last for 5,000 years"
+              ],
+              "correctAnswer": "A. Renewable generation yields many times more useful electrical energy over its operational life than the energy expended during manufacturing and installation",
+              "hint": "Renewable assets rapidly amortize embodied energy, delivering high net energy compared to unconventional, energy-intensive fossil fuels.",
+              "workedSolution": "Renewable assets rapidly amortize embodied energy, delivering high net energy compared to unconventional, energy-intensive fossil fuels.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A33",
+              "difficulty": "hard",
+              "prompt": "How does the implementation of extended producer responsibility (EPR) in a green economy incentivize eco-design?",
+              "options": [
+                "A. Manufacturers are held financially liable for post-consumer waste management, compelling them to design products with recyclable materials and minimal packaging",
+                "B. It forces companies to stop selling goods",
+                "C. It taxes consumers for buying food",
+                "D. It bans all product warranties"
+              ],
+              "correctAnswer": "A. Manufacturers are held financially liable for post-consumer waste management, compelling them to design products with recyclable materials and minimal packaging",
+              "hint": "End-of-life accountability encourages engineers to design products that are easily disassembled and recycled.",
+              "workedSolution": "End-of-life accountability encourages engineers to design products that are easily disassembled and recycled.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A34",
+              "difficulty": "hard",
+              "prompt": "Why does the application of bio-digester effluent (digestate) to farmland reduce agricultural run-off pollution compared to raw manure?",
+              "options": [
+                "A. Anaerobic digestion stabilizes organic nutrients, converting volatile nitrogen into plant-available ammonium ($NH_4^+$) that binds tightly to soil colloids",
+                "B. Digestate turns into solid limestone",
+                "C. Digestate contains zero chemical elements",
+                "D. Digestate eliminates the need for farm soil"
+              ],
+              "correctAnswer": "A. Anaerobic digestion stabilizes organic nutrients, converting volatile nitrogen into plant-available ammonium ($NH_4^+$) that binds tightly to soil colloids",
+              "hint": "Digestion mineralizes nitrogen and lowers biological oxygen demand, reducing nutrient leaching into groundwater.",
+              "workedSolution": "Digestion mineralizes nitrogen and lowers biological oxygen demand, reducing nutrient leaching into groundwater.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A35",
+              "difficulty": "hard",
+              "prompt": "In energy economics, what is the 'rebound effect' (Jevons' paradox) associated with energy-efficiency improvements?",
+              "options": [
+                "A. Increased energy efficiency lowers the cost of energy services, which may induce consumers to use those services more frequently, partially offsetting energy savings",
+                "B. Efficient machines consume double the electricity",
+                "C. Energy efficiency causes power outages",
+                "D. Light bulbs explode when efficient"
+              ],
+              "correctAnswer": "A. Increased energy efficiency lowers the cost of energy services, which may induce consumers to use those services more frequently, partially offsetting energy savings",
+              "hint": "Jevons' paradox occurs when efficiency gains make energy cheaper, driving behavioral consumption increases that erode net savings.",
+              "workedSolution": "Jevons' paradox occurs when efficiency gains make energy cheaper, driving behavioral consumption increases that erode net savings.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A36",
+              "difficulty": "hard",
+              "prompt": "How do green hydrogen production technologies utilizing PEM water electrolyzers powered by solar energy avoid carbon emissions?",
+              "options": [
+                "A. Pure water is split into hydrogen ($H_2$) and oxygen ($O_2$) using zero-carbon solar electricity, releasing only oxygen into the atmosphere",
+                "B. They burn natural gas with oxygen",
+                "C. They extract hydrogen from coal deposits",
+                "D. They use diesel generators to split water"
+              ],
+              "correctAnswer": "A. Pure water is split into hydrogen ($H_2$) and oxygen ($O_2$) using zero-carbon solar electricity, releasing only oxygen into the atmosphere",
+              "hint": "Green electrolysis splits water using renewable energy, yielding zero greenhouse emissions during production and utilization.",
+              "workedSolution": "Green electrolysis splits water using renewable energy, yielding zero greenhouse emissions during production and utilization.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A37",
+              "difficulty": "hard",
+              "prompt": "Why does heavy siltation in rivers and reservoirs behind hydroelectric dams impair long-term generation capacity?",
+              "options": [
+                "A. Settling sediment displaces active water storage volume, reducing water head and causing abrasive erosion of turbine runner blades",
+                "B. Silt turns river water into solid rock",
+                "C. Silt causes dam walls to float",
+                "D. Silt stops the water from evaporating"
+              ],
+              "correctAnswer": "A. Settling sediment displaces active water storage volume, reducing water head and causing abrasive erosion of turbine runner blades",
+              "hint": "Sedimentation silts up reservoir active storage and erodes turbine impellers, reducing generation reliability.",
+              "workedSolution": "Sedimentation silts up reservoir active storage and erodes turbine impellers, reducing generation reliability.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A38",
+              "difficulty": "hard",
+              "prompt": "What is the biological importance of preserving microbial soil fungi (arbuscular mycorrhizae) under regenerative agricultural practices?",
+              "options": [
+                "A. Fungal hyphae produce glomalin, a stable glycoprotein that binds soil minerals into aggregates, sequestering carbon and enhancing drought resilience",
+                "B. Fungi eat all crop roots",
+                "C. Fungi turn soil into water",
+                "D. Fungi emit large plumes of methane"
+              ],
+              "correctAnswer": "A. Fungal hyphae produce glomalin, a stable glycoprotein that binds soil minerals into aggregates, sequestering carbon and enhancing drought resilience",
+              "hint": "Mycorrhizal networks synthesize glomalin, which stabilizes soil organic carbon and improves soil structure and water storage.",
+              "workedSolution": "Mycorrhizal networks synthesize glomalin, which stabilizes soil organic carbon and improves soil structure and water storage.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A39",
+              "difficulty": "hard",
+              "prompt": "Why does replacing heavy timber building framing with sustainably engineered bamboo promote forest conservation?",
+              "options": [
+                "A. Bamboo is a fast-growing perennial grass that matures in 3 to 5 years, providing high-tensile structural timber without felling slow-growing rainforest hardwoods",
+                "B. Bamboo does not absorb water",
+                "C. Bamboo is made of steel fibers",
+                "D. Bamboo requires no agricultural land"
+              ],
+              "correctAnswer": "A. Bamboo is a fast-growing perennial grass that matures in 3 to 5 years, providing high-tensile structural timber without felling slow-growing rainforest hardwoods",
+              "hint": "Rapidly renewable bamboo provides high-strength structural material, relieving logging pressure on natural forests.",
+              "workedSolution": "Rapidly renewable bamboo provides high-strength structural material, relieving logging pressure on natural forests.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A40",
+              "difficulty": "hard",
+              "prompt": "How does the deployment of smart electrical grid meters facilitate the integration of fluctuating wind and solar power?",
+              "options": [
+                "A. Two-way communication allows utilities to balance real-time electricity demand dynamically against intermittent renewable generation",
+                "B. Smart meters turn wind turbines on and off with magnets",
+                "C. Smart meters eliminate the need for electrical wires",
+                "D. Smart meters generate solar energy at night"
+              ],
+              "correctAnswer": "A. Two-way communication allows utilities to balance real-time electricity demand dynamically against intermittent renewable generation",
+              "hint": "Smart grids enable demand-side management, matching variable renewable generation with flexible consumer loads.",
+              "workedSolution": "Smart grids enable demand-side management, matching variable renewable generation with flexible consumer loads.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A41",
+              "difficulty": "hard",
+              "prompt": "What is the primary thermodynamic penalty of carbon capture and storage (CCS) systems retrofitted onto coal-fired thermal power stations?",
+              "options": [
+                "A. Reboiler solvent regeneration and $CO_2$ compression consume 20% to 30% of the plant's gross power output (parasitic energy load)",
+                "B. CCS turns coal into ice water",
+                "C. CCS eliminates all electricity generation",
+                "D. CCS makes power stations explode"
+              ],
+              "correctAnswer": "A. Reboiler solvent regeneration and $CO_2$ compression consume 20% to 30% of the plant's gross power output (parasitic energy load)",
+              "hint": "Amine stripping and gas compression demand substantial energy, significantly reducing net thermal plant efficiency.",
+              "workedSolution": "Amine stripping and gas compression demand substantial energy, significantly reducing net thermal plant efficiency.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A42",
+              "difficulty": "hard",
+              "prompt": "How does implementing drip irrigation instead of conventional overhead sprinklers contribute to both water conservation and climate adaptation?",
+              "options": [
+                "A. Water is delivered directly to plant root zones at low pressure, cutting evaporation and percolation losses by up to 50%",
+                "B. Drip irrigation freezes the topsoil",
+                "C. Drip irrigation stops crops from transpiring",
+                "D. Drip irrigation creates artificial rain clouds"
+              ],
+              "correctAnswer": "A. Water is delivered directly to plant root zones at low pressure, cutting evaporation and percolation losses by up to 50%",
+              "hint": "Targeted root-zone delivery minimizes evaporation and deep drainage losses, optimizing water productivity during droughts.",
+              "workedSolution": "Targeted root-zone delivery minimizes evaporation and deep drainage losses, optimizing water productivity during droughts.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A43",
+              "difficulty": "hard",
+              "prompt": "Why is the global atmospheric concentration of carbon dioxide measured continuously at pristine baseline observatories like Mauna Loa?",
+              "options": [
+                "A. High-altitude, well-mixed oceanic air provides representative global baseline data unaffected by localized urban pollution plumes",
+                "B. Mauna Loa is the only place with carbon dioxide",
+                "C. The observatory generates all atmospheric CO2",
+                "D. Hawaii has no clouds or wind"
+              ],
+              "correctAnswer": "A. High-altitude, well-mixed oceanic air provides representative global baseline data unaffected by localized urban pollution plumes",
+              "hint": "Remote marine mountain observatories capture well-mixed hemispheric background air, tracking clean global $CO_2$ trends.",
+              "workedSolution": "Remote marine mountain observatories capture well-mixed hemispheric background air, tracking clean global $CO_2$ trends.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A44",
+              "difficulty": "hard",
+              "prompt": "What is the physical cause of localized cavitation erosion on hydroelectric turbine runner blades during low-head operations?",
+              "options": [
+                "A. Rapid pressure drops in the water flow cause vapor bubbles to form and implode violently against the steel surface, pitting the metal",
+                "B. Fish hitting the turbine blades",
+                "C. Water rusting the blades within 10 seconds",
+                "D. Solar heat melting the turbine metal"
+              ],
+              "correctAnswer": "A. Rapid pressure drops in the water flow cause vapor bubbles to form and implode violently against the steel surface, pitting the metal",
+              "hint": "Sub-vapor-pressure drops create micro-cavities; their shockwave implosion pits and damages hydro turbine runners.",
+              "workedSolution": "Sub-vapor-pressure drops create micro-cavities; their shockwave implosion pits and damages hydro turbine runners.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A45",
+              "difficulty": "hard",
+              "prompt": "How does the circular recycling of lithium-ion vehicle battery cathode metals (cobalt, nickel, lithium) minimize ecological harm?",
+              "options": [
+                "A. Hydrometallurgical closed-loop recovery reduces the need for new open-pit mining, tailings dams, and deforestation in vulnerable mining regions",
+                "B. Recycled batteries turn into clean water",
+                "C. Recycled batteries never need recharging",
+                "D. Recycling eliminates all battery weight"
+              ],
+              "correctAnswer": "A. Hydrometallurgical closed-loop recovery reduces the need for new open-pit mining, tailings dams, and deforestation in vulnerable mining regions",
+              "hint": "Closed-loop hydrometallurgical recycling recovers critical battery metals, reducing destructive primary mineral extraction.",
+              "workedSolution": "Closed-loop hydrometallurgical recycling recovers critical battery metals, reducing destructive primary mineral extraction.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A46",
+              "difficulty": "hard",
+              "prompt": "Why does a photovoltaic solar inverter require automatic anti-islanding protection circuitry?",
+              "options": [
+                "A. To immediately disconnect the solar array from the local grid during a utility blackout, preventing hazardous back-feeding into lines where technicians are working",
+                "B. To keep the solar panels clean during rain",
+                "C. To prevent the inverter from overheating",
+                "D. To turn DC power into diesel fuel"
+              ],
+              "correctAnswer": "A. To immediately disconnect the solar array from the local grid during a utility blackout, preventing hazardous back-feeding into lines where technicians are working",
+              "hint": "Anti-islanding prevents distributed inverters from energizing severed utility lines, protecting line maintenance workers from electrocution.",
+              "workedSolution": "Anti-islanding prevents distributed inverters from energizing severed utility lines, protecting line maintenance workers from electrocution.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A47",
+              "difficulty": "hard",
+              "prompt": "In urban ecological planning, how does the deployment of permeable pavement systems reduce localized climate-induced flood risks?",
+              "options": [
+                "A. Porous interlocking pavers allow stormwater to infiltrate directly into underlying gravel sub-bases and aquifers, attenuating peak runoff flows",
+                "B. Permeable pavers absorb all rainwater and turn it into steam",
+                "C. Permeable pavers float on water",
+                "D. Permeable pavers stop rain from falling"
+              ],
+              "correctAnswer": "A. Porous interlocking pavers allow stormwater to infiltrate directly into underlying gravel sub-bases and aquifers, attenuating peak runoff flows",
+              "hint": "Porous surfaces facilitate on-site infiltration, recharging groundwater and preventing surface stormwater surges.",
+              "workedSolution": "Porous surfaces facilitate on-site infiltration, recharging groundwater and preventing surface stormwater surges.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A48",
+              "difficulty": "hard",
+              "prompt": "How does the preservation of natural peat bogs and coastal mangrove swamps prevent the release of ancient geological greenhouse gases?",
+              "options": [
+                "A. Continuous waterlogging maintains permanent anaerobic conditions that prevent microbial enzymes from oxidizing ancient organic peat into CO2 and N2O",
+                "B. Peat bogs absorb all sunlight completely",
+                "C. Waterlogged swamps turn peat into diamond",
+                "D. Peat bogs freeze the surrounding air"
+              ],
+              "correctAnswer": "A. Continuous waterlogging maintains permanent anaerobic conditions that prevent microbial enzymes from oxidizing ancient organic peat into CO2 and N2O",
+              "hint": "Anoxic saturation halts aerobic decomposition; draining wetlands exposes millennia of stored carbon to rapid oxidative release.",
+              "workedSolution": "Anoxic saturation halts aerobic decomposition; draining wetlands exposes millennia of stored carbon to rapid oxidative release.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A49",
+              "difficulty": "hard",
+              "prompt": "Why does a wind turbine rotor operate below the theoretical Betz Limit (59.3% efficiency)?",
+              "options": [
+                "A. Aerodynamic blade drag, wake rotation losses, tip vortex shedding, and electrical generator conversion friction limit real extraction efficiency to 35%–45%",
+                "B. The wind stops moving when it hits the blades",
+                "C. Betz limit applies only to solar panels",
+                "D. Wind turbines are made of wood"
+              ],
+              "correctAnswer": "A. Aerodynamic blade drag, wake rotation losses, tip vortex shedding, and electrical generator conversion friction limit real extraction efficiency to 35%–45%",
+              "hint": "The Betz limit establishes ideal kinetic extraction; real-world viscous drag and mechanical-electrical losses lower actual efficiency.",
+              "workedSolution": "The Betz limit establishes ideal kinetic extraction; real-world viscous drag and mechanical-electrical losses lower actual efficiency.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_CC_A50",
+              "difficulty": "hard",
+              "prompt": "How does transitioning to a green economy foster long-term national macroeconomic resilience in developing nations?",
+              "options": [
+                "A. By reducing imported fuel dependencies, creating localized green employment, preserving natural capital, and shielding communities from climate shocks",
+                "B. By banning all agricultural farming",
+                "C. By eliminating all monetary banking systems",
+                "D. By forcing all citizens to move away from cities"
+              ],
+              "correctAnswer": "A. By reducing imported fuel dependencies, creating localized green employment, preserving natural capital, and shielding communities from climate shocks",
+              "hint": "Green economic models protect natural capital assets, diversify domestic energy, and insulate economies from climate disruption.",
+              "workedSolution": "Green economic models protect natural capital assets, diversify domestic energy, and insulate economies from climate disruption.",
+              "points": 1,
+              "learningCompetency": "B7.5.4.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -42076,7 +44610,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.228Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -42273,7 +44807,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T15:40:56.582Z"
+    "updatedAt": "2026-10-08T16:09:26.228Z"
   }
 ];
 
@@ -80978,48 +83512,2434 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Climate Change & The Green Economy (Global Warming, Adaptation, Renewable Energy & Mitigation)",
     "order": 52,
     "notes": {
-      "summaryMarkdown": "### The Greenhouse Effect & Global Warming Dynamics\n* **NaCCA Curriculum Code:** `B7.5.4.1`\n* **Core Competency:** Explain the natural and enhanced greenhouse effect and identify major anthropogenic greenhouse gas sources.\n\n#### 1. The Natural Greenhouse Effect\n* Solar shortwave electromagnetic radiation (visible light, ultraviolet) penetrates Earth's atmosphere unimpeded and is absorbed by the surface.\n* The warmed Earth re-emits energy as **longer-wavelength infrared radiation** (thermal heat).\n* Naturally occurring atmospheric greenhouse gases absorb and re-radiate this outgoing infrared radiation in all directions, trapping heat in the troposphere.\n* **Without the natural greenhouse effect**, Earth's average surface temperature would plummet to $-18^\\circ\\text{C}$ (instead of the hospitable $+15^\\circ\\text{C}$), freezing the oceans solid.\n\n#### 2. Major Greenhouse Gases & Anthropogenic Sources\n* **Carbon Dioxide ($CO_2$):** Responsible for $\\approx 65\\%$ of enhanced radiative forcing. Emitted from combustion of fossil fuels (coal, oil, gas) for electricity and transport; widespread deforestation (reducing photosynthetic sinks).\n* **Methane ($CH_4$):** 28 times more potent than $CO_2$. Emitted from enteric fermentation in ruminant livestock (cattle belching), anaerobic decomposition in flooded paddy rice fields, and organic landfill off-gassing.\n* **Nitrous Oxide ($N_2O$):** 265 times more potent than $CO_2$. Over-application of synthetic nitrogen fertilizers on agricultural soils; industrial nitric acid production.\n* **Fluorinated Gases (CFCs, HFCs):** Synthetic refrigerants, aerosol propellants, and semiconductor manufacturing solvents.\n\n#### 3. The Enhanced Greenhouse Effect\nExcessive human emissions over the past 150 years have drastically increased greenhouse gas concentrations, thickening the thermal atmospheric blanket, trapping excess infrared energy, and driving unprecedented **anthropogenic global warming**.",
+      "summaryMarkdown": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 4: CLIMATE CHANGE AND GREEN ECONOMY\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 4 — Climate Change and Green Economy\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.4.1:** Demonstrate understanding of sustainable energy choices and their impact on the environment.\n- **Indicator:**\n  - **B7.5.4.1.1:** Search for information on ways sustainable energy choices and scientific ideas are used to protect the environment.\n- **Pedagogical Approach:** Direct instructional notes incorporating meteorological definitions, astronomical and terrestrial drivers of climate change, the physics of the greenhouse effect, global warming dynamics, stratospheric ozone depletion kinetics, clean sustainable energy technologies, green economy frameworks, and fully enclosed vector SVGs.\n- **Core Competencies:** Critical Thinking and Problem Solving, Environmental Literacy, Digital Literacy, and Cultural Identity and Global Citizenship.\n\n---\n\n### MODULE 1: Meteorological Concepts, Drivers of Climate Change, and Uneven Planetary Heating\n\n#### 1.1 Meteorological and Atmospheric Definitions\n1. **Weather:**\n   - *Scientific Definition:* The localized atmospheric condition of a specific geographic area over a brief, short-term interval of time (measured in hours, days, or weeks).\n   - *Atmospheric Parameters:* It is quantified through direct physical measurements of ambient air temperature (degrees of hotness or coldness), atmospheric pressure, relative humidity (wetness or dryness), wind velocity and direction (calm or stormy conditions), cloud cover, precipitation types, and visibility.\n2. **Climate:**\n   - *Scientific Definition:* The aggregate, statistical condition of the atmosphere recorded over a prolonged duration of time (conventionally defined by the World Meteorological Organization [WMO] as **30 years or more**).\n   - *Significance:* Climate represents the baseline statistical summation, mean patterns, and frequency of extreme variations of atmospheric parameters across large biomes (e.g., Tropical Savannah, Equatorial Rainforest, Semi-Arid Sahelian).\n3. **Climate Change:**\n   - *Scientific Definition:* Statistically significant, long-term modifications, shifts, or disturbances in the baseline average weather patterns (such as mean surface temperature, annual precipitation volume, prevailing wind currents, and the frequency and intensity of catastrophic storms) that endure for extended epochs across regional or global planetary systems.\n   - *Origin:* Driven by a confluence of natural cosmic/geological cycles and intensified by anthropogenic activities that perturb planetary radiative equilibrium.\n\n---\n\n#### 1.2 Physics of Uneven Planetary Heating\nSolar energy is distributed unequally across the Earth's surface, creating atmospheric pressure gradients, global trade winds, oceanic circulation belts, and distinct thermal zones through four primary physical mechanisms:\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"320\" viewBox=\"0 0 760 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"320\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PLANETARY PHYSICS: SOLAR INCIDENCE ANGLE &amp; UNEVEN HEATING</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"245\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Solar Angle of Incidence</text><path d=\"M 180 40 A 100 100 0 0 1 180 220\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"4\"/><line x1=\"180\" y1=\"130\" x2=\"280\" y2=\"130\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><text x=\"210\" y=\"122\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#dc2626\">Equator (0°)</text><text x=\"190\" y=\"55\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e40af\">North Pole</text><text x=\"190\" y=\"215\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e40af\">South Pole</text><line x1=\"30\" y1=\"60\" x2=\"170\" y2=\"60\" stroke=\"#ea580c\" stroke-width=\"2\" marker-end=\"url(#arr)\"/><line x1=\"30\" y1=\"130\" x2=\"180\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"3\"/><line x1=\"30\" y1=\"200\" x2=\"170\" y2=\"200\" stroke=\"#ea580c\" stroke-width=\"2\"/><rect x=\"25\" y=\"150\" width=\"135\" height=\"80\" rx=\"4\" fill=\"#eff6ff\"/><text x=\"92\" y=\"166\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Curvature Effects:</text><text x=\"32\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Equator: Direct perpendicular</text><text x=\"38\" y=\"194\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">  rays (concentrated heat)</text><text x=\"32\" y=\"210\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">• Poles: Slanted oblique rays</text><text x=\"38\" y=\"222\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\">  (spread over larger area)</text></g><g transform=\"translate(395, 45)\"><rect width=\"335\" height=\"245\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"167\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Thermal Land-Water Differential</text><rect x=\"25\" y=\"45\" width=\"135\" height=\"75\" rx=\"4\" fill=\"#fed7aa\" stroke=\"#ea580c\"/><text x=\"92\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Continental Land</text><text x=\"92\" y=\"84\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\" text-anchor=\"middle\">Low specific heat capacity</text><text x=\"92\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\" text-anchor=\"middle\">Heats &amp; cools rapidly</text><rect x=\"175\" y=\"45\" width=\"135\" height=\"75\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\"/><text x=\"242\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Oceanic Water</text><text x=\"242\" y=\"84\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#075985\" text-anchor=\"middle\">High specific heat capacity</text><text x=\"242\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#075985\" text-anchor=\"middle\">Heats &amp; cools slowly</text><rect x=\"25\" y=\"135\" width=\"285\" height=\"95\" rx=\"4\" fill=\"#f0fdf4\" stroke=\"#bbf7d0\"/><text x=\"167\" y=\"152\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Net Climatic Consequences</text><text x=\"35\" y=\"170\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">1. Generation of sea breezes and trade winds</text><text x=\"35\" y=\"186\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">2. Global atmospheric Hadley and Ferrel cell circulation</text><text x=\"35\" y=\"202\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">3. Formation of regional monsoons and rainfall belts</text></g></svg>\n</div>\n\n1. **Earth Curvature and Angle of Solar Incidence:**\n   - The Earth is an oblate spheroid. At equatorial latitudes ($0^\\circ$), incoming solar radiation strikes the surface at an angle close to **$90^\\circ$ (perpendicular incidence)**. Solar rays pass through a thinner atmospheric column and concentrate their electromagnetic energy over a minimal surface area, generating intense, high-density surface heating.\n   - Conversely, at polar latitudes, solar rays strike the curved surface at an **oblique, slanted angle**, traversing a longer path through the atmosphere (which scatters and absorbs more photons) and spreading the same radiant energy over a vastly larger geographical area. Consequently, equatorial zones accumulate massive heat surpluses, whereas polar zones experience persistent heat deficits.\n2. **Axial Tilt ($23.5^\\circ$) and Orbital Revolution:**\n   - The Earth revolves around the Sun along an elliptical orbit once every $365.25\\text{ days}$, maintaining a permanent axial tilt of **$23.5^\\circ$** relative to its orbital plane (the ecliptic).\n   - This fixed orientation alters the solar declination angle throughout the year, changing the Sun's zenith position between the Tropic of Cancer ($23.5^\\circ\\text{ N}$) and the Tropic of Capricorn ($23.5^\\circ\\text{ S}$). This variation governs seasonal changes, alters day length, and drives cyclical shifts in regional temperature and rainfall belts (such as the latitudinal migration of the Inter-Tropical Convergence Zone [ITCZ] across Ghana).\n3. **Differential Thermal Properties of Land and Water Masses:**\n   - The continental crust (rock and soil) and oceanic water bodies possess radically different thermal physical constants.\n   - **Specific Heat Capacity ($c$):** Liquid water has an exceptionally high specific heat capacity ($c_{\\text{water}} \\approx 4,184\\text{ J}/(\\text{kg}\\cdot\\text{K})$), whereas dry land/granite has a low specific heat capacity ($c_{\\text{land}} \\approx 800\\text{ J}/(\\text{kg}\\cdot\\text{K})$).\n   - Continental land masses heat up rapidly during solar irradiation and cool down rapidly at night or during winter. In contrast, oceanic water bodies heat up very slowly and retain thermal energy for prolonged periods.\n   - This thermal inertia differential creates localized diurnal pressure gradients (producing daytime **sea breezes** and nighttime **land breezes**) as well as seasonal continental monsoons (such as the moisture-laden South-West Monsoon winds and dry North-East Harmattan winds across West Africa).\n4. **Axial Diurnal Rotation and the Coriolis Effect:**\n   - The Earth completes one full rotation on its geographic axis every 24 hours, generating the diurnal day-night cycle that governs heating and cooling periods.\n   - Furthermore, planetary rotation generates the **Coriolis force**, an apparent inertial force that deflects moving air currents and oceanic gyres to the right in the Northern Hemisphere and to the left in the Southern Hemisphere. This deflection breaks global convection into three distinct atmospheric circulation cells per hemisphere (**Hadley, Ferrel, and Polar cells**), shaping global climate zones.\n\n---\n\n#### 1.3 Natural Drivers of Planetary Climate Variability\nOver geological timescales, natural mechanisms have driven climate fluctuations:\n- **Solar Irradiance Cycles:** Periodic variations in the Sun's core thermonuclear output, 11-year sunspot cycles, and Milankovitch orbital cycles (variations in eccentricity, axial tilt, and precession over 20,000 to 100,000 years) modulate total solar energy reaching Earth.\n- **Stratospheric Volcanic Eruptions:** Violent plinian eruptions eject massive quantities of sulfur dioxide ($SO_2$) gas, ash, and silicate particulates into the stratosphere. $SO_2$ reacts with atmospheric water vapor to form microscopic sulfuric acid ($H_2SO_4$) aerosols that reflect incoming solar radiation, creating global radiative cooling for 1 to 3 years (e.g., Mount Pinatubo, 1991).\n- **Oceanic Circulations & Teleconnections:** Dynamic ocean-atmosphere oscillations, such as the **El Niño-Southern Oscillation (ENSO)**, periodically warm or cool the equatorial Pacific Ocean surface, disrupting global jet streams and shifting rainfall patterns worldwide.\n- **Natural Greenhouse Equilibrium:** Baseline pre-industrial concentrations of naturally occurring atmospheric gases maintain the planet's average surface temperature at a habitable $+15^\\circ\\text{C}$ (preventing a frozen equilibrium of $-18^\\circ\\text{C}$).\n\n---\n\n#### 1.4 Anthropogenic Drivers of Contemporary Climate Change\nSince the Industrial Revolution (circa 1750), human industrial, agricultural, and urban activities have massively amplified radiative forcing:\n1. **Fossil Fuel Combustion:** The burning of bituminous coal, refined petroleum (gasoline, diesel, heavy fuel oil), and natural gas in thermoelectric generation stations, motor vehicles, aircraft, and industrial furnaces releases over 36 billion metric tonnes of concentrated carbon dioxide ($CO_2$) into the atmosphere annually.\n2. **Deforestation and Land-Use Conversion:** Extensive clear-felling, commercial logging, and slash-and-burn clearing of tropical rainforests (such as the Upper Guinean forests in Ghana and the Amazon basin) eliminate critical photosynthetic carbon sinks. The felled timber either decomposes or is burned, rapidly releasing stored organic carbon back into the atmosphere as $CO_2$.\n3. **Heavy Industrial Processes:** High-temperature calcination in limestone cement kilns (converting $CaCO_3 \\rightarrow CaO + CO_2$), petrochemical synthesis, aluminum smelting, and chemical manufacturing discharge massive streams of $CO_2$, nitrous oxide ($N_2O$), and synthetic fluorinated gases.\n4. **Agricultural Activities and Ruminant Husbandry:**\n   - Enteric fermentation by ruminant livestock (cattle, sheep, goats) produces methanogenic microbes that generate and emit large volumes of methane ($CH_4$) gas.\n   - Flooded anaerobic paddy rice cultivation produces biogenic methane.\n   - The widespread application of synthetic nitrogen fertilizers ($NH_4NO_3$, urea) stimulates soil nitrifying and denitrifying bacteria to emit nitrous oxide ($N_2O$), a greenhouse gas with a global warming potential nearly 300 times that of $CO_2$.\n5. **Open Refuse Burning and Surface Mining:** Indiscriminate burning of municipal solid waste, plastic bonfires, and forest clearing for illegal artisanal gold mining (*galamsey*) generate soot, black carbon particulates, and greenhouse gases that coat vegetative surfaces and lower surface albedo.\n\n---\n\n### MODULE 2: The Greenhouse Effect, Global Warming, and Stratospheric Ozone Depletion\n\n#### 2.1 The Physics of the Greenhouse Effect\nThe **Greenhouse Effect** is a natural physical-chemical phenomenon whereby trace atmospheric gases absorb and re-radiate thermal infrared energy, insulating the planet.\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE GREENHOUSE MECHANISM &amp; STRATOSPHERIC OZONE LAYER</text><g transform=\"translate(40, 45)\"><path d=\"M 40 250 A 280 280 0 0 1 640 250\" fill=\"#f1f5f9\" stroke=\"#64748b\" stroke-width=\"2\"/><path d=\"M 70 250 A 250 250 0 0 1 610 250\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"3\" stroke-dasharray=\"6,4\"/><text x=\"340\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Ozone Layer (O₃) Shield (Absorbs UV)</text><path d=\"M 100 250 A 220 220 0 0 1 580 250\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"1.5\"/><text x=\"340\" y=\"120\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#334155\" text-anchor=\"middle\">Atmosphere (CO₂, CH₄, N₂O, H₂O vapor)</text><circle cx=\"90\" cy=\"50\" r=\"26\" fill=\"#facc15\" stroke=\"#eab308\" stroke-width=\"2\"/><text x=\"90\" y=\"54\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">SUN</text><line x1=\"115\" y1=\"65\" x2=\"220\" y2=\"195\" stroke=\"#ea580c\" stroke-width=\"2.5\"/><text x=\"165\" y=\"125\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\">1. Solar Rays</text><path d=\"M 220 195 A 160 160 0 0 1 460 195\" fill=\"#86efac\" stroke=\"#16a34a\" stroke-width=\"2\"/><text x=\"340\" y=\"215\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#14532d\" text-anchor=\"middle\">EARTH SURFACE</text><line x1=\"220\" y1=\"195\" x2=\"280\" y2=\"110\" stroke=\"#ca8a04\" stroke-width=\"2\" stroke-dasharray=\"3,3\"/><text x=\"260\" y=\"145\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#854d0e\">3. Reflected</text><line x1=\"340\" y1=\"195\" x2=\"400\" y2=\"120\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><text x=\"395\" y=\"165\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#dc2626\">4. Infrared Heat</text><path d=\"M 400 120 L 440 170 L 480 120 L 520 170\" fill=\"none\" stroke=\"#b91c1c\" stroke-width=\"2\"/><text x=\"470\" y=\"140\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#b91c1c\">5. Heat Trapped</text><rect x=\"450\" y=\"225\" width=\"210\" height=\"55\" rx=\"4\" fill=\"#fee2e2\" stroke=\"#ef4444\"/><text x=\"555\" y=\"242\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Greenhouse Consequences:</text><text x=\"460\" y=\"258\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Enhanced trapping raises temperatures</text><text x=\"460\" y=\"270\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#7f1d1d\">• Drives polar ice melt &amp; sea-level rise</text></g></svg>\n</div>\n\nThe phenomenon operates through a **five-stage radiative sequence**:\n- **Stage 1 (Incident Solar Radiation):** High-energy, short-wavelength electromagnetic radiation emitted by the Sun (predominantly ultraviolet, visible light, and near-infrared, with wavelengths $\\lambda < 4\\,\\mu\\text{m}$) penetrates the atmosphere with minimal absorption by greenhouse gases.\n- **Stage 2 (Surface Absorption & Thermalization):** Approximately $50\\%$ of incident solar radiation is absorbed directly by continental rocks, soils, vegetation, and oceanic water bodies, converting electromagnetic energy into thermal kinetic energy and elevating surface temperatures.\n- **Stage 3 (Atmospheric & Surface Reflection / Albedo):** Approximately $30\\%$ of incoming radiation is reflected back into outer space by bright clouds, atmospheric aerosol particulates, and high-albedo surfaces (polar ice sheets, snow, and desert sands) without heating the planet.\n- **Stage 4 (Terrestrial Infrared Reradiation):** In accordance with **Planck's Law** and the **Stefan-Boltzmann Law** ($E = \\sigma T^4$), the warmed Earth re-emits thermal energy outward toward space. Because the Earth's average surface temperature ($approx 288\\text{ K}$) is much lower than the Sun's surface ($approx 5,778\\text{ K}$), terrestrial radiation shifts to **long-wavelength, low-frequency infrared thermal radiation** (peak emission $\\lambda \\approx 10\\,\\mu\\text{m}$).\n- **Stage 5 (Infrared Absorption & Atmospheric Back-Radiation):** Diatomic atmospheric gases (nitrogen $N_2$ at $\\approx 78\\%$ and oxygen $O_2$ at $\\approx 21\\%$) are symmetrical, non-polar molecules unable to absorb infrared radiation. However, heteronuclear triatomic and polyatomic greenhouse gas molecules possess vibrational and rotational dipole moments that resonant-absorb outgoing infrared photons. The excited greenhouse molecules re-emit this thermal energy isotropically in all directions — both toward outer space and back toward the Earth's surface (**back-radiation**), effectively trapping heat within the troposphere.\n\n---\n\n#### 2.2 Taxonomy and Properties of Major Greenhouse Gases (GHGs)\n\n| Greenhouse Gas | Chemical Formula | Pre-Industrial Baseline | Contemporary Concentration | Atmospheric Lifetime | 100-Year Global Warming Potential (GWP) | Anthropogenic Primary Sources |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Carbon Dioxide** | $CO_2$ | $\\approx 280\\text{ ppm}$ | $> 420\\text{ ppm}$ | $100\\text{--}1,000\\text{ years}$ | **1** (Reference Standard) | Fossil fuel combustion, deforestation, cement manufacturing, flaring. |\n| **Methane** | $CH_4$ | $\\approx 722\\text{ ppb}$ | $> 1,900\\text{ ppb}$ | $\\approx 12\\text{ years}$ | **$28\\text{--}36$** | Enteric ruminant fermentation, anaerobic landfills, natural gas leakage, rice paddies. |\n| **Nitrous Oxide** | $N_2O$ | $\\approx 270\\text{ ppb}$ | $> 335\\text{ ppb}$ | $\\approx 114\\text{ years}$ | **$265\\text{--}298$** | Synthetic nitrogen fertilizers, chemical nylon synthesis, biomass combustion. |\n| **Water Vapor** | $H_2O$ | Variable | Increasing with warming | $9\\text{--}10\\text{ days}$ | Variable (Amplifier) | Natural oceanic evaporation; amplifies warming via positive thermal feedback loops. |\n| **Tropospheric Ozone** | $O_3$ | $\\approx 25\\text{ ppb}$ | $\\approx 38\\text{ ppb}$ | Weeks to months | $\\approx 1,000$ | Photochemical smog from vehicle $NO_x$ and volatile organic compound (VOC) emissions. |\n| **Chlorofluorocarbons** | $\\text{CFC-11, CFC-12}$ | $0\\text{ ppt}$ (Synthetic) | Trace (Regulated) | $50\\text{--}100\\text{ years}$ | **$4,000\\text{--}10,000+$** | Air conditioning refrigerants, aerosol spray propellants, foam blowing agents. |\n\n---\n\n#### 2.3 Global Warming: Systemic Environmental & Ecological Consequences\n**Global Warming** is the progressive, continuous rise in the average global surface and atmospheric temperatures of the Earth driven by the enhanced anthropogenic greenhouse effect.\n\n1. **Escalating Atmospheric & Oceanic Temperatures:** Induces frequent, severe, and prolonged heatwaves, altering global atmospheric pressure belts and disrupting human physiological comfort.\n2. **Thermal Expansion of Oceans & Glacial Melting:**\n   - As ocean water warms, thermal kinetic agitation increases the physical volume occupied by water molecules (**thermal expansion**).\n   - Simultaneously, high temperatures accelerate the melting of polar continental glaciers (Greenland and Antarctic ice sheets) and alpine ice packs, discharging billions of tonnes of meltwater into the global oceans.\n3. **Sea-Level Rise & Coastal Inundation:**\n   - The combined effect of thermal expansion and land-ice melt drives rapid sea-level rise ($approx 3.7\\text{ mm/year}$ and accelerating).\n   - Low-lying coastal settlements, coastal wetlands, and estuarine communities across West Africa (notably **Keta, Ada Foah, Axim, and Jamestown** in Ghana) suffer catastrophic coastal shoreline erosion, saltwater intrusion into freshwater aquifers, and destructive tidal surges.\n4. **Depletion of Freshwater Reservoirs:** Accelerated evaporation from reservoirs, lakes, and rivers causes severe shrinkage of freshwater storage basins, lowering groundwater recharge and threatening municipal water security.\n5. **Agricultural Disruption & Crop Failure:** Shifts in seasonal rainfall onsets, prolonged drought spells, and intense flash flooding disrupt traditional planting calendars. Heat stress stunts cereal crop germination (maize, sorghum, millet), accelerates evapotranspiration, and damages tropical agricultural outputs.\n6. **Accelerated Soil Degradation & Fertilizer Dependency:** Desiccated topsoils lose structural organic humus, forcing farmers to apply increasing quantities of synthetic chemical fertilizers to sustain crop yields, which exacerbates nitrogen runoff and aquatic eutrophication.\n7. **Severe Biodiversity Loss & Coral Bleaching:**\n   - Terrestrial plant and animal species fail to adapt or migrate fast enough to track changing temperature isotherms.\n   - In marine ecosystems, sustained ocean warming causes corals to expel their symbiotic photosynthetic zooxanthellae algae (**coral bleaching**), leading to the death of tropical coral reef ecosystems.\n8. **Human Population Displacement & Climate Refugees:** Coastal land loss, desertification of agricultural savannahs, and recurrent famine force rural populations to migrate into overcrowded urban centers, fueling resource competition and socio-economic stress.\n\n---\n\n#### 2.4 Stratospheric Ozone Layer Dynamics & Depletion Kinetics\n1. **Nature and Function of the Ozone Layer:**\n   - The ozone layer is a specialized band situated within the **stratosphere** (approximately $15\\text{ to }35\\text{ km}$ above the Earth's surface) characterized by elevated concentrations of triatomic ozone molecules ($O_3$).\n   - *Protective Shield:* It absorbs the vast majority of biologically lethal, high-energy solar **Ultraviolet-B (UV-B, $280\\text{--}315\\text{ nm}$)** and **Ultraviolet-C (UV-C, $100\\text{--}280\\text{ nm}$)** radiation, preventing dangerous ionizing radiation from penetrating the troposphere.\n2. **Mechanism of Stratospheric Ozone Depletion:**\n   - Ozone depletion is caused by the release of synthetic volatile halogenated hydrocarbons, predominantly **Chlorofluorocarbons (CFCs, e.g., $CFCl_3, CF_2Cl_2$)**, halons, and carbon tetrachloride, historically used in refrigeration compressors, air conditioners, and aerosol propellants.\n   - CFCs are chemically inert in the lower atmosphere, allowing them to diffuse intact across decades into the upper stratosphere.\n   - Upon encountering intense solar UV radiation, photolytic cleavage occurs, liberating free chlorine radicals ($Cl^\\bullet$):\n     $$CFCl_3 + h\\nu (\\text{UV}) \\rightarrow CFCl_2 + Cl^\\bullet$$\n   - The free chlorine radical acts as a catalytic destruction agent in a rapid chain reaction:\n     $$Cl^\\bullet + O_3 \\rightarrow ClO^\\bullet + O_2$$\n     $$ClO^\\bullet + O \\rightarrow Cl^\\bullet + O_2$$\n   - **Catalytic Potency:** A single chlorine free radical ($Cl^\\bullet$) continuously breaks down and destroys upwards of **100,000 ozone molecules ($O_3$)** before being bound into a stable reservoir species.\n3. **Biological & Environmental Impacts of Ozone Depletion:**\n   - *Human Health Hazards:* Increased UV-B radiation penetrates the biosphere, damaging cellular DNA and leading to high rates of cutaneous malignant melanoma (skin cancer), solar keratitis, cataracts in human eyes, and systemic immunosuppression.\n   - *Agricultural & Ecological Disruption:* High UV-B radiation suppresses photosynthesis, damages phytoplankton at the base of marine food webs, and disrupts beneficial soil microorganisms — specifically **nitrogen-fixing soil bacteria (*Rhizobium*, *Azotobacter*)**, sharply reducing biological nitrogen fixation and depressing agricultural crop yields.\n\n---\n\n### MODULE 3: Sustainable Clean Energy Technologies and Comparative Energy Analysis\n\n#### 3.1 Scientific Definition and Foundations of Sustainable Energy\n**Sustainable Clean Energy** is formally defined as:\n> **Energy derived from naturally replenished, non-depletable environmental resources that satisfies current operational industrial and residential power demands without exhausting finite planetary reserves, generating toxic environmental pollutants, or compromising the ecological and climatic stability of future generations.**\n\n---\n\n#### 3.2 Deep-Dive into the Six Primary Clean Energy Technologies\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">CLEAN ENERGY GENERATION TECHNOLOGIES</text><g transform=\"translate(30, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#fefce8\" stroke=\"#eab308\" stroke-width=\"1.2\"/><circle cx=\"107\" cy=\"45\" r=\"16\" fill=\"#facc15\"/><rect x=\"45\" y=\"80\" width=\"125\" height=\"60\" rx=\"4\" fill=\"#0284c7\" stroke=\"#0369a1\"/><line x1=\"85\" y1=\"80\" x2=\"85\" y2=\"140\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><line x1=\"130\" y1=\"80\" x2=\"130\" y2=\"140\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><line x1=\"45\" y1=\"110\" x2=\"170\" y2=\"110\" stroke=\"#bae6fd\" stroke-width=\"1.5\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Solar Photovoltaic</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">Converts solar radiation</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\" text-anchor=\"middle\">into direct electricity</text></g><g transform=\"translate(272, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><line x1=\"107\" y1=\"75\" x2=\"107\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"4\"/><circle cx=\"107\" cy=\"75\" r=\"6\" fill=\"#334155\"/><line x1=\"107\" y1=\"75\" x2=\"80\" y2=\"45\" stroke=\"#16a34a\" stroke-width=\"3\"/><line x1=\"107\" y1=\"75\" x2=\"135\" y2=\"45\" stroke=\"#16a34a\" stroke-width=\"3\"/><line x1=\"107\" y1=\"75\" x2=\"107\" y2=\"110\" stroke=\"#16a34a\" stroke-width=\"3\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Wind Turbine Farms</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">Kinetic wind motion</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\" text-anchor=\"middle\">drives generator rotation</text></g><g transform=\"translate(515, 45)\"><rect width=\"215\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><path d=\"M 35 125 L 75 75 L 140 75 L 180 125 Z\" fill=\"#94a3b8\" stroke=\"#475569\"/><path d=\"M 75 75 Q 107 100 140 75 L 140 140 L 75 140 Z\" fill=\"#38bdf8\"/><text x=\"107\" y=\"165\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Hydroelectric Power</text><text x=\"107\" y=\"182\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Akosombo Dam model:</text><text x=\"107\" y=\"195\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\" text-anchor=\"middle\">Falling water turns turbines</text></g></svg>\n</div>\n\n1. **Solar Energy (Photovoltaic and Solar-Thermal Systems):**\n   - *Operating Principle:* Photovoltaic (PV) cells exploit the quantum mechanical **photoelectric effect** within doped semiconductor silicon wafers. When solar photons with energy greater than the bandgap ($E = h\nu > E_g$) strike the silicon p-n junction, electrons are excited into the conduction band, generating a direct electrical current (DC).\n   - *Solar Thermal:* Concentrated solar collectors use parabolic mirrors to focus sunlight onto heat-transfer fluids, boiling water into high-pressure steam that drives electric turbogenerators.\n   - *Advantages:* Abundant, infinitely replenished resource, zero direct emissions during operational lifespan, and ideal for decentralized off-grid rural electrification (e.g., mini-grids in Northern Ghana).\n2. **Wind Energy (Aerodynamic Kinetic Conversion):**\n   - *Operating Principle:* Atmospheric kinetic energy is harnessed by wind turbines. Moving air currents exert aerodynamic lift across curved rotor blades, rotating a central low-speed shaft linked to a mechanical gearbox and electromagnetic generator to produce alternating current (AC) power.\n   - *Output Dynamics:* Power output is proportional to the cube of wind velocity ($P = \\frac{1}{2} \\rho A v^3$).\n   - *Advantages:* Completely emission-free operation, infinite asset lifespan, minimal water footprint, and compatible with dual agricultural land-use (onshore wind farming).\n3. **Hydroelectric Power (Gravitational Potential Harnessing):**\n   - *Operating Principle:* Harnesses the gravitational potential energy of water held behind dams at elevated heads ($E_p = mgh$). Controlled release through high-pressure penstocks directs water to hydraulic turbines (Francis, Kaplan, or Pelton), driving generators to produce high-capacity base-load electricity.\n   - *Ghanaian Keystone Application:* The **Akosombo Hydroelectric Dam** on the Volta River (commissioned in 1965, generating $1,020\\text{ MW}$) and the **Bui Hydroelectric Dam** on the Black Volta River ($400\\text{ MW}$) provide clean, renewable electricity to Ghana's national grid.\n4. **Geothermal Energy (Subterranean Hydrothermal Systems):**\n   - *Operating Principle:* Deep injection wells tap superheated steam and pressurized hot water reservoirs ($150^\\circ\\text{C}\\text{--}350^\\circ\\text{C}$) located within volcanically and tectonically active subterranean rock strata. The rising steam spins electric turbines before being condensed and reinjected into the aquifer.\n   - *Limitations:* Geographically restricted to continental rift zones (such as the East African Rift System) and plate boundaries.\n5. **Ocean, Tidal, and Wave Energy:**\n   - *Operating Principle:* Converts the kinetic energy of ocean surface swell waves into mechanical pressure via oscillating water columns or hydraulic rams, and harnesses lunar-solar gravitational ocean tides through tidal barrages and sub-sea current turbines.\n   - *Advantages:* Highly predictable energy generation with zero atmospheric emissions.\n6. **Biomass & Bioenergy (Biological Carbon Recycling):**\n   - *Operating Principle:* Derives usable thermal and electrical energy from organic biomass, including agricultural harvest residues, dedicated energy crops, and anaerobic digestion of livestock manure.\n   - *Anaerobic Biogas:* Biogas digesters employ methanogenic bacteria to ferment organic wastes into combustible biogas ($55\\text{--}70\\%\\text{ }CH_4, 30\\text{--}45\\%\\text{ }CO_2$), which is scrubbed and burned for smokeless cooking and electricity generation, turning biological waste into a clean energy asset.\n\n---\n\n#### 3.3 Comparative Analysis: Solar Clean Energy vs. Fossil Fuels\n\n| Comparative Parameter | Solar Clean Energy | Conventional Fossil Fuels (Coal, Petroleum, Gas) |\n| :--- | :--- | :--- |\n| **Resource Depletability** | **Renewable:** Infinitely replenished by solar thermonuclear fusion for the next 5 billion years. | **Non-Renewable:** Finite geological deposits formed over millions of years; rapidly depleting. |\n| **National Energy Security** | **Decentralized Independence:** Generates power locally from ambient sunshine, eliminating dependence on foreign oil imports. | **Geopolitical Vulnerability:** Heavily reliant on volatile international oil cartels, shipping routes, and pipelines. |\n| **Operational Atmospheric Emissions** | **Zero Direct Emissions:** Operates with zero release of $CO_2$, $CH_4$, sulfur oxides ($SO_x$), or nitrogen oxides ($NO_x$). | **Heavy Toxic Emissions:** Releases billions of tonnes of $CO_2$, particulate matter, toxic carbon monoxide, and acid rain precursors. |\n| **Operational & Fuel Costs** | **Zero Fuel Cost:** Free solar fuel; expenditures are limited to initial capital investment and routine panel cleaning. | **Perpetual Recurring Fuel Costs:** Continuous, unpredictable fuel purchase expenses subject to inflation. |\n| **Water Consumption** | Minimal water footprint (used exclusively for periodic surface dust cleaning). | Massive water volumes consumed for continuous cooling towers and boiler feed. |\n| **Public Health Impact** | Non-polluting; eliminates respiratory and cardiovascular illnesses linked to combustion smog. | Major cause of urban smog, asthma, chronic bronchitis, lung carcinomas, and premature mortality. |\n\n---\n\n#### 3.4 Strategic Imperatives for Sustainable Energy Adoption\n1. **Mitigating Anthropogenic Climate Breakdown:** Displacing fossil-fueled power plants with zero-carbon renewables is the single most effective intervention to halt greenhouse gas emissions and stabilize global temperatures below dangerous thresholds.\n2. **Infinite Asset Security:** Renewable technologies exploit inexhaustible natural cycles (sunlight, wind, and river runoff) that will never deplete, ensuring sustainable power for future generations.\n3. **Protecting Public Health:** Transitioning away from coal and heavy diesel power eliminates hazardous atmospheric particulate matter ($PM_{2.5}$ and $PM_{10}$), sulfur dioxide, and toxic ozone smog that trigger chronic respiratory and cardiovascular disorders.\n4. **Fostering National Economic Resilience:** Developing domestic renewable resources insulates emerging economies from foreign exchange shocks and international fuel price spikes.\n\n---\n\n### MODULE 4: The Green Economy, Climate Mitigation, and Environmental Sustainability\n\n#### 4.1 The Theoretical Framework of a Green Economy\nAccording to the United Nations Environment Programme (UNEP), a **Green Economy** is defined as:\n> **An economic development model that results in improved human well-being and social equity, while significantly reducing environmental risks and ecological scarcities. In its simplest expression, a green economy is low-carbon, resource-efficient, and socially inclusive.**\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE CORE PILLARS OF A GREEN ECONOMY</text><g transform=\"translate(30, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. Low Carbon Growth</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Shift to solar, wind &amp; hydro power</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Electric vehicles &amp; mass transit</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Energy efficiency (LEDs &amp; CFLs)</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Transition to LPG &amp; biogas fuels</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#dcfce7\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Climate Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#14532d\" text-anchor=\"middle\">Drastic reduction in net CO₂</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#14532d\" text-anchor=\"middle\">&amp; methane emissions</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">2. Resource Efficiency</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Circular 3Rs (Reduce, Reuse, Recycle)</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Industrial water recycling &amp; care</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Green building architecture</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Sustainable organic agroforestry</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#dbeafe\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Resource Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\" text-anchor=\"middle\">Decoupling GDP growth from</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#1e3a8a\" text-anchor=\"middle\">raw virgin resource extraction</text></g><g transform=\"translate(510, 45)\"><rect width=\"220\" height=\"215\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/><text x=\"110\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">3. Social Inclusivity</text><line x1=\"20\" y1=\"35\" x2=\"200\" y2=\"35\" stroke=\"#fef08a\" stroke-width=\"1\"/><text x=\"10\" y=\"55\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Local green enterprise support</text><text x=\"10\" y=\"75\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Public health protection from smog</text><text x=\"10\" y=\"95\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Climate equity for vulnerable groups</text><text x=\"10\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Sustainable green job creation</text><rect x=\"15\" y=\"135\" width=\"190\" height=\"65\" rx=\"4\" fill=\"#fef9c3\"/><text x=\"105\" y=\"155\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">Societal Target:</text><text x=\"105\" y=\"172\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">Equitable prosperity aligned</text><text x=\"105\" y=\"186\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#713f12\" text-anchor=\"middle\">with ecological resilience</text></g></svg>\n</div>\n\nThe green economy framework rests on **three foundational pillars**:\n1. **Low-Carbon Growth:** Decarbonizing industrial manufacturing, energy grids, and transportation fleets to reduce net emissions of carbon dioxide and methane.\n2. **Resource Efficiency & Circularity:** Decoupling economic gross domestic product (GDP) growth from raw virgin material extraction through circular recycling, industrial water reclamation, and minimal waste generation.\n3. **Social Inclusivity & Climate Justice:** Ensuring the economic benefits of the green transition are distributed equitably, generating sustainable green jobs, safeguarding vulnerable agrarian communities, and protecting public health.\n\n---\n\n#### 4.2 Ten Actionable Green Economy Practices\nTo transition toward a sustainable green economy, societies must integrate actionable practices across industrial, agricultural, and domestic domains:\n\n1. **Deploying the Circular 3Rs (Reduce, Reuse, Recycle):** Minimizing raw material consumption, reusing functional containers, and sorting plastics, paper, metals, and glass for industrial recycling.\n2. **Scaling Renewable Energy Infrastructures:** Replacing fossil fuel generation plants with utility-scale and rooftop solar arrays, wind turbine farms, and decentralized mini-grids.\n3. **Water and Energy Conservation Protocols:** Installing low-flow plumbing fixtures, rainwater harvesting cisterns, fixing municipal distribution leaks, and turning off idle electrical appliances.\n4. **Adopting Sustainable Organic Agroforestry:** Integrating indigenous tree species with crop cultivation, utilizing organic bio-fertilizers, and minimizing synthetic agrochemical inputs to regenerate degraded topsoils and protect river basins.\n5. **Promoting Low-Carbon Eco-Friendly Transportation:** Investing in electric vehicles (EVs), expanding electric mass transit rail, dedicated urban bus rapid transit (BRT), carpooling, and safe bicycle corridors.\n6. **Eliminating Single-Use Packaging:** Banning non-biodegradable single-use thin carrier bags, promoting biodegradable packaging alternatives, and purchasing bulk goods.\n7. **Adopting Sustainable Green Building Architecture:** Designing modern residential and commercial buildings that utilize natural daylighting, bioclimatic cross-ventilation, rooftop solar panels, and low-embodied-energy local building materials.\n8. **Directing Capital into Green Technological R&D:** Establishing green venture funds and tax credits for startups engineering high-efficiency batteries, industrial biocatalysts, and clean fabrication systems.\n9. **Patronizing Local and Sustainable Businesses:** Supporting community enterprises that employ certified sustainable sourcing, fair-trade ethical labor, and zero-waste manufacturing.\n10. **Enforcing Environmental Legislation & Carbon Standards:** Supporting strict statutory regulations that enforce national emission caps, penalize illegal mining, mandate environmental impact assessments (EIAs), and establish protected forest reserves.\n\n---\n\n#### 4.3 High-Impact Climate Mitigation Actions\n**Climate Mitigation** entails deliberate human interventions to reduce anthropogenic greenhouse gas emissions or enhance the capacity of biological carbon sinks to remove $CO_2$ from the atmosphere.\n\n1. **Reforestation and Afforestation (Biological Carbon Sinks):**\n   - *Scientific Principle:* Terrestrial trees and woody vegetation function as living biological carbon sinks, absorbing atmospheric carbon dioxide via oxygenic photosynthesis:\n     $$6CO_2 + 6H_2O + h\nu \\xrightarrow{\\text{Chlorophyll}} C_6H_{12}O_6 + 6O_2$$\n   - *Afforestation:* Planting new forests on lands that historically have not contained trees.\n   - *Reforestation:* Replanting native tree species across deforested landscapes (e.g., the **Green Ghana Day** national tree-planting initiative).\n   - *Carbon Sequestration:* A single mature tropical tree can sequester upwards of $22\\text{ kg}$ of atmospheric $CO_2$ per year, locking carbon into cellulose and lignin plant biomass for centuries.\n2. **Energy Efficiency and Demand-Side Management:**\n   - Upgrading lighting infrastructures by replacing obsolete, inefficient incandescent tungsten filament bulbs (which convert $90\\%$ of consumed electrical energy into wasted heat) with **Light-Emitting Diodes (LEDs)** or Compact Fluorescent Lamps (CFLs), achieving an **$80\\text{--}85\\%$ reduction in power consumption** for identical lumen output.\n   - Enforcing mandatory national appliance energy-efficiency labeling (Ghana Energy Commission star-rating standards) on imported refrigerators, air conditioners, and electric motors.\n3. **Adopting Clean Modern Cooking Fuels:**\n   - Transitioning households away from burning traditional biomass (firewood and lump charcoal in inefficient cookstoves) to **Liquefied Petroleum Gas (LPG)**, electricity, or **anaerobic biogas digesters**.\n   - Halts unsustainable logging of tropical forests, eliminates destructive indoor smoke inhalation (preventing childhood pneumonia and chronic obstructive pulmonary disease), and drastically reduces black carbon emissions.\n\n---\n\n### MODULE 5: Quantitative Case Studies & Real-World Worked Examples\n\n#### Worked Example 1: Solar Photovoltaic Sizing and Carbon Abatement (Navrongo Solar Power Facility)\n\n**Problem Statement:**\nA rural educational complex near Navrongo in the Upper East Region of Ghana installs a rooftop grid-tied solar photovoltaic (PV) array with a total rated peak power capacity of $P_{\\text{peak}} = 10\\text{ kWp}$.\nThe regional meteorological station records an average daily solar insolation of $H = 5.5\\text{ peak sun hours (h/day)}$.\nDue to dust accumulation, ambient tropical heat, and inverter conversion losses, the solar system operates with an overall performance ratio of $PR = 0.78$ ($78\\%$).\n\n**(a)** Calculate the total electrical energy generated by the solar array in one year ($365\\text{ days}$), expressed in kilowatt-hours ($\\text{kWh}$).  \n**(b)** Prior to installing the solar panels, the school relied on a diesel fuel generator that emitted $0.85\\text{ kg of } CO_2$ for every $1\\text{ kWh}$ of electrical energy generated. Calculate the total mass of carbon dioxide ($CO_2$) emissions abated (prevented) per year by this solar installation, expressed in metric tonnes ($1\\text{ metric tonne} = 1,000\\text{ kg}$).\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Annual Electrical Energy Generated ($E_{\\text{annual}}$):**\n1. Determine the daily electrical energy output ($E_{\\text{daily}}$):\n   $$E_{\\text{daily}} = P_{\\text{peak}} \\times H \\times PR$$\n   $$E_{\\text{daily}} = 10\\text{ kWp} \\times 5.5\\text{ h/day} \\times 0.78$$\n   $$E_{\\text{daily}} = 42.9\\text{ kWh/day}$$\n\n2. Calculate the annual electrical output over 365 days:\n   $$E_{\\text{annual}} = E_{\\text{daily}} \\times 365\\text{ days}$$\n   $$E_{\\text{annual}} = 42.9\\text{ kWh/day} \\times 365\\text{ days} = 15,658.5\\text{ kWh/year}$$\n\n**(b) Mass of Carbon Dioxide Emissions Abated ($M_{CO_2}$):**\n1. Multiply the total electrical energy generated by the diesel emissions factor:\n   $$M_{CO_2\\text{ (kg)}} = E_{\\text{annual}} \\times \\text{Emission Factor}$$\n   $$M_{CO_2\\text{ (kg)}} = 15,658.5\\text{ kWh} \\times 0.85\\text{ kg } CO_2/\\text{kWh}$$\n   $$M_{CO_2\\text{ (kg)}} = 13,309.725\\text{ kg of } CO_2$$\n\n2. Convert the mass from kilograms to metric tonnes:\n   $$M_{CO_2\\text{ (tonnes)}} = \\frac{13,309.725\\text{ kg}}{1,000\\text{ kg/tonne}} \\approx 13.31\\text{ metric tonnes of } CO_2\\text{ per year}$$\n\n*Pedagogical Conclusion:* The $10\\text{ kWp}$ solar array prevents **$13.31\\text{ metric tonnes}$** of greenhouse gas emissions annually, while providing reliable, clean power to the educational community.\n\n---\n\n#### Worked Example 2: Landfill Methane Biogas Thermodynamics & Waste-to-Energy (Kumasi Oti Sanitary Landfill)\n\n**Problem Statement:**\nThe Kumasi Oti Landfill site receives $1,000\\text{ metric tonnes}$ ($1,000,000\\text{ kg}$) of municipal solid waste per week, of which $60\\%$ by mass is biodegradable organic matter.\nThrough anaerobic microbial methanogenesis within the compacted landfill cells, the decomposed organic waste produces biogenic methane ($CH_4$) at a yield of $0.08\\text{ m}^3$ of pure methane per kilogram of organic waste.\n- The volumetric energy density (calorific value) of pure methane is $36\\text{ MJ/m}^3$.\n- An on-site combined heat and power (CHP) gas generator converts this captured methane into electrical energy with an efficiency of $\\eta = 35\\%$ ($0.35$).\n- Note that $1\\text{ kilowatt-hour (kWh)} = 3.6\\text{ MJ}$.\n\n**(a)** Determine the total volume of pure methane gas ($CH_4$) generated per week from this organic waste mass.  \n**(b)** Calculate the total electrical energy output generated per week in kilowatt-hours ($\\text{kWh}$).  \n**(c)** If uncaptured, methane released into the atmosphere has a 100-year Global Warming Potential (GWP) of $28$ (meaning $1\\text{ kg}$ of $CH_4$ warms the atmosphere as much as $28\\text{ kg}$ of $CO_2$). Given the density of methane is $\\rho = 0.717\\text{ kg/m}^3$, calculate the equivalent carbon dioxide warming impact ($CO_{2\\text{-eq}}$) prevented per week by capturing and combusting this methane.\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Total Volume of Methane Generated ($V_{CH_4}$):**\n1. Calculate the mass of organic waste:\n   $$M_{\\text{organic}} = 1,000,000\\text{ kg} \\times 0.60 = 600,000\\text{ kg}$$\n\n2. Multiply by the methane yield coefficient:\n   $$V_{CH_4} = 600,000\\text{ kg} \\times 0.08\\text{ m}^3/\\text{kg} = 48,000\\text{ m}^3\\text{ of pure } CH_4$$\n\n**(b) Weekly Electrical Energy Output ($E_{\\text{elec}}$):**\n1. Compute the total chemical energy contained in the captured methane gas:\n   $$E_{\\text{chemical}} = V_{CH_4} \\times \\text{Calorific Value}$$\n   $$E_{\\text{chemical}} = 48,000\\text{ m}^3 \\times 36\\text{ MJ/m}^3 = 1,728,000\\text{ MJ}$$\n\n2. Apply the electrical conversion efficiency of $35\\%$ ($0.35$):\n   $$E_{\\text{thermal-to-elec}} = E_{\\text{chemical}} \\times 0.35 = 1,728,000\\text{ MJ} \\times 0.35 = 604,800\\text{ MJ}$$\n\n3. Convert megajoules to kilowatt-hours:\n   $$E_{\\text{elec}} = \\frac{604,800\\text{ MJ}}{3.6\\text{ MJ/kWh}} = 168,000\\text{ kWh/week}$$\n\n**(c) Equivalent Carbon Dioxide Warming Impact Prevented ($M_{CO_2\\text{-eq}}$):**\n1. Determine the physical mass of captured methane:\n   $$M_{CH_4\\text{ (kg)}} = V_{CH_4} \\times \\rho_{CH_4}$$\n   $$M_{CH_4\\text{ (kg)}} = 48,000\\text{ m}^3 \\times 0.717\\text{ kg/m}^3 = 34,416\\text{ kg of } CH_4$$\n\n2. Calculate the equivalent $CO_2$ mass prevented based on a GWP of 28:\n   $$M_{CO_2\\text{-eq}} = M_{CH_4} \\times \\text{GWP}$$\n   $$M_{CO_2\\text{-eq}} = 34,416\\text{ kg} \\times 28 = 963,648\\text{ kg of } CO_{2\\text{-eq}}$$\n   $$M_{CO_2\\text{-eq}} = \\frac{963,648\\text{ kg}}{1,000\\text{ kg/tonne}} \\approx 963.65\\text{ metric tonnes of } CO_{2\\text{-eq}}\\text{ per week}$$\n\n*Pedagogical Conclusion:* Capturing landfill gas transforms a potent climate hazard into **$168,000\\text{ kWh}$** of clean electricity weekly, while averting **$963.65\\text{ metric tonnes}$** of greenhouse warming impact.\n\n---\n\n#### Worked Example 3: Coastal Sea-Level Rise, Thermal Expansion & Inundation in Keta (Volta Delta Basin)\n\n**Problem Statement:**\nThe coastal town of Keta along the Gulf of Guinea is situated on a low-lying sandy spit vulnerable to rising sea levels.\nOceanographers model the upper mixed layer of the coastal ocean column off Keta to an effective depth of $h_0 = 250\\text{ m}$.\nDue to ongoing climate change, the average temperature of this ocean layer rises by $\\Delta T = 1.2^\\circ\\text{C}$.\n- The volumetric coefficient of thermal expansion for seawater at this temperature is $\\beta = 2.1 \\times 10^{-4}\\text{ }^\\circ\\text{C}^{-1}$.\n- The linear vertical expansion of the water column is calculated as:\n  $$\\Delta h = h_0 \\cdot \\beta \\cdot \\Delta T$$\n- The sandy beach along this coastline has an average topographic slope of $1:80$ (meaning every $1\\text{ cm}$ of vertical sea-level rise causes the shoreline to retreat horizontally inland by $80\\text{ cm}$, or $0.8\\text{ m}$).\n\n**(a)** Calculate the vertical sea-level rise ($\\Delta h$) caused solely by the thermal expansion of this $250\\text{ m}$ ocean column, expressed in centimeters ($\\text{cm}$).  \n**(b)** Using the beach slope ratio, determine the horizontal inland shoreline retreat (coastal erosion distance) in meters ($\\text{m}$).  \n**(c)** Explain two engineering or ecological interventions implemented under Ghana's coastal zone management framework to protect coastal settlements like Keta.\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Vertical Sea-Level Rise ($\\Delta h$):**\n1. Substitute the known physical parameters into the thermal expansion equation:\n   $$\\Delta h = 250\\text{ m} \\times (2.1 \\times 10^{-4}\\text{ }^\\circ\\text{C}^{-1}) \\times 1.2^\\circ\\text{C}$$\n   $$\\Delta h = 250 \\times 0.00021 \\times 1.2 = 0.063\\text{ m}$$\n\n2. Convert meters to centimeters:\n   $$\\Delta h = 0.063\\text{ m} \\times 100\\text{ cm/m} = 6.3\\text{ cm}$$\n\n**(b) Horizontal Shoreline Retreat ($D_{\\text{retreat}}$):**\n1. Apply the $1:80$ topographic beach slope relationship:\n   $$D_{\\text{retreat}} = \\Delta h\\text{ (cm)} \\times 80$$\n   $$D_{\\text{retreat}} = 6.3\\text{ cm} \\times 80 = 504\\text{ cm}$$\n\n2. Convert centimeters to meters:\n   $$D_{\\text{retreat}} = \\frac{504\\text{ cm}}{100\\text{ cm/m}} = 5.04\\text{ meters}$$\n\n**(c) Coastal Protection Interventions:**\n1. **Engineered Hard Defense Structures (Keta Sea Defense Project):** Constructing heavy granitic rock armor **groynes** perpendicular to the shoreline and offshore **breakwaters** to dissipate incoming wave kinetic energy, trap littoral longshore sand drift, and physically stabilize the beach berm.\n2. **Ecological Soft Defenses (Mangrove Reforestation & Dune Stabilization):** Planting indigenous red and black mangrove forests (*Rhizophora* and *Avicennia*) across the Keta Lagoon estuary and cultivating salt-tolerant creeping vegetation along sand dunes to bind the coastal soil matrix and absorb tidal surge energy naturally.\n\n---\n\n#### Worked Example 4: Energy Efficiency Transition & Household Economics in Accra\n\n**Problem Statement:**\nA domestic household in Dansoman, Accra, currently illuminates its rooms and compound using $10$ incandescent tungsten filament light bulbs, each rated at $60\\text{ W}$.\nThe bulbs operate for an average of $6\\text{ hours}$ each night ($365\\text{ days/year}$).\nThe family decides to replace all $10$ incandescent bulbs with energy-efficient **Light-Emitting Diode (LED)** bulbs, each providing equivalent brightness (lumens) while drawing only $9\\text{ W}$ of electrical power.\n- The Electricity Company of Ghana (ECG) domestic residential tariff is $\\text{GHS } 1.35\\text{ per kWh}$.\n- The carbon emission intensity factor of Ghana's national electricity grid (a mix of hydroelectricity, natural gas, and thermal plants) is $0.40\\text{ kg } CO_2\\text{ per kWh}$.\n\n**(a)** Calculate the total annual electrical energy consumed by the incandescent bulbs in kilowatt-hours ($\\text{kWh}$).  \n**(b)** Calculate the total annual electrical energy consumed by the replacement LED bulbs in kilowatt-hours ($\\text{kWh}$).  \n**(c)** Determine the total annual electricity cost savings achieved by the household in Ghana Cedis ($\\text{GHS}$).  \n**(d)** Calculate the net reduction in carbon dioxide ($CO_2$) emissions resulting from this lighting transition per year in kilograms ($\\text{kg}$).\n\n---\n\n**Detailed Step-by-Step Solution:**\n\n**(a) Annual Energy Consumption of Incandescent Bulbs ($E_{\\text{incandescent}}$):**\n1. Total wattage of 10 incandescent bulbs:\n   $$P_{\\text{incandescent}} = 10 \\times 60\\text{ W} = 600\\text{ W} = 0.60\\text{ kW}$$\n\n2. Annual operational hours:\n   $$T = 6\\text{ hours/day} \\times 365\\text{ days/year} = 2,190\\text{ hours/year}$$\n\n3. Total annual energy consumed:\n   $$E_{\\text{incandescent}} = 0.60\\text{ kW} \\times 2,190\\text{ hours} = 1,314.0\\text{ kWh/year}$$\n\n**(b) Annual Energy Consumption of LED Bulbs ($E_{\\text{LED}}$):**\n1. Total wattage of 10 LED bulbs:\n   $$P_{\\text{LED}} = 10 \\times 9\\text{ W} = 90\\text{ W} = 0.09\\text{ kW}$$\n\n2. Total annual energy consumed:\n   $$E_{\\text{LED}} = 0.09\\text{ kW} \\times 2,190\\text{ hours} = 197.1\\text{ kWh/year}$$\n\n**(c) Annual Financial Savings ($\\text{Savings}_{\\text{GHS}}$):**\n1. Calculate the net energy saved:\n   $$\\Delta E = E_{\\text{incandescent}} - E_{\\text{LED}}$$\n   $$\\Delta E = 1,314.0\\text{ kWh} - 197.1\\text{ kWh} = 1,116.9\\text{ kWh/year}$$\n   *(Percentage Energy Reduction: $\\frac{1,116.9}{1,314.0} \\times 100\\% = 85.0\\%$)*\n\n2. Multiply the saved kilowatt-hours by the tariff:\n   $$\\text{Savings}_{\\text{GHS}} = 1,116.9\\text{ kWh} \\times \\text{GHS } 1.35/\\text{kWh} = \\text{GHS } 1,507.815 \\approx \\text{GHS } 1,507.82\\text{ per year}$$\n\n**(d) Net Reduction in Carbon Dioxide Emissions ($\\Delta M_{CO_2}$):**\n1. Multiply the conserved electrical energy by the grid emission factor:\n   $$\\Delta M_{CO_2} = \\Delta E \\times 0.40\\text{ kg } CO_2/\\text{kWh}$$\n   $$\\Delta M_{CO_2} = 1,116.9\\text{ kWh} \\times 0.40\\text{ kg/kWh} = 446.76\\text{ kg of } CO_2\\text{ per year}$$\n\n*Pedagogical Conclusion:* Switching to LED lighting cuts domestic lighting power consumption by **$85\\%$**, saves the household **$\\text{GHS } 1,507.82$** annually on electricity bills, and prevents **$446.76\\text{ kg}$** of carbon emissions.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s18_1",
-        "questionPrompt": "Explain why greenhouse gases allow incoming solar radiation to reach Earth's surface but trap outgoing radiation attempting to escape into space.",
-        "stepByStepSolution": "Step 1: Incident solar radiation — The Sun is extremely hot (~5,500°C surface temperature) and emits shortwave electromagnetic radiation (visible light and UV). Greenhouse gases in Earth's atmosphere are transparent to short wavelengths, allowing solar rays to pass through directly and warm the Earth's surface.\nStep 2: Terrestrial re-emission — The warmed Earth is much cooler (~15°C) and re-radiates thermal energy as longwave infrared radiation.\nStep 3: Molecular absorption — Greenhouse gas molecules (CO2, CH4, H2O vapor) possess molecular bond vibrational frequencies that resonate with and absorb longwave infrared photons, re-radiating heat back down toward Earth and preventing its escape into deep space.",
-        "examinerTip": "Examiner Tip: Highlight the physical difference: incoming radiation is shortwave (passes through); outgoing terrestrial radiation is longwave infrared (absorbed)."
+        "id": "WE_B7_CC_01",
+        "questionPrompt": "A rural educational complex near Navrongo installs a 10 kWp grid-tied solar photovoltaic array. The regional daily solar insolation averages 5.5 peak sun hours (h/day), and the system operates with an overall performance ratio of PR = 0.78 (78%). (a) Calculate the total annual electrical energy generated (kWh/year). (b) If this replaces a diesel generator emitting 0.85 kg CO2/kWh, calculate the mass of CO2 abated annually in metric tonnes.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_CC_02",
+        "questionPrompt": "The Kumasi Oti Landfill receives 1,000 metric tonnes (1,000,000 kg) of municipal waste weekly, of which 60% is biodegradable organic matter yielding 0.08 m^3 of pure methane per kg. Methane has a calorific value of 36 MJ/m^3 and an electrical generation efficiency of 35% (1 kWh = 3.6 MJ). Density of CH4 = 0.717 kg/m^3; GWP = 28. (a) Find the weekly volume of methane generated (m^3). (b) Determine weekly electrical output (kWh). (c) Calculate the equivalent CO2 warming impact (CO2-eq) prevented per week.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_CC_03",
+        "questionPrompt": "The upper ocean column off Keta has an effective depth of h0 = 250 m and warms by ΔT = 1.2°C. The volumetric thermal expansion coefficient of seawater is β = 2.1 * 10^-4 °C^-1 (Δh = h0 * β * ΔT). The sandy beach has a topographic slope of 1:80 (1 cm vertical rise causes 80 cm horizontal inland retreat). (a) Calculate vertical sea-level rise (Δh in cm). (b) Determine horizontal inland retreat (meters). (c) State two coastal defense interventions.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_CC_04",
+        "questionPrompt": "A household in Dansoman, Accra, uses 10 incandescent 60 W bulbs operating 6 hours daily (365 days/year). They replace them with 10 LED bulbs drawing 9 W each. Tariff = GHS 1.35 per kWh; national grid emission factor = 0.40 kg CO2/kWh. (a) Calculate annual kWh consumed by incandescent bulbs. (b) Calculate annual kWh consumed by LED bulbs. (c) Determine annual financial savings in GHS. (d) Calculate annual CO2 reduction in kg.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s18_1",
+        "id": "B7_CC_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which atmospheric gas accounts for the largest proportion of human-induced enhanced greenhouse warming?",
+        "prompt": "What is weather defined as in meteorological science?",
         "options": [
-          "Nitrogen (N2)",
-          "Carbon dioxide (CO2)",
-          "Oxygen (O2)",
-          "Argon (Ar)"
+          "A. The long-term condition of the atmosphere over 30 years",
+          "B. The condition of the atmosphere over a short period of time describing hotness, coldness, or rain",
+          "C. The gravitational pull of the moon on ocean tides",
+          "D. The movement of tectonic plates inside the Earth"
         ],
-        "correctAnswer": "Carbon dioxide (CO2)",
-        "hint": "Emitted from burning fossil fuels like coal, petrol, and diesel.",
-        "workedSolution": "Carbon dioxide is the principal anthropogenic greenhouse gas driving enhanced global warming, emitted in massive volumes from fossil fuel combustion and deforestation.",
+        "correctAnswer": "B. The condition of the atmosphere over a short period of time describing hotness, coldness, or rain",
+        "hint": "Weather describes the short-term condition of the atmosphere regarding temperature, wetness, cloudiness, and calm or stormy skies.",
+        "workedSolution": "Weather describes the short-term condition of the atmosphere regarding temperature, wetness, cloudiness, and calm or stormy skies.",
         "points": 1
       },
       {
-        "id": "q_b7_s18_2",
+        "id": "B7_CC_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is climate?",
+        "options": [
+          "A. Daily rainfall changes over 24 hours",
+          "B. The condition of the atmosphere at a particular location over a long period of time",
+          "C. The speed at which clouds move across the sky",
+          "D. The temperature of ocean water on a single morning"
+        ],
+        "correctAnswer": "B. The condition of the atmosphere at a particular location over a long period of time",
+        "hint": "Climate is the long-term pattern and average variation of atmospheric elements recorded over an extended period.",
+        "workedSolution": "Climate is the long-term pattern and average variation of atmospheric elements recorded over an extended period.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Significant long-term alterations in global or regional weather patterns caused by human and natural activities are called:",
+        "options": [
+          "A. Seasonal drift",
+          "B. Climate change",
+          "C. Tidal shift",
+          "D. Cloud seeding"
+        ],
+        "correctAnswer": "B. Climate change",
+        "hint": "Climate change refers to persistent, long-term changes in average weather patterns and temperatures across regions or the planet.",
+        "workedSolution": "Climate change refers to persistent, long-term changes in average weather patterns and temperatures across regions or the planet.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a major human activity driving modern climate change?",
+        "options": [
+          "A. Burning fossil fuels (coal, oil, and natural gas)",
+          "B. Planting trees in community school gardens",
+          "C. Walking to school rather than driving cars",
+          "D. Generating clean electricity with solar panels"
+        ],
+        "correctAnswer": "A. Burning fossil fuels (coal, oil, and natural gas)",
+        "hint": "Burning fossil fuels releases massive amounts of heat-trapping carbon dioxide into the atmosphere.",
+        "workedSolution": "Burning fossil fuels releases massive amounts of heat-trapping carbon dioxide into the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does deforestation contribute to the increase of carbon dioxide in the atmosphere?",
+        "options": [
+          "A. Trees produce carbon dioxide during photosynthesis",
+          "B. Clearing forests removes natural carbon sinks that absorb CO2, releasing stored carbon into the air",
+          "C. Cutting down trees adds cold water to rivers",
+          "D. Fallen logs turn directly into ozone gas"
+        ],
+        "correctAnswer": "B. Clearing forests removes natural carbon sinks that absorb CO2, releasing stored carbon into the air",
+        "hint": "Trees take in carbon dioxide during photosynthesis; destroying forests eliminates this absorption and releases stored carbon.",
+        "workedSolution": "Trees take in carbon dioxide during photosynthesis; destroying forests eliminates this absorption and releases stored carbon.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which human activity releases large quantities of methane (CH4) gas into the atmosphere?",
+        "options": [
+          "A. Ruminant livestock farming (cattle rearing) and burying garbage in landfills",
+          "B. Catching fish with nylon nets in oceans",
+          "C. Pumping water from deep boreholes",
+          "D. Installing solar street lights"
+        ],
+        "correctAnswer": "A. Ruminant livestock farming (cattle rearing) and burying garbage in landfills",
+        "hint": "Methane is produced when organic garbage decays in landfills and from enteric fermentation in cattle.",
+        "workedSolution": "Methane is produced when organic garbage decays in landfills and from enteric fermentation in cattle.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following natural factors influences regional and global climate patterns?",
+        "options": [
+          "A. Periodic volcanic eruptions that eject ash and gases into the atmosphere",
+          "B. Building concrete houses in towns",
+          "C. Digging agricultural drainage gutters",
+          "D. Paving footpaths in school compounds"
+        ],
+        "correctAnswer": "A. Periodic volcanic eruptions that eject ash and gases into the atmosphere",
+        "hint": "Volcanic eruptions release large quantities of gases and dust particles that can block sunlight and influence global climate.",
+        "workedSolution": "Volcanic eruptions release large quantities of gases and dust particles that can block sunlight and influence global climate.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary cause of uneven solar heating across the Earth's surface?",
+        "options": [
+          "A. The Earth is a curved sphere where the equator receives more perpendicular rays than the poles",
+          "B. The Sun only shines on Africa",
+          "C. Oceans do not receive sunlight",
+          "D. Clouds only form over deserts"
+        ],
+        "correctAnswer": "A. The Earth is a curved sphere where the equator receives more perpendicular rays than the poles",
+        "hint": "Because of Earth's spherical curvature, the sun's rays strike the equator directly, heating it more intensely than the poles.",
+        "workedSolution": "Because of Earth's spherical curvature, the sun's rays strike the equator directly, heating it more intensely than the poles.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do landmasses and ocean bodies heat up and cool down at different rates?",
+        "options": [
+          "A. Water has a higher specific heat capacity than land, meaning water heats up and cools down much slower than land",
+          "B. Land is transparent to solar light",
+          "C. Ocean water generates its own heat",
+          "D. Land surfaces absorb zero solar radiation"
+        ],
+        "correctAnswer": "A. Water has a higher specific heat capacity than land, meaning water heats up and cools down much slower than land",
+        "hint": "Land and water absorb and release heat at different rates, leading to coastal temperature differences and wind patterns.",
+        "workedSolution": "Land and water absorb and release heat at different rates, leading to coastal temperature differences and wind patterns.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is global warming defined as?",
+        "options": [
+          "A. An increase in the average global atmospheric temperature of the Earth",
+          "B. The seasonal arrival of harmattan winds",
+          "C. A temporary rise in soil temperature at noon",
+          "D. The warming of water inside an electric kettle"
+        ],
+        "correctAnswer": "A. An increase in the average global atmospheric temperature of the Earth",
+        "hint": "Global warming is the persistent increase in average global temperatures caused by accumulating greenhouse gases.",
+        "workedSolution": "Global warming is the persistent increase in average global temperatures caused by accumulating greenhouse gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What natural atmospheric phenomenon traps heat on Earth, keeping it warm enough to sustain biological life?",
+        "options": [
+          "A. The greenhouse effect",
+          "B. The Coriolis effect",
+          "C. Thermal inversion",
+          "D. Magnetic deflection"
+        ],
+        "correctAnswer": "A. The greenhouse effect",
+        "hint": "The greenhouse effect is the natural trapping of infrared heat radiation by atmospheric gases to keep Earth warm.",
+        "workedSolution": "The greenhouse effect is the natural trapping of infrared heat radiation by atmospheric gases to keep Earth warm.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a greenhouse gas?",
+        "options": [
+          "A. Carbon dioxide (CO2)",
+          "B. Pure Argon",
+          "C. Helium",
+          "D. Pure Hydrogen"
+        ],
+        "correctAnswer": "A. Carbon dioxide (CO2)",
+        "hint": "Carbon dioxide, methane, nitrous oxide, and water vapor are primary greenhouse gases that trap heat in the atmosphere.",
+        "workedSolution": "Carbon dioxide, methane, nitrous oxide, and water vapor are primary greenhouse gases that trap heat in the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which gas is considered the single largest contributor to human-induced global warming?",
+        "options": [
+          "A. Carbon dioxide (CO2)",
+          "B. Oxygen",
+          "C. Nitrogen",
+          "D. Neon"
+        ],
+        "correctAnswer": "A. Carbon dioxide (CO2)",
+        "hint": "Carbon dioxide emitted from burning fossil fuels is the most prominent anthropogenic greenhouse gas.",
+        "workedSolution": "Carbon dioxide emitted from burning fossil fuels is the most prominent anthropogenic greenhouse gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which greenhouse gas is added in large volumes to the atmosphere as atmospheric temperatures rise and oceanic evaporation increases?",
+        "options": [
+          "A. Water vapor",
+          "B. Liquid nitrogen",
+          "C. Argon gas",
+          "D. Chlorine gas"
+        ],
+        "correctAnswer": "A. Water vapor",
+        "hint": "As temperatures rise, evaporation from water bodies increases, adding more water vapor to the atmosphere.",
+        "workedSolution": "As temperatures rise, evaporation from water bodies increases, adding more water vapor to the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What primary effect does global warming have on polar ice caps and glaciers?",
+        "options": [
+          "A. It causes them to freeze harder into stone",
+          "B. It causes icebergs and glaciers to melt rapidly",
+          "C. It turns ice into snow crystals",
+          "D. It lifts ice into the stratosphere"
+        ],
+        "correctAnswer": "B. It causes icebergs and glaciers to melt rapidly",
+        "hint": "Elevated global temperatures cause icebergs and polar ice sheets to melt, contributing to rising sea levels.",
+        "workedSolution": "Elevated global temperatures cause icebergs and polar ice sheets to melt, contributing to rising sea levels.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does the melting of continental ice caps affect coastal communities in Ghana?",
+        "options": [
+          "A. It leads to sea-level rise and coastal submersion or flooding",
+          "B. It dries up the ocean completely",
+          "C. It stops ocean tides from moving",
+          "D. It cools the ocean into ice"
+        ],
+        "correctAnswer": "A. It leads to sea-level rise and coastal submersion or flooding",
+        "hint": "Melting land ice and thermal expansion of seawater cause sea levels to rise, submerging and eroding low-lying coastal areas.",
+        "workedSolution": "Melting land ice and thermal expansion of seawater cause sea levels to rise, submerging and eroding low-lying coastal areas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the ozone layer?",
+        "options": [
+          "A. A blanket of smog over industrial cities",
+          "B. A region of the upper stratosphere containing a higher concentration of ozone molecules that absorbs harmful UV rays",
+          "C. A layer of plastic waste floating in oceans",
+          "D. A cloud of carbon monoxide produced by cars"
+        ],
+        "correctAnswer": "B. A region of the upper stratosphere containing a higher concentration of ozone molecules that absorbs harmful UV rays",
+        "hint": "The ozone layer is a stratospheric region rich in ozone molecules that absorbs harmful ultraviolet (UV) radiation from the Sun.",
+        "workedSolution": "The ozone layer is a stratospheric region rich in ozone molecules that absorbs harmful ultraviolet (UV) radiation from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the chemical formula of an ozone molecule?",
+        "options": [
+          "A. O2",
+          "B. O3",
+          "C. CO2",
+          "D. H2O"
+        ],
+        "correctAnswer": "B. O3",
+        "hint": "Ozone is a triatomic molecule made of three oxygen atoms bonded together (O3).",
+        "workedSolution": "Ozone is a triatomic molecule made of three oxygen atoms bonded together (O3).",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary class of synthetic chemicals responsible for the depletion of the stratospheric ozone layer?",
+        "options": [
+          "A. Chlorofluorocarbons (CFCs)",
+          "B. Pure water vapor",
+          "C. Table salt",
+          "D. Nitrogen gas"
+        ],
+        "correctAnswer": "A. Chlorofluorocarbons (CFCs)",
+        "hint": "Chlorofluorocarbons (CFCs) used in old cooling systems and aerosol propellants are the main agents of ozone destruction.",
+        "workedSolution": "Chlorofluorocarbons (CFCs) used in old cooling systems and aerosol propellants are the main agents of ozone destruction.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which severe human health condition is directly caused by increased exposure to solar ultraviolet (UV) rays penetrating depleted ozone?",
+        "options": [
+          "A. Skin cancer",
+          "B. Kwashiorkor",
+          "C. Goitre",
+          "D. Rickets"
+        ],
+        "correctAnswer": "A. Skin cancer",
+        "hint": "Excess UV radiation penetrating through thinned ozone damages skin cellular DNA, triggering skin cancer and burns.",
+        "workedSolution": "Excess UV radiation penetrating through thinned ozone damages skin cellular DNA, triggering skin cancer and burns.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does excessive ultraviolet (UV) radiation penetrating the ozone layer harm agricultural crops?",
+        "options": [
+          "A. It makes crops grow three times faster",
+          "B. It damages soil microorganisms that help absorb and fix nitrogen, reducing food crop yield",
+          "C. It turns crops into sugar",
+          "D. It eliminates all crop pests"
+        ],
+        "correctAnswer": "B. It damages soil microorganisms that help absorb and fix nitrogen, reducing food crop yield",
+        "hint": "UV radiation damages beneficial soil bacteria that fix nitrogen, impairing plant nutrition and reducing harvest yields.",
+        "workedSolution": "UV radiation damages beneficial soil bacteria that fix nitrogen, impairing plant nutrition and reducing harvest yields.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are sustainable energy choices?",
+        "options": [
+          "A. Energy derived from resources that can maintain operations without endangering future energy needs or the climate",
+          "B. Energy produced exclusively by burning coal",
+          "C. Energy that pollutes rivers",
+          "D. Using only non-renewable crude petroleum"
+        ],
+        "correctAnswer": "A. Energy derived from resources that can maintain operations without endangering future energy needs or the climate",
+        "hint": "Sustainable energy choices meet current energy demands without depleting finite resources or harming the environment.",
+        "workedSolution": "Sustainable energy choices meet current energy demands without depleting finite resources or harming the environment.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is categorized as a renewable sustainable energy source?",
+        "options": [
+          "A. Solar energy",
+          "B. Diesel fuel",
+          "C. Anthracite coal",
+          "D. Kerosene"
+        ],
+        "correctAnswer": "A. Solar energy",
+        "hint": "Solar energy is naturally replenished and sustainable, unlike finite fossil fuels.",
+        "workedSolution": "Solar energy is naturally replenished and sustainable, unlike finite fossil fuels.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What device is used to convert sunlight directly into electricity?",
+        "options": [
+          "A. Solar photovoltaic (PV) cell or panel",
+          "B. Diesel generator",
+          "C. Kerosene stove",
+          "D. Incandescent light bulb"
+        ],
+        "correctAnswer": "A. Solar photovoltaic (PV) cell or panel",
+        "hint": "Solar photovoltaic (PV) systems capture radiant sunlight and convert it directly into electrical current.",
+        "workedSolution": "Solar photovoltaic (PV) systems capture radiant sunlight and convert it directly into electrical current.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which renewable energy technology captures the kinetic energy of moving air to spin electric generators?",
+        "options": [
+          "A. Wind turbines",
+          "B. Solar water heaters",
+          "C. Coal boilers",
+          "D. Hand fans"
+        ],
+        "correctAnswer": "A. Wind turbines",
+        "hint": "Wind turbines capture the kinetic energy of blowing wind and convert it into electrical power.",
+        "workedSolution": "Wind turbines capture the kinetic energy of blowing wind and convert it into electrical power.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What clean energy technology captures the natural thermal heat coming from deep inside the Earth?",
+        "options": [
+          "A. Geothermal energy",
+          "B. Biomass power",
+          "C. Hydroelectric power",
+          "D. Solar photovoltaic"
+        ],
+        "correctAnswer": "A. Geothermal energy",
+        "hint": "Geothermal energy extracts steam and hot water from beneath the Earth's crust to generate electricity.",
+        "workedSolution": "Geothermal energy extracts steam and hot water from beneath the Earth's crust to generate electricity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Hydroelectric power stations generate electricity by capturing the energy of:",
+        "options": [
+          "A. Moving or falling water from rivers and dams",
+          "B. Burning plastic waste",
+          "C. Splitting atoms in reactors",
+          "D. Solar flares"
+        ],
+        "correctAnswer": "A. Moving or falling water from rivers and dams",
+        "hint": "Hydroelectric power plants harness flowing or falling river water to spin hydraulic turbines and drive generators.",
+        "workedSolution": "Hydroelectric power plants harness flowing or falling river water to spin hydraulic turbines and drive generators.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which major hydroelectric power facility supplies a significant portion of Ghana's national electricity?",
+        "options": [
+          "A. The Akosombo Dam",
+          "B. Hoover Dam",
+          "C. Kariba Dam",
+          "D. Aswan Dam"
+        ],
+        "correctAnswer": "A. The Akosombo Dam",
+        "hint": "The Akosombo Dam on the Volta River is Ghana's primary hydroelectric installation.",
+        "workedSolution": "The Akosombo Dam on the Volta River is Ghana's primary hydroelectric installation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Renewable energy derived from organic matter such as wood, plant residues, and animal dung is termed:",
+        "options": [
+          "A. Biomass energy (bioenergy)",
+          "B. Geothermal power",
+          "C. Tidal power",
+          "D. Nuclear power"
+        ],
+        "correctAnswer": "A. Biomass energy (bioenergy)",
+        "hint": "Biomass energy is derived from organic plant and animal matter, including wood, crop residues, and dung.",
+        "workedSolution": "Biomass energy is derived from organic plant and animal matter, including wood, crop residues, and dung.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What major environmental advantage does solar energy have over fossil fuels?",
+        "options": [
+          "A. Solar power generates electricity without releasing greenhouse gases or air pollution",
+          "B. Solar power works only at night",
+          "C. Solar power uses coal as a backup fuel",
+          "D. Solar energy causes severe smog in cities"
+        ],
+        "correctAnswer": "A. Solar power generates electricity without releasing greenhouse gases or air pollution",
+        "hint": "Solar energy generation produces zero greenhouse gas emissions, protecting air quality and public health.",
+        "workedSolution": "Solar energy generation produces zero greenhouse gas emissions, protecting air quality and public health.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is solar energy considered an energy-independent power choice?",
+        "options": [
+          "A. Sunlight is free and available locally, reducing reliance on imported foreign fuels",
+          "B. Solar panels can only be manufactured in one country",
+          "C. Solar energy requires fuel pipelines",
+          "D. Solar energy uses gasoline every week"
+        ],
+        "correctAnswer": "A. Sunlight is free and available locally, reducing reliance on imported foreign fuels",
+        "hint": "Solar power harnesses local sunlight, making users independent of volatile international fossil fuel supplies.",
+        "workedSolution": "Solar power harnesses local sunlight, making users independent of volatile international fossil fuel supplies.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What respiratory health hazard is caused by inhaling smog generated from burning fossil fuels?",
+        "options": [
+          "A. Lung irritation and aggravated respiratory diseases",
+          "B. Stronger tooth enamel",
+          "C. Improved athletic endurance",
+          "D. Faster hair growth"
+        ],
+        "correctAnswer": "A. Lung irritation and aggravated respiratory diseases",
+        "hint": "Combustion smog and particulate matter irritate lung tissue, triggering asthma and chronic respiratory illnesses.",
+        "workedSolution": "Combustion smog and particulate matter irritate lung tissue, triggering asthma and chronic respiratory illnesses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a green economy defined as?",
+        "options": [
+          "A. An economy that reduces environmental risks and ecological scarcities while promoting sustainable development",
+          "B. An economy where all paper money is printed in green ink",
+          "C. An economy based only on cutting down trees",
+          "D. An economy that prohibits all agricultural trade"
+        ],
+        "correctAnswer": "A. An economy that reduces environmental risks and ecological scarcities while promoting sustainable development",
+        "hint": "A green economy is low-carbon, resource-efficient, and socially inclusive, balancing growth with environmental safety.",
+        "workedSolution": "A green economy is low-carbon, resource-efficient, and socially inclusive, balancing growth with environmental safety.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a primary characteristic of a green economy?",
+        "options": [
+          "A. Low carbon emissions, resource efficiency, and social inclusivity",
+          "B. High fossil fuel consumption and open deforestation",
+          "C. Maximizing toxic waste generation",
+          "D. Relying strictly on diesel trucks"
+        ],
+        "correctAnswer": "A. Low carbon emissions, resource efficiency, and social inclusivity",
+        "hint": "A green economy prioritizes low greenhouse emissions, efficient resource utilization, and inclusive prosperity.",
+        "workedSolution": "A green economy prioritizes low greenhouse emissions, efficient resource utilization, and inclusive prosperity.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which actionable practice supports the transition to a green economy in our communities?",
+        "options": [
+          "A. Reduce, reuse, and recycle materials",
+          "B. Burn plastic waste in street gutters",
+          "C. Leave electrical lights on all day",
+          "D. Throw food scraps into rivers"
+        ],
+        "correctAnswer": "A. Reduce, reuse, and recycle materials",
+        "hint": "The circular practice of reducing, reusing, and recycling is a core pillar of a resource-efficient green economy.",
+        "workedSolution": "The circular practice of reducing, reusing, and recycling is a core pillar of a resource-efficient green economy.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does using public transportation or carpooling help protect the climate?",
+        "options": [
+          "A. It reduces the number of vehicles on the road, lowering overall exhaust emissions and fuel consumption",
+          "B. It makes cars travel twice as fast",
+          "C. It converts gasoline into water vapor",
+          "D. It eliminates road maintenance"
+        ],
+        "correctAnswer": "A. It reduces the number of vehicles on the road, lowering overall exhaust emissions and fuel consumption",
+        "hint": "Shared and public transport lowers per-capita fossil fuel consumption, reducing vehicle greenhouse gas emissions.",
+        "workedSolution": "Shared and public transport lowers per-capita fossil fuel consumption, reducing vehicle greenhouse gas emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is reforestation?",
+        "options": [
+          "A. Planting trees on deforested land where a forest previously existed",
+          "B. Cutting down all trees to build shopping centers",
+          "C. Burning bush for cattle grazing",
+          "D. Paving land with asphalt"
+        ],
+        "correctAnswer": "A. Planting trees on deforested land where a forest previously existed",
+        "hint": "Reforestation is the ecological process of replanting trees on deforested or degraded forest land.",
+        "workedSolution": "Reforestation is the ecological process of replanting trees on deforested or degraded forest land.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is afforestation?",
+        "options": [
+          "A. Establishing a new forest by planting trees on land that was not previously forested",
+          "B. Felling trees for commercial timber export",
+          "C. Clearing vegetation for surface mining",
+          "D. Removing sand from riverbanks"
+        ],
+        "correctAnswer": "A. Establishing a new forest by planting trees on land that was not previously forested",
+        "hint": "Afforestation involves creating new forests on previously non-forested land, expanding natural carbon sinks.",
+        "workedSolution": "Afforestation involves creating new forests on previously non-forested land, expanding natural carbon sinks.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do tree planting initiatives help mitigate the greenhouse effect?",
+        "options": [
+          "A. Trees act as natural carbon sinks, absorbing carbon dioxide from the air during photosynthesis",
+          "B. Trees produce fossil fuel reserves",
+          "C. Trees block sunlight from reaching the Earth",
+          "D. Trees stop all rainfall"
+        ],
+        "correctAnswer": "A. Trees act as natural carbon sinks, absorbing carbon dioxide from the air during photosynthesis",
+        "hint": "Trees absorb atmospheric CO2 through photosynthetic respiration, storing carbon in their trunks, leaves, and roots.",
+        "workedSolution": "Trees absorb atmospheric CO2 through photosynthetic respiration, storing carbon in their trunks, leaves, and roots.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following household actions directly conserves electrical energy and reduces emissions?",
+        "options": [
+          "A. Replacing incandescent light bulbs with compact fluorescent lamps (CFLs) or LEDs",
+          "B. Leaving television sets running overnight",
+          "C. Using old, inefficient air conditioners with open windows",
+          "D. Ironing clothes with diesel-heated irons"
+        ],
+        "correctAnswer": "A. Replacing incandescent light bulbs with compact fluorescent lamps (CFLs) or LEDs",
+        "hint": "Energy-efficient compact fluorescent and LED bulbs consume significantly less electricity, reducing generation demands.",
+        "workedSolution": "Energy-efficient compact fluorescent and LED bulbs consume significantly less electricity, reducing generation demands.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is switching from firewood to liquefied petroleum gas (LPG) beneficial for the environment?",
+        "options": [
+          "A. It reduces tree cutting and lowers household smoke and soot pollution",
+          "B. LPG produces zero heat",
+          "C. Firewood is a non-renewable fossil mineral",
+          "D. LPG cools the kitchen to freezing point"
+        ],
+        "correctAnswer": "A. It reduces tree cutting and lowers household smoke and soot pollution",
+        "hint": "Using LPG for domestic cooking curbs deforestation from wood fuel collection and eliminates indoor smoke exposure.",
+        "workedSolution": "Using LPG for domestic cooking curbs deforestation from wood fuel collection and eliminates indoor smoke exposure.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does sustainable organic agriculture support environmental protection?",
+        "options": [
+          "A. It avoids synthetic chemical fertilizers and pesticides, improving soil health and water conservation",
+          "B. It clears all trees from farm borders",
+          "C. It turns crop fields into concrete surfaces",
+          "D. It requires burning fields after every harvest"
+        ],
+        "correctAnswer": "A. It avoids synthetic chemical fertilizers and pesticides, improving soil health and water conservation",
+        "hint": "Sustainable organic farming improves soil structure, preserves biodiversity, and cuts nitrous oxide emissions.",
+        "workedSolution": "Sustainable organic farming improves soil structure, preserves biodiversity, and cuts nitrous oxide emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is green building technology?",
+        "options": [
+          "A. Designing buildings that use energy, water, and building materials efficiently to reduce environmental impacts",
+          "B. Painting every house wall green",
+          "C. Constructing buildings without doors or windows",
+          "D. Building houses out of wet mud only"
+        ],
+        "correctAnswer": "A. Designing buildings that use energy, water, and building materials efficiently to reduce environmental impacts",
+        "hint": "Green building architecture maximizes energy efficiency, natural lighting, and water conservation throughout a structure's life.",
+        "workedSolution": "Green building architecture maximizes energy efficiency, natural lighting, and water conservation throughout a structure's life.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What impact does global warming have on freshwater availability in rivers, streams, and lakes?",
+        "options": [
+          "A. High evaporation rates reduce water volume, leading to freshwater shortages and shrinking lakes",
+          "B. It turns river water into pure diesel",
+          "C. It causes all lakes to double in depth",
+          "D. It stops rivers from flowing into the sea"
+        ],
+        "correctAnswer": "A. High evaporation rates reduce water volume, leading to freshwater shortages and shrinking lakes",
+        "hint": "Elevated temperatures accelerate evaporation, depleting freshwater reserves in lakes and seasonal river systems.",
+        "workedSolution": "Elevated temperatures accelerate evaporation, depleting freshwater reserves in lakes and seasonal river systems.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a direct consequence of global warming on terrestrial ecosystems?",
+        "options": [
+          "A. Disruption of plant life cycles and widespread extinction of vulnerable species",
+          "B. Immediate conversion of deserts into oceans",
+          "C. Plants growing without needing water",
+          "D. Wild animals losing all fur"
+        ],
+        "correctAnswer": "A. Disruption of plant life cycles and widespread extinction of vulnerable species",
+        "hint": "Thermal shifts disrupt flowering times, migration patterns, and habitat ranges, driving extinction risks.",
+        "workedSolution": "Thermal shifts disrupt flowering times, migration patterns, and habitat ranges, driving extinction risks.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do farmers apply more chemical fertilizers to crops during prolonged droughts caused by climate change?",
+        "options": [
+          "A. To stimulate struggling crops in degraded, moisture-stressed soils, despite higher environmental costs",
+          "B. To make the field soil colder",
+          "C. Because fertilizer turns into water",
+          "D. To kill all earthworms"
+        ],
+        "correctAnswer": "A. To stimulate struggling crops in degraded, moisture-stressed soils, despite higher environmental costs",
+        "hint": "Struggling crop yields on degraded land often push farmers to increase fertilizer applications to maintain output.",
+        "workedSolution": "Struggling crop yields on degraded land often push farmers to increase fertilizer applications to maintain output.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of clean ocean wave and tidal energy systems?",
+        "options": [
+          "A. Converting the kinetic and potential energy of ocean tides and waves into electricity",
+          "B. Removing all salt from the sea",
+          "C. Heating ocean water to boil fish",
+          "D. Pumping sea water into clouds"
+        ],
+        "correctAnswer": "A. Converting the kinetic and potential energy of ocean tides and waves into electricity",
+        "hint": "Ocean energy technologies convert surface wave motion and tidal rises into mechanical and electrical power.",
+        "workedSolution": "Ocean energy technologies convert surface wave motion and tidal rises into mechanical and electrical power.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why are fossil fuels classified as non-renewable energy sources?",
+        "options": [
+          "A. They take millions of years to form and exist in finite geological deposits that will eventually run out",
+          "B. They are made of water",
+          "C. They replenish themselves every night",
+          "D. They can be grown in vegetable gardens"
+        ],
+        "correctAnswer": "A. They take millions of years to form and exist in finite geological deposits that will eventually run out",
+        "hint": "Fossil fuels are finite geologic deposits of ancient biomass that cannot be replaced once exhausted.",
+        "workedSolution": "Fossil fuels are finite geologic deposits of ancient biomass that cannot be replaced once exhausted.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How can citizens support green businesses in their local communities?",
+        "options": [
+          "A. By purchasing eco-friendly, energy-efficient, and recyclable locally made products",
+          "B. By dumping plastic litter near stores",
+          "C. By avoiding local markets completely",
+          "D. By burning business packaging"
+        ],
+        "correctAnswer": "A. By purchasing eco-friendly, energy-efficient, and recyclable locally made products",
+        "hint": "Patronizing eco-certified and sustainable local enterprises encourages green commerce and sustainable manufacturing.",
+        "workedSolution": "Patronizing eco-certified and sustainable local enterprises encourages green commerce and sustainable manufacturing.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the overall goal of implementing sustainable environmental policies and regulations?",
+        "options": [
+          "A. To protect natural ecosystems, minimize pollution, and guarantee resources for future generations",
+          "B. To stop all economic trade in the country",
+          "C. To prevent people from farming",
+          "D. To ban all technology usage"
+        ],
+        "correctAnswer": "A. To protect natural ecosystems, minimize pollution, and guarantee resources for future generations",
+        "hint": "Environmental regulations exist to protect biospheric health, prevent resource depletion, and ensure sustainability.",
+        "workedSolution": "Environmental regulations exist to protect biospheric health, prevent resource depletion, and ensure sustainability.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Agricultural activities contribute significantly to methane emissions into the atmosphere primarily through:",
+        "prompt": "What step in the greenhouse effect occurs when the warmed Earth radiates heat back toward space?",
         "options": [
-          "Photosynthesis in orange trees",
-          "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
-          "Harvesting ripe cocoa pods",
-          "Spraying water on vegetable beds"
+          "A. Emission of long-wavelength infrared (heat) radiation from the Earth's surface",
+          "B. Influx of high-energy ultraviolet rays from soil",
+          "C. Direct reflection of visible light by ocean beds",
+          "D. Absorption of oxygen by clouds"
         ],
-        "correctAnswer": "Enteric fermentation in ruminant livestock (cattle) and anaerobic flooded rice fields",
-        "hint": "Anaerobic microbes in cattle stomachs and flooded rice mud produce methane.",
-        "workedSolution": "Methanogenic bacteria inside the rumen of cattle and in waterlogged anaerobic rice paddies produce large amounts of methane gas (CH4), which is released into the atmosphere.",
+        "correctAnswer": "A. Emission of long-wavelength infrared (heat) radiation from the Earth's surface",
+        "hint": "The Earth absorbs shortwave solar radiation and reradiates it upward as longer-wavelength infrared heat.",
+        "workedSolution": "The Earth absorbs shortwave solar radiation and reradiates it upward as longer-wavelength infrared heat.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do greenhouse gas molecules in the atmosphere prevent heat from escaping into outer space?",
+        "options": [
+          "A. They absorb outgoing infrared radiation and reradiate thermal energy in all directions, including back toward the Earth",
+          "B. They build an airtight solid ceiling of ice",
+          "C. They reflect all sunlight back to the Sun",
+          "D. They convert heat energy into sound waves"
+        ],
+        "correctAnswer": "A. They absorb outgoing infrared radiation and reradiate thermal energy in all directions, including back toward the Earth",
+        "hint": "Greenhouse gases absorb infrared radiation and emit it isotropically, retaining thermal energy in the lower atmosphere.",
+        "workedSolution": "Greenhouse gases absorb infrared radiation and emit it isotropically, retaining thermal energy in the lower atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does deforestation amplify global warming through two distinct mechanisms?",
+        "options": [
+          "A. It releases stored carbon when vegetation is burned or rots, and eliminates future photosynthetic absorption of CO2",
+          "B. It stops all wind from blowing and cools the soil",
+          "C. It turns trees into water vapor",
+          "D. It causes the Sun to emit more solar flares"
+        ],
+        "correctAnswer": "A. It releases stored carbon when vegetation is burned or rots, and eliminates future photosynthetic absorption of CO2",
+        "hint": "Clearing trees halts carbon sequestration and directly releases stored biospheric carbon as carbon dioxide gas.",
+        "workedSolution": "Clearing trees halts carbon sequestration and directly releases stored biospheric carbon as carbon dioxide gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do periodic El Niño and La Niña events in the Pacific Ocean alter global climate?",
+        "options": [
+          "A. They shift ocean surface water temperatures, altering atmospheric jet streams and global precipitation patterns",
+          "B. They change the tilt of the Earth's axis",
+          "C. They stop the rotation of the Earth on its axis",
+          "D. They increase the distance between Earth and the Sun"
+        ],
+        "correctAnswer": "A. They shift ocean surface water temperatures, altering atmospheric jet streams and global precipitation patterns",
+        "hint": "El Niño and La Niña alter equatorial Pacific sea-surface temperatures, shifting global wind and rainfall patterns.",
+        "workedSolution": "El Niño and La Niña alter equatorial Pacific sea-surface temperatures, shifting global wind and rainfall patterns.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do explosive volcanic eruptions cause short-term global cooling rather than warming?",
+        "options": [
+          "A. Sulfuric gases and fine ash ejected into the stratosphere form reflective aerosol veils that scatter incoming solar radiation",
+          "B. Lava cools down the ocean waters",
+          "C. Volcanic ash absorbs all greenhouse gases",
+          "D. Volcanoes emit frozen carbon ice"
+        ],
+        "correctAnswer": "A. Sulfuric gases and fine ash ejected into the stratosphere form reflective aerosol veils that scatter incoming solar radiation",
+        "hint": "Stratospheric sulfate aerosols and volcanic dust increase Earth's albedo, reflecting solar rays and cooling surface temperatures.",
+        "workedSolution": "Stratospheric sulfate aerosols and volcanic dust increase Earth's albedo, reflecting solar rays and cooling surface temperatures.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the annual revolution of the tilted Earth ($23.5^\\circ$) around the Sun create seasonal climate cycles?",
+        "options": [
+          "A. It continuously changes the angle of solar incidence and duration of daylight received by each hemisphere throughout the year",
+          "B. It brings the Earth physically closer to the Sun in summer",
+          "C. It stops solar radiation during winter months",
+          "D. It turns atmospheric nitrogen into oxygen"
+        ],
+        "correctAnswer": "A. It continuously changes the angle of solar incidence and duration of daylight received by each hemisphere throughout the year",
+        "hint": "Earth's axial tilt alters the angle of sunlight and daylight duration during its annual orbit, driving the seasons.",
+        "workedSolution": "Earth's axial tilt alters the angle of sunlight and daylight duration during its annual orbit, driving the seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the daytime sea breeze generated along the Ghanaian coast during sunny afternoons?",
+        "options": [
+          "A. Continental land heats up faster than ocean water, creating rising warm air over land that pulls in cooler air from the sea",
+          "B. Ocean water heats up faster than dry land",
+          "C. Waves push air onto the beach mechanically",
+          "D. The Sun sets over the ocean first"
+        ],
+        "correctAnswer": "A. Continental land heats up faster than ocean water, creating rising warm air over land that pulls in cooler air from the sea",
+        "hint": "Lower heat capacity causes land to warm faster, forming a low-pressure area that draws cooler maritime air inland.",
+        "workedSolution": "Lower heat capacity causes land to warm faster, forming a low-pressure area that draws cooler maritime air inland.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What chemical process in landfills produces combustible methane gas from organic municipal waste?",
+        "options": [
+          "A. Anaerobic biological decomposition by methanogenic bacteria in the absence of oxygen",
+          "B. Aerobic oxidation in the presence of strong winds",
+          "C. Direct photosynthesis by buried grass",
+          "D. Nuclear fission of plastic containers"
+        ],
+        "correctAnswer": "A. Anaerobic biological decomposition by methanogenic bacteria in the absence of oxygen",
+        "hint": "When organic waste is buried without oxygen in landfills, anaerobic microbes ferment it into methane gas.",
+        "workedSolution": "When organic waste is buried without oxygen in landfills, anaerobic microbes ferment it into methane gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does elevated atmospheric temperature cause a positive feedback loop involving water vapor?",
+        "options": [
+          "A. Warmer air holds more evaporated water vapor, and since water vapor is a greenhouse gas, it traps more heat and warms the air further",
+          "B. Evaporation removes all clouds from the sky",
+          "C. Water vapor destroys carbon dioxide molecules",
+          "D. Warmer air freezes water droplets instantly"
+        ],
+        "correctAnswer": "A. Warmer air holds more evaporated water vapor, and since water vapor is a greenhouse gas, it traps more heat and warms the air further",
+        "hint": "Warming enhances evaporation; higher water vapor levels increase thermal absorption, accelerating the greenhouse effect.",
+        "workedSolution": "Warming enhances evaporation; higher water vapor levels increase thermal absorption, accelerating the greenhouse effect.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do Chlorofluorocarbons (CFCs) destroy stratospheric ozone molecules?",
+        "options": [
+          "A. Solar UV radiation breaks CFC molecules, releasing free chlorine atoms that catalytically convert ozone ($O_3$) into ordinary oxygen ($O_2$)",
+          "B. CFCs freeze ozone molecules into solid ice",
+          "C. CFCs absorb all oxygen from the atmosphere",
+          "D. CFCs reflect all sunlight away from the stratosphere"
+        ],
+        "correctAnswer": "A. Solar UV radiation breaks CFC molecules, releasing free chlorine atoms that catalytically convert ozone ($O_3$) into ordinary oxygen ($O_2$)",
+        "hint": "UV photolysis releases chlorine free radicals from CFCs, which break down ozone molecules in a repeating catalytic cycle.",
+        "workedSolution": "UV photolysis releases chlorine free radicals from CFCs, which break down ozone molecules in a repeating catalytic cycle.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the destruction of nitrogen-fixing soil bacteria by UV radiation a serious threat to food security?",
+        "options": [
+          "A. Legumes and crops cannot obtain biological nitrogen needed for protein synthesis, stunting crop growth and reducing harvest yields",
+          "B. Soil turns into solid rock",
+          "C. Crops absorb too much water and rot",
+          "D. It causes weeds to turn into trees"
+        ],
+        "correctAnswer": "A. Legumes and crops cannot obtain biological nitrogen needed for protein synthesis, stunting crop growth and reducing harvest yields",
+        "hint": "Excess UV damages rhizobial bacteria, disrupting natural nitrogen fixation and stunting plant protein development.",
+        "workedSolution": "Excess UV damages rhizobial bacteria, disrupting natural nitrogen fixation and stunting plant protein development.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does sea-level rise cause freshwater contamination in coastal lagoons and estuaries?",
+        "options": [
+          "A. Rising ocean salt water intrudes into coastal freshwater aquifers and shallow wells (saltwater intrusion)",
+          "B. Salt water evaporates and leaves only salt in wells",
+          "C. Sea water turns freshwater into acid",
+          "D. Rising seas push freshwater into the clouds"
+        ],
+        "correctAnswer": "A. Rising ocean salt water intrudes into coastal freshwater aquifers and shallow wells (saltwater intrusion)",
+        "hint": "Sea-level rise drives saline intrusion into coastal water tables, contaminating drinking water and agricultural soils.",
+        "workedSolution": "Sea-level rise drives saline intrusion into coastal water tables, contaminating drinking water and agricultural soils.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does climate change shift vegetative zones and agricultural planting seasons in West Africa?",
+        "options": [
+          "A. Changes in rainfall onset, duration, and temperature extremes alter the moisture availability required for crop growth",
+          "B. The soil moves geographically to new regions",
+          "C. The Sun changes its position in space",
+          "D. Plant seeds refuse to germinate in daylight"
+        ],
+        "correctAnswer": "A. Changes in rainfall onset, duration, and temperature extremes alter the moisture availability required for crop growth",
+        "hint": "Erratic precipitation and temperature patterns shift agro-ecological belts, altering traditional planting calendars.",
+        "workedSolution": "Erratic precipitation and temperature patterns shift agro-ecological belts, altering traditional planting calendars.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary constraint limiting the widespread deployment of geothermal power plants?",
+        "options": [
+          "A. High underground heat is geographically restricted to areas with tectonic plate boundaries and volcanic activity",
+          "B. Geothermal energy emits massive greenhouse gases",
+          "C. Geothermal steam is too cold to turn turbines",
+          "D. Geothermal power only works during rainy seasons"
+        ],
+        "correctAnswer": "A. High underground heat is geographically restricted to areas with tectonic plate boundaries and volcanic activity",
+        "hint": "Geothermal power requires accessible underground hydrothermal reservoirs, which are confined to volcanically active regions.",
+        "workedSolution": "Geothermal power requires accessible underground hydrothermal reservoirs, which are confined to volcanically active regions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the Akosombo Dam generate electricity without consuming fossil fuels?",
+        "options": [
+          "A. Potential energy of water stored in Lake Volta is converted into kinetic energy that spins hydraulic turbines connected to generators",
+          "B. Water in the dam is boiled using diesel fuel",
+          "C. Solar panels are floating on the entire dam surface",
+          "D. Electric cables are dropped into deep mud"
+        ],
+        "correctAnswer": "A. Potential energy of water stored in Lake Volta is converted into kinetic energy that spins hydraulic turbines connected to generators",
+        "hint": "Hydroelectric plants harness the hydraulic head of dammed water to spin turbines, producing clean mechanical power.",
+        "workedSolution": "Hydroelectric plants harness the hydraulic head of dammed water to spin turbines, producing clean mechanical power.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does biomass energy derived from sustainably replanted wood have lower net carbon impact than coal?",
+        "options": [
+          "A. The carbon dioxide released during combustion was recently absorbed from the atmosphere by the growing plants during photosynthesis",
+          "B. Wood does not contain carbon atoms",
+          "C. Burning wood produces zero smoke",
+          "D. Coal does not burn in oxygen"
+        ],
+        "correctAnswer": "A. The carbon dioxide released during combustion was recently absorbed from the atmosphere by the growing plants during photosynthesis",
+        "hint": "Sustainable biomass recycles modern biological carbon within the carbon cycle, unlike fossil fuels which add ancient stored carbon.",
+        "workedSolution": "Sustainable biomass recycles modern biological carbon within the carbon cycle, unlike fossil fuels which add ancient stored carbon.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the reliance on imported crude oil and petroleum an economic risk for developing nations?",
+        "options": [
+          "A. Fluctuating global market prices and currency exchange rates inflate domestic transportation and electricity costs",
+          "B. Petroleum cannot be transported in ships",
+          "C. Imported oil turns into water during transport",
+          "D. Crude oil expires after 24 hours"
+        ],
+        "correctAnswer": "A. Fluctuating global market prices and currency exchange rates inflate domestic transportation and electricity costs",
+        "hint": "Import dependence exposes economies to volatile global oil prices, straining foreign reserves and inflating energy tariffs.",
+        "workedSolution": "Import dependence exposes economies to volatile global oil prices, straining foreign reserves and inflating energy tariffs.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do energy-efficient light bulbs like LEDs reduce greenhouse gas emissions at power stations?",
+        "options": [
+          "A. They use up to 80% less electricity to produce the same light, reducing the quantity of fossil fuel burned at generation plants",
+          "B. They absorb carbon dioxide from bedroom air",
+          "C. They generate their own diesel fuel",
+          "D. They emit cold air that cools the house"
+        ],
+        "correctAnswer": "A. They use up to 80% less electricity to produce the same light, reducing the quantity of fossil fuel burned at generation plants",
+        "hint": "Lower electrical demand reduces fossil fuel consumption at thermal power stations, cutting emissions at the source.",
+        "workedSolution": "Lower electrical demand reduces fossil fuel consumption at thermal power stations, cutting emissions at the source.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary objective of agroforestry in sustainable agriculture?",
+        "options": [
+          "A. Integrating trees and shrubs into crop and livestock fields to sequester carbon, conserve soil moisture, and improve fertility",
+          "B. Cutting down all forest trees to grow maize",
+          "C. Painting farm plants with chemical dyes",
+          "D. Feeding crops with chemical weedicides"
+        ],
+        "correctAnswer": "A. Integrating trees and shrubs into crop and livestock fields to sequester carbon, conserve soil moisture, and improve fertility",
+        "hint": "Agroforestry combines forestry with farming, enhancing soil organic matter, sequestering carbon, and stabilizing microclimates.",
+        "workedSolution": "Agroforestry combines forestry with farming, enhancing soil organic matter, sequestering carbon, and stabilizing microclimates.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does green building design maximize passive cooling in tropical climates like Ghana?",
+        "options": [
+          "A. Utilizing wide roof overhangs, orientation away from direct solar glare, and large windows for natural cross-ventilation",
+          "B. Sealing all windows with airtight metal plates",
+          "C. Installing five air conditioners in every room",
+          "D. Building houses completely underground in water"
+        ],
+        "correctAnswer": "A. Utilizing wide roof overhangs, orientation away from direct solar glare, and large windows for natural cross-ventilation",
+        "hint": "Passive design uses shading, building orientation, and cross-ventilation to keep interiors cool without heavy air conditioning.",
+        "workedSolution": "Passive design uses shading, building orientation, and cross-ventilation to keep interiors cool without heavy air conditioning.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is recycling plastic containers beneficial to the climate compared to producing new plastics?",
+        "options": [
+          "A. Reprocessing scrap plastic uses significantly less energy than extracting and refining crude petroleum into virgin polymers",
+          "B. Recycled plastic is completely biodegradable",
+          "C. Plastic recycling removes salt from the ocean",
+          "D. Recycled plastic cannot catch fire"
+        ],
+        "correctAnswer": "A. Reprocessing scrap plastic uses significantly less energy than extracting and refining crude petroleum into virgin polymers",
+        "hint": "Mechanical recycling bypasses fossil fuel refining and cracking, slashing industrial energy use and associated emissions.",
+        "workedSolution": "Mechanical recycling bypasses fossil fuel refining and cracking, slashing industrial energy use and associated emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do anaerobic biogas digesters improve sanitation while generating clean energy in rural communities?",
+        "options": [
+          "A. They treat pathogen-rich livestock dung and organic waste in sealed digesters, producing biogas for cooking and bio-fertilizer for crops",
+          "B. They turn livestock dung into solid plastic",
+          "C. They freeze animal waste into ice cubes",
+          "D. They release methane directly into the clouds"
+        ],
+        "correctAnswer": "A. They treat pathogen-rich livestock dung and organic waste in sealed digesters, producing biogas for cooking and bio-fertilizer for crops",
+        "hint": "Biogas digestion destroys manure pathogens in sealed tanks, generating clean cooking gas and rich organic fertilizer.",
+        "workedSolution": "Biogas digestion destroys manure pathogens in sealed tanks, generating clean cooking gas and rich organic fertilizer.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of environmental advocacy and green regulations in national development?",
+        "options": [
+          "A. Mandating emission limits, promoting renewable energy standards, and discouraging polluting industrial practices",
+          "B. Banning all commercial transport vehicles",
+          "C. Forbidding the use of electricity in hospitals",
+          "D. Forcing citizens to live in forests"
+        ],
+        "correctAnswer": "A. Mandating emission limits, promoting renewable energy standards, and discouraging polluting industrial practices",
+        "hint": "Environmental regulations set enforceable pollution caps and incentivize adoption of clean technology across industries.",
+        "workedSolution": "Environmental regulations set enforceable pollution caps and incentivize adoption of clean technology across industries.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do electric vehicles (EVs) have lower lifetime carbon footprints when charged on clean electrical grids?",
+        "options": [
+          "A. They have zero tailpipe emissions and utilize renewable hydro or solar power rather than burning petroleum in combustion engines",
+          "B. They are powered by compressed coal",
+          "C. Their tires do not touch the ground",
+          "D. They run on distilled river water"
+        ],
+        "correctAnswer": "A. They have zero tailpipe emissions and utilize renewable hydro or solar power rather than burning petroleum in combustion engines",
+        "hint": "EVs eliminate petroleum combustion, producing zero direct emissions and running cleanly when charged by renewable grids.",
+        "workedSolution": "EVs eliminate petroleum combustion, producing zero direct emissions and running cleanly when charged by renewable grids.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does bush burning during traditional land preparation exacerbate the greenhouse effect?",
+        "options": [
+          "A. It rapidly oxidizes biomass, releasing large plumes of carbon dioxide, nitrous oxide, and soot aerosols into the atmosphere",
+          "B. It cools the soil down to freezing point",
+          "C. It converts carbon into pure diamond",
+          "D. It adds liquid nitrogen to the clouds"
+        ],
+        "correctAnswer": "A. It rapidly oxidizes biomass, releasing large plumes of carbon dioxide, nitrous oxide, and soot aerosols into the atmosphere",
+        "hint": "Open bush burning releases stored plant carbon as greenhouse gases and particulates, contributing to global warming.",
+        "workedSolution": "Open bush burning releases stored plant carbon as greenhouse gases and particulates, contributing to global warming.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What occurs during thermal expansion of seawater caused by global warming?",
+        "options": [
+          "A. As ocean water absorbs heat and warms up, water molecules expand and occupy greater volume, raising global sea levels",
+          "B. Ocean water boils and evaporates completely",
+          "C. Ocean water turns into solid ice crystals",
+          "D. Ocean water loses all salt content"
+        ],
+        "correctAnswer": "A. As ocean water absorbs heat and warms up, water molecules expand and occupy greater volume, raising global sea levels",
+        "hint": "Thermal expansion means water expands as it warms; this physical expansion accounts for a large portion of sea-level rise.",
+        "workedSolution": "Thermal expansion means water expands as it warms; this physical expansion accounts for a large portion of sea-level rise.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does climate change accelerate the process of desertification in savanna ecosystems?",
+        "options": [
+          "A. Higher temperatures and recurrent droughts dry out topsoil, destroying vegetative cover and allowing wind erosion to expand deserts",
+          "B. Rain falls every day in deserts",
+          "C. Desert sand turns into fertile mud",
+          "D. Trees grow faster in desert heat"
+        ],
+        "correctAnswer": "A. Higher temperatures and recurrent droughts dry out topsoil, destroying vegetative cover and allowing wind erosion to expand deserts",
+        "hint": "Persistent drought and heat deplete soil moisture, stripping vegetation and converting semi-arid margins into desert.",
+        "workedSolution": "Persistent drought and heat deplete soil moisture, stripping vegetation and converting semi-arid margins into desert.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are ocean wave energy plants considered advantageous for coastal nations?",
+        "options": [
+          "A. Ocean waves and tides are constant, highly predictable, and produce zero greenhouse emissions during operation",
+          "B. Ocean waves work only on sunny days",
+          "C. Ocean wave turbines destroy all ocean waves",
+          "D. Wave energy plants use diesel fuel to create waves"
+        ],
+        "correctAnswer": "A. Ocean waves and tides are constant, highly predictable, and produce zero greenhouse emissions during operation",
+        "hint": "Waves deliver continuous kinetic power, providing predictable, emission-free electricity to coastal power grids.",
+        "workedSolution": "Waves deliver continuous kinetic power, providing predictable, emission-free electricity to coastal power grids.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of planting vegetative cover crops on bare farmland?",
+        "options": [
+          "A. Protecting topsoil from solar baking and erosion while maintaining soil microbial moisture and carbon",
+          "B. Reflecting all sunlight into space",
+          "C. Stopping crops from absorbing water",
+          "D. Turning soil into sand"
+        ],
+        "correctAnswer": "A. Protecting topsoil from solar baking and erosion while maintaining soil microbial moisture and carbon",
+        "hint": "Cover crops shield soil from heat and rainfall erosion, improving organic carbon and moisture retention.",
+        "workedSolution": "Cover crops shield soil from heat and rainfall erosion, improving organic carbon and moisture retention.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the international Montreal Protocol protect the Earth's atmosphere?",
+        "options": [
+          "A. By legally phasing out the global production and use of ozone-depleting Chlorofluorocarbons (CFCs)",
+          "B. By banning the use of solar energy",
+          "C. By making tree planting illegal",
+          "D. By requiring factories to burn more coal"
+        ],
+        "correctAnswer": "A. By legally phasing out the global production and use of ozone-depleting Chlorofluorocarbons (CFCs)",
+        "hint": "The Montreal Protocol phased out CFCs, enabling the stratospheric ozone layer to begin gradual recovery.",
+        "workedSolution": "The Montreal Protocol phased out CFCs, enabling the stratospheric ozone layer to begin gradual recovery.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a green economy emphasize 'resource efficiency' in manufacturing industries?",
+        "options": [
+          "A. To decouple economic growth from resource consumption by producing more goods with less raw material and minimal waste",
+          "B. To force factories to stop manufacturing goods",
+          "C. To increase industrial smoke emissions",
+          "D. To use only imported virgin raw materials"
+        ],
+        "correctAnswer": "A. To decouple economic growth from resource consumption by producing more goods with less raw material and minimal waste",
+        "hint": "Resource efficiency maximizes product yield per unit of raw material, lowering waste and environmental strain.",
+        "workedSolution": "Resource efficiency maximizes product yield per unit of raw material, lowering waste and environmental strain.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the adoption of solar water heaters reduce urban electrical load?",
+        "options": [
+          "A. They use direct solar thermal collectors to heat water, eliminating the need for high-wattage electric immersion heaters",
+          "B. They cool domestic water to freezing point",
+          "C. They generate electricity using wood fire",
+          "D. They require diesel generators to operate"
+        ],
+        "correctAnswer": "A. They use direct solar thermal collectors to heat water, eliminating the need for high-wattage electric immersion heaters",
+        "hint": "Solar thermal collectors heat water directly from sunlight, avoiding heavy electrical heating loads on the grid.",
+        "workedSolution": "Solar thermal collectors heat water directly from sunlight, avoiding heavy electrical heating loads on the grid.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the link between climate change and the spread of vector-borne tropical diseases?",
+        "options": [
+          "A. Rising temperatures and altered rainfall expand the geographical breeding habitats of disease vectors like mosquitoes",
+          "B. Warmer weather freezes all mosquito larvae",
+          "C. Climate change kills all bacteria",
+          "D. Vectors cannot fly in warm air"
+        ],
+        "correctAnswer": "A. Rising temperatures and altered rainfall expand the geographical breeding habitats of disease vectors like mosquitoes",
+        "hint": "Warming temperatures and changing precipitation extend the altitude and range where malaria-carrying mosquitoes thrive.",
+        "workedSolution": "Warming temperatures and changing precipitation extend the altitude and range where malaria-carrying mosquitoes thrive.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is regular energy auditing recommended for commercial public buildings?",
+        "options": [
+          "A. To identify areas of power wastage, optimize lighting/cooling efficiency, and lower operational utility costs and emissions",
+          "B. To measure the physical weight of the building",
+          "C. To turn off all electricity permanently",
+          "D. To check if the building is painted green"
+        ],
+        "correctAnswer": "A. To identify areas of power wastage, optimize lighting/cooling efficiency, and lower operational utility costs and emissions",
+        "hint": "Energy audits pinpoint thermal leaks and inefficient equipment, guiding retrofits that cut power consumption.",
+        "workedSolution": "Energy audits pinpoint thermal leaks and inefficient equipment, guiding retrofits that cut power consumption.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does conserving water in homes help reduce greenhouse gas emissions?",
+        "options": [
+          "A. Pumping, treating, and heating municipal water requires substantial electrical energy, so using less water reduces energy generation",
+          "B. Water contains carbon dioxide gas",
+          "C. Running taps create cloud storms",
+          "D. Saving water stops global rainfall"
+        ],
+        "correctAnswer": "A. Pumping, treating, and heating municipal water requires substantial electrical energy, so using less water reduces energy generation",
+        "hint": "Water treatment and distribution consume large amounts of electrical power; water conservation cuts this municipal energy demand.",
+        "workedSolution": "Water treatment and distribution consume large amounts of electrical power; water conservation cuts this municipal energy demand.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary benefit of installing rainwater harvesting systems in schools?",
+        "options": [
+          "A. Collecting roof runoff provides sustainable non-potable water, reducing reliance on treated municipal supply and conserving groundwater",
+          "B. Rainwater cools down the school roof completely",
+          "C. Rainwater harvesting stops rainy seasons",
+          "D. Harvested water turns into electricity"
+        ],
+        "correctAnswer": "A. Collecting roof runoff provides sustainable non-potable water, reducing reliance on treated municipal supply and conserving groundwater",
+        "hint": "Rainwater harvesting captures free precipitation for sanitation and irrigation, buffering against municipal water shortages.",
+        "workedSolution": "Rainwater harvesting captures free precipitation for sanitation and irrigation, buffering against municipal water shortages.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does increased chemical fertilizer use on farmland contribute to atmospheric global warming?",
+        "options": [
+          "A. Soil microbes convert excess synthetic nitrogen fertilizer into nitrous oxide (N2O), a potent greenhouse gas",
+          "B. Chemical fertilizers absorb all oxygen from the air",
+          "C. Fertilizers generate solar flares",
+          "D. Fertilizers cause volcanoes to erupt"
+        ],
+        "correctAnswer": "A. Soil microbes convert excess synthetic nitrogen fertilizer into nitrous oxide (N2O), a potent greenhouse gas",
+        "hint": "Microbial nitrification and denitrification of synthetic nitrogen fertilizers release nitrous oxide, a potent greenhouse gas.",
+        "workedSolution": "Microbial nitrification and denitrification of synthetic nitrogen fertilizers release nitrous oxide, a potent greenhouse gas.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does transitioning to a low-carbon transport sector benefit public health in cities like Kumasi and Accra?",
+        "options": [
+          "A. It reduces toxic vehicle exhaust pollutants (particulate matter PM2.5, carbon monoxide), lowering asthma and respiratory hospitalizations",
+          "B. It eliminates traffic congestion permanently",
+          "C. It makes motor vehicles completely free",
+          "D. It prevents rainfall from causing puddles"
+        ],
+        "correctAnswer": "A. It reduces toxic vehicle exhaust pollutants (particulate matter PM2.5, carbon monoxide), lowering asthma and respiratory hospitalizations",
+        "hint": "Low-emission transport cuts urban air pollutants, preventing chronic cardiorespiratory and asthmatic illnesses.",
+        "workedSolution": "Low-emission transport cuts urban air pollutants, preventing chronic cardiorespiratory and asthmatic illnesses.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What ecological consequence occurs when warmer oceans trigger coral reef bleaching?",
+        "options": [
+          "A. Elevated seawater temperatures cause corals to expel their symbiotic algae, turning them white and collapsing reef marine biodiversity",
+          "B. Corals turn into edible fish",
+          "C. Coral reefs grow into mountains",
+          "D. The ocean water turns into freshwater"
+        ],
+        "correctAnswer": "A. Elevated seawater temperatures cause corals to expel their symbiotic algae, turning them white and collapsing reef marine biodiversity",
+        "hint": "Thermal stress forces coral polyps to expel photosynthetic zooxanthellae, starving the coral and degrading marine habitats.",
+        "workedSolution": "Thermal stress forces coral polyps to expel photosynthetic zooxanthellae, starving the coral and degrading marine habitats.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is replacing old home appliances with energy-efficient models an effective personal climate action?",
+        "options": [
+          "A. Modern appliances use advanced compressors and microprocessors that consume far less power, lowering household electricity usage",
+          "B. Old appliances generate carbon dioxide directly",
+          "C. New appliances never use electricity",
+          "D. Old appliances attract termites"
+        ],
+        "correctAnswer": "A. Modern appliances use advanced compressors and microprocessors that consume far less power, lowering household electricity usage",
+        "hint": "Energy-rated appliances draw significantly less current, reducing overall demand on national power generation grids.",
+        "workedSolution": "Energy-rated appliances draw significantly less current, reducing overall demand on national power generation grids.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the Earth's axial rotation affect planetary climate zones?",
+        "options": [
+          "A. The rotation creates the Coriolis effect, deflecting moving winds and ocean currents into clockwise or counterclockwise global circulation cells",
+          "B. Rotation stops solar rays from reaching the equator",
+          "C. Rotation makes polar ice caps melt every day",
+          "D. Rotation changes the distance to the Moon"
+        ],
+        "correctAnswer": "A. The rotation creates the Coriolis effect, deflecting moving winds and ocean currents into clockwise or counterclockwise global circulation cells",
+        "hint": "Axial rotation produces the Coriolis force, which steers global trade winds and westerlies into organized circulation cells.",
+        "workedSolution": "Axial rotation produces the Coriolis force, which steers global trade winds and westerlies into organized circulation cells.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a healthy forest act as an active 'carbon sink'?",
+        "options": [
+          "A. Trees absorb more carbon dioxide through photosynthesis during growth than they release through respiration, sequestering carbon in biomass",
+          "B. Trees bury carbon into deep rock layers",
+          "C. Trees convert carbon dioxide into nitrogen",
+          "D. Forest soil burns carbon underground"
+        ],
+        "correctAnswer": "A. Trees absorb more carbon dioxide through photosynthesis during growth than they release through respiration, sequestering carbon in biomass",
+        "hint": "Growing trees sequester carbon in wood, roots, and soil, removing large volumes of carbon dioxide from the atmosphere.",
+        "workedSolution": "Growing trees sequester carbon in wood, roots, and soil, removing large volumes of carbon dioxide from the atmosphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the practice of 'reduce, reuse, and recycle' conserve national energy reserves?",
+        "options": [
+          "A. Manufacturing goods from recycled materials requires far less energy than extracting, transporting, and refining virgin natural resources",
+          "B. Recycled products generate electricity in homes",
+          "C. It eliminates the need for power lines",
+          "D. It stops factory machines from using power"
+        ],
+        "correctAnswer": "A. Manufacturing goods from recycled materials requires far less energy than extracting, transporting, and refining virgin natural resources",
+        "hint": "Recycling circumvents energy-intensive raw resource extraction and primary smelting, saving industrial power.",
+        "workedSolution": "Recycling circumvents energy-intensive raw resource extraction and primary smelting, saving industrial power.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary environmental risk of continuing to burn coal in electricity generation?",
+        "options": [
+          "A. Coal is the most carbon-intensive fossil fuel, releasing massive amounts of CO2, sulfur dioxide, mercury, and fly ash",
+          "B. Coal burns with zero heat output",
+          "C. Coal turns into clean water vapor",
+          "D. Coal makes power lines freeze"
+        ],
+        "correctAnswer": "A. Coal is the most carbon-intensive fossil fuel, releasing massive amounts of CO2, sulfur dioxide, mercury, and fly ash",
+        "hint": "Coal combustion emits dense $CO_2$ and toxic air pollutants, driving global warming, smog, and acid rain.",
+        "workedSolution": "Coal combustion emits dense $CO_2$ and toxic air pollutants, driving global warming, smog, and acid rain.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does climate change trigger population displacement and environmental migration?",
+        "options": [
+          "A. Rising sea levels submerge coastal settlements, while severe droughts destroy agricultural livelihoods and water supplies",
+          "B. People move to look for colder winter snow in Africa",
+          "C. Governments ban living in cities",
+          "D. Deserts turn into modern shopping malls"
+        ],
+        "correctAnswer": "A. Rising sea levels submerge coastal settlements, while severe droughts destroy agricultural livelihoods and water supplies",
+        "hint": "Sea-level encroachment and agricultural collapse force vulnerable communities to abandon homes as climate refugees.",
+        "workedSolution": "Sea-level encroachment and agricultural collapse force vulnerable communities to abandon homes as climate refugees.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are wind turbines mounted on tall support towers in commercial wind farms?",
+        "options": [
+          "A. Wind speeds are faster, stronger, and less turbulent at higher altitudes, allowing turbines to generate more electricity",
+          "B. To keep turbines away from farm animals",
+          "C. To bring turbines closer to the Sun",
+          "D. To catch rain water"
+        ],
+        "correctAnswer": "A. Wind speeds are faster, stronger, and less turbulent at higher altitudes, allowing turbines to generate more electricity",
+        "hint": "Wind velocity increases with altitude away from ground friction, maximizing kinetic power generation.",
+        "workedSolution": "Wind velocity increases with altitude away from ground friction, maximizing kinetic power generation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of a solar charge controller in a domestic solar home system?",
+        "options": [
+          "A. Regulating voltage and current from the solar panels to prevent battery banks from overcharging or deep discharging",
+          "B. Turning sunlight into diesel fuel",
+          "C. Keeping the solar panels cold with water",
+          "D. Making the solar lights shine in green color"
+        ],
+        "correctAnswer": "A. Regulating voltage and current from the solar panels to prevent battery banks from overcharging or deep discharging",
+        "hint": "Charge controllers manage power flow, preventing battery damage from overcharging and extending storage life.",
+        "workedSolution": "Charge controllers manage power flow, preventing battery damage from overcharging and extending storage life.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does adopting precision farming technology minimize agricultural greenhouse emissions?",
+        "options": [
+          "A. GPS-guided equipment applies water and fertilizers in exact localized amounts, avoiding over-application and volatilization of N2O",
+          "B. It stops crops from absorbing nitrogen",
+          "C. It harvests crops before they grow",
+          "D. It replaces tractors with manual hoeing"
+        ],
+        "correctAnswer": "A. GPS-guided equipment applies water and fertilizers in exact localized amounts, avoiding over-application and volatilization of N2O",
+        "hint": "Precision agriculture applies inputs only where needed, cutting fertilizer waste and reducing nitrous oxide emissions.",
+        "workedSolution": "Precision agriculture applies inputs only where needed, cutting fertilizer waste and reducing nitrous oxide emissions.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is public awareness and climate education essential in building national climate resilience?",
+        "options": [
+          "A. It empowers communities to adopt sustainable habits, implement conservation practices, and support clean policies",
+          "B. It makes climate change disappear immediately",
+          "C. It allows citizens to ignore weather forecasts",
+          "D. It makes imported goods cheaper"
+        ],
+        "correctAnswer": "A. It empowers communities to adopt sustainable habits, implement conservation practices, and support clean policies",
+        "hint": "Climate literacy mobilizes community action, driving behavioral changes and policy support for sustainability.",
+        "workedSolution": "Climate literacy mobilizes community action, driving behavioral changes and policy support for sustainability.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the ultimate objective of integrating sustainable energy choices into Ghana's national development strategy?",
+        "options": [
+          "A. Achieving reliable, clean, and affordable energy access while preserving the climate and ecosystems for future generations",
+          "B. Banning all manufacturing factories",
+          "C. Stopping the use of electricity in homes",
+          "D. Exporting all national water resources"
+        ],
+        "correctAnswer": "A. Achieving reliable, clean, and affordable energy access while preserving the climate and ecosystems for future generations",
+        "hint": "Sustainable energy integration provides reliable, low-carbon power that drives development without degrading the environment.",
+        "workedSolution": "Sustainable energy integration provides reliable, low-carbon power that drives development without degrading the environment.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A coastal metropolitan district consumes 1,200 MWh of electricity generated by a heavy fuel oil thermal plant daily. If switching to a solar photovoltaic farm reduces carbon emissions by 0.75 metric tons of CO2 per MWh generated, how many metric tons of CO2 emissions are avoided each week?",
+        "options": [
+          "A. 900 metric tons CO2",
+          "B. 4,500 metric tons CO2",
+          "C. 6,300 metric tons CO2",
+          "D. 8,400 metric tons CO2"
+        ],
+        "correctAnswer": "C. 6,300 metric tons CO2",
+        "hint": "Daily Avoided CO2 = 1,200 MWh × 0.75 tons/MWh = 900 tons/day. Weekly Avoided CO2 = 900 tons/day × 7 days = 6,300 metric tons.",
+        "workedSolution": "Daily Avoided CO2 = 1,200 MWh × 0.75 tons/MWh = 900 tons/day. Weekly Avoided CO2 = 900 tons/day × 7 days = 6,300 metric tons.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a 1-meter rise in sea level cause coastal shoreline retreat far greater than 1 meter inland in sandy coastal plains like Keta?",
+        "options": [
+          "A. Under the Bruun Rule of coastal erosion, every meter of vertical sea-level rise typically induces 50 to 100 meters of horizontal shoreline erosion inland",
+          "B. Sand dissolves in warm seawater",
+          "C. Waves stop moving near the beach",
+          "D. Sea water turns sand into clay"
+        ],
+        "correctAnswer": "A. Under the Bruun Rule of coastal erosion, every meter of vertical sea-level rise typically induces 50 to 100 meters of horizontal shoreline erosion inland",
+        "hint": "The Bruun Rule shows that vertical sea rise forces the coastal beach profile upward and landward, eroding 50–100 times the vertical rise horizontally.",
+        "workedSolution": "The Bruun Rule shows that vertical sea rise forces the coastal beach profile upward and landward, eroding 50–100 times the vertical rise horizontally.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In radiative thermodynamics, why does incoming shortwave solar radiation penetrate the atmosphere easily, while outgoing longwave terrestrial radiation is trapped by greenhouse gases?",
+        "options": [
+          "A. The Sun's high surface temperature (~5,500°C) emits shortwave radiation to which greenhouse gases are transparent; the Earth's cooler surface emits infrared radiation that matches the vibrational absorption frequencies of greenhouse gas bonds",
+          "B. Solar rays have no energy",
+          "C. Greenhouse gases are made of metal mirrors",
+          "D. The Earth emits high-energy X-rays"
+        ],
+        "correctAnswer": "A. The Sun's high surface temperature (~5,500°C) emits shortwave radiation to which greenhouse gases are transparent; the Earth's cooler surface emits infrared radiation that matches the vibrational absorption frequencies of greenhouse gas bonds",
+        "hint": "Wien's displacement law dictates that Earth's cool surface reradiates infrared, whose wavelengths resonate with and are absorbed by greenhouse gas molecular bonds.",
+        "workedSolution": "Wien's displacement law dictates that Earth's cool surface reradiates infrared, whose wavelengths resonate with and are absorbed by greenhouse gas molecular bonds.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A hectare of mature tropical rainforest sequesters approximately 12 metric tons of carbon annually. If a 500-hectare forest reserve is protected from deforestation, what total mass of CO2 is removed from the atmosphere over a 5-year period? (take the molecular weight ratio of CO2 to C as 44/12 = 3.67)",
+        "options": [
+          "A. 6,000 metric tons CO2",
+          "B. 30,000 metric tons CO2",
+          "C. 110,100 metric tons CO2",
+          "D. 220,000 metric tons CO2"
+        ],
+        "correctAnswer": "C. 110,100 metric tons CO2",
+        "hint": "Total Carbon = 500 ha × 12 tons/ha/yr × 5 yrs = 30,000 tons C. Total CO2 = 30,000 tons × (44/12) = 110,100 metric tons of CO2.",
+        "workedSolution": "Total Carbon = 500 ha × 12 tons/ha/yr × 5 yrs = 30,000 tons C. Total CO2 = 30,000 tons × (44/12) = 110,100 metric tons of CO2.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical mechanism by which stratospheric ozone destruction by CFCs is sustained as a catalytic chain reaction?",
+        "options": [
+          "A. A single chlorine radical ($Cl^\\bullet$) reacts with ozone to form chlorine monoxide ($ClO$), which then reacts with free oxygen atoms to regenerate the active chlorine radical, destroying thousands of ozone molecules",
+          "B. Chlorine radicals turn into water droplets",
+          "C. Ozone molecules convert chlorine into nitrogen",
+          "D. UV radiation destroys chlorine immediately"
+        ],
+        "correctAnswer": "A. A single chlorine radical ($Cl^\\bullet$) reacts with ozone to form chlorine monoxide ($ClO$), which then reacts with free oxygen atoms to regenerate the active chlorine radical, destroying thousands of ozone molecules",
+        "hint": "The catalytic cycle ($Cl + O_3 \\rightarrow ClO + O_2$; $ClO + O \\rightarrow Cl + O_2$) regenerates free chlorine, allowing one radical to break down over 100,000 ozone molecules.",
+        "workedSolution": "The catalytic cycle ($Cl + O_3 \\rightarrow ClO + O_2$; $ClO + O \\rightarrow Cl + O_2$) regenerates free chlorine, allowing one radical to break down over 100,000 ozone molecules.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does ocean acidification, driven by elevated atmospheric CO2 absorption, impair marine calcifying organisms like mollusks and coral polyps?",
+        "options": [
+          "A. Dissolved CO2 reacts with water to form carbonic acid, lowering seawater pH and depleting the carbonate ions ($CO_3^{2-}$) required to build calcium carbonate shells",
+          "B. Carbonic acid turns ocean water into ice",
+          "C. Dissolved carbon turns shells into pure gold",
+          "D. Acid makes shells grow too thick for animals to move"
+        ],
+        "correctAnswer": "A. Dissolved CO2 reacts with water to form carbonic acid, lowering seawater pH and depleting the carbonate ions ($CO_3^{2-}$) required to build calcium carbonate shells",
+        "hint": "Acidification ($CO_2 + H_2O \\rightarrow H_2CO_3 \\rightarrow H^+ + HCO_3^-$) consumes free carbonate ions, dissolving shells and inhibiting calcification.",
+        "workedSolution": "Acidification ($CO_2 + H_2O \\rightarrow H_2CO_3 \\rightarrow H^+ + HCO_3^-$) consumes free carbonate ions, dissolving shells and inhibiting calcification.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a municipal biogas digester operating at optimal mesophilic temperatures (35°C–37°C), why must the internal anaerobic atmosphere be maintained with zero dissolved oxygen?",
+        "options": [
+          "A. Methanogenic archaea are obligate anaerobes whose key metabolic enzymes are poisoned and inactivated by molecular oxygen",
+          "B. Oxygen turns methane into solid rock",
+          "C. Anaerobic bacteria breathe nitrogen gas",
+          "D. Oxygen makes the digester too cold"
+        ],
+        "correctAnswer": "A. Methanogenic archaea are obligate anaerobes whose key metabolic enzymes are poisoned and inactivated by molecular oxygen",
+        "hint": "Methanogens are strict anaerobes; exposure to dissolved oxygen halts methane synthesis and kills the bacterial consortium.",
+        "workedSolution": "Methanogens are strict anaerobes; exposure to dissolved oxygen halts methane synthesis and kills the bacterial consortium.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Albedo Effect create an amplifying positive feedback loop in polar climate warming?",
+        "options": [
+          "A. Melting highly reflective white ice exposes darker ocean water, which absorbs more solar radiation, warming the ocean and melting more ice",
+          "B. Melting ice makes the polar air colder",
+          "C. Dark ocean water reflects more light than white ice",
+          "D. White ice absorbs 100% of solar radiation"
+        ],
+        "correctAnswer": "A. Melting highly reflective white ice exposes darker ocean water, which absorbs more solar radiation, warming the ocean and melting more ice",
+        "hint": "Ice-albedo feedback: replacing high-albedo sea ice (reflects ~80%) with low-albedo open water (absorbs ~90%) accelerates thermal absorption and warming.",
+        "workedSolution": "Ice-albedo feedback: replacing high-albedo sea ice (reflects ~80%) with low-albedo open water (absorbs ~90%) accelerates thermal absorption and warming.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the global warming potential (GWP) of nitrous oxide (N2O) evaluated as approximately 273 times greater than that of carbon dioxide over a 100-year timescale?",
+        "options": [
+          "A. N2O has a long atmospheric lifetime (~114 years) and molecular bonds that absorb infrared radiation within a spectral atmospheric window where CO2 is transparent",
+          "B. N2O is a radioactive element",
+          "C. N2O molecules are 273 times heavier than CO2",
+          "D. N2O burns spontaneously in cloud water"
+        ],
+        "correctAnswer": "A. N2O has a long atmospheric lifetime (~114 years) and molecular bonds that absorb infrared radiation within a spectral atmospheric window where CO2 is transparent",
+        "hint": "Nitrous oxide absorbs strongly in the unblocked infrared window and has high chemical stability, conferring an elevated warming potential.",
+        "workedSolution": "Nitrous oxide absorbs strongly in the unblocked infrared window and has high chemical stability, conferring an elevated warming potential.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A village installs an off-grid solar mini-grid with an array efficiency of 18% and total panel surface area of 200 m². If average solar irradiance is 800 W/m² for 5 peak hours daily, what electrical energy is produced per day?",
+        "options": [
+          "A. 28.8 kWh",
+          "B. 144.0 kWh",
+          "C. 288.0 kWh",
+          "D. 576.0 kWh"
+        ],
+        "correctAnswer": "B. 144.0 kWh",
+        "hint": "Peak Power = 200 m² × 800 W/m² × 0.18 = 28,800 W = 28.8 kW. Daily Energy = 28.8 kW × 5 hours = 144.0 kWh.",
+        "workedSolution": "Peak Power = 200 m² × 800 W/m² × 0.18 = 28,800 W = 28.8 kW. Daily Energy = 28.8 kW × 5 hours = 144.0 kWh.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary thermodynamic challenge associated with deep-water ocean thermal energy conversion (OTEC)?",
+        "options": [
+          "A. The temperature difference between warm surface water (25°C) and cold deep water (5°C) is relatively small (~20°C), resulting in low theoretical Carnot thermal efficiency (6%–7%)",
+          "B. Ocean water contains too much salt to boil",
+          "C. Deep ocean water freezes all turbine blades",
+          "D. OTEC plants produce heavy greenhouse gases"
+        ],
+        "correctAnswer": "A. The temperature difference between warm surface water (25°C) and cold deep water (5°C) is relatively small (~20°C), resulting in low theoretical Carnot thermal efficiency (6%–7%)",
+        "hint": "Carnot efficiency is governed by $\\Delta T / T_H$; a small temperature gradient yields low thermodynamic efficiency, requiring massive flow volumes.",
+        "workedSolution": "Carnot efficiency is governed by $\\Delta T / T_H$; a small temperature gradient yields low thermodynamic efficiency, requiring massive flow volumes.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the conversion of savanna grasslands into irrigated monoculture rice paddies significantly increase regional greenhouse gas emissions?",
+        "options": [
+          "A. Continuous flooding creates waterlogged, anaerobic soil conditions where methanogenic bacteria thrive, releasing high volumes of methane",
+          "B. Rice plants do not perform photosynthesis",
+          "C. Irrigation water dissolves atmospheric oxygen permanently",
+          "D. Rice paddies emit CFC refrigerants"
+        ],
+        "correctAnswer": "A. Continuous flooding creates waterlogged, anaerobic soil conditions where methanogenic bacteria thrive, releasing high volumes of methane",
+        "hint": "Flooded paddy soils create anoxic environments where organic matter is decomposed by methanogens, venting substantial methane.",
+        "workedSolution": "Flooded paddy soils create anoxic environments where organic matter is decomposed by methanogens, venting substantial methane.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does installing a grid-tied inverter with maximum power point tracking (MPPT) optimize a commercial solar photovoltaic installation?",
+        "options": [
+          "A. It dynamically adjusts electrical load impedance to extract the maximum available power from solar arrays under fluctuating irradiance and temperature",
+          "B. It stores electrical current without batteries",
+          "C. It converts sunlight into liquid fuel",
+          "D. It cools the solar panels with fans"
+        ],
+        "correctAnswer": "A. It dynamically adjusts electrical load impedance to extract the maximum available power from solar arrays under fluctuating irradiance and temperature",
+        "hint": "MPPT algorithms track the solar panel's non-linear IV curve, ensuring the array operates at its peak power output point.",
+        "workedSolution": "MPPT algorithms track the solar panel's non-linear IV curve, ensuring the array operates at its peak power output point.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the preservation of mangrove wetland ecosystems along the Ghanaian coast critical for blue carbon sequestration?",
+        "options": [
+          "A. Mangrove waterlogged, anaerobic soils prevent the rapid decomposition of organic matter, storing carbon in sediments for centuries at rates 4 to 10 times higher than terrestrial forests",
+          "B. Mangroves turn carbon into salt crystals",
+          "C. Mangrove trees do not produce oxygen",
+          "D. Mangrove leaves are made of pure carbon fibers"
+        ],
+        "correctAnswer": "A. Mangrove waterlogged, anaerobic soils prevent the rapid decomposition of organic matter, storing carbon in sediments for centuries at rates 4 to 10 times higher than terrestrial forests",
+        "hint": "Anoxic mangrove sediments inhibit bacterial oxidation, locking buried organic carbon into long-term coastal sinks.",
+        "workedSolution": "Anoxic mangrove sediments inhibit bacterial oxidation, locking buried organic carbon into long-term coastal sinks.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the mechanical cause of turbine aerodynamic stall in wind energy systems during severe storm gusts?",
+        "options": [
+          "A. Excessive wind angle of attack causes boundary-layer airflow separation on the suction side of the blade, collapsing lift and reducing rotor speed to prevent mechanical destruction",
+          "B. The wind turns into a vacuum",
+          "C. Storm winds freeze the generator magnets",
+          "D. Turbine blades become too heavy to spin"
+        ],
+        "correctAnswer": "A. Excessive wind angle of attack causes boundary-layer airflow separation on the suction side of the blade, collapsing lift and reducing rotor speed to prevent mechanical destruction",
+        "hint": "Aerodynamic stall or pitch control feathers the blades, detaching airflow to reduce lift and protect the drive train from overload.",
+        "workedSolution": "Aerodynamic stall or pitch control feathers the blades, detaching airflow to reduce lift and protect the drive train from overload.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the combustion of sulfur-rich heavy fuel oil in thermal power stations generate secondary aerosols that cause both acid rain and localized solar dimming?",
+        "options": [
+          "A. Emitted SO2 oxidizes in the troposphere to form sulfuric acid droplets ($H_2SO_4$), which acidify precipitation and back-scatter incoming solar radiation",
+          "B. Sulfur reacts with water to form pure carbon",
+          "C. Fuel oil contains nuclear isotopes",
+          "D. Sulfur droplets destroy the Earth's gravity"
+        ],
+        "correctAnswer": "A. Emitted SO2 oxidizes in the troposphere to form sulfuric acid droplets ($H_2SO_4$), which acidify precipitation and back-scatter incoming solar radiation",
+        "hint": "Tropospheric sulfate aerosols act as cloud condensation nuclei and scatter solar radiation (dimming), while raining out as acid precipitation.",
+        "workedSolution": "Tropospheric sulfate aerosols act as cloud condensation nuclei and scatter solar radiation (dimming), while raining out as acid precipitation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does biochar application to agricultural soils contribute to climate change mitigation?",
+        "options": [
+          "A. Pyrolyzed stable aromatic carbon remains recalcitrant in soil for hundreds of years, sequestering carbon while improving soil cation exchange capacity and moisture retention",
+          "B. Biochar releases methane into the clouds",
+          "C. Biochar turns soil into limestone",
+          "D. Biochar heats the farm soil to 100°C"
+        ],
+        "correctAnswer": "A. Pyrolyzed stable aromatic carbon remains recalcitrant in soil for hundreds of years, sequestering carbon while improving soil cation exchange capacity and moisture retention",
+        "hint": "Biochar locks labile biomass carbon into recalcitrant aromatic rings that resist microbial oxidation, creating long-term soil carbon storage.",
+        "workedSolution": "Biochar locks labile biomass carbon into recalcitrant aromatic rings that resist microbial oxidation, creating long-term soil carbon storage.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a municipal water utility, how does the adoption of variable frequency drives (VFDs) on high-pressure booster pumps reduce carbon emissions?",
+        "options": [
+          "A. By modulating electric motor speed to match fluctuating hydraulic demand exactly, eliminating throttling energy losses and lowering electrical consumption",
+          "B. VFDs generate their own solar power",
+          "C. VFDs filter all bacteria from water",
+          "D. VFDs eliminate the need for water pipes"
+        ],
+        "correctAnswer": "A. By modulating electric motor speed to match fluctuating hydraulic demand exactly, eliminating throttling energy losses and lowering electrical consumption",
+        "hint": "VFDs adjust pump speeds according to affinity laws ($Power \\propto Speed^3$), drastically cutting energy use during partial-load periods.",
+        "workedSolution": "VFDs adjust pump speeds according to affinity laws ($Power \\propto Speed^3$), drastically cutting energy use during partial-load periods.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does black carbon (soot) deposition on snow and glacial ice accelerate cryospheric melting rates?",
+        "options": [
+          "A. Dark soot particles darken the snow surface, lowering its albedo and increasing the absorption of solar radiation, which accelerates surface melting",
+          "B. Soot freezes the snow permanently",
+          "C. Soot dissolves ice into carbon dioxide gas",
+          "D. Soot makes the ice reflect all sunlight"
+        ],
+        "correctAnswer": "A. Dark soot particles darken the snow surface, lowering its albedo and increasing the absorption of solar radiation, which accelerates surface melting",
+        "hint": "Soot lowers surface reflectivity, absorbing radiant energy and accelerating heat transfer to underlying ice.",
+        "workedSolution": "Soot lowers surface reflectivity, absorbing radiant energy and accelerating heat transfer to underlying ice.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of an environmental life cycle assessment (LCA) when evaluating the sustainability of biofuels compared to fossil petroleum?",
+        "options": [
+          "A. Quantifying net greenhouse emissions across all stages: feedstock planting, fertilizer inputs, harvesting, processing distillation, and final engine tailpipe combustion",
+          "B. Testing only the color of the fuel",
+          "C. Measuring how fast the fuel burns in a lamp",
+          "D. Calculating the retail price of the fuel"
+        ],
+        "correctAnswer": "A. Quantifying net greenhouse emissions across all stages: feedstock planting, fertilizer inputs, harvesting, processing distillation, and final engine tailpipe combustion",
+        "hint": "LCA accounts for energy inputs, fertilizer nitrous oxide, and processing emissions, determining true net well-to-wheel carbon savings.",
+        "workedSolution": "LCA accounts for energy inputs, fertilizer nitrous oxide, and processing emissions, determining true net well-to-wheel carbon savings.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does groundwater over-extraction in coastal agricultural belts exacerbate the local impacts of sea-level rise?",
+        "options": [
+          "A. Land subsidence caused by depressurized sediment compaction lowers the ground elevation, while saline seawater moves inland to contaminate remaining aquifers",
+          "B. Over-pumping turns groundwater into oil",
+          "C. It causes the sea level to drop globally",
+          "D. It stops all rainfall over the coast"
+        ],
+        "correctAnswer": "A. Land subsidence caused by depressurized sediment compaction lowers the ground elevation, while saline seawater moves inland to contaminate remaining aquifers",
+        "hint": "Pumping out groundwater induces aquifer compaction and land subsidence, worsening relative sea-level rise and saltwater intrusion.",
+        "workedSolution": "Pumping out groundwater induces aquifer compaction and land subsidence, worsening relative sea-level rise and saltwater intrusion.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In atmospheric physics, what is the 'infrared atmospheric window' ($8\\ \\mu\\text{m} - 14\\ \\mu\\text{m}$)?",
+        "options": [
+          "A. A spectral band where water vapor and CO2 absorb very little infrared radiation, allowing surface heat to escape directly into space unless blocked by gases like CFCs or ozone",
+          "B. A hole in the clouds over the equator",
+          "C. A glass window installed on satellites",
+          "D. A layer where sunlight turns into radio waves"
+        ],
+        "correctAnswer": "A. A spectral band where water vapor and CO2 absorb very little infrared radiation, allowing surface heat to escape directly into space unless blocked by gases like CFCs or ozone",
+        "hint": "The atmospheric window is a spectral gap where thermal radiation escapes; pollutant gases absorbing in this window exert high warming impact.",
+        "workedSolution": "The atmospheric window is a spectral gap where thermal radiation escapes; pollutant gases absorbing in this window exert high warming impact.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does conservation tillage (zero-till or minimum-till farming) support climate change mitigation in agriculture?",
+        "options": [
+          "A. Avoiding soil inversion preserves soil aggregate structure and prevents the microbial oxidation of buried organic matter into atmospheric CO2",
+          "B. It turns the farm soil into rock",
+          "C. It prevents crops from growing roots",
+          "D. It removes all water from the soil"
+        ],
+        "correctAnswer": "A. Avoiding soil inversion preserves soil aggregate structure and prevents the microbial oxidation of buried organic matter into atmospheric CO2",
+        "hint": "Tillage aerates soil, accelerating microbial respiration and carbon loss; no-till keeps carbon stabilized within soil aggregates.",
+        "workedSolution": "Tillage aerates soil, accelerating microbial respiration and carbon loss; no-till keeps carbon stabilized within soil aggregates.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of a thermal energy storage (TES) system utilizing molten salts in concentrated solar power (CSP) plants?",
+        "options": [
+          "A. Storing thermal energy during high-sunlight hours so steam turbines can continue generating electricity during nighttime and cloudy periods",
+          "B. Producing edible table salt from sunlight",
+          "C. Cooling down the solar mirrors",
+          "D. Generating magnetic fields"
+        ],
+        "correctAnswer": "A. Storing thermal energy during high-sunlight hours so steam turbines can continue generating electricity during nighttime and cloudy periods",
+        "hint": "Molten salt reservoirs store high-temperature heat, enabling CSP facilities to generate dispatchable base-load power after sunset.",
+        "workedSolution": "Molten salt reservoirs store high-temperature heat, enabling CSP facilities to generate dispatchable base-load power after sunset.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does permafrost thawing in sub-arctic regions pose a major tipping point in global climate change?",
+        "options": [
+          "A. Thawing anaerobic soils stimulate microbial decay of ancient frozen biomass, triggering massive releases of trapped methane and CO2 that accelerate warming",
+          "B. Thawing permafrost turns all ocean water fresh",
+          "C. It cools down the tropical equator",
+          "D. It stops volcanic eruptions permanently"
+        ],
+        "correctAnswer": "A. Thawing anaerobic soils stimulate microbial decay of ancient frozen biomass, triggering massive releases of trapped methane and CO2 that accelerate warming",
+        "hint": "Thawing permafrost unlocks vast pools of organic carbon to methanogenic decay, triggering a dangerous self-reinforcing warming feedback.",
+        "workedSolution": "Thawing permafrost unlocks vast pools of organic carbon to methanogenic decay, triggering a dangerous self-reinforcing warming feedback.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does an anaerobic digester's hydraulic retention time (HRT) influence biological methane yield?",
+        "options": [
+          "A. Adequate retention time ensures slow-growing methanogenic archaea have sufficient time to fully convert volatile fatty acids into methane without being washed out",
+          "B. Shorter retention times turn waste into gasoline",
+          "C. HRT measures the temperature of the digester fire",
+          "D. Retention time has no effect on bacteria"
+        ],
+        "correctAnswer": "A. Adequate retention time ensures slow-growing methanogenic archaea have sufficient time to fully convert volatile fatty acids into methane without being washed out",
+        "hint": "Sufficient HRT is essential because methanogens reproduce slowly; short retention times wash out microbes before digestion is complete.",
+        "workedSolution": "Sufficient HRT is essential because methanogens reproduce slowly; short retention times wash out microbes before digestion is complete.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the integration of distributed solar rooftop generation supported by net metering policies in modern green economies?",
+        "options": [
+          "A. It allows consumers to export surplus clean daytime solar electricity back to the grid for financial credit, incentivizing private renewable investments",
+          "B. It forces all houses to disconnect from the grid",
+          "C. It eliminates the need for power meters",
+          "D. It makes the national grid generate diesel fuel"
+        ],
+        "correctAnswer": "A. It allows consumers to export surplus clean daytime solar electricity back to the grid for financial credit, incentivizing private renewable investments",
+        "hint": "Net metering credits prosumers for exported power, improving solar return on investment and decentralizing generation.",
+        "workedSolution": "Net metering credits prosumers for exported power, improving solar return on investment and decentralizing generation.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of selective catalytic reduction (SCR) systems in mitigating atmospheric pollution from industrial boilers?",
+        "options": [
+          "A. Injecting ammonia or urea over a catalyst bed to convert nitrogen oxides (NOx) into harmless nitrogen gas ($N_2$) and water vapor",
+          "B. Converting carbon dioxide into solid gold",
+          "C. Freezing boiler flue gas",
+          "D. Producing methane for cooking"
+        ],
+        "correctAnswer": "A. Injecting ammonia or urea over a catalyst bed to convert nitrogen oxides (NOx) into harmless nitrogen gas ($N_2$) and water vapor",
+        "hint": "SCR uses ammonia reduction catalysts to remove smog-forming and acid-rain-precursor NOx from flue gases.",
+        "workedSolution": "SCR uses ammonia reduction catalysts to remove smog-forming and acid-rain-precursor NOx from flue gases.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the preservation of high urban canopy cover (urban forestry) reduce the 'urban heat island' (UHI) effect?",
+        "options": [
+          "A. Tree canopies provide shade and transpire moisture, converting sensible heat into latent heat and lowering surrounding ambient air temperatures",
+          "B. Trees absorb all car headlights",
+          "C. Trees turn asphalt roads into mud",
+          "D. Trees stop all city winds from blowing"
+        ],
+        "correctAnswer": "A. Tree canopies provide shade and transpire moisture, converting sensible heat into latent heat and lowering surrounding ambient air temperatures",
+        "hint": "Shading and evapotranspiration cool urban surfaces, countering heat retention in concrete and asphalt infrastructure.",
+        "workedSolution": "Shading and evapotranspiration cool urban surfaces, countering heat retention in concrete and asphalt infrastructure.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a photovoltaic solar panel's electrical conversion efficiency decline as its operating surface temperature rises?",
+        "options": [
+          "A. Elevated semiconductor temperatures increase internal electron-hole thermal recombination rates, reducing the open-circuit voltage ($V_{oc}$) of the cell",
+          "B. The panel begins to reflect all light",
+          "C. High heat freezes the silicon atoms",
+          "D. The copper wires dissolve in heat"
+        ],
+        "correctAnswer": "A. Elevated semiconductor temperatures increase internal electron-hole thermal recombination rates, reducing the open-circuit voltage ($V_{oc}$) of the cell",
+        "hint": "Thermal excitation increases intrinsic carrier concentration, lowering the band gap and reducing cell operating voltage.",
+        "workedSolution": "Thermal excitation increases intrinsic carrier concentration, lowering the band gap and reducing cell operating voltage.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the environmental objective of establishing marine protected areas (MPAs) in the context of global climate resilience?",
+        "options": [
+          "A. Preventing overfishing and habitat destruction, allowing marine ecosystems and coral reefs to maintain biological resilience against ocean warming and acidification",
+          "B. Banning all transport ships globally",
+          "C. Making ocean water completely fresh",
+          "D. Harvesting all fish for commercial exports"
+        ],
+        "correctAnswer": "A. Preventing overfishing and habitat destruction, allowing marine ecosystems and coral reefs to maintain biological resilience against ocean warming and acidification",
+        "hint": "MPAs protect intact marine food webs, bolstering the natural capacity of reefs and fisheries to buffer thermal shocks.",
+        "workedSolution": "MPAs protect intact marine food webs, bolstering the natural capacity of reefs and fisheries to buffer thermal shocks.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the energy return on investment (EROI) of modern solar and wind technologies significantly superior to tar sands and oil shales?",
+        "options": [
+          "A. Renewable generation yields many times more useful electrical energy over its operational life than the energy expended during manufacturing and installation",
+          "B. Solar panels generate energy without manufacturing",
+          "C. Oil shales require no extraction energy",
+          "D. Wind turbines last for 5,000 years"
+        ],
+        "correctAnswer": "A. Renewable generation yields many times more useful electrical energy over its operational life than the energy expended during manufacturing and installation",
+        "hint": "Renewable assets rapidly amortize embodied energy, delivering high net energy compared to unconventional, energy-intensive fossil fuels.",
+        "workedSolution": "Renewable assets rapidly amortize embodied energy, delivering high net energy compared to unconventional, energy-intensive fossil fuels.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the implementation of extended producer responsibility (EPR) in a green economy incentivize eco-design?",
+        "options": [
+          "A. Manufacturers are held financially liable for post-consumer waste management, compelling them to design products with recyclable materials and minimal packaging",
+          "B. It forces companies to stop selling goods",
+          "C. It taxes consumers for buying food",
+          "D. It bans all product warranties"
+        ],
+        "correctAnswer": "A. Manufacturers are held financially liable for post-consumer waste management, compelling them to design products with recyclable materials and minimal packaging",
+        "hint": "End-of-life accountability encourages engineers to design products that are easily disassembled and recycled.",
+        "workedSolution": "End-of-life accountability encourages engineers to design products that are easily disassembled and recycled.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the application of bio-digester effluent (digestate) to farmland reduce agricultural run-off pollution compared to raw manure?",
+        "options": [
+          "A. Anaerobic digestion stabilizes organic nutrients, converting volatile nitrogen into plant-available ammonium ($NH_4^+$) that binds tightly to soil colloids",
+          "B. Digestate turns into solid limestone",
+          "C. Digestate contains zero chemical elements",
+          "D. Digestate eliminates the need for farm soil"
+        ],
+        "correctAnswer": "A. Anaerobic digestion stabilizes organic nutrients, converting volatile nitrogen into plant-available ammonium ($NH_4^+$) that binds tightly to soil colloids",
+        "hint": "Digestion mineralizes nitrogen and lowers biological oxygen demand, reducing nutrient leaching into groundwater.",
+        "workedSolution": "Digestion mineralizes nitrogen and lowers biological oxygen demand, reducing nutrient leaching into groundwater.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In energy economics, what is the 'rebound effect' (Jevons' paradox) associated with energy-efficiency improvements?",
+        "options": [
+          "A. Increased energy efficiency lowers the cost of energy services, which may induce consumers to use those services more frequently, partially offsetting energy savings",
+          "B. Efficient machines consume double the electricity",
+          "C. Energy efficiency causes power outages",
+          "D. Light bulbs explode when efficient"
+        ],
+        "correctAnswer": "A. Increased energy efficiency lowers the cost of energy services, which may induce consumers to use those services more frequently, partially offsetting energy savings",
+        "hint": "Jevons' paradox occurs when efficiency gains make energy cheaper, driving behavioral consumption increases that erode net savings.",
+        "workedSolution": "Jevons' paradox occurs when efficiency gains make energy cheaper, driving behavioral consumption increases that erode net savings.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do green hydrogen production technologies utilizing PEM water electrolyzers powered by solar energy avoid carbon emissions?",
+        "options": [
+          "A. Pure water is split into hydrogen ($H_2$) and oxygen ($O_2$) using zero-carbon solar electricity, releasing only oxygen into the atmosphere",
+          "B. They burn natural gas with oxygen",
+          "C. They extract hydrogen from coal deposits",
+          "D. They use diesel generators to split water"
+        ],
+        "correctAnswer": "A. Pure water is split into hydrogen ($H_2$) and oxygen ($O_2$) using zero-carbon solar electricity, releasing only oxygen into the atmosphere",
+        "hint": "Green electrolysis splits water using renewable energy, yielding zero greenhouse emissions during production and utilization.",
+        "workedSolution": "Green electrolysis splits water using renewable energy, yielding zero greenhouse emissions during production and utilization.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does heavy siltation in rivers and reservoirs behind hydroelectric dams impair long-term generation capacity?",
+        "options": [
+          "A. Settling sediment displaces active water storage volume, reducing water head and causing abrasive erosion of turbine runner blades",
+          "B. Silt turns river water into solid rock",
+          "C. Silt causes dam walls to float",
+          "D. Silt stops the water from evaporating"
+        ],
+        "correctAnswer": "A. Settling sediment displaces active water storage volume, reducing water head and causing abrasive erosion of turbine runner blades",
+        "hint": "Sedimentation silts up reservoir active storage and erodes turbine impellers, reducing generation reliability.",
+        "workedSolution": "Sedimentation silts up reservoir active storage and erodes turbine impellers, reducing generation reliability.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological importance of preserving microbial soil fungi (arbuscular mycorrhizae) under regenerative agricultural practices?",
+        "options": [
+          "A. Fungal hyphae produce glomalin, a stable glycoprotein that binds soil minerals into aggregates, sequestering carbon and enhancing drought resilience",
+          "B. Fungi eat all crop roots",
+          "C. Fungi turn soil into water",
+          "D. Fungi emit large plumes of methane"
+        ],
+        "correctAnswer": "A. Fungal hyphae produce glomalin, a stable glycoprotein that binds soil minerals into aggregates, sequestering carbon and enhancing drought resilience",
+        "hint": "Mycorrhizal networks synthesize glomalin, which stabilizes soil organic carbon and improves soil structure and water storage.",
+        "workedSolution": "Mycorrhizal networks synthesize glomalin, which stabilizes soil organic carbon and improves soil structure and water storage.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does replacing heavy timber building framing with sustainably engineered bamboo promote forest conservation?",
+        "options": [
+          "A. Bamboo is a fast-growing perennial grass that matures in 3 to 5 years, providing high-tensile structural timber without felling slow-growing rainforest hardwoods",
+          "B. Bamboo does not absorb water",
+          "C. Bamboo is made of steel fibers",
+          "D. Bamboo requires no agricultural land"
+        ],
+        "correctAnswer": "A. Bamboo is a fast-growing perennial grass that matures in 3 to 5 years, providing high-tensile structural timber without felling slow-growing rainforest hardwoods",
+        "hint": "Rapidly renewable bamboo provides high-strength structural material, relieving logging pressure on natural forests.",
+        "workedSolution": "Rapidly renewable bamboo provides high-strength structural material, relieving logging pressure on natural forests.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the deployment of smart electrical grid meters facilitate the integration of fluctuating wind and solar power?",
+        "options": [
+          "A. Two-way communication allows utilities to balance real-time electricity demand dynamically against intermittent renewable generation",
+          "B. Smart meters turn wind turbines on and off with magnets",
+          "C. Smart meters eliminate the need for electrical wires",
+          "D. Smart meters generate solar energy at night"
+        ],
+        "correctAnswer": "A. Two-way communication allows utilities to balance real-time electricity demand dynamically against intermittent renewable generation",
+        "hint": "Smart grids enable demand-side management, matching variable renewable generation with flexible consumer loads.",
+        "workedSolution": "Smart grids enable demand-side management, matching variable renewable generation with flexible consumer loads.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary thermodynamic penalty of carbon capture and storage (CCS) systems retrofitted onto coal-fired thermal power stations?",
+        "options": [
+          "A. Reboiler solvent regeneration and $CO_2$ compression consume 20% to 30% of the plant's gross power output (parasitic energy load)",
+          "B. CCS turns coal into ice water",
+          "C. CCS eliminates all electricity generation",
+          "D. CCS makes power stations explode"
+        ],
+        "correctAnswer": "A. Reboiler solvent regeneration and $CO_2$ compression consume 20% to 30% of the plant's gross power output (parasitic energy load)",
+        "hint": "Amine stripping and gas compression demand substantial energy, significantly reducing net thermal plant efficiency.",
+        "workedSolution": "Amine stripping and gas compression demand substantial energy, significantly reducing net thermal plant efficiency.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does implementing drip irrigation instead of conventional overhead sprinklers contribute to both water conservation and climate adaptation?",
+        "options": [
+          "A. Water is delivered directly to plant root zones at low pressure, cutting evaporation and percolation losses by up to 50%",
+          "B. Drip irrigation freezes the topsoil",
+          "C. Drip irrigation stops crops from transpiring",
+          "D. Drip irrigation creates artificial rain clouds"
+        ],
+        "correctAnswer": "A. Water is delivered directly to plant root zones at low pressure, cutting evaporation and percolation losses by up to 50%",
+        "hint": "Targeted root-zone delivery minimizes evaporation and deep drainage losses, optimizing water productivity during droughts.",
+        "workedSolution": "Targeted root-zone delivery minimizes evaporation and deep drainage losses, optimizing water productivity during droughts.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the global atmospheric concentration of carbon dioxide measured continuously at pristine baseline observatories like Mauna Loa?",
+        "options": [
+          "A. High-altitude, well-mixed oceanic air provides representative global baseline data unaffected by localized urban pollution plumes",
+          "B. Mauna Loa is the only place with carbon dioxide",
+          "C. The observatory generates all atmospheric CO2",
+          "D. Hawaii has no clouds or wind"
+        ],
+        "correctAnswer": "A. High-altitude, well-mixed oceanic air provides representative global baseline data unaffected by localized urban pollution plumes",
+        "hint": "Remote marine mountain observatories capture well-mixed hemispheric background air, tracking clean global $CO_2$ trends.",
+        "workedSolution": "Remote marine mountain observatories capture well-mixed hemispheric background air, tracking clean global $CO_2$ trends.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physical cause of localized cavitation erosion on hydroelectric turbine runner blades during low-head operations?",
+        "options": [
+          "A. Rapid pressure drops in the water flow cause vapor bubbles to form and implode violently against the steel surface, pitting the metal",
+          "B. Fish hitting the turbine blades",
+          "C. Water rusting the blades within 10 seconds",
+          "D. Solar heat melting the turbine metal"
+        ],
+        "correctAnswer": "A. Rapid pressure drops in the water flow cause vapor bubbles to form and implode violently against the steel surface, pitting the metal",
+        "hint": "Sub-vapor-pressure drops create micro-cavities; their shockwave implosion pits and damages hydro turbine runners.",
+        "workedSolution": "Sub-vapor-pressure drops create micro-cavities; their shockwave implosion pits and damages hydro turbine runners.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the circular recycling of lithium-ion vehicle battery cathode metals (cobalt, nickel, lithium) minimize ecological harm?",
+        "options": [
+          "A. Hydrometallurgical closed-loop recovery reduces the need for new open-pit mining, tailings dams, and deforestation in vulnerable mining regions",
+          "B. Recycled batteries turn into clean water",
+          "C. Recycled batteries never need recharging",
+          "D. Recycling eliminates all battery weight"
+        ],
+        "correctAnswer": "A. Hydrometallurgical closed-loop recovery reduces the need for new open-pit mining, tailings dams, and deforestation in vulnerable mining regions",
+        "hint": "Closed-loop hydrometallurgical recycling recovers critical battery metals, reducing destructive primary mineral extraction.",
+        "workedSolution": "Closed-loop hydrometallurgical recycling recovers critical battery metals, reducing destructive primary mineral extraction.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a photovoltaic solar inverter require automatic anti-islanding protection circuitry?",
+        "options": [
+          "A. To immediately disconnect the solar array from the local grid during a utility blackout, preventing hazardous back-feeding into lines where technicians are working",
+          "B. To keep the solar panels clean during rain",
+          "C. To prevent the inverter from overheating",
+          "D. To turn DC power into diesel fuel"
+        ],
+        "correctAnswer": "A. To immediately disconnect the solar array from the local grid during a utility blackout, preventing hazardous back-feeding into lines where technicians are working",
+        "hint": "Anti-islanding prevents distributed inverters from energizing severed utility lines, protecting line maintenance workers from electrocution.",
+        "workedSolution": "Anti-islanding prevents distributed inverters from energizing severed utility lines, protecting line maintenance workers from electrocution.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In urban ecological planning, how does the deployment of permeable pavement systems reduce localized climate-induced flood risks?",
+        "options": [
+          "A. Porous interlocking pavers allow stormwater to infiltrate directly into underlying gravel sub-bases and aquifers, attenuating peak runoff flows",
+          "B. Permeable pavers absorb all rainwater and turn it into steam",
+          "C. Permeable pavers float on water",
+          "D. Permeable pavers stop rain from falling"
+        ],
+        "correctAnswer": "A. Porous interlocking pavers allow stormwater to infiltrate directly into underlying gravel sub-bases and aquifers, attenuating peak runoff flows",
+        "hint": "Porous surfaces facilitate on-site infiltration, recharging groundwater and preventing surface stormwater surges.",
+        "workedSolution": "Porous surfaces facilitate on-site infiltration, recharging groundwater and preventing surface stormwater surges.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the preservation of natural peat bogs and coastal mangrove swamps prevent the release of ancient geological greenhouse gases?",
+        "options": [
+          "A. Continuous waterlogging maintains permanent anaerobic conditions that prevent microbial enzymes from oxidizing ancient organic peat into CO2 and N2O",
+          "B. Peat bogs absorb all sunlight completely",
+          "C. Waterlogged swamps turn peat into diamond",
+          "D. Peat bogs freeze the surrounding air"
+        ],
+        "correctAnswer": "A. Continuous waterlogging maintains permanent anaerobic conditions that prevent microbial enzymes from oxidizing ancient organic peat into CO2 and N2O",
+        "hint": "Anoxic saturation halts aerobic decomposition; draining wetlands exposes millennia of stored carbon to rapid oxidative release.",
+        "workedSolution": "Anoxic saturation halts aerobic decomposition; draining wetlands exposes millennia of stored carbon to rapid oxidative release.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a wind turbine rotor operate below the theoretical Betz Limit (59.3% efficiency)?",
+        "options": [
+          "A. Aerodynamic blade drag, wake rotation losses, tip vortex shedding, and electrical generator conversion friction limit real extraction efficiency to 35%–45%",
+          "B. The wind stops moving when it hits the blades",
+          "C. Betz limit applies only to solar panels",
+          "D. Wind turbines are made of wood"
+        ],
+        "correctAnswer": "A. Aerodynamic blade drag, wake rotation losses, tip vortex shedding, and electrical generator conversion friction limit real extraction efficiency to 35%–45%",
+        "hint": "The Betz limit establishes ideal kinetic extraction; real-world viscous drag and mechanical-electrical losses lower actual efficiency.",
+        "workedSolution": "The Betz limit establishes ideal kinetic extraction; real-world viscous drag and mechanical-electrical losses lower actual efficiency.",
+        "points": 1
+      },
+      {
+        "id": "B7_CC_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does transitioning to a green economy foster long-term national macroeconomic resilience in developing nations?",
+        "options": [
+          "A. By reducing imported fuel dependencies, creating localized green employment, preserving natural capital, and shielding communities from climate shocks",
+          "B. By banning all agricultural farming",
+          "C. By eliminating all monetary banking systems",
+          "D. By forcing all citizens to move away from cities"
+        ],
+        "correctAnswer": "A. By reducing imported fuel dependencies, creating localized green employment, preserving natural capital, and shielding communities from climate shocks",
+        "hint": "Green economic models protect natural capital assets, diversify domestic energy, and insulate economies from climate disruption.",
+        "workedSolution": "Green economic models protect natural capital assets, diversify domestic energy, and insulate economies from climate disruption.",
         "points": 1
       }
     ]
